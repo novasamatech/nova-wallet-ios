@@ -6,9 +6,20 @@ final class WalletConnectSessionsViewController: UIViewController, ViewHolder {
 
     let presenter: WalletConnectSessionsPresenterProtocol
 
-    init(presenter: WalletConnectSessionsPresenterProtocol) {
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, WalletConnectSessionListViewModel>
+
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, WalletConnectSessionListViewModel>
+
+    private lazy var dataSource = createDataSource()
+
+    init(
+        presenter: WalletConnectSessionsPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -24,9 +35,25 @@ final class WalletConnectSessionsViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupTableView()
         setupHandlers()
 
         presenter.setup()
+    }
+
+    private func createDataSource() -> DataSource {
+        .init(tableView: rootView.tableView) { tableView, indexPath, viewModel -> UITableViewCell? in
+            let cell: WalletConnectSessionCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.bind(viewModel: viewModel)
+            return cell
+        }
+    }
+
+    private func setupTableView() {
+        rootView.tableView.dataSource = dataSource
+        rootView.tableView.delegate = self
+
+        rootView.tableView.registerClassForCell(WalletConnectSessionCell.self)
     }
 
     private func setupHandlers() {
@@ -54,7 +81,23 @@ final class WalletConnectSessionsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension WalletConnectSessionsViewController: WalletConnectSessionsViewProtocol {}
+extension WalletConnectSessionsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        presenter.showSession(at: indexPath.row)
+    }
+}
+
+extension WalletConnectSessionsViewController: WalletConnectSessionsViewProtocol {
+    func didReceive(viewModels: [WalletConnectSessionListViewModel]) {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModels)
+
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+}
 
 extension WalletConnectSessionsViewController: Localizable {
     func applyLocalization() {
