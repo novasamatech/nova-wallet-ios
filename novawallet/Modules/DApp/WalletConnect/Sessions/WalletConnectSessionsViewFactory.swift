@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct WalletConnectSessionsViewFactory {
     static func createView(
@@ -10,13 +11,20 @@ struct WalletConnectSessionsViewFactory {
 
         let wireframe = WalletConnectSessionsWireframe()
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = WalletConnectSessionsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: WalletConnectSessionsViewModelFactory(),
+            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = WalletConnectSessionsViewController(presenter: presenter)
+        let view = WalletConnectSessionsViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

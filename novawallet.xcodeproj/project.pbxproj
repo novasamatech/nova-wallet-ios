@@ -2135,6 +2135,11 @@
 		84C9CF3B291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3A291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift */; };
 		84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3C291AF1B1002BF328 /* GovernanceOffchainApi.swift */; };
 		84C9CF3F291AF4B2002BF328 /* ReferendumMetadataDetailsProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3E291AF4B2002BF328 /* ReferendumMetadataDetailsProviderSource.swift */; };
+		84CA40752A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA40742A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift */; };
+		84CA40782A0366E1004BB71E /* WalletConnectSessionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA40772A0366E1004BB71E /* WalletConnectSessionCell.swift */; };
+		84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA40792A036886004BB71E /* PlainBaseTableViewCell.swift */; };
+		84CA407C2A037175004BB71E /* WalletConnectSessionListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA407B2A037175004BB71E /* WalletConnectSessionListViewModel.swift */; };
+		84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA407D2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift */; };
 		84CA68CF26BD6872003B9453 /* RuntimeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA68CE26BD6872003B9453 /* RuntimeSyncService.swift */; };
 		84CA68D126BE99ED003B9453 /* RuntimeProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA68D026BE99ED003B9453 /* RuntimeProviderFactory.swift */; };
 		84CA68D326BE9A35003B9453 /* RuntimeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA68D226BE9A35003B9453 /* RuntimeProvider.swift */; };
@@ -5592,6 +5597,11 @@
 		84C9CF3C291AF1B1002BF328 /* GovernanceOffchainApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceOffchainApi.swift; sourceTree = "<group>"; };
 		84C9CF3E291AF4B2002BF328 /* ReferendumMetadataDetailsProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumMetadataDetailsProviderSource.swift; sourceTree = "<group>"; };
 		84CA40732A0274C2004BB71E /* MultiassetUserDataModel8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel8.xcdatamodel; sourceTree = "<group>"; };
+		84CA40742A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionsInteractorError.swift; sourceTree = "<group>"; };
+		84CA40772A0366E1004BB71E /* WalletConnectSessionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionCell.swift; sourceTree = "<group>"; };
+		84CA40792A036886004BB71E /* PlainBaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainBaseTableViewCell.swift; sourceTree = "<group>"; };
+		84CA407B2A037175004BB71E /* WalletConnectSessionListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionListViewModel.swift; sourceTree = "<group>"; };
+		84CA407D2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionsViewModelFactory.swift; sourceTree = "<group>"; };
 		84CA68CE26BD6872003B9453 /* RuntimeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeSyncService.swift; sourceTree = "<group>"; };
 		84CA68D026BE99ED003B9453 /* RuntimeProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProviderFactory.swift; sourceTree = "<group>"; };
 		84CA68D226BE9A35003B9453 /* RuntimeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProvider.swift; sourceTree = "<group>"; };
@@ -8029,6 +8039,7 @@
 				849842E526587573006BBB9F /* MultilineTableViewCell.swift */,
 				84C91FA9261E724F002796B9 /* SwitchTableViewCell.swift */,
 				84276686297AB22B0063E08E /* TableViewCellPosition.swift */,
+				84CA40792A036886004BB71E /* PlainBaseTableViewCell.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -13231,6 +13242,16 @@
 			path = GovMetadataOperationFactory;
 			sourceTree = "<group>";
 		};
+		84CA40762A0366C3004BB71E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84CA40772A0366E1004BB71E /* WalletConnectSessionCell.swift */,
+				84CA407B2A037175004BB71E /* WalletConnectSessionListViewModel.swift */,
+				84CA407D2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		84CAF52524BEEF2F00F4C295 /* JSONRPC */ = {
 			isa = PBXGroup;
 			children = (
@@ -15942,6 +15963,7 @@
 		EBA3D6C1965795AF75E2A18B /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
+				84CA40762A0366C3004BB71E /* View */,
 				1AE2D71C8E0A7FD346D2654C /* WalletConnectSessionsProtocols.swift */,
 				52CC2C3981590DCEDE3ABBEC /* WalletConnectSessionsWireframe.swift */,
 				82445792D5EF0120B5233767 /* WalletConnectSessionsPresenter.swift */,
@@ -15949,6 +15971,7 @@
 				9ADD21F058AE84F533353158 /* WalletConnectSessionsViewController.swift */,
 				E697F5EF3AD8EE7281FBF6CB /* WalletConnectSessionsViewLayout.swift */,
 				0AC34A44F63EFAE6E804BDE9 /* WalletConnectSessionsViewFactory.swift */,
+				84CA40742A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift */,
 			);
 			path = Sessions;
 			sourceTree = "<group>";
@@ -17014,6 +17037,7 @@
 				84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */,
 				84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */,
 				8487010A2907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift in Sources */,
+				84CA407C2A037175004BB71E /* WalletConnectSessionListViewModel.swift in Sources */,
 				AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */,
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
@@ -17401,6 +17425,7 @@
 				849ABE49262763BB00011A2A /* Longrun.swift in Sources */,
 				8490111129E5A509005D688B /* URIScanPresenter.swift in Sources */,
 				84644A30256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift in Sources */,
+				84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */,
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
@@ -17535,6 +17560,7 @@
 				84B6349F28F5575900503306 /* PreimageRequestStatus.swift in Sources */,
 				F4F69E282731B0B200214542 /* VoteTableHeaderView.swift in Sources */,
 				8428768624AE046300D91AD8 /* LanguageSelectionPresenter.swift in Sources */,
+				84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */,
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,
 				84893C0124DA861D008F6A3F /* AccountCreationMetadata.swift in Sources */,
@@ -19498,6 +19524,7 @@
 				84350AD62845836C0031EF24 /* IdentityPresentable.swift in Sources */,
 				8A19EC93E6A6972327116D80 /* ParaStkStakeConfirmProtocols.swift in Sources */,
 				C18124044388698CB0BE8947 /* ParaStkStakeConfirmWireframe.swift in Sources */,
+				84CA40782A0366E1004BB71E /* WalletConnectSessionCell.swift in Sources */,
 				8EECC23DA32547DAAFC260BE /* ParaStkStakeConfirmPresenter.swift in Sources */,
 				EFEB65B229DB34B4B526003B /* ParaStkStakeConfirmInteractor.swift in Sources */,
 				EE0DFA5851AEF99D3C2DBDDD /* ParaStkStakeConfirmViewController.swift in Sources */,
@@ -19770,6 +19797,7 @@
 				2BBD2FAA29C71DC6E0C8A845 /* ParaStkYieldBoostStopPresenter.swift in Sources */,
 				68BE7C4037E8A5C245CDFF0D /* ParaStkYieldBoostStopInteractor.swift in Sources */,
 				A2BE8967FC1609D61E4131BE /* ParaStkYieldBoostStopViewController.swift in Sources */,
+				84CA40752A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift in Sources */,
 				7584B6DC2C7F8B2B6671908F /* ParaStkYieldBoostStopViewLayout.swift in Sources */,
 				3E0DDDE01391F9041C8D7382 /* ParaStkYieldBoostStopViewFactory.swift in Sources */,
 				0B48B02E973CB304B765BBC9 /* ReferendumDetailsProtocols.swift in Sources */,
