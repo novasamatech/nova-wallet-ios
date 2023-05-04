@@ -28,6 +28,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject, BaseReferendumsInteract
     func didReceivePrice(_ price: PriceData?)
     func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule)
     func didReceiveSupportDelegations(_ supportsDelegations: Bool)
+    func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
 protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
@@ -51,6 +52,7 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
     )
     func showSearch(
         from view: ControllerBackedProtocol?,
-        initialState: SearchReferndumsInitialState
+        initialState: SearchReferendumsState,
+        delegate: ReferendumSearchDelegate?
     )
 }

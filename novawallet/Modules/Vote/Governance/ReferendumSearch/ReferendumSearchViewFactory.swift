@@ -3,8 +3,9 @@ import SoraFoundation
 
 struct ReferendumSearchViewFactory {
     static func createView(
-        initialState: SearchReferndumsInitialState,
-        governanceState: GovernanceSharedState
+        initialState: SearchReferendumsState,
+        governanceState: GovernanceSharedState,
+        delegate: ReferendumSearchDelegate?
     ) -> ReferendumSearchViewProtocol? {
         guard let interactor = createInteractor(
             for: governanceState,
@@ -13,7 +14,7 @@ struct ReferendumSearchViewFactory {
         ) else {
             return nil
         }
-        let wireframe = ReferendumSearchWireframe()
+        let wireframe = ReferendumSearchWireframe(state: governanceState)
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
         let indexFormatter = NumberFormatter.index.localizableResource()
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
@@ -31,7 +32,9 @@ struct ReferendumSearchViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            statusViewModelFactory: ReferendumStatusViewModelFactory()
+            statusViewModelFactory: ReferendumStatusViewModelFactory(),
+            delegate: delegate,
+            logger: Logger.shared
         )
 
         let view = ReferendumSearchViewController(
@@ -47,7 +50,7 @@ struct ReferendumSearchViewFactory {
 
     private static func createInteractor(
         for state: GovernanceSharedState,
-        initialState: SearchReferndumsInitialState,
+        initialState: SearchReferendumsState,
         wallet: MetaAccountModel
     ) -> ReferendumSearchInteractor? {
         guard let currencyManager = CurrencyManager.shared else {
@@ -78,14 +81,4 @@ struct ReferendumSearchViewFactory {
             operationQueue: operationQueue
         )
     }
-}
-
-struct SearchReferndumsInitialState {
-    let referendums: [ReferendumLocal]?
-    let referendumsMetadata: ReferendumMetadataMapping?
-    let voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
-    let offchainVoting: GovernanceOffchainVotesLocal?
-    let blockNumber: BlockNumber?
-    let blockTime: BlockTime?
-    let chain: ChainModel?
 }

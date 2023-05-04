@@ -3,11 +3,6 @@ import SoraFoundation
 import SoraUI
 
 final class ReferendumSearchViewController: BaseTableSearchViewController {
-    enum EmptyStateType {
-        case notFound
-        case start
-    }
-
     var presenter: ReferendumSearchPresenterProtocol? {
         basePresenter as? ReferendumSearchPresenterProtocol
     }
@@ -16,7 +11,7 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
     typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, ReferendumIdLocal>
     private var dataStore: [ReferendumIdLocal: ReferendumsCellViewModel] = [:]
     private lazy var dataSource = createDataSource()
-    private var emptyStateType: EmptyStateType? = .start
+    private(set) var emptyStateType: EmptyState? = .start
 
     init(presenter: ReferendumSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         super.init(basePresenter: presenter)
@@ -33,7 +28,8 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         setupTableView()
         applyLocalization()
         applyState()
-        rootView.cancelButton.addTarget(self, action: #selector(cancelAction), for: .touchUpInside)
+        setupHandlers()
+
         super.viewDidLoad()
     }
 
@@ -44,9 +40,9 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+        title = ""
 
-        rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
+        rootView.searchField.placeholder = R.string.localizable.governanceReferendumsSearchFieldPlaceholder(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -55,6 +51,10 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
             cancelButtonTitle: R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages),
             contentInsets: .init(top: 16, left: 0, bottom: 0, right: 0)
         ))
+    }
+
+    private func setupHandlers() {
+        rootView.cancelButton.addTarget(self, action: #selector(cancelAction), for: .touchUpInside)
     }
 
     private func applyState() {
@@ -101,67 +101,8 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
     private func cancelAction() {
         presenter?.cancel()
     }
-}
 
-extension ReferendumSearchViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-}
-
-// MARK: - EmptyStateViewOwnerProtocol
-
-extension ReferendumSearchViewController: EmptyStateViewOwnerProtocol {
-    var emptyStateDelegate: EmptyStateDelegate { self }
-    var emptyStateDataSource: EmptyStateDataSource { self }
-}
-
-// MARK: - EmptyStateDataSource
-
-extension ReferendumSearchViewController: EmptyStateDataSource {
-    var viewForEmptyState: UIView? {
-        guard let emptyStateType = emptyStateType else {
-            return nil
-        }
-
-        let emptyView = EmptyStateView()
-
-        switch emptyStateType {
-        case .notFound:
-            emptyView.image = R.image.iconEmptySearch()
-            emptyView.title = R.string.localizable.walletSearchEmptyTitle_v1100(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        case .start:
-            emptyView.image = R.image.iconStartSearch()
-            emptyView.title = R.string.localizable.commonSearchStartTitle_v2_2_0(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        }
-
-        emptyView.titleColor = R.color.colorTextSecondary()!
-        emptyView.titleFont = .p2Paragraph
-
-        return emptyView
-    }
-
-    var contentViewForEmptyState: UIView {
-        rootView.emptyStateContainer
-    }
-
-    var verticalSpacingForEmptyState: CGFloat? { 0 }
-}
-
-// MARK: - EmptyStateDelegate
-
-extension ReferendumSearchViewController: EmptyStateDelegate {
-    var shouldDisplayEmptyState: Bool {
-        emptyStateType != nil
-    }
-}
-
-extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
-    func update(viewModels: [ReferendumsCellViewModel]) {
+    private func update(viewModels: [ReferendumsCellViewModel]) {
         let existingIds = viewModels.compactMap { model in
             if dataStore[model.referendumIndex] != nil {
                 return model.referendumIndex
@@ -184,7 +125,21 @@ extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
         snapshot.reloadItems(existingIds)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
+}
 
+extension ReferendumSearchViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        guard let identifier = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        presenter?.select(referendumIndex: identifier)
+    }
+}
+
+extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
     func didReceive(viewModel: TableSearchResultViewModel<ReferendumsCellViewModel>) {
         switch viewModel {
         case .start:
@@ -240,8 +195,6 @@ extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
         dataSource.apply(newSnapshot, animatingDifferences: false)
     }
 }
-
-// MARK: - Localizable
 
 extension ReferendumSearchViewController: Localizable {
     func applyLocalization() {

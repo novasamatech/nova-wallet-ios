@@ -9,12 +9,13 @@ final class ReferendumSearchInteractor: BaseReferendumsInteractor {
         }
     }
 
-    let initialState: SearchReferndumsInitialState
+    let initialState: SearchReferendumsState
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
+    private var currentSearchOperation: CancellableCall?
 
     init(
-        initialState: SearchReferndumsInitialState,
+        initialState: SearchReferendumsState,
         selectedMetaAccount: MetaAccountModel,
         governanceState: GovernanceSharedState,
         chainRegistry: ChainRegistryProtocol,
@@ -82,40 +83,18 @@ final class ReferendumSearchInteractor: BaseReferendumsInteractor {
 
         super.updateReferendumsMetadata(changes)
     }
-}
 
-extension ReferendumSearchInteractor: ReferendumSearchInteractorInputProtocol {
-    func search(text: String) {
-        print(text)
-        guard let referendums = referendums else {
-            return
-        }
-
-        let weightFunction: (String, String) -> UInt = text.split(by: .space).count > 1 ? phraseWeight : singleWeight
-        let weights = referendums.reduce(into: [ReferendumIdLocal: UInt]()) {
-            $0[$1.index] = weightFunction(
-                text.lowercased(),
-                (referendumsMetadata?[$1.index]?.title ?? "\($1.index)").lowercased()
-            )
-        }
-        let searchedReferendums = referendums.filter {
-            (weights[$0.index] ?? 0) > 0
-        }.sorted(by: { (weights[$0.index] ?? 0) > (weights[$1.index] ?? 0) })
-
-        presenter?.didReceiveReferendums(searchedReferendums)
-    }
-
-    func singleWeight(word: String, title: String) -> UInt {
-        if word == title {
+    private func wordWeight(word: String, title: String) -> UInt {
+        if word.caseInsensitiveCompare(title) == .orderedSame {
             return 1000
-        } else if title.contains(word) {
+        } else if title.range(of: word, options: .caseInsensitive) != nil {
             return 1
         } else {
             return 0
         }
     }
 
-    func phraseWeight(phrase: String, title: String) -> UInt {
+    private func phraseWeight(phrase: String, title: String) -> UInt {
         let pattern = phrase.replacingOccurrences(of: " ", with: ".*")
         guard let regex = try? NSRegularExpression(pattern: pattern) else {
             return 0
@@ -125,5 +104,55 @@ extension ReferendumSearchInteractor: ReferendumSearchInteractorInputProtocol {
             range: NSRange(title.startIndex..., in: title)
         )
         return match != nil ? 1 : 0
+    }
+
+    private func searchOperation(text: String) -> BaseOperation<[ReferendumLocal]?> {
+        ClosureOperation {
+            guard let referendums = self.referendums else {
+                return nil
+            }
+            guard !text.isEmpty else {
+                return referendums
+            }
+            let calculateWeight = text.split(
+                by: .space,
+                maxSplits: 1
+            ).count > 1 ? self.phraseWeight : self.wordWeight
+            let weights = referendums.reduce(into: [ReferendumIdLocal: UInt]()) { result, item in
+                let title = self.referendumsMetadata?[item.index]?.title ?? "\(item.trackId)"
+                result[item.index] = calculateWeight(text, title)
+            }
+            let searchedReferendums = referendums
+                .filter {
+                    weights[$0.index, default: 0] > 0
+                }
+                .sorted {
+                    weights[$0.index, default: 0] > weights[$1.index, default: 0]
+                }
+
+            return searchedReferendums
+        }
+    }
+}
+
+extension ReferendumSearchInteractor: ReferendumSearchInteractorInputProtocol {
+    func search(text: String) {
+        currentSearchOperation?.cancel()
+
+        let searchOperation = searchOperation(text: text)
+        searchOperation.completionBlock = { [weak self] in
+            do {
+                let referendums = try searchOperation.extractNoCancellableResultData()
+                DispatchQueue.main.async {
+                    self?.presenter?.didReceiveReferendums(referendums ?? [])
+                }
+            } catch {
+                self?.presenter?.didReceiveError(.searchFailed(text, error))
+            }
+        }
+
+        currentSearchOperation = searchOperation
+
+        operationQueue.addOperation(searchOperation)
     }
 }

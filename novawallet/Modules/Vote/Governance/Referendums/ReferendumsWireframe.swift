@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     let state: GovernanceSharedState
@@ -91,11 +92,13 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showSearch(
         from view: ControllerBackedProtocol?,
-        initialState: SearchReferndumsInitialState
+        initialState: SearchReferendumsState,
+        delegate: ReferendumSearchDelegate?
     ) {
         guard let searchView = ReferendumSearchViewFactory.createView(
             initialState: initialState,
-            governanceState: state
+            governanceState: state,
+            delegate: delegate
         ) else {
             return
         }

@@ -385,6 +385,9 @@
 		777BD86829FA3376004969A2 /* ReferendumsSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */; };
 		777BD86A29FA3D5E004969A2 /* ReferendumsFilter+match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86929FA3D5E004969A2 /* ReferendumsFilter+match.swift */; };
 		77FE034929FE3FBF00424D37 /* BaseReferendumsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FE034829FE3FBF00424D37 /* BaseReferendumsInteractor.swift */; };
+		77FE034B2A03561B00424D37 /* SearchReferendumsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FE034A2A03561B00424D37 /* SearchReferendumsState.swift */; };
+		77FE034D2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FE034C2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift */; };
+		77FE03502A036CB500424D37 /* BaseReferendumsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FE034F2A036CB500424D37 /* BaseReferendumsProtocols.swift */; };
 		78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B309EC85D8897A4ADD98A /* CustomValidatorListViewController.swift */; };
 		78E0B6963A8D0A07E742232C /* GovernanceEditDelegationTracksWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3B84FA1F22CC12B16C79AE /* GovernanceEditDelegationTracksWireframe.swift */; };
 		790129F3CB6AEA611639E886 /* ParaStkUnstakeViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5467B9B6AEDB33F565D130A1 /* ParaStkUnstakeViewFactory.swift */; };
@@ -3798,6 +3801,9 @@
 		777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsSettingsCell.swift; sourceTree = "<group>"; };
 		777BD86929FA3D5E004969A2 /* ReferendumsFilter+match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsFilter+match.swift"; sourceTree = "<group>"; };
 		77FE034829FE3FBF00424D37 /* BaseReferendumsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumsInteractor.swift; sourceTree = "<group>"; };
+		77FE034A2A03561B00424D37 /* SearchReferendumsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchReferendumsState.swift; sourceTree = "<group>"; };
+		77FE034C2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumSearchViewController+EmptyState.swift"; sourceTree = "<group>"; };
+		77FE034F2A036CB500424D37 /* BaseReferendumsProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseReferendumsProtocols.swift; sourceTree = "<group>"; };
 		781FA4C896AF31B4035AFB38 /* ChainAddressDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsViewFactory.swift; sourceTree = "<group>"; };
 		782CC21A2F9EEF5DBA3AB1AA /* PurchaseProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseProtocols.swift; sourceTree = "<group>"; };
 		78536852751EF56F58C5691E /* ReferendumDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumDetailsPresenter.swift; sourceTree = "<group>"; };
@@ -7170,8 +7176,10 @@
 				72EF3BEC3EA07548C10A87FD /* ReferendumSearchWireframe.swift */,
 				AC1626234F0BF7E20D351CB2 /* ReferendumSearchPresenter.swift */,
 				FA6E4928A7447F3525B5FE15 /* ReferendumSearchInteractor.swift */,
-				BD8D3BC1137332FA3CC1FEF2 /* ReferendumSearchViewController.swift */,
 				B179EA3EF793684717BA9D68 /* ReferendumSearchViewFactory.swift */,
+				77FE034A2A03561B00424D37 /* SearchReferendumsState.swift */,
+				BD8D3BC1137332FA3CC1FEF2 /* ReferendumSearchViewController.swift */,
+				77FE034C2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift */,
 			);
 			path = ReferendumSearch;
 			sourceTree = "<group>";
@@ -7808,6 +7816,15 @@
 				8472C39B298BD8CE00043061 /* GovernanceSelectTracksInteractorError.swift */,
 			);
 			path = GovernanceSelectTracks;
+			sourceTree = "<group>";
+		};
+		77FE034E2A036C9E00424D37 /* BaseReferendums */ = {
+			isa = PBXGroup;
+			children = (
+				77FE034829FE3FBF00424D37 /* BaseReferendumsInteractor.swift */,
+				77FE034F2A036CB500424D37 /* BaseReferendumsProtocols.swift */,
+			);
+			path = BaseReferendums;
 			sourceTree = "<group>";
 		};
 		788647A9C0A8684C9A8AC310 /* ControllerAccount */ = {
@@ -9071,7 +9088,6 @@
 				8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */,
 				84C355BE298A52F1005072CF /* ReferendumsInteractor+Protocol.swift */,
 				8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */,
-				77FE034829FE3FBF00424D37 /* BaseReferendumsInteractor.swift */,
 			);
 			path = Referendums;
 			sourceTree = "<group>";
@@ -10253,6 +10269,7 @@
 				880059D628EEA55500E87B9B /* View */,
 				84A1742528ED60610096F943 /* Operation */,
 				84D8753B28EB1796004065BD /* Model */,
+				77FE034E2A036C9E00424D37 /* BaseReferendums */,
 				8442002128E6FE0100C49C4A /* Referendums */,
 				F8A59D8BC6BED77EF106670E /* ReferendumsFilters */,
 				B4F0332763AFF64A3793C679 /* ReferendumDetails */,
@@ -16830,6 +16847,7 @@
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
 				843612C92790109100DC739E /* SigningWrapperFactory.swift in Sources */,
 				88FF5C7F29C8364500D1CB5D /* Caip2+ParseError.swift in Sources */,
+				77FE034B2A03561B00424D37 /* SearchReferendumsState.swift in Sources */,
 				8473D40D2657E9DC00B394B2 /* MultiSigner.swift in Sources */,
 				8409C27425227DC60049B5C8 /* WalletSingleActionAccessoryFactory.swift in Sources */,
 				D9D163662744F9BF00681C1F /* ExternalContributionSource.swift in Sources */,
@@ -17270,6 +17288,7 @@
 				84B28FC428C54441007A1006 /* OnChainTransferAmount.swift in Sources */,
 				84A3B8A82836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift in Sources */,
 				849842FE26592C2B006BBB9F /* StatusSectionView.swift in Sources */,
+				77FE03502A036CB500424D37 /* BaseReferendumsProtocols.swift in Sources */,
 				88D997B228ABC90E006135A5 /* AboutCrowdloansView.swift in Sources */,
 				846A835628B8A5C700D92892 /* WalletCreationFlowCompleting.swift in Sources */,
 				8461CC7F26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift in Sources */,
@@ -18694,6 +18713,7 @@
 				848B59BA28BCB3CA0009543C /* LedgerBaseAccountConfirmationWireframe.swift in Sources */,
 				3133215566E418F40844A60E /* ExportMnemonicWireframe.swift in Sources */,
 				8446F5F02817279600B7A86C /* HintListView.swift in Sources */,
+				77FE034D2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift in Sources */,
 				84BFE89728C2314300140F1F /* ParaStkYieldBoostOperationFactory.swift in Sources */,
 				84A70DA129CCEDC800C648AD /* GovV2SubsquareOperationFactory.swift in Sources */,
 				84F77AAA265EE86B00F54885 /* CrowdloanErrorPresentable.swift in Sources */,

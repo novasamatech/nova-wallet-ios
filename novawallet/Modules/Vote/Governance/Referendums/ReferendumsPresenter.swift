@@ -271,7 +271,8 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
                 blockNumber: blockNumber,
                 blockTime: blockTime,
                 chain: chain
-            )
+            ),
+            delegate: self
         )
     }
 
@@ -418,7 +419,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         updateReferendumsView()
     }
 
-    func didReceiveError(_ error: ReferendumsInteractorError) {
+    func didReceiveError(_ error: BaseReferendumsInteractorError) {
         logger.error("Did receive error: \(error)")
 
         switch error {
@@ -426,18 +427,11 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
             }
-        case .chainSaveFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                if let option = self?.selectedOption {
-                    self?.interactor.saveSelected(option: option)
-                }
-            }
         case .referendumsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refresh()
             }
-        case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
-             .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
+        case .blockNumberSubscriptionFailed, .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
@@ -445,13 +439,30 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryBlockTime()
             }
+        case .offchainVotingFetchFailed:
+            // we don't bother user with offchain retry and wait next block
+            break
+        }
+    }
+
+    func didReceiveError(_ error: ReferendumsInteractorError) {
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .chainSaveFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let option = self?.selectedOption {
+                    self?.interactor.saveSelected(option: option)
+                }
+            }
+        case .priceSubscriptionFailed, .balanceSubscriptionFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscriptions()
+            }
         case .unlockScheduleFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshUnlockSchedule()
             }
-        case .offchainVotingFetchFailed:
-            // we don't bother user with offchain retry and wait next block
-            break
         }
     }
 }
@@ -505,14 +516,8 @@ extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     }
 }
 
-protocol ReferendumsProviderProtocol {
-    func updateChainInformation(
-        chain: ChainModel?,
-        blockNumber: BlockNumber?,
-        blockTime: BlockTime?
-    )
-    func update(voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?)
-    func update(offchainVoting: GovernanceOffchainVotesLocal?)
-    func update(referendumsMetadata: ReferendumMetadataMapping?)
-    func update(referendums: [ReferendumLocal]?)
+extension ReferendumsPresenter: ReferendumSearchDelegate {
+    func didSelectReferendum(referendumIndex: ReferendumIdLocal) {
+        select(referendumIndex: referendumIndex)
+    }
 }

@@ -5,6 +5,7 @@ protocol ReferendumSearchViewProtocol: ControllerBackedProtocol {
 
 protocol ReferendumSearchPresenterProtocol: TableSearchPresenterProtocol {
     func setup()
+    func select(referendumIndex: UInt)
     func cancel()
 }
 
@@ -15,8 +16,17 @@ protocol ReferendumSearchInteractorInputProtocol: BaseReferendumsInteractorInput
 protocol ReferendumSearchInteractorOutputProtocol: BaseReferendumsInteractorOutputProtocol {
     func didRecieveChain(_ chainModel: ChainModel)
     func didReceiveReferendumsMetadata(_ referendumsMetadata: ReferendumMetadataMapping?)
+    func didReceiveError(_ error: ReferendumSearchError)
 }
 
-protocol ReferendumSearchWireframeProtocol: AnyObject {
+protocol ReferendumSearchWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable {
     func finish(from view: ControllerBackedProtocol?)
+}
+
+protocol ReferendumSearchDelegate: AnyObject {
+    func didSelectReferendum(referendumIndex: ReferendumIdLocal)
+}
+
+enum ReferendumSearchError: Error {
+    case searchFailed(String, Error)
 }

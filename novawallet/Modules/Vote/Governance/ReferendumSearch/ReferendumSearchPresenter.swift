@@ -7,6 +7,8 @@ final class ReferendumSearchPresenter {
     let wireframe: ReferendumSearchWireframeProtocol
     let interactor: ReferendumSearchInteractorInputProtocol
     let viewModelFactory: SearchReferendumsModelFactoryProtocol
+    let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let logger: LoggerProtocol?
 
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
@@ -15,21 +17,26 @@ final class ReferendumSearchPresenter {
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var chain: ChainModel?
-    let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+
     private var maxTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
     private var timeModels: [UInt: StatusTimeViewModel?]?
+    private weak var delegate: ReferendumSearchDelegate?
 
     init(
         interactor: ReferendumSearchInteractorInputProtocol,
         wireframe: ReferendumSearchWireframeProtocol,
         viewModelFactory: SearchReferendumsModelFactoryProtocol,
-        statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+        statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
+        delegate: ReferendumSearchDelegate?,
+        logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
+        self.delegate = delegate
+        self.logger = logger
     }
 
     private func updateReferendumsView() {
@@ -129,8 +136,39 @@ extension ReferendumSearchPresenter: ReferendumSearchInteractorOutputProtocol {
         updateReferendumsView()
     }
 
-    func didReceiveError(_: ReferendumsInteractorError) {
-        // TODO:
+    func didReceiveError(_ error: BaseReferendumsInteractorError) {
+        logger?.error("Did receive error: \(error)")
+
+        switch error {
+        case .settingsLoadFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        case .referendumsFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refresh()
+            }
+        case .blockNumberSubscriptionFailed, .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscriptions()
+            }
+        case .blockTimeFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryBlockTime()
+            }
+        case .offchainVotingFetchFailed:
+            // we don't bother user with offchain retry and wait next block
+            break
+        }
+    }
+
+    func didReceiveError(_ error: ReferendumSearchError) {
+        switch error {
+        case let .searchFailed(text, error):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.search(text: text)
+            }
+        }
     }
 }
 
@@ -153,6 +191,11 @@ extension ReferendumSearchPresenter: CountdownTimerDelegate {
 
     func didStop(with _: TimeInterval) {
         updateTimerDisplay()
+    }
+
+    func select(referendumIndex: UInt) {
+        delegate?.didSelectReferendum(referendumIndex: referendumIndex)
+        wireframe.finish(from: view)
     }
 }
 
