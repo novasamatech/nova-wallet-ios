@@ -47,7 +47,7 @@ final class DAppOperationConfirmPresenter {
     }
 
     private func provideFeeViewModel() {
-        guard let feeModel = feeModel, let confirmationModel = confirmationModel else {
+        guard let feeModel = feeModel else {
             view?.didReceive(feeViewModel: .loading)
             return
         }
