@@ -87,6 +87,16 @@ extension WalletConnectInteractor: WalletConnectTransportDelegate {
         }
     }
 
+    func walletConnectDidChangeChains(transport _: WalletConnectTransportProtocol) {
+        delegates.forEach { wrapper in
+            guard let target = wrapper.target as? WalletConnectDelegateOutputProtocol else {
+                return
+            }
+
+            return target.walletConnectDidChangeChains()
+        }
+    }
+
     func walletConnectAskNextMessage(transport _: WalletConnectTransportProtocol) {
         mediator?.processMessageQueue()
     }

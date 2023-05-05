@@ -17,4 +17,12 @@ protocol WalletConnectDelegateInputProtocol: AnyObject {
 
 protocol WalletConnectDelegateOutputProtocol: AnyObject {
     func walletConnectDidChangeSessions()
+
+    func walletConnectDidChangeChains()
+}
+
+extension WalletConnectDelegateOutputProtocol {
+    func walletConnectDidChangeSessions() {}
+
+    func walletConnectDidChangeChains() {}
 }

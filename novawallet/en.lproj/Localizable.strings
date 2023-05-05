@@ -1216,3 +1216,4 @@
 "common.status.expired" = "Expired";
 "common.disconnect" = "Disconnect";
 "common.status" = "Status";
+"common.none" = "None";
