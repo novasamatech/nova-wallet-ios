@@ -49,4 +49,8 @@ extension WalletConnectSessionDetailsInteractor: WalletConnectDelegateOutputProt
     func walletConnectDidChangeSessions() {
         updateSession(for: sessionId)
     }
+
+    func walletConnectDidChangeChains() {
+        updateSession(for: sessionId)
+    }
 }

@@ -1215,3 +1215,4 @@
 "common.status.expired" = "Истёк";
 "common.disconnect" = "Отключить";
 "common.status" = "Статус";
+"common.none" = "Отсутствуют";
