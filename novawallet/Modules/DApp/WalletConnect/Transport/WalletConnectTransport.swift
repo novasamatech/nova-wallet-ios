@@ -66,7 +66,9 @@ final class WalletConnectTransport {
             let allSettings = try allSettingsOperation.extractNoCancellableResultData().reduceToDict()
             let allWallets = try allWalletsOperation.extractNoCancellableResultData().reduceToDict()
 
-            return wcSessions.map { wcSession in
+            return wcSessions.sorted(
+                by: { $0.expiryDate.compare($1.expiryDate) == .orderedDescending }
+            ).map { wcSession in
                 let dAppIcon = wcSession.peer.icons.first.flatMap { URL(string: $0) }
                 let active = wcSession.expiryDate.compare(Date()) != .orderedAscending
 
