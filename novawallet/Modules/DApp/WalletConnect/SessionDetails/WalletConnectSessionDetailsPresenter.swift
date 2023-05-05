@@ -42,6 +42,8 @@ final class WalletConnectSessionDetailsPresenter {
 
 extension WalletConnectSessionDetailsPresenter: WalletConnectSessionDetailsPresenterProtocol {
     func setup() {
+        updateView()
+
         interactor.setup()
     }
 

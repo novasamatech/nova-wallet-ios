@@ -17,3 +17,9 @@ struct DiffableNetworkViewModel: Hashable {
         hasher.combine(identifier)
     }
 }
+
+extension NetworkViewModel {
+    var cellViewModel: StackCellViewModel {
+        .init(details: name, imageViewModel: icon)
+    }
+}

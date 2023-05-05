@@ -6,6 +6,7 @@ protocol WalletConnectSessionViewModelFactoryProtocol {
 
 final class WalletConnectSessionViewModelFactory: WalletConnectSessionViewModelFactoryProtocol {
     let walletViewModelFactory = WalletAccountViewModelFactory()
+    let networksViewModelFactory = WalletConnectNetworksViewModelFactory()
 
     func createViewModel(from model: WalletConnectSession) -> WalletConnectSessionViewModel {
         let walletViewModel: DisplayWalletViewModel? = model.wallet.flatMap { wallet in
@@ -21,12 +22,14 @@ final class WalletConnectSessionViewModelFactory: WalletConnectSessionViewModelF
             iconViewModel = StaticImageViewModel(image: icon)
         }
 
+        let networks = networksViewModelFactory.createViewModel(from: model.networks)
+
         return .init(
             iconViewModel: iconViewModel,
             title: model.dAppName ?? "",
             wallet: walletViewModel,
             host: model.dAppHost ?? "",
-            networks: .init(network: nil, supported: 0, unsupported: 0),
+            networks: networks,
             status: model.active ? .active : .expired
         )
     }

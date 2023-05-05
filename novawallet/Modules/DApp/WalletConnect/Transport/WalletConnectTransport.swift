@@ -32,6 +32,8 @@ protocol WalletConnectTransportDelegate: AnyObject {
 
     func walletConnectDidChangeSessions(transport: WalletConnectTransportProtocol)
 
+    func walletConnectDidChangeChains(transport: WalletConnectTransportProtocol)
+
     func walletConnectAskNextMessage(transport: WalletConnectTransportProtocol)
 }
 
@@ -57,7 +59,8 @@ final class WalletConnectTransport {
     private func createSessionsMappingOperation(
         dependingOn allSettingsOperation: BaseOperation<[DAppSettings]>,
         allWalletsOperation: BaseOperation<[MetaAccountModel]>,
-        wcSessions: [Session]
+        wcSessions: [Session],
+        chainsStore: ChainsStoreProtocol
     ) -> BaseOperation<[WalletConnectSession]> {
         ClosureOperation<[WalletConnectSession]> {
             let allSettings = try allSettingsOperation.extractNoCancellableResultData().reduceToDict()
@@ -65,7 +68,7 @@ final class WalletConnectTransport {
 
             return wcSessions.map { wcSession in
                 let dAppIcon = wcSession.peer.icons.first.flatMap { URL(string: $0) }
-                let active = wcSession.expiryDate.compare(Date()) != .orderedDescending
+                let active = wcSession.expiryDate.compare(Date()) != .orderedAscending
 
                 let wallet: MetaAccountModel?
 
@@ -77,10 +80,16 @@ final class WalletConnectTransport {
                     wallet = nil
                 }
 
+                let networks = WalletConnectModelFactory.createSessionChainsResolution(
+                    from: wcSession,
+                    chainsStore: chainsStore
+                )
+
                 return WalletConnectSession(
                     sessionId: wcSession.topic,
                     pairingId: wcSession.pairingTopic,
                     wallet: wallet,
+                    networks: networks,
                     dAppName: wcSession.peer.name,
                     dAppHost: wcSession.peer.url,
                     dAppIcon: dAppIcon,
@@ -114,7 +123,8 @@ extension WalletConnectTransport: WalletConnectTransportProtocol {
         let mapOperation = createSessionsMappingOperation(
             dependingOn: allSettingsOperation,
             allWalletsOperation: allWalletsOperation,
-            wcSessions: wcSessions
+            wcSessions: wcSessions,
+            chainsStore: dataSource.chainsStore
         )
 
         mapOperation.addDependency(allSettingsOperation)
@@ -172,6 +182,8 @@ extension WalletConnectTransport {
 
     func processChainsChanges() {
         state?.proceed(with: dataSource)
+
+        delegate?.walletConnectDidChangeChains(transport: self)
     }
 
     func start() {

@@ -7,6 +7,14 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
 
     var iconImageView: UIImageView { rowContentView.valueView.imageView }
 
+    var canSelect: Bool = true {
+        didSet {
+            if oldValue != canSelect {
+                updateSelection()
+            }
+        }
+    }
+
     private var imageViewModel: ImageViewModelProtocol?
 
     convenience init() {
@@ -72,6 +80,22 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         valueView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         valueView.detailsView.detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    }
+
+    private func updateSelection() {
+        let accessoryView = rowContentView.valueView.detailsView
+
+        if canSelect {
+            isUserInteractionEnabled = true
+            accessoryView.imageView.image = R.image.iconInfoFilled()?.tinted(
+                with: R.color.colorIconSecondary()!
+            )
+            accessoryView.spacing = 8
+        } else {
+            isUserInteractionEnabled = false
+            accessoryView.imageView.image = nil
+            accessoryView.spacing = 0
+        }
     }
 }
 
