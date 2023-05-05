@@ -47,7 +47,13 @@ extension WalletConnectSessionDetailsPresenter: WalletConnectSessionDetailsPrese
         interactor.setup()
     }
 
-    func presentNetworks() {}
+    func presentNetworks() {
+        let networks = session.networks.resolved.values.sorted {
+            ChainModelCompator.defaultComparator(chain1: $0, chain2: $1)
+        }
+
+        wireframe.showNetworks(from: view, networks: networks)
+    }
 
     func disconnect() {
         performDisconnect()

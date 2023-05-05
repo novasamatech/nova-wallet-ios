@@ -21,7 +21,7 @@ extension StackInfoTableCell {
             } else {
                 canSelect = false
 
-                bind(viewModel: networkViewModel.cellViewModel)
+                bind(viewModel: networkViewModel.cellViewModel, cornerRadius: nil)
             }
         } else if viewModel.unsupported > 0 {
             canSelect = true

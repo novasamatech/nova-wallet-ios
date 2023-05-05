@@ -23,4 +23,5 @@ protocol WalletConnectSessionDetailsInteractorOutputProtocol: AnyObject {
 protocol WalletConnectSessionDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable {
     func close(view: WalletConnectSessionDetailsViewProtocol?)
+    func showNetworks(from view: WalletConnectSessionDetailsViewProtocol?, networks: [ChainModel])
 }
