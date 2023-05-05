@@ -9,7 +9,7 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     ) {
-        guard let viewController = ModalPickerFactory.createNetworkSelectionList(
+        guard let viewController = ModalNetworksFactory.createNetworkSelectionList(
             selectionState: selectionState,
             delegate: delegate,
             context: context

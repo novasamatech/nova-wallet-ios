@@ -1507,6 +1507,8 @@
 		8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */; };
 		8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECDE258CE118004591CC /* PurchaseCompleted.swift */; };
 		8488ECEA258CE456004591CC /* PurchaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECE9258CE456004591CC /* PurchaseViewController.swift */; };
+		8489198E2A0529DA008D57A3 /* NetworkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489198D2A0529DA008D57A3 /* NetworkTableViewCell.swift */; };
+		848919902A052C18008D57A3 /* ModalNetworksFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489198F2A052C18008D57A3 /* ModalNetworksFactory.swift */; };
 		848919D726FB238E004DBAD5 /* JsonDataProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848919D626FB238E004DBAD5 /* JsonDataProviderFactory.swift */; };
 		848919DB26FB663D004DBAD5 /* CrowdloansChainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848919DA26FB663D004DBAD5 /* CrowdloansChainViewModel.swift */; };
 		84893BFC24D9B0F1008F6A3F /* PredicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84893BFB24D9B0F1008F6A3F /* PredicateTests.swift */; };
@@ -4973,6 +4975,8 @@
 		8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompletionHandler.swift; sourceTree = "<group>"; };
 		8488ECDE258CE118004591CC /* PurchaseCompleted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompleted.swift; sourceTree = "<group>"; };
 		8488ECE9258CE456004591CC /* PurchaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseViewController.swift; sourceTree = "<group>"; };
+		8489198D2A0529DA008D57A3 /* NetworkTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTableViewCell.swift; sourceTree = "<group>"; };
+		8489198F2A052C18008D57A3 /* ModalNetworksFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalNetworksFactory.swift; sourceTree = "<group>"; };
 		848919D626FB238E004DBAD5 /* JsonDataProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonDataProviderFactory.swift; sourceTree = "<group>"; };
 		848919DA26FB663D004DBAD5 /* CrowdloansChainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansChainViewModel.swift; sourceTree = "<group>"; };
 		84893BFB24D9B0F1008F6A3F /* PredicateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredicateTests.swift; sourceTree = "<group>"; };
@@ -13653,6 +13657,7 @@
 				84D8F16C24D82C7E00AF43E9 /* ModalPickerConfiguration.swift */,
 				84DF21A4253473B0005454AE /* ModalInfoFactory.swift */,
 				844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */,
+				8489198F2A052C18008D57A3 /* ModalNetworksFactory.swift */,
 			);
 			path = ModalPicker;
 			sourceTree = "<group>";
@@ -13675,6 +13680,7 @@
 				8471825E2846A8E2002C5720 /* ActionManageTableViewCell.swift */,
 				8436B6D728480D2F00F24360 /* ModalPickerActionTableViewCell.swift */,
 				842B17FC2864980B0014CC57 /* NetworkSelectionTableViewCell.swift */,
+				8489198D2A0529DA008D57A3 /* NetworkTableViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -17318,6 +17324,7 @@
 				AE2C84D525EF989A00986716 /* ValidatorInfoWireframe.swift in Sources */,
 				849D14CC2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift in Sources */,
 				F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */,
+				8489198E2A0529DA008D57A3 /* NetworkTableViewCell.swift in Sources */,
 				84E4897329A79017008726FA /* SkeletonDecoration+View.swift in Sources */,
 				2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */,
 				845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */,
@@ -18096,6 +18103,7 @@
 				84F1A073286A5DDA007DB053 /* CommonRetryable.swift in Sources */,
 				845B821526EF657700D25C72 /* PersistentValueSettings.swift in Sources */,
 				F4DCAE4726207EF900CCA6BF /* PayoutRewardsServiceProtocol.swift in Sources */,
+				848919902A052C18008D57A3 /* ModalNetworksFactory.swift in Sources */,
 				8463A6F925E2F82E003B8160 /* CDSingleValue+CoreDataCodable.swift in Sources */,
 				84ED6BE6286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift in Sources */,
 				84EBFCE7285E7A7C0006327E /* XcmMessage.swift in Sources */,
