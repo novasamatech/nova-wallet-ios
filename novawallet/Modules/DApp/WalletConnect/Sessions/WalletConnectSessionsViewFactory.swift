@@ -9,7 +9,7 @@ struct WalletConnectSessionsViewFactory {
             return nil
         }
 
-        let wireframe = WalletConnectSessionsWireframe()
+        let wireframe = WalletConnectSessionsWireframe(dappMediator: dappMediator)
 
         let localizationManager = LocalizationManager.shared
 

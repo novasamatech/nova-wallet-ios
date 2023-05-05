@@ -1212,3 +1212,7 @@
 "wallet.connect.scan.message" = "Scan QR from DApp";
 "wallet.connect.scan.error" = "Invalid URI format";
 "wallet.connect.scan.button" = "New connection";
+"common.status.active" = "Active";
+"common.status.expired" = "Expired";
+"common.disconnect" = "Disconnect";
+"common.status" = "Status";
