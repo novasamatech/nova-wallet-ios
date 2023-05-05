@@ -11,6 +11,8 @@ protocol WalletConnectDelegateInputProtocol: AnyObject {
     func getSessionsCount() -> Int
 
     func fetchSessions(_ completion: @escaping (Result<[WalletConnectSession], Error>) -> Void)
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void)
 }
 
 protocol WalletConnectDelegateOutputProtocol: AnyObject {

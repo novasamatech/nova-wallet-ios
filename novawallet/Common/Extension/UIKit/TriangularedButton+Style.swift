@@ -12,6 +12,11 @@ extension TriangularedButton {
         applySecondaryEnabledStyle()
     }
 
+    func applyDestructiveDefaultStyle() {
+        imageWithTitleView?.titleFont = .semiBoldSubheadline
+        applyDestructiveEnabledStyle()
+    }
+
     func applyAccessoryStyle() {
         triangularedView?.shadowOpacity = 0.0
         triangularedView?.fillColor = .clear
@@ -42,6 +47,18 @@ extension TriangularedButton {
         triangularedView?.shadowOpacity = 0.0
         triangularedView?.fillColor = R.color.colorButtonBackgroundSecondary()!
         triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
+        triangularedView?.strokeColor = .clear
+        triangularedView?.highlightedStrokeColor = .clear
+
+        imageWithTitleView?.titleColor = R.color.colorButtonText()!
+
+        changesContentOpacityWhenHighlighted = true
+    }
+
+    func applyDestructiveEnabledStyle() {
+        triangularedView?.shadowOpacity = 0.0
+        triangularedView?.fillColor = R.color.colorButtonBackgroundReject()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundReject()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 

@@ -1211,3 +1211,7 @@
 "wallet.connect.scan.message" = "Отсканируйте QR код";
 "wallet.connect.scan.error" = "Неверный формат URI";
 "wallet.connect.scan.button" = "Новое соединение";
+"common.status.active" = "Активный";
+"common.status.expired" = "Истёк";
+"common.disconnect" = "Отключить";
+"common.status" = "Статус";
