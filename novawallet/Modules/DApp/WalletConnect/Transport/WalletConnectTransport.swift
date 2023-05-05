@@ -10,6 +10,8 @@ protocol WalletConnectTransportProtocol: DAppTransportProtocol {
     func getSessionsCount() -> Int
 
     func fetchSessions(_ completion: @escaping (Result<[WalletConnectSession], Error>) -> Void)
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void)
 }
 
 protocol WalletConnectTransportDelegate: AnyObject {
@@ -120,12 +122,8 @@ extension WalletConnectTransport: WalletConnectTransportProtocol {
 
         let operations = [allSettingsOperation, allWalletsOperation, mapOperation]
 
-        mapOperation.completionBlock = { [weak self] in
+        mapOperation.completionBlock = {
             DispatchQueue.main.async {
-                guard let self = self else {
-                    return
-                }
-
                 do {
                     let sessions = try mapOperation.extractNoCancellableResultData()
 
@@ -137,6 +135,10 @@ extension WalletConnectTransport: WalletConnectTransportProtocol {
         }
 
         dataSource.operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
+        service.disconnect(from: session, completion: completion)
     }
 }
 
@@ -250,8 +252,8 @@ extension WalletConnectTransport: WalletConnectServiceDelegate {
         delegate?.walletConnect(transport: self, didReceive: .proposal(proposal))
     }
 
-    func walletConnect(service _: WalletConnectServiceProtocol, establishedSession: Session) {
-        logger.debug("New session: \(establishedSession)")
+    func walletConnect(service _: WalletConnectServiceProtocol, didChange sessions: [Session]) {
+        logger.debug("Sessions number: \(sessions.count)")
 
         delegate?.walletConnectDidChangeSessions(transport: self)
     }

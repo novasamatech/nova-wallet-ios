@@ -65,4 +65,9 @@ extension UILabel.Style {
         textColor: R.color.colorTextPrimary()!,
         font: .semiBoldBody
     )
+
+    static let title3Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldTitle3
+    )
 }

@@ -1,11 +1,28 @@
 import Foundation
 
 final class WalletConnectSessionsWireframe: WalletConnectSessionsWireframeProtocol {
-    func showSession(from _: WalletConnectSessionsViewProtocol?, details _: WalletConnectSession) {
-        // TODO: Present session details
+    let dappMediator: DAppInteractionMediating
+
+    init(dappMediator: DAppInteractionMediating) {
+        self.dappMediator = dappMediator
+    }
+
+    func showSession(from view: WalletConnectSessionsViewProtocol?, details: WalletConnectSession) {
+        guard
+            let detailsView = WalletConnectSessionDetailsViewFactory.createView(
+                for: details,
+                dappMediator: dappMediator
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            detailsView.controller,
+            animated: true
+        )
     }
 
     func close(view: WalletConnectSessionsViewProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
+        view?.controller.navigationController?.popToRootViewController(animated: true)
     }
 }
