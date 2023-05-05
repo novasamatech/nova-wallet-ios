@@ -23,6 +23,8 @@ final class WalletConnectSessionDetailsViewLayout: ScrollableContainerActionLayo
         super.setupStyle()
 
         stackView.layoutMargins = UIEdgeInsets(top: 32.0, left: 16.0, bottom: 0.0, right: 16.0)
+
+        actionLoadableView.actionButton.applyDestructiveDefaultStyle()
     }
 
     override func setupLayout() {
