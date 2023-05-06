@@ -1014,6 +1014,9 @@
 		844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */; };
 		844B6EC528A3153C00A8BE83 /* MetaAccountModelType+SignatureFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B6EC428A3153C00A8BE83 /* MetaAccountModelType+SignatureFormat.swift */; };
 		844B6EC728A3B05300A8BE83 /* MessageSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B6EC628A3B05300A8BE83 /* MessageSheetViewModel.swift */; };
+		844C3E5A2A06141F00C4305F /* SettingsSubtitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */; };
+		844C3E5C2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */; };
+		844C3E5E2A06180900C4305F /* SettingsBoxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */; };
 		844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */; };
 		844CB56426F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */; };
 		844CB56826F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56726F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift */; };
@@ -4478,6 +4481,9 @@
 		844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		844B6EC428A3153C00A8BE83 /* MetaAccountModelType+SignatureFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModelType+SignatureFormat.swift"; sourceTree = "<group>"; };
 		844B6EC628A3B05300A8BE83 /* MessageSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetViewModel.swift; sourceTree = "<group>"; };
+		844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSubtitleTableViewCell.swift; sourceTree = "<group>"; };
+		844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessoryTableViewCell.swift; sourceTree = "<group>"; };
+		844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBoxTableViewCell.swift; sourceTree = "<group>"; };
 		844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		844CB56726F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -8383,6 +8389,9 @@
 				8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */,
 				F466AA84273D0D4200D14021 /* SettingsSectionHeaderView.swift */,
 				F452D8C9273E58D5008F7295 /* SettingsTableFooterView.swift */,
+				844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */,
+				844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */,
+				844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -19316,6 +19325,7 @@
 				847F2D4F27AA695F00AFD476 /* AssetListGroupModel.swift in Sources */,
 				8499FED827BFCABD00712589 /* NftModel+Identifier.swift in Sources */,
 				84B8AA8329F90E3E00347A37 /* WalletConnectStateProtocols.swift in Sources */,
+				844C3E5A2A06141F00C4305F /* SettingsSubtitleTableViewCell.swift in Sources */,
 				88421064289BBD9100306F2C /* Currency.swift in Sources */,
 				921E4891E85C0DC6FDD8A0D0 /* CrowdloanContributionConfirmInteractor.swift in Sources */,
 				88A6BCFF28CA15400047E4C2 /* LocksBalanceViewModelFactory.swift in Sources */,
@@ -19331,6 +19341,7 @@
 				84735E7B2881A57700BADC1B /* AssetsSearchFlowLayout.swift in Sources */,
 				EB9D8D22AA13BF12F845856B /* ReferralCrowdloanProtocols.swift in Sources */,
 				51FC48FA6FD4D2FB1781424D /* ReferralCrowdloanWireframe.swift in Sources */,
+				844C3E5E2A06180900C4305F /* SettingsBoxTableViewCell.swift in Sources */,
 				0F3E58FC800ED8722589F89E /* ReferralCrowdloanPresenter.swift in Sources */,
 				84A9ECC1291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift in Sources */,
 				9F4A48B1BE3A1110A0CF9F36 /* ReferralCrowdloanViewController.swift in Sources */,
@@ -19798,6 +19809,7 @@
 				211725E26764530359F53A38 /* ParitySignerTxQrInteractor.swift in Sources */,
 				845B0817291902CF005785D3 /* Gov2LockStateFactory.swift in Sources */,
 				41DE96F778AE909978775438 /* ParitySignerTxQrViewController.swift in Sources */,
+				844C3E5C2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift in Sources */,
 				87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */,
 				84770F2C291F893200852A33 /* GovernanceUnlockConfirmInitData.swift in Sources */,
 				84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */,
