@@ -31,9 +31,14 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
-    static let chipStyle = UILabel.Style(
+    static let semiboldChip = UILabel.Style(
         textColor: R.color.colorChipText(),
         font: .semiBoldFootnote
+    )
+
+    static let footnoteChip = UILabel.Style(
+        textColor: R.color.colorChipText(),
+        font: .regularFootnote
     )
 
     static let caption1Secondary = UILabel.Style(
@@ -48,6 +53,11 @@ extension UILabel.Style {
 
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlineSecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
         font: .regularSubheadline
     )
 
