@@ -1208,6 +1208,8 @@
 "transfer.setup.recipient.input.placeholder" = "Адрес или w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Идет поиск адреса получателя";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Пожалуйста, подождите пока завершится поиск имени %@";
+"common.wallet.connect" = "WalletConnect";
+"common.wallet.connect.v2" = "WalletConnect v2";
 "wallet.connect.scan.message" = "Отсканируйте QR код";
 "wallet.connect.scan.error" = "Неверный формат URI";
 "wallet.connect.scan.button" = "Новое соединение";

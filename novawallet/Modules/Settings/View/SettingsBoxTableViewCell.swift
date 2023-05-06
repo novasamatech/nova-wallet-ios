@@ -7,7 +7,7 @@ final class SettingsBoxTableViewCell: SettingsAccessoryTableViewCell<BorderedIco
         accessoryDisplayView.backgroundView.apply(style: .chips)
         accessoryDisplayView.backgroundView.cornerRadius = 7
         accessoryDisplayView.iconDetailsView.detailsLabel.numberOfLines = 1
-        accessoryDisplayView.iconDetailsView.detailsLabel.apply(style: .footnoteChip)
+        accessoryDisplayView.iconDetailsView.detailsLabel.apply(style: .footnoteIconChip)
         accessoryDisplayView.iconDetailsView.iconWidth = 12
         accessoryDisplayView.contentInsets = UIEdgeInsets(
             top: 4,
