@@ -1209,7 +1209,8 @@
 "transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
 "common.wallet.connect" = "WalletConnect";
-"wallet.connect.scan.message" = "Scan QR from DApp";
+"common.wallet.connect.v2" = "WalletConnect v2";
+"wallet.connect.scan.message" = "Scan the QR code";
 "wallet.connect.scan.error" = "Invalid URI format";
 "wallet.connect.scan.button" = "New connection";
 "common.status.active" = "Active";
