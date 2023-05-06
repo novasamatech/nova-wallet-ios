@@ -31,6 +31,11 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let semiboldBodyPrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldBody
+    )
+
     static let semiboldChip = UILabel.Style(
         textColor: R.color.colorChipText(),
         font: .semiBoldFootnote

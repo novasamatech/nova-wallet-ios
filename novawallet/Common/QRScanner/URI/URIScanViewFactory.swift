@@ -2,16 +2,19 @@ import Foundation
 import SoraFoundation
 
 struct URIScanViewFactory {
-    static func createScan(
+    static func createWalletConnectScan(
         for delegate: URIScanDelegate,
         context: AnyObject?
     ) -> QRScannerViewProtocol? {
-        let title = LocalizableResource { locale in
-            R.string.localizable.commonWalletConnect(preferredLanguages: locale.rLanguages)
+        let scanTitle = LocalizableResource { locale in
+            R.string.localizable.walletConnectScanMessage(preferredLanguages: locale.rLanguages)
         }
 
-        let message = LocalizableResource { locale in
-            R.string.localizable.walletConnectScanMessage(preferredLanguages: locale.rLanguages)
+        let details = LocalizableResource { locale in
+            let title = R.string.localizable.commonWalletConnectV2(preferredLanguages: locale.rLanguages)
+            let icon = R.image.iconWalletConnect()?.tinted(with: R.color.colorTextPrimary()!)
+
+            return TitleIconViewModel(title: title, icon: icon)
         }
 
         let qrExtractionError = LocalizableResource { locale in
@@ -20,20 +23,18 @@ struct URIScanViewFactory {
 
         return createView(
             matcher: SchemeURIMatcher(scheme: "wc"),
-            title: title,
-            message: message,
+            viewDisplayParams: .init(topTitle: nil, details: details, scanTitle: scanTitle),
             qrExtractionError: qrExtractionError,
-            for: delegate,
+            delegate: delegate,
             context: context
         )
     }
 
     static func createView(
         matcher: URIQRMatching,
-        title: LocalizableResource<String>,
-        message: LocalizableResource<String>,
+        viewDisplayParams: QRScannerViewDisplayParams,
         qrExtractionError: LocalizableResource<String>,
-        for delegate: URIScanDelegate,
+        delegate: URIScanDelegate,
         context: AnyObject?
     ) -> QRScannerViewProtocol? {
         let processingQueue = QRCaptureService.processingQueue
@@ -57,10 +58,12 @@ struct URIScanViewFactory {
         )
 
         let view = QRScannerViewController(
-            title: title,
-            message: message,
+            title: viewDisplayParams.topTitle,
+            details: viewDisplayParams.details,
+            message: viewDisplayParams.scanTitle,
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            settings: .init(canUploadFromGallery: true, extendsUnderSafeArea: true)
         )
 
         presenter.view = view

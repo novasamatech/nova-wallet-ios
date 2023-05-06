@@ -1017,6 +1017,7 @@
 		844C3E5A2A06141F00C4305F /* SettingsSubtitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */; };
 		844C3E5C2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */; };
 		844C3E5E2A06180900C4305F /* SettingsBoxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */; };
+		844C3E602A0635DE00C4305F /* QRScanViewDisplayParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844C3E5F2A0635DE00C4305F /* QRScanViewDisplayParams.swift */; };
 		844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */; };
 		844CB56426F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */; };
 		844CB56826F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56726F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift */; };
@@ -4484,6 +4485,7 @@
 		844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSubtitleTableViewCell.swift; sourceTree = "<group>"; };
 		844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessoryTableViewCell.swift; sourceTree = "<group>"; };
 		844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBoxTableViewCell.swift; sourceTree = "<group>"; };
+		844C3E5F2A0635DE00C4305F /* QRScanViewDisplayParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScanViewDisplayParams.swift; sourceTree = "<group>"; };
 		844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		844CB56726F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -10460,6 +10462,7 @@
 				8487582827F06AF300495306 /* QRScannerViewController.swift */,
 				8487582F27F06AF300495306 /* Service */,
 				840B3D662899BFD200DA1DA9 /* QRScannerViewSettings.swift */,
+				844C3E5F2A0635DE00C4305F /* QRScanViewDisplayParams.swift */,
 			);
 			path = QRScanner;
 			sourceTree = "<group>";
@@ -18243,6 +18246,7 @@
 				840874DE29782DD400ACFA55 /* GovernanceDelegateMetadataFactory.swift in Sources */,
 				846A835A28B8C5EC00D92892 /* TransactionExpiredPresentable.swift in Sources */,
 				842EBB352890A79500B952D8 /* WalletSelectionViewFactory.swift in Sources */,
+				844C3E602A0635DE00C4305F /* QRScanViewDisplayParams.swift in Sources */,
 				8407715828CB802C007DBD24 /* ParaStkYieldBoostBaseProtocols.swift in Sources */,
 				84DB4E1E25E93B1700A6DF41 /* Identity.swift in Sources */,
 				F47F5A822626FDB9009BCFF4 /* StakingPayoutViewModel.swift in Sources */,
