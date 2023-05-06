@@ -36,8 +36,8 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
-    static let footnoteChip = UILabel.Style(
-        textColor: R.color.colorChipText(),
+    static let footnoteIconChip = UILabel.Style(
+        textColor: R.color.colorIconChip(),
         font: .regularFootnote
     )
 
