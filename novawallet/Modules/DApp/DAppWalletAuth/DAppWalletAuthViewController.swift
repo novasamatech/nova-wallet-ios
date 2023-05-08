@@ -32,9 +32,24 @@ final class DAppWalletAuthViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupStaticHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupStaticHandlers() {
+        rootView.walletCell.addTarget(
+            self,
+            action: #selector(actionSelectWallet),
+            for: .touchUpInside
+        )
+
+        rootView.networksCell.addTarget(
+            self,
+            action: #selector(actionShowNetworks),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -77,6 +92,14 @@ final class DAppWalletAuthViewController: UIViewController, ViewHolder {
 
     @objc func actionReject() {
         presenter.reject()
+    }
+
+    @objc func actionSelectWallet() {
+        presenter.selectWallet()
+    }
+
+    @objc func actionShowNetworks() {
+        presenter.showNetworks()
     }
 }
 
