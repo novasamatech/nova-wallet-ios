@@ -1,17 +1,19 @@
 import UIKit
 import SoraUI
 
-final class WalletManageTableViewCell: WalletsListTableViewCell {
+final class WalletManageTableViewCell: WalletsListTableViewCell<UIImageView> {
     private lazy var reorderingAnimator = BlockViewAnimator()
 
-    let disclosureIndicatorView: UIImageView = {
-        let imageView = UIImageView()
+    var disclosureIndicatorView: UIImageView { contentDisplayView.valueView }
+
+    override func setupStyle() {
+        super.setupStyle()
+
         let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
-        imageView.image = icon
-        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        return imageView
-    }()
+        disclosureIndicatorView.image = icon
+        disclosureIndicatorView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        disclosureIndicatorView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+    }
 
     func setReordering(_ reordering: Bool, animated: Bool) {
         let closure = {
@@ -26,17 +28,6 @@ final class WalletManageTableViewCell: WalletsListTableViewCell {
 
         if reordering {
             recolorReorderControl(R.color.colorIconPrimary()!)
-        }
-    }
-
-    override func setupLayout() {
-        super.setupLayout()
-
-        contentView.addSubview(disclosureIndicatorView)
-        disclosureIndicatorView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(infoView.snp.trailing).offset(8.0)
         }
     }
 }

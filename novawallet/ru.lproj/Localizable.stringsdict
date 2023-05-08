@@ -174,5 +174,21 @@
 			<string>%li не поддерживаются</string>
 		</dict>
 	</dict>
+	<key>missing.accounts.warning.format</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%2$@ аккаунт не найден. Добавьте аккаунт в кошелек в Настройках</string>
+			<key>other</key>
+			<string>%2$@ аккаунты не найдены. Добавьте аккаунты в кошелек в Настройках</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

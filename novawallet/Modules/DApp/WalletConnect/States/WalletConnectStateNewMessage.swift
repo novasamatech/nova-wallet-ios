@@ -41,12 +41,6 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
             chainsStore: dataSource.chainsStore
         )
 
-        let requiredChains = Set(resolution.requiredNamespaces.resolved.values)
-        let optionalChains = resolution.optionalNamespaces.map { Set($0.resolved.values) }
-        let unresolvedChains = resolution.requiredNamespaces.unresolved.union(
-            resolution.optionalNamespaces?.unresolved ?? []
-        )
-
         let authRequest = DAppAuthRequest(
             transportName: DAppTransports.walletConnect,
             identifier: proposal.pairingTopic,
@@ -54,9 +48,8 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
             origin: proposal.proposer.url,
             dApp: proposal.proposer.name,
             dAppIcon: proposal.proposer.icons.first.flatMap { URL(string: $0) },
-            requiredChains: requiredChains,
-            optionalChains: optionalChains,
-            unknownChains: !unresolvedChains.isEmpty ? unresolvedChains : nil
+            requiredChains: .init(wcResolution: resolution.requiredNamespaces),
+            optionalChains: resolution.optionalNamespaces.map { DAppChainsResolution(wcResolution: $0) }
         )
 
         let nextState = WalletConnectStateAuthorizing(
