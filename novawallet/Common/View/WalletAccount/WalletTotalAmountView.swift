@@ -18,7 +18,10 @@ final class WalletTotalAmountView: IconDetailsGenericView<MultiValueView> {
         detailsView.spacing = 0
 
         titleLabel.apply(style: .regularSubhedlinePrimary)
+        titleLabel.textAlignment = .left
+
         subtitleLabel.apply(style: .footnoteSecondary)
+        subtitleLabel.textAlignment = .left
     }
 }
 

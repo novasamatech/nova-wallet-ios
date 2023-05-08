@@ -58,7 +58,8 @@ extension DAppWalletAuthPresenter: DAppWalletAuthPresenterProtocol {
     func setup() {
         updateView()
 
-        interactor.fetchTotalValue(for: selectedWallet)
+        interactor.setup()
+        interactor.apply(wallet: selectedWallet)
     }
 
     func approve() {
@@ -72,6 +73,8 @@ extension DAppWalletAuthPresenter: DAppWalletAuthPresenterProtocol {
 
 extension DAppWalletAuthPresenter: DAppWalletAuthInteractorOutputProtocol {
     func didFetchTotalValue(_ value: Decimal, wallet: MetaAccountModel) {
+        logger.debug("Did receive total value: \(value)")
+
         guard wallet.metaId == selectedWallet.metaId else {
             return
         }
@@ -79,6 +82,11 @@ extension DAppWalletAuthPresenter: DAppWalletAuthInteractorOutputProtocol {
         totalWalletValue = value
 
         updateView()
+    }
+
+    func didReceive(error: BalancesStoreError) {
+        // ignore the because a user can't fix storage problems
+        logger.error("Did receive error: \(error)")
     }
 }
 

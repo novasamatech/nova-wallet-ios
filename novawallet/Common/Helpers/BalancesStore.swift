@@ -60,6 +60,7 @@ final class BalancesStore {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             self?.calculator?.didReceiveChainChanges(changes)
             self?.handle(changes: changes)
+            self?.notifyCalculatorChanges()
         }
     }
 
@@ -91,6 +92,16 @@ final class BalancesStore {
         }
     }
 
+    private func notifyCalculatorChanges() {
+        if let calculator = calculator {
+            delegate?.balancesStore(self, didUpdate: calculator)
+        }
+    }
+
+    private func notify(error: BalancesStoreError) {
+        delegate?.balancesStore(self, didReceive: error)
+    }
+
     private func updatePriceProvider(
         for priceIdSet: Set<AssetModel.PriceId>,
         currency: Currency
@@ -120,16 +131,14 @@ final class BalancesStore {
             )
 
             strongSelf.calculator?.didReceivePrice(mappedChanges)
+            strongSelf.notifyCalculatorChanges()
 
             return
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            guard let strongSelf = self else {
-                return
-            }
-
-            strongSelf.delegate?.balancesStore(strongSelf, didReceive: .priceFailed(error))
+            self?.notify(error: .priceFailed(error))
+            return
         }
 
         let options = StreamableProviderObserverOptions(
@@ -166,8 +175,9 @@ extension BalancesStore: WalletLocalStorageSubscriber, WalletLocalSubscriptionHa
         switch result {
         case let .success(changes):
             calculator?.didReceiveBalancesChanges(changes)
+            notifyCalculatorChanges()
         case let .failure(error):
-            delegate?.balancesStore(self, didReceive: .balancesFailed(error))
+            notify(error: .balancesFailed(error))
         }
     }
 }
@@ -177,8 +187,9 @@ extension BalancesStore: CrowdloanContributionLocalSubscriptionHandler, Crowdloa
         switch result {
         case let .success(changes):
             calculator?.didReceiveCrowdloanContributionChanges(changes)
+            notifyCalculatorChanges()
         case let .failure(error):
-            delegate?.balancesStore(self, didReceive: .crowdloansFailed(error))
+            notify(error: .crowdloansFailed(error))
         }
     }
 }
