@@ -1,12 +1,18 @@
 import Foundation
 
-final class DAppWalletAuthWireframe: DAppWalletAuthWireframeProtocol {
-    func close(from view: DAppWalletAuthViewProtocol?) {
-        view?.controller.presentingViewController?.dismiss(animated: true, completion: nil)
-    }
-
+protocol WalletChoosePresentable: AnyObject {
     func showWalletChoose(
         from view: DAppWalletAuthViewProtocol?,
+        selectedWalletId: String,
+        delegate: WalletsChooseDelegate
+    )
+
+    func closeWalletChoose(on view: ControllerBackedProtocol?, completion: @escaping () -> Void)
+}
+
+extension WalletChoosePresentable {
+    func showWalletChoose(
+        from view: ControllerBackedProtocol?,
         selectedWalletId: String,
         delegate: WalletsChooseDelegate
     ) {
@@ -21,5 +27,9 @@ final class DAppWalletAuthWireframe: DAppWalletAuthWireframeProtocol {
         let navigationController = NovaNavigationController(rootViewController: chooseView.controller)
 
         view?.controller.present(navigationController, animated: true)
+    }
+
+    func closeWalletChoose(on view: ControllerBackedProtocol?, completion: @escaping () -> Void) {
+        view?.controller.dismiss(animated: true, completion: completion)
     }
 }
