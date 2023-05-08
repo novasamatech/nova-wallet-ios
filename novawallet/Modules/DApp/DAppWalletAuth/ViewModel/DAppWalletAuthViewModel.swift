@@ -11,6 +11,6 @@ struct DAppWalletAuthViewModel {
     let walletWarning: String?
 
     var canApprove: Bool {
-        networksWarning != nil || walletWarning != nil
+        networksWarning == nil && walletWarning == nil
     }
 }
