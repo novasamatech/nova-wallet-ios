@@ -8,6 +8,8 @@ protocol DAppWalletAuthPresenterProtocol: AnyObject {
     func setup()
     func approve()
     func reject()
+    func selectWallet()
+    func showNetworks()
 }
 
 protocol DAppWalletAuthInteractorInputProtocol: AnyObject {
@@ -20,6 +22,6 @@ protocol DAppWalletAuthInteractorOutputProtocol: AnyObject {
     func didReceive(error: BalancesStoreError)
 }
 
-protocol DAppWalletAuthWireframeProtocol: AnyObject {
+protocol DAppWalletAuthWireframeProtocol: WalletChoosePresentable {
     func close(from view: DAppWalletAuthViewProtocol?)
 }

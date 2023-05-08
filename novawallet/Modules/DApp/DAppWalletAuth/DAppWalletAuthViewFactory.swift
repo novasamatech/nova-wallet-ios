@@ -60,17 +60,9 @@ struct DAppWalletAuthViewFactory {
     }
 
     private static func createInteractor() -> DAppWalletAuthInteractor? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard let balancesStore = BalancesStore.createDefaut() else {
             return nil
         }
-
-        let balancesStore = BalancesStore(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currencyManager: currencyManager,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared
-        )
 
         return .init(balancesStore: balancesStore)
     }
