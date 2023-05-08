@@ -214,11 +214,15 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
         let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
 
+        let totalAmountViewModel = WalletTotalAmountView.ViewModel(
+            icon: iconViewModel,
+            name: wallet.info.name,
+            amount: totalValue
+        )
+
         return WalletsListViewModel(
             identifier: wallet.identifier,
-            name: wallet.info.name,
-            icon: iconViewModel,
-            value: totalValue,
+            walletAmountViewModel: totalAmountViewModel,
             isSelected: wallet.isSelected
         )
     }

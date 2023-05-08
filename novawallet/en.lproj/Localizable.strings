@@ -1218,3 +1218,4 @@
 "common.disconnect" = "Disconnect";
 "common.status" = "Status";
 "common.none" = "None";
+"dapps.missing.required.networks.warning.format" = "Some of the required networks requested by “%@” are not supported in Nova Wallet";

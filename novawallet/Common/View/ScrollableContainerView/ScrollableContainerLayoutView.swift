@@ -41,14 +41,50 @@ class ScrollableContainerLayoutView: UIView {
             stackView.setCustomSpacing(value, after: view)
         }
     }
+
+    func insertArrangedSubview(_ view: UIView, after oldView: UIView, spacingAfter value: CGFloat = 0) {
+        stackView.insertArranged(view: view, after: oldView)
+
+        if value > 0 {
+            stackView.setCustomSpacing(value, after: view)
+        }
+    }
+
+    func applyWarning(
+        on warningView: inout InlineAlertView?,
+        after view: UIView?,
+        text: String?,
+        spacing: CGFloat = 0
+    ) {
+        if let text = text {
+            if warningView == nil {
+                let newView = InlineAlertView.warning()
+
+                if let afterView = view {
+                    insertArrangedSubview(newView, after: afterView, spacingAfter: spacing)
+                } else {
+                    addArrangedSubview(newView, spacingAfter: spacing)
+                }
+
+                warningView = newView
+            }
+
+            warningView?.contentView.detailsLabel.text = text
+        } else {
+            warningView?.removeFromSuperview()
+            warningView = nil
+        }
+
+        setNeedsLayout()
+    }
 }
 
-class ScrollableContainerActionLayoutView: ScrollableContainerLayoutView {
-    let actionLoadableView = LoadableActionView()
+class SCGenericActionLayoutView<A: UIView>: ScrollableContainerLayoutView {
+    let genericActionView = A()
 
     override func setupLayout() {
-        addSubview(actionLoadableView)
-        actionLoadableView.snp.makeConstraints { make in
+        addSubview(genericActionView)
+        genericActionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -57,7 +93,11 @@ class ScrollableContainerActionLayoutView: ScrollableContainerLayoutView {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionLoadableView.snp.top).offset(-8.0)
+            make.bottom.equalTo(genericActionView.snp.top).offset(-8.0)
         }
     }
 }
+
+typealias SCLoadableActionLayoutView = SCGenericActionLayoutView<LoadableActionView>
+
+typealias SCSingleActionLayoutView = SCGenericActionLayoutView<TriangularedButton>
