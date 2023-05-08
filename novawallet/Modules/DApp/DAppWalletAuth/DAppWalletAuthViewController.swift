@@ -32,6 +32,8 @@ final class DAppWalletAuthViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLocalization()
+
         presenter.setup()
     }
 
@@ -41,6 +43,8 @@ final class DAppWalletAuthViewController: UIViewController, ViewHolder {
         title = localizableTitle.value(for: selectedLocale)
         rootView.subtitleLabel.text = R.string.localizable.dappAuthSubtitle(preferredLanguages: languages)
         rootView.dappCell.titleLabel.text = R.string.localizable.commonDapp(preferredLanguages: languages)
+
+        setupButtonsLocalization()
     }
 
     private func setupButtonsLocalization() {

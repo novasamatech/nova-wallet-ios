@@ -51,7 +51,7 @@ final class DAppWalletAuthViewModelFactory {
         from request: DAppAuthRequest,
         locale: Locale
     ) -> String? {
-        guard !request.requiredChains.hasUnresolved else {
+        guard request.requiredChains.hasUnresolved else {
             return nil
         }
 

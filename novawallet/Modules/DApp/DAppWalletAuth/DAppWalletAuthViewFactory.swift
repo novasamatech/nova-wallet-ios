@@ -18,11 +18,12 @@ struct DAppWalletAuthViewFactory {
         delegate: DAppAuthDelegate,
         title: LocalizableResource<String>
     ) -> DAppWalletAuthViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor() else {
             return nil
         }
 
-        let interactor = DAppWalletAuthInteractor()
         let wireframe = DAppWalletAuthWireframe()
 
         let localizationManager = LocalizationManager.shared
@@ -56,5 +57,21 @@ struct DAppWalletAuthViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor() -> DAppWalletAuthInteractor? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let balancesStore = BalancesStore(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared
+        )
+
+        return .init(balancesStore: balancesStore)
     }
 }

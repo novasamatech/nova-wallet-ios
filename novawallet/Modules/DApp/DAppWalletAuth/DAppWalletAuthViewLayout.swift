@@ -29,7 +29,10 @@ final class DAppWalletAuthViewLayout: SCGenericActionLayoutView<UIStackView> {
     let dappCell = StackTableCell()
     let networksCell = StackInfoTableCell()
 
-    let walletTableView = StackTableView()
+    let walletTableView: StackTableView = .create { view in
+        view.cellHeight = 56
+    }
+
     let walletCell = StackWalletAmountCell()
 
     private(set) var rejectButton: TriangularedButton?
@@ -56,7 +59,7 @@ final class DAppWalletAuthViewLayout: SCGenericActionLayoutView<UIStackView> {
         }
 
         let button = TriangularedButton()
-        button.applyEnabledStyle()
+        button.applyDefaultStyle()
         genericActionView.addArrangedSubview(button)
 
         approveButton = button
@@ -89,6 +92,7 @@ final class DAppWalletAuthViewLayout: SCGenericActionLayoutView<UIStackView> {
         super.setupLayout()
 
         genericActionView.axis = .horizontal
+        genericActionView.distribution = .fillEqually
         genericActionView.spacing = 16
 
         let headerView = UIView()
