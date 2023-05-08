@@ -140,7 +140,7 @@ final class BalancesCalculator {
         )
 
         let contributions = crowdloanContributions[accountId]?
-            .filter { !chainAccountIds.contains($0.key) } ?? [:]
+            .filter { !excludingChainIds.contains($0.key) } ?? [:]
 
         let crowdloans = calculateCrowdloanContribution(
             contributions,
@@ -159,11 +159,17 @@ extension BalancesCalculator: BalancesCalculating {
         var totalValue: Decimal = 0.0
 
         if let substrateAccountId = wallet.substrateAccountId {
-            totalValue += calculateTotalValue(for: substrateAccountId, excludingChainIds: chainAccountIds)
+            totalValue += calculateTotalValue(
+                for: substrateAccountId,
+                excludingChainIds: Set(chainAccountIds)
+            )
         }
 
         if let ethereumAddress = wallet.ethereumAddress {
-            totalValue += calculateTotalValue(for: ethereumAddress, excludingChainIds: chainAccountIds)
+            totalValue += calculateTotalValue(
+                for: ethereumAddress,
+                excludingChainIds: Set(chainAccountIds)
+            )
         }
 
         wallet.chainAccounts.forEach { chainAccount in

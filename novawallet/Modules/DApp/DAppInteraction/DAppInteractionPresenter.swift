@@ -11,6 +11,45 @@ final class DAppInteractionPresenter {
     init(logger: LoggerProtocol) {
         self.logger = logger
     }
+
+    private func presentDefaultAuthConfirmation(for request: DAppAuthRequest) {
+        guard let authVew = DAppAuthConfirmViewFactory.createView(for: request, delegate: self) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(
+            configuration: ModalSheetPresentationConfiguration.nova
+        )
+        authVew.controller.modalTransitioningFactory = factory
+        authVew.controller.modalPresentationStyle = .custom
+
+        window?.rootViewController?.topModalViewController.present(
+            authVew.controller,
+            animated: true,
+            completion: nil
+        )
+    }
+
+    private func presentWalletConnectAuthConfirmation(for request: DAppAuthRequest) {
+        guard
+            let confirmationView = DAppWalletAuthViewFactory.createWalletConnectView(
+                for: request,
+                delegate: self
+            ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: confirmationView.controller)
+        navigationController.barSettings = .init(style: .defaultStyle, shouldSetCloseButton: false)
+
+        navigationController.modalPresentationStyle = .overFullScreen
+
+        window?.rootViewController?.topModalViewController.present(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
+    }
 }
 
 extension DAppInteractionPresenter: DAppInteractionOutputProtocol {
@@ -37,21 +76,11 @@ extension DAppInteractionPresenter: DAppInteractionOutputProtocol {
     }
 
     func didReceiveAuth(request: DAppAuthRequest) {
-        guard let authVew = DAppAuthConfirmViewFactory.createView(for: request, delegate: self) else {
-            return
+        if request.transportName == DAppTransports.walletConnect {
+            presentWalletConnectAuthConfirmation(for: request)
+        } else {
+            presentDefaultAuthConfirmation(for: request)
         }
-
-        let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.nova
-        )
-        authVew.controller.modalTransitioningFactory = factory
-        authVew.controller.modalPresentationStyle = .custom
-
-        window?.rootViewController?.topModalViewController.present(
-            authVew.controller,
-            animated: true,
-            completion: nil
-        )
     }
 
     func didDetectPhishing(host _: String) {
