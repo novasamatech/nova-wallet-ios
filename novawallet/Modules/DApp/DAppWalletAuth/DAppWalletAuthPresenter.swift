@@ -69,6 +69,16 @@ extension DAppWalletAuthPresenter: DAppWalletAuthPresenterProtocol {
     func reject() {
         complete(with: false)
     }
+
+    func selectWallet() {
+        wireframe.showWalletChoose(
+            from: view,
+            selectedWalletId: selectedWallet.metaId,
+            delegate: self
+        )
+    }
+
+    func showNetworks() {}
 }
 
 extension DAppWalletAuthPresenter: DAppWalletAuthInteractorOutputProtocol {
@@ -87,6 +97,19 @@ extension DAppWalletAuthPresenter: DAppWalletAuthInteractorOutputProtocol {
     func didReceive(error: BalancesStoreError) {
         // ignore the because a user can't fix storage problems
         logger.error("Did receive error: \(error)")
+    }
+}
+
+extension DAppWalletAuthPresenter: WalletsChooseDelegate {
+    func walletChooseDidSelect(item: ManagedMetaAccountModel) {
+        wireframe.closeWalletChoose(on: view) { [weak self] in
+            self?.selectedWallet = item.info
+            self?.totalWalletValue = nil
+
+            self?.updateView()
+
+            self?.interactor.apply(wallet: item.info)
+        }
     }
 }
 
