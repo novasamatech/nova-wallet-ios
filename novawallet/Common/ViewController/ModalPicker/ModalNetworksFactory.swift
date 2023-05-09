@@ -27,7 +27,7 @@ enum ModalNetworksFactory {
             = createNetworksController(for: title)
 
         viewController.cellHeight = 48.0
-        viewController.headerHeight = 40.0
+        viewController.headerHeight = 32.0
         viewController.footerHeight = 0.0
         viewController.sectionHeaderHeight = 32
         viewController.sectionFooterHeight = 32
