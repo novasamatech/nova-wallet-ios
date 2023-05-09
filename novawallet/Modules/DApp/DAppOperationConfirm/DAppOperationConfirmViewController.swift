@@ -38,26 +38,27 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.confirmButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
         rootView.rejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
-        rootView.transactionDetailsControl.addTarget(self, action: #selector(actionTxDetails), for: .touchUpInside)
+        rootView.transactionDetailsCell.addTarget(self, action: #selector(actionTxDetails), for: .touchUpInside)
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.titleLabel.text = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
         rootView.subtitleLabel.text = R.string.localizable.dappConfirmSubtitle(preferredLanguages: languages)
-        rootView.walletView.rowContentView.titleView.text = R.string.localizable.commonWallet(
+        rootView.dAppCell.titleLabel.text = R.string.localizable.commonDapp(preferredLanguages: languages)
+        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
             preferredLanguages: languages
         )
-        rootView.accountAddressView.rowContentView.titleView.text = R.string.localizable.commonAccountAddress(
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccountAddress(
             preferredLanguages: languages
         )
-        rootView.networkView.rowContentView.titleView.text = R.string.localizable.commonNetwork(
+        rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
             preferredLanguages: languages
         )
-        rootView.networkFeeView.titleLabel.text = R.string.localizable.commonNetworkFee(
-            preferredLanguages: languages
-        )
-        rootView.transactionDetailsControl.rowContentView.titleView.text = R.string.localizable.commonTxDetails(
+
+        rootView.feeCell.rowContentView.locale = selectedLocale
+
+        rootView.transactionDetailsCell.titleLabel.text = R.string.localizable.commonTxDetails(
             preferredLanguages: languages
         )
 
@@ -84,55 +85,39 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
 
 extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
     func didReceive(confimationViewModel: DAppOperationConfirmViewModel) {
-        let networkImageView = rootView.networkView.rowContentView.valueView.imageView
-        viewModel?.networkIconViewModel?.cancel(on: networkImageView)
-
-        viewModel = confimationViewModel
+        rootView.dAppCell.bind(details: confimationViewModel.dApp)
 
         rootView.iconView.bind(
             viewModel: viewModel?.iconImageViewModel,
-            size: DAppOperationConfirmViewLayout.titleImageSize
+            size: DAppIconLargeConstants.displaySize
         )
 
-        rootView.walletView.rowContentView.valueView.detailsLabel.text = confimationViewModel.walletName
+        rootView.walletCell.bind(viewModel: .init(
+            details: confimationViewModel.walletName,
+            imageViewModel: confimationViewModel.walletIcon.map({ DrawableIconViewModel(icon: $0) })
+        ))
 
-        let walletImageView = rootView.walletView.rowContentView.valueView.imageView
-        walletImageView.image = confimationViewModel.walletIcon?.imageWithFillColor(
-            R.color.colorIconPrimary()!,
-            size: DAppOperationConfirmViewLayout.listImageSize,
-            contentScale: UIScreen.main.scale
-        )
+        rootView.accountCell.bind(viewModel: .init(
+            details: confimationViewModel.address,
+            imageViewModel: confimationViewModel.addressIcon.map({ DrawableIconViewModel(icon: $0) })
+        ))
 
-        rootView.accountAddressView.rowContentView.valueView.detailsLabel.text = confimationViewModel.address
-
-        let addressImageView = rootView.accountAddressView.rowContentView.valueView.imageView
-        addressImageView.image = confimationViewModel.addressIcon?.imageWithFillColor(
-            R.color.colorIconPrimary()!,
-            size: DAppOperationConfirmViewLayout.listImageSize,
-            contentScale: UIScreen.main.scale
-        )
-
-        rootView.networkView.rowContentView.valueView.detailsLabel.text = confimationViewModel.networkName
-
-        networkImageView.image = nil
-
-        confimationViewModel.networkIconViewModel?.loadImage(
-            on: networkImageView,
-            targetSize: DAppOperationConfirmViewLayout.listImageSize,
-            animated: true
-        )
+        rootView.networkCell.bind(viewModel: .init(
+            details: confimationViewModel.networkName,
+            imageViewModel: confimationViewModel.networkIconViewModel
+        ))
     }
 
     func didReceive(feeViewModel: DAppOperationFeeViewModel) {
         switch feeViewModel {
         case .loading:
-            rootView.networkFeeView.isHidden = false
-            rootView.networkFeeView.bind(viewModel: nil)
+            rootView.feeCell.isHidden = false
+            rootView.feeCell.rowContentView.bind(viewModel: nil)
         case .empty:
-            rootView.networkFeeView.isHidden = true
+            rootView.feeCell.isHidden = true
         case let .loaded(value):
-            rootView.networkFeeView.isHidden = false
-            rootView.networkFeeView.bind(viewModel: value)
+            rootView.feeCell.isHidden = false
+            rootView.feeCell.rowContentView.bind(viewModel: value)
         }
     }
 }
