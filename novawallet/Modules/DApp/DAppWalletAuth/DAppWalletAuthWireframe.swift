@@ -5,21 +5,18 @@ final class DAppWalletAuthWireframe: DAppWalletAuthWireframeProtocol {
         view?.controller.presentingViewController?.dismiss(animated: true, completion: nil)
     }
 
-    func showWalletChoose(
+    func showNetworksResolution(
         from view: DAppWalletAuthViewProtocol?,
-        selectedWalletId: String,
-        delegate: WalletsChooseDelegate
+        requiredResolution: DAppChainsResolution,
+        optionalResolution: DAppChainsResolution?
     ) {
-        guard
-            let chooseView = WalletsChooseViewFactory.createView(
-                for: selectedWalletId,
-                delegate: delegate
-            ) else {
+        guard let networksView = ModalNetworksFactory.createResolutionInfoList(
+            for: requiredResolution,
+            optional: optionalResolution
+        ) else {
             return
         }
 
-        let navigationController = NovaNavigationController(rootViewController: chooseView.controller)
-
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.present(networksView, animated: true)
     }
 }
