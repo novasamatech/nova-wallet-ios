@@ -2,7 +2,7 @@ import Foundation
 
 protocol WalletChoosePresentable: AnyObject {
     func showWalletChoose(
-        from view: DAppWalletAuthViewProtocol?,
+        from view: ControllerBackedProtocol?,
         selectedWalletId: String,
         delegate: WalletsChooseDelegate
     )

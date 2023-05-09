@@ -190,5 +190,25 @@
 			<string>%2$@ аккаунты не найдены. Добавьте аккаунты в кошелек в Настройках</string>
 		</dict>
 	</dict>
+	<key>dapps.unsupported.networks.format</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>1 не поддерживаемая сеть скрыта</string>
+			<key>few</key>
+			<string>%li не поддерживаемые сети скрыты</string>
+			<key>many</key>
+			<string>%li не поддерживаемых сетей скрыто</string>
+			<key>other</key>
+			<string>%li не поддерживаемых сетей скрыто</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
