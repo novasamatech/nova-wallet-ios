@@ -21,6 +21,12 @@ final class StackActionView: UIView {
             iconImageView.snp.updateConstraints { make in
                 make.height.equalTo(iconSize)
             }
+
+            let iconOffset = iconSize > 0 ? 12 : 0
+
+            titleLabel.snp.updateConstraints { make in
+                make.leading.equalTo(iconImageView.snp.trailing).offset(iconOffset)
+            }
         }
     }
 
@@ -52,8 +58,10 @@ final class StackActionView: UIView {
 
         addSubview(view)
 
+        let iconOffset: CGFloat = iconSize > 0 ? 12 : 0
+
         titleLabel.snp.remakeConstraints { make in
-            make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
+            make.leading.equalTo(iconImageView.snp.trailing).offset(iconOffset)
             make.centerY.equalToSuperview()
         }
 
