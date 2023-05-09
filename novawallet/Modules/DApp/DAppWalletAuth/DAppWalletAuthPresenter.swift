@@ -78,7 +78,13 @@ extension DAppWalletAuthPresenter: DAppWalletAuthPresenterProtocol {
         )
     }
 
-    func showNetworks() {}
+    func showNetworks() {
+        wireframe.showNetworksResolution(
+            from: view,
+            requiredResolution: request.requiredChains,
+            optionalResolution: request.optionalChains
+        )
+    }
 }
 
 extension DAppWalletAuthPresenter: DAppWalletAuthInteractorOutputProtocol {

@@ -1219,3 +1219,5 @@
 "common.status" = "Status";
 "common.none" = "None";
 "dapps.missing.required.networks.warning.format" = "Some of the required networks requested by “%@” are not supported in Nova Wallet";
+"dapps.required.networks" = "Required";
+"dapps.optional.networks" = "Optional";

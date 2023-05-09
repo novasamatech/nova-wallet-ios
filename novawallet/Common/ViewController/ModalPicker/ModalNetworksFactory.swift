@@ -13,12 +13,24 @@ enum ModalNetworksFactory {
 
         viewController.modalPresentationStyle = .custom
         viewController.separatorStyle = .none
-        viewController.cellHeight = 52.0
-        viewController.headerHeight = 40.0
-        viewController.footerHeight = 0.0
         viewController.headerBorderType = []
 
         viewController.actionType = .none
+
+        return viewController
+    }
+
+    private static func createDAppsNetworksController(
+        for title: LocalizableResource<String>
+    ) -> ModalPickerViewController<NetworkTableViewCell, NetworkViewModel> {
+        let viewController: ModalPickerViewController<NetworkTableViewCell, NetworkViewModel>
+            = createNetworksController(for: title)
+
+        viewController.cellHeight = 48.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.sectionHeaderHeight = 32
+        viewController.sectionFooterHeight = 32
 
         return viewController
     }
@@ -96,17 +108,9 @@ enum ModalNetworksFactory {
             )
         }
 
-        viewController = createNetworksController(for: title)
+        viewController = createDAppsNetworksController(for: title)
 
-        let networkViewModelFactory = NetworkViewModelFactory()
-
-        let viewModels = networks.map { network in
-            LocalizableResource { _ in
-                networkViewModelFactory.createViewModel(from: network)
-            }
-        }
-
-        viewController.viewModels = viewModels
+        viewController.viewModels = convertNetworkListToViewModels(from: networks)
 
         let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
@@ -117,5 +121,123 @@ enum ModalNetworksFactory {
         viewController.localizationManager = LocalizationManager.shared
 
         return viewController
+    }
+
+    static func createResolutionInfoList(
+        for required: DAppChainsResolution,
+        optional: DAppChainsResolution?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<NetworkTableViewCell, NetworkViewModel>
+
+        let networksCount = required.totalChainsCount + (optional?.totalChainsCount ?? 0)
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.commonNetworksTitle(
+                networksCount,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        viewController = createDAppsNetworksController(for: title)
+
+        let rowsCount = required.resolved.count + (optional?.resolved.count ?? 0)
+        var sectionsCount: Int = 0
+        var footersCount: Int = 0
+
+        if required.hasChains {
+            let hasFooter = addNetworksSection(
+                to: viewController,
+                from: required,
+                title: LocalizableResource { locale in
+                    R.string.localizable.dappsRequiredNetworks(preferredLanguages: locale.rLanguages)
+                }
+            )
+
+            sectionsCount += 1
+
+            if hasFooter {
+                footersCount += 1
+            }
+        }
+
+        if let optional = optional, optional.hasChains {
+            let hasFooter = addNetworksSection(
+                to: viewController,
+                from: optional,
+                title: LocalizableResource { locale in
+                    R.string.localizable.dappsOptionalNetworks(preferredLanguages: locale.rLanguages)
+                }
+            )
+
+            sectionsCount += 1
+
+            if hasFooter {
+                footersCount += 1
+            }
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight +
+            CGFloat(rowsCount) * viewController.cellHeight +
+            CGFloat(sectionsCount) * viewController.sectionHeaderHeight +
+            CGFloat(footersCount) * viewController.sectionFooterHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
+    private static func addNetworksSection(
+        to viewController: ModalPickerViewController<NetworkTableViewCell, NetworkViewModel>,
+        from resolution: DAppChainsResolution,
+        title: LocalizableResource<String>
+    ) -> Bool {
+        let requiredViewModels = convertNetworkSetToViewModels(from: resolution.resolved)
+
+        let sectionFooter: LocalizableResource<String>?
+
+        if resolution.hasUnresolved {
+            sectionFooter = LocalizableResource { locale in
+                R.string.localizable.dappsUnsupportedNetworksFormat(
+                    format: resolution.unresolved.count,
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        } else {
+            sectionFooter = nil
+        }
+
+        viewController.addSection(
+            viewModels: requiredViewModels,
+            title: title,
+            footer: sectionFooter
+        )
+
+        return sectionFooter != nil
+    }
+
+    private static func convertNetworkListToViewModels(
+        from networkList: [ChainModel]
+    ) -> [LocalizableResource<NetworkViewModel>] {
+        let networkViewModelFactory = NetworkViewModelFactory()
+
+        return networkList.map { network in
+            LocalizableResource { _ in
+                networkViewModelFactory.createViewModel(from: network)
+            }
+        }
+    }
+
+    private static func convertNetworkSetToViewModels(
+        from networkSet: Set<ChainModel>
+    ) -> [LocalizableResource<NetworkViewModel>] {
+        let networkList = networkSet.sorted(by: { chain1, chain2 in
+            ChainModelCompator.defaultComparator(chain1: chain1, chain2: chain2)
+        })
+
+        return convertNetworkListToViewModels(from: networkList)
     }
 }

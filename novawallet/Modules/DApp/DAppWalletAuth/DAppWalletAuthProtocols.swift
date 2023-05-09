@@ -24,4 +24,9 @@ protocol DAppWalletAuthInteractorOutputProtocol: AnyObject {
 
 protocol DAppWalletAuthWireframeProtocol: WalletChoosePresentable {
     func close(from view: DAppWalletAuthViewProtocol?)
+    func showNetworksResolution(
+        from view: DAppWalletAuthViewProtocol?,
+        requiredResolution: DAppChainsResolution,
+        optionalResolution: DAppChainsResolution?
+    )
 }

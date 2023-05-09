@@ -9,6 +9,8 @@ struct DAppChainsResolution {
 
     var hasChains: Bool { hasResolved || hasUnresolved }
 
+    var totalChainsCount: Int { resolved.count + unresolved.count }
+
     init(resolved: Set<ChainModel> = [], unresolved: Set<String> = []) {
         self.resolved = resolved
         self.unresolved = unresolved
