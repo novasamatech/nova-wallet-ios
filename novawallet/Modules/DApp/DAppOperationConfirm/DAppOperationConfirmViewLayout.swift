@@ -43,6 +43,7 @@ final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackVie
 
     let transactionDetailsCell: StackActionCell = .create { view in
         view.rowContentView.iconSize = 0
+        view.rowContentView.titleLabel.apply(style: .footnoteSecondary)
     }
 
     let rejectButton: TriangularedButton = .create { button in
@@ -95,5 +96,8 @@ final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackVie
         senderTableView.addArrangedSubview(accountCell)
         senderTableView.addArrangedSubview(networkCell)
         senderTableView.addArrangedSubview(feeCell)
+
+        addArrangedSubview(transactionDetailsTableView, spacingAfter: 8)
+        transactionDetailsTableView.addArrangedSubview(transactionDetailsCell)
     }
 }
