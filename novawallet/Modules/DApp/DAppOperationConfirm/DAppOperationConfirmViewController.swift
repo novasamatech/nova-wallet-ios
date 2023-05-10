@@ -43,6 +43,9 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.dappsRequestSignTitle(preferredLanguages: languages)
+
         rootView.titleLabel.text = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
         rootView.subtitleLabel.text = R.string.localizable.dappConfirmSubtitle(preferredLanguages: languages)
         rootView.dAppCell.titleLabel.text = R.string.localizable.commonDapp(preferredLanguages: languages)
@@ -94,12 +97,12 @@ extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
 
         rootView.walletCell.bind(viewModel: .init(
             details: confimationViewModel.walletName,
-            imageViewModel: confimationViewModel.walletIcon.map({ DrawableIconViewModel(icon: $0) })
+            imageViewModel: confimationViewModel.walletIcon.map { DrawableIconViewModel(icon: $0) }
         ))
 
         rootView.accountCell.bind(viewModel: .init(
             details: confimationViewModel.address,
-            imageViewModel: confimationViewModel.addressIcon.map({ DrawableIconViewModel(icon: $0) })
+            imageViewModel: confimationViewModel.addressIcon.map { DrawableIconViewModel(icon: $0) }
         ))
 
         rootView.networkCell.bind(viewModel: .init(
