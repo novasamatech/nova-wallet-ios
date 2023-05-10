@@ -11,11 +11,8 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
-        preferredContentSize = CGSize(width: 0.0, height: 522.0)
         self.localizationManager = localizationManager
     }
-
-    private var viewModel: DAppOperationConfirmViewModel?
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -36,6 +33,9 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
+        presentationController?.delegate = self
+
+        rootView.accountCell.addTarget(self, action: #selector(actionShowAccountOptions), for: .touchUpInside)
         rootView.confirmButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
         rootView.rejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
         rootView.transactionDetailsCell.addTarget(self, action: #selector(actionTxDetails), for: .touchUpInside)
@@ -84,31 +84,38 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     @objc private func actionTxDetails() {
         presenter.activateTxDetails()
     }
+
+    @objc func actionShowAccountOptions() {
+        presenter.showAccountOptions()
+    }
 }
 
 extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
-    func didReceive(confimationViewModel: DAppOperationConfirmViewModel) {
-        rootView.dAppCell.bind(details: confimationViewModel.dApp)
+    func didReceive(confirmationViewModel: DAppOperationConfirmViewModel) {
+        rootView.dAppCell.bind(details: confirmationViewModel.dApp)
 
         rootView.iconView.bind(
-            viewModel: viewModel?.iconImageViewModel,
+            viewModel: confirmationViewModel.iconImageViewModel,
             size: DAppIconLargeConstants.displaySize
         )
 
         rootView.walletCell.bind(viewModel: .init(
-            details: confimationViewModel.walletName,
-            imageViewModel: confimationViewModel.walletIcon.map { DrawableIconViewModel(icon: $0) }
+            details: confirmationViewModel.walletName,
+            imageViewModel: confirmationViewModel.walletIcon.map { DrawableIconViewModel(icon: $0) }
         ))
 
         rootView.accountCell.bind(viewModel: .init(
-            details: confimationViewModel.address,
-            imageViewModel: confimationViewModel.addressIcon.map { DrawableIconViewModel(icon: $0) }
+            details: confirmationViewModel.address,
+            imageViewModel: confirmationViewModel.addressIcon.map { DrawableIconViewModel(icon: $0) }
         ))
 
-        rootView.networkCell.bind(viewModel: .init(
-            details: confimationViewModel.networkName,
-            imageViewModel: confimationViewModel.networkIconViewModel
-        ))
+        rootView.networkCell.bind(
+            viewModel: .init(
+                details: confirmationViewModel.networkName,
+                imageViewModel: confirmationViewModel.networkIconViewModel
+            ),
+            cornerRadius: nil
+        )
     }
 
     func didReceive(feeViewModel: DAppOperationFeeViewModel) {
@@ -133,8 +140,8 @@ extension DAppOperationConfirmViewController: Localizable {
     }
 }
 
-extension DAppOperationConfirmViewController: ModalPresenterDelegate {
-    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { false }
-
-    func presenterDidHide(_: ModalPresenterProtocol) {}
+extension DAppOperationConfirmViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool {
+        false
+    }
 }

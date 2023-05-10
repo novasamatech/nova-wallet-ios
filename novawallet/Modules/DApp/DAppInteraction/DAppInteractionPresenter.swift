@@ -12,11 +12,11 @@ final class DAppInteractionPresenter {
         self.logger = logger
     }
 
-    private func presentOverFullscreen(the controller: UIViewController) {
+    private func presentModal(the controller: UIViewController, style: UIModalPresentationStyle = .overFullScreen) {
         let navigationController = NovaNavigationController(rootViewController: controller)
         navigationController.barSettings = .init(style: .defaultStyle, shouldSetCloseButton: false)
 
-        navigationController.modalPresentationStyle = .overFullScreen
+        navigationController.modalPresentationStyle = style
 
         window?.rootViewController?.topModalViewController.present(
             navigationController,
@@ -49,7 +49,7 @@ final class DAppInteractionPresenter {
     }
 
     private func presentDefaultRequestConfirmation(view: DAppOperationConfirmViewProtocol) {
-        presentInBottomSheet(the: view.controller)
+        presentModal(the: view.controller, style: .automatic)
     }
 
     private func presentWalletConnectAuthConfirmation(for request: DAppAuthRequest) {
@@ -61,11 +61,11 @@ final class DAppInteractionPresenter {
             return
         }
 
-        presentOverFullscreen(the: confirmationView.controller)
+        presentModal(the: confirmationView.controller)
     }
 
     private func presentWalletConnectRequestConfirmation(view: DAppOperationConfirmViewProtocol) {
-        presentOverFullscreen(the: view.controller)
+        presentModal(the: view.controller)
     }
 }
 
