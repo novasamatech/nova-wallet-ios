@@ -362,6 +362,10 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
             break
         }
     }
+
+    func selectPeriod() {
+        wireframe.showPeriodSelection(from: view)
+    }
 }
 
 extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol {

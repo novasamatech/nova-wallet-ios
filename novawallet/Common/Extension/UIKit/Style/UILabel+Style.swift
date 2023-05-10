@@ -31,6 +31,11 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let footnoteAccent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .regularFootnote
+    )
+
     static let chipStyle = UILabel.Style(
         textColor: R.color.colorChipText(),
         font: .semiBoldFootnote

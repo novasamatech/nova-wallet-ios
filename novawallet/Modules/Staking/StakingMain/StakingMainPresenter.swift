@@ -144,6 +144,10 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     func performManageAction(_ action: StakingManageOption) {
         childPresenter?.performManageAction(action)
     }
+
+    func selectPeriod() {
+        childPresenter?.selectPeriod()
+    }
 }
 
 extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
