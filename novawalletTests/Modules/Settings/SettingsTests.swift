@@ -45,7 +45,7 @@ final class SettingsTests: XCTestCase {
 
         stub(walletConnect) { stub in
             when(stub).add(delegate: any()).thenDoNothing()
-            when(stub).connect(uri: any()).thenDoNothing()
+            when(stub).connect(uri: any(), completion: any()).thenDoNothing()
             when(stub).remove(delegate: any()).thenDoNothing()
             when(stub).getSessionsCount().thenReturn(0)
             when(stub).fetchSessions(any()).then { closure in

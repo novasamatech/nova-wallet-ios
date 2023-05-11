@@ -1222,3 +1222,7 @@
 "dapps.required.networks" = "Required";
 "dapps.optional.networks" = "Optional";
 "dapps.request.sign.title" = "Sign Request";
+"wallet.connect.pairing.error" = "Could not connect to the dapp due to the network issues";
+"wallet.connect.disconnect.error" = "Could not close session with the dapp due to the network issues";
+"wallet.connect.signature.submit.error" = "Could not submit signature to the dapp due to the network issues";
+"wallet.connect.proposal.result.submit.error" = "Could not authorize the dapp due to the network issues";

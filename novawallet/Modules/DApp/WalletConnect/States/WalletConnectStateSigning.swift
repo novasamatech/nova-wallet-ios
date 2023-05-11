@@ -38,10 +38,11 @@ extension WalletConnectStateSigning: WalletConnectStateProtocol {
 
             stateMachine.emit(
                 signDecision: .approve(request: request, signature: result),
-                nextState: nextState
+                nextState: nextState,
+                error: nil
             )
         } else {
-            stateMachine.emit(signDecision: .reject(request: request), nextState: nextState)
+            stateMachine.emit(signDecision: .reject(request: request), nextState: nextState, error: nil)
         }
     }
 
