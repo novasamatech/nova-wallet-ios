@@ -1221,3 +1221,4 @@
 "dapps.missing.required.networks.warning.format" = "Некоторые запрошенные “%@” сети не поддерживаются в Nova Wallet";
 "dapps.required.networks" = "Обязательные";
 "dapps.optional.networks" = "Не обязательные";
+"dapps.request.sign.title" = "Подпишите запрос";

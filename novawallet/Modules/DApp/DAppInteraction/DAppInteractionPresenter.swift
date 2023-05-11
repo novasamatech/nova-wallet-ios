@@ -12,22 +12,44 @@ final class DAppInteractionPresenter {
         self.logger = logger
     }
 
+    private func presentModal(the controller: UIViewController, style: UIModalPresentationStyle = .overFullScreen) {
+        let navigationController = NovaNavigationController(rootViewController: controller)
+        navigationController.barSettings = .init(style: .defaultStyle, shouldSetCloseButton: false)
+
+        navigationController.modalPresentationStyle = style
+
+        window?.rootViewController?.topModalViewController.present(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
+    }
+
+    private func presentInBottomSheet(the controller: UIViewController) {
+        let factory = ModalSheetPresentationFactory(
+            configuration: ModalSheetPresentationConfiguration.nova
+        )
+
+        controller.modalTransitioningFactory = factory
+        controller.modalPresentationStyle = .custom
+
+        window?.rootViewController?.topModalViewController.present(
+            controller,
+            animated: true,
+            completion: nil
+        )
+    }
+
     private func presentDefaultAuthConfirmation(for request: DAppAuthRequest) {
         guard let authVew = DAppAuthConfirmViewFactory.createView(for: request, delegate: self) else {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.nova
-        )
-        authVew.controller.modalTransitioningFactory = factory
-        authVew.controller.modalPresentationStyle = .custom
+        presentInBottomSheet(the: authVew.controller)
+    }
 
-        window?.rootViewController?.topModalViewController.present(
-            authVew.controller,
-            animated: true,
-            completion: nil
-        )
+    private func presentDefaultRequestConfirmation(view: DAppOperationConfirmViewProtocol) {
+        presentModal(the: view.controller, style: .automatic)
     }
 
     private func presentWalletConnectAuthConfirmation(for request: DAppAuthRequest) {
@@ -39,16 +61,11 @@ final class DAppInteractionPresenter {
             return
         }
 
-        let navigationController = NovaNavigationController(rootViewController: confirmationView.controller)
-        navigationController.barSettings = .init(style: .defaultStyle, shouldSetCloseButton: false)
+        presentModal(the: confirmationView.controller)
+    }
 
-        navigationController.modalPresentationStyle = .overFullScreen
-
-        window?.rootViewController?.topModalViewController.present(
-            navigationController,
-            animated: true,
-            completion: nil
-        )
+    private func presentWalletConnectRequestConfirmation(view: DAppOperationConfirmViewProtocol) {
+        presentModal(the: view.controller)
     }
 }
 
@@ -62,17 +79,11 @@ extension DAppInteractionPresenter: DAppInteractionOutputProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova
-        )
-
-        confirmationView.controller.modalTransitioningFactory = factory
-        confirmationView.controller.modalPresentationStyle = .custom
-
-        window?.rootViewController?.topModalViewController.present(
-            confirmationView.controller,
-            animated: true,
-            completion: nil
-        )
+        if request.transportName == DAppTransports.walletConnect {
+            presentWalletConnectRequestConfirmation(view: confirmationView)
+        } else {
+            presentDefaultRequestConfirmation(view: confirmationView)
+        }
     }
 
     func didReceiveAuth(request: DAppAuthRequest) {
