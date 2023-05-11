@@ -124,12 +124,12 @@ enum ModalNetworksFactory {
     }
 
     static func createResolutionInfoList(
-        for required: DAppChainsResolution,
-        optional: DAppChainsResolution?
+        for requiredResolution: DAppChainsResolution,
+        optionalResolution: DAppChainsResolution?
     ) -> UIViewController? {
         let viewController: ModalPickerViewController<NetworkTableViewCell, NetworkViewModel>
 
-        let networksCount = required.totalChainsCount + (optional?.totalChainsCount ?? 0)
+        let networksCount = requiredResolution.totalChainsCount + (optionalResolution?.totalChainsCount ?? 0)
 
         let title = LocalizableResource { locale in
             R.string.localizable.commonNetworksTitle(
@@ -140,14 +140,14 @@ enum ModalNetworksFactory {
 
         viewController = createDAppsNetworksController(for: title)
 
-        let rowsCount = required.resolved.count + (optional?.resolved.count ?? 0)
+        let rowsCount = requiredResolution.resolved.count + (optionalResolution?.resolved.count ?? 0)
         var sectionsCount: Int = 0
         var footersCount: Int = 0
 
-        if required.hasChains {
+        if requiredResolution.hasChains {
             let hasFooter = addNetworksSection(
                 to: viewController,
-                from: required,
+                from: requiredResolution,
                 title: LocalizableResource { locale in
                     R.string.localizable.dappsRequiredNetworks(preferredLanguages: locale.rLanguages)
                 }
@@ -160,10 +160,10 @@ enum ModalNetworksFactory {
             }
         }
 
-        if let optional = optional, optional.hasChains {
+        if let optionalResolution = optionalResolution, optionalResolution.hasChains {
             let hasFooter = addNetworksSection(
                 to: viewController,
-                from: optional,
+                from: optionalResolution,
                 title: LocalizableResource { locale in
                     R.string.localizable.dappsOptionalNetworks(preferredLanguages: locale.rLanguages)
                 }
