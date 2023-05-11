@@ -9,12 +9,15 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private lazy var dataSource = createDataSource()
     var viewModel: StackingRewardFiltersViewModel?
+    let dateFormatter: LocalizableResource<DateFormatter>
 
     init(
         presenter: StackingRewardFiltersPresenterProtocol,
+        dateFormatter: LocalizableResource<DateFormatter>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.dateFormatter = dateFormatter
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -72,7 +75,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
                     let cell: SelectableFilterCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.bind(viewModel: .init(underlyingViewModel: model.title, selectable: model.selected))
                     return cell
-                case let .togglable(title, isEnabled):
+                case let .dateAlwaysToday(title, isEnabled):
                     let cell: TitleSubtitleSwitchTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.titleLabel.apply(style: .footnoteSecondary)
                     cell?.horizontalInset = 0
@@ -101,9 +104,15 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         return view
     }
 
-    private func createActionHeaderView(for tableView: UITableView, title: String) -> StackingRewardActionControl {
+    private func createActionHeaderView(
+        for tableView: UITableView,
+        title: String,
+        date: Date?
+    ) -> StackingRewardActionControl {
         let view: StackingRewardActionControl = tableView.dequeueReusableHeaderFooterView()
-        let value = R.string.localizable.stackingRewardFiltersPeriodSelectDate(
+        let value = date.map {
+            dateFormatter.value(for: selectedLocale).string(from: $0)
+        } ?? R.string.localizable.stackingRewardFiltersPeriodSelectDate(
             preferredLanguages: selectedLocale.rLanguages)
         view.bind(
             title: title,
@@ -112,15 +121,15 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         return view
     }
 
-    private func toggleCollapseDay(
+    private func collapseOrExpandCalendar(
         lens: GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Bool>,
-        forcedValue: Bool? = nil
+        forceCollapse: Bool? = nil
     ) {
         guard let viewModel = self.viewModel else {
             return
         }
 
-        let newValue = forcedValue ?? !lens.get(viewModel.customPeriod)
+        let newValue = forceCollapse ?? !lens.get(viewModel.customPeriod)
         let updatedCustomPeriod = lens.set(newValue, viewModel.customPeriod)
 
         updateViewModel(viewModel: .init(
@@ -131,14 +140,14 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
 
     @objc
     private func startDayAction() {
-        toggleCollapseDay(lens: Lens.endDayCollapsed, forcedValue: true)
-        toggleCollapseDay(lens: Lens.startDayCollapsed)
+        collapseOrExpandCalendar(lens: Lens.endDayCollapsed, forceCollapse: true)
+        collapseOrExpandCalendar(lens: Lens.startDayCollapsed)
     }
 
     @objc
     private func endDayAction() {
-        toggleCollapseDay(lens: Lens.startDayCollapsed, forcedValue: true)
-        toggleCollapseDay(lens: Lens.endDayCollapsed)
+        collapseOrExpandCalendar(lens: Lens.startDayCollapsed, forceCollapse: true)
+        collapseOrExpandCalendar(lens: Lens.endDayCollapsed)
     }
 
     @objc
@@ -156,9 +165,6 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
             customPeriod: updatedCustomPeriod
         ))
     }
-
-    @objc
-    private func chooseDate(_: UIDatePicker) {}
 
     private func map(period: StackingRewardFiltersPeriod) -> StackingRewardFiltersViewModel {
         switch period {
@@ -188,7 +194,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
                     ),
                     endDay: .init(
                         value: endDayValue,
-                        isCollapsed: viewModel?.customPeriod.endDay.isCollapsed ?? false
+                        collapsed: viewModel?.customPeriod.endDay.collapsed ?? false
                     )
                 )
             )
@@ -216,58 +222,63 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
             )
         }
     }
+
+    private func updateViewModel(viewModel: StackingRewardFiltersViewModel) {
+        self.viewModel = viewModel
+        var snapshot = Snapshot()
+
+        defer {
+            dataSource.apply(snapshot, animatingDifferences: false)
+        }
+
+        let periodSection = Section.period
+        snapshot.appendSections([periodSection])
+        snapshot.appendItems(
+            StackingRewardFiltersViewModel.Period.allCases.map {
+                Row.selectable(
+                    title: $0.name.value(for: selectedLocale),
+                    selected: $0.rawValue == viewModel.period.rawValue
+                )
+            },
+            toSection: periodSection
+        )
+
+        guard viewModel.period == .custom else {
+            return
+        }
+
+        let customPeriod = viewModel.customPeriod
+        let startDaySection = Section.start
+        snapshot.appendSections([startDaySection])
+        if !customPeriod.startDay.isCollapsed {
+            snapshot.appendItems(
+                [.calendar(.startDate, customPeriod.startDay.value)],
+                toSection: startDaySection
+            )
+        }
+
+        snapshot.appendSections([.endAlwaysToday])
+        let title = R.string.localizable.stackingRewardFiltersPeriodEndDateOpen(
+            preferredLanguages: selectedLocale.rLanguages)
+        switch customPeriod.endDay.value {
+        case .alwaysToday, .none:
+            snapshot.appendItems([.dateAlwaysToday(title, true)])
+        case let .exact(day):
+            snapshot.appendItems([.dateAlwaysToday(title, false)])
+            let endDaySection = Section.end
+            snapshot.appendSections([endDaySection])
+            let collapsed = customPeriod.endDay.collapsed ?? false
+            if !collapsed {
+                snapshot.appendItems([.calendar(.endDate, day)], toSection: endDaySection)
+            }
+        }
+    }
 }
 
 extension StackingRewardFiltersViewController: StackingRewardFiltersViewProtocol {
     func didReceive(viewModel: StackingRewardFiltersPeriod) {
         let newViewModel = map(period: viewModel)
         updateViewModel(viewModel: newViewModel)
-    }
-
-    private func updateViewModel(viewModel: StackingRewardFiltersViewModel) {
-        self.viewModel = viewModel
-
-        var snapshot = Snapshot()
-        let periodSection = Section.period
-        snapshot.appendSections([periodSection])
-
-        snapshot.appendItems(
-            StackingRewardFiltersViewModel.Period.allCases.map { Row.selectable(
-                title: $0.name.value(for: selectedLocale),
-                selected: $0.rawValue == viewModel.period.rawValue
-            ) },
-            toSection: periodSection
-        )
-        switch viewModel.period {
-        case .allTime, .lastWeek, .lastMonth, .lastThreeMonths, .lastSixMonths, .lastYear:
-            break
-        case .custom:
-            let customPeriod = viewModel.customPeriod
-            let startDaySection = Section.start
-            snapshot.appendSections([startDaySection])
-            if !customPeriod.startDay.isCollapsed {
-                snapshot.appendItems(
-                    [.calendar(.startDate, customPeriod.startDay.value)],
-                    toSection: startDaySection
-                )
-            }
-            snapshot.appendSections([.endAlwaysToday])
-            let title = R.string.localizable.stackingRewardFiltersPeriodEndDateOpen(preferredLanguages: selectedLocale.rLanguages)
-            switch customPeriod.endDay.value {
-            case .alwaysToday, .none:
-                snapshot.appendItems([.togglable(title, true)])
-            case let .exact(day):
-                snapshot.appendItems([.togglable(title, false)])
-                let endDaySection = Section.end
-                snapshot.appendSections([endDaySection])
-                let isCollapsed = customPeriod.endDay.isCollapsed ?? false
-                if !isCollapsed {
-                    snapshot.appendItems([.calendar(.endDate, day)], toSection: endDaySection)
-                }
-            }
-        }
-
-        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
 
@@ -277,15 +288,23 @@ extension StackingRewardFiltersViewController: UITableViewDelegate {
         case .period:
             return createTitleHeaderView(for: tableView)
         case .start:
-            let title = R.string.localizable.stackingRewardFiltersPeriodDateStart(preferredLanguages: selectedLocale.rLanguages)
-            let view = createActionHeaderView(for: tableView, title: title)
+            let title = R.string.localizable.stackingRewardFiltersPeriodDateStart(
+                preferredLanguages: selectedLocale.rLanguages)
+            let date = viewModel.map { model in
+                Lens.startDayValue.get(model.customPeriod)
+            } ?? nil
+            let view = createActionHeaderView(for: tableView, title: title, date: date)
             view.control.addTarget(self, action: #selector(startDayAction), for: .touchUpInside)
             return view
         case .endAlwaysToday:
             return nil
         case .end:
-            let title = R.string.localizable.stackingRewardFiltersPeriodDateEnd(preferredLanguages: selectedLocale.rLanguages)
-            let view = createActionHeaderView(for: tableView, title: title)
+            let title = R.string.localizable.stackingRewardFiltersPeriodDateEnd(
+                preferredLanguages: selectedLocale.rLanguages)
+            let date = viewModel.map { model in
+                model.customPeriod.endDay.value.map { Lens.endDayDate.get($0) }
+            } ?? nil
+            let view = createActionHeaderView(for: tableView, title: title, date: date ?? nil)
             view.control.addTarget(self, action: #selector(endDayAction), for: .touchUpInside)
             return view
         default:
@@ -316,32 +335,36 @@ extension StackingRewardFiltersViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let viewModel = viewModel else {
+        guard let viewModel = viewModel,
+              let period = StackingRewardFiltersViewModel.Period(rawValue: indexPath.row) else {
             return
         }
-        switch Section(rawValue: indexPath.section) {
-        case .period:
-            StackingRewardFiltersViewModel.Period(rawValue: indexPath.row).map {
-                updateViewModel(viewModel: .init(period: $0, customPeriod: viewModel.customPeriod))
-            }
-        default:
-            break
-        }
+
+        updateViewModel(viewModel: .init(period: period, customPeriod: viewModel.customPeriod))
     }
 }
 
 extension StackingRewardFiltersViewController: StackingRewardDateCellDelegate {
-    func datePicker(id: String, selectedDate _: Date) {
-        switch id {
-        case CalendarIdentifier.startDate.rawValue:
-            // TODO:
-            break
-        case CalendarIdentifier.endDate.rawValue:
-            // TODO:
-            break
-        default:
-            break
+    func datePicker(id: String, selectedDate: Date) {
+        guard let viewModel = viewModel, let calendar = CalendarIdentifier(rawValue: id) else {
+            return
         }
+        let updatedPeriod: StackingRewardFiltersViewModel.CustomPeriod
+        switch calendar {
+        case .startDate:
+            updatedPeriod = Lens.startDayValue.set(selectedDate, viewModel.customPeriod)
+        case .endDate:
+            let endDate = Lens.endDayValue.get(viewModel.customPeriod).map {
+                Lens.endDayDate.set(selectedDate, $0)
+            }
+
+            updatedPeriod = Lens.endDayValue.set(endDate, viewModel.customPeriod)
+        }
+
+        updateViewModel(viewModel: .init(
+            period: viewModel.period,
+            customPeriod: updatedPeriod
+        ))
     }
 }
 
@@ -353,25 +376,5 @@ extension StackingRewardFiltersViewController: Localizable {
                 updateViewModel(viewModel: $0)
             }
         }
-    }
-}
-
-extension StackingRewardFiltersViewController {
-    enum Section: Int, Hashable {
-        case period
-        case start
-        case endAlwaysToday
-        case end
-    }
-
-    enum Row: Hashable {
-        case selectable(title: String, selected: Bool)
-        case togglable(String, Bool)
-        case calendar(CalendarIdentifier, Date?)
-    }
-
-    enum CalendarIdentifier: String {
-        case startDate
-        case endDate
     }
 }

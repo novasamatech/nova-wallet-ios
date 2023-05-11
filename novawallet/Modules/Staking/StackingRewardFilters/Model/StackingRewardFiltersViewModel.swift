@@ -15,21 +15,24 @@ struct StackingRewardFiltersViewModel {
 
         var name: LocalizableResource<String> {
             LocalizableResource<String> { selectedLocale in
+                let strings = R.string.localizable.self
+                let languages = selectedLocale.rLanguages
+
                 switch self {
                 case .allTime:
-                    return R.string.localizable.stackingRewardFiltersPeriodAllTime(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodAllTime(preferredLanguages: languages)
                 case .lastWeek:
-                    return R.string.localizable.stackingRewardFiltersPeriodLastWeek(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodLastWeek(preferredLanguages: languages)
                 case .lastMonth:
-                    return R.string.localizable.stackingRewardFiltersPeriodLastMonth(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodLastMonth(preferredLanguages: languages)
                 case .lastThreeMonths:
-                    return R.string.localizable.stackingRewardFiltersPeriodLastThreeMonths(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodLastThreeMonths(preferredLanguages: languages)
                 case .lastSixMonths:
-                    return R.string.localizable.stackingRewardFiltersPeriodLastSixMonths(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodLastSixMonths(preferredLanguages: languages)
                 case .lastYear:
-                    return R.string.localizable.stackingRewardFiltersPeriodLastYear(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodLastYear(preferredLanguages: languages)
                 case .custom:
-                    return R.string.localizable.stackingRewardFiltersPeriodCustom(preferredLanguages: selectedLocale.rLanguages)
+                    return strings.stackingRewardFiltersPeriodCustom(preferredLanguages: languages)
                 }
             }
         }
@@ -48,7 +51,7 @@ extension StackingRewardFiltersViewModel {
             ),
             endDay: .init(
                 value: nil,
-                isCollapsed: true
+                collapsed: true
             )
         )
     }
@@ -60,7 +63,7 @@ extension StackingRewardFiltersViewModel {
 
     struct EndDay: Hashable {
         let value: EndDayValue?
-        let isCollapsed: Bool
+        let collapsed: Bool
     }
 
     enum EndDayValue: Hashable {

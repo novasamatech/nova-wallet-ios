@@ -17,22 +17,33 @@ extension StackingRewardFiltersViewController {
         )
 
         static let endDayCollapsed = GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Bool>(
-            get: { $0.endDay.isCollapsed },
+            get: { $0.endDay.collapsed },
             set: { .init(
                 startDay: $1.startDay,
-                endDay: .init(value: $1.endDay.value, isCollapsed: $0)
+                endDay: .init(value: $1.endDay.value, collapsed: $0)
             )
             }
         )
 
-        static let endDayValue = GenericLens<StackingRewardFiltersViewModel.CustomPeriod, StackingRewardFiltersViewModel.EndDayValue?>(
-            get: { $0.endDay.value },
-            set: { .init(
-                startDay: $1.startDay,
-                endDay: .init(value: $0, isCollapsed: $1.endDay.isCollapsed)
+        static let startDayValue =
+            GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Date?>(
+                get: { $0.startDay.value },
+                set: { .init(
+                    startDay: .init(value: $0, isCollapsed: $1.startDay.isCollapsed),
+                    endDay: $1.endDay
+                )
+                }
             )
-            }
-        )
+
+        static let endDayValue =
+            GenericLens<StackingRewardFiltersViewModel.CustomPeriod, StackingRewardFiltersViewModel.EndDayValue?>(
+                get: { $0.endDay.value },
+                set: { .init(
+                    startDay: $1.startDay,
+                    endDay: .init(value: $0, collapsed: $1.endDay.collapsed)
+                )
+                }
+            )
 
         static let endDayDate = GenericLens<StackingRewardFiltersViewModel.EndDayValue, Date?>(
             get: {

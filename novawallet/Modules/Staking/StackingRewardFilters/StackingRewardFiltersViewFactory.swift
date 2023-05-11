@@ -10,6 +10,7 @@ struct StackingRewardFiltersViewFactory {
 
         let view = StackingRewardFiltersViewController(
             presenter: presenter,
+            dateFormatter: DateFormatter.shortDate,
             localizationManager: LocalizationManager.shared
         )
 
