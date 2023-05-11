@@ -48,9 +48,8 @@ final class DAppBrowserWaitingAuthState: DAppBrowserBaseState {
             origin: message.request?.origin?.stringValue,
             dApp: message.url ?? "",
             dAppIcon: dataSource.dApp?.icon,
-            requiredChains: [],
-            optionalChains: nil,
-            unknownChains: nil
+            requiredChains: .init(),
+            optionalChains: nil
         )
 
         let nextState = DAppBrowserAuthorizingState(

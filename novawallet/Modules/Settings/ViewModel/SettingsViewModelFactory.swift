@@ -81,21 +81,21 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     ) -> SettingsCellViewModel {
         SettingsCellViewModel(
             row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: nil
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .none
         )
     }
 
     private func createLanguageViewModel(from language: Language?, locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileLanguageTitle(preferredLanguages: locale.rLanguages)
+
         let subtitle = language?.title(in: locale)?.capitalized
+
         let viewModel = SettingsCellViewModel(
             row: .language,
-            title: title,
-            icon: SettingsRow.language.icon,
-            accessoryTitle: subtitle
+            title: .init(title: title, icon: SettingsRow.language.icon),
+            accessory: .init(optTitle: subtitle)
         )
 
         return viewModel
@@ -117,9 +117,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
 
         return SettingsCellViewModel(
             row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: subtitle
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .init(optTitle: subtitle, icon: R.image.iconConnections())
         )
     }
 
@@ -130,9 +129,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     ) -> SettingsCellViewModel {
         SettingsCellViewModel(
             row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: value
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .init(optTitle: value)
         )
     }
 }

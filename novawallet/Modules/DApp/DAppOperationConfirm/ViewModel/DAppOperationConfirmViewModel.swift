@@ -3,6 +3,7 @@ import SubstrateSdk
 
 struct DAppOperationConfirmViewModel {
     let iconImageViewModel: ImageViewModelProtocol?
+    let dApp: String
     let walletName: String
     let walletIcon: DrawableIcon?
     let address: String

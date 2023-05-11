@@ -95,7 +95,9 @@ extension WalletConnectSessionsViewController: WalletConnectSessionsViewProtocol
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
 
-        dataSource.apply(snapshot, animatingDifferences: false)
+        let shouldAnimate = dataSource.numberOfSections(in: rootView.tableView) > 0
+
+        dataSource.apply(snapshot, animatingDifferences: shouldAnimate)
     }
 }
 
