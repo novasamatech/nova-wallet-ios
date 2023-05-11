@@ -64,6 +64,7 @@ struct DAppOperationConfirmViewFactory {
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
             balanceViewModelFactory: balanceViewModelFactory,
+            chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

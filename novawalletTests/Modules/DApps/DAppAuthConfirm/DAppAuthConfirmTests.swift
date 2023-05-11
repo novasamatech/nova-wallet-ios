@@ -111,9 +111,8 @@ class DAppAuthConfirmTests: XCTestCase {
             origin: "DApp",
             dApp: "Test",
             dAppIcon: nil,
-            requiredChains: [],
-            optionalChains: nil,
-            unknownChains: nil
+            requiredChains: .init(),
+            optionalChains: nil
         )
 
         let presenter = DAppAuthConfirmPresenter(
