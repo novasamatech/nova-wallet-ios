@@ -5,21 +5,30 @@ import IrohaCrypto
 import SubstrateSdk
 
 struct SettingsViewFactory {
-    static func createView() -> SettingsViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+    static func createView(with dappMediator: DAppInteractionMediating) -> SettingsViewProtocol? {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let walletConnect = dappMediator.children.first(
+                where: { $0 is WalletConnectDelegateInputProtocol }
+            ) as? WalletConnectDelegateInputProtocol else {
             return nil
         }
+
         let localizationManager = LocalizationManager.shared
 
-        let profileViewModelFactory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator())
+        let profileViewModelFactory = SettingsViewModelFactory(
+            iconGenerator: NovaIconGenerator(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
+            walletConnect: walletConnect,
             currencyManager: currencyManager
         )
 
-        let wireframe = SettingsWireframe()
+        let wireframe = SettingsWireframe(dappMediator: dappMediator)
 
         let view = SettingsViewController()
 
