@@ -34,6 +34,11 @@ class BorderedIconLabelView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func bind(viewModel: TitleIconViewModel) {
+        iconDetailsView.detailsLabel.text = viewModel.title
+        iconDetailsView.imageView.image = viewModel.icon
+    }
+
     private func updateLayout() {
         iconDetailsView.snp.updateConstraints { make in
             make.edges.equalToSuperview().inset(contentInsets)

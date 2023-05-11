@@ -7,8 +7,13 @@ struct DAppAuthRequest {
     let origin: String?
     let dApp: String
     let dAppIcon: URL?
+
+    let requiredChains: DAppChainsResolution
+    let optionalChains: DAppChainsResolution?
 }
 
 struct DAppAuthResponse {
     let approved: Bool
+
+    let wallet: MetaAccountModel
 }

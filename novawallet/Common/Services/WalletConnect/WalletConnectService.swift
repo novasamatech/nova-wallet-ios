@@ -5,8 +5,8 @@ import Combine
 
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
-    func walletConnect(service: WalletConnectServiceProtocol, establishedSession: Session)
-    func walletConnect(service: WalletConnectServiceProtocol, request: Request)
+    func walletConnect(service: WalletConnectServiceProtocol, didChange sessions: [Session])
+    func walletConnect(service: WalletConnectServiceProtocol, request: Request, session: Session?)
     func walletConnect(service: WalletConnectServiceProtocol, error: WalletConnectServiceError)
 }
 
@@ -14,11 +14,21 @@ protocol WalletConnectServiceProtocol: ApplicationServiceProtocol, AnyObject {
     var delegate: WalletConnectServiceDelegate? { get set }
 
     func connect(uri: String)
+
+    func submit(proposalDecision: WalletConnectProposalDecision)
+    func submit(signingDecision: WalletConnectSignDecision)
+
+    func getSessions() -> [Session]
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void)
 }
 
 enum WalletConnectServiceError: Error {
     case setupNeeded
     case connectFailed(uri: String, internalError: Error)
+    case proposalFailed(decision: WalletConnectProposalDecision, internalError: Error)
+    case signFailed(decision: WalletConnectSignDecision, internalError: Error)
+    case disconnectionFailed(sessionId: String, internalError: Error)
 }
 
 final class WalletConnectService {
@@ -57,14 +67,14 @@ final class WalletConnectService {
                 strongSelf.delegate?.walletConnect(service: strongSelf, proposal: proposal)
             }
 
-        sessionCancellable = client?.sessionSettlePublisher
+        sessionCancellable = client?.sessionsPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] session in
+            .sink { [weak self] sessions in
                 guard let strongSelf = self else {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, establishedSession: session)
+                strongSelf.delegate?.walletConnect(service: strongSelf, didChange: sessions)
             }
 
         requestCancellable = client?.sessionRequestPublisher
@@ -74,7 +84,13 @@ final class WalletConnectService {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, request: request)
+                let session = strongSelf.client?.getSessions().first { $0.topic == request.topic }
+
+                strongSelf.delegate?.walletConnect(
+                    service: strongSelf,
+                    request: request,
+                    session: session
+                )
             }
     }
 
@@ -169,6 +185,55 @@ extension WalletConnectService: WalletConnectServiceProtocol {
         }
     }
 
+    func submit(proposalDecision: WalletConnectProposalDecision) {
+        guard let client = client else {
+            notify(error: .setupNeeded)
+            return
+        }
+
+        Task { [weak self] in
+            do {
+                switch proposalDecision {
+                case let .approve(proposal, namespaces):
+                    try await client.approve(proposalId: proposal.id, namespaces: namespaces)
+                case let .reject(proposal):
+                    try await client.reject(proposalId: proposal.id, reason: .userRejected)
+                }
+            } catch {
+                self?.logger.error("Decision submission failed: \(error)")
+                self?.notify(error: .proposalFailed(decision: proposalDecision, internalError: error))
+            }
+        }
+    }
+
+    func submit(signingDecision: WalletConnectSignDecision) {
+        guard let client = client else {
+            notify(error: .setupNeeded)
+            return
+        }
+
+        Task { [weak self] in
+            do {
+                try await client.respond(
+                    topic: signingDecision.request.topic,
+                    requestId: signingDecision.request.id,
+                    response: signingDecision.result
+                )
+            } catch {
+                self?.logger.error("Signature submission failed: \(error)")
+                self?.notify(error: .signFailed(decision: signingDecision, internalError: error))
+            }
+        }
+    }
+
+    func getSessions() -> [Session] {
+        guard let client = client else {
+            return []
+        }
+
+        return client.getSessions()
+    }
+
     func setup() {
         setupNetworking()
         setupPairing()
@@ -181,6 +246,27 @@ extension WalletConnectService: WalletConnectServiceProtocol {
         clearPairing()
         clearClient()
         clearSubscriptions()
+    }
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
+        Task {
+            do {
+                try await client?.disconnect(topic: session)
+
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+
+            } catch {
+                logger.error("Disconnecting \(session) failed: \(error)")
+
+                notify(error: .disconnectionFailed(sessionId: session, internalError: error))
+
+                DispatchQueue.main.async {
+                    completion(error)
+                }
+            }
+        }
     }
 }
 

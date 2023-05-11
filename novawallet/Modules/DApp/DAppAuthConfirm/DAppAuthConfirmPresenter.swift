@@ -22,7 +22,7 @@ final class DAppAuthConfirmPresenter {
     }
 
     private func complete(with result: Bool) {
-        let response = DAppAuthResponse(approved: result)
+        let response = DAppAuthResponse(approved: result, wallet: request.wallet)
         delegate?.didReceiveAuthResponse(response, for: request)
         wireframe.close(from: view)
     }

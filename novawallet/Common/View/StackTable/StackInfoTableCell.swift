@@ -7,6 +7,14 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
 
     var iconImageView: UIImageView { rowContentView.valueView.imageView }
 
+    var canSelect: Bool = true {
+        didSet {
+            if oldValue != canSelect {
+                updateSelection()
+            }
+        }
+    }
+
     private var imageViewModel: ImageViewModelProtocol?
 
     convenience init() {
@@ -20,14 +28,26 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
     }
 
     func bind(viewModel: StackCellViewModel?) {
-        bind(details: viewModel?.details, imageViewModel: viewModel?.imageViewModel)
+        bind(
+            details: viewModel?.details,
+            imageViewModel: viewModel?.imageViewModel,
+            cornerRadius: rowContentView.valueView.iconWidth / 2.0
+        )
+    }
+
+    func bind(viewModel: StackCellViewModel?, cornerRadius: CGFloat?) {
+        bind(
+            details: viewModel?.details,
+            imageViewModel: viewModel?.imageViewModel,
+            cornerRadius: cornerRadius
+        )
     }
 
     func bind(details: String) {
-        bind(details: details, imageViewModel: nil)
+        bind(details: details, imageViewModel: nil, cornerRadius: nil)
     }
 
-    private func bind(details: String?, imageViewModel: ImageViewModelProtocol?) {
+    private func bind(details: String?, imageViewModel: ImageViewModelProtocol?, cornerRadius: CGFloat?) {
         self.imageViewModel?.cancel(on: iconImageView)
 
         self.imageViewModel = imageViewModel
@@ -36,12 +56,21 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         iconImageView.image = nil
 
         let imageSize = rowContentView.valueView.iconWidth
-        imageViewModel?.loadImage(
-            on: iconImageView,
-            targetSize: CGSize(width: imageSize, height: imageSize),
-            cornerRadius: imageSize / 2.0,
-            animated: true
-        )
+
+        if let cornerRadius = cornerRadius {
+            imageViewModel?.loadImage(
+                on: iconImageView,
+                targetSize: CGSize(width: imageSize, height: imageSize),
+                cornerRadius: cornerRadius,
+                animated: true
+            )
+        } else {
+            imageViewModel?.loadImage(
+                on: iconImageView,
+                targetSize: CGSize(width: imageSize, height: imageSize),
+                animated: true
+            )
+        }
     }
 
     private func configureStyle() {
@@ -72,6 +101,24 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         valueView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         valueView.detailsView.detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    }
+
+    private func updateSelection() {
+        let accessoryView = rowContentView.valueView.detailsView
+
+        if canSelect {
+            isUserInteractionEnabled = true
+            accessoryView.imageView.image = R.image.iconInfoFilled()?.tinted(
+                with: R.color.colorIconSecondary()!
+            )
+            accessoryView.spacing = 8
+            accessoryView.iconWidth = 16
+        } else {
+            isUserInteractionEnabled = false
+            accessoryView.imageView.image = nil
+            accessoryView.spacing = 0
+            accessoryView.iconWidth = 0
+        }
     }
 }
 
