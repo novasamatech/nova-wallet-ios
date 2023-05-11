@@ -20,14 +20,26 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
     }
 
     func bind(viewModel: StackCellViewModel?) {
-        bind(details: viewModel?.details, imageViewModel: viewModel?.imageViewModel)
+        bind(
+            details: viewModel?.details,
+            imageViewModel: viewModel?.imageViewModel,
+            cornerRadius: rowContentView.valueView.iconWidth / 2.0
+        )
+    }
+
+    func bind(viewModel: StackCellViewModel?, cornerRadius: CGFloat?) {
+        bind(
+            details: viewModel?.details,
+            imageViewModel: viewModel?.imageViewModel,
+            cornerRadius: cornerRadius
+        )
     }
 
     func bind(details: String) {
-        bind(details: details, imageViewModel: nil)
+        bind(details: details, imageViewModel: nil, cornerRadius: nil)
     }
 
-    private func bind(details: String?, imageViewModel: ImageViewModelProtocol?) {
+    private func bind(details: String?, imageViewModel: ImageViewModelProtocol?, cornerRadius: CGFloat?) {
         self.imageViewModel?.cancel(on: iconImageView)
 
         self.imageViewModel = imageViewModel
@@ -36,12 +48,21 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
         iconImageView.image = nil
 
         let imageSize = rowContentView.valueView.iconWidth
-        imageViewModel?.loadImage(
-            on: iconImageView,
-            targetSize: CGSize(width: imageSize, height: imageSize),
-            cornerRadius: imageSize / 2.0,
-            animated: true
-        )
+
+        if let cornerRadius = cornerRadius {
+            imageViewModel?.loadImage(
+                on: iconImageView,
+                targetSize: CGSize(width: imageSize, height: imageSize),
+                cornerRadius: cornerRadius,
+                animated: true
+            )
+        } else {
+            imageViewModel?.loadImage(
+                on: iconImageView,
+                targetSize: CGSize(width: imageSize, height: imageSize),
+                animated: true
+            )
+        }
     }
 
     private func configureStyle() {

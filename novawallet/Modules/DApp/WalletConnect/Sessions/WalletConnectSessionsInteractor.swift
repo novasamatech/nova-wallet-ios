@@ -41,4 +41,8 @@ extension WalletConnectSessionsInteractor: WalletConnectDelegateOutputProtocol {
     func walletConnectDidChangeSessions() {
         provideSessions()
     }
+
+    func walletConnectDidChangeChains() {
+        provideSessions()
+    }
 }

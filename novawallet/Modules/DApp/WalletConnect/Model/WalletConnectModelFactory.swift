@@ -180,6 +180,16 @@ extension WalletConnectModelFactory {
         return .init(requiredNamespaces: requiredNamespaces, optionalNamespaces: optionalNamespaces)
     }
 
+    static func createSessionChainsResolution(
+        from session: Session,
+        chainsStore: ChainsStoreProtocol
+    ) -> WalletConnectChainsResolution {
+        session.namespaces.values.reduce(WalletConnectChainsResolution()) { result, namespace in
+            let resolution = resolveChains(from: namespace.chains ?? [], chainsStore: chainsStore)
+            return result.merging(with: resolution)
+        }
+    }
+
     static func resolveChain(for blockchain: Blockchain, chainsStore: ChainsStoreProtocol) -> ChainModel? {
         let resolution = resolveChains(from: [blockchain], chainsStore: chainsStore)
         return resolution.resolved.first?.value

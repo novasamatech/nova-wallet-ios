@@ -29,7 +29,7 @@ final class DAppMetamaskTransport {
             identifier: "\(messageId)",
             wallet: dataSource.wallet,
             accountId: accountId,
-            dApp: dataSource.dApp?.name ?? "",
+            dApp: dataSource.dApp?.url.absoluteString ?? "",
             dAppIcon: dataSource.dApp?.icon,
             operationData: signingOperation
         )
