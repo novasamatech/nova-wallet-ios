@@ -20,7 +20,7 @@ protocol WalletConnectSessionsInteractorOutputProtocol: AnyObject {
 }
 
 protocol WalletConnectSessionsWireframeProtocol: WalletConnectScanPresentable, AlertPresentable,
-    ErrorPresentable, CommonRetryable {
+    ErrorPresentable, CommonRetryable, WalletConnectErrorPresentable {
     func showSession(from view: WalletConnectSessionsViewProtocol?, details: WalletConnectSession)
     func close(view: WalletConnectSessionsViewProtocol?)
 }

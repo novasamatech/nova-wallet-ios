@@ -167,6 +167,12 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
         updateView()
     }
+
+    func didFailConnection(walletConnect error: Error) {
+        logger?.error("Did receive wc error: \(error)")
+
+        wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+    }
 }
 
 extension SettingsPresenter: URIScanDelegate {
