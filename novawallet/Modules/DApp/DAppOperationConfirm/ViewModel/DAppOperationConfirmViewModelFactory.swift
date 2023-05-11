@@ -37,6 +37,7 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
 
         return DAppOperationConfirmViewModel(
             iconImageViewModel: iconViewModel,
+            dApp: model.dApp,
             walletName: model.accountName,
             walletIcon: walletIcon,
             address: model.chainAddress.truncated,
