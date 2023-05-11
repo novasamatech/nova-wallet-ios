@@ -5,7 +5,7 @@ import Combine
 
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
-    func walletConnect(service: WalletConnectServiceProtocol, establishedSession: Session)
+    func walletConnect(service: WalletConnectServiceProtocol, didChange sessions: [Session])
     func walletConnect(service: WalletConnectServiceProtocol, request: Request, session: Session?)
     func walletConnect(service: WalletConnectServiceProtocol, error: WalletConnectServiceError)
 }
@@ -17,6 +17,10 @@ protocol WalletConnectServiceProtocol: ApplicationServiceProtocol, AnyObject {
 
     func submit(proposalDecision: WalletConnectProposalDecision)
     func submit(signingDecision: WalletConnectSignDecision)
+
+    func getSessions() -> [Session]
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void)
 }
 
 enum WalletConnectServiceError: Error {
@@ -24,6 +28,7 @@ enum WalletConnectServiceError: Error {
     case connectFailed(uri: String, internalError: Error)
     case proposalFailed(decision: WalletConnectProposalDecision, internalError: Error)
     case signFailed(decision: WalletConnectSignDecision, internalError: Error)
+    case disconnectionFailed(sessionId: String, internalError: Error)
 }
 
 final class WalletConnectService {
@@ -62,14 +67,14 @@ final class WalletConnectService {
                 strongSelf.delegate?.walletConnect(service: strongSelf, proposal: proposal)
             }
 
-        sessionCancellable = client?.sessionSettlePublisher
+        sessionCancellable = client?.sessionsPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] session in
+            .sink { [weak self] sessions in
                 guard let strongSelf = self else {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, establishedSession: session)
+                strongSelf.delegate?.walletConnect(service: strongSelf, didChange: sessions)
             }
 
         requestCancellable = client?.sessionRequestPublisher
@@ -221,6 +226,14 @@ extension WalletConnectService: WalletConnectServiceProtocol {
         }
     }
 
+    func getSessions() -> [Session] {
+        guard let client = client else {
+            return []
+        }
+
+        return client.getSessions()
+    }
+
     func setup() {
         setupNetworking()
         setupPairing()
@@ -233,6 +246,27 @@ extension WalletConnectService: WalletConnectServiceProtocol {
         clearPairing()
         clearClient()
         clearSubscriptions()
+    }
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
+        Task {
+            do {
+                try await client?.disconnect(topic: session)
+
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+
+            } catch {
+                logger.error("Disconnecting \(session) failed: \(error)")
+
+                notify(error: .disconnectionFailed(sessionId: session, internalError: error))
+
+                DispatchQueue.main.async {
+                    completion(error)
+                }
+            }
+        }
     }
 }
 
