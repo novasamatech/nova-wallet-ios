@@ -1222,3 +1222,7 @@
 "dapps.required.networks" = "Обязательные";
 "dapps.optional.networks" = "Не обязательные";
 "dapps.request.sign.title" = "Подпишите запрос";
+"wallet.connect.pairing.error" = "Не удалось подключиться к dapp из-за проблем с сетью";
+"wallet.connect.disconnect.error" = "Не удалось завершить сессию с dapp из-за проблем с сетью";
+"wallet.connect.signature.submit.error" = "Не удалось отправить подпись dapp из-за проблем с сетью";
+"wallet.connect.proposal.result.submit.error" = "Не удалось авторизовать dapp из-за проблем с сетью";

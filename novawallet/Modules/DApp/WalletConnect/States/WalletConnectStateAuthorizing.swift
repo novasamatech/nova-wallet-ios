@@ -83,30 +83,38 @@ extension WalletConnectStateAuthorizing: WalletConnectStateProtocol {
             pairingId: proposal.pairingTopic,
             dataSource: dataSource
         ) { [weak self] optError in
-            guard let proposal = self?.proposal, let resolution = self?.resolution else {
+            guard let self = self else {
                 return
             }
 
             guard optError == nil else {
-                // TODO: Also notify error
-                stateMachine.emit(proposalDecision: .reject(proposal: proposal), nextState: nextState)
+                stateMachine.emit(
+                    proposalDecision: .reject(proposal: self.proposal),
+                    nextState: nextState,
+                    error: .unexpectedData(details: "session save failed", self)
+                )
                 return
             }
 
             guard response.approved else {
-                stateMachine.emit(proposalDecision: .reject(proposal: proposal), nextState: nextState)
+                stateMachine.emit(
+                    proposalDecision: .reject(proposal: self.proposal),
+                    nextState: nextState,
+                    error: nil
+                )
                 return
             }
 
             let namespaces = WalletConnectModelFactory.createSessionNamespaces(
-                from: proposal,
+                from: self.proposal,
                 wallet: response.wallet,
-                resolvedChains: resolution.allResolvedChains().resolved
+                resolvedChains: self.resolution.allResolvedChains().resolved
             )
 
             stateMachine.emit(
-                proposalDecision: .approve(proposal: proposal, namespaces: namespaces),
-                nextState: nextState
+                proposalDecision: .approve(proposal: self.proposal, namespaces: namespaces),
+                nextState: nextState,
+                error: nil
             )
         }
     }

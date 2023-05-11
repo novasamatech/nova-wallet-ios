@@ -131,6 +131,7 @@ class DAppOperationConfirmTests: XCTestCase {
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFactory: balanceViewModelFactory,
+            chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )
 
@@ -152,7 +153,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(confimationViewModel: any()).then { _ in
+            when(stub).didReceive(confirmationViewModel: any()).then { _ in
                 setupExpectation.fulfill()
             }
         }
@@ -249,6 +250,7 @@ class DAppOperationConfirmTests: XCTestCase {
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFactory: balanceViewModelFactory,
+            chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )
 
@@ -270,7 +272,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(confimationViewModel: any()).then { _ in
+            when(stub).didReceive(confirmationViewModel: any()).then { _ in
                 setupExpectation.fulfill()
             }
         }
