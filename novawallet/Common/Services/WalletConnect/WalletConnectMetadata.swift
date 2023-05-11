@@ -13,9 +13,9 @@ extension WalletConnectMetadata {
         .init(
             projectId: projectId,
             name: "Nova wallet",
-            description: "Non-custodial Polkadot & Kusama wallet",
+            description: "Next-gen wallet for Polkadot and Kusama ecosystem",
             website: "https://novawallet.io",
-            icon: "https://github.com/nova-wallet/branding/raw/master/logos/Nova_Wallet_Horizontal_On_White_200px.png"
+            icon: "https://raw.githubusercontent.com/nova-wallet/branding/master/logos/Nova_Wallet_Star_Color.png"
         )
     }
 }
