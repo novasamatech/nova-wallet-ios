@@ -8,6 +8,7 @@ final class DAppOperationConfirmPresenter {
     let wireframe: DAppOperationConfirmWireframeProtocol
     let interactor: DAppOperationConfirmInteractorInputProtocol
     let logger: LoggerProtocol?
+    let chain: DAppEitherChain
 
     private(set) weak var delegate: DAppOperationConfirmDelegate?
 
@@ -24,6 +25,7 @@ final class DAppOperationConfirmPresenter {
         delegate: DAppOperationConfirmDelegate,
         viewModelFactory: DAppOperationConfirmViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        chain: DAppEitherChain,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -32,6 +34,7 @@ final class DAppOperationConfirmPresenter {
         self.delegate = delegate
         self.viewModelFactory = viewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.chain = chain
         self.logger = logger
 
         self.localizationManager = localizationManager
@@ -43,7 +46,7 @@ final class DAppOperationConfirmPresenter {
         }
 
         let viewModel = viewModelFactory.createViewModel(from: model)
-        view?.didReceive(confimationViewModel: viewModel)
+        view?.didReceive(confirmationViewModel: viewModel)
     }
 
     private func provideFeeViewModel() {
@@ -106,6 +109,22 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmPresenterProtocol {
 
     func activateTxDetails() {
         interactor.prepareTxDetails()
+    }
+
+    func showAccountOptions() {
+        guard
+            let address = confirmationModel?.chainAddress,
+            let chain = chain.nativeChain,
+            let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
     }
 }
 
