@@ -3,9 +3,7 @@ import SubstrateSdk
 
 struct WalletsListViewModel {
     let identifier: String
-    let name: String
-    let icon: ImageViewModelProtocol?
-    let value: String?
+    let walletAmountViewModel: WalletTotalAmountView.ViewModel
     let isSelected: Bool
 }
 
