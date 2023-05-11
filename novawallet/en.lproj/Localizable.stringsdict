@@ -1,182 +1,182 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>common.days.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%li day</string>
-			<key>other</key>
-			<string>%li days</string>
-		</dict>
-	</dict>
-	<key>common.hours.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%li hour</string>
-			<key>other</key>
-			<string>%li hours</string>
-		</dict>
-	</dict>
-	<key>common.days.left.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%li day left</string>
-			<key>other</key>
-			<string>%li days left</string>
-		</dict>
-	</dict>
-	<key>staking.analytics.validators.eras.counter</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%li era</string>
-			<key>other</key>
-			<string>%li eras</string>
-		</dict>
-	</dict>
-	<key>common.minutes.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%li minute</string>
-			<key>other</key>
-			<string>%li minutes</string>
-		</dict>
-	</dict>
-	<key>common.every.days.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>everyday</string>
-			<key>other</key>
-			<string>every %li days</string>
-		</dict>
-	</dict>
-	<key>common.in.tracks</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>1 track</string>
-			<key>other</key>
-			<string>%li tracks</string>
-		</dict>
-	</dict>
-	<key>common.networks.title</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>Network</string>
-			<key>other</key>
-			<string>Networks</string>
-		</dict>
-	</dict>
-	<key>common.unsupported.count</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>1 unsupported</string>
-			<key>other</key>
-			<string>%li unsupported</string>
-		</dict>
-	</dict>
-	<key>missing.accounts.warning.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%2$@ account is missing. Add account to the wallet in Settings</string>
-			<key>other</key>
-			<string>%2$@ accounts are missing. Add accounts to the wallet in Settings</string>
-		</dict>
-	</dict>
-	<key>dapps.unsupported.networks.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>1 unsupported network hidden</string>
-			<key>other</key>
-			<string>%li unsupported networks hidden</string>
-		</dict>
-	</dict>
-</dict>
+  <dict>
+    <key>common.days.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li day</string>
+        <key>other</key>
+        <string>%li days</string>
+      </dict>
+    </dict>
+    <key>common.hours.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li hour</string>
+        <key>other</key>
+        <string>%li hours</string>
+      </dict>
+    </dict>
+    <key>common.days.left.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li day left</string>
+        <key>other</key>
+        <string>%li days left</string>
+      </dict>
+    </dict>
+    <key>staking.analytics.validators.eras.counter</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li era</string>
+        <key>other</key>
+        <string>%li eras</string>
+      </dict>
+    </dict>
+    <key>common.minutes.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li minute</string>
+        <key>other</key>
+        <string>%li minutes</string>
+      </dict>
+    </dict>
+    <key>common.every.days.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>everyday</string>
+        <key>other</key>
+        <string>every %li days</string>
+      </dict>
+    </dict>
+    <key>common.in.tracks</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 track</string>
+        <key>other</key>
+        <string>%li tracks</string>
+      </dict>
+    </dict>
+    <key>common.networks.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Network</string>
+        <key>other</key>
+        <string>Networks</string>
+      </dict>
+    </dict>
+    <key>common.unsupported.count</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 unsupported</string>
+        <key>other</key>
+        <string>%li unsupported</string>
+      </dict>
+    </dict>
+    <key>missing.accounts.warning.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%2$@ account is missing. Add account to the wallet in Settings</string>
+        <key>other</key>
+        <string>%2$@ accounts are missing. Add accounts to the wallet in Settings</string>
+      </dict>
+    </dict>
+    <key>dapps.unsupported.networks.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 unsupported network hidden</string>
+        <key>other</key>
+        <string>%li unsupported networks hidden</string>
+      </dict>
+    </dict>
+  </dict>
 </plist>
