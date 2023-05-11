@@ -51,34 +51,34 @@ final class WalletConnectService {
         proposalCancellable = client?.sessionProposalPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] proposal in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, proposal: proposal)
+                self.delegate?.walletConnect(service: self, proposal: proposal)
             }
 
         sessionCancellable = client?.sessionsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sessions in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, didChange: sessions)
+                self.delegate?.walletConnect(service: self, didChange: sessions)
             }
 
         requestCancellable = client?.sessionRequestPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] request in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                let session = strongSelf.client?.getSessions().first { $0.topic == request.topic }
+                let session = self.client?.getSessions().first { $0.topic == request.topic }
 
-                strongSelf.delegate?.walletConnect(
-                    service: strongSelf,
+                self.delegate?.walletConnect(
+                    service: self,
                     request: request,
                     session: session
                 )
