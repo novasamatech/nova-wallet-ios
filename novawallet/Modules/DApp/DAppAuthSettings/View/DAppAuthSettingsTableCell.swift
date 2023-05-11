@@ -5,17 +5,6 @@ protocol DAppAuthSettingsTableCellDelegate: AnyObject {
     func authSettingsDidSelectCell(_ cell: DAppAuthSettingsTableCell)
 }
 
-enum DAppIconCellConstants {
-    static let size = CGSize(width: 48.0, height: 48.0)
-    static let insets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
-    static var displaySize: CGSize {
-        CGSize(
-            width: size.width - insets.left - insets.right,
-            height: size.height - insets.top - insets.bottom
-        )
-    }
-}
-
 final class DAppAuthSettingsTableCell: UITableViewCell {
     let iconView: DAppIconView = {
         let view = DAppIconView()

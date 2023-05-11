@@ -44,6 +44,10 @@ extension WalletConnectInteractor: WalletConnectDelegateInputProtocol {
     func fetchSessions(_ completion: @escaping (Result<[WalletConnectSession], Error>) -> Void) {
         transport.fetchSessions(completion)
     }
+
+    func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
+        transport.disconnect(from: session, completion: completion)
+    }
 }
 
 extension WalletConnectInteractor: WalletConnectTransportDelegate {
@@ -80,6 +84,16 @@ extension WalletConnectInteractor: WalletConnectTransportDelegate {
             }
 
             return target.walletConnectDidChangeSessions()
+        }
+    }
+
+    func walletConnectDidChangeChains(transport _: WalletConnectTransportProtocol) {
+        delegates.forEach { wrapper in
+            guard let target = wrapper.target as? WalletConnectDelegateOutputProtocol else {
+                return
+            }
+
+            return target.walletConnectDidChangeChains()
         }
     }
 
