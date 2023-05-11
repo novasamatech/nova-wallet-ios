@@ -8,7 +8,7 @@ struct WalletConnectServiceFactory {
         walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationQueue: OperationQueue
     ) -> WalletConnectInteractor {
-        let metadata = WalletConnectMetadata.nova(with: ApplicationConfig.shared.walletConnectProjectId)
+        let metadata = WalletConnectMetadata.nova(with: WalletConnectSecret.getProjectId())
         let service = WalletConnectService(metadata: metadata)
 
         let dataSource = DAppStateDataSource(
