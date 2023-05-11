@@ -1,6 +1,6 @@
 import Foundation
 
-struct WalletConnectNetworksViewModel {
+struct DAppNetworksViewModel {
     let network: NetworkViewModel?
     let supported: Int
     let unsupported: Int

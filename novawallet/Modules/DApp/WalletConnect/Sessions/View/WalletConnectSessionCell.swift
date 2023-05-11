@@ -25,6 +25,8 @@ final class WalletConnectSessionCell: PlainBaseTableViewCell<WalletConnectSessio
     override func setupStyle() {
         super.setupStyle()
 
+        backgroundColor = R.color.colorSecondaryScreenBackground()
+
         iconView.contentInsets = DAppIconCellConstants.insets
 
         contentDisplayView.titleView.setHorizontalAndSpacing(12)

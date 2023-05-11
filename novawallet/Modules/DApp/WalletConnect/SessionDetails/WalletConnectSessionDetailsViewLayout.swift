@@ -1,6 +1,6 @@
 import UIKit
 
-final class WalletConnectSessionDetailsViewLayout: ScrollableContainerActionLayoutView {
+final class WalletConnectSessionDetailsViewLayout: SCLoadableActionLayoutView {
     let titleView: GenericPairValueView<DAppIconView, UILabel> = .create { view in
         view.setVerticalAndSpacing(24)
         view.stackView.alignment = .center
@@ -18,6 +18,8 @@ final class WalletConnectSessionDetailsViewLayout: ScrollableContainerActionLayo
     let dappCell = StackTableCell()
     let networksCell = StackInfoTableCell()
     let statusCell = StackStatusCell()
+
+    var actionLoadableView: LoadableActionView { genericActionView }
 
     override func setupStyle() {
         super.setupStyle()
