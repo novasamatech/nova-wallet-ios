@@ -61,16 +61,19 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         stateMachine.emit(authRequest: authRequest, nextState: nextState)
     }
 
-    private func rejectRequest(request: Request) {
+    private func rejectRequest(request: Request, reason: String?) {
         guard let stateMachine = stateMachine else {
             return
         }
 
-        let desicion = WalletConnectSignDecision.reject(request: request)
+        let decision = WalletConnectSignDecision.reject(request: request)
+
+        let error = reason.map { WalletConnectStateError.unexpectedData(details: $0, self) }
 
         stateMachine.emit(
-            signDecision: desicion,
-            nextState: WalletConnectStateReady(stateMachine: stateMachine)
+            signDecision: decision,
+            nextState: WalletConnectStateReady(stateMachine: stateMachine),
+            error: error
         )
     }
 
@@ -125,7 +128,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         }
 
         guard let method = WalletConnectMethod(rawValue: request.method) else {
-            rejectRequest(request: request)
+            rejectRequest(request: request, reason: "unsupported method: \(request.method)")
             return
         }
 
@@ -134,13 +137,13 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 for: request.chainId,
                 chainsStore: chainsStore
             ) else {
-            rejectRequest(request: request)
+            rejectRequest(request: request, reason: "unsupported chain id: \(request.chainId)")
             return
         }
 
         guard
             let accountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
-            rejectRequest(request: request)
+            rejectRequest(request: request, reason: "missing account for chain: \(chain.chainId)")
             return
         }
 
@@ -176,9 +179,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 nextState: nextState
             )
         } catch {
-            // TODO: Handle error
-
-            rejectRequest(request: request)
+            rejectRequest(request: request, reason: "signing failed")
         }
     }
 }
@@ -204,7 +205,7 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
             process(proposal: proposal, dataSource: dataSource)
         case let .request(request, session):
             guard let session = session else {
-                // TODO: No session found error
+                rejectRequest(request: request, reason: "missing session for request")
                 return
             }
 
@@ -217,8 +218,7 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
                         chainsStore: dataSource.chainsStore
                     )
                 } else {
-                    // TODO: Handle not authorized request
-                    self?.rejectRequest(request: request)
+                    self?.rejectRequest(request: request, reason: "missing wallet for session")
                 }
             }
         }

@@ -14,7 +14,8 @@ enum WalletConnectSignModelFactory {
     private static func parseAndValidatePolkadotParams(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        params: AnyCodable
+        params: AnyCodable,
+        method: WalletConnectMethod
     ) throws -> JSON {
         guard let walletAccountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
             throw WalletConnectSignModelFactoryError.missingAccount(chainId: chain.chainId)
@@ -28,7 +29,7 @@ enum WalletConnectSignModelFactory {
             ) else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
-                method: .polkadotSignTransaction
+                method: method
             )
         }
 
@@ -45,18 +46,20 @@ enum WalletConnectSignModelFactory {
     private static func createPolkadotSignTransaction(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        params: AnyCodable
+        params: AnyCodable,
+        method: WalletConnectMethod
     ) throws -> JSON {
         let json = try parseAndValidatePolkadotParams(
             for: wallet,
             chain: chain,
-            params: params
+            params: params,
+            method: method
         )
 
         guard let payload = try json.transactionPayload?.map(to: PolkadotExtensionExtrinsic.self) else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
-                method: .polkadotSignTransaction
+                method: method
             )
         }
 
@@ -66,25 +69,27 @@ enum WalletConnectSignModelFactory {
     private static func createPolkadotSignMessage(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        params: AnyCodable
+        params: AnyCodable,
+        method: WalletConnectMethod
     ) throws -> JSON {
         let json = try parseAndValidatePolkadotParams(
             for: wallet,
             chain: chain,
-            params: params
+            params: params,
+            method: method
         )
 
         guard let messageJson = json.message, messageJson.stringValue != nil else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
-                method: .polkadotSignTransaction
+                method: method
             )
         }
 
         return messageJson
     }
 
-    private static func createEthereumTransaction(for params: AnyCodable) throws -> JSON {
+    private static func createEthereumTransaction(for params: AnyCodable, method: WalletConnectMethod) throws -> JSON {
         let json = try params.get(JSON.self)
 
         guard
@@ -93,7 +98,7 @@ enum WalletConnectSignModelFactory {
             ) else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
-                method: .polkadotSignTransaction
+                method: method
             )
         }
 
@@ -217,16 +222,18 @@ extension WalletConnectSignModelFactory {
             return try createPolkadotSignTransaction(
                 for: wallet,
                 chain: chain,
-                params: params
+                params: params,
+                method: method
             )
         case .polkadotSignMessage:
             return try createPolkadotSignMessage(
                 for: wallet,
                 chain: chain,
-                params: params
+                params: params,
+                method: method
             )
         case .ethSignTransaction, .ethSendTransaction:
-            return try createEthereumTransaction(for: params)
+            return try createEthereumTransaction(for: params, method: method)
         case .ethPersonalSign:
             return try createPersonalSignMessage(
                 for: wallet,

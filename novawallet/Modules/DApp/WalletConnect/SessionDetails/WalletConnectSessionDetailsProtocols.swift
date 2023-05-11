@@ -17,11 +17,11 @@ protocol WalletConnectSessionDetailsInteractorInputProtocol: AnyObject {
 protocol WalletConnectSessionDetailsInteractorOutputProtocol: AnyObject {
     func didUpdate(session: WalletConnectSession)
     func didDisconnect()
-    func didReceive(error: WalletConnectSessionDetailsInteractorError)
+    func didReceive(error: WCSessionDetailsInteractorError)
 }
 
 protocol WalletConnectSessionDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CommonRetryable {
+    CommonRetryable, WalletConnectErrorPresentable {
     func close(view: WalletConnectSessionDetailsViewProtocol?)
     func showNetworks(from view: WalletConnectSessionDetailsViewProtocol?, networks: [ChainModel])
 }

@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 struct WalletConnectServiceFactory {
     static func createInteractor(
@@ -25,9 +26,15 @@ struct WalletConnectServiceFactory {
             logger: Logger.shared
         )
 
+        let presenter = WalletConnectPresenter(
+            logger: Logger.shared,
+            localizationManager: LocalizationManager.shared
+        )
+
         return .init(
             transport: transport,
-            presenter: WalletConnectPresenter(logger: Logger.shared)
+            presenter: presenter,
+            securedLayer: SecurityLayerService.shared
         )
     }
 }

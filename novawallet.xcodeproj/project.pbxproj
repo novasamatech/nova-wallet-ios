@@ -1112,7 +1112,7 @@
 		84592F4C298716540001BB56 /* GovernanceOffchainVotingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84592F4B298716540001BB56 /* GovernanceOffchainVotingFactory.swift */; };
 		84592F4F298716E80001BB56 /* GovernanceOffchainVoting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84592F4E298716E80001BB56 /* GovernanceOffchainVoting.swift */; };
 		84592F512987B2E80001BB56 /* SubqueryVotingResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84592F502987B2E80001BB56 /* SubqueryVotingResponse.swift */; };
-		845938842A03D34F00292BFF /* WalletConnectSessionDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845938832A03D34F00292BFF /* WalletConnectSessionDetailsInteractorError.swift */; };
+		845938842A03D34F00292BFF /* WCSessionDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845938832A03D34F00292BFF /* WCSessionDetailsInteractorError.swift */; };
 		8459A9C827469E4B000D6278 /* AcalaContributionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9C727469E4B000D6278 /* AcalaContributionSource.swift */; };
 		8459A9CA2746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9C92746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift */; };
 		8459A9CC2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */; };
@@ -1448,6 +1448,7 @@
 		847A6C0B28817E4000477F77 /* AssetListBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A6C0A28817E4000477F77 /* AssetListBaseInteractor.swift */; };
 		847ABE3128532E1B00851218 /* ConsesusType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847ABE3028532E1B00851218 /* ConsesusType.swift */; };
 		847ABE332853333A00851218 /* StakingSharedState+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847ABE322853333A00851218 /* StakingSharedState+Duration.swift */; };
+		847C15BF2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C15BE2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift */; };
 		847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C961F255340F2002D288F /* ExportGenericViewController.swift */; };
 		847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C962725534134002D288F /* ExportGenericProtocols.swift */; };
 		847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C962F2553426D002D288F /* ExportGenericViewModel.swift */; };
@@ -4607,7 +4608,7 @@
 		84592F4B298716540001BB56 /* GovernanceOffchainVotingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceOffchainVotingFactory.swift; sourceTree = "<group>"; };
 		84592F4E298716E80001BB56 /* GovernanceOffchainVoting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceOffchainVoting.swift; sourceTree = "<group>"; };
 		84592F502987B2E80001BB56 /* SubqueryVotingResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryVotingResponse.swift; sourceTree = "<group>"; };
-		845938832A03D34F00292BFF /* WalletConnectSessionDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionDetailsInteractorError.swift; sourceTree = "<group>"; };
+		845938832A03D34F00292BFF /* WCSessionDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WCSessionDetailsInteractorError.swift; sourceTree = "<group>"; };
 		8459A9C727469E4B000D6278 /* AcalaContributionSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSource.swift; sourceTree = "<group>"; };
 		8459A9C92746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainSubscriber.swift; sourceTree = "<group>"; };
 		8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainSubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -4946,6 +4947,7 @@
 		847A6C0A28817E4000477F77 /* AssetListBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBaseInteractor.swift; sourceTree = "<group>"; };
 		847ABE3028532E1B00851218 /* ConsesusType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsesusType.swift; sourceTree = "<group>"; };
 		847ABE322853333A00851218 /* StakingSharedState+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingSharedState+Duration.swift"; sourceTree = "<group>"; };
+		847C15BE2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectErrorPresentable.swift; sourceTree = "<group>"; };
 		847C961F255340F2002D288F /* ExportGenericViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericViewController.swift; sourceTree = "<group>"; };
 		847C962725534134002D288F /* ExportGenericProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericProtocols.swift; sourceTree = "<group>"; };
 		847C962F2553426D002D288F /* ExportGenericViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericViewModel.swift; sourceTree = "<group>"; };
@@ -7994,7 +7996,7 @@
 				FC122CEA0D33584669126731 /* WalletConnectSessionDetailsViewController.swift */,
 				BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */,
 				BE103341935B2A4B8C32B966 /* WalletConnectSessionDetailsViewFactory.swift */,
-				845938832A03D34F00292BFF /* WalletConnectSessionDetailsInteractorError.swift */,
+				845938832A03D34F00292BFF /* WCSessionDetailsInteractorError.swift */,
 			);
 			path = SessionDetails;
 			sourceTree = "<group>";
@@ -8206,6 +8208,7 @@
 			isa = PBXGroup;
 			children = (
 				8413C4A82A025AC3001E190A /* WalletConnectScanPresentable.swift */,
+				847C15BE2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -20057,7 +20060,7 @@
 				879D493C025963619CFADF4F /* GovernanceUnlockSetupProtocols.swift in Sources */,
 				46298240F3528B5C62AEC29E /* GovernanceUnlockSetupWireframe.swift in Sources */,
 				9097EE6D11E2E023D2637BE5 /* GovernanceUnlockSetupPresenter.swift in Sources */,
-				845938842A03D34F00292BFF /* WalletConnectSessionDetailsInteractorError.swift in Sources */,
+				845938842A03D34F00292BFF /* WCSessionDetailsInteractorError.swift in Sources */,
 				38D0977931828C7894579968 /* GovernanceUnlockSetupInteractor.swift in Sources */,
 				16098DABB1C9C058C1965F1D /* GovernanceUnlockSetupViewController.swift in Sources */,
 				8493FF38291A59D800F09F1B /* ReferendumMetadataMapper.swift in Sources */,
@@ -20184,6 +20187,7 @@
 				12F8A8A869D05D66B658F649 /* GovernanceDelegateSetupWireframe.swift in Sources */,
 				061C16B970BE568D7A80F53A /* GovernanceDelegateSetupPresenter.swift in Sources */,
 				7D690E88EAB7437B9F69C92F /* GovernanceDelegateSetupInteractor.swift in Sources */,
+				847C15BF2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift in Sources */,
 				B8DC27C3CAE9846A5E56B4EE /* GovernanceDelegateSetupViewController.swift in Sources */,
 				4C4142B4CB2DBCA1F06DC046 /* GovernanceDelegateSetupViewLayout.swift in Sources */,
 				6789ED94EFF73E5B47956462 /* GovernanceDelegateSetupViewFactory.swift in Sources */,
