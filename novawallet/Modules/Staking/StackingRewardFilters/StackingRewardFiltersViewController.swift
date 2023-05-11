@@ -79,9 +79,11 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
                     cell?.switchView.addTarget(self, action: #selector(self.toggleEndDay), for: .valueChanged)
                     cell?.bind(title: title, isOn: isEnabled)
                     return cell
-                case let .calendar(date):
+                case let .calendar(id, date):
                     let cell: StackingRewardDateCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.bind(date: date)
+                    cell?.id = id.rawValue
+                    cell?.delegate = self
                     return cell
                 }
             }
@@ -154,6 +156,9 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
             customPeriod: updatedCustomPeriod
         ))
     }
+
+    @objc
+    private func chooseDate(_: UIDatePicker) {}
 
     private func map(period: StackingRewardFiltersPeriod) -> StackingRewardFiltersViewModel {
         switch period {
@@ -242,7 +247,7 @@ extension StackingRewardFiltersViewController: StackingRewardFiltersViewProtocol
             snapshot.appendSections([startDaySection])
             if !customPeriod.startDay.isCollapsed {
                 snapshot.appendItems(
-                    [.calendar(customPeriod.startDay.value)],
+                    [.calendar(.startDate, customPeriod.startDay.value)],
                     toSection: startDaySection
                 )
             }
@@ -257,7 +262,7 @@ extension StackingRewardFiltersViewController: StackingRewardFiltersViewProtocol
                 snapshot.appendSections([endDaySection])
                 let isCollapsed = customPeriod.endDay.isCollapsed ?? false
                 if !isCollapsed {
-                    snapshot.appendItems([.calendar(day)], toSection: endDaySection)
+                    snapshot.appendItems([.calendar(.endDate, day)], toSection: endDaySection)
                 }
             }
         }
@@ -325,6 +330,21 @@ extension StackingRewardFiltersViewController: UITableViewDelegate {
     }
 }
 
+extension StackingRewardFiltersViewController: StackingRewardDateCellDelegate {
+    func datePicker(id: String, selectedDate _: Date) {
+        switch id {
+        case CalendarIdentifier.startDate.rawValue:
+            // TODO:
+            break
+        case CalendarIdentifier.endDate.rawValue:
+            // TODO:
+            break
+        default:
+            break
+        }
+    }
+}
+
 extension StackingRewardFiltersViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
@@ -347,6 +367,11 @@ extension StackingRewardFiltersViewController {
     enum Row: Hashable {
         case selectable(title: String, selected: Bool)
         case togglable(String, Bool)
-        case calendar(Date?)
+        case calendar(CalendarIdentifier, Date?)
+    }
+
+    enum CalendarIdentifier: String {
+        case startDate
+        case endDate
     }
 }
