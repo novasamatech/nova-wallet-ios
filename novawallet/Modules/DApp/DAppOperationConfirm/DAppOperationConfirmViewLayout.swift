@@ -1,185 +1,103 @@
 import UIKit
 import SoraUI
 
-final class DAppOperationConfirmViewLayout: UIView, AdaptiveDesignable {
-    static let titleImageSize = CGSize(width: 56, height: 56)
+final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackView> {
     static let listImageSize = CGSize(width: 24, height: 24)
 
-    let iconView: DAppIconView = {
-        let view = DAppIconView()
-        return view
-    }()
+    let iconView: DAppIconView = .create { view in
+        view.contentInsets = DAppIconLargeConstants.insets
+    }
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .semiBoldTitle3
-        label.textAlignment = .center
-        return label
-    }()
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .title3Primary)
+        view.textAlignment = .center
+    }
 
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .regularFootnote
-        label.numberOfLines = 3
-        label.textAlignment = .center
-        return label
-    }()
+    let subtitleLabel: UILabel = .create { view in
+        view.apply(style: .footnoteSecondary)
+        view.numberOfLines = 3
+        view.textAlignment = .center
+    }
 
-    let walletView = createIconDetailsRowView()
+    let dAppTableView: StackTableView = .create { view in
+        view.cellHeight = 52
+    }
 
-    let accountAddressView = createIconDetailsRowView()
+    let dAppCell = StackTableCell()
 
-    let networkView = createIconDetailsRowView()
+    let senderTableView = StackTableView()
 
-    let networkFeeView: NetworkFeeView = {
-        let view = NetworkFeeView()
-        view.titleLabel.textColor = R.color.colorTextSecondary()
-        view.titleLabel.font = .regularFootnote
-        view.tokenLabel.textColor = R.color.colorTextPrimary()
-        view.tokenLabel.font = .regularFootnote
-        view.borderView.strokeWidth = 0.5
-        view.borderView.strokeColor = R.color.colorContainerBorder()!
-        return view
-    }()
+    let walletCell = StackTableCell()
 
-    let transactionDetailsControl: RowView<GenericTitleValueView<UILabel, UIImageView>> = {
-        let titleLabel = UILabel()
-        titleLabel.textColor = R.color.colorTextSecondary()
-        titleLabel.font = .regularFootnote
+    let accountCell: StackInfoTableCell = .create {
+        $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    }
 
-        let arrowImageView = UIImageView()
-        arrowImageView.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
-        arrowImageView.tintColor = R.color.colorIconPrimary()
+    let networkCell = StackTableCell()
 
-        let titleView = GenericTitleValueView(titleView: titleLabel, valueView: arrowImageView)
+    let feeCell = StackNetworkFeeCell()
 
-        let rowView = RowView(contentView: titleView, preferredHeight: 48.0)
-        rowView.borderView.strokeWidth = 0.0
-        rowView.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    let transactionDetailsTableView: StackTableView = .create { view in
+        view.cellHeight = 52
+    }
 
-        return rowView
-    }()
+    let transactionDetailsCell: StackActionCell = .create { view in
+        view.rowContentView.iconSize = 0
+        view.rowContentView.titleLabel.apply(style: .footnoteSecondary)
+    }
 
-    let stackView: UIStackView = {
-        let view = UIStackView()
-        view.axis = .vertical
-        view.alignment = .fill
-        return view
-    }()
-
-    let rejectButton: TriangularedButton = {
-        let button = TriangularedButton()
+    let rejectButton: TriangularedButton = .create { button in
         button.applySecondaryDefaultStyle()
-        return button
-    }()
+    }
 
-    let confirmButton: TriangularedButton = {
-        let button = TriangularedButton()
+    let confirmButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
-        return button
-    }()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        backgroundColor = R.color.colorBottomSheetBackground()
-
-        setupLayout()
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    override func setupLayout() {
+        super.setupLayout()
 
-    // swiftlint:disable:next function_body_length
-    private func setupLayout() {
-        addSubview(iconView)
+        genericActionView.axis = .horizontal
+        genericActionView.distribution = .fillEqually
+        genericActionView.spacing = 16
+
+        genericActionView.addArrangedSubview(rejectButton)
+        genericActionView.addArrangedSubview(confirmButton)
+
+        let headerView = UIView()
+
+        headerView.addSubview(iconView)
         iconView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.size.equalTo(88.0)
         }
 
-        addSubview(titleLabel)
+        headerView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
             make.top.equalTo(iconView.snp.bottom).offset(20.0)
         }
 
-        addSubview(subtitleLabel)
+        headerView.addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
             make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
+            make.bottom.equalToSuperview()
         }
 
-        addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(20.0)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
+        addArrangedSubview(headerView, spacingAfter: 24)
 
-        let stackViews: [UIView] = [
-            walletView,
-            accountAddressView,
-            networkView,
-            networkFeeView
-        ]
+        addArrangedSubview(dAppTableView, spacingAfter: 8)
+        dAppTableView.addArrangedSubview(dAppCell)
 
-        for view in stackViews {
-            stackView.addArrangedSubview(view)
-            view.snp.makeConstraints { make in
-                make.height.equalTo(48.0)
-            }
-        }
+        addArrangedSubview(senderTableView, spacingAfter: 8)
+        senderTableView.addArrangedSubview(walletCell)
+        senderTableView.addArrangedSubview(accountCell)
+        senderTableView.addArrangedSubview(networkCell)
+        senderTableView.addArrangedSubview(feeCell)
 
-        addSubview(transactionDetailsControl)
-        transactionDetailsControl.snp.makeConstraints { make in
-            make.top.equalTo(stackView.snp.bottom)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(48.0)
-        }
-
-        addSubview(rejectButton)
-        rejectButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(self.snp.centerX).offset(-8.0)
-            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(confirmButton)
-        confirmButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.leading.equalTo(self.snp.centerX).offset(8.0)
-            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-    }
-}
-
-extension DAppOperationConfirmViewLayout {
-    private static func createIconDetailsRowView() -> RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
-        let titleLabel = UILabel()
-        titleLabel.textColor = R.color.colorTextSecondary()
-        titleLabel.font = .regularFootnote
-
-        let valueView = IconDetailsView()
-        valueView.iconWidth = 24.0
-        valueView.mode = .iconDetails
-        valueView.spacing = 8.0
-        valueView.detailsLabel.textColor = R.color.colorTextPrimary()
-        valueView.detailsLabel.font = .regularFootnote
-        valueView.detailsLabel.numberOfLines = 1
-
-        let titleView = GenericTitleValueView(titleView: titleLabel, valueView: valueView)
-        let rowView = RowView(contentView: titleView, preferredHeight: 48.0)
-        rowView.borderView.strokeColor = R.color.colorDivider()!
-        rowView.borderView.strokeWidth = 0.5
-        rowView.isUserInteractionEnabled = false
-        rowView.contentInsets = .zero
-        return rowView
+        addArrangedSubview(transactionDetailsTableView, spacingAfter: 8)
+        transactionDetailsTableView.addArrangedSubview(transactionDetailsCell)
     }
 }

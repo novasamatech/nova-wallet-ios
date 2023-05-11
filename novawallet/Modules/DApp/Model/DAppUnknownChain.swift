@@ -37,4 +37,13 @@ extension DAppEitherChain {
             return unknownChain.assetDisplayInfo
         }
     }
+
+    var nativeChain: ChainModel? {
+        switch self {
+        case let .left(nativeChain):
+            return nativeChain
+        case .right:
+            return nil
+        }
+    }
 }
