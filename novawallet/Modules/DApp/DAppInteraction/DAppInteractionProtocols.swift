@@ -34,6 +34,7 @@ protocol DAppInteractionMediating: AnyObject, ApplicationServiceProtocol {
 protocol DAppInteractionInputProtocol: AnyObject {
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func processAuth(response: DAppAuthResponse, forTransport name: String)
+    func completePhishingStateHandling()
 }
 
 protocol DAppInteractionOutputProtocol: AnyObject {
@@ -45,4 +46,6 @@ protocol DAppInteractionOutputProtocol: AnyObject {
 
 protocol DAppInteractionChildProtocol: ApplicationServiceProtocol {
     var mediator: DAppInteractionMediating? { get set }
+
+    func completePhishingStateHandling()
 }

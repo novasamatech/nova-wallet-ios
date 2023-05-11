@@ -111,4 +111,8 @@ extension WalletConnectInteractor: DAppInteractionChildProtocol {
     func throttle() {
         mediator?.unregister(transport: transport)
     }
+
+    func completePhishingStateHandling() {
+        // do nothing as wallet connect continues working after phishing detected
+    }
 }
