@@ -1195,9 +1195,6 @@
 "evm.contract.call" = "Contract call";
 "evm.contract" = "Contract";
 "evm.contract.function" = "Function";
-"common.wallet.connect" = "Wallet Connect";
-"wallet.connect.scan.message" = "Scan QR from DApp";
-"wallet.connect.scan.error" = "Invalid URI format";
 "transfer.setup.kilt.addresses.title" = "%@ addresses for %@";
 "transfer.setup.error.w3n.serviceNotFound.subtitle" = "No valid address was found for %@ on the %@ network";
 "transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ not found";
@@ -1211,3 +1208,17 @@
 "transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
+"common.wallet.connect" = "WalletConnect";
+"common.wallet.connect.v2" = "WalletConnect v2";
+"wallet.connect.scan.message" = "Scan the QR code";
+"wallet.connect.scan.error" = "Invalid URI format";
+"wallet.connect.scan.button" = "New connection";
+"common.status.active" = "Active";
+"common.status.expired" = "Expired";
+"common.disconnect" = "Disconnect";
+"common.status" = "Status";
+"common.none" = "None";
+"dapps.missing.required.networks.warning.format" = "Some of the required networks requested by “%@” are not supported in Nova Wallet";
+"dapps.required.networks" = "Required";
+"dapps.optional.networks" = "Optional";
+"dapps.request.sign.title" = "Sign Request";

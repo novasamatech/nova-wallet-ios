@@ -16,7 +16,7 @@ struct EthereumTransaction: Codable {
 
 extension EthereumTransaction {
     static func gasEstimationTransaction(
-        from transaction: MetamaskTransaction
+        from transaction: EthereumTransaction
     ) -> EthereumTransaction {
         EthereumTransaction(
             from: transaction.from,
