@@ -47,6 +47,7 @@ struct ParitySignerScanViewFactory {
 
         let view = QRScannerViewController(
             title: nil,
+            details: nil,
             message: message,
             presenter: presenter,
             localizationManager: localizationManager,
