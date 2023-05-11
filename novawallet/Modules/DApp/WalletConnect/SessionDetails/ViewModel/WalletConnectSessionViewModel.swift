@@ -10,6 +10,6 @@ struct WalletConnectSessionViewModel {
     let title: String
     let wallet: DisplayWalletViewModel?
     let host: String
-    let networks: WalletConnectNetworksViewModel
+    let networks: DAppNetworksViewModel
     let status: Status
 }

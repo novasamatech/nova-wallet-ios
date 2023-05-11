@@ -41,6 +41,7 @@ struct ParitySignerTxScanViewFactory {
 
         let view = ParitySignerTxScanViewController(
             title: title,
+            details: nil,
             message: message,
             presenter: presenter,
             localizationManager: LocalizationManager.shared,

@@ -8,9 +8,8 @@ struct DAppAuthRequest {
     let dApp: String
     let dAppIcon: URL?
 
-    let requiredChains: Set<ChainModel>
-    let optionalChains: Set<ChainModel>?
-    let unknownChains: Set<String>?
+    let requiredChains: DAppChainsResolution
+    let optionalChains: DAppChainsResolution?
 }
 
 struct DAppAuthResponse {
