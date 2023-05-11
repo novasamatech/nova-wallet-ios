@@ -1,15 +1,18 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
-final class DAppInteractionPresenter {
+final class DAppInteractionPresenter: AlertPresentable, ErrorPresentable {
     var window: UIWindow? { UIApplication.shared.keyWindow }
 
     weak var interactor: DAppInteractionInputProtocol?
 
     let logger: LoggerProtocol
+    let localizationManager: LocalizationManagerProtocol
 
-    init(logger: LoggerProtocol) {
+    init(logger: LoggerProtocol, localizationManager: LocalizationManagerProtocol) {
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 
     private func presentModal(the controller: UIViewController, style: UIModalPresentationStyle = .overFullScreen) {
@@ -114,6 +117,8 @@ extension DAppInteractionPresenter: DAppInteractionOutputProtocol {
 
     func didReceive(error: DAppInteractionError) {
         logger.error("Did receive error: \(error)")
+
+        _ = present(error: error, from: nil, locale: localizationManager.selectedLocale)
     }
 }
 
@@ -134,6 +139,6 @@ extension DAppInteractionPresenter: DAppOperationConfirmDelegate {
 
 extension DAppInteractionPresenter: DAppPhishingViewDelegate {
     func dappPhishingViewDidHide() {
-        // TODO: we might need to notify child ui to hide phishing interface
+        interactor?.completePhishingStateHandling()
     }
 }

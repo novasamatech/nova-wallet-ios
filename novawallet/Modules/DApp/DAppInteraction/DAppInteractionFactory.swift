@@ -1,10 +1,14 @@
 import Foundation
+import SoraFoundation
 
 final class DAppInteractionFactory {
     static func createMediator() -> DAppInteractionMediating {
         let logger = Logger.shared
 
-        let presenter = DAppInteractionPresenter(logger: logger)
+        let presenter = DAppInteractionPresenter(
+            logger: logger,
+            localizationManager: LocalizationManager.shared
+        )
 
         let storageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
