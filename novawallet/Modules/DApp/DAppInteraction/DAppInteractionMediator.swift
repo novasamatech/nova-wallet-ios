@@ -55,17 +55,18 @@ final class DAppInteractionMediator {
         transport?.process(message: queueMessage.underliningMessage, host: queueMessage.host)
     }
 
-    private func bringPhishingDetectedStateAndNotify(for host: String) {
-        let allNotPhishing = transports
+    private func bringPhishingDetectedStateAndNotify(for host: String, transportName: String) {
+        let shouldNotNotifyPhishing = transports
+            .filter { $0.name == transportName }
             .map { $0.bringPhishingDetectedStateIfNeeded() }
             .allSatisfy { !$0 }
 
-        if !allNotPhishing {
+        if !shouldNotNotifyPhishing {
             presenter.didDetectPhishing(host: host)
         }
     }
 
-    private func verifyPhishing(for host: String?, completion: ((Bool) -> Void)?) {
+    private func verifyPhishing(for host: String?, transportName: String, completion: ((Bool) -> Void)?) {
         guard let host = host else {
             completion?(true)
             return
@@ -75,12 +76,14 @@ final class DAppInteractionMediator {
             switch result {
             case let .success(isNotPhishing):
                 if !isNotPhishing {
-                    self?.bringPhishingDetectedStateAndNotify(for: host)
+                    self?.bringPhishingDetectedStateAndNotify(for: host, transportName: transportName)
                 }
 
                 completion?(isNotPhishing)
             case let .failure(error):
-                self?.presenter.didReceive(error: .phishingVerifierFailed(error))
+                self?.presenter.didReceive(
+                    error: .unexpected(reason: "phishing detection failed", internalError: error)
+                )
             }
         }
     }
@@ -88,7 +91,7 @@ final class DAppInteractionMediator {
 
 extension DAppInteractionMediator: DAppInteractionMediating {
     func register(transport: DAppTransportProtocol) {
-        guard !transports.contains(where: { $0 !== transport }) else {
+        guard !transports.contains(where: { $0 === transport }) else {
             return
         }
 
@@ -107,7 +110,7 @@ extension DAppInteractionMediator: DAppInteractionMediating {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host ?? ""): \(message)")
 
-            self?.verifyPhishing(for: host) { [weak self] isNotPhishing in
+            self?.verifyPhishing(for: host, transportName: name) { [weak self] isNotPhishing in
                 if isNotPhishing {
                     let queueMessage = QueueMessage(
                         host: host,
@@ -152,6 +155,10 @@ extension DAppInteractionMediator: DAppInteractionInputProtocol {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.transports.first(where: { $0.name == name })?.processAuth(response: response)
         }
+    }
+
+    func completePhishingStateHandling() {
+        children.forEach { $0.completePhishingStateHandling() }
     }
 }
 
