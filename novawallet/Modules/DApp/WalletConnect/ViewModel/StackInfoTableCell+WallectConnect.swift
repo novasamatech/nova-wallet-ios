@@ -1,7 +1,7 @@
 import Foundation
 
 extension StackInfoTableCell {
-    func bindNetworks(viewModel: WalletConnectNetworksViewModel, locale: Locale) {
+    func bindNetworks(viewModel: DAppNetworksViewModel, locale: Locale) {
         titleLabel.text = R.string.localizable.commonNetworksTitle(
             viewModel.totalNetworks,
             preferredLanguages: locale.rLanguages
