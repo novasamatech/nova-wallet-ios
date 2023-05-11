@@ -57,6 +57,13 @@ final class WalletAccountViewModelFactory {
         return DisplayWalletViewModel(name: response.chainAccount.name, imageViewModel: iconViewModel)
     }
 
+    func createDisplayViewModel(from wallet: MetaAccountModel) throws -> DisplayWalletViewModel {
+        let walletIcon = wallet.walletIdenticonData().flatMap { try? walletIconGenerator.generateFromAccountId($0) }
+        let iconViewModel = walletIcon.map { DrawableIconViewModel(icon: $0) }
+
+        return DisplayWalletViewModel(name: wallet.name, imageViewModel: iconViewModel)
+    }
+
     func createViewModel(from validatorInfo: ValidatorInfoProtocol) -> WalletAccountViewModel {
         do {
             let walletIconViewModel: ImageViewModelProtocol?

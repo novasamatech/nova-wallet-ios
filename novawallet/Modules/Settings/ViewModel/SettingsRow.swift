@@ -82,7 +82,7 @@ extension SettingsRow {
         case .privacyPolicy:
             return R.image.iconTerms()!
         case .walletConnect:
-            return R.image.iconWallets()
+            return R.image.iconWalletConnect()!
         }
     }
 }
