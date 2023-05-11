@@ -21,6 +21,8 @@ final class StackActionView: UIView {
             iconImageView.snp.updateConstraints { make in
                 make.height.equalTo(iconSize)
             }
+
+            updateTitleLayout()
         }
     }
 
@@ -30,6 +32,10 @@ final class StackActionView: UIView {
         imageView.image = icon
         return imageView
     }()
+
+    private var titleOffset: CGFloat {
+        iconSize > 0 ? 12 : 0
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -52,10 +58,7 @@ final class StackActionView: UIView {
 
         addSubview(view)
 
-        titleLabel.snp.remakeConstraints { make in
-            make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
-            make.centerY.equalToSuperview()
-        }
+        updateTitleLayout()
 
         disclosureIndicatorView.snp.remakeConstraints { make in
             make.trailing.equalToSuperview()
@@ -81,7 +84,7 @@ final class StackActionView: UIView {
 
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
+            make.leading.equalToSuperview().offset(iconSize + titleOffset)
             make.centerY.equalToSuperview()
         }
 
@@ -93,5 +96,12 @@ final class StackActionView: UIView {
         }
 
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    }
+
+    private func updateTitleLayout() {
+        titleLabel.snp.remakeConstraints { make in
+            make.leading.equalToSuperview().offset(iconSize + titleOffset)
+            make.centerY.equalToSuperview()
+        }
     }
 }

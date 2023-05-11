@@ -21,7 +21,10 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
 
     private func validateAndProvideConfirmationModel() {
         guard
-            let accountResponse = request.wallet.fetch(for: chain.accountRequest()),
+            let accountResponse = request.wallet.fetchByAccountId(
+                request.accountId,
+                request: chain.accountRequest()
+            ),
             let chainAddress = accountResponse.toAddress() else {
             presenter?.didReceive(feeResult: .failure(ChainAccountFetchingError.accountNotExists))
             return
@@ -29,27 +32,13 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
 
         account = accountResponse
 
-        let networkIconUrl: URL?
-        let assetPrecision: UInt16
-
-        if let asset = chain.utilityAssets().first {
-            networkIconUrl = asset.icon ?? chain.icon
-            assetPrecision = asset.precision
-        } else {
-            networkIconUrl = nil
-            assetPrecision = 0
-        }
-
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: accountResponse.accountId,
             chainAddress: chainAddress,
-            networkName: chain.name,
-            utilityAssetPrecision: Int16(bitPattern: assetPrecision),
             dApp: request.dApp,
-            dAppIcon: request.dAppIcon,
-            networkIcon: networkIconUrl
+            dAppIcon: request.dAppIcon
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))
@@ -63,8 +52,17 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     private func prepareRawBytes() throws -> Data {
-        if case let .stringValue(hexValue) = request.operationData {
-            return try Data(hexString: hexValue)
+        if case let .stringValue(stringValue) = request.operationData {
+            if stringValue.isHex() {
+                return try Data(hexString: stringValue)
+            } else {
+                guard let data = stringValue.data(using: .utf8) else {
+                    throw CommonError.dataCorruption
+                }
+
+                return data
+            }
+
         } else {
             return try JSONEncoder().encode(request.operationData)
         }

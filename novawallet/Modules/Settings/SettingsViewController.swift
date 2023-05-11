@@ -38,6 +38,8 @@ final class SettingsViewController: UIViewController, ViewHolder {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
+        rootView.tableView.registerClassForCell(SettingsSubtitleTableViewCell.self)
+        rootView.tableView.registerClassForCell(SettingsBoxTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 
@@ -60,22 +62,26 @@ extension SettingsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
         let viewModels = sections[indexPath.section].1
         let cellViewModel = viewModels[indexPath.row]
-        cell.bind(viewModel: cellViewModel)
 
-        if viewModels.count > 1 {
-            if indexPath.row == viewModels.count - 1 {
-                cell.roundView.roundingCorners = [.bottomLeft, .bottomRight]
-            } else if indexPath.row == 0 {
-                cell.roundView.roundingCorners = [.topLeft, .topRight]
-            } else {
-                cell.roundView.roundingCorners = []
-            }
-        } else {
-            cell.roundView.roundingCorners = .allCorners
+        let cell: SettingsTableViewCell
+
+        switch cellViewModel.accessory {
+        case let .title(viewModel):
+            let subtitleCell = tableView.dequeueReusableCellWithType(SettingsSubtitleTableViewCell.self)!
+            subtitleCell.bind(titleViewModel: cellViewModel.title, accessoryViewModel: viewModel)
+            cell = subtitleCell
+        case let .box(viewModel):
+            let boxCell = tableView.dequeueReusableCellWithType(SettingsBoxTableViewCell.self)!
+            boxCell.bind(titleViewModel: cellViewModel.title, accessoryViewModel: viewModel)
+            cell = boxCell
+        case .none:
+            cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
+            cell.bind(titleViewModel: cellViewModel.title)
         }
+
+        cell.apply(position: .init(row: indexPath.row, count: viewModels.count))
 
         return cell
     }

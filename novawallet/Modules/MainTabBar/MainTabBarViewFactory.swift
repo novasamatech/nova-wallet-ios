@@ -45,7 +45,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        guard let settingsController = createProfileController(for: localizationManager) else {
+        guard let settingsController = createProfileController(
+            for: localizationManager,
+            dappMediator: serviceCoordinator.dappMediator
+        ) else {
             return nil
         }
 
@@ -144,9 +147,12 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func createProfileController(
-        for localizationManager: LocalizationManagerProtocol
+        for localizationManager: LocalizationManagerProtocol,
+        dappMediator: DAppInteractionMediating
     ) -> UIViewController? {
-        guard let viewController = SettingsViewFactory.createView()?.controller else { return nil }
+        guard let view = SettingsViewFactory.createView(with: dappMediator) else { return nil }
+
+        let viewController = view.controller
 
         let navigationController = NovaNavigationController(rootViewController: viewController)
 
