@@ -11,14 +11,17 @@ final class SettingsInteractor {
 
     let selectedWalletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
+    let walletConnect: WalletConnectDelegateInputProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
+        walletConnect: WalletConnectDelegateInputProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
+        self.walletConnect = walletConnect
         self.currencyManager = currencyManager
     }
 
@@ -32,13 +35,26 @@ final class SettingsInteractor {
             presenter?.didReceiveUserDataProvider(error: error)
         }
     }
+
+    private func provideWalletConnectSessionsCount() {
+        let count = walletConnect.getSessionsCount()
+
+        presenter?.didReceiveWalletConnect(sessionsCount: count)
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
+        walletConnect.add(delegate: self)
+
         provideUserSettings()
+        provideWalletConnectSessionsCount()
         applyCurrency()
+    }
+
+    func connectWalletConnect(uri: String) {
+        walletConnect.connect(uri: uri)
     }
 }
 
@@ -49,6 +65,12 @@ extension SettingsInteractor: EventVisitorProtocol {
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
         provideUserSettings()
+    }
+}
+
+extension SettingsInteractor: WalletConnectDelegateOutputProtocol {
+    func walletConnectDidChangeSessions() {
+        provideWalletConnectSessionsCount()
     }
 }
 
