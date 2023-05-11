@@ -112,7 +112,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func toggleCollapseDay(
         lens: GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Bool>,
-        forcedValue: Bool?
+        forcedValue: Bool? = nil
     ) {
         guard let viewModel = self.viewModel else {
             return
@@ -129,13 +129,13 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
 
     @objc
     private func startDayAction() {
-        toggleCollapseDay(lens: Lens.endDayCollapsed, forcedValue: false)
+        toggleCollapseDay(lens: Lens.endDayCollapsed, forcedValue: true)
         toggleCollapseDay(lens: Lens.startDayCollapsed)
     }
 
     @objc
     private func endDayAction() {
-        toggleCollapseDay(lens: Lens.startDayCollapsed, forcedValue: false)
+        toggleCollapseDay(lens: Lens.startDayCollapsed, forcedValue: true)
         toggleCollapseDay(lens: Lens.endDayCollapsed)
     }
 
@@ -247,7 +247,7 @@ extension StackingRewardFiltersViewController: StackingRewardFiltersViewProtocol
                 )
             }
             snapshot.appendSections([.endAlwaysToday])
-            let title = R.string.localizable.stackingRewardFiltersPeriodDateEnd(preferredLanguages: selectedLocale.rLanguages)
+            let title = R.string.localizable.stackingRewardFiltersPeriodEndDateOpen(preferredLanguages: selectedLocale.rLanguages)
             switch customPeriod.endDay.value {
             case .alwaysToday, .none:
                 snapshot.appendItems([.togglable(title, true)])
