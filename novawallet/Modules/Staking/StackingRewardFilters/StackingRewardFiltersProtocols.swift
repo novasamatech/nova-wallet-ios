@@ -1,9 +1,10 @@
 protocol StackingRewardFiltersViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModel: StackingRewardFiltersViewModel)
+    func didReceive(viewModel: StackingRewardFiltersPeriod)
 }
 
 protocol StackingRewardFiltersPresenterProtocol: AnyObject {
     func setup()
+    func save()
 }
 
 protocol StackingRewardFiltersInteractorInputProtocol: AnyObject {}

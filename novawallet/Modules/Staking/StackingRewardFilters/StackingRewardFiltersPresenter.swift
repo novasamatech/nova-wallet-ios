@@ -16,8 +16,12 @@ final class StackingRewardFiltersPresenter {
 
 extension StackingRewardFiltersPresenter: StackingRewardFiltersPresenterProtocol {
     func setup() {
-        let period = StackingRewardFiltersViewModel(period: .allTime)
+        let period = StackingRewardFiltersPeriod.allTime
         view?.didReceive(viewModel: period)
+    }
+
+    func save() {
+        // TODO:
     }
 }
 

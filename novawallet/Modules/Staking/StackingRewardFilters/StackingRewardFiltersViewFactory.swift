@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct StackingRewardFiltersViewFactory {
     static func createView() -> StackingRewardFiltersViewProtocol? {
@@ -7,7 +8,10 @@ struct StackingRewardFiltersViewFactory {
 
         let presenter = StackingRewardFiltersPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = StackingRewardFiltersViewController(presenter: presenter)
+        let view = StackingRewardFiltersViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

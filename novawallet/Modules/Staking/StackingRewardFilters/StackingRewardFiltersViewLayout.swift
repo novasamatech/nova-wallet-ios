@@ -6,6 +6,7 @@ final class StackingRewardFiltersViewLayout: UIView {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
+        tableView.showsVerticalScrollIndicator = false
     }
 
     override init(frame: CGRect) {

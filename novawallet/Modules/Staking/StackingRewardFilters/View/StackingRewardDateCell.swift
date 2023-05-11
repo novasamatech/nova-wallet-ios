@@ -3,9 +3,10 @@ import SoraUI
 
 final class StackingRewardDateCell: UITableViewCell {
     let datePicker: UIDatePicker = .create {
-        if #available(iOS 13.4, *) {
-            $0.preferredDatePickerStyle = .compact
+        if #available(iOS 14, *) {
+            $0.preferredDatePickerStyle = .inline
         }
+        $0.backgroundColor = R.color.colorSecondaryScreenBackground()
         $0.datePickerMode = .date
     }
 

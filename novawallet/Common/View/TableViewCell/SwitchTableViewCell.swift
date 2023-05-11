@@ -81,16 +81,27 @@ final class TitleSubtitleSwitchTableViewCell: SwitchTableViewCell {
         return stackView
     }()
 
+    var horizontalInset: CGFloat = UIConstants.horizontalInset {
+        didSet {
+            switchView.snp.updateConstraints { make in
+                make.trailing.equalToSuperview().inset(horizontalInset)
+            }
+            stackView.snp.makeConstraints { make in
+                make.leading.equalToSuperview().inset(horizontalInset)
+            }
+        }
+    }
+
     override fileprivate func setupLayout() {
         contentView.addSubview(switchView)
         switchView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalToSuperview().inset(horizontalInset)
             make.centerY.equalToSuperview()
         }
 
         contentView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview().inset(horizontalInset)
             make.trailing.equalTo(switchView.snp.leading).offset(-16)
             make.centerY.equalToSuperview()
         }
