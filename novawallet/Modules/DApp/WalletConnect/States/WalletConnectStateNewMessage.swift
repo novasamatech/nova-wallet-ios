@@ -163,7 +163,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 identifier: request.id.string,
                 wallet: wallet,
                 accountId: accountId,
-                dApp: session?.peer.name ?? "",
+                dApp: session?.peer.url ?? "",
                 dAppIcon: session?.peer.icons.first.flatMap { URL(string: $0) },
                 operationData: operationData
             )
