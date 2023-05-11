@@ -128,7 +128,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         }
 
         guard let method = WalletConnectMethod(rawValue: request.method) else {
-            rejectRequest(request: request, reason: "unsupported method: \(request.method)")
+            rejectRequest(request: request, reason: "unsupported method \(request.method)")
             return
         }
 
