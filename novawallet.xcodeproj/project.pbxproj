@@ -2413,6 +2413,7 @@
 		84E8BA1F29FFB38600FD9F40 /* EthereumOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA1629FFB38600FD9F40 /* EthereumOperationFactory.swift */; };
 		84E8BA2229FFB38600FD9F40 /* EthereumTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA1929FFB38600FD9F40 /* EthereumTransaction.swift */; };
 		84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA2729FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift */; };
+		84E8BA2A2A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA292A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift */; };
 		84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E90BA028D0B51000529633 /* CheckboxControlView.swift */; };
 		84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E9A04F28F000AB00551DC4 /* ReferendumMetadataLocal.swift */; };
 		84EA0B2A25E579DF00AFB0DC /* AssetBalanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EA0B2925E579DF00AFB0DC /* AssetBalanceViewModel.swift */; };
@@ -5927,6 +5928,7 @@
 		84E8BA1629FFB38600FD9F40 /* EthereumOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumOperationFactory.swift; sourceTree = "<group>"; };
 		84E8BA1929FFB38600FD9F40 /* EthereumTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransaction.swift; sourceTree = "<group>"; };
 		84E8BA2729FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectEthereumTransaction.swift; sourceTree = "<group>"; };
+		84E8BA292A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmBaseMetadataQueryFactory.swift; sourceTree = "<group>"; };
 		84E90BA028D0B51000529633 /* CheckboxControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxControlView.swift; sourceTree = "<group>"; };
 		84E9A04F28F000AB00551DC4 /* ReferendumMetadataLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumMetadataLocal.swift; sourceTree = "<group>"; };
 		84EA0B2925E579DF00AFB0DC /* AssetBalanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceViewModel.swift; sourceTree = "<group>"; };
@@ -14458,6 +14460,7 @@
 				84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */,
 				84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */,
 				844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */,
+				84E8BA292A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -18666,6 +18669,7 @@
 				84EBC55124F660A700459D15 /* EventVisitor.swift in Sources */,
 				842B2FCF2947352A002829B6 /* UITextField+Attributes.swift in Sources */,
 				8452585127ABC531004F9082 /* AssetsSettingsViewModel.swift in Sources */,
+				84E8BA2A2A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift in Sources */,
 				8454C21D2632A78900657DAD /* EventRecord.swift in Sources */,
 				84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */,
 				84C4C2F9255DB9510045B582 /* PinChangeInteractor.swift in Sources */,
