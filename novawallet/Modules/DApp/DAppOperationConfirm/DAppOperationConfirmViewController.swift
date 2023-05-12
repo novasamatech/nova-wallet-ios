@@ -52,7 +52,7 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
         rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
             preferredLanguages: languages
         )
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccountAddress(
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
             preferredLanguages: languages
         )
         rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
