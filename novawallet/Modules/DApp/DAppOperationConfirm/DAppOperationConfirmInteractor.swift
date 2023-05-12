@@ -99,23 +99,15 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         for extrinsicFactory: DAppExtrinsicBuilderOperationFactory,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
-        let signatureWrapper = extrinsicFactory.createWrapper(
-            customClosure: { builder, _ in builder },
-            indexes: [0],
-            signingClosure: { data in
-                try signer.sign(data).rawData()
-            }
-        )
+        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data in
+            try signer.sign(data).rawData()
+        }
 
-        let codingFactoryOperation = extrinsicFactory.runtimeProvider.fetchCoderFactoryOperation()
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let signatureOperation = ClosureOperation<Data> {
-            let rawSignatures = try signatureWrapper.targetOperation.extractNoCancellableResultData()
+            let rawSignature = try signatureWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-            guard let rawSignature = rawSignatures.first else {
-                throw CommonError.dataCorruption
-            }
 
             let scaleEncoder = codingFactory.createEncoder()
 
