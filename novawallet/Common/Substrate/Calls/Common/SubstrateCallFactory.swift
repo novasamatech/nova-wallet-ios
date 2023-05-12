@@ -6,7 +6,8 @@ import BigInt
 protocol SubstrateCallFactoryProtocol {
     func nativeTransfer(
         to receiver: AccountId,
-        amount: BigUInt
+        amount: BigUInt,
+        callPath: CallCodingPath
     ) -> RuntimeCall<TransferCall>
 
     func nativeTransferAll(to receiver: AccountId) -> RuntimeCall<TransferAllCall>
@@ -169,10 +170,11 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
 
     func nativeTransfer(
         to receiver: AccountId,
-        amount: BigUInt
+        amount: BigUInt,
+        callPath: CallCodingPath
     ) -> RuntimeCall<TransferCall> {
         let args = TransferCall(dest: .accoundId(receiver), value: amount)
-        return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
+        return RuntimeCall(moduleName: callPath.moduleName, callName: callPath.callName, args: args)
     }
 
     func nativeTransferAll(to receiver: AccountId) -> RuntimeCall<TransferAllCall> {
