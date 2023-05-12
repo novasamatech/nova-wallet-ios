@@ -1,11 +1,11 @@
 import Foundation
 
 extension StackingRewardFiltersViewController {
-    enum Section: Int, Hashable {
+    enum Section: Hashable {
         case period
-        case start
+        case start(String)
         case endAlwaysToday
-        case end
+        case end(String)
     }
 
     enum Row: Hashable {

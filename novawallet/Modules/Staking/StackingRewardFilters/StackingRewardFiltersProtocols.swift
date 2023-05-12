@@ -4,11 +4,13 @@ protocol StackingRewardFiltersViewProtocol: ControllerBackedProtocol {
 
 protocol StackingRewardFiltersPresenterProtocol: AnyObject {
     func setup()
-    func save()
+    func save(_ period: StackingRewardFiltersPeriod)
 }
 
 protocol StackingRewardFiltersInteractorInputProtocol: AnyObject {}
 
 protocol StackingRewardFiltersInteractorOutputProtocol: AnyObject {}
 
-protocol StackingRewardFiltersWireframeProtocol: AnyObject {}
+protocol StackingRewardFiltersWireframeProtocol: AnyObject {
+    func close(view: StackingRewardFiltersViewProtocol?)
+}

@@ -86,7 +86,7 @@ final class TitleSubtitleSwitchTableViewCell: SwitchTableViewCell {
             switchView.snp.updateConstraints { make in
                 make.trailing.equalToSuperview().inset(horizontalInset)
             }
-            stackView.snp.makeConstraints { make in
+            stackView.snp.updateConstraints { make in
                 make.leading.equalToSuperview().inset(horizontalInset)
             }
         }

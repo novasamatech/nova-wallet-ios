@@ -20,8 +20,9 @@ extension StackingRewardFiltersPresenter: StackingRewardFiltersPresenterProtocol
         view?.didReceive(viewModel: period)
     }
 
-    func save() {
+    func save(_: StackingRewardFiltersPeriod) {
         // TODO:
+        wireframe.close(view: view)
     }
 }
 
