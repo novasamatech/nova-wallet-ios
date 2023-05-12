@@ -86,21 +86,10 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
         indexes _: [Int],
         signingClosure: @escaping (Data) throws -> Data
     ) -> CompoundOperationWrapper<[Data]> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let builderOperation = createBaseBuilderOperation(
-            for: processedResult,
-            codingFactoryOperation: codingFactoryOperation
-        )
-
-        builderOperation.addDependency(codingFactoryOperation)
-
         let signatureWrapper = createRawSignatureOperation(
             for: processedResult,
             signingClosure: signingClosure
         )
-
-        signatureWrapper.addDependency(operations: [builderOperation])
 
         let mappingOperation = ClosureOperation<[Data]> {
             let data = try signatureWrapper.targetOperation.extractNoCancellableResultData()
@@ -110,7 +99,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
 
         mappingOperation.addDependency(signatureWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation, builderOperation] + signatureWrapper.allOperations
+        let dependencies = signatureWrapper.allOperations
 
         let wrapper = CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
 
@@ -119,5 +108,35 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
 
     func createDummySigner() throws -> DummySigner {
         try DummySigner(cryptoType: processedResult.account.cryptoType)
+    }
+
+    func createRawSignatureWrapper(
+        for signingClosure: @escaping (Data) throws -> Data
+    ) -> CompoundOperationWrapper<Data> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let builderOperation = createBaseBuilderOperation(
+            for: processedResult,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        builderOperation.addDependency(codingFactoryOperation)
+
+        let signOperation = ClosureOperation<Data> {
+            let builder = try builderOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            return try builder.buildRawSignature(
+                using: signingClosure,
+                encoder: codingFactory.createEncoder(),
+                metadata: codingFactory.metadata
+            )
+        }
+
+        signOperation.addDependency(builderOperation)
+
+        let dependencies = [codingFactoryOperation, builderOperation]
+
+        return CompoundOperationWrapper(targetOperation: signOperation, dependencies: dependencies)
     }
 }
