@@ -11763,16 +11763,16 @@ import SubstrateSdk
     
     
     
-     func didReceive(confimationViewModel: DAppOperationConfirmViewModel)  {
+     func didReceive(confirmationViewModel: DAppOperationConfirmViewModel)  {
         
-    return cuckoo_manager.call("didReceive(confimationViewModel: DAppOperationConfirmViewModel)",
-            parameters: (confimationViewModel),
-            escapingParameters: (confimationViewModel),
+    return cuckoo_manager.call("didReceive(confirmationViewModel: DAppOperationConfirmViewModel)",
+            parameters: (confirmationViewModel),
+            escapingParameters: (confirmationViewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(confimationViewModel: confimationViewModel))
+            defaultCall: __defaultImplStub!.didReceive(confirmationViewModel: confirmationViewModel))
         
     }
     
@@ -11810,9 +11810,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(confimationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationConfirmViewModel)> where M1.MatchedType == DAppOperationConfirmViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewModel)>] = [wrap(matchable: confimationViewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmViewProtocol.self, method: "didReceive(confimationViewModel: DAppOperationConfirmViewModel)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(confirmationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationConfirmViewModel)> where M1.MatchedType == DAppOperationConfirmViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewModel)>] = [wrap(matchable: confirmationViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmViewProtocol.self, method: "didReceive(confirmationViewModel: DAppOperationConfirmViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable>(feeViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationFeeViewModel)> where M1.MatchedType == DAppOperationFeeViewModel {
@@ -11847,9 +11847,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(confimationViewModel: M1) -> Cuckoo.__DoNotUse<(DAppOperationConfirmViewModel), Void> where M1.MatchedType == DAppOperationConfirmViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewModel)>] = [wrap(matchable: confimationViewModel) { $0 }]
-	        return cuckoo_manager.verify("didReceive(confimationViewModel: DAppOperationConfirmViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(confirmationViewModel: M1) -> Cuckoo.__DoNotUse<(DAppOperationConfirmViewModel), Void> where M1.MatchedType == DAppOperationConfirmViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewModel)>] = [wrap(matchable: confirmationViewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(confirmationViewModel: DAppOperationConfirmViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -11887,7 +11887,7 @@ import SubstrateSdk
     
     
     
-     func didReceive(confimationViewModel: DAppOperationConfirmViewModel)   {
+     func didReceive(confirmationViewModel: DAppOperationConfirmViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -11984,6 +11984,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func showAccountOptions()  {
+        
+    return cuckoo_manager.call("showAccountOptions()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAccountOptions())
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppOperationConfirmPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -12011,6 +12026,11 @@ import SubstrateSdk
 	    func activateTxDetails() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmPresenterProtocol.self, method: "activateTxDetails()", parameterMatchers: matchers))
+	    }
+	    
+	    func showAccountOptions() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmPresenterProtocol.self, method: "showAccountOptions()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -12053,6 +12073,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("activateTxDetails()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func showAccountOptions() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("showAccountOptions()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -12083,6 +12109,12 @@ import SubstrateSdk
     
     
      func activateTxDetails()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showAccountOptions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
