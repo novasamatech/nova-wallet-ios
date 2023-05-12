@@ -91,28 +91,6 @@ extension BalanceContext {
 }
 
 extension BalanceContext {
-    func byChangingAccountInfo(_ accountData: AccountData, precision: Int16) -> BalanceContext {
-        let free = Decimal
-            .fromSubstrateAmount(accountData.free, precision: precision) ?? .zero
-        let reserved = Decimal
-            .fromSubstrateAmount(accountData.reserved, precision: precision) ?? .zero
-        let miscFrozen = Decimal
-            .fromSubstrateAmount(accountData.miscFrozen, precision: precision) ?? .zero
-        let feeFrozen = Decimal
-            .fromSubstrateAmount(accountData.feeFrozen, precision: precision) ?? .zero
-
-        return BalanceContext(
-            free: free,
-            reserved: reserved,
-            frozen: max(miscFrozen, feeFrozen),
-            crowdloans: crowdloans,
-            price: price,
-            priceChange: priceChange,
-            priceId: priceId,
-            balanceLocks: balanceLocks
-        )
-    }
-
     func byChangingAssetBalance(_ assetBalance: AssetBalance, precision: Int16) -> BalanceContext {
         let free = Decimal
             .fromSubstrateAmount(assetBalance.freeInPlank, precision: precision) ?? .zero
