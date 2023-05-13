@@ -24,10 +24,11 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceiveUserDataProvider(error: Error)
     func didReceive(currencyCode: String)
     func didReceiveWalletConnect(sessionsCount: Int)
+    func didFailConnection(walletConnect error: Error)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable, WalletSwitchPresentable, WalletConnectScanPresentable {
+    EmailPresentable, WalletSwitchPresentable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)

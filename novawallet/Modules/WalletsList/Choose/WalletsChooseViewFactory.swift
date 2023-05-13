@@ -42,7 +42,7 @@ final class WalletsChooseViewFactory {
     }
 
     private static func createInteractor() -> WalletsListInteractor? {
-        guard let balancesStore = BalancesStore.createDefaut() else {
+        guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
 

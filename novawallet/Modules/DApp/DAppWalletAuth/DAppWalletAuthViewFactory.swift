@@ -60,7 +60,7 @@ struct DAppWalletAuthViewFactory {
     }
 
     private static func createInteractor() -> DAppWalletAuthInteractor? {
-        guard let balancesStore = BalancesStore.createDefaut() else {
+        guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
 

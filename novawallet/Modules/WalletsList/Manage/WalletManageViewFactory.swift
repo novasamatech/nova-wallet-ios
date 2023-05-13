@@ -43,7 +43,7 @@ final class WalletManageViewFactory {
     }
 
     private static func createInteractor() -> WalletManageInteractor? {
-        guard let balancesStore = BalancesStore.createDefaut() else {
+        guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
 

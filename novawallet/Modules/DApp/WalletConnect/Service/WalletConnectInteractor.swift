@@ -4,6 +4,7 @@ import WalletConnectSwiftV2
 final class WalletConnectInteractor {
     let presenter: WalletConnectInteractorOutputProtocol
     let transport: WalletConnectTransportProtocol
+    let securedLayer: SecurityLayerServiceProtocol
 
     weak var mediator: DAppInteractionMediating?
 
@@ -11,18 +12,24 @@ final class WalletConnectInteractor {
 
     init(
         transport: WalletConnectTransportProtocol,
-        presenter: WalletConnectInteractorOutputProtocol
+        presenter: WalletConnectInteractorOutputProtocol,
+        securedLayer: SecurityLayerServiceProtocol
     ) {
         self.transport = transport
         self.presenter = presenter
+        self.securedLayer = securedLayer
     }
 }
 
 extension WalletConnectInteractor: WalletConnectInteractorInputProtocol {}
 
 extension WalletConnectInteractor: WalletConnectDelegateInputProtocol {
-    func connect(uri: String) {
-        transport.connect(uri: uri)
+    func connect(uri: String, completion: @escaping (Error?) -> Void) {
+        transport.connect(uri: uri) { [weak self] optError in
+            self?.securedLayer.scheduleExecutionIfAuthorized {
+                completion(optError)
+            }
+        }
     }
 
     func add(delegate: WalletConnectDelegateOutputProtocol) {
@@ -46,7 +53,11 @@ extension WalletConnectInteractor: WalletConnectDelegateInputProtocol {
     }
 
     func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
-        transport.disconnect(from: session, completion: completion)
+        transport.disconnect(from: session) { [weak self] optError in
+            self?.securedLayer.scheduleExecutionIfAuthorized {
+                completion(optError)
+            }
+        }
     }
 }
 
@@ -60,9 +71,11 @@ extension WalletConnectInteractor: WalletConnectTransportDelegate {
 
     func walletConnect(
         transport _: WalletConnectTransportProtocol,
-        didFail _: WalletConnectTransportError
+        didFail error: WalletConnectTransportError
     ) {
-        // TODO: Handle error
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter.didReceive(error: error)
+        }
     }
 
     func walletConnect(transport _: WalletConnectTransportProtocol, authorize request: DAppAuthRequest) {
@@ -110,5 +123,9 @@ extension WalletConnectInteractor: DAppInteractionChildProtocol {
 
     func throttle() {
         mediator?.unregister(transport: transport)
+    }
+
+    func completePhishingStateHandling() {
+        // do nothing as wallet connect continues working after phishing detected
     }
 }
