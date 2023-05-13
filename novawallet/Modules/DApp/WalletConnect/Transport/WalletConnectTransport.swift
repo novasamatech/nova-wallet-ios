@@ -5,7 +5,7 @@ import RobinHood
 protocol WalletConnectTransportProtocol: DAppTransportProtocol {
     var delegate: WalletConnectTransportDelegate? { get set }
 
-    func connect(uri: String)
+    func connect(uri: String, completion: @escaping (Error?) -> Void)
 
     func getSessionsCount() -> Int
 
@@ -100,11 +100,22 @@ final class WalletConnectTransport {
             }
         }
     }
+
+    private func checkStateTransition(
+        from oldState: WalletConnectStateProtocol?,
+        to newState: WalletConnectStateProtocol
+    ) {
+        let prevCanHandleMessage = oldState?.canHandleMessage() ?? false
+
+        if !prevCanHandleMessage, newState.canHandleMessage() {
+            delegate?.walletConnectAskNextMessage(transport: self)
+        }
+    }
 }
 
 extension WalletConnectTransport: WalletConnectTransportProtocol {
-    func connect(uri: String) {
-        service.connect(uri: uri)
+    func connect(uri: String, completion: @escaping (Error?) -> Void) {
+        service.connect(uri: uri, completion: completion)
     }
 
     func getSessionsCount() -> Int {
@@ -162,7 +173,7 @@ extension WalletConnectTransport {
     }
 
     func bringPhishingDetectedStateIfNeeded() -> Bool {
-        // TODO: Handle phishing transition
+        // just notify user but remain in the same state
         true
     }
 
@@ -203,23 +214,23 @@ extension WalletConnectTransport {
 
 extension WalletConnectTransport: WalletConnectStateMachineProtocol {
     func emit(nextState: WalletConnectStateProtocol) {
-        let prevCanHandleMessage = state?.canHandleMessage() ?? false
-
+        let oldState = state
         state = nextState
 
         nextState.proceed(with: dataSource)
 
-        if !prevCanHandleMessage, nextState.canHandleMessage() {
-            delegate?.walletConnectAskNextMessage(transport: self)
-        }
+        checkStateTransition(from: oldState, to: nextState)
     }
 
     func emit(authRequest: DAppAuthRequest, nextState: WalletConnectStateProtocol) {
+        let oldState = state
         state = nextState
 
         delegate?.walletConnect(transport: self, authorize: authRequest)
 
         nextState.proceed(with: dataSource)
+
+        checkStateTransition(from: oldState, to: nextState)
     }
 
     func emit(
@@ -227,35 +238,74 @@ extension WalletConnectTransport: WalletConnectStateMachineProtocol {
         type: DAppSigningType,
         nextState: WalletConnectStateProtocol
     ) {
+        let oldState = state
         state = nextState
 
         delegate?.walletConnect(transport: self, sign: signingRequest, type: type)
 
         nextState.proceed(with: dataSource)
+
+        checkStateTransition(from: oldState, to: nextState)
     }
 
-    func emit(proposalDecision: WalletConnectProposalDecision, nextState: WalletConnectStateProtocol) {
+    func emit(
+        proposalDecision: WalletConnectProposalDecision,
+        nextState: WalletConnectStateProtocol,
+        error: WalletConnectStateError?
+    ) {
+        let oldState = state
         state = nextState
 
-        service.submit(proposalDecision: proposalDecision)
+        service.submit(proposalDecision: proposalDecision) { [weak self] optError in
+            if let error = optError, let self = self {
+                self.delegate?.walletConnect(
+                    transport: self,
+                    didFail: .proposalDecisionSubmissionFailed(error)
+                )
+            }
+        }
+
+        if let error = error {
+            delegate?.walletConnect(transport: self, didFail: .stateFailed(error))
+        }
 
         nextState.proceed(with: dataSource)
+
+        checkStateTransition(from: oldState, to: nextState)
     }
 
-    func emit(signDecision: WalletConnectSignDecision, nextState: WalletConnectStateProtocol) {
+    func emit(
+        signDecision: WalletConnectSignDecision,
+        nextState: WalletConnectStateProtocol,
+        error: WalletConnectStateError?
+    ) {
+        let oldState = state
         state = nextState
 
-        service.submit(signingDecision: signDecision)
+        service.submit(signingDecision: signDecision) { [weak self] optError in
+            if let error = optError, let self = self {
+                self.delegate?.walletConnect(transport: self, didFail: .signingDecisionSubmissionFailed(error))
+            }
+        }
+
+        if let error = error {
+            delegate?.walletConnect(transport: self, didFail: .stateFailed(error))
+        }
 
         nextState.proceed(with: dataSource)
+
+        checkStateTransition(from: oldState, to: nextState)
     }
 
     func emit(error: WalletConnectStateError, nextState: WalletConnectStateProtocol) {
+        let oldState = state
         state = nextState
 
         delegate?.walletConnect(transport: self, didFail: .stateFailed(error))
 
         nextState.proceed(with: dataSource)
+
+        checkStateTransition(from: oldState, to: nextState)
     }
 }
 
@@ -276,11 +326,5 @@ extension WalletConnectTransport: WalletConnectServiceDelegate {
         logger.debug("New session: \(request)")
 
         delegate?.walletConnect(transport: self, didReceive: .request(request, session))
-    }
-
-    func walletConnect(service _: WalletConnectServiceProtocol, error: WalletConnectServiceError) {
-        logger.error("Error: \(error)")
-
-        delegate?.walletConnect(transport: self, didFail: .serviceFailed(error))
     }
 }

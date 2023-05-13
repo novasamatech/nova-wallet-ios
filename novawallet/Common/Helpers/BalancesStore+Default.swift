@@ -1,7 +1,7 @@
 import Foundation
 
 extension BalancesStore {
-    static func createDefaut() -> BalancesStore? {
+    static func createDefault() -> BalancesStore? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }

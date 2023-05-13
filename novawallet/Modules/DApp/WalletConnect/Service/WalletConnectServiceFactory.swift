@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 struct WalletConnectServiceFactory {
     static func createInteractor(
@@ -8,7 +9,7 @@ struct WalletConnectServiceFactory {
         walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationQueue: OperationQueue
     ) -> WalletConnectInteractor {
-        let metadata = WalletConnectMetadata.nova(with: ApplicationConfig.shared.walletConnectProjectId)
+        let metadata = WalletConnectMetadata.nova(with: WalletConnectSecret.getProjectId())
         let service = WalletConnectService(metadata: metadata)
 
         let dataSource = DAppStateDataSource(
@@ -25,9 +26,15 @@ struct WalletConnectServiceFactory {
             logger: Logger.shared
         )
 
+        let presenter = WalletConnectPresenter(
+            logger: Logger.shared,
+            localizationManager: LocalizationManager.shared
+        )
+
         return .init(
             transport: transport,
-            presenter: WalletConnectPresenter(logger: Logger.shared)
+            presenter: presenter,
+            securedLayer: SecurityLayerService.shared
         )
     }
 }

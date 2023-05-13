@@ -36,7 +36,7 @@ struct WalletSelectionViewFactory {
     }
 
     private static func createInteractor() -> WalletSelectionInteractor? {
-        guard let balancesStore = BalancesStore.createDefaut() else {
+        guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
 

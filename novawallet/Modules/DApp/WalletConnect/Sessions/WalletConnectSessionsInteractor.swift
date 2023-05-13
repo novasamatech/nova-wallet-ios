@@ -29,7 +29,11 @@ extension WalletConnectSessionsInteractor: WalletConnectSessionsInteractorInputP
     }
 
     func connect(uri: String) {
-        walletConnect.connect(uri: uri)
+        walletConnect.connect(uri: uri) { [weak self] optError in
+            if let error = optError {
+                self?.presenter?.didReceive(error: .connectionFailed(error))
+            }
+        }
     }
 
     func retrySessionsFetch() {

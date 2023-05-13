@@ -1,9 +1,11 @@
 protocol WalletConnectInteractorInputProtocol: AnyObject {}
 
-protocol WalletConnectInteractorOutputProtocol: AnyObject {}
+protocol WalletConnectInteractorOutputProtocol: AnyObject {
+    func didReceive(error: WalletConnectTransportError)
+}
 
 protocol WalletConnectDelegateInputProtocol: AnyObject {
-    func connect(uri: String)
+    func connect(uri: String, completion: @escaping (Error?) -> Void)
 
     func add(delegate: WalletConnectDelegateOutputProtocol)
     func remove(delegate: WalletConnectDelegateOutputProtocol)
