@@ -54,7 +54,11 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
     }
 
     func connectWalletConnect(uri: String) {
-        walletConnect.connect(uri: uri)
+        walletConnect.connect(uri: uri) { [weak self] optError in
+            if let error = optError {
+                self?.presenter?.didFailConnection(walletConnect: error)
+            }
+        }
     }
 }
 

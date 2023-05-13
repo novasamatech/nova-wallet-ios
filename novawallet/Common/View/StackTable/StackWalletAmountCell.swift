@@ -12,7 +12,7 @@ final class StackWalletAmountCell: RowView<GenericTitleValueView<WalletTotalAmou
     }
 
     convenience init() {
-        self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
+        self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44)))
     }
 
     private func setupStyle() {

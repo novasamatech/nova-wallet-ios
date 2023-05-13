@@ -9,8 +9,16 @@ protocol WalletConnectStateMachineProtocol: AnyObject {
         type: DAppSigningType,
         nextState: WalletConnectStateProtocol
     )
-    func emit(proposalDecision: WalletConnectProposalDecision, nextState: WalletConnectStateProtocol)
-    func emit(signDecision: WalletConnectSignDecision, nextState: WalletConnectStateProtocol)
+    func emit(
+        proposalDecision: WalletConnectProposalDecision,
+        nextState: WalletConnectStateProtocol,
+        error: WalletConnectStateError?
+    )
+    func emit(
+        signDecision: WalletConnectSignDecision,
+        nextState: WalletConnectStateProtocol,
+        error: WalletConnectStateError?
+    )
     func emit(error: WalletConnectStateError, nextState: WalletConnectStateProtocol)
 }
 
