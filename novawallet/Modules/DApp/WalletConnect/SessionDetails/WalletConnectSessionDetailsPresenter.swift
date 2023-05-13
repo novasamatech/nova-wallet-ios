@@ -73,7 +73,7 @@ extension WalletConnectSessionDetailsPresenter: WalletConnectSessionDetailsInter
         wireframe.close(view: view)
     }
 
-    func didReceive(error: WalletConnectSessionDetailsInteractorError) {
+    func didReceive(error: WCSessionDetailsInteractorError) {
         logger.error("Did receive error: \(error)")
 
         switch error {
@@ -87,12 +87,7 @@ extension WalletConnectSessionDetailsPresenter: WalletConnectSessionDetailsInter
         case .disconnectionFailed:
             view?.didStopLoading()
 
-            wireframe.presentRequestStatus(
-                on: view,
-                locale: selectedLocale
-            ) { [weak self] in
-                self?.performDisconnect()
-            }
+            wireframe.presentWCDisconnectionError(from: view, locale: selectedLocale)
         }
     }
 }

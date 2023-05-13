@@ -12,7 +12,7 @@ final class DAppWalletAuthWireframe: DAppWalletAuthWireframeProtocol {
     ) {
         guard let networksView = ModalNetworksFactory.createResolutionInfoList(
             for: requiredResolution,
-            optional: optionalResolution
+            optionalResolution: optionalResolution
         ) else {
             return
         }

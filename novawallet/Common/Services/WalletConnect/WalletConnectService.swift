@@ -7,28 +7,19 @@ protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
     func walletConnect(service: WalletConnectServiceProtocol, didChange sessions: [Session])
     func walletConnect(service: WalletConnectServiceProtocol, request: Request, session: Session?)
-    func walletConnect(service: WalletConnectServiceProtocol, error: WalletConnectServiceError)
 }
 
 protocol WalletConnectServiceProtocol: ApplicationServiceProtocol, AnyObject {
     var delegate: WalletConnectServiceDelegate? { get set }
 
-    func connect(uri: String)
+    func connect(uri: String, completion: @escaping (Error?) -> Void)
 
-    func submit(proposalDecision: WalletConnectProposalDecision)
-    func submit(signingDecision: WalletConnectSignDecision)
+    func submit(proposalDecision: WalletConnectProposalDecision, completion: @escaping (Error?) -> Void)
+    func submit(signingDecision: WalletConnectSignDecision, completion: @escaping (Error?) -> Void)
 
     func getSessions() -> [Session]
 
     func disconnect(from session: String, completion: @escaping (Error?) -> Void)
-}
-
-enum WalletConnectServiceError: Error {
-    case setupNeeded
-    case connectFailed(uri: String, internalError: Error)
-    case proposalFailed(decision: WalletConnectProposalDecision, internalError: Error)
-    case signFailed(decision: WalletConnectSignDecision, internalError: Error)
-    case disconnectionFailed(sessionId: String, internalError: Error)
 }
 
 final class WalletConnectService {
@@ -60,34 +51,34 @@ final class WalletConnectService {
         proposalCancellable = client?.sessionProposalPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] proposal in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, proposal: proposal)
+                self.delegate?.walletConnect(service: self, proposal: proposal)
             }
 
         sessionCancellable = client?.sessionsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sessions in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, didChange: sessions)
+                self.delegate?.walletConnect(service: self, didChange: sessions)
             }
 
         requestCancellable = client?.sessionRequestPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] request in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                let session = strongSelf.client?.getSessions().first { $0.topic == request.topic }
+                let session = self.client?.getSessions().first { $0.topic == request.topic }
 
-                strongSelf.delegate?.walletConnect(
-                    service: strongSelf,
+                self.delegate?.walletConnect(
+                    service: self,
                     request: request,
                     session: session
                 )
@@ -160,17 +151,17 @@ final class WalletConnectService {
         networking = nil
     }
 
-    private func notify(error: WalletConnectServiceError) {
+    private func notify(completion: @escaping (Error?) -> Void, error: Error?) {
         DispatchQueue.main.async {
-            self.delegate?.walletConnect(service: self, error: error)
+            completion(error)
         }
     }
 }
 
 extension WalletConnectService: WalletConnectServiceProtocol {
-    func connect(uri: String) {
+    func connect(uri: String, completion: @escaping (Error?) -> Void) {
         guard let pairingUri = WalletConnectURI(string: uri), let pairing = pairing else {
-            notify(error: .setupNeeded)
+            notify(completion: completion, error: CommonError.dataCorruption)
             return
         }
 
@@ -178,16 +169,17 @@ extension WalletConnectService: WalletConnectServiceProtocol {
             do {
                 try await pairing.pair(uri: pairingUri)
                 self?.logger.debug("Pairing submitted: \(uri)")
+                self?.notify(completion: completion, error: nil)
             } catch {
                 self?.logger.error("Pairing failed \(uri): \(error)")
-                self?.notify(error: .connectFailed(uri: uri, internalError: error))
+                self?.notify(completion: completion, error: error)
             }
         }
     }
 
-    func submit(proposalDecision: WalletConnectProposalDecision) {
+    func submit(proposalDecision: WalletConnectProposalDecision, completion: @escaping (Error?) -> Void) {
         guard let client = client else {
-            notify(error: .setupNeeded)
+            notify(completion: completion, error: CommonError.undefined)
             return
         }
 
@@ -199,16 +191,18 @@ extension WalletConnectService: WalletConnectServiceProtocol {
                 case let .reject(proposal):
                     try await client.reject(proposalId: proposal.id, reason: .userRejected)
                 }
+
+                self?.notify(completion: completion, error: nil)
             } catch {
                 self?.logger.error("Decision submission failed: \(error)")
-                self?.notify(error: .proposalFailed(decision: proposalDecision, internalError: error))
+                self?.notify(completion: completion, error: error)
             }
         }
     }
 
-    func submit(signingDecision: WalletConnectSignDecision) {
+    func submit(signingDecision: WalletConnectSignDecision, completion: @escaping (Error?) -> Void) {
         guard let client = client else {
-            notify(error: .setupNeeded)
+            notify(completion: completion, error: CommonError.undefined)
             return
         }
 
@@ -219,9 +213,11 @@ extension WalletConnectService: WalletConnectServiceProtocol {
                     requestId: signingDecision.request.id,
                     response: signingDecision.result
                 )
+
+                notify(completion: completion, error: nil)
             } catch {
                 self?.logger.error("Signature submission failed: \(error)")
-                self?.notify(error: .signFailed(decision: signingDecision, internalError: error))
+                notify(completion: completion, error: error)
             }
         }
     }
@@ -249,30 +245,34 @@ extension WalletConnectService: WalletConnectServiceProtocol {
     }
 
     func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
-        Task {
+        Task { [weak self] in
             do {
                 try await client?.disconnect(topic: session)
 
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
+                self?.notify(completion: completion, error: nil)
 
             } catch {
                 logger.error("Disconnecting \(session) failed: \(error)")
 
-                notify(error: .disconnectionFailed(sessionId: session, internalError: error))
-
-                DispatchQueue.main.async {
-                    completion(error)
-                }
+                self?.notify(completion: completion, error: error)
             }
         }
     }
 }
 
-private final class DefaultWebSocket: WebSocket, WebSocketConnecting {
+private final class DefaultWebSocket: WebSocketConnecting {
     public var isConnected: Bool {
         connected
+    }
+
+    public var request: URLRequest {
+        get {
+            webSocket.request
+        }
+
+        set {
+            webSocket.request = newValue
+        }
     }
 
     @Atomic(defaultValue: false) private var connected: Bool
@@ -283,10 +283,12 @@ private final class DefaultWebSocket: WebSocket, WebSocketConnecting {
 
     public var onText: ((String) -> Void)?
 
-    override init(request: URLRequest, engine: Engine) {
-        super.init(request: request, engine: engine)
+    private let webSocket: WebSocket
 
-        onEvent = { [weak self] event in
+    init(request: URLRequest, engine: Engine) {
+        webSocket = WebSocket(request: request, engine: engine)
+
+        webSocket.onEvent = { [weak self] event in
             switch event {
             case .connected:
                 self?.connected = true
@@ -307,6 +309,22 @@ private final class DefaultWebSocket: WebSocket, WebSocketConnecting {
             }
         }
     }
+
+    func connect() {
+        webSocket.connect()
+    }
+
+    func disconnect() {
+        connected = false
+
+        webSocket.forceDisconnect()
+
+        onDisconnect?(nil)
+    }
+
+    func write(string: String, completion: (() -> Void)?) {
+        webSocket.write(string: string, completion: completion)
+    }
 }
 
 private struct DefaultSocketFactory: WebSocketFactory {
@@ -315,6 +333,13 @@ private struct DefaultSocketFactory: WebSocketFactory {
 
         // This is specifics of Starscream due to how Origin is set
         urlRequest.addValue("allowed.domain.com", forHTTPHeaderField: "Origin")
-        return DefaultWebSocket(request: urlRequest)
+
+        let engine = WSEngine(
+            transport: TCPTransport(),
+            certPinner: FoundationSecurity(),
+            compressionHandler: nil
+        )
+
+        return DefaultWebSocket(request: urlRequest, engine: engine)
     }
 }
