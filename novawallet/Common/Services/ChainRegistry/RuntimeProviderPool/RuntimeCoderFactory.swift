@@ -15,6 +15,12 @@ protocol RuntimeCoderFactoryProtocol {
     func getCall(for codingPath: CallCodingPath) -> CallMetadata?
 }
 
+extension RuntimeCoderFactoryProtocol {
+    func hasCall(for codingPath: CallCodingPath) -> Bool {
+        getCall(for: codingPath) != nil
+    }
+}
+
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
     static let addressTypeName = "Address"
 
