@@ -15,7 +15,8 @@ struct CustomAssetMapper {
         statemineHandler: (StatemineAssetExtras) -> T,
         ormlHandler: (OrmlTokenExtras) -> T,
         evmHandler: (AccountId) -> T,
-        evmNativeHandler: () -> T
+        evmNativeHandler: () -> T,
+        equilibriumHandler: (EquilibriumAssetExtras) -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -48,6 +49,12 @@ struct CustomAssetMapper {
             return evmHandler(accountId)
         case .evmNative:
             return evmNativeHandler()
+        case .equilibrium:
+            guard let wrappedExtras = try? typeExtras?.map(to: EquilibriumAssetExtras.self) else {
+                throw MapperError.invalidJson(type)
+            }
+
+            return equilibriumHandler(wrappedExtras)
         case .none:
             return nativeHandler()
         }
@@ -58,7 +65,8 @@ struct CustomAssetMapper {
         statemineHandler: () -> T,
         ormlHandler: () -> T,
         evmHandler: () -> T,
-        evmNativeHandler: () -> T
+        evmNativeHandler: () -> T,
+        equilibriumHandler: () -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -77,6 +85,8 @@ struct CustomAssetMapper {
             return evmHandler()
         case .evmNative:
             return evmNativeHandler()
+        case .equilibrium:
+            return equilibriumHandler()
         case .none:
             return nativeHandler()
         }
@@ -90,7 +100,8 @@ extension CustomAssetMapper {
             statemineHandler: { $0.assetId },
             ormlHandler: { $0.currencyIdScale },
             evmHandler: { try? $0.toAddress(using: .ethereum) },
-            evmNativeHandler: { nil }
+            evmNativeHandler: { nil },
+            equilibriumHandler: { String($0.assetId) }
         )
     }
 
@@ -100,7 +111,8 @@ extension CustomAssetMapper {
             statemineHandler: { _ in true },
             ormlHandler: { $0.transfersEnabled ?? true },
             evmHandler: { _ in true },
-            evmNativeHandler: { true }
+            evmNativeHandler: { true },
+            equilibriumHandler: { $0.transfersEnabled ?? true }
         )
     }
 }

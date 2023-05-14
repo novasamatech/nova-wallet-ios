@@ -6,7 +6,8 @@ import BigInt
 protocol SubstrateCallFactoryProtocol {
     func nativeTransfer(
         to receiver: AccountId,
-        amount: BigUInt
+        amount: BigUInt,
+        callPath: CallCodingPath
     ) -> RuntimeCall<TransferCall>
 
     func nativeTransferAll(to receiver: AccountId) -> RuntimeCall<TransferAllCall>
@@ -62,7 +63,12 @@ protocol SubstrateCallFactoryProtocol {
     func addMemo(to paraId: ParaId, memo: Data) -> RuntimeCall<CrowdloanAddMemo>
     func remark(remark: Data) -> RuntimeCall<SystemRemarkCall>
     func remarkWithEvent(remark: Data) -> RuntimeCall<SystemRemarkCall>
-    func rebag(accountId: AccountId) -> RuntimeCall<BagList.RebagCall>
+    func rebag(accountId: AccountId, module: String?) -> RuntimeCall<BagList.RebagCall>
+    func equilibriumTransfer(
+        to receiver: AccountId,
+        extras: EquilibriumAssetExtras,
+        amount: BigUInt
+    ) -> RuntimeCall<EquilibriumTokenTransfer>
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
@@ -142,12 +148,33 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         )
     }
 
+    func equilibriumTransfer(
+        to receiver: AccountId,
+        extras: EquilibriumAssetExtras,
+        amount: BigUInt
+    ) -> RuntimeCall<EquilibriumTokenTransfer> {
+        let args = EquilibriumTokenTransfer(
+            assetId: extras.assetId,
+            destinationAccountId: receiver,
+            value: amount
+        )
+
+        let callCodingPath = CallCodingPath.equilibriumTransfer
+
+        return RuntimeCall(
+            moduleName: callCodingPath.moduleName,
+            callName: callCodingPath.callName,
+            args: args
+        )
+    }
+
     func nativeTransfer(
         to receiver: AccountId,
-        amount: BigUInt
+        amount: BigUInt,
+        callPath: CallCodingPath
     ) -> RuntimeCall<TransferCall> {
         let args = TransferCall(dest: .accoundId(receiver), value: amount)
-        return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
+        return RuntimeCall(moduleName: callPath.moduleName, callName: callPath.callName, args: args)
     }
 
     func nativeTransferAll(to receiver: AccountId) -> RuntimeCall<TransferAllCall> {
@@ -228,8 +255,11 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return RuntimeCall(moduleName: "System", callName: "remark_with_event", args: args)
     }
 
-    func rebag(accountId: AccountId) -> RuntimeCall<BagList.RebagCall> {
-        BagList.RebagCall(dislocated: .accoundId(accountId)).runtimeCall
+    func rebag(accountId: AccountId, module: String?) -> RuntimeCall<BagList.RebagCall> {
+        let rebagCall = BagList.RebagCall(dislocated: .accoundId(accountId))
+        return rebagCall.runtimeCalls.first(where: {
+            $0.moduleName == module
+        }) ?? rebagCall.defaultRuntimeCall
     }
 }
 

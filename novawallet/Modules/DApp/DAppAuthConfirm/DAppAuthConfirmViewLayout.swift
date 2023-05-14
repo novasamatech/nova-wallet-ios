@@ -1,12 +1,15 @@
 import UIKit
 
 final class DAppAuthConfirmViewLayout: UIView {
-    static let iconSize = CGSize(width: 56.0, height: 56.0)
     static let listImageSize = CGSize(width: 24.0, height: 24.0)
 
-    let sourceAppIconView = DAppIconView()
+    let sourceAppIconView: DAppIconView = .create { view in
+        view.contentInsets = DAppIconLargeConstants.insets
+    }
 
-    let destinationAppIconView = DAppIconView()
+    let destinationAppIconView: DAppIconView = .create { view in
+        view.contentInsets = DAppIconLargeConstants.insets
+    }
 
     let accessImageView: UIImageView = {
         let view = UIImageView()
@@ -103,14 +106,14 @@ final class DAppAuthConfirmViewLayout: UIView {
         sourceAppIconView.snp.makeConstraints { make in
             make.centerY.equalTo(accessImageView.snp.centerY)
             make.trailing.equalTo(accessImageView.snp.leading).offset(-8.0)
-            make.size.equalTo(88.0)
+            make.size.equalTo(DAppIconLargeConstants.size)
         }
 
         addSubview(destinationAppIconView)
         destinationAppIconView.snp.makeConstraints { make in
             make.centerY.equalTo(accessImageView.snp.centerY)
             make.leading.equalTo(accessImageView.snp.trailing).offset(8.0)
-            make.size.equalTo(88.0)
+            make.size.equalTo(DAppIconLargeConstants.size)
         }
 
         addSubview(titleLabel)

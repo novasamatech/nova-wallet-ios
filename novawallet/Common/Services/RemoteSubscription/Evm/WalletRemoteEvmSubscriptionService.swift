@@ -100,7 +100,7 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
 
             return try attachToSubscription(
                 on: chain.chainId,
-                request: .erc20Balace(request),
+                request: .erc20Balance(request),
                 cacheKey: cacheKey,
                 queue: queue,
                 closure: closure

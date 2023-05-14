@@ -7,7 +7,7 @@ struct CallCodingPath: Hashable, Codable {
 
 extension CallCodingPath {
     var isSubstrateOrEvmTransfer: Bool {
-        isTransfer || isERC20Transfer || isEvmNativeTransfer
+        isTransfer || isERC20Transfer || isEvmNativeTransfer || isEquilibriumTransfer
     }
 
     var isTransfer: Bool {
@@ -15,7 +15,7 @@ extension CallCodingPath {
     }
 
     static var substrateTransfers: [CallCodingPath] {
-        [.transfer, .transferKeepAlive, .forceTransfer, .transferAll]
+        [.transfer, .transferAllowDeath, .transferKeepAlive, .forceTransfer, .transferAll]
     }
 
     var isBalancesTransfer: Bool {
@@ -58,6 +58,10 @@ extension CallCodingPath {
 
     static var transferKeepAlive: CallCodingPath {
         CallCodingPath(moduleName: "Balances", callName: "transfer_keep_alive")
+    }
+
+    static var transferAllowDeath: CallCodingPath {
+        CallCodingPath(moduleName: "Balances", callName: "transfer_allow_death")
     }
 
     static var forceTransfer: CallCodingPath {

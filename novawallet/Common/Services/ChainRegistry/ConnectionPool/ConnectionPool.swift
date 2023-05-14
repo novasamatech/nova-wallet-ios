@@ -7,6 +7,7 @@ protocol ConnectionPoolProtocol {
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
     func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
     func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
+    func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine?
 }
 
 protocol ConnectionStateSubscription: AnyObject {
@@ -20,6 +21,7 @@ class ConnectionPool {
     private var mutex = NSLock()
 
     private(set) var connections: [ChainModel.Id: WeakWrapper] = [:]
+    private(set) var oneShotConnections: [ChainModel.Id: OneShotConnection] = [:]
 
     private(set) var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] = [:]
 
@@ -97,6 +99,28 @@ extension ConnectionPool: ConnectionPoolProtocol {
         }
 
         return connections[chainId]?.target as? ChainConnection
+    }
+
+    func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let existingConnection = oneShotConnections[chain.chainId] {
+            connectionFactory.updateOneShotConnection(existingConnection, chain: chain)
+
+            return existingConnection
+        }
+
+        if let connection = try? connectionFactory.createOneShotConnection(for: chain) {
+            oneShotConnections[chain.chainId] = connection
+
+            return connection
+        } else {
+            return connections[chain.chainId]?.target as? JSONRPCEngine
+        }
     }
 }
 

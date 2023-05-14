@@ -68,7 +68,10 @@ final class ChainRegistryFactory {
         let runtimeProviderPool = RuntimeProviderPool(runtimeProviderFactory: runtimeProviderFactory)
 
         let connectionPool = ConnectionPool(
-            connectionFactory: ConnectionFactory(logger: Logger.shared),
+            connectionFactory: ConnectionFactory(
+                logger: Logger.shared,
+                operationQueue: OperationManagerFacade.assetsSyncQueue
+            ),
             applicationHandler: SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         )
 

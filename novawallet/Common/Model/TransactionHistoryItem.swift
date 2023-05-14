@@ -74,7 +74,7 @@ extension TransactionHistoryItemSource {
     init(assetTypeString: String?) {
         let assetType: AssetType? = assetTypeString.flatMap { .init(rawValue: $0) }
         switch assetType {
-        case .statemine, .orml, .none:
+        case .statemine, .orml, .none, .equilibrium:
             self = .substrate
         case .evmAsset:
             self = .evmAsset

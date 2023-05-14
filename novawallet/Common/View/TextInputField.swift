@@ -95,6 +95,7 @@ class TextInputField: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
+        configureLocalHandlers()
         configureTextFieldHandlers()
     }
 
@@ -102,11 +103,14 @@ class TextInputField: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.apply(style: .textField)
-            roundedView.strokeWidth = 0.0
+            roundedView.apply(style: .strokeOnEditing)
 
             backgroundView = roundedView
         }
+    }
+
+    private func configureLocalHandlers() {
+        addTarget(self, action: #selector(actionTouchUpInside), for: .touchUpInside)
     }
 
     private func configureTextFieldHandlers() {
@@ -139,11 +143,7 @@ class TextInputField: BackgroundedContentControl {
     }
 
     private func updateTextFieldState() {
-        if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 0.5
-        } else {
-            roundedBackgroundView?.strokeWidth = 0.0
-        }
+        roundedBackgroundView?.strokeWidth = textField.isFirstResponder ? 0.5 : 0.0
     }
 
     // MARK: Action
@@ -160,6 +160,10 @@ class TextInputField: BackgroundedContentControl {
 
     @objc private func actionEditingDidBeginEnd() {
         updateTextFieldState()
+    }
+
+    @objc private func actionTouchUpInside() {
+        textField.becomeFirstResponder()
     }
 }
 

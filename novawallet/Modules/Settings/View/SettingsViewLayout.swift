@@ -8,7 +8,7 @@ final class SettingsViewLayout: UIView {
     let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()
-        view.separatorColor = R.color.colorDivider()
+        view.separatorStyle = .none
         return view
     }()
 

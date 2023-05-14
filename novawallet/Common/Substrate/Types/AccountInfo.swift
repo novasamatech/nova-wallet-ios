@@ -10,13 +10,21 @@ struct AccountInfo: Codable, Equatable {
 struct AccountData: Codable, Equatable {
     @StringCodable var free: BigUInt
     @StringCodable var reserved: BigUInt
-    @StringCodable var miscFrozen: BigUInt
-    @StringCodable var feeFrozen: BigUInt
+    @OptionStringCodable var frozen: BigUInt?
+    @OptionStringCodable var miscFrozen: BigUInt?
+    @OptionStringCodable var feeFrozen: BigUInt?
 }
 
 extension AccountData {
     var total: BigUInt { free + reserved }
-    var frozen: BigUInt { reserved + locked }
-    var locked: BigUInt { max(miscFrozen, feeFrozen) }
+
+    var locked: BigUInt {
+        if let feeFrozen = feeFrozen, let miscFrozen = miscFrozen {
+            return max(miscFrozen, feeFrozen)
+        } else {
+            return frozen ?? 0
+        }
+    }
+
     var available: BigUInt { free > locked ? free - locked : 0 }
 }

@@ -34,6 +34,7 @@ protocol ApplicationConfigProtocol {
     var learnGovernanceDelegateMetadata: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
+    var slip44URL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -125,9 +126,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v9/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v11/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v9/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v11/chains_dev.json")!
         #endif
     }
 
@@ -143,9 +144,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v3/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v3/transfers_dev.json")!
         #endif
     }
 
@@ -183,12 +184,13 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var learnPayoutURL: URL {
-        URL(string: "https://wiki.polkadot.network/docs/en/learn-simple-payouts")!
+        // swiftlint:disable:next line_length
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-what-is-the-difference-between-restake-rewards-and-transferable-rewards")!
     }
 
     var learnControllerAccountURL: URL {
         // swiftlint:disable:next line_length
-        URL(string: "https://wiki.polkadot.network/docs/en/maintain-guides-how-to-nominate-polkadot#setting-up-stash-and-controller-keys")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-what-are-stash-and-controller-accounts")!
     }
 
     var paritySignerTroubleshoutingURL: URL {
@@ -200,7 +202,8 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var learnRecommendedValidatorsURL: URL {
-        URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
+        // swiftlint:disable:next line_length
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-how-does-nova-wallet-select-validators-collators")!
     }
 
     var learnGovernanceDelegateMetadata: URL {
@@ -223,5 +226,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
         #endif
     }
+
+    var slip44URL: URL {
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
+    }
+
     // swiftlint:enable line_length
 }
