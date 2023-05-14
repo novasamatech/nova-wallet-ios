@@ -5,6 +5,8 @@ import SubstrateSdk
 import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
+    var dappMediator: DAppInteractionMediating { get }
+
     func updateOnAccountChange()
 }
 
@@ -15,6 +17,8 @@ final class ServiceCoordinator {
     let evmAssetsService: AssetsUpdatingServiceProtocol
     let evmNativeService: AssetsUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
+    let equilibriumService: AssetsUpdatingServiceProtocol
+    let dappMediator: DAppInteractionMediating
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -22,14 +26,18 @@ final class ServiceCoordinator {
         assetsService: AssetsUpdatingServiceProtocol,
         evmAssetsService: AssetsUpdatingServiceProtocol,
         evmNativeService: AssetsUpdatingServiceProtocol,
-        githubPhishingService: ApplicationServiceProtocol
+        githubPhishingService: ApplicationServiceProtocol,
+        equilibriumService: AssetsUpdatingServiceProtocol,
+        dappMediator: DAppInteractionMediating
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
         self.assetsService = assetsService
         self.evmAssetsService = evmAssetsService
         self.evmNativeService = evmNativeService
+        self.equilibriumService = equilibriumService
         self.githubPhishingService = githubPhishingService
+        self.dappMediator = dappMediator
     }
 }
 
@@ -40,6 +48,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             assetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmAssetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
+            equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
@@ -49,6 +58,8 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         assetsService.setup()
         evmAssetsService.setup()
         evmNativeService.setup()
+        equilibriumService.setup()
+        dappMediator.setup()
     }
 
     func throttle() {
@@ -57,10 +68,13 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         assetsService.throttle()
         evmAssetsService.throttle()
         evmNativeService.throttle()
+        equilibriumService.throttle()
+        dappMediator.throttle()
     }
 }
 
 extension ServiceCoordinator {
+    // swiftlint:disable:next function_body_length
     static func createDefault() -> ServiceCoordinatorProtocol {
         let githubPhishingAPIService = GitHubPhishingServiceFactory.createService()
 
@@ -129,13 +143,26 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let equilibriumService = EquilibriumAssetBalanceUpdatingService(
+            selectedAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            remoteSubscriptionService: walletRemoteSubscription,
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: substrateStorageFacade),
+            storageRequestFactory: storageRequestFactory,
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationQueue(),
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
             assetsService: assetsService,
             evmAssetsService: evmAssetsService,
             evmNativeService: evmNativeService,
-            githubPhishingService: githubPhishingAPIService
+            githubPhishingService: githubPhishingAPIService,
+            equilibriumService: equilibriumService,
+            dappMediator: DAppInteractionFactory.createMediator()
         )
     }
 }

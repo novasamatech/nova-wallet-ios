@@ -12,16 +12,16 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
     }
 
     func confirm() {
-        guard signWrapper == nil, let result = processedResult else {
+        guard signWrapper == nil, let extrinsicFactory = extrinsicFactory else {
             return
         }
 
         let signer = signingWrapperFactory.createSigningWrapper(
             for: request.wallet.metaId,
-            accountResponse: result.account
+            accountResponse: extrinsicFactory.processedResult.account
         )
 
-        let signWrapper = createSignatureOperation(for: result, signer: signer)
+        let signWrapper = createSignatureOperation(for: extrinsicFactory, signer: signer)
 
         self.signWrapper = signWrapper
 
@@ -71,37 +71,22 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
     }
 
     func estimateFee() {
-        guard feeWrapper == nil, let result = processedResult else {
+        guard feeWrapper == nil, let extrinsicFactory = extrinsicFactory else {
             return
         }
 
-        guard let signer = try? DummySigner(cryptoType: result.account.cryptoType) else {
-            return
-        }
-
-        let builderWrapper = createFeePayloadOperation(
-            for: result,
-            signer: signer
-        )
-
-        let infoOperation = JSONRPCListOperation<RuntimeDispatchInfo>(
+        let operationFactory = ExtrinsicProxyOperationFactory(
+            proxy: extrinsicFactory,
+            runtimeRegistry: runtimeProvider,
             engine: connection,
-            method: RPCMethod.paymentInfo
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        infoOperation.configurationBlock = {
-            do {
-                let payload = try builderWrapper.targetOperation.extractNoCancellableResultData()
-                let extrinsic = payload.toHex(includePrefix: true)
-                infoOperation.parameters = [extrinsic]
-            } catch {
-                infoOperation.result = .failure(error)
-            }
+        let feeWrapper = operationFactory.estimateFeeOperation { builder in
+            builder
         }
 
-        infoOperation.addDependency(builderWrapper.targetOperation)
-
-        infoOperation.completionBlock = { [weak self] in
+        feeWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 guard self?.feeWrapper != nil else {
                     return
@@ -110,7 +95,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
                 self?.feeWrapper = nil
 
                 do {
-                    let info = try infoOperation.extractNoCancellableResultData()
+                    let info = try feeWrapper.targetOperation.extractNoCancellableResultData()
                     self?.presenter?.didReceive(feeResult: .success(info))
                 } catch {
                     self?.presenter?.didReceive(feeResult: .failure(error))
@@ -118,18 +103,13 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             }
         }
 
-        let feeWrapper = CompoundOperationWrapper(
-            targetOperation: infoOperation,
-            dependencies: builderWrapper.allOperations
-        )
-
         self.feeWrapper = feeWrapper
 
         operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: false)
     }
 
     func prepareTxDetails() {
-        guard let result = processedResult else {
+        guard let result = extrinsicFactory?.processedResult else {
             return
         }
 

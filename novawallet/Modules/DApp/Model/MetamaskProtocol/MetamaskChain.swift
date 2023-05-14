@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 struct MetamaskChain: Codable {
     struct NativeCurrency: Codable {
@@ -51,5 +52,30 @@ extension MetamaskChain {
             blockExplorerUrls: blockExplorerUrls,
             iconUrls: iconUrls
         )
+    }
+}
+
+extension DAppEitherChain {
+    static func createFromMetamask(
+        chain: MetamaskChain,
+        dataSource: DAppBrowserStateDataSource
+    ) -> DAppEitherChain? {
+        if let knownChain = dataSource.fetchChainByEthereumChainId(chain.chainId) {
+            return .left(knownChain)
+        } else {
+            guard let rpcUrl = chain.rpcUrls.first.flatMap({ URL(string: $0) }) else {
+                return nil
+            }
+
+            let unknownChain = DAppUnknownChain(
+                chainId: chain.chainId,
+                name: chain.chainName,
+                icon: chain.iconUrls?.first.flatMap { URL(string: $0) },
+                assetDisplayInfo: chain.assetDisplayInfo,
+                rpcUrl: rpcUrl
+            )
+
+            return .right(unknownChain)
+        }
     }
 }

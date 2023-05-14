@@ -74,7 +74,11 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
     let operationManager: OperationManagerProtocol
     let timeout: Int
 
-    init(remoteFactory: StorageKeyFactoryProtocol, operationManager: OperationManagerProtocol, timeout: Int = 60) {
+    init(
+        remoteFactory: StorageKeyFactoryProtocol,
+        operationManager: OperationManagerProtocol,
+        timeout: Int = JSONRPCTimeout.singleNode
+    ) {
         self.remoteFactory = remoteFactory
         self.operationManager = operationManager
         self.timeout = timeout

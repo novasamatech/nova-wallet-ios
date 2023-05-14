@@ -43,9 +43,10 @@ final class WalletManageViewFactory {
     }
 
     private static func createInteractor() -> WalletManageInteractor? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
+
         let facade = UserDataStorageFacade.shared
         let repository = AccountRepositoryFactory(storageFacade: facade).createManagedMetaAccountRepository(
             for: nil,
@@ -53,15 +54,11 @@ final class WalletManageViewFactory {
         )
 
         return WalletManageInteractor(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             repository: repository,
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            currencyManager: currencyManager,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

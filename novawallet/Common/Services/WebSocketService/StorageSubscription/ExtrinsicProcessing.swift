@@ -75,6 +75,15 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
                 return processingResult
             }
 
+            if let processingResult = matchEquilibriumTransfer(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
+            ) {
+                return processingResult
+            }
+
             return matchExtrinsic(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,

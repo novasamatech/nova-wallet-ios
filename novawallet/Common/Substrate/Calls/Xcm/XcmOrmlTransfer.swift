@@ -42,7 +42,7 @@ extension Xcm {
         let destination: VersionedMultilocation
 
         // must be set as maximum between reserve and destination
-        let destinationWeightLimit: Xcm.WeightLimit<BlockchainWeight.WeightV1>
+        let destinationWeightLimit: Xcm.WeightLimit<JSON>
 
         func runtimeCall(for module: String) -> RuntimeCall<Self> {
             RuntimeCall(moduleName: module, callName: Xcm.ormlTransferCallName, args: self)
@@ -53,7 +53,7 @@ extension Xcm {
         }
     }
 
-    static func appendTransferCall(
+    static func appendOrmlTransferCall(
         asset: VersionedMultiasset,
         destination: VersionedMultilocation,
         weight: BigUInt,
@@ -66,10 +66,10 @@ extension Xcm {
             return ({ $0 }, path)
         }
 
-        let paramName = OrmlTransferCallV1.CodingKeys.destinationWeight.rawValue
+        let paramNameV1 = OrmlTransferCallV1.CodingKeys.destinationWeight.rawValue
 
         // v1 require only uint64 weight and v2 requires weight limit
-        let isV1 = callType.isArgumentTypeOf(paramName) { argumentType in
+        let isV1 = callType.isArgumentTypeOf(paramNameV1) { argumentType in
             codingFactory.isUInt64Type(argumentType)
         }
 
@@ -78,10 +78,22 @@ extension Xcm {
 
             return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
         } else {
+            let paramNameV2 = OrmlTransferCallV2.CodingKeys.destinationWeightLimit.rawValue
+
+            let optWeightJson = try BlockchainWeightFactory.convertCallVersionedWeightInWeightLimitToJson(
+                for: .init(path: path, argName: paramNameV2),
+                codingFactory: codingFactory,
+                weight: UInt64(weight)
+            )
+
+            guard let weightJson = optWeightJson else {
+                throw XcmTransferServiceError.noArgumentFound(paramNameV2)
+            }
+
             let call = OrmlTransferCallV2(
                 asset: asset,
                 destination: destination,
-                destinationWeightLimit: .limited(weight: .init(value: UInt64(weight)))
+                destinationWeightLimit: .limited(weight: weightJson)
             )
 
             return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)

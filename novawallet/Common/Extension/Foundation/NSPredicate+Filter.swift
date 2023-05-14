@@ -247,8 +247,17 @@ extension NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDDAppFavorite.identifier), identifier)
     }
 
-    static func filterAuthorizedDApps(by metaId: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDDAppSettings.metaId), metaId)
+    static func filterAuthorizedBrowserDApps(by metaId: String) -> NSPredicate {
+        let metaId = NSPredicate(format: "%K == %@", #keyPath(CDDAppSettings.metaId), metaId)
+        let source = NSPredicate(format: "%K = nil", #keyPath(CDDAppSettings.source))
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [metaId, source])
+    }
+
+    static func filterWalletConnectSessions() -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@", #keyPath(CDDAppSettings.source), DAppTransports.walletConnect
+        )
     }
 
     static func crowdloanContribution(chainIds: Set<ChainModel.Id>) -> NSPredicate {

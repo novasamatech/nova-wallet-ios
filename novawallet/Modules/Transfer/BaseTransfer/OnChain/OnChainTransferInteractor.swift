@@ -77,7 +77,8 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     ) {
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
-            chainId: chain.chainId
+            chainId: chain.chainId,
+            asset: asset
         )
 
         wrapper.targetOperation.completionBlock = {
@@ -233,20 +234,26 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recepient: AccountId,
-        canTransferAll: Bool
+        info: NativeTokenStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch amount {
         case let .concrete(value):
             return try addingNativeTransferValueCommand(
                 to: builder,
                 recepient: recepient,
-                value: value
+                value: value,
+                callPath: info.transferCallPath
             )
         case let .all(value):
-            if canTransferAll {
+            if info.canTransferAll {
                 return try addingNativeTransferAllCommand(to: builder, recepient: recepient)
             } else {
-                return try addingNativeTransferValueCommand(to: builder, recepient: recepient, value: value)
+                return try addingNativeTransferValueCommand(
+                    to: builder,
+                    recepient: recepient,
+                    value: value,
+                    callPath: info.transferCallPath
+                )
             }
         }
     }
@@ -254,9 +261,10 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     func addingNativeTransferValueCommand(
         to builder: ExtrinsicBuilderProtocol,
         recepient: AccountId,
-        value: BigUInt
+        value: BigUInt,
+        callPath: CallCodingPath
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.nativeTransfer(to: recepient, amount: value)
+        let call = callFactory.nativeTransfer(to: recepient, amount: value, callPath: callPath)
         let newBuilder = try builder.adding(call: call)
         return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
@@ -277,6 +285,22 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         extras: StatemineAssetExtras
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         let call = callFactory.assetsTransfer(
+            to: recepient,
+            extras: extras,
+            amount: amount.value
+        )
+
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+    }
+
+    func addingEquilibriumTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId,
+        extras: EquilibriumAssetExtras
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.equilibriumTransfer(
             to: recepient,
             extras: extras,
             amount: amount.value
@@ -310,12 +334,19 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
                 recepient: recepient,
                 extras: extras
             )
-        case let .native(canTransferAll):
+        case let .native(info):
             return try addingNativeTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
-                canTransferAll: canTransferAll
+                info: info
+            )
+        case let .equilibrium(extras):
+            return try addingEquilibriumTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                extras: extras
             )
         case .erc20, .evmNative:
             // we have a separate flow for evm

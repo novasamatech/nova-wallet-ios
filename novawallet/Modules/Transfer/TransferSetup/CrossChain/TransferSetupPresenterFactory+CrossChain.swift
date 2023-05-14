@@ -71,7 +71,8 @@ extension TransferSetupPresenterFactory {
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             phishingValidatingFactory: phishingValidatingFactory,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         presenter.view = view

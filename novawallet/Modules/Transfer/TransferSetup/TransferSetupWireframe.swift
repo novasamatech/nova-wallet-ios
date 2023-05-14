@@ -9,7 +9,7 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     ) {
-        guard let viewController = ModalPickerFactory.createNetworkSelectionList(
+        guard let viewController = ModalNetworksFactory.createNetworkSelectionList(
             selectionState: selectionState,
             delegate: delegate,
             context: context
@@ -63,5 +63,9 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
 
     func hideYourWallets(from view: TransferSetupViewProtocol?) {
         view?.controller.dismiss(animated: true)
+    }
+
+    func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
+        view?.controller.navigationController?.isBeingDismissed ?? true
     }
 }

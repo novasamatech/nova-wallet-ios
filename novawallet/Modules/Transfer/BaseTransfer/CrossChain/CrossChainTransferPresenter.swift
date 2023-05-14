@@ -134,16 +134,17 @@ class CrossChainTransferPresenter {
 
             // check whether sending amount and might be origin fee might be spent
             // for cross chain there is a separate check
-            dataValidatingFactory.canSend(
-                amount: sendingAmount,
-                fee: isOriginUtilityTransfer ? originFee : 0,
-                transferable: senderSendingAssetBalance?.transferable,
+            dataValidatingFactory.canSpendAmountInPlank(
+                balance: senderSendingAssetBalance?.transferable,
+                spendingAmount: sendingAmount,
+                asset: originChainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.canPayFeeInPlank(
+            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: senderUtilityAssetTransferable,
                 fee: originFee,
+                spendingAmount: isOriginUtilityTransfer ? sendingAmount : nil,
                 asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
@@ -206,7 +207,9 @@ class CrossChainTransferPresenter {
         switch result {
         case let .success(fee):
             originFee = fee
-        case .failure:
+        case let .failure(error):
+            logger?.error("Origin fee error: \(error)")
+
             askOriginFeeRetry()
         }
     }
@@ -215,7 +218,9 @@ class CrossChainTransferPresenter {
         switch result {
         case let .success(fee):
             crossChainFee = fee
-        case .failure:
+        case let .failure(error):
+            logger?.error("Crosschain fee error: \(error)")
+
             askCrossChainFeeRetry()
         }
     }
