@@ -26,7 +26,7 @@ final class ReferendumsPersonalActivityView: GenericTitleValueView<
 
         titleLabel.apply(style: .regularSubhedlinePrimary)
 
-        valueLabel.apply(style: .chipStyle)
+        valueLabel.apply(style: .semiboldChip)
         valueLabel.numberOfLines = 1
 
         detailsLabel.apply(style: .unlockStyle)
