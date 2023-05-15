@@ -654,6 +654,7 @@
 "dapp.auth.title" = "Allow “%@” to access your account addresses?";
 "common.account.address" = "Account address";
 "dapp.sign.extrinsic.failed" = "Failed to sign requested operation";
+"dapp.sign.operation.details.subtitle" = "Make sure the operation is correct";
 "common.all" = "All";
 "dapp.list.search" = "Search by name or enter URL";
 "dapp.browser.close.confirmation" = "Are you sure you want to close this screen?\nYour changes will not be applied.";
