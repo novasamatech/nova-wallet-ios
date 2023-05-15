@@ -3,6 +3,7 @@ extension String {
         case slash = "/"
         case colon = ":"
         case hashtag = "#"
+        case space = " "
     }
 
     func split(by separator: Separator, maxSplits: Int = .max) -> [String] {
