@@ -15,24 +15,17 @@ final class WalletSelectionInteractor: WalletsListInteractor {
     let eventCenter: EventCenterProtocol
 
     init(
-        chainRegistry: ChainRegistryProtocol,
+        balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         settings: SelectedWalletSettings,
-        eventCenter: EventCenterProtocol,
-        currencyManager: CurrencyManagerProtocol
+        eventCenter: EventCenterProtocol
     ) {
         self.settings = settings
         self.eventCenter = eventCenter
 
         super.init(
-            chainRegistry: chainRegistry,
-            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            currencyManager: currencyManager,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared
+            balancesStore: balancesStore,
+            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory
         )
     }
 }
