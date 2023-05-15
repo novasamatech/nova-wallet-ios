@@ -7,6 +7,16 @@ enum ReferendumsSection {
     case settings(isFilterOn: Bool)
     case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
     case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
+
+    var referendumsCells: [ReferendumsCellViewModel]? {
+        switch self {
+        case .personalActivities, .settings: return nil
+        case let .active(_, activeReferendums):
+            return activeReferendums
+        case let .completed(_, completedReferendums):
+            return completedReferendums
+        }
+    }
 }
 
 enum ReferendumPersonalActivity {
