@@ -1,3 +1,6 @@
+import Foundation
+import RobinHood
+
 enum SearchOperationFactory {
     private static func pointsForWord(title: String, word: String) -> UInt {
         if word.caseInsensitiveCompare(title) == .orderedSame {
