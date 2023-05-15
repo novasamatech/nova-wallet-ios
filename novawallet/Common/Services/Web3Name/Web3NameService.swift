@@ -150,7 +150,7 @@ final class Web3NameService: AnyCancellableCleaning {
         }
 
         guard let recipients = response.first(where: {
-            $0.key.match(chainId: chain.chainId, token: caip19Token)
+            $0.key.match(chain: chain, token: caip19Token)
         })?.value else {
             throw Web3NameServiceError.serviceNotFound(name, chain.name)
         }

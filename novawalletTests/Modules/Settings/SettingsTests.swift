@@ -40,13 +40,33 @@ final class SettingsTests: XCTestCase {
         let wireframe = MockSettingsWireframeProtocol()
 
         let eventCenter = MockEventCenterProtocol()
+
+        let walletConnect = MockWalletConnectDelegateInputProtocol()
+
+        stub(walletConnect) { stub in
+            when(stub).add(delegate: any()).thenDoNothing()
+            when(stub).connect(uri: any(), completion: any()).thenDoNothing()
+            when(stub).remove(delegate: any()).thenDoNothing()
+            when(stub).getSessionsCount().thenReturn(0)
+            when(stub).fetchSessions(any()).then { closure in
+                closure(.success([]))
+            }
+            when(stub).disconnect(from: any(), completion: any()).then { session, completion in
+                completion(nil)
+            }
+        }
+
         let interactor = SettingsInteractor(
             selectedWalletSettings: walletSettings,
             eventCenter: eventCenter,
+            walletConnect: walletConnect,
             currencyManager: CurrencyManagerStub()
         )
 
-        let viewModelFactory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator())
+        let viewModelFactory = SettingsViewModelFactory(
+            iconGenerator: NovaIconGenerator(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
 
         let presenter = SettingsPresenter(
             viewModelFactory: viewModelFactory,
