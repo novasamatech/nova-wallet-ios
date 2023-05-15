@@ -83,6 +83,7 @@ struct AddressScanViewFactory {
 
         let view = QRScannerViewController(
             title: title,
+            details: nil,
             message: message,
             presenter: presenter,
             localizationManager: localizationManager

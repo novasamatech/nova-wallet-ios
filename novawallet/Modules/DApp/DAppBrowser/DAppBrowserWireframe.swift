@@ -16,12 +16,6 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova
-        )
-
-        confirmationView.controller.modalTransitioningFactory = factory
-        confirmationView.controller.modalPresentationStyle = .custom
-
         view?.controller.present(confirmationView.controller, animated: true, completion: nil)
     }
 

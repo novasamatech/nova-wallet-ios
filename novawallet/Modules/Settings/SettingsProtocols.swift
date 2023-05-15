@@ -14,32 +14,26 @@ protocol SettingsPresenterProtocol: AnyObject {
     func handleSwitchAction()
 }
 
-protocol SettingsViewModelFactoryProtocol: AnyObject {
-    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
-
-    func createSectionViewModels(
-        language: Language?,
-        currency: String?,
-        locale: Locale
-    ) -> [(SettingsSection, [SettingsCellViewModel])]
-}
-
 protocol SettingsInteractorInputProtocol: AnyObject {
     func setup()
+    func connectWalletConnect(uri: String)
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
     func didReceive(currencyCode: String)
+    func didReceiveWalletConnect(sessionsCount: Int)
+    func didFailConnection(walletConnect error: Error)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable, WalletSwitchPresentable {
+    EmailPresentable, WalletSwitchPresentable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)
     func showPincodeChange(from view: ControllerBackedProtocol?)
     func showCurrencies(from view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
+    func showWalletConnect(from view: ControllerBackedProtocol?)
 }
