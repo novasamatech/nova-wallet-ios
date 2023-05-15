@@ -204,7 +204,7 @@ extension TransactionHistoryItem {
         case .reward:
             return .reward
         default:
-            if callPath.isTransfer {
+            if callPath.isSubstrateOrEvmTransfer {
                 return sender == address ? .outgoing : .incoming
             } else {
                 return TransactionType.extrinsic
