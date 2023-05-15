@@ -13,7 +13,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         provideResponse(for: messageId, results: addresses, nextState: self)
     }
 
-    private func sendTransaction(from message: MetamaskMessage) {
+    private func sendTransaction(from message: MetamaskMessage, host: String) {
         guard let transactionInfo = message.object else {
             let error = MetamaskError.invalidParams(with: "transaction missing")
             provideError(for: message.identifier, error: error, nextState: self)
@@ -28,10 +28,15 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             requestId: requestId
         )
 
-        stateMachine?.emit(messageId: requestId, signingOperation: transactionInfo, nextState: nextState)
+        stateMachine?.emit(
+            messageId: requestId,
+            signingOperation: transactionInfo,
+            host: host,
+            nextState: nextState
+        )
     }
 
-    private func signPersonalMessage(from message: MetamaskMessage) {
+    private func signPersonalMessage(from message: MetamaskMessage, host: String) {
         guard
             let hexString = message.object?.data?.stringValue,
             let signingHashedData = try? Data(
@@ -43,10 +48,10 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             return
         }
 
-        emitSigningBytesOperation(for: message, hashedData: signingHashedData)
+        emitSigningBytesOperation(for: message, host: host, hashedData: signingHashedData)
     }
 
-    private func signTypedData(from message: MetamaskMessage) {
+    private func signTypedData(from message: MetamaskMessage, host: String) {
         guard
             let hexString = message.object?.data?.stringValue,
             let signingHashedData = try? Data(hexString: hexString) else {
@@ -56,10 +61,10 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             return
         }
 
-        emitSigningBytesOperation(for: message, hashedData: signingHashedData)
+        emitSigningBytesOperation(for: message, host: host, hashedData: signingHashedData)
     }
 
-    private func emitSigningBytesOperation(for message: MetamaskMessage, hashedData: Data) {
+    private func emitSigningBytesOperation(for message: MetamaskMessage, host: String, hashedData: Data) {
         let requestId = message.identifier
         let nextState = DAppMetamaskSigningState(
             stateMachine: stateMachine,
@@ -69,7 +74,12 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
 
         let signingJson = JSON.stringValue(hashedData.toHex(includePrefix: true))
 
-        stateMachine?.emit(messageId: requestId, signingOperation: signingJson, nextState: nextState)
+        stateMachine?.emit(
+            messageId: requestId,
+            signingOperation: signingJson,
+            host: host,
+            nextState: nextState
+        )
     }
 }
 
@@ -86,7 +96,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
         dataSource.fetchEthereumAddresses(for: chain.chainId).first?.toEthereumAddressWithChecksum()
     }
 
-    func handle(message: MetamaskMessage, host _: String, dataSource: DAppBrowserStateDataSource) {
+    func handle(message: MetamaskMessage, host: String, dataSource: DAppBrowserStateDataSource) {
         do {
             switch message.name {
             case .requestAccounts:
@@ -112,11 +122,11 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
                     }
                 )
             case .signTransaction:
-                sendTransaction(from: message)
+                sendTransaction(from: message, host: host)
             case .signPersonalMessage:
-                signPersonalMessage(from: message)
+                signPersonalMessage(from: message, host: host)
             case .signTypedMessage:
-                signTypedData(from: message)
+                signTypedData(from: message, host: host)
             }
         } catch {
             stateMachine?.emit(error: error, nextState: self)
