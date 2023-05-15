@@ -29,9 +29,13 @@ final class AssetHistoryFacade {
             let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
             let historyAssetId = try assetMapper.historyAssetId()
 
+            // we support only transfers for non utility assets
+
+            let mappedFilter = asset.isUtility ? filter : .transfers
+
             return SubqueryHistoryOperationFactory(
                 url: url,
-                filter: filter,
+                filter: mappedFilter,
                 assetId: historyAssetId
             )
         } catch {
