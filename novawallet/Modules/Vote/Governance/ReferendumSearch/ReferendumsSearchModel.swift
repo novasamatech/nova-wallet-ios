@@ -1,3 +1,5 @@
+import RobinHood
+
 final class ReferendumsSearchModel {
     let cells: [ReferendumsCellViewModel]
     let searchKeyExtractor: (ReferendumIdLocal) -> String

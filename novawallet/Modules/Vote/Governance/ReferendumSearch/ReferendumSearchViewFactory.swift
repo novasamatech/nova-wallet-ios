@@ -14,6 +14,7 @@ struct ReferendumSearchViewFactory {
             delegate: delegate,
             referendumsState: state,
             operationQueue: OperationQueue(),
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
