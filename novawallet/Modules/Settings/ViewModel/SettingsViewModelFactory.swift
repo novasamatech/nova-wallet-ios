@@ -3,11 +3,27 @@ import SoraFoundation
 import SubstrateSdk
 import IrohaCrypto
 
+protocol SettingsViewModelFactoryProtocol: AnyObject {
+    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
+
+    func createSectionViewModels(
+        language: Language?,
+        currency: String?,
+        parameters: SettingsParameters,
+        locale: Locale
+    ) -> [(SettingsSection, [SettingsCellViewModel])]
+}
+
 final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
+    let quantityFormatter: LocalizableResource<NumberFormatter>
 
-    init(iconGenerator: IconGenerating) {
+    init(
+        iconGenerator: IconGenerating,
+        quantityFormatter: LocalizableResource<NumberFormatter>
+    ) {
         self.iconGenerator = iconGenerator
+        self.quantityFormatter = quantityFormatter
     }
 
     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel {
@@ -28,10 +44,14 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     func createSectionViewModels(
         language: Language?,
         currency: String?,
+        parameters: SettingsParameters,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
         [
-            (.general, [createCommonViewViewModel(row: .wallets, locale: locale)]),
+            (.general, [
+                createCommonViewViewModel(row: .wallets, locale: locale),
+                createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale)
+            ]),
             (.preferences, [
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale)
@@ -61,24 +81,45 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     ) -> SettingsCellViewModel {
         SettingsCellViewModel(
             row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: nil
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .none
         )
     }
 
     private func createLanguageViewModel(from language: Language?, locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileLanguageTitle(preferredLanguages: locale.rLanguages)
+
         let subtitle = language?.title(in: locale)?.capitalized
+
         let viewModel = SettingsCellViewModel(
             row: .language,
-            title: title,
-            icon: SettingsRow.language.icon,
-            accessoryTitle: subtitle
+            title: .init(title: title, icon: SettingsRow.language.icon),
+            accessory: .init(optTitle: subtitle)
         )
 
         return viewModel
+    }
+
+    private func createWalletConnectViewModel(
+        from counter: Int?,
+        locale: Locale
+    ) -> SettingsCellViewModel {
+        let row = SettingsRow.walletConnect
+
+        let subtitle: String? = counter.flatMap { counter in
+            if counter > 0 {
+                return quantityFormatter.value(for: locale).string(from: .init(value: counter))
+            } else {
+                return nil
+            }
+        }
+
+        return SettingsCellViewModel(
+            row: row,
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .init(optTitle: subtitle, icon: R.image.iconConnections())
+        )
     }
 
     private func createValuableViewModel(
@@ -88,9 +129,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     ) -> SettingsCellViewModel {
         SettingsCellViewModel(
             row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: value
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .init(optTitle: value)
         )
     }
 }
