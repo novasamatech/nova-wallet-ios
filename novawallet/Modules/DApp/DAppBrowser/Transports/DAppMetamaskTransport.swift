@@ -17,7 +17,8 @@ final class DAppMetamaskTransport {
 
     private func createConfirmationRequest(
         messageId: MetamaskMessage.Id,
-        from signingOperation: JSON
+        host: String,
+        signingOperation: JSON
     ) -> DAppOperationRequest? {
         guard let dataSource = dataSource,
               let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() else {
@@ -29,7 +30,7 @@ final class DAppMetamaskTransport {
             identifier: "\(messageId)",
             wallet: dataSource.wallet,
             accountId: accountId,
-            dApp: dataSource.dApp?.url.absoluteString ?? "",
+            dApp: host,
             dAppIcon: dataSource.dApp?.icon,
             operationData: signingOperation
         )
@@ -74,6 +75,7 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
     func emit(
         messageId: MetamaskMessage.Id,
         signingOperation: JSON,
+        host: String,
         nextState: DAppMetamaskStateProtocol
     ) {
         guard let dataSource = dataSource else {
@@ -82,7 +84,12 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
 
         state = nextState
 
-        if let request = createConfirmationRequest(messageId: messageId, from: signingOperation) {
+        if
+            let request = createConfirmationRequest(
+                messageId: messageId,
+                host: host,
+                signingOperation: signingOperation
+            ) {
             if
                 let chain = DAppEitherChain.createFromMetamask(
                     chain: nextState.chain,
