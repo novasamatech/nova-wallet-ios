@@ -230,5 +230,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     var slip44URL: URL {
         URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
     }
+
     // swiftlint:enable line_length
 }

@@ -127,3 +127,22 @@ extension IconDetailsView {
         detailsLabel.text = viewModel?.title
     }
 }
+
+class LoadableIconDetailsView: IconDetailsView {
+    private var imageViewModel: ImageViewModelProtocol?
+
+    func bind(viewModel: StackCellViewModel?) {
+        imageViewModel?.cancel(on: imageView)
+        imageView.image = nil
+
+        detailsLabel.text = viewModel?.details
+
+        imageViewModel = viewModel?.imageViewModel
+
+        viewModel?.imageViewModel?.loadImage(
+            on: imageView,
+            targetSize: CGSize(width: iconWidth, height: iconWidth),
+            animated: true
+        )
+    }
+}

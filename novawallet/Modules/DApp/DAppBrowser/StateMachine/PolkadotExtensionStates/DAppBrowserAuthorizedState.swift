@@ -61,7 +61,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             return
         }
 
-        guard dataSource.wallet.fetch(for: chain.accountRequest()) != nil else {
+        guard let accountId = dataSource.wallet.fetch(for: chain.accountRequest())?.accountId else {
             let error = DAppBrowserStateError.unexpected(reason: "no account for extrinsic chain")
             stateMachine?.emit(error: error, nextState: self)
             return
@@ -71,6 +71,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
+            accountId: accountId,
             dApp: message.url ?? "",
             dAppIcon: dataSource.dApp?.icon,
             operationData: jsonRequest
@@ -117,6 +118,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
+            accountId: accountId,
             dApp: message.url ?? "",
             dAppIcon: dataSource.dApp?.icon,
             operationData: .stringValue(payload.data)

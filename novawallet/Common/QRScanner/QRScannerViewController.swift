@@ -7,6 +7,7 @@ class QRScannerViewController: UIViewController, ViewHolder {
     typealias RootViewType = QRScannerViewLayout
 
     let localizedTitle: LocalizableResource<String>?
+    let localizableDetails: LocalizableResource<TitleIconViewModel>?
     let localizedMessage: LocalizableResource<String>
     let presenter: QRScannerPresenterProtocol
     let settings: QRScannerViewSettings
@@ -18,12 +19,14 @@ class QRScannerViewController: UIViewController, ViewHolder {
 
     init(
         title: LocalizableResource<String>?,
+        details: LocalizableResource<TitleIconViewModel>?,
         message: LocalizableResource<String>,
         presenter: QRScannerPresenterProtocol,
         localizationManager: LocalizationManagerProtocol,
         settings: QRScannerViewSettings = QRScannerViewSettings()
     ) {
         localizedTitle = title
+        localizableDetails = details
         localizedMessage = message
         self.presenter = presenter
         self.settings = settings
@@ -69,6 +72,9 @@ class QRScannerViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = localizedTitle?.value(for: selectedLocale)
         rootView.titleLabel.text = localizedMessage.value(for: selectedLocale)
+
+        rootView.detailsView.bind(viewModel: localizableDetails?.value(for: selectedLocale))
+
         rootView.actionButton?.imageWithTitleView?.title = R.string.localizable.qrScanUploadGallery(
             preferredLanguages: selectedLocale.rLanguages
         )
