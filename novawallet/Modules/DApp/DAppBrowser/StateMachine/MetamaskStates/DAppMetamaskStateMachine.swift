@@ -8,6 +8,7 @@ protocol DAppMetamaskStateMachineProtocol: AnyObject {
     func emit(
         messageId: MetamaskMessage.Id,
         signingOperation: JSON,
+        host: String,
         nextState: DAppMetamaskStateProtocol
     )
     func emitReload(with postExecutionScript: DAppScriptResponse, nextState: DAppMetamaskStateProtocol)
