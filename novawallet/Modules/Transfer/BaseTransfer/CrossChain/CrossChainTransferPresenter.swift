@@ -207,7 +207,9 @@ class CrossChainTransferPresenter {
         switch result {
         case let .success(fee):
             originFee = fee
-        case .failure:
+        case let .failure(error):
+            logger?.error("Origin fee error: \(error)")
+
             askOriginFeeRetry()
         }
     }
@@ -216,7 +218,9 @@ class CrossChainTransferPresenter {
         switch result {
         case let .success(fee):
             crossChainFee = fee
-        case .failure:
+        case let .failure(error):
+            logger?.error("Crosschain fee error: \(error)")
+
             askCrossChainFeeRetry()
         }
     }

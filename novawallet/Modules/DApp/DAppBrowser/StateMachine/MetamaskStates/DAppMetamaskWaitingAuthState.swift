@@ -51,7 +51,9 @@ final class DAppMetamaskWaitingAuthState: DAppMetamaskBaseState {
             wallet: dataSource.wallet,
             origin: host,
             dApp: host,
-            dAppIcon: nil
+            dAppIcon: nil,
+            requiredChains: .init(),
+            optionalChains: nil
         )
 
         let nextState = DAppMetamaskAuthorizingState(

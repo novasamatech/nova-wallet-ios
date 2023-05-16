@@ -2,6 +2,12 @@ import Foundation
 import UIKit
 
 final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentable {
+    let dappMediator: DAppInteractionMediating
+
+    init(dappMediator: DAppInteractionMediating) {
+        self.dappMediator = dappMediator
+    }
+
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createView(for: walletId) else {
             return
@@ -73,6 +79,18 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         } else if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
+    }
+
+    func showWalletConnect(from view: ControllerBackedProtocol?) {
+        guard
+            let walletConnectView = WalletConnectSessionsViewFactory.createView(
+                with: dappMediator
+            ) else {
+            return
+        }
+
+        walletConnectView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 
     // MARK: Private

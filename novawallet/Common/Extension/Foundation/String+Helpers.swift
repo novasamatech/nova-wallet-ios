@@ -15,4 +15,8 @@ extension String {
             return self
         }
     }
+
+    func isHex() -> Bool {
+        hasPrefix("0x") && lengthOfBytes(using: .ascii) % 2 == 0
+    }
 }

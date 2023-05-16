@@ -1,7 +1,7 @@
 import SubstrateSdk
 
 protocol DAppOperationConfirmViewProtocol: ControllerBackedProtocol {
-    func didReceive(confimationViewModel: DAppOperationConfirmViewModel)
+    func didReceive(confirmationViewModel: DAppOperationConfirmViewModel)
     func didReceive(feeViewModel: DAppOperationFeeViewModel)
 }
 
@@ -10,6 +10,7 @@ protocol DAppOperationConfirmPresenterProtocol: AnyObject {
     func confirm()
     func reject()
     func activateTxDetails()
+    func showAccountOptions()
 }
 
 protocol DAppOperationConfirmInteractorInputProtocol: AnyObject {
@@ -28,7 +29,8 @@ protocol DAppOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(txDetailsResult: Result<JSON, Error>)
 }
 
-protocol DAppOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable, MessageSheetPresentable {
+protocol DAppOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+    MessageSheetPresentable, AddressOptionsPresentable {
     func close(view: DAppOperationConfirmViewProtocol?)
     func showTxDetails(from view: DAppOperationConfirmViewProtocol?, json: JSON)
 }

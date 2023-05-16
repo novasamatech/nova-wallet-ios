@@ -104,8 +104,8 @@ extension Caip19.AssetId {
         return coin
     }
 
-    func match(chainId: String, token: Caip19.RegisteredToken) -> Bool {
-        guard self.chainId.match(chainId) else {
+    func match(chain: ChainModel, token: Caip19.RegisteredToken) -> Bool {
+        guard chainId.match(chain) else {
             return false
         }
 
