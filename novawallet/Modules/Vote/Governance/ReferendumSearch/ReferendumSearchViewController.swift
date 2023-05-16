@@ -138,15 +138,19 @@ extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
         applyState()
     }
 
-    func updateReferendums(time _: [UInt: StatusTimeViewModel?]) {
+    func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
         rootView.tableView.visibleCells.forEach { cell in
             guard let referendumCell = cell as? ReferendumTableViewCell,
-                  let indexPath = rootView.tableView.indexPath(for: cell) else {
+                  let indexPath = rootView.tableView.indexPath(for: cell),
+                  let cellModel = viewModels[safe: indexPath.row] else {
                 return
             }
-            if let model = viewModels[safe: indexPath.row] {
-                referendumCell.view.bind(viewModel: model.viewModel)
+
+            guard let timeModel = time[cellModel.referendumIndex]??.viewModel else {
+                return
             }
+
+            referendumCell.view.referendumInfoView.bind(timeModel: timeModel)
         }
     }
 }
