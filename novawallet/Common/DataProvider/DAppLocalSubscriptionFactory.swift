@@ -108,7 +108,7 @@ extension DAppLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol {
         let repository: CoreDataRepository<DAppSettings, CDDAppSettings>
 
         let mapper = DAppSettingsMapper()
-        let filter = NSPredicate.filterAuthorizedDApps(by: metaId)
+        let filter = NSPredicate.filterAuthorizedBrowserDApps(by: metaId)
         repository = storageFacade.createRepository(
             filter: filter,
             sortDescriptors: [],

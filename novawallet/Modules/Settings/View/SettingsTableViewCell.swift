@@ -1,18 +1,18 @@
 import UIKit
 import SoraUI
 
-typealias SettingsTableViewCell = CommonSettingsTableViewCell<UIImageView>
+class SettingsTableViewCell: SettingsBaseTableViewCell<UIImageView> {
+    var accessoryArrowView: UIImageView { rightView }
 
-extension SettingsTableViewCell {
-    func setup() {
-        accessorySize = .init(width: 16, height: 16)
-        rightView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
+    override func setupStyle() {
+        super.setupStyle()
+
+        accessoryArrowView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
     }
 
-    func bind(viewModel: DetailsSettingsCellViewModel) {
-        iconImageView.image = viewModel.icon
-        titleLabel.text = viewModel.title
+    override func setupLayout() {
+        super.setupLayout()
 
-        subtitleLabel.text = viewModel.accessoryTitle
+        accessorySize = CGSize(width: 16, height: 16)
     }
 }
