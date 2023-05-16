@@ -194,7 +194,8 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var paritySignerTroubleshoutingURL: URL {
-        URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Parity-Signer-troubleshooting")!
+        // swiftlint:disable:next line_length
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/welcome-to-nova-wallet/hardware-wallets#parity-signer-troubleshooting")!
     }
 
     var ledgerGuideURL: URL {
