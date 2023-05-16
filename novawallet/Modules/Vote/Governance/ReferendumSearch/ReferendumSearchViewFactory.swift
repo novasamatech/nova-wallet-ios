@@ -13,6 +13,7 @@ struct ReferendumSearchViewFactory {
             wireframe: wireframe,
             delegate: delegate,
             referendumsState: state,
+            searchOperationFactory: ReferendumsSearchOperationFactory(),
             operationQueue: OperationQueue(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
