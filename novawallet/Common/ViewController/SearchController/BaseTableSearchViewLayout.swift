@@ -11,28 +11,25 @@ class BaseTableSearchViewLayout: UIView {
         return view
     }()
 
+    private var backgroundView: UIView?
+
     var searchField: UITextField { searchView.searchBar.textField }
+    var cancelButton: RoundedButton { searchView.cancelButton }
 
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorSecondaryScreenBackground()
         tableView.rowHeight = UITableView.automaticDimension
         return tableView
     }()
 
-    let emptyStateContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = R.color.colorSecondaryScreenBackground()
-        return view
-    }()
+    let emptyStateContainer = UIView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorSecondaryScreenBackground()
-
         setupLayout()
+        apply(style: .defaultStyle)
     }
 
     @available(*, unavailable)
@@ -60,4 +57,51 @@ class BaseTableSearchViewLayout: UIView {
             make.bottom.equalToSuperview()
         }
     }
+}
+
+extension BaseTableSearchViewLayout {
+    struct Style {
+        let background: Background
+        let contentInsets: UIEdgeInsets?
+    }
+
+    enum Background {
+        case multigradient
+        case colored(UIColor)
+    }
+
+    func apply(style: Style) {
+        switch style.background {
+        case .multigradient:
+            guard backgroundView == nil else {
+                return
+            }
+            let gradientView = MultigradientView.background
+            insertSubview(gradientView, at: 0)
+            gradientView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            backgroundView = gradientView
+            backgroundColor = .clear
+            tableView.backgroundColor = .clear
+            emptyStateContainer.backgroundColor = .clear
+        case let .colored(color):
+            backgroundView?.removeFromSuperview()
+            backgroundView = nil
+            backgroundColor = color
+            tableView.backgroundColor = color
+            emptyStateContainer.backgroundColor = color
+        }
+        style.contentInsets.map {
+            tableView.contentInset = $0
+        }
+    }
+}
+
+extension BaseTableSearchViewLayout.Style {
+    static let defaultStyle =
+        BaseTableSearchViewLayout.Style(
+            background: .colored(R.color.colorSecondaryScreenBackground()!),
+            contentInsets: nil
+        )
 }
