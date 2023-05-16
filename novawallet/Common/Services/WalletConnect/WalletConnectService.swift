@@ -335,7 +335,7 @@ private struct DefaultSocketFactory: WebSocketFactory {
         urlRequest.addValue("allowed.domain.com", forHTTPHeaderField: "Origin")
 
         let engine = WSEngine(
-            transport: TCPTransport(),
+            transport: FoundationTransport(),
             certPinner: FoundationSecurity(),
             compressionHandler: nil
         )
