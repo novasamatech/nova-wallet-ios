@@ -1,13 +1,8 @@
 import Foundation
 
-struct GenericLens<Whole, Part> {
-    let get: (Whole) -> Part
-    let set: (Part, Whole) -> Whole
-}
-
-extension StackingRewardFiltersViewController {
+extension StakingRewardFiltersViewController {
     enum Lens {
-        static let startDayCollapsed = GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Bool>(
+        static let startDayCollapsed = GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Bool>(
             get: { $0.startDay.isCollapsed },
             set: { .init(
                 startDay: .init(value: $1.startDay.value, isCollapsed: $0),
@@ -16,7 +11,7 @@ extension StackingRewardFiltersViewController {
             }
         )
 
-        static let endDayCollapsed = GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Bool>(
+        static let endDayCollapsed = GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Bool>(
             get: { $0.endDay.collapsed },
             set: { .init(
                 startDay: $1.startDay,
@@ -26,7 +21,7 @@ extension StackingRewardFiltersViewController {
         )
 
         static let startDayValue =
-            GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Date?>(
+            GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Date?>(
                 get: { $0.startDay.value },
                 set: { .init(
                     startDay: .init(value: $0, isCollapsed: $1.startDay.isCollapsed),
@@ -36,7 +31,7 @@ extension StackingRewardFiltersViewController {
             )
 
         static let endDayValue =
-            GenericLens<StackingRewardFiltersViewModel.CustomPeriod, StackingRewardFiltersViewModel.EndDayValue?>(
+            GenericLens<StakingRewardFiltersViewModel.CustomPeriod, StakingRewardFiltersViewModel.EndDayValue?>(
                 get: { $0.endDay.value },
                 set: { .init(
                     startDay: $1.startDay,
@@ -45,7 +40,7 @@ extension StackingRewardFiltersViewController {
                 }
             )
 
-        static let endDayDate = GenericLens<StackingRewardFiltersViewModel.EndDayValue, Date?>(
+        static let endDayDate = GenericLens<StakingRewardFiltersViewModel.EndDayValue, Date?>(
             get: {
                 switch $0 {
                 case .alwaysToday:

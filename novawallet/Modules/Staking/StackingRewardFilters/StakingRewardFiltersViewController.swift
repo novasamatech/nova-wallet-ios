@@ -1,18 +1,18 @@
 import UIKit
 import SoraFoundation
 
-final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
-    typealias RootViewType = StackingRewardFiltersViewLayout
+final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
+    typealias RootViewType = StakingRewardFiltersViewLayout
 
-    let presenter: StackingRewardFiltersPresenterProtocol
+    let presenter: StakingRewardFiltersPresenterProtocol
     typealias DataSource = UITableViewDiffableDataSource<Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private lazy var dataSource = createDataSource()
-    var viewModel: StackingRewardFiltersViewModel?
+    var viewModel: StakingRewardFiltersViewModel?
     let dateFormatter: LocalizableResource<DateFormatter>
 
     init(
-        presenter: StackingRewardFiltersPresenterProtocol,
+        presenter: StakingRewardFiltersPresenterProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -28,7 +28,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = StackingRewardFiltersViewLayout()
+        view = StakingRewardFiltersViewLayout()
     }
 
     override func viewDidLoad() {
@@ -41,10 +41,10 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func setupTableView() {
         rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
-        rootView.tableView.registerHeaderFooterView(withClass: StackingRewardActionControl.self)
+        rootView.tableView.registerHeaderFooterView(withClass: StakingRewardActionControl.self)
         rootView.tableView.registerClassForCell(SelectableFilterCell.self)
         rootView.tableView.registerClassForCell(TitleSubtitleSwitchTableViewCell.self)
-        rootView.tableView.registerClassForCell(StackingRewardDateCell.self)
+        rootView.tableView.registerClassForCell(StakingRewardDateCell.self)
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
     }
@@ -88,7 +88,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
                     cell?.bind(title: title, isOn: isEnabled)
                     return cell
                 case let .calendar(id, date):
-                    let cell: StackingRewardDateCell? = tableView.dequeueReusableCell(for: indexPath)
+                    let cell: StakingRewardDateCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.bind(date: date)
                     cell?.id = id.rawValue
                     cell?.delegate = self
@@ -102,7 +102,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func createTitleHeaderView(for tableView: UITableView) -> IconTitleHeaderView {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let header = R.string.localizable.stackingRewardFiltersPeriodHeader(
+        let header = R.string.localizable.stakingRewardFiltersPeriodHeader(
             preferredLanguages: selectedLocale.rLanguages)
         view.bind(title: header, icon: nil)
         view.contentInsets = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
@@ -113,8 +113,8 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         for tableView: UITableView,
         title: String,
         value: String
-    ) -> StackingRewardActionControl {
-        let view: StackingRewardActionControl = tableView.dequeueReusableHeaderFooterView()
+    ) -> StakingRewardActionControl {
+        let view: StakingRewardActionControl = tableView.dequeueReusableHeaderFooterView()
         view.bind(
             title: title,
             value: value
@@ -123,7 +123,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
     }
 
     private func collapseOrExpandCalendar(
-        lens: GenericLens<StackingRewardFiltersViewModel.CustomPeriod, Bool>,
+        lens: GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Bool>,
         forceCollapse: Bool? = nil
     ) {
         guard let viewModel = self.viewModel else {
@@ -157,7 +157,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
             return
         }
 
-        let endDayValue: StackingRewardFiltersViewModel.EndDayValue = sender.isOn ?
+        let endDayValue: StakingRewardFiltersViewModel.EndDayValue = sender.isOn ?
             .alwaysToday : .exact(nil)
         let updatedCustomPeriod = Lens.endDayValue.set(endDayValue, viewModel.customPeriod)
 
@@ -167,7 +167,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         ))
     }
 
-    private func map(period: StackingRewardFiltersPeriod) -> StackingRewardFiltersViewModel {
+    private func map(period: StakingRewardFiltersPeriod) -> StakingRewardFiltersViewModel {
         switch period {
         case .allTime:
             return .init(period: .allTime)
@@ -184,7 +184,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         case let .custom(startDay, endDay):
             let endDayValue = viewModel?.customPeriod.endDay.value.map {
                 Lens.endDayDate.set(endDay, $0)
-            } ?? StackingRewardFiltersViewModel.CustomPeriod.defaultValue.endDay.value
+            } ?? StakingRewardFiltersViewModel.CustomPeriod.defaultValue.endDay.value
 
             return .init(
                 period: .custom,
@@ -202,7 +202,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func map(viewModel: StackingRewardFiltersViewModel) -> StackingRewardFiltersPeriod {
+    private func map(viewModel: StakingRewardFiltersViewModel) -> StakingRewardFiltersPeriod {
         switch viewModel.period {
         case .allTime:
             return .allTime
@@ -226,14 +226,14 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func dateStringValue(_ date: Date?) -> String {
         guard let date = date else {
-            return R.string.localizable.stackingRewardFiltersPeriodSelectDate(
+            return R.string.localizable.stakingRewardFiltersPeriodSelectDate(
                 preferredLanguages: selectedLocale.rLanguages)
         }
 
         return dateFormatter.value(for: selectedLocale).string(from: date)
     }
 
-    private func updateViewModel(viewModel: StackingRewardFiltersViewModel) {
+    private func updateViewModel(viewModel: StakingRewardFiltersViewModel) {
         self.viewModel = viewModel
         var snapshot = Snapshot()
 
@@ -244,7 +244,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         let periodSection = Section.period
         snapshot.appendSections([periodSection])
         snapshot.appendItems(
-            StackingRewardFiltersViewModel.Period.allCases.map {
+            StakingRewardFiltersViewModel.Period.allCases.map {
                 Row.selectable(
                     title: $0.name.value(for: selectedLocale),
                     selected: $0.rawValue == viewModel.period.rawValue
@@ -269,7 +269,7 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
         }
 
         snapshot.appendSections([.endAlwaysToday])
-        let title = R.string.localizable.stackingRewardFiltersPeriodEndDateOpen(
+        let title = R.string.localizable.stakingRewardFiltersPeriodEndDateOpen(
             preferredLanguages: selectedLocale.rLanguages)
         switch customPeriod.endDay.value {
         case .alwaysToday, .none:
@@ -288,21 +288,21 @@ final class StackingRewardFiltersViewController: UIViewController, ViewHolder {
     }
 }
 
-extension StackingRewardFiltersViewController: StackingRewardFiltersViewProtocol {
-    func didReceive(viewModel: StackingRewardFiltersPeriod) {
+extension StakingRewardFiltersViewController: StakingRewardFiltersViewProtocol {
+    func didReceive(viewModel: StakingRewardFiltersPeriod) {
         let newViewModel = map(period: viewModel)
         updateViewModel(viewModel: newViewModel)
     }
 }
 
-extension StackingRewardFiltersViewController: UITableViewDelegate {
+extension StakingRewardFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let sectionModel = dataSource.snapshot().sectionIdentifiers[section]
         switch sectionModel {
         case .period:
             return createTitleHeaderView(for: tableView)
         case let .start(value):
-            let title = R.string.localizable.stackingRewardFiltersPeriodDateStart(
+            let title = R.string.localizable.stakingRewardFiltersPeriodDateStart(
                 preferredLanguages: selectedLocale.rLanguages)
             let date = viewModel.map { model in
                 Lens.startDayValue.get(model.customPeriod)
@@ -313,7 +313,7 @@ extension StackingRewardFiltersViewController: UITableViewDelegate {
         case .endAlwaysToday:
             return nil
         case let .end(value):
-            let title = R.string.localizable.stackingRewardFiltersPeriodDateEnd(
+            let title = R.string.localizable.stakingRewardFiltersPeriodDateEnd(
                 preferredLanguages: selectedLocale.rLanguages)
             let date = viewModel.map { model in
                 model.customPeriod.endDay.value.map { Lens.endDayDate.get($0) }
@@ -352,7 +352,7 @@ extension StackingRewardFiltersViewController: UITableViewDelegate {
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let viewModel = viewModel,
-              let period = StackingRewardFiltersViewModel.Period(rawValue: indexPath.row) else {
+              let period = StakingRewardFiltersViewModel.Period(rawValue: indexPath.row) else {
             return
         }
 
@@ -360,12 +360,12 @@ extension StackingRewardFiltersViewController: UITableViewDelegate {
     }
 }
 
-extension StackingRewardFiltersViewController: StackingRewardDateCellDelegate {
+extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
     func datePicker(id: String, selectedDate: Date) {
         guard let viewModel = viewModel, let calendar = CalendarIdentifier(rawValue: id) else {
             return
         }
-        let updatedPeriod: StackingRewardFiltersViewModel.CustomPeriod
+        let updatedPeriod: StakingRewardFiltersViewModel.CustomPeriod
         switch calendar {
         case .startDate:
             updatedPeriod = Lens.startDayValue.set(selectedDate, viewModel.customPeriod)
@@ -384,7 +384,7 @@ extension StackingRewardFiltersViewController: StackingRewardDateCellDelegate {
     }
 }
 
-extension StackingRewardFiltersViewController: Localizable {
+extension StakingRewardFiltersViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupSaveButton()

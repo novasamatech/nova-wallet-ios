@@ -1,6 +1,6 @@
 import SoraFoundation
 
-struct StackingRewardFiltersViewModel {
+struct StakingRewardFiltersViewModel {
     var period: Period
     var customPeriod: CustomPeriod = .defaultValue
 
@@ -20,26 +20,26 @@ struct StackingRewardFiltersViewModel {
 
                 switch self {
                 case .allTime:
-                    return strings.stackingRewardFiltersPeriodAllTime(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodAllTime(preferredLanguages: languages)
                 case .lastWeek:
-                    return strings.stackingRewardFiltersPeriodLastWeek(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastWeek(preferredLanguages: languages)
                 case .lastMonth:
-                    return strings.stackingRewardFiltersPeriodLastMonth(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastMonth(preferredLanguages: languages)
                 case .lastThreeMonths:
-                    return strings.stackingRewardFiltersPeriodLastThreeMonths(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastThreeMonths(preferredLanguages: languages)
                 case .lastSixMonths:
-                    return strings.stackingRewardFiltersPeriodLastSixMonths(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastSixMonths(preferredLanguages: languages)
                 case .lastYear:
-                    return strings.stackingRewardFiltersPeriodLastYear(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastYear(preferredLanguages: languages)
                 case .custom:
-                    return strings.stackingRewardFiltersPeriodCustom(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodCustom(preferredLanguages: languages)
                 }
             }
         }
     }
 }
 
-extension StackingRewardFiltersViewModel {
+extension StakingRewardFiltersViewModel {
     struct CustomPeriod: Hashable {
         let startDay: StartDay
         let endDay: EndDay

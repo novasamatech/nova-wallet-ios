@@ -169,10 +169,10 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
     }
 
     func showPeriodSelection(from view: ControllerBackedProtocol?) {
-        guard let stackingRewardFiltersView = StackingRewardFiltersViewFactory.createView() else {
+        guard let stakingRewardFiltersView = StakingRewardFiltersViewFactory.createView() else {
             return
         }
-        let navigationController = NovaNavigationController(rootViewController: stackingRewardFiltersView.controller)
+        let navigationController = NovaNavigationController(rootViewController: stakingRewardFiltersView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

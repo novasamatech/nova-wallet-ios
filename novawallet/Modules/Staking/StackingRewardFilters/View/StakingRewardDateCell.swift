@@ -1,11 +1,11 @@
 import UIKit
 import SoraUI
 
-protocol StackingRewardDateCellDelegate: AnyObject {
+protocol StakingRewardDateCellDelegate: AnyObject {
     func datePicker(id: String, selectedDate: Date)
 }
 
-final class StackingRewardDateCell: UITableViewCell, Identifiable {
+final class StakingRewardDateCell: UITableViewCell, Identifiable {
     let datePicker: UIDatePicker = .create {
         if #available(iOS 14, *) {
             $0.preferredDatePickerStyle = .inline
@@ -15,7 +15,7 @@ final class StackingRewardDateCell: UITableViewCell, Identifiable {
         $0.addTarget(self, action: #selector(selectDateAction), for: .valueChanged)
     }
 
-    weak var delegate: StackingRewardDateCellDelegate?
+    weak var delegate: StakingRewardDateCellDelegate?
     var id: String = ""
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

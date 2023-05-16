@@ -1,6 +1,6 @@
 import Foundation
 
-extension StackingRewardFiltersViewController {
+extension StakingRewardFiltersViewController {
     enum Section: Hashable {
         case period
         case start(String)

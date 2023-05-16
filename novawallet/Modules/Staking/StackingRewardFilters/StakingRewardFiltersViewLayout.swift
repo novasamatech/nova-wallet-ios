@@ -1,6 +1,6 @@
 import UIKit
 
-final class StackingRewardFiltersViewLayout: UIView {
+final class StakingRewardFiltersViewLayout: UIView {
     let tableView: UITableView = .create { tableView in
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none

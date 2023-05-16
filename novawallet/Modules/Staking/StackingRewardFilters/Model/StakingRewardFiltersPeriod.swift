@@ -1,6 +1,6 @@
 import Foundation
 
-enum StackingRewardFiltersPeriod: Hashable {
+enum StakingRewardFiltersPeriod: Hashable {
     case allTime
     case lastWeek
     case lastMonth

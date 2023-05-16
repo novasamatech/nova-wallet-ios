@@ -1,16 +1,16 @@
-protocol StackingRewardFiltersViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModel: StackingRewardFiltersPeriod)
+protocol StakingRewardFiltersViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: StakingRewardFiltersPeriod)
 }
 
-protocol StackingRewardFiltersPresenterProtocol: AnyObject {
+protocol StakingRewardFiltersPresenterProtocol: AnyObject {
     func setup()
-    func save(_ period: StackingRewardFiltersPeriod)
+    func save(_ period: StakingRewardFiltersPeriod)
 }
 
-protocol StackingRewardFiltersInteractorInputProtocol: AnyObject {}
+protocol StakingRewardFiltersInteractorInputProtocol: AnyObject {}
 
-protocol StackingRewardFiltersInteractorOutputProtocol: AnyObject {}
+protocol StakingRewardFiltersInteractorOutputProtocol: AnyObject {}
 
-protocol StackingRewardFiltersWireframeProtocol: AnyObject {
-    func close(view: StackingRewardFiltersViewProtocol?)
+protocol StakingRewardFiltersWireframeProtocol: AnyObject {
+    func close(view: StakingRewardFiltersViewProtocol?)
 }

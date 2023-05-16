@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class StackingRewardActionControl: UITableViewHeaderFooterView {
+final class StakingRewardActionControl: UITableViewHeaderFooterView {
     let titleLabel = UILabel(style: .footnoteSecondary)
     let control: ActionTitleControl = .create {
         let tintColor = R.color.colorButtonTextAccent()!
