@@ -39,6 +39,8 @@ final class SettingsViewController: UIViewController, ViewHolder {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
         rootView.tableView.registerClassForCell(SwitchSettingsTableViewCell.self)
+        rootView.tableView.registerClassForCell(SettingsSubtitleTableViewCell.self)
+        rootView.tableView.registerClassForCell(SettingsBoxTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 
@@ -48,24 +50,6 @@ final class SettingsViewController: UIViewController, ViewHolder {
 
     @objc private func handleSwitchAction() {
         presenter.handleSwitchAction()
-    }
-
-    private func dequeueReusableCell(
-        tableView: UITableView,
-        viewModel: SettingsCellViewModel
-    ) -> RoundableTableViewCell {
-        switch viewModel {
-        case let .details(model):
-            let settingsCell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
-            settingsCell.setup()
-            settingsCell.bind(viewModel: model)
-            return settingsCell
-        case let .toggle(model):
-            let settingsCell = tableView.dequeueReusableCellWithType(SwitchSettingsTableViewCell.self)!
-            settingsCell.bind(viewModel: model)
-            settingsCell.delegate = self
-            return settingsCell
-        }
     }
 }
 
@@ -81,19 +65,30 @@ extension SettingsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewModels = sections[indexPath.section].1
         let cellViewModel = viewModels[indexPath.row]
-        let cell = dequeueReusableCell(tableView: tableView, viewModel: cellViewModel)
 
-        if viewModels.count > 1 {
-            if indexPath.row == viewModels.count - 1 {
-                cell.roundView.roundingCorners = [.bottomLeft, .bottomRight]
-            } else if indexPath.row == 0 {
-                cell.roundView.roundingCorners = [.topLeft, .topRight]
-            } else {
-                cell.roundView.roundingCorners = []
-            }
-        } else {
-            cell.roundView.roundingCorners = .allCorners
+        let cell: UITableViewCell & TableViewCellPositioning
+
+        switch cellViewModel.accessory {
+        case let .title(viewModel):
+            let subtitleCell = tableView.dequeueReusableCellWithType(SettingsSubtitleTableViewCell.self)!
+            subtitleCell.bind(titleViewModel: cellViewModel.title, accessoryViewModel: viewModel)
+            cell = subtitleCell
+        case let .box(viewModel):
+            let boxCell = tableView.dequeueReusableCellWithType(SettingsBoxTableViewCell.self)!
+            boxCell.bind(titleViewModel: cellViewModel.title, accessoryViewModel: viewModel)
+            cell = boxCell
+        case let .switchControl(isOn):
+            let switchCell = tableView.dequeueReusableCellWithType(SwitchSettingsTableViewCell.self)!
+            switchCell.bind(titleViewModel: cellViewModel.title, isOn: isOn)
+            switchCell.delegate = self
+            cell = switchCell
+        case .none:
+            let titleCell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
+            titleCell.bind(titleViewModel: cellViewModel.title)
+            cell = titleCell
         }
+
+        cell.apply(position: .init(row: indexPath.row, count: viewModels.count))
 
         return cell
     }
@@ -149,12 +144,15 @@ extension SettingsViewController: Localizable {
 }
 
 extension SettingsViewController: SwitchSettingsTableViewCellDelegate {
-    func didChangeSwitchValue(model: SwitchSettingsCellViewModel?) {
-        guard let model = model else {
+    func didToggle(cell: SwitchSettingsTableViewCell) {
+        guard let indexPath = rootView.tableView.indexPath(for: cell) else {
             return
         }
 
-        presenter.actionRow(model.row)
+        let viewModels = sections[indexPath.section].1
+        let cellViewModel = viewModels[indexPath.row]
+
+        presenter.actionRow(cellViewModel.row)
     }
 }
 
