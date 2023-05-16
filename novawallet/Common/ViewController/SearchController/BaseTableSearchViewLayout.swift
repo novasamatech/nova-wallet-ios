@@ -6,6 +6,8 @@ class BaseTableSearchViewLayout: UIView {
         let view = CustomSearchView()
         view.searchBar.textField.autocorrectionType = .no
         view.searchBar.textField.autocapitalizationType = .none
+        view.cancelButton.isHidden = true
+        view.cancelButton.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
         return view
     }()
 
@@ -60,7 +62,6 @@ class BaseTableSearchViewLayout: UIView {
 extension BaseTableSearchViewLayout {
     struct Style {
         let background: Background
-        let cancelButtonTitle: String?
         let contentInsets: UIEdgeInsets?
     }
 
@@ -91,15 +92,6 @@ extension BaseTableSearchViewLayout {
             tableView.backgroundColor = color
             emptyStateContainer.backgroundColor = color
         }
-        if let cancelButtonTitle = style.cancelButtonTitle {
-            cancelButton.isHidden = false
-            cancelButton.contentInsets = .init(top: 0, left: 16, bottom: 0, right: 16)
-            cancelButton.imageWithTitleView?.title = cancelButtonTitle
-        } else {
-            cancelButton.isHidden = true
-            cancelButton.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
-            searchView.invalidateIntrinsicContentSize()
-        }
         style.contentInsets.map {
             tableView.contentInset = $0
         }
@@ -110,7 +102,6 @@ extension BaseTableSearchViewLayout.Style {
     static let defaultStyle =
         BaseTableSearchViewLayout.Style(
             background: .colored(R.color.colorSecondaryScreenBackground()!),
-            cancelButtonTitle: nil,
             contentInsets: nil
         )
 }
