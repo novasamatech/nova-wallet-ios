@@ -233,6 +233,8 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
             break
         }
     }
+
+    func selectPeriod() {}
 }
 
 extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
