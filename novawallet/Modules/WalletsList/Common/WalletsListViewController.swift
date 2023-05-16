@@ -1,8 +1,9 @@
 import UIKit
 import SoraFoundation
 
-class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsListTableViewCell>: UIViewController,
-    ViewHolder, UITableViewDataSource, UITableViewDelegate {
+class WalletsListViewController<
+    Layout: WalletsListViewLayout, Cell: WalletsListTableViewCellProtocol & UITableViewCell
+>: UIViewController, ViewHolder, UITableViewDataSource, UITableViewDelegate {
     typealias RootViewType = Layout
 
     let basePresenter: WalletsListPresenterProtocol

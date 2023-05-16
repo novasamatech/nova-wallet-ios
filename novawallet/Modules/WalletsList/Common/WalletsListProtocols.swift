@@ -20,10 +20,7 @@ protocol WalletsListInteractorInputProtocol: AnyObject {
 
 protocol WalletsListInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>])
-    func didReceiveBalancesChanges(_ changes: [DataProviderChange<AssetBalance>])
-    func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>])
-    func didReceivePrice(_ changes: [ChainAssetId: DataProviderChange<PriceData>])
-    func didReceiveCrowdloanContributionChanges(_ changes: [DataProviderChange<CrowdloanContributionData>])
+    func didUpdateBalancesCalculator(_ calculator: BalancesCalculating)
     func didReceiveError(_ error: Error)
 }
 

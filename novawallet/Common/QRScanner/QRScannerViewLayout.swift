@@ -17,23 +17,24 @@ class QRScannerViewLayout: UIView {
         return imageView
     }()
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .semiBoldBody
-        label.textColor = R.color.colorTextPrimary()
-        label.numberOfLines = 2
-        label.textAlignment = .center
-        return label
-    }()
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .semiboldBodyPrimary)
+        view.numberOfLines = 2
+        view.textAlignment = .center
+    }
 
-    let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .semiBoldBody
-        label.textColor = R.color.colorTextPrimary()
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        return label
-    }()
+    let detailsView: IconDetailsView = .create { view in
+        view.detailsLabel.apply(style: .semiboldBodyPrimary)
+        view.detailsLabel.numberOfLines = 1
+        view.iconWidth = 24
+        view.spacing = 2
+    }
+
+    let messageLabel: UILabel = .create { view in
+        view.apply(style: .semiboldBodyPrimary)
+        view.numberOfLines = 0
+        view.textAlignment = .center
+    }
 
     var actionButton: TriangularedButton?
 
@@ -84,6 +85,15 @@ class QRScannerViewLayout: UIView {
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(qrFrameImageView.snp.top).offset(-24.0)
+        }
+
+        addSubview(detailsView)
+
+        detailsView.snp.makeConstraints { make in
+            make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.centerX.equalToSuperview()
+            make.top.equalTo(qrFrameImageView.snp.bottom).offset(24.0)
         }
 
         if let actionButton = actionButton {
