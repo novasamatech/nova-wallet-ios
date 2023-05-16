@@ -23,6 +23,7 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
 
     override func viewDidLoad() {
         setupTableView()
+        setupSearchView()
         applyLocalization()
         applyState()
         setupHandlers()
@@ -36,6 +37,15 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         rootView.searchView.searchBar.becomeFirstResponder()
     }
 
+    private func setupSearchView() {
+        rootView.apply(style: .init(
+            background: .multigradient,
+            contentInsets: .init(top: 16, left: 0, bottom: 0, right: 0)
+        ))
+        rootView.cancelButton.isHidden = false
+        rootView.cancelButton.contentInsets = .init(top: 0, left: 16, bottom: 0, right: 16)
+    }
+
     private func setupLocalization() {
         title = ""
 
@@ -43,11 +53,8 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.apply(style: .init(
-            background: .multigradient,
-            cancelButtonTitle: R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages),
-            contentInsets: .init(top: 16, left: 0, bottom: 0, right: 0)
-        ))
+        let cancelButtonTitle = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
+        rootView.cancelButton.imageWithTitleView?.title = cancelButtonTitle
     }
 
     private func setupHandlers() {
