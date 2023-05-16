@@ -18,6 +18,8 @@ final class SwitchSettingsTableViewCell: SettingsBaseTableViewCell<UISwitch> {
         rightView.onTintColor = R.color.colorIndicatorActive()
         rightView.thumbTintColor = R.color.colorIconPrimary()
         rightView.addTarget(self, action: #selector(actionSwitch), for: .valueChanged)
+
+        selectionStyle = .none
     }
 
     func bind(titleViewModel: TitleIconViewModel, isOn: Bool) {
