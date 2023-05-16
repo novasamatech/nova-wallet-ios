@@ -4,7 +4,6 @@ protocol ReferendumSearchViewProtocol: ControllerBackedProtocol {
 }
 
 protocol ReferendumSearchPresenterProtocol: TableSearchPresenterProtocol {
-    func setup()
     func select(referendumIndex: UInt)
     func cancel()
 }
