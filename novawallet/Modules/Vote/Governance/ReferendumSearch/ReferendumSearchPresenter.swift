@@ -12,7 +12,7 @@ final class ReferendumSearchPresenter {
 
     private weak var delegate: ReferendumSearchDelegate?
     private var currentSearchOperation: CancellableCall?
-    private var searchOperation: ReferendumsSearchOperation
+    private var searchOperationClosure: ReferendumsSearchOperationClosure
 
     private let operationQueue: OperationQueue
 
@@ -32,7 +32,7 @@ final class ReferendumSearchPresenter {
         self.wireframe = wireframe
         self.referendumsState = referendumsState
         self.searchOperationFactory = searchOperationFactory
-        searchOperation = searchOperationFactory.createOperation(cells: [])
+        searchOperationClosure = searchOperationFactory.createOperationClosure(cells: [])
     }
 
     deinit {
@@ -40,7 +40,7 @@ final class ReferendumSearchPresenter {
     }
 
     private func updateReferendumsViewModels(_ models: [ReferendumsCellViewModel]) {
-        searchOperation = searchOperationFactory.createOperation(cells: models)
+        searchOperationClosure = searchOperationFactory.createOperationClosure(cells: models)
         view?.didReceive(viewModel: .found(
             title: .init(title: ""),
             items: models
@@ -76,7 +76,7 @@ extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
     func search(for text: String) {
         currentSearchOperation?.cancel()
 
-        let searchOperation = searchOperation(text)
+        let searchOperation = searchOperationClosure(text)
         searchOperation.completionBlock = { [weak self] in
             do {
                 let referendums = try searchOperation.extractNoCancellableResultData()

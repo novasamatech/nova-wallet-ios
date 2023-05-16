@@ -1,13 +1,13 @@
 import RobinHood
 
-typealias ReferendumsSearchOperation = (String) -> BaseOperation<[ReferendumsCellViewModel]>
+typealias ReferendumsSearchOperationClosure = (String) -> BaseOperation<[ReferendumsCellViewModel]>
 
 protocol ReferendumsSearchOperationFactoryProtocol {
-    func createOperation(cells: [ReferendumsCellViewModel]) -> ReferendumsSearchOperation
+    func createOperationClosure(cells: [ReferendumsCellViewModel]) -> ReferendumsSearchOperationClosure
 }
 
 final class ReferendumsSearchOperationFactory: ReferendumsSearchOperationFactoryProtocol {
-    func createOperation(cells: [ReferendumsCellViewModel]) -> ReferendumsSearchOperation {
+    func createOperationClosure(cells: [ReferendumsCellViewModel]) -> ReferendumsSearchOperationClosure {
         ReferendumsSearchManager(cells: cells).searchOperation
     }
 }
