@@ -125,6 +125,11 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         rootView.walletSwitch.addTarget(self, action: #selector(actionIcon), for: .touchUpInside)
     }
 
+    @objc
+    private func rewardPeriodAction() {
+        presenter.selectPeriod()
+    }
+
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
     }
@@ -196,6 +201,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         let rewardView = StakingRewardView(frame: defaultFrame)
         rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
+        rewardView.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(rewardPeriodAction))
+        rewardView.addGestureRecognizer(tapGesture)
         containerView.addSubview(rewardView)
 
         applyConstraints(for: containerView, innerView: rewardView)

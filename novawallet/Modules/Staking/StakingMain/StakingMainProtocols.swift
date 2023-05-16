@@ -25,6 +25,7 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performRebag()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
+    func selectPeriod()
 }
 
 protocol StakingMainInteractorInputProtocol: AnyObject {
@@ -67,4 +68,5 @@ protocol StakingMainChildPresenterProtocol: AnyObject {
     func performRebondAction()
     func performRebag()
     func performManageAction(_ action: StakingManageOption)
+    func selectPeriod()
 }
