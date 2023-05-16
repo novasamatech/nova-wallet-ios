@@ -7,16 +7,20 @@ final class ReferendumSearchPresenter {
     let wireframe: ReferendumSearchWireframeProtocol
     let logger: LoggerProtocol?
     let referendumsState: Observable<ReferendumsState>
+    let localizationManager: LocalizationManagerProtocol
+    let searchOperationFactory: ReferendumsSearchOperationFactoryProtocol
+
     private weak var delegate: ReferendumSearchDelegate?
     private var currentSearchOperation: CancellableCall?
-    private var searchModel = ReferendumsSearchModel(cells: [])
+    private var searchOperation: ReferendumsSearchOperation
+
     private let operationQueue: OperationQueue
-    private let localizationManager: LocalizationManagerProtocol
 
     init(
         wireframe: ReferendumSearchWireframeProtocol,
         delegate: ReferendumSearchDelegate?,
         referendumsState: Observable<ReferendumsState>,
+        searchOperationFactory: ReferendumsSearchOperationFactoryProtocol,
         operationQueue: OperationQueue,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
@@ -27,14 +31,52 @@ final class ReferendumSearchPresenter {
         self.localizationManager = localizationManager
         self.wireframe = wireframe
         self.referendumsState = referendumsState
+        self.searchOperationFactory = searchOperationFactory
+        searchOperation = searchOperationFactory.createOperation(cells: [])
+    }
+
+    deinit {
+        referendumsState.removeObserver(by: self)
+    }
+
+    private func updateReferendumsViewModels(_ models: [ReferendumsCellViewModel]) {
+        searchOperation = searchOperationFactory.createOperation(cells: models)
+        view?.didReceive(viewModel: .found(
+            title: .init(title: ""),
+            items: models
+        ))
+    }
+
+    private func updateTimeModels(_ timeModels: [UInt: StatusTimeViewModel?]?) {
+        view?.updateReferendums(time: timeModels ?? [:])
+    }
+
+    private func setupInitialState() {
+        updateReferendumsViewModels(referendumsState.state.cells)
+        updateTimeModels(referendumsState.state.timeModels)
     }
 }
 
 extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
+    func setup() {
+        view?.didReceive(viewModel: .start)
+        setupInitialState()
+
+        referendumsState.addObserver(with: self) { [weak self] old, new in
+            if old.cells != new.cells {
+                self?.updateReferendumsViewModels(new.cells)
+            }
+
+            if old.timeModels != new.timeModels {
+                self?.updateTimeModels(new.timeModels)
+            }
+        }
+    }
+
     func search(for text: String) {
         currentSearchOperation?.cancel()
 
-        let searchOperation = searchModel.searchOperation(text: text)
+        let searchOperation = searchOperation(text)
         searchOperation.completionBlock = { [weak self] in
             do {
                 let referendums = try searchOperation.extractNoCancellableResultData()
@@ -50,35 +92,11 @@ extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
         }
 
         currentSearchOperation = searchOperation
-
         operationQueue.addOperation(searchOperation)
     }
 
-    func setup() {
-        view?.didReceive(viewModel: .start)
-
-        searchModel = ReferendumsSearchModel(cells: referendumsState.state.cells)
-        view?.updateReferendums(time: referendumsState.state.timeModels ?? [:])
-        view?.didReceive(viewModel: .found(
-            title: .init(title: ""),
-            items: referendumsState.state.cells
-        ))
-        referendumsState.addObserver(with: self) { [weak self] old, new in
-            if old.cells != new.cells {
-                self?.searchModel = ReferendumsSearchModel(cells: new.cells)
-                self?.view?.didReceive(viewModel: .found(
-                    title: .init(title: ""),
-                    items: new.cells
-                ))
-            }
-
-            if old.timeModels != new.timeModels {
-                self?.view?.updateReferendums(time: new.timeModels ?? [:])
-            }
-        }
-    }
-
     func cancel() {
+        currentSearchOperation?.cancel()
         wireframe.finish(from: view)
     }
 
