@@ -6,11 +6,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         static let bottomInset: CGFloat = 20.0
     }
 
-    let backgroundBlurView: BlockBackgroundView = {
-        let view = BlockBackgroundView()
-        view.sideLength = 12.0
-        return view
-    }()
+    let backgroundBlurView: BalanceCardView = .create { _ in
+    }
 
     let titleView: IconDetailsView = {
         let view = IconDetailsView()
@@ -62,6 +59,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
         setupLayout()
         setupLocalization()
+        setupMotionEffect()
     }
 
     @available(*, unavailable)
@@ -113,6 +111,22 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         titleView.detailsLabel.text = R.string.localizable.walletTotalBalance(
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    private func setupMotionEffect() {
+        let identity = CATransform3DIdentity
+        let minimum = CATransform3DRotate(identity, (315 * .pi) / 180.0, 0.0, 1.0, 0.0)
+        let maximum = CATransform3DRotate(identity, (45 * .pi) / 180.0, 0.0, 1.0, 0.0)
+
+        contentView.layer.transform = identity
+        let effect = UIInterpolatingMotionEffect(
+            keyPath: "layer.transform",
+            type: .tiltAlongHorizontalAxis
+        )
+        effect.minimumRelativeValue = minimum
+        effect.maximumRelativeValue = maximum
+
+        contentView.addMotionEffect(effect)
     }
 
     private func setupLayout() {
