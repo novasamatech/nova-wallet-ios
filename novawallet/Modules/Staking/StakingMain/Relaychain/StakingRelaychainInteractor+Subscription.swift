@@ -29,6 +29,8 @@ extension StakingRelaychainInteractor {
             if let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
                 totalRewardProvider = subscribeTotalReward(
                     for: stashItem.stash,
+                    startTimestamp: stakingTotalRewardFilter.startTimeStamp,
+                    endTimestamp: stakingTotalRewardFilter.endTimeStamp,
                     api: rewardApi,
                     assetPrecision: Int16(chainAsset.asset.precision)
                 )
