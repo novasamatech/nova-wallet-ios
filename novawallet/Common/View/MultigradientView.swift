@@ -20,7 +20,7 @@ class MultigradientView: UIView {
         }
     }
 
-    var startPoint = CGPoint(x: 0.0, y: 0.0) {
+    @objc var startPoint = CGPoint(x: 0.0, y: 0.0) {
         didSet {
             applyStartPoint()
         }
@@ -56,6 +56,12 @@ class MultigradientView: UIView {
             case .linear:
                 gradientLayer?.type = .axial
             }
+        }
+    }
+
+    var customMask: CALayer? {
+        didSet {
+            layer.mask = customMask
         }
     }
 
@@ -149,22 +155,26 @@ class MultigradientView: UIView {
     }
 
     private func applyMask() {
-        if let layer = self.layer as? CAGradientLayer {
-            if cornerRadius > 0 {
-                let path = CGMutablePath()
-                path.addRoundedRect(
-                    in: layer.bounds,
-                    cornerWidth: cornerRadius,
-                    cornerHeight: cornerRadius
-                )
+        guard
+            customMask == nil,
+            let layer = self.layer as? CAGradientLayer else {
+            return
+        }
 
-                let mask = CAShapeLayer()
-                mask.frame = layer.bounds
-                mask.path = path
-                layer.mask = mask
-            } else {
-                layer.mask = nil
-            }
+        if cornerRadius > 0 {
+            let path = CGMutablePath()
+            path.addRoundedRect(
+                in: layer.bounds,
+                cornerWidth: cornerRadius,
+                cornerHeight: cornerRadius
+            )
+
+            let mask = CAShapeLayer()
+            mask.frame = layer.bounds
+            mask.path = path
+            layer.mask = mask
+        } else {
+            layer.mask = nil
         }
     }
 }
