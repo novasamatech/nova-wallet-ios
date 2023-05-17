@@ -7637,7 +7637,7 @@
 			path = CreateWatchOnly;
 			sourceTree = "<group>";
 		};
-		5E8CD0BF639BD87FB423B57B /* StackingRewardFilters */ = {
+		5E8CD0BF639BD87FB423B57B /* StakingRewardFilters */ = {
 			isa = PBXGroup;
 			children = (
 				77ED16782A0CF40B00E1FC8C /* Model */,
@@ -7650,7 +7650,7 @@
 				1AF0DA16AC88A24E968490DF /* StakingRewardFiltersViewLayout.swift */,
 				78F5CAA29A0D442151679EA8 /* StakingRewardFiltersViewFactory.swift */,
 			);
-			path = StackingRewardFilters;
+			path = StakingRewardFilters;
 			sourceTree = "<group>";
 		};
 		68DEED3BF634220D4BF7A9C8 /* StakingAmount */ = {
@@ -14046,7 +14046,7 @@
 				153CB18ECB38553596D7C2F9 /* ControllerAccountConfirmation */,
 				02D14D8E22EE8B8422C929CD /* StakingUnbondSetup */,
 				A9D01A0AE42238560DA92299 /* StakingUnbondConfirm */,
-				5E8CD0BF639BD87FB423B57B /* StackingRewardFilters */,
+				5E8CD0BF639BD87FB423B57B /* StakingRewardFilters */,
 				5A992016B7B8EE42C6CC61F7 /* StakingRebagConfirm */,
 			);
 			path = Staking;

@@ -7,15 +7,21 @@ final class SubqueryTotalRewardSource {
     typealias Model = TotalRewardItem
 
     let address: AccountAddress
+    let startTimestamp: Int64?
+    let endTimestamp: Int64?
     let assetPrecision: Int16
     let operationFactory: SubqueryRewardOperationFactoryProtocol
 
     init(
         address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
         assetPrecision: Int16,
         operationFactory: SubqueryRewardOperationFactoryProtocol
     ) {
         self.address = address
+        self.startTimestamp = startTimestamp
+        self.endTimestamp = endTimestamp
         self.assetPrecision = assetPrecision
         self.operationFactory = operationFactory
     }
@@ -35,7 +41,11 @@ final class SubqueryTotalRewardSource {
 
 extension SubqueryTotalRewardSource: SingleValueProviderSourceProtocol {
     func fetchOperation() -> CompoundOperationWrapper<Model?> {
-        let rewardOperation = operationFactory.createTotalRewardOperation(for: address)
+        let rewardOperation = operationFactory.createTotalRewardOperation(
+            for: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp
+        )
 
         let mapOperation = createMapOperation(
             dependingOn: rewardOperation,

@@ -136,6 +136,8 @@ extension StakingParachainInteractor {
             let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
+                startTimestamp: stakingTotalRewardFilter.startTimeStamp,
+                endTimestamp: stakingTotalRewardFilter.endTimeStamp,
                 api: rewardApi,
                 assetPrecision: Int16(chainAsset.asset.precision)
             )
@@ -315,4 +317,9 @@ extension StakingParachainInteractor: SelectedCurrencyDepending {
 
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
+}
+
+struct StakingRewardFilter {
+    var startTimeStamp: Int64?
+    var endTimeStamp: Int64?
 }

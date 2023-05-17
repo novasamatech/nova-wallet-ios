@@ -48,6 +48,8 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
 
     func getTotalReward(
         for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
         api: LocalChainExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem>
@@ -198,12 +200,19 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
 
     func getTotalReward(
         for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
         api: LocalChainExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         clearIfNeeded()
 
-        let identifier = ("reward" + api.url.absoluteString) + address
+        let timeIdentifier = [
+            startTimestamp.map { "\($0)" } ?? "nil",
+            endTimestamp.map { "\($0)" } ?? "nil"
+        ].joined(separator: "-")
+
+        let identifier = ("reward" + api.url.absoluteString) + address + timeIdentifier
 
         if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
             return AnySingleValueProvider(provider)
@@ -217,6 +226,8 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
 
         let source = SubqueryTotalRewardSource(
             address: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
             assetPrecision: assetPrecision,
             operationFactory: operationFactory
         )

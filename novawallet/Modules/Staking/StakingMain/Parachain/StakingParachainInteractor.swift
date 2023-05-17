@@ -51,6 +51,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
+    var stakingTotalRewardFilter: StakingRewardFilter = .init()
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
