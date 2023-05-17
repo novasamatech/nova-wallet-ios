@@ -219,8 +219,8 @@ extension SubqueryRewardOperationFactory: SubqueryRewardOperationFactoryProtocol
                     .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
                 let endRewardString = response.end?
                     .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
-                let startReward = startRewardString.map { BigUInt($0) ?? 0 }
-                let endReward = endRewardString.map { BigUInt($0) ?? 0 }
+                let startReward = startRewardString.map { BigUInt($0) ?? 0 } ?? 0
+                let endReward = endRewardString.map { BigUInt($0) ?? 0 } ?? 0
                 return endReward - startReward
             }
         }
