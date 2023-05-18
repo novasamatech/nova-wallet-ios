@@ -41,7 +41,10 @@ struct TransactionHistoryViewFactory {
             logger: Logger.shared
         )
 
-        let view = TransactionHistoryViewController(presenter: presenter)
+        let view = TransactionHistoryViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
