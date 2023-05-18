@@ -64,3 +64,25 @@ final class DAppIconView: UIView {
         }
     }
 }
+
+enum DAppIconCellConstants {
+    static let size = CGSize(width: 48.0, height: 48.0)
+    static let insets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
+    static var displaySize: CGSize {
+        CGSize(
+            width: size.width - insets.left - insets.right,
+            height: size.height - insets.top - insets.bottom
+        )
+    }
+}
+
+enum DAppIconLargeConstants {
+    static let size = CGSize(width: 88.0, height: 88.0)
+    static let insets = UIEdgeInsets(top: 11.0, left: 11.0, bottom: 11.0, right: 11.0)
+    static var displaySize: CGSize {
+        CGSize(
+            width: size.width - insets.left - insets.right,
+            height: size.height - insets.top - insets.bottom
+        )
+    }
+}

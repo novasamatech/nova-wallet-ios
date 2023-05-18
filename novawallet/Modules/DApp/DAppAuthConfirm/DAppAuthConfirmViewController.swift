@@ -86,12 +86,12 @@ extension DAppAuthConfirmViewController: DAppAuthConfirmViewProtocol {
     func didReceive(viewModel: DAppAuthViewModel) {
         rootView.sourceAppIconView.bind(
             viewModel: viewModel.sourceImageViewModel,
-            size: DAppAuthConfirmViewLayout.iconSize
+            size: DAppIconLargeConstants.displaySize
         )
 
         rootView.destinationAppIconView.bind(
             viewModel: viewModel.destinationImageViewModel,
-            size: DAppAuthConfirmViewLayout.iconSize
+            size: DAppIconLargeConstants.displaySize
         )
 
         rootView.walletView.rowContentView.valueView.detailsLabel.text = viewModel.walletName

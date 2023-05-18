@@ -51,6 +51,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     var selectedIndex: Int = 0
     var selectedSection: Int = 0
     var sectionHeaderHeight: CGFloat = 26.0
+    var sectionFooterHeight: CGFloat = 26.0
     var isScrollEnabled: Bool = false
 
     var hasCloseItem: Bool = false
@@ -60,6 +61,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
 
     private var sections: [[LocalizableResource<T>]] = []
     private var sectionTitles: [Int: LocalizableResource<String>] = [:]
+    private var sectionFooters: [Int: LocalizableResource<String>] = [:]
 
     var viewModels: [LocalizableResource<T>] {
         get {
@@ -88,10 +90,20 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     }
 
     func addSection(viewModels: [LocalizableResource<T>], title: LocalizableResource<String>?) {
+        addSection(viewModels: viewModels, title: title, footer: nil)
+    }
+
+    func addSection(
+        viewModels: [LocalizableResource<T>],
+        title: LocalizableResource<String>?,
+        footer: LocalizableResource<String>?
+    ) {
         sections.append(viewModels)
 
         let lastSectionIndex = sections.count - 1
+
         sectionTitles[lastSectionIndex] = title
+        sectionFooters[lastSectionIndex] = footer
     }
 
     private func configure() {
@@ -224,12 +236,36 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
 
         if let title = sectionTitles[itemSectionIndex] {
             let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-            headerView.titleView.detailsLabel.textColor = R.color.colorTextSecondary()
-            headerView.titleView.detailsLabel.font = .regularFootnote
+            headerView.titleView.detailsLabel.apply(style: .footnoteSecondary)
 
             headerView.bind(title: title.value(for: selectedLocale), icon: nil)
 
             return headerView
+        } else {
+            return nil
+        }
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        let itemSectionIndex = actionType.hasAction ? section - 1 : section
+
+        if sectionFooters[itemSectionIndex] != nil {
+            return sectionFooterHeight
+        } else {
+            return 0.0
+        }
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let itemSectionIndex = actionType.hasAction ? section - 1 : section
+
+        if let footer = sectionFooters[itemSectionIndex] {
+            let footerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+            footerView.titleView.detailsLabel.apply(style: .footnoteSecondary)
+
+            footerView.bind(title: footer.value(for: selectedLocale), icon: nil)
+
+            return footerView
         } else {
             return nil
         }

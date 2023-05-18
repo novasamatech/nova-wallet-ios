@@ -9,7 +9,10 @@ class DAppMetamaskBaseState {
         self.chain = chain
     }
 
-    func extendingMetamaskChainWithSubstrate(_ chain: MetamaskChain, dataSource: DAppBrowserStateDataSource) -> MetamaskChain {
+    func extendingMetamaskChainWithSubstrate(
+        _ chain: MetamaskChain,
+        dataSource: DAppBrowserStateDataSource
+    ) -> MetamaskChain {
         if let substrateChain = dataSource.fetchChainByEthereumChainId(chain.chainId) {
             return chain.appending(iconUrl: substrateChain.icon.absoluteString)
         } else {
