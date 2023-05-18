@@ -1,6 +1,5 @@
 import Foundation
 import SnapKit
-import CommonWallet
 import UIKit
 
 final class HistoryItemTableViewCell: UITableViewCell {
@@ -59,8 +58,6 @@ final class HistoryItemTableViewCell: UITableViewCell {
     }()
 
     private var statusImageView: UIImageView?
-
-    var viewModel: WalletViewModelProtocol?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -159,81 +156,6 @@ final class HistoryItemTableViewCell: UITableViewCell {
             } else {
                 make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             }
-        }
-    }
-
-    private func applyAmount(from itemViewModel: HistoryItemViewModel) {
-        switch itemViewModel.type {
-        case .incoming, .reward:
-            amountLabel.text = "+ \(itemViewModel.amount)"
-            amountLabel.textColor = R.color.colorTextPositive()!
-        case .outgoing, .slash, .extrinsic:
-            amountLabel.text = "- \(itemViewModel.amount)"
-            amountLabel.textColor = R.color.colorTextPrimary()!
-        }
-    }
-
-    private func applyTitle(from itemViewModel: HistoryItemViewModel) {
-        switch itemViewModel.titleType {
-        case .rawString:
-            titleLabel.lineBreakMode = .byTruncatingTail
-
-            titleLabel.snp.updateConstraints { make in
-                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
-                    .offset(-Constants.titleSpacingForOthers)
-            }
-        case .address:
-            titleLabel.lineBreakMode = .byTruncatingMiddle
-
-            titleLabel.snp.updateConstraints { make in
-                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
-                    .offset(-Constants.titleSpacingForTransfer)
-            }
-        }
-    }
-
-    private func applyStatus(from itemViewModel: HistoryItemViewModel) {
-        switch itemViewModel.status {
-        case .commited:
-            removeStatusView()
-        case .rejected:
-            addStatusViewIfNeeded()
-            statusImageView?.image = R.image.iconErrorFilled()
-            amountLabel.textColor = R.color.colorTextSecondary()
-        case .pending:
-            addStatusViewIfNeeded()
-            statusImageView?.image = R.image.iconPending()
-            amountLabel.textColor = R.color.colorTextPrimary()
-        }
-    }
-}
-
-extension HistoryItemTableViewCell: WalletViewProtocol {
-    func bind(viewModel: WalletViewModelProtocol) {
-        if let itemViewModel = viewModel as? HistoryItemViewModel {
-            self.viewModel = viewModel
-
-            titleLabel.text = itemViewModel.title
-            subtitleLabel.text = itemViewModel.subtitle
-            timeLabel.text = itemViewModel.time
-
-            applyAmount(from: itemViewModel)
-
-            applyTitle(from: itemViewModel)
-
-            applyStatus(from: itemViewModel)
-
-            let settings = ImageViewModelSettings(
-                targetSize: Constants.displayImageSize,
-                cornerRadius: nil,
-                tintColor: R.color.colorIconSecondary()
-            )
-
-            iconView.bind(viewModel: itemViewModel.imageViewModel, settings: settings)
-
-            updateAmountConstraints()
-
-            setNeedsLayout()
         }
     }
 }

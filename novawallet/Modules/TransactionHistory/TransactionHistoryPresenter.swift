@@ -7,18 +7,19 @@ final class TransactionHistoryPresenter {
     weak var view: TransactionHistoryViewProtocol?
     let wireframe: TransactionHistoryWireframeProtocol
     let interactor: TransactionHistoryInteractorInputProtocol
-    let viewModelFactory: TransactionHistoryViewModelFactory2Protocol
+    let viewModelFactory: TransactionHistoryViewModelFactoryProtocol
     let logger: LoggerProtocol?
     let address: AccountAddress
 
     private var items: [String: TransactionHistoryItem] = [:]
     private var filter: WalletHistoryFilter = .all
+    private var priceCalculator: TokenPriceCalculatorProtocol?
 
     init(
         address: AccountAddress,
         interactor: TransactionHistoryInteractorInputProtocol,
         wireframe: TransactionHistoryWireframeProtocol,
-        viewModelFactory: TransactionHistoryViewModelFactory2Protocol,
+        viewModelFactory: TransactionHistoryViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
@@ -37,6 +38,7 @@ final class TransactionHistoryPresenter {
 
         let viewModel = viewModelFactory.createGroupModel(
             Array(items.values),
+            priceCalculator: priceCalculator,
             address: address,
             locale: selectedLocale
         )
@@ -96,12 +98,12 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
     func didReceive(error: TransactionHistoryError) {
         logger?.error("Transaction history error: \(error)")
 
-        view?.stopLoading()
-
         switch error {
-        case let .fetchFailed:
+        case .fetchFailed:
+            view?.stopLoading()
+        case .setupFailed:
             break
-        case let .setupFailed:
+        case .priceFailed:
             break
         }
     }
@@ -113,6 +115,12 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
             items = changes.mergeToDict(items)
             reloadView()
         }
+    }
+
+    func didReceive(priceCalculator: TokenPriceCalculatorProtocol) {
+        self.priceCalculator = priceCalculator
+
+        reloadView()
     }
 }
 

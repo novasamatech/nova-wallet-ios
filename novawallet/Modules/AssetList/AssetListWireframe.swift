@@ -3,12 +3,6 @@ import UIKit
 import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
-    let walletUpdater: WalletDetailsUpdating
-
-    init(walletUpdater: WalletDetailsUpdating) {
-        self.walletUpdater = walletUpdater
-    }
-
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             chain: chain,
@@ -24,7 +18,9 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        guard let history = TransactionHistoryViewFactory.createView(chainAsset: .init(chain: chain, asset: asset)) else {
+        guard let history = TransactionHistoryViewFactory.createView(
+            chainAsset: .init(chain: chain, asset: asset)
+        ) else {
             return
         }
         guard let navigationController = view?.controller.navigationController else {

@@ -6,6 +6,6 @@ struct CoingeckoAPI {
     static let price = "simple/price"
 
     static func priceHistory(for tokenId: String) -> String {
-        "coin/\(tokenId)/market_chart/range"
+        "coins/\(tokenId)/market_chart/range"
     }
 }

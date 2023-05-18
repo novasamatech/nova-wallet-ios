@@ -96,7 +96,7 @@ final class CrowdloansViewModelFactory {
                     contentScale: UIScreen.main.scale
                 )
 
-                return WalletStaticImageViewModel(staticImage: icon ?? UIImage())
+                return StaticImageViewModel(image: icon ?? UIImage())
             }
         }()
 
