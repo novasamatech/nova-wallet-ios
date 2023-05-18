@@ -78,10 +78,10 @@ final class SubqueryRewardOperationFactory {
         endTimestamp: Int64?
     ) -> String {
         """
-        query {
-                    start: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: true))
-                    end: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: false))
-              }
+        {
+            start: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: true))
+            end: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: false))
+        }
         """
     }
 
@@ -113,7 +113,6 @@ final class SubqueryRewardOperationFactory {
         guard !filters.isEmpty else {
             return ""
         }
-        let accumulatedFilters = filters.joined(separator: ",")
 
         return "filter: { \(filters.joined(separator: ",")) }"
     }

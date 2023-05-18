@@ -2,11 +2,17 @@ import Foundation
 import SoraFoundation
 
 struct StakingRewardFiltersViewFactory {
-    static func createView() -> StakingRewardFiltersViewProtocol? {
-        let interactor = StakingRewardFiltersInteractor()
+    static func createView(
+        initialState: StakingRewardFiltersPeriod?,
+        delegate: StakingRewardFiltersDelegate
+    ) -> StakingRewardFiltersViewProtocol? {
         let wireframe = StakingRewardFiltersWireframe()
 
-        let presenter = StakingRewardFiltersPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = StakingRewardFiltersPresenter(
+            initialState: initialState,
+            delegate: delegate,
+            wireframe: wireframe
+        )
 
         let view = StakingRewardFiltersViewController(
             presenter: presenter,
@@ -15,7 +21,6 @@ struct StakingRewardFiltersViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }

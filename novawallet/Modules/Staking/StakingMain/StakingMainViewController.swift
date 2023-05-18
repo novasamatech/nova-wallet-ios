@@ -201,9 +201,11 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         let rewardView = StakingRewardView(frame: defaultFrame)
         rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
-        rewardView.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(rewardPeriodAction))
-        rewardView.addGestureRecognizer(tapGesture)
+        rewardView.filterView.control.addTarget(
+            self,
+            action: #selector(rewardPeriodAction),
+            for: .touchUpInside
+        )
         containerView.addSubview(rewardView)
 
         applyConstraints(for: containerView, innerView: rewardView)

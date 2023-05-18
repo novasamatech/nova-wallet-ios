@@ -109,5 +109,11 @@ extension ParachainStaking {
         func process(delegations _: [CollatorSelectionInfo]?) {}
 
         func process(scheduledRequests _: [ParachainStaking.DelegatorScheduledRequest]?) {}
+
+        func process(filter: StakingRewardFiltersPeriod?) {
+            commonData = commonData.byReplacing(filter: filter)
+
+            stateMachine?.transit(to: self)
+        }
     }
 }

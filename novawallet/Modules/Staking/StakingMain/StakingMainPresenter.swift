@@ -16,6 +16,7 @@ final class StakingMainPresenter {
     private var wallet: MetaAccountModel?
     private var chainAsset: ChainAsset?
     private var accountBalance: AssetBalance?
+    private var period: StakingRewardFiltersPeriod?
 
     init(
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
@@ -146,7 +147,13 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     }
 
     func selectPeriod() {
-        childPresenter?.selectPeriod()
+        wireframe.showPeriodSelection(
+            from: view,
+            initialState: period,
+            delegate: self
+        ) {
+            
+        }
     }
 }
 
@@ -178,6 +185,9 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
             )
 
             childPresenter?.setup()
+            if let period = period {
+                childPresenter?.selectPeriod(period)
+            }
         }
     }
 
@@ -190,10 +200,21 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     func didReceiveExpansion(_ isExpanded: Bool) {
         view?.expandNetworkInfoView(isExpanded)
     }
+
+    func didReceiveRewardFilter(_ period: StakingRewardFiltersPeriod) {
+        self.period = period
+        childPresenter?.selectPeriod(period)
+    }
 }
 
 extension StakingMainPresenter: AssetSelectionDelegate {
     func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
         interactor.save(chainAsset: chainAsset)
+    }
+}
+
+extension StakingMainPresenter: StakingRewardFiltersDelegate {
+    func stackingRewardFilter(didSelectFilter filter: StakingRewardFiltersPeriod) {
+        interactor.save(filter: filter)
     }
 }
