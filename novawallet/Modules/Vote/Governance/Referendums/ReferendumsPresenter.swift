@@ -29,8 +29,14 @@ final class ReferendumsPresenter {
 
     private var maxStatusTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
-    private var timeModels: [UInt: StatusTimeViewModel?]?
+    private var timeModels: [UInt: StatusTimeViewModel?]? {
+        didSet {
+            observableState.state.timeModels = timeModels
+        }
+    }
+
     private var filter = ReferendumsFilter.all
+    let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
 
     private var chain: ChainModel? {
         selectedOption?.chain
@@ -154,6 +160,7 @@ final class ReferendumsPresenter {
 
         let allSections = [activitySection, settingsSection] + referendumsSections
         view.update(model: .init(sections: allSections))
+        observableState.state.cells = referendumsSections.compactMap(\.referendumsCells).flatMap { $0 }
     }
 
     private func updateTimeModels() {
@@ -261,7 +268,11 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func showSearch() {
-        // TODO: Task #85zrwjtzu
+        wireframe.showSearch(
+            from: view,
+            referendumsState: observableState,
+            delegate: self
+        )
     }
 
     func select(referendumIndex: UInt) {
@@ -491,5 +502,11 @@ extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     func didUpdate(filter: ReferendumsFilter) {
         self.filter = filter
         filterReferendums()
+    }
+}
+
+extension ReferendumsPresenter: ReferendumSearchDelegate {
+    func didSelectReferendum(referendumIndex: ReferendumIdLocal) {
+        select(referendumIndex: referendumIndex)
     }
 }

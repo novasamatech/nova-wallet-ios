@@ -14,8 +14,13 @@ struct OrmlTokenStorageInfo {
     let canTransferAll: Bool
 }
 
+struct NativeTokenStorageInfo {
+    let canTransferAll: Bool
+    let transferCallPath: CallCodingPath
+}
+
 enum AssetStorageInfo {
-    case native(canTransferAll: Bool)
+    case native(info: NativeTokenStorageInfo)
     case statemine(extras: StatemineAssetExtras)
     case orml(info: OrmlTokenStorageInfo)
     case erc20(contractAccount: AccountId)
@@ -62,12 +67,16 @@ extension AssetStorageInfo {
 
             return .equilibrium(extras: extras)
         case .none:
-            let call = CallCodingPath.transferAll
-            let canTransferAll = codingFactory.metadata.getCall(
-                from: call.moduleName,
-                with: call.callName
-            ) != nil
-            return .native(canTransferAll: canTransferAll)
+            let canTransferAll = codingFactory.hasCall(for: .transferAll)
+            let transferCallPath: CallCodingPath = codingFactory.hasCall(for: .transferAllowDeath) ?
+                .transferAllowDeath : .transfer
+
+            let info = NativeTokenStorageInfo(
+                canTransferAll: canTransferAll,
+                transferCallPath: transferCallPath
+            )
+
+            return .native(info: info)
         }
     }
 
