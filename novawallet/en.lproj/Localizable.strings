@@ -286,6 +286,13 @@
 "staking.reward.filters.period.last.six.months" = "Last 6 months (6M)";
 "staking.reward.filters.period.last.year" = "Last year (1Y)";
 "staking.reward.filters.period.custom" = "Custom period";
+"staking.reward.filters.period.all.time.short" = "All";
+"staking.reward.filters.period.last.week.short" = "7D";
+"staking.reward.filters.period.last.month.short" = "30D";
+"staking.reward.filters.period.last.three.months.short" = "3M";
+"staking.reward.filters.period.last.six.months.short" = "6M";
+"staking.reward.filters.period.last.year.short" = "1Y";
+"staking.reward.filters.period.custom.month.short" = "%@D";
 "common.call" = "Call";
 "common.module" = "Module";
 "wallet.asset.buy.with" = "Buy with";

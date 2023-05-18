@@ -81,18 +81,24 @@ final class StakingStateViewModelFactory {
                 if let price = reward.price {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: .loaded(price)
+                        price: .loaded(price),
+                        filter: commonData.filter.map(\.title)?.value(for: locale)
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: nil
+                        price: nil,
+                        filter: commonData.filter.map(\.title)?.value(for: locale)
                     )
                 }
             }
         } else {
             return LocalizableResource { _ in
-                StakingRewardViewModel(amount: .loading, price: .loading)
+                StakingRewardViewModel(
+                    amount: .loading,
+                    price: .loading,
+                    filter: nil
+                )
             }
         }
     }

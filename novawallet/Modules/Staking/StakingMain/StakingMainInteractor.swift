@@ -17,6 +17,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     let logger: LoggerProtocol?
 
     var balanceProvider: StreamableProvider<AssetBalance>?
+    private var stakingRewardFiltersPeriod: StakingRewardFiltersPeriod?
 
     init(
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -104,6 +105,9 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
                 }
             }
         }
+
+        stakingRewardFiltersPeriod = .allTime
+        presenter?.didReceiveRewardFilter(stakingRewardFiltersPeriod!)
     }
 
     func save(chainAsset: ChainAsset) {
@@ -120,6 +124,11 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 
     func saveNetworkInfoViewExpansion(isExpanded: Bool) {
         commonSettings.stakingNetworkExpansion = isExpanded
+    }
+
+    func save(filter: StakingRewardFiltersPeriod) {
+        stakingRewardFiltersPeriod = filter
+        presenter?.didReceiveRewardFilter(filter)
     }
 }
 

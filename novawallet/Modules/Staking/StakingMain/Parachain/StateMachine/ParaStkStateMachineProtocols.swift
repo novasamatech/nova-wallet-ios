@@ -24,6 +24,7 @@ protocol ParaStkStateProtocol {
     func process(roundInfo: ParachainStaking.RoundInfo?)
     func process(totalReward: TotalRewardItem?)
     func process(yieldBoostState: ParaStkYieldBoostState?)
+    func process(filter: StakingRewardFiltersPeriod?)
 }
 
 protocol ParaStkStateMachineProtocol: AnyObject {

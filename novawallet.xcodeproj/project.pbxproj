@@ -380,6 +380,7 @@
 		76B0B7147181747A7CEDDDF6 /* GovernanceUnavailableTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E25CF67173500E0AC19387 /* GovernanceUnavailableTracksViewController.swift */; };
 		76CF8508C6936FC9941F3C3E /* TokensManageAddProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C995D640129977CAB05982EC /* TokensManageAddProtocols.swift */; };
 		7728E5932A13290D007901E0 /* GenericLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E5922A13290D007901E0 /* GenericLens.swift */; };
+		7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */; };
 		774A481129F8BFB70094635B /* OperationAuthPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A481029F8BFB70094635B /* OperationAuthPresentable.swift */; };
 		777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */; };
 		777BD86229F97322004969A2 /* ReferendumsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86129F97322004969A2 /* ReferendumsFilter.swift */; };
@@ -3075,7 +3076,6 @@
 		B409644ED1E20062A3EA0316 /* DAppTxDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BCDAB970C17F9798AC79B08 /* DAppTxDetailsViewController.swift */; };
 		B51AD1836313CE26F369ED3F /* CustomValidatorListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D540DFC00C25D8F73CFDC3 /* CustomValidatorListWireframe.swift */; };
 		B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F49B3B261FBA0B568A5320 /* ParaStkRebondPresenter.swift */; };
-		B6910C7C620800A8CCC49A5B /* StakingRewardFiltersInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C96856E3D9A15505FAD63D7 /* StakingRewardFiltersInteractor.swift */; };
 		B6D4C073B3F984FE0348B7D4 /* ParaStkYieldBoostStartInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0988D8EC0768B03BA7C55612 /* ParaStkYieldBoostStartInteractor.swift */; };
 		B6DB30A8D1BF84158CAC635D /* OperationDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661356CFE77B978610397907 /* OperationDetailsInteractor.swift */; };
 		B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8939D2E509D6FF66B7E117 /* InAppUpdatesProtocols.swift */; };
@@ -3630,7 +3630,6 @@
 		3C50BB281AD6DB3CF1493958 /* DAppOperationConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmPresenter.swift; sourceTree = "<group>"; };
 		3C535E8504943299B3E4A8EB /* ReferendumFullDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsViewController.swift; sourceTree = "<group>"; };
 		3C784EDFB9227884E30FBE6E /* ReferendumVoteConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteConfirmWireframe.swift; sourceTree = "<group>"; };
-		3C96856E3D9A15505FAD63D7 /* StakingRewardFiltersInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersInteractor.swift; sourceTree = "<group>"; };
 		3CAF58F7D0659E89B66B75E4 /* GovernanceRevokeDelegationTracksViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationTracksViewController.swift; sourceTree = "<group>"; };
 		3D2A26EC9537BD4275A03272 /* OperationDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OperationDetailsPresenter.swift; sourceTree = "<group>"; };
 		3D383344BEDAEDC76A6BE2CE /* DAppTxDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsProtocols.swift; sourceTree = "<group>"; };
@@ -3796,6 +3795,8 @@
 		75CFAA1D2D04553B10421C69 /* DAppAuthConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmProtocols.swift; sourceTree = "<group>"; };
 		76AA6A6232B1CF2D5AF74D0D /* ParaStkUnstakeInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeInteractor.swift; sourceTree = "<group>"; };
 		7728E5922A13290D007901E0 /* GenericLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLens.swift; sourceTree = "<group>"; };
+		7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedActionControlView.swift; sourceTree = "<group>"; };
+		7731E9C52A15F5680085B5FF /* MultiassetUserDataModel8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel8.xcdatamodel; sourceTree = "<group>"; };
 		774A481029F8BFB70094635B /* OperationAuthPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationAuthPresentable.swift; sourceTree = "<group>"; };
 		777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilterViewModel.swift; sourceTree = "<group>"; };
 		777BD86129F97322004969A2 /* ReferendumsFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilter.swift; sourceTree = "<group>"; };
@@ -7645,7 +7646,6 @@
 				D26BFF6789F0A11C5D870348 /* StackingRewardFiltersProtocols.swift */,
 				81EA338A618A41D4192644E4 /* StakingRewardFiltersWireframe.swift */,
 				BCA363AE7B1C51E3B1F7DD07 /* StakingRewardFiltersPresenter.swift */,
-				3C96856E3D9A15505FAD63D7 /* StakingRewardFiltersInteractor.swift */,
 				051D4C5F49FD0A4FAF5BFCC4 /* StakingRewardFiltersViewController.swift */,
 				1AF0DA16AC88A24E968490DF /* StakingRewardFiltersViewLayout.swift */,
 				78F5CAA29A0D442151679EA8 /* StakingRewardFiltersViewFactory.swift */,
@@ -15492,6 +15492,7 @@
 				8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */,
 				8489A6D927FDC49D0040C066 /* StakingUnbondingsView.swift */,
 				8489A6DD27FEA1930040C066 /* StakingUnbondingItemView.swift */,
+				7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -18974,6 +18975,7 @@
 				8468119428E6234B00BF54F1 /* RoundedSegmentedControl.swift in Sources */,
 				8453DE5928FD32780055345C /* NotEqualWrapper.swift in Sources */,
 				A32E1373E3671D518FFC3BC2 /* YourValidatorListViewController.swift in Sources */,
+				7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */,
 				84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */,
 				37E1E9782B9752BC50AF2476 /* YourValidatorListViewFactory.swift in Sources */,
 				84735E76288197F900BADC1B /* AssetListBasePresenter.swift in Sources */,
@@ -19936,7 +19938,6 @@
 				0154E387EC40EF553FC7BD02 /* StackingRewardFiltersProtocols.swift in Sources */,
 				3030DB7C067CC906E6794B1A /* StakingRewardFiltersWireframe.swift in Sources */,
 				4C06C526C22782939922BEB0 /* StakingRewardFiltersPresenter.swift in Sources */,
-				B6910C7C620800A8CCC49A5B /* StakingRewardFiltersInteractor.swift in Sources */,
 				3D798C32B3C960FC6216C8C9 /* StakingRewardFiltersViewController.swift in Sources */,
 				19055A725FD9C18753B74A52 /* StakingRewardFiltersViewLayout.swift in Sources */,
 				3983EDE80B9296F3A252BA03 /* StakingRewardFiltersViewFactory.swift in Sources */,
@@ -20353,11 +20354,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = RD2HBGJZLF;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
+				DEVELOPMENT_TEAM = 2857FNT253;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -20369,10 +20369,9 @@
 				);
 				MARKETING_VERSION = 6.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Ruslan's Dev";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan's Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -20790,6 +20789,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				7731E9C52A15F5680085B5FF /* MultiassetUserDataModel8.xcdatamodel */,
 				8881572D295AE5C600912F69 /* MultiassetUserDataModel7.xcdatamodel */,
 				84466B3128B652BA00FA1E0D /* MultiassetUserDataModel6.xcdatamodel */,
 				8450805128868B6E00FB3CB6 /* MultiassetUserDataModel5.xcdatamodel */,
@@ -20799,7 +20799,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 8881572D295AE5C600912F69 /* MultiassetUserDataModel7.xcdatamodel */;
+			currentVersion = 7731E9C52A15F5680085B5FF /* MultiassetUserDataModel8.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

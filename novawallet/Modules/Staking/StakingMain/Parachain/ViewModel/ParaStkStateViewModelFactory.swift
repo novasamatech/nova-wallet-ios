@@ -142,18 +142,24 @@ final class ParaStkStateViewModelFactory {
                 if let price = reward.price {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: .loaded(price)
+                        price: .loaded(price),
+                        filter: commonData.filter.map(\.title)?.value(for: locale)
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: nil
+                        price: nil,
+                        filter: commonData.filter.map(\.title)?.value(for: locale)
                     )
                 }
             }
         } else {
             return LocalizableResource { _ in
-                StakingRewardViewModel(amount: .loading, price: .loading)
+                StakingRewardViewModel(
+                    amount: .loading,
+                    price: .loading,
+                    filter: nil
+                )
             }
         }
     }
@@ -285,5 +291,41 @@ extension ParaStkStateViewModelFactory: ParaStkStateViewModelFactoryProtocol {
     func createViewModel(from state: ParaStkStateProtocol) -> StakingViewState {
         state.accept(visitor: self)
         return lastViewModel
+    }
+}
+
+extension StakingRewardFiltersPeriod {
+    var title: LocalizableResource<String> {
+        .init { locale in
+            let languages = locale.rLanguages
+            switch self {
+            case .allTime:
+                return R.string.localizable.stakingRewardFiltersPeriodAllTimeShort(preferredLanguages: languages)
+            case .lastWeek:
+                return R.string.localizable.stakingRewardFiltersPeriodLastWeekShort(preferredLanguages: languages)
+            case .lastMonth:
+                return R.string.localizable.stakingRewardFiltersPeriodLastMonthShort(preferredLanguages: languages)
+            case .lastThreeMonths:
+                return R.string.localizable.stakingRewardFiltersPeriodLastThreeMonthsShort(
+                    preferredLanguages: languages)
+            case .lastSixMonths:
+                return R.string.localizable.stakingRewardFiltersPeriodLastSixMonthsShort(preferredLanguages: languages)
+            case .lastYear:
+                return R.string.localizable.stakingRewardFiltersPeriodLastYearShort(preferredLanguages: languages)
+            case let .custom(start, end):
+                guard let startDate = start else {
+                    return ""
+                }
+                let endDate = end ?? Date()
+                guard let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day else {
+                    return ""
+                }
+
+                return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
+                    "\(days)",
+                    preferredLanguages: languages
+                )
+            }
+        }
     }
 }

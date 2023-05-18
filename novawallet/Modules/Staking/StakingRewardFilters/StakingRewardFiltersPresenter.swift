@@ -2,28 +2,30 @@ import Foundation
 
 final class StakingRewardFiltersPresenter {
     weak var view: StakingRewardFiltersViewProtocol?
+    weak var delegate: StakingRewardFiltersDelegate?
+    private var period: StakingRewardFiltersPeriod?
     let wireframe: StakingRewardFiltersWireframeProtocol
-    let interactor: StakingRewardFiltersInteractorInputProtocol
 
     init(
-        interactor: StakingRewardFiltersInteractorInputProtocol,
+        initialState: StakingRewardFiltersPeriod?,
+        delegate: StakingRewardFiltersDelegate,
         wireframe: StakingRewardFiltersWireframeProtocol
     ) {
-        self.interactor = interactor
+        period = initialState
+        self.delegate = delegate
         self.wireframe = wireframe
     }
 }
 
 extension StakingRewardFiltersPresenter: StakingRewardFiltersPresenterProtocol {
     func setup() {
-        let period = StakingRewardFiltersPeriod.allTime
-        view?.didReceive(viewModel: period)
+        if let period = period {
+            view?.didReceive(viewModel: period)
+        }
     }
 
-    func save(_: StakingRewardFiltersPeriod) {
-        // TODO:
+    func save(_ period: StakingRewardFiltersPeriod) {
+        delegate?.stackingRewardFilter(didSelect filter: period)
         wireframe.close(view: view)
     }
 }
-
-extension StakingRewardFiltersPresenter: StakingRewardFiltersInteractorOutputProtocol {}

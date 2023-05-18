@@ -32,6 +32,8 @@ final class StakingRewardView: UIView {
         return label
     }()
 
+    let filterView = BorderedActionControlView()
+
     let rewardView: MultiValueView = {
         let view = MultiValueView()
         view.valueTop.textColor = R.color.colorTextPrimary()
@@ -107,6 +109,13 @@ final class StakingRewardView: UIView {
             newSkeletonOptions.insert(.price)
         }
 
+        if let filter = viewModel.filter {
+            filterView.isHidden = false
+            filterView.bind(title: filter)
+        } else {
+            filterView.isHidden = true
+        }
+
         setupSkeleton(for: newSkeletonOptions)
     }
 
@@ -124,7 +133,14 @@ final class StakingRewardView: UIView {
 
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(20.0)
+        }
+
+        addSubview(filterView)
+        filterView.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
+            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalToSuperview().inset(20.0)
         }
 
