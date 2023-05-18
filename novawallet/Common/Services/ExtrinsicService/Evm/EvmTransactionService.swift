@@ -87,7 +87,11 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             let builder = EvmTransactionBuilder(address: address, chainId: chain.evmChainId)
             let transaction = (try closure(builder)).buildTransaction()
 
-            let gasEstimationWrapper = createGasLimitOrDefaultWrapper(for: transaction, fallbackGasLimit: fallbackGasLimit)
+            let gasEstimationWrapper = createGasLimitOrDefaultWrapper(
+                for: transaction,
+                fallbackGasLimit: fallbackGasLimit
+            )
+
             let gasPriceOperation = operationFactory.createGasPriceOperation()
 
             let mapOperation = ClosureOperation<BigUInt> {

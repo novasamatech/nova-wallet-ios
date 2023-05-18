@@ -25,6 +25,15 @@ extension Caip2 {
             namespace = parsedNamespace
             reference = parsedReference
         }
+
+        init(namespace: String, reference: String) {
+            self.namespace = namespace
+            self.reference = reference
+        }
+
+        var rawString: String {
+            namespace + String(String.Separator.colon.rawValue) + reference
+        }
     }
 }
 
@@ -41,6 +50,15 @@ extension Caip2 {
                 return id == otherId
             default:
                 return false
+            }
+        }
+
+        var rawChainId: String {
+            switch self {
+            case let .polkadot(genesisHash):
+                return ChainId(namespace: "polkadot", reference: genesisHash).rawString
+            case let .eip155(id):
+                return ChainId(namespace: "eip155", reference: String(id)).rawString
             }
         }
     }
@@ -63,12 +81,16 @@ extension Caip2.ChainId {
 }
 
 extension Caip2.ChainId {
-    func match(_ identifier: String) -> Bool {
+    func match(_ chain: ChainModel) -> Bool {
         switch knownChain {
         case let .polkadot(chainId):
-            return identifier.hasPrefix(chainId)
+            return chain.chainId.hasPrefix(chainId)
         case let .eip155(id):
-            return identifier.caseInsensitiveCompare("eip155:\(id)") == .orderedSame
+            if chain.isEthereumBased, BigUInt(chain.addressPrefix) == id {
+                return true
+            }
+
+            return chain.chainId.caseInsensitiveCompare("eip155:\(id)") == .orderedSame
         default:
             return false
         }

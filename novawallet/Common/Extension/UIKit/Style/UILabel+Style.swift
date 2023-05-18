@@ -33,12 +33,20 @@ extension UILabel.Style {
 
     static let footnoteAccent = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
-        font: .regularFootnote
+        font: .regularFootnote)
+    static let semiboldBodyPrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldBody
     )
 
-    static let chipStyle = UILabel.Style(
+    static let semiboldChip = UILabel.Style(
         textColor: R.color.colorChipText(),
         font: .semiBoldFootnote
+    )
+
+    static let footnoteIconChip = UILabel.Style(
+        textColor: R.color.colorIconChip(),
+        font: .regularFootnote
     )
 
     static let caption1Secondary = UILabel.Style(
@@ -56,6 +64,11 @@ extension UILabel.Style {
         font: .regularSubheadline
     )
 
+    static let regularSubhedlineSecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .regularSubheadline
+    )
+
     static let rowLink = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .p2Paragraph
@@ -69,5 +82,15 @@ extension UILabel.Style {
     static let bottomSheetTitle = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .semiBoldBody
+    )
+
+    static let title3Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldTitle3
+    )
+
+    static let sourceCodePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .regularFootnote
     )
 }

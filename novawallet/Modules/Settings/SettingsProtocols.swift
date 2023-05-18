@@ -20,8 +20,7 @@ protocol SettingsViewModelFactoryProtocol: AnyObject {
     func createSectionViewModels(
         language: Language?,
         currency: String?,
-        isBiometricAuthOn: Bool?,
-        isPinConfirmationOn: Bool,
+        parameters: SettingsParameters,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])]
 }
@@ -30,19 +29,21 @@ protocol SettingsInteractorInputProtocol: AnyObject {
     func setup()
     func updateBiometricAuthSettings(isOn: Bool)
     func updatePinConfirmationSettings(isOn: Bool)
+    func connectWalletConnect(uri: String)
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
     func didReceive(currencyCode: String)
+    func didReceiveWalletConnect(sessionsCount: Int)
     func didReceive(biometrySettings: BiometrySettings)
     func didReceive(pinConfirmationEnabled: Bool)
     func didReceive(error: SettingsError)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable, OperationAuthPresentable {
+    EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable, OperationAuthPresentable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)
@@ -50,4 +51,5 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showCurrencies(from view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
     func showPincode(completion: @escaping (Bool) -> Void)
+    func showWalletConnect(from view: ControllerBackedProtocol?)
 }

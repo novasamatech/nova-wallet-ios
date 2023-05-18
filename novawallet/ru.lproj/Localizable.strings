@@ -164,7 +164,7 @@
 "transaction.status.completed" = "Успешно";
 "transaction.status.failed" = "Ошибка";
 "transaction.status.pending" = "В ожидании";
-"transaction.detail.status" = "Статус";
+"common.status" = "Статус";
 "transaction.detail.date" = "Дата";
 "transaction.details.from" = "От";
 "wallet.balance.locked" = "Заблокировано";
@@ -676,6 +676,7 @@
 "dapp.auth.title" = "Разрешить “%@” доступ к адресам вашего кошелька?";
 "common.account.address" = "Адрес аккаунта";
 "dapp.sign.extrinsic.failed" = "Не удалось подписать запрошенную операцию";
+"dapp.sign.operation.details.subtitle" = "Убедитесь, что операция правильная";
 "common.all" = "Все";
 "dapp.list.search" = "Введите имя или URL";
 "dapp.browser.close.confirmation" = "Вы уверены, что хотите закрыть этот экран?\nВсе изменения не будут применены.";
@@ -1057,6 +1058,8 @@
 "governance.referendums.filter.not.voted" = "Не проголосованные";
 "governance.referendums.filter.title" = "Фильтры";
 "governance.referendums.filter.header" = "Показывать:";
+"governance.referendums.search.field.placeholder" = "Поиск по названию референдума или ID";
+"governance.referendums.search.empty" = "Не найдены референдумы с таким названием или ID";
 "governance.referendums.settings.title" = "Референдумы";
 "gov.referendum.title.fallback" = "Референдум %@";
 "tabbar.governance.title" = "Демократия";
@@ -1236,3 +1239,20 @@
 "transfer.setup.recipient.input.placeholder" = "Адрес или w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Идет поиск адреса получателя";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Пожалуйста, подождите пока завершится поиск имени %@";
+"wallet.connect.scan.message" = "Отсканируйте QR-код";
+"common.wallet.connect" = "WalletConnect";
+"wallet.connect.scan.button" = "Новое подключение";
+"common.disconnect" = "Отключить";
+"common.none" = "Нет";
+"common.status.active" = "Активно";
+"dapps.request.sign.title" = "Запрос на подпись";
+"common.wallet.connect.v2" = "WalletConnect v2";
+"dapps.missing.required.networks.warning.format" = "Некоторые из обязательных сетей, запрошенных \"%@\", не поддерживаются в Nova Wallet";
+"dapps.optional.networks" = "Необязательные";
+"dapps.required.networks" = "Обязательные";
+"common.status.expired" = "Истекла";
+"wallet.connect.scan.error" = "Неверный формат URI";
+"wallet.connect.pairing.error" = "Не удалось подключиться к dapp из-за проблем с сетью";
+"wallet.connect.disconnect.error" = "Не удалось завершить сессию с dapp из-за проблем с сетью";
+"wallet.connect.signature.submit.error" = "Не удалось отправить подпись dapp из-за проблем с сетью";
+"wallet.connect.proposal.result.submit.error" = "Не удалось авторизовать dapp из-за проблем с сетью";

@@ -164,7 +164,7 @@
 "transaction.status.completed" = "Completed";
 "transaction.status.failed" = "Failed";
 "transaction.status.pending" = "Pending";
-"transaction.detail.status" = "Status";
+"common.status" = "Status";
 "transaction.detail.date" = "Date";
 "transaction.details.from" = "From";
 "wallet.balance.locked" = "Locked";
@@ -676,6 +676,7 @@
 "dapp.auth.title" = "Allow “%@” to access your account addresses?";
 "common.account.address" = "Account address";
 "dapp.sign.extrinsic.failed" = "Failed to sign requested operation";
+"dapp.sign.operation.details.subtitle" = "Make sure the operation is correct";
 "common.all" = "All";
 "dapp.list.search" = "Search by name or enter URL";
 "dapp.browser.close.confirmation" = "Are you sure you want to close this screen?\nYour changes will not be applied.";
@@ -1057,6 +1058,8 @@
 "governance.referendums.filter.not.voted" = "Not voted";
 "governance.referendums.filter.title" = "Filters";
 "governance.referendums.filter.header" = "Show:";
+"governance.referendums.search.field.placeholder" = "Search by referendum title or ID";
+"governance.referendums.search.empty" = "No referenda with entered title or ID were found";
 "governance.referendums.settings.title" = "Referenda";
 "gov.referendum.title.fallback" = "Referendum %@";
 "tabbar.governance.title" = "Governance";
@@ -1236,3 +1239,20 @@
 "transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
+"wallet.connect.scan.message" = "Scan the QR code";
+"common.wallet.connect" = "WalletConnect";
+"wallet.connect.scan.button" = "New connection";
+"common.disconnect" = "Disconnect";
+"common.none" = "None";
+"common.status.active" = "Active";
+"dapps.request.sign.title" = "Sign Request";
+"common.wallet.connect.v2" = "WalletConnect v2";
+"dapps.missing.required.networks.warning.format" = "Some of the required networks requested by \"%@\" are not supported in Nova Wallet";
+"dapps.optional.networks" = "Optional";
+"dapps.required.networks" = "Required";
+"common.status.expired" = "Expired";
+"wallet.connect.scan.error" = "Invalid URI format";
+"wallet.connect.pairing.error" = "Could not connect to the dapp due to the network issues";
+"wallet.connect.disconnect.error" = "Could not close session with the dapp due to the network issues";
+"wallet.connect.signature.submit.error" = "Could not submit signature to the dapp due to the network issues";
+"wallet.connect.proposal.result.submit.error" = "Could not authorize the dapp due to the network issues";

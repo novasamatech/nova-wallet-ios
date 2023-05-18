@@ -13,10 +13,12 @@ final class SettingsInteractor {
     let settingsManager: SettingsManagerProtocol
     let eventCenter: EventCenterProtocol
     let biometryAuth: BiometryAuthProtocol
+    let walletConnect: WalletConnectDelegateInputProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
+        walletConnect: WalletConnectDelegateInputProtocol,
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol
@@ -25,6 +27,7 @@ final class SettingsInteractor {
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.biometryAuth = biometryAuth
+        self.walletConnect = walletConnect
         self.currencyManager = currencyManager
     }
 
@@ -53,12 +56,21 @@ final class SettingsInteractor {
             self.presenter?.didReceive(pinConfirmationEnabled: pinConfirmationEnabled)
         }
     }
+
+    private func provideWalletConnectSessionsCount() {
+        let count = walletConnect.getSessionsCount()
+
+        presenter?.didReceiveWalletConnect(sessionsCount: count)
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
+        walletConnect.add(delegate: self)
+
         provideUserSettings()
+        provideWalletConnectSessionsCount()
         applyCurrency()
     }
 
@@ -77,6 +89,14 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         settingsManager.pinConfirmationEnabled = isOn
         provideSecuritySettings()
     }
+
+    func connectWalletConnect(uri: String) {
+        walletConnect.connect(uri: uri) { [weak self] optError in
+            if let error = optError {
+                self?.presenter?.didReceive(error: .walletConnectFailed(error))
+            }
+        }
+    }
 }
 
 extension SettingsInteractor: EventVisitorProtocol {
@@ -86,6 +106,12 @@ extension SettingsInteractor: EventVisitorProtocol {
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
         provideUserSettings()
+    }
+}
+
+extension SettingsInteractor: WalletConnectDelegateOutputProtocol {
+    func walletConnectDidChangeSessions() {
+        provideWalletConnectSessionsCount()
     }
 }
 
