@@ -365,6 +365,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
 
     func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
         stateMachine.state.process(filter: filter)
+        interactor.update(filter: filter)
     }
 }
 

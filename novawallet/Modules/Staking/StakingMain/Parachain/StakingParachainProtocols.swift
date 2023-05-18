@@ -5,6 +5,7 @@ protocol StakingParachainInteractorInputProtocol: AnyObject {
     func setup()
     func fetchScheduledRequests()
     func fetchDelegations(for collators: [AccountId])
+    func update(filter: StakingRewardFiltersPeriod)
 }
 
 protocol StakingParachainInteractorOutputProtocol: AnyObject {

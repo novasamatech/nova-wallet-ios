@@ -36,6 +36,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     private var eraCompletionTimeCancellable: CancellableCall?
     private var rewardCalculatorCancellable: CancellableCall?
 
+    var stashItem: StashItem?
     var priceProvider: StreamableProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
     var stashControllerProvider: StreamableProvider<StashItem>?

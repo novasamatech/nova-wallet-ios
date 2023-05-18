@@ -93,14 +93,15 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     }
 
     private func provideStakingRewardsFilter() {
-        guard let stakingSettings = stakingSettings.value,
-              let accountId = selectedWalletSettings.value?.fetchChainAccountId(for: stakingSettings.chain.accountRequest()) else {
+        guard let chainAsset = stakingSettings.value,
+              let settings = selectedWalletSettings.value,
+              let accountId = settings.fetchChainAccountId(for: chainAsset.chain.accountRequest()) else {
             return
         }
-        let stakingType = StakingType(rawType: stakingSettings.asset.staking)
+        let stakingType = StakingType(rawType: chainAsset.asset.staking)
         let filterId = StakingRewardsFilter.createIdentifier(
             chainAccountId: accountId,
-            chainAssetId: stakingSettings.chainAssetId,
+            chainAssetId: chainAsset.chainAssetId,
             stakingType: stakingType
         )
         let fetchFilterOperation = stakingRewardsFilterRepository.fetchOperation(by: { filterId }, options: .init())

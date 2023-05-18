@@ -5,6 +5,8 @@ import CommonWallet
 
 extension StakingRelaychainInteractor {
     func handle(stashItem: StashItem?) {
+        self.stashItem = stashItem
+
         clear(dataProvider: &ledgerProvider)
         clear(dataProvider: &bagListNodeProvider)
         clear(dataProvider: &nominatorProvider)
@@ -25,7 +27,7 @@ extension StakingRelaychainInteractor {
             validatorProvider = subscribeValidator(for: stashAccountId, chainId: chainId)
             payeeProvider = subscribePayee(for: stashAccountId, chainId: chainId)
 
-            performTotalRewardSubscription(stashItem: stashItem)
+            performTotalRewardSubscription()
 
             subscribeToControllerAccount(address: stashItem.controller, chain: chainAsset.chain)
 
@@ -37,7 +39,7 @@ extension StakingRelaychainInteractor {
         presenter?.didReceive(stashItem: stashItem)
     }
 
-    func performTotalRewardSubscription(stashItem: StashItem?) {
+    func performTotalRewardSubscription() {
         clear(singleValueProvider: &totalRewardProvider)
         if
             let stashItem = stashItem,
