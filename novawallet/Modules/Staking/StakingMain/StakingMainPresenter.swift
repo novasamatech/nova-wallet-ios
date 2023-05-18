@@ -151,9 +151,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
             from: view,
             initialState: period,
             delegate: self
-        ) {
-            
-        }
+        ) {}
     }
 }
 

@@ -15,23 +15,27 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     let commonSettings: SettingsManagerProtocol
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol?
-
+    let stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>
     var balanceProvider: StreamableProvider<AssetBalance>?
     private var stakingRewardFiltersPeriod: StakingRewardFiltersPeriod?
-
+    private let operationQueue: OperationQueue
     init(
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         stakingSettings: StakingAssetSettings,
         commonSettings: SettingsManagerProtocol,
+        stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>,
         eventCenter: EventCenterProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.selectedWalletSettings = selectedWalletSettings
         self.stakingSettings = stakingSettings
         self.commonSettings = commonSettings
+        self.stakingRewardsFilterRepository = stakingRewardsFilterRepository
         self.eventCenter = eventCenter
+        self.operationQueue = operationQueue
         self.logger = logger
     }
 
@@ -87,6 +91,36 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
 
         presenter?.didReceiveExpansion(commonSettings.stakingNetworkExpansion)
     }
+
+    private func provideStakingRewardsFilter() {
+        guard let stakingSettings = stakingSettings.value,
+              let accountId = selectedWalletSettings.value?.fetchChainAccountId(for: stakingSettings.chain.accountRequest()) else {
+            return
+        }
+        let stakingType = StakingType(rawType: stakingSettings.asset.staking)
+        let filterId = StakingRewardsFilter.createIdentifier(
+            chainAccountId: accountId,
+            chainAssetId: stakingSettings.chainAssetId,
+            stakingType: stakingType
+        )
+        let fetchFilterOperation = stakingRewardsFilterRepository.fetchOperation(by: { filterId }, options: .init())
+
+        fetchFilterOperation.completionBlock = {
+            do {
+                let period = try fetchFilterOperation.extractNoCancellableResultData()?.period ?? .allTime
+                self.stakingRewardFiltersPeriod = period
+                DispatchQueue.main.async {
+                    self.presenter?.didReceiveRewardFilter(period)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        operationQueue.addOperation(fetchFilterOperation)
+    }
 }
 
 extension StakingMainInteractor: StakingMainInteractorInputProtocol {
@@ -99,15 +133,13 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
                     self?.provideNewChain()
                     self?.provideSelectedAccount()
                     self?.updateAccountSubscription()
+                    self?.provideStakingRewardsFilter()
                 case let .failure(error):
                     self?.logger?.error("Staking settings setup error: \(error)")
                     self?.presenter?.didReceiveError(error)
                 }
             }
         }
-
-        stakingRewardFiltersPeriod = .allTime
-        presenter?.didReceiveRewardFilter(stakingRewardFiltersPeriod!)
     }
 
     func save(chainAsset: ChainAsset) {
@@ -127,8 +159,32 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 
     func save(filter: StakingRewardFiltersPeriod) {
-        stakingRewardFiltersPeriod = filter
-        presenter?.didReceiveRewardFilter(filter)
+        guard let stakingSettings = stakingSettings.value,
+              let accountId = selectedWalletSettings.value?.fetchChainAccountId(for: stakingSettings.chain.accountRequest()) else {
+            return
+        }
+
+        let entity = StakingRewardsFilter(
+            chainAccountId: accountId,
+            chainAssetId: stakingSettings.chainAssetId,
+            stakingType: StakingType(rawType: stakingSettings.asset.staking),
+            period: filter
+        )
+
+        let saveOperation = stakingRewardsFilterRepository.saveOperation({ [entity] }, { [] })
+
+        saveOperation.completionBlock = { [weak self] in
+            self?.stakingRewardFiltersPeriod = filter
+
+            DispatchQueue.main.async {
+                if case .success = saveOperation.result {
+                    self?.stakingRewardFiltersPeriod = filter
+                    self?.presenter?.didReceiveRewardFilter(filter)
+                }
+            }
+        }
+
+        operationQueue.addOperation(saveOperation)
     }
 }
 

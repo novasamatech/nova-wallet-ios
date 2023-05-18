@@ -97,6 +97,11 @@ extension StakingParachainInteractor: EventVisitorProtocol {
 
         provideDurationInfo(for: blockTimeService)
     }
+
+    func update(filter: StakingRewardFiltersPeriod) {
+        totalRewardInterval = filter.interval
+        performTotalRewardSubscription()
+    }
 }
 
 extension StakingParachainInteractor: ApplicationHandlerDelegate {

@@ -37,7 +37,7 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         from view: ControllerBackedProtocol?,
         initialState: StakingRewardFiltersPeriod?,
         delegate: StakingRewardFiltersDelegate,
-        completion: @escaping () -> Void
+        completion _: @escaping () -> Void
     ) {
         guard let stakingRewardFiltersView = StakingRewardFiltersViewFactory.createView(initialState: initialState, delegate: delegate) else {
             return
