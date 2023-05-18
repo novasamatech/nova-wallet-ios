@@ -3,6 +3,7 @@ import BigInt
 
 protocol StakingRelaychainInteractorInputProtocol: AnyObject {
     func setup()
+    func update(filter: StakingRewardFiltersPeriod)
 }
 
 protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
