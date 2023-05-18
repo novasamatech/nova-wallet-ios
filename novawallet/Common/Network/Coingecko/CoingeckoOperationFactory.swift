@@ -154,7 +154,7 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
             let priceHistory = try JSONDecoder().decode(CoingeckPriceHistoryData.self, from: data)
 
             let historyItems = priceHistory.prices.map { item in
-                PriceHistoryItem(startedAt: item.time.timeInterval.seconds, value: item.value)
+                PriceHistoryItem(startedAt: UInt64(item.time.timeInterval.seconds), value: item.value)
             }
 
             return PriceHistory(currencyId: currency.id, items: historyItems)
