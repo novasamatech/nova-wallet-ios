@@ -1,7 +1,7 @@
 import UIKit
 
 final class TransactionHistoryHeaderView: UIView {
-    private let titleLabel = UILabel(style: .footnoteSecondary)
+    private let titleLabel = UILabel(style: .semiboldCaps2Secondary)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,6 +24,6 @@ final class TransactionHistoryHeaderView: UIView {
     }
 
     func bind(title: String) {
-        titleLabel.text = title
+        titleLabel.text = title.uppercased()
     }
 }

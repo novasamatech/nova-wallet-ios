@@ -56,6 +56,11 @@ extension UILabel.Style {
         font: .caption2
     )
 
+    static let semiboldCaps2Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldCaps2
+    )
+
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline
