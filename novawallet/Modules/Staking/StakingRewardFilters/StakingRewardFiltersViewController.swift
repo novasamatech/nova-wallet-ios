@@ -49,7 +49,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         rootView.tableView.delegate = self
     }
 
-    private func setupSaveButton() {
+    private func setupSaveButton(isEnabled: Bool = true) {
         let saveButton = UIBarButtonItem(
             title: R.string.localizable.commonSave(preferredLanguages: selectedLocale.rLanguages),
             style: .plain,
@@ -57,16 +57,15 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             action: #selector(saveButtonAction)
         )
 
+        saveButton.isEnabled = isEnabled
         saveButton.setupDefaultTitleStyle(with: .regularBody)
         navigationItem.rightBarButtonItem = saveButton
     }
 
     @objc private func saveButtonAction() {
-        guard let viewModel = viewModel else {
+        guard let viewModel = viewModel, let period = map(viewModel: viewModel) else {
             return
         }
-        let period = map(viewModel: viewModel)
-
         presenter.save(period)
     }
 
@@ -181,20 +180,31 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             return .init(period: .lastSixMonths)
         case .lastYear:
             return .init(period: .lastYear)
-        case let .custom(startDay, endDay):
-            let endDayValue = viewModel?.customPeriod.endDay.value.map {
-                Lens.endDayDate.set(endDay, $0)
-            } ?? StakingRewardFiltersViewModel.CustomPeriod.defaultValue.endDay.value
+        case let .custom(customDate):
+            let startDate: Date?
+            let endDate: StakingRewardFiltersViewModel.EndDayValue?
+
+            switch customDate {
+            case let .interval(start, end):
+                startDate = start
+                endDate = .exact(end)
+            case let .openEndDate(start):
+                startDate = start
+                endDate = .alwaysToday
+            case let .openStartDate(end):
+                startDate = nil
+                endDate = .alwaysToday
+            }
 
             return .init(
                 period: .custom,
                 customPeriod: .init(
                     startDay: .init(
-                        value: startDay,
-                        isCollapsed: viewModel?.customPeriod.startDay.isCollapsed ?? false
+                        value: startDate,
+                        collapsed: viewModel?.customPeriod.startDay.collapsed ?? false
                     ),
                     endDay: .init(
-                        value: endDayValue,
+                        value: endDate,
                         collapsed: viewModel?.customPeriod.endDay.collapsed ?? false
                     )
                 )
@@ -202,7 +212,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func map(viewModel: StakingRewardFiltersViewModel) -> StakingRewardFiltersPeriod {
+    private func map(viewModel: StakingRewardFiltersViewModel) -> StakingRewardFiltersPeriod? {
         switch viewModel.period {
         case .allTime:
             return .allTime
@@ -217,10 +227,25 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         case .lastYear:
             return .lastYear
         case .custom:
-            return .custom(
-                start: viewModel.customPeriod.startDay.value,
-                end: viewModel.customPeriod.endDay.value.map { Lens.endDayDate.get($0) } ?? nil
-            )
+            switch viewModel.customPeriod.endDay.value {
+            case .alwaysToday:
+                if let startDate = viewModel.customPeriod.startDay.value {
+                    return .custom(.openEndDate(startDate: startDate))
+                } else {
+                    return nil
+                }
+            case let .exact(date):
+                guard let exactDate = date else {
+                    return nil
+                }
+                if let startDate = viewModel.customPeriod.startDay.value {
+                    return .custom(.interval(startDate, exactDate))
+                } else {
+                    return .custom(.openStartDate(endDate: exactDate))
+                }
+            case .none:
+                return nil
+            }
         }
     }
 
@@ -234,6 +259,8 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     }
 
     private func updateViewModel(viewModel: StakingRewardFiltersViewModel) {
+        setupSaveButton(isEnabled: map(viewModel: viewModel) != nil)
+
         self.viewModel = viewModel
         var snapshot = Snapshot()
 
@@ -261,7 +288,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         let selectDateValue = dateStringValue(viewModel.customPeriod.startDay.value)
         let startDaySection = Section.start(selectDateValue)
         snapshot.appendSections([startDaySection])
-        if !customPeriod.startDay.isCollapsed {
+        if !customPeriod.startDay.collapsed {
             snapshot.appendItems(
                 [.calendar(.startDate, customPeriod.startDay.value)],
                 toSection: startDaySection

@@ -95,12 +95,12 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     private func provideStakingRewardsFilter() {
         guard let chainAsset = stakingSettings.value,
               let settings = selectedWalletSettings.value,
-              let accountId = settings.fetchChainAccountId(for: chainAsset.chain.accountRequest()) else {
+              let selectedAccount = settings.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return
         }
         let stakingType = StakingType(rawType: chainAsset.asset.staking)
         let filterId = StakingRewardsFilter.createIdentifier(
-            chainAccountId: accountId,
+            chainAccountId: selectedAccount.chainAccount.accountId,
             chainAssetId: chainAsset.chainAssetId,
             stakingType: stakingType
         )
@@ -120,7 +120,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
             }
         }
 
-        operationQueue.addOperation(fetchFilterOperation)
+        operationQueue.addOperations([fetchFilterOperation], waitUntilFinished: false)
     }
 }
 
@@ -160,15 +160,16 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 
     func save(filter: StakingRewardFiltersPeriod) {
-        guard let stakingSettings = stakingSettings.value,
-              let accountId = selectedWalletSettings.value?.fetchChainAccountId(for: stakingSettings.chain.accountRequest()) else {
+        guard let chainAsset = stakingSettings.value,
+              let settings = selectedWalletSettings.value,
+              let selectedAccount = settings.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return
         }
 
         let entity = StakingRewardsFilter(
-            chainAccountId: accountId,
-            chainAssetId: stakingSettings.chainAssetId,
-            stakingType: StakingType(rawType: stakingSettings.asset.staking),
+            chainAccountId: selectedAccount.chainAccount.accountId,
+            chainAssetId: chainAsset.chainAssetId,
+            stakingType: StakingType(rawType: chainAsset.asset.staking),
             period: filter
         )
 

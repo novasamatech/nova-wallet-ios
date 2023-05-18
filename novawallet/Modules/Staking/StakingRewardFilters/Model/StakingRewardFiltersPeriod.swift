@@ -7,7 +7,13 @@ enum StakingRewardFiltersPeriod: Hashable, Codable {
     case lastThreeMonths
     case lastSixMonths
     case lastYear
-    case custom(start: Date?, end: Date?)
+    case custom(RewardFiltersCustomPeriod)
+
+    enum RewardFiltersCustomPeriod: Hashable, Codable {
+        case interval(Date, Date)
+        case openStartDate(endDate: Date)
+        case openEndDate(startDate: Date)
+    }
 }
 
 extension StakingRewardFiltersPeriod {
@@ -30,11 +36,18 @@ extension StakingRewardFiltersPeriod {
         case .lastYear:
             let twelveMonthsAgo = Date().addingTimeInterval(-(.secondsInDay * 7 * 4 * 12)).timeIntervalSince1970
             return (startTimestamp: Int64(twelveMonthsAgo), endTimestamp: nil)
-        case let .custom(start, end):
-            return (
-                startTimestamp: start.map { Int64($0.timeIntervalSince1970) },
-                endTimestamp: end.map { Int64($0.timeIntervalSince1970) }
-            )
+        case let .custom(customPeriod):
+            switch customPeriod {
+            case let .interval(start, end):
+                return (
+                    startTimestamp: Int64(start.timeIntervalSince1970),
+                    endTimestamp: Int64(end.timeIntervalSince1970)
+                )
+            case let .openStartDate(end):
+                return (startTimestamp: nil, endTimestamp: Int64(end.timeIntervalSince1970))
+            case let .openEndDate(start):
+                return (startTimestamp: Int64(start.timeIntervalSince1970), endTimestamp: nil)
+            }
         }
     }
 }
