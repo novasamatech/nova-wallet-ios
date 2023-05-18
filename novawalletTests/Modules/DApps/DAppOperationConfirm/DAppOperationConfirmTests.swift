@@ -75,6 +75,7 @@ class DAppOperationConfirmTests: XCTestCase {
             transportName: DAppTransports.polkadotExtension,
             identifier: UUID().uuidString,
             wallet: wallet,
+            accountId: accountId,
             dApp: "Test",
             dAppIcon: nil,
             operationData: jsonRequest
@@ -128,8 +129,9 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(),
+            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFactory: balanceViewModelFactory,
+            chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )
 
@@ -151,7 +153,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(confimationViewModel: any()).then { _ in
+            when(stub).didReceive(confirmationViewModel: any()).then { _ in
                 setupExpectation.fulfill()
             }
         }
@@ -223,6 +225,7 @@ class DAppOperationConfirmTests: XCTestCase {
             transportName: DAppTransports.polkadotExtension,
             identifier: UUID().uuidString,
             wallet: wallet,
+            accountId: accountId,
             dApp: "Test",
             dAppIcon: nil,
             operationData: jsonRequest
@@ -245,8 +248,9 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(),
+            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFactory: balanceViewModelFactory,
+            chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )
 
@@ -268,7 +272,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(confimationViewModel: any()).then { _ in
+            when(stub).didReceive(confirmationViewModel: any()).then { _ in
                 setupExpectation.fulfill()
             }
         }

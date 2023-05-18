@@ -110,7 +110,9 @@ class DAppAuthConfirmTests: XCTestCase {
             wallet: walletSettings.value,
             origin: "DApp",
             dApp: "Test",
-            dAppIcon: nil
+            dAppIcon: nil,
+            requiredChains: .init(),
+            optionalChains: nil
         )
 
         let presenter = DAppAuthConfirmPresenter(

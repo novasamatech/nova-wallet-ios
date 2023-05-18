@@ -114,5 +114,69 @@
         <string>%li tracks</string>
       </dict>
     </dict>
+    <key>common.networks.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Network</string>
+        <key>other</key>
+        <string>Networks</string>
+      </dict>
+    </dict>
+    <key>common.unsupported.count</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 unsupported</string>
+        <key>other</key>
+        <string>%li unsupported</string>
+      </dict>
+    </dict>
+    <key>missing.accounts.warning.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%2$@ account is missing. Add account to the wallet in Settings</string>
+        <key>other</key>
+        <string>%2$@ accounts are missing. Add accounts to the wallet in Settings</string>
+      </dict>
+    </dict>
+    <key>dapps.unsupported.networks.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 unsupported network hidden</string>
+        <key>other</key>
+        <string>%li unsupported networks hidden</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

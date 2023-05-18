@@ -36,17 +36,15 @@ struct WalletSelectionViewFactory {
     }
 
     private static func createInteractor() -> WalletSelectionInteractor? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
+
         return WalletSelectionInteractor(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             settings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared,
-            currencyManager: currencyManager
+            eventCenter: EventCenter.shared
         )
     }
 }

@@ -15,7 +15,7 @@ extension CallCodingPath {
     }
 
     var isBalancesTransfer: Bool {
-        [.transfer, .transferKeepAlive, .forceTransfer, .transferAll].contains(self)
+        [.transfer, .transferAllowDeath, .transferKeepAlive, .forceTransfer, .transferAll].contains(self)
     }
 
     var isAssetsTransfer: Bool {
@@ -50,6 +50,10 @@ extension CallCodingPath {
 
     static var transferKeepAlive: CallCodingPath {
         CallCodingPath(moduleName: "Balances", callName: "transfer_keep_alive")
+    }
+
+    static var transferAllowDeath: CallCodingPath {
+        CallCodingPath(moduleName: "Balances", callName: "transfer_allow_death")
     }
 
     static var forceTransfer: CallCodingPath {

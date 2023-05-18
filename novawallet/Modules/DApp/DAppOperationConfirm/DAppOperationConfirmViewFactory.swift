@@ -1,6 +1,8 @@
 import Foundation
 import SoraKeystore
 import SoraFoundation
+import SubstrateSdk
+import BigInt
 
 struct DAppOperationConfirmViewFactory {
     static func createView(
@@ -8,31 +10,44 @@ struct DAppOperationConfirmViewFactory {
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     ) -> DAppOperationConfirmViewProtocol? {
-        let maybeInteractor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?
-        let maybeAssetInfo: AssetBalanceDisplayInfo?
-
         switch type {
         case let .extrinsic(chain):
-            maybeAssetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon)
-            maybeInteractor = createExtrinsicInteractor(for: request, chain: chain)
+            let interactor = createExtrinsicInteractor(for: request, chain: chain)
+            return createView(for: interactor, chain: .left(chain), delegate: delegate)
         case let .bytes(chain):
-            maybeAssetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon)
-            maybeInteractor = createSignBytesInteractor(for: request, chain: chain)
-        case let .ethereumTransaction(chain):
-            maybeAssetInfo = chain.assetDisplayInfo
-            maybeInteractor = createEthereumInteractor(for: request, chain: chain)
-        case let .ethereumBytes(chain, accountId):
-            maybeAssetInfo = chain.assetDisplayInfo
-            maybeInteractor = createEthereumPersonalSignInteractor(
+            let interactor = createSignBytesInteractor(for: request, chain: chain)
+            return createView(for: interactor, chain: .left(chain), delegate: delegate)
+        case let .ethereumSendTransaction(chain):
+            let interactor = createEthereumInteractor(
                 for: request,
                 chain: chain,
-                accountId: accountId
+                shouldSendTransaction: true
             )
-        }
 
-        guard let interactor = maybeInteractor,
-              let assetInfo = maybeAssetInfo,
-              let currencyManager = CurrencyManager.shared else {
+            return createView(for: interactor, chain: chain, delegate: delegate)
+        case let .ethereumSignTransaction(chain):
+            let interactor = createEthereumInteractor(
+                for: request,
+                chain: chain,
+                shouldSendTransaction: false
+            )
+
+            return createView(for: interactor, chain: chain, delegate: delegate)
+        case let .ethereumBytes(chain):
+            let interactor = createEthereumPersonalSignInteractor(for: request)
+            return createView(for: interactor, chain: chain, delegate: delegate)
+        }
+    }
+
+    private static func createView(
+        for interactor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?,
+        chain: DAppEitherChain,
+        delegate: DAppOperationConfirmDelegate
+    ) -> DAppOperationConfirmViewProtocol? {
+        guard
+            let interactor = interactor,
+            let assetInfo = chain.utilityAssetBalanceInfo,
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -47,8 +62,9 @@ struct DAppOperationConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(),
+            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
             balanceViewModelFactory: balanceViewModelFactory,
+            chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -102,33 +118,51 @@ struct DAppOperationConfirmViewFactory {
 
     private static func createEthereumInteractor(
         for request: DAppOperationRequest,
-        chain: MetamaskChain
+        chain: Either<ChainModel, DAppUnknownChain>,
+        shouldSendTransaction: Bool
     ) -> DAppEthereumConfirmInteractor? {
-        guard let rpcUrlString = chain.rpcUrls.first, let rpcUrl = URL(string: rpcUrlString) else {
-            return nil
+        let operationFactory: EthereumOperationFactoryProtocol
+        let chainId: String
+
+        switch chain {
+        case let .left(knownChain):
+            guard
+                let connection = ChainRegistryFacade.sharedRegistry.getOneShotConnection(
+                    for: knownChain.chainId
+                ) else {
+                return nil
+            }
+
+            operationFactory = EvmWebSocketOperationFactory(connection: connection)
+            chainId = BigUInt(knownChain.addressPrefix).toHexString()
+        case let .right(unknownChain):
+            guard let connection = HTTPEngine(
+                urls: [unknownChain.rpcUrl],
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ) else {
+                return nil
+            }
+
+            operationFactory = EvmWebSocketOperationFactory(connection: connection)
+            chainId = unknownChain.chainId
         }
 
-        let operationFactory = EthereumOperationFactory(node: rpcUrl)
-
         return DAppEthereumConfirmInteractor(
+            chainId: chainId,
             request: request,
-            chain: chain,
             ethereumOperationFactory: operationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
-            serializationFactory: EthereumSerializationFactory()
+            serializationFactory: EthereumSerializationFactory(),
+            shouldSendTransaction: shouldSendTransaction
         )
     }
 
     private static func createEthereumPersonalSignInteractor(
-        for request: DAppOperationRequest,
-        chain: MetamaskChain,
-        accountId: AccountId
+        for request: DAppOperationRequest
     ) -> DAppEthereumSignBytesInteractor {
         DAppEthereumSignBytesInteractor(
             request: request,
-            accountId: accountId,
-            chain: chain,
             signingWrapperFactory: SigningWrapperFactory()
         )
     }

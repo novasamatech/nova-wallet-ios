@@ -1,29 +1,30 @@
 import UIKit.UIImage
 
-enum SettingsCellViewModel {
-    case details(DetailsSettingsCellViewModel)
-    case toggle(SwitchSettingsCellViewModel)
+struct SettingsCellViewModel {
+    enum Accessory {
+        case title(String)
+        case box(TitleIconViewModel)
+        case switchControl(isOn: Bool)
+        case none
 
-    var row: SettingsRow {
-        switch self {
-        case let .details(navigationSettingsCellViewModel):
-            return navigationSettingsCellViewModel.row
-        case let .toggle(switchSettingsCellViewModel):
-            return switchSettingsCellViewModel.row
+        init(optTitle: String?) {
+            if let title = optTitle {
+                self = .title(title)
+            } else {
+                self = .none
+            }
+        }
+
+        init(optTitle: String?, icon: UIImage?) {
+            if let title = optTitle {
+                self = .box(.init(title: title, icon: icon))
+            } else {
+                self = .none
+            }
         }
     }
-}
 
-struct SwitchSettingsCellViewModel {
     let row: SettingsRow
-    let title: String
-    let icon: UIImage?
-    let isOn: Bool
-}
-
-struct DetailsSettingsCellViewModel {
-    let row: SettingsRow
-    let title: String
-    let icon: UIImage?
-    let accessoryTitle: String?
+    let title: TitleIconViewModel
+    let accessory: Accessory
 }

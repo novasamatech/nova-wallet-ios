@@ -36,29 +36,3 @@ enum EthereumMethod: String {
     case transactionReceipt = "eth_getTransactionReceipt"
     case blockByNumber = "eth_getBlockByNumber"
 }
-
-final class EthereumOperationFactory {
-    static let errorDomain = "EthereumDomain"
-
-    let node: URL
-
-    init(node: URL) {
-        self.node = node
-    }
-
-    func createResultFactory<T: Codable>() -> AnyNetworkResultFactory<T> {
-        AnyNetworkResultFactory { data in
-            let response = try JSONDecoder().decode(EthereumRpcResponse<T>.self, from: data)
-
-            if let result = response.result {
-                return result
-            }
-
-            if let error = response.error {
-                throw error
-            }
-
-            throw BaseOperationError.unexpectedDependentResult
-        }
-    }
-}

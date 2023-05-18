@@ -13,6 +13,7 @@ final class SettingsPresenter {
     private var biometrySettings: BiometrySettings?
 
     private var wallet: MetaAccountModel?
+    private var walletConnectSessionsCount: Int?
 
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
@@ -33,13 +34,19 @@ final class SettingsPresenter {
     private func updateView() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
+        let parameters = SettingsParameters(
+            walletConnectSessionsCount: walletConnectSessionsCount,
+            isBiometricAuthOn: biometrySettings?.isEnabled,
+            isPinConfirmationOn: isPinConfirmationOn
+        )
+
         let sectionViewModels = viewModelFactory.createSectionViewModels(
             language: localizationManager?.selectedLanguage,
             currency: currency,
-            isBiometricAuthOn: biometrySettings?.isEnabled,
-            isPinConfirmationOn: isPinConfirmationOn,
+            parameters: parameters,
             locale: locale
         )
+
         view?.reload(sections: sectionViewModels)
     }
 
@@ -181,6 +188,12 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             show(url: config.termsURL)
         case .privacyPolicy:
             show(url: config.privacyPolicyURL)
+        case .walletConnect:
+            if let count = walletConnectSessionsCount, count > 0 {
+                wireframe.showWalletConnect(from: view)
+            } else {
+                wireframe.showScan(from: view, delegate: self)
+            }
         }
     }
 
@@ -234,11 +247,14 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
     }
 
     func didReceive(error: SettingsError) {
-        guard let biometrySettings = biometrySettings else {
-            return
-        }
+        logger?.error("Did receive wc error: \(error)")
+
         switch error {
         case .biometryAuthAndSystemSettingsOutOfSync:
+            guard let biometrySettings = biometrySettings else {
+                return
+            }
+
             let biometryTypeName = biometrySettings.name
             let title = R.string.localizable.settingsErrorBiometryDisabledInSettingsTitle(
                 biometryTypeName,
@@ -255,6 +271,22 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
                 from: view,
                 locale: selectedLocale
             )
+        case .walletConnectFailed:
+            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        }
+    }
+
+    func didReceiveWalletConnect(sessionsCount: Int) {
+        walletConnectSessionsCount = sessionsCount
+
+        updateView()
+    }
+}
+
+extension SettingsPresenter: URIScanDelegate {
+    func uriScanDidReceive(uri: String, context _: AnyObject?) {
+        wireframe.hideUriScanAnimated(from: view) { [weak self] in
+            self?.interactor.connectWalletConnect(uri: uri)
         }
     }
 }

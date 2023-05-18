@@ -22,3 +22,7 @@ enum MoonbeamCrowdloanCIKeys {
 enum ConnectionApiKeys {
     static var infuraApiKey: String = "{{ argument.infuraApiKey }}"
 }
+
+enum WalletConnectCISecrets {
+    static var projectId: String = "{{ argument.wcProjectId }}"
+}

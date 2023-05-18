@@ -63,4 +63,10 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         delegate: ReferendumsFiltersDelegate,
         filter: ReferendumsFilter
     )
+
+    func showSearch(
+        from view: ControllerBackedProtocol?,
+        referendumsState: Observable<ReferendumsState>,
+        delegate: ReferendumSearchDelegate?
+    )
 }

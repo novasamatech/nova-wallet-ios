@@ -18,15 +18,11 @@ final class WalletManageInteractor: WalletsListInteractor {
     }
 
     init(
-        chainRegistry: ChainRegistryProtocol,
+        balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.repository = repository
@@ -35,12 +31,8 @@ final class WalletManageInteractor: WalletsListInteractor {
         self.eventCenter = eventCenter
 
         super.init(
-            chainRegistry: chainRegistry,
-            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            currencyManager: currencyManager,
-            crowdloansLocalSubscriptionFactory: crowdloansLocalSubscriptionFactory
+            balancesStore: balancesStore,
+            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory
         )
     }
 
