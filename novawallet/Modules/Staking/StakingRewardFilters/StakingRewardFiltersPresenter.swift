@@ -25,7 +25,7 @@ extension StakingRewardFiltersPresenter: StakingRewardFiltersPresenterProtocol {
     }
 
     func save(_ period: StakingRewardFiltersPeriod) {
-        delegate?.stackingRewardFilter(didSelect filter: period)
+        delegate?.stackingRewardFilter(didSelectFilter: period)
         wireframe.close(view: view)
     }
 }

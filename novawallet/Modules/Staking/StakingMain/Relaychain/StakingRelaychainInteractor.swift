@@ -52,7 +52,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
     var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
-    var stakingTotalRewardFilter: StakingRewardFilter = .init()
+    var totalRewardInterval: (startTimestamp: Int64?, endTimestamp: Int64?)?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
