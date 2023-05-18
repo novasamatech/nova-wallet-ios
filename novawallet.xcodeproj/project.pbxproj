@@ -1819,6 +1819,8 @@
 		849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFEBC26DCCE3A00B65924 /* SubqueryResponse.swift */; };
 		849B03682A14FB8C009624D9 /* CoingeckoPriceHistoryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B03672A14FB8C009624D9 /* CoingeckoPriceHistoryData.swift */; };
 		849B036B2A14FCC3009624D9 /* PriceHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B036A2A14FCC3009624D9 /* PriceHistoryItem.swift */; };
+		849B036D2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B036C2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift */; };
+		849B03702A15EE39009624D9 /* TokenPriceCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B036F2A15EE39009624D9 /* TokenPriceCalculator.swift */; };
 		849B563327A70D71007D5528 /* ExtrinsicProcessor+Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563227A70D71007D5528 /* ExtrinsicProcessor+Fee.swift */; };
 		849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */; };
 		849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */; };
@@ -2485,7 +2487,6 @@
 		84EF8D40288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF8D3F288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift */; };
 		84EFB78928AB7654003B8396 /* LedgerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EFB78828AB7654003B8396 /* LedgerError.swift */; };
 		84EFB78F28AB897D003B8396 /* LedgerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EFB78E28AB897D003B8396 /* LedgerResponse.swift */; };
-		84F0316F27302888003BDCF8 /* CoingeckoPriceListSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */; };
 		84F0D9FC299D87A700F82CBC /* GovernanceBalanceConviction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F0D9FB299D87A700F82CBC /* GovernanceBalanceConviction.swift */; };
 		84F13F0826F13898006725FF /* StakingAssetSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0726F13898006725FF /* StakingAssetSettings.swift */; };
 		84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0926F14122006725FF /* ChainAsset.swift */; };
@@ -3106,7 +3107,6 @@
 		AEA2C1C02681E9EC0069492E /* ValidatorSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA2C1BF2681E9EC0069492E /* ValidatorSearchViewLayout.swift */; };
 		AEAC68F526E9F93B00346599 /* CoingeckoDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68F426E9F93B00346599 /* CoingeckoDefinitions.swift */; };
 		AEAC68F726E9FB8400346599 /* CoingeckoOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68F626E9FB8400346599 /* CoingeckoOperationFactory.swift */; };
-		AEAC68FE26EA3C2A00346599 /* CoingeckoPriceSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68FD26EA3C2A00346599 /* CoingeckoPriceSource.swift */; };
 		AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68FF26EA729300346599 /* CoingeckoPriceData.swift */; };
 		AEAC690426EB891900346599 /* Logger+FearlessUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC690326EB891900346599 /* Logger+FearlessUtils.swift */; };
 		AEACD5F9265E94AB00A09892 /* StatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */; };
@@ -5381,6 +5381,8 @@
 		849AFEBC26DCCE3A00B65924 /* SubqueryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryResponse.swift; sourceTree = "<group>"; };
 		849B03672A14FB8C009624D9 /* CoingeckoPriceHistoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceHistoryData.swift; sourceTree = "<group>"; };
 		849B036A2A14FCC3009624D9 /* PriceHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryItem.swift; sourceTree = "<group>"; };
+		849B036C2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceHistorySource.swift; sourceTree = "<group>"; };
+		849B036F2A15EE39009624D9 /* TokenPriceCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenPriceCalculator.swift; sourceTree = "<group>"; };
 		849B563227A70D71007D5528 /* ExtrinsicProcessor+Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Fee.swift"; sourceTree = "<group>"; };
 		849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Matching.swift"; sourceTree = "<group>"; };
 		849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCancellableCleaning.swift; sourceTree = "<group>"; };
@@ -6056,7 +6058,6 @@
 		84EF8D3F288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListLocalStorageSubscriptionHandler.swift; sourceTree = "<group>"; };
 		84EFB78828AB7654003B8396 /* LedgerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerError.swift; sourceTree = "<group>"; };
 		84EFB78E28AB897D003B8396 /* LedgerResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerResponse.swift; sourceTree = "<group>"; };
-		84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceListSource.swift; sourceTree = "<group>"; };
 		84F0D9FB299D87A700F82CBC /* GovernanceBalanceConviction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceBalanceConviction.swift; sourceTree = "<group>"; };
 		84F13F0726F13898006725FF /* StakingAssetSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAssetSettings.swift; sourceTree = "<group>"; };
 		84F13F0926F14122006725FF /* ChainAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAsset.swift; sourceTree = "<group>"; };
@@ -6704,7 +6705,6 @@
 		AEA2C1BF2681E9EC0069492E /* ValidatorSearchViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorSearchViewLayout.swift; sourceTree = "<group>"; };
 		AEAC68F426E9F93B00346599 /* CoingeckoDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoDefinitions.swift; sourceTree = "<group>"; };
 		AEAC68F626E9FB8400346599 /* CoingeckoOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoOperationFactory.swift; sourceTree = "<group>"; };
-		AEAC68FD26EA3C2A00346599 /* CoingeckoPriceSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceSource.swift; sourceTree = "<group>"; };
 		AEAC68FF26EA729300346599 /* CoingeckoPriceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceData.swift; sourceTree = "<group>"; };
 		AEAC690326EB891900346599 /* Logger+FearlessUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+FearlessUtils.swift"; sourceTree = "<group>"; };
 		AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusViewModel.swift; sourceTree = "<group>"; };
@@ -9885,10 +9885,9 @@
 				84F4386F25D9BC3900AEDA56 /* EmptyStreamableSource.swift */,
 				843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */,
 				F4C086C626D1159E00716AEC /* SubqueryEraStakersInfoSource.swift */,
-				AEAC68FD26EA3C2A00346599 /* CoingeckoPriceSource.swift */,
-				84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */,
 				84B91AEC287078B0001A0420 /* StorageProviderSourceFallback.swift */,
 				840D627B29CC369100D5E894 /* CoingeckoStreamableSource.swift */,
+				849B036C2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -11351,6 +11350,7 @@
 		8490145424A9403C008F705E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				849B036E2A15EE07009624D9 /* TransactionHistory */,
 				8490145524A9404E008F705E /* AttributedStringDecorator.swift */,
 				8490152424ABCBF3008F705E /* AmountFormatterFactory.swift */,
 				843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */,
@@ -11360,7 +11360,6 @@
 				8493D0DE26FE7D7400A28008 /* ChainRepositoryFactory.swift */,
 				8410DBCA26EA31DE00FE1738 /* AccountProviderFactory.swift */,
 				84DF21B425388B35005454AE /* Scheduler.swift */,
-				84FD3DB02540C09800A234E3 /* TransactionHistoryMergeManager.swift */,
 				84113B90255B2CA0009BD21A /* MainTransitionHelper.swift */,
 				84CE69E72566750D00559427 /* ByteLengthProcessor.swift */,
 				2A84E87725D425750006FE9C /* AlertControllerFactory.swift */,
@@ -12148,6 +12147,15 @@
 				849B036A2A14FCC3009624D9 /* PriceHistoryItem.swift */,
 			);
 			path = Price;
+			sourceTree = "<group>";
+		};
+		849B036E2A15EE07009624D9 /* TransactionHistory */ = {
+			isa = PBXGroup;
+			children = (
+				84FD3DB02540C09800A234E3 /* TransactionHistoryMergeManager.swift */,
+				849B036F2A15EE39009624D9 /* TokenPriceCalculator.swift */,
+			);
+			path = TransactionHistory;
 			sourceTree = "<group>";
 		};
 		849DEBD225ED014000C64C19 /* ViewModel */ = {
@@ -17508,6 +17516,7 @@
 				84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */,
 				8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */,
 				8428229C289BC9D300163031 /* AddAccount+ParitySignerAddressesWireframe.swift in Sources */,
+				849B03702A15EE39009624D9 /* TokenPriceCalculator.swift in Sources */,
 				84C6801424D7013500006BF5 /* SubtitleContentView.swift in Sources */,
 				F436BB962726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift in Sources */,
 				F452D89A273D237E008F7295 /* SettingsViewLayout.swift in Sources */,
@@ -17572,7 +17581,6 @@
 				844C3E672A0763D500C4305F /* WalletTotalAmountView.swift in Sources */,
 				8425EB1B25EADD8600C307C9 /* StakingConstants.swift in Sources */,
 				84690783264132AB0030E693 /* WithdrawUnbondedCall.swift in Sources */,
-				84F0316F27302888003BDCF8 /* CoingeckoPriceListSource.swift in Sources */,
 				842EBB332890A77C00B952D8 /* WalletSelectionInteractor.swift in Sources */,
 				8444407128AA57D600446D22 /* LedgerApplication.swift in Sources */,
 				8490146D24A9487A008F705E /* ErrorPresentable+AlertText.swift in Sources */,
@@ -18089,7 +18097,6 @@
 				84350ADD2846226B0031EF24 /* CollatorSelectionInfo+ViewModel.swift in Sources */,
 				886A278229E939E1003B269F /* EquilibriumRemoteBalance.swift in Sources */,
 				84F30E9725FD3C5300039D09 /* EventEmittingStorageSubscription.swift in Sources */,
-				AEAC68FE26EA3C2A00346599 /* CoingeckoPriceSource.swift in Sources */,
 				848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */,
 				84333BDB285772F300C76A4F /* UInt64+TimeInterval.swift in Sources */,
 				847999AD2888646000D1BAD2 /* WatchOnlyWalletOperationFactory.swift in Sources */,
@@ -19138,6 +19145,7 @@
 				84DD49F428EE91ED00B804F3 /* Gov2LocalMappingFactory.swift in Sources */,
 				84C1706D2996424800CBE531 /* GovernanceYourDelegationCell.swift in Sources */,
 				84E0EE04292D336C008B2953 /* GovernanceType.swift in Sources */,
+				849B036D2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
 				8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */,
