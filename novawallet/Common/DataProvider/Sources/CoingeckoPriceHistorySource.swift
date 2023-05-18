@@ -25,7 +25,7 @@ extension CoingeckoPriceHistoryProviderSource: SingleValueProviderSourceProtocol
             for: priceId,
             currency: currency,
             startDate: Date(timeIntervalSince1970: 0),
-            endDate: Date(timeIntervalSince1970: TimeInterval(UInt64.max))
+            endDate: Date(timeIntervalSince1970: TimeInterval(UInt32.max))
         )
 
         let mapOperation = ClosureOperation<Model?> {

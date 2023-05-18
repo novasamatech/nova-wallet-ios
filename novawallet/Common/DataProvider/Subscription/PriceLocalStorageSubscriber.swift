@@ -11,6 +11,12 @@ protocol PriceLocalStorageSubscriber where Self: AnyObject {
         currency: Currency,
         options: StreamableProviderObserverOptions
     ) -> StreamableProvider<PriceData>
+
+    func subscribeToPriceHistory(
+        for priceId: AssetModel.PriceId,
+        currency: Currency,
+        options: DataProviderObserverOptions
+    ) -> AnySingleValueProvider<PriceHistory>
 }
 
 extension PriceLocalStorageSubscriber {
@@ -26,6 +32,18 @@ extension PriceLocalStorageSubscriber {
         )
 
         return subscribeToPrice(for: priceId, currency: currency, options: options)
+    }
+
+    func subscribeToPriceHistory(
+        for priceId: AssetModel.PriceId,
+        currency: Currency
+    ) -> AnySingleValueProvider<PriceHistory> {
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        return subscribeToPriceHistory(for: priceId, currency: currency, options: options)
     }
 }
 
@@ -59,6 +77,37 @@ extension PriceLocalStorageSubscriber {
         )
 
         return priceProvider
+    }
+
+    func subscribeToPriceHistory(
+        for priceId: AssetModel.PriceId,
+        currency: Currency,
+        options: DataProviderObserverOptions
+    ) -> AnySingleValueProvider<PriceHistory> {
+        let provider = priceLocalSubscriptionFactory.getPriceHistoryProvider(for: priceId, currency: currency)
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceHistory>]) in
+            let finalValue = changes.reduceToLastChange()
+            self?.priceLocalSubscriptionHandler.handlePriceHistory(
+                result: .success(finalValue),
+                priceId: priceId
+            )
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.priceLocalSubscriptionHandler.handlePriceHistory(result: .failure(error), priceId: priceId)
+            return
+        }
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return provider
     }
 }
 

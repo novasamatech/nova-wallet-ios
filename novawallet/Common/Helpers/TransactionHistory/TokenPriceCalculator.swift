@@ -39,7 +39,7 @@ extension TokenPriceCalculator: TokenPriceCalculatorProtocol {
 
         let partialIndex = history.items[searchRange].partitioningIndex { $0.startedAt >= time }
 
-        let fullIndex = searchRange.startIndex + partialIndex
+        let fullIndex = min(searchRange.startIndex + partialIndex, history.items.count - 1)
         lastUsedIndex = fullIndex
 
         return history.items[fullIndex].value
