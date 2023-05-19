@@ -397,6 +397,8 @@
 		777BD86629F9C426004969A2 /* ReferendumsFiltersDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86529F9C426004969A2 /* ReferendumsFiltersDelegate.swift */; };
 		777BD86829FA3376004969A2 /* ReferendumsSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */; };
 		777BD86A29FA3D5E004969A2 /* ReferendumsFilter+match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86929FA3D5E004969A2 /* ReferendumsFilter+match.swift */; };
+		7796C6FF2A177D7300D56094 /* GenericLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C6FE2A177D7300D56094 /* GenericLens.swift */; };
+		7796C7012A177D9000D56094 /* ReferendumsSection+Lens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7002A177D9000D56094 /* ReferendumsSection+Lens.swift */; };
 		77FE034D2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FE034C2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift */; };
 		78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B309EC85D8897A4ADD98A /* CustomValidatorListViewController.swift */; };
 		78E0B6963A8D0A07E742232C /* GovernanceEditDelegationTracksWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3B84FA1F22CC12B16C79AE /* GovernanceEditDelegationTracksWireframe.swift */; };
@@ -3910,6 +3912,8 @@
 		777BD86529F9C426004969A2 /* ReferendumsFiltersDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFiltersDelegate.swift; sourceTree = "<group>"; };
 		777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsSettingsCell.swift; sourceTree = "<group>"; };
 		777BD86929FA3D5E004969A2 /* ReferendumsFilter+match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsFilter+match.swift"; sourceTree = "<group>"; };
+		7796C6FE2A177D7300D56094 /* GenericLens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericLens.swift; sourceTree = "<group>"; };
+		7796C7002A177D9000D56094 /* ReferendumsSection+Lens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsSection+Lens.swift"; sourceTree = "<group>"; };
 		77FE034C2A03599600424D37 /* ReferendumSearchViewController+EmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumSearchViewController+EmptyState.swift"; sourceTree = "<group>"; };
 		781FA4C896AF31B4035AFB38 /* ChainAddressDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsViewFactory.swift; sourceTree = "<group>"; };
 		782CC21A2F9EEF5DBA3AB1AA /* PurchaseProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseProtocols.swift; sourceTree = "<group>"; };
@@ -11322,6 +11326,7 @@
 		8490145424A9403C008F705E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				7796C6FE2A177D7300D56094 /* GenericLens.swift */,
 				8490145524A9404E008F705E /* AttributedStringDecorator.swift */,
 				8490152424ABCBF3008F705E /* AmountFormatterFactory.swift */,
 				843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */,
@@ -14452,6 +14457,7 @@
 				84F523FA298AA5820026AD08 /* ReferendumsModelFactory+State.swift */,
 				84F523FC298AA5F10026AD08 /* ReferendumsModelFactory+Protocol.swift */,
 				84F523FE298AA64A0026AD08 /* ReferendumsModelFactory+Votes.swift */,
+				7796C7002A177D9000D56094 /* ReferendumsSection+Lens.swift */,
 			);
 			path = ReferendumsViewModelFactory;
 			sourceTree = "<group>";
@@ -19221,6 +19227,7 @@
 				840874D62978225700ACFA55 /* SubqueryDelegateStatsResponse.swift in Sources */,
 				84E2ABCC29939E6B00A5D3C1 /* GovernanceDelegateValidatingParams.swift in Sources */,
 				F4B39C612732717100BB6E10 /* AcalaContributionSetupProtocols.swift in Sources */,
+				7796C7012A177D9000D56094 /* ReferendumsSection+Lens.swift in Sources */,
 				E2F9D7BDDE961B162EF100AB /* StakingMainViewFactory.swift in Sources */,
 				88DC3E21292CAA0100DBCE4D /* RoundedView+Style.swift in Sources */,
 				848DAF00282294E600D56F55 /* ParachainStaking.swift in Sources */,
@@ -19789,6 +19796,7 @@
 				A2F7908210A0398EDBBA89BD /* NftDetailsViewFactory.swift in Sources */,
 				5E6D69D84220119BA5362358 /* OperationDetailsProtocols.swift in Sources */,
 				81544BD01F6AD0197588D3C5 /* OperationDetailsWireframe.swift in Sources */,
+				7796C6FF2A177D7300D56094 /* GenericLens.swift in Sources */,
 				7FF2D6FEDD352AC51E1DBB3B /* OperationDetailsPresenter.swift in Sources */,
 				B6DB30A8D1BF84158CAC635D /* OperationDetailsInteractor.swift in Sources */,
 				C9931414951375760E5D1C57 /* OperationDetailsViewController.swift in Sources */,
