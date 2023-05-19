@@ -101,8 +101,8 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
         performStashControllerSubscription()
     }
 
-    func update(filter: StakingRewardFiltersPeriod) {
-        totalRewardInterval = filter.interval
+    func update(totalRewardFilter: StakingRewardFiltersPeriod) {
+        totalRewardInterval = totalRewardFilter.interval
         performTotalRewardSubscription()
     }
 }

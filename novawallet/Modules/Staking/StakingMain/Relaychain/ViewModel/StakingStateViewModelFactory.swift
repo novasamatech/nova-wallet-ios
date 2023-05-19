@@ -82,13 +82,19 @@ final class StakingStateViewModelFactory {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: .loaded(price),
-                        filter: commonData.filter.map(\.title)?.value(for: locale)
+                        filter: commonData.filter.map { $0.title(
+                            dateFormatter: dateFormatter,
+                            calendar: calendar
+                        ) }?.value(for: locale)
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: nil,
-                        filter: commonData.filter.map(\.title)?.value(for: locale)
+                        filter: commonData.filter.map { $0.title(
+                            dateFormatter: dateFormatter,
+                            calendar: calendar
+                        ) }?.value(for: locale)
                     )
                 }
             }

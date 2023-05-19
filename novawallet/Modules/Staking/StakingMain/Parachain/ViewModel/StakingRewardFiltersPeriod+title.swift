@@ -1,7 +1,7 @@
 import SoraFoundation
 
 extension StakingRewardFiltersPeriod {
-    var title: LocalizableResource<String> {
+    func title(dateFormatter: LocalizableResource<DateFormatter>, calendar: Calendar) -> LocalizableResource<String> {
         .init { locale in
             let languages = locale.rLanguages
             switch self {
@@ -19,37 +19,46 @@ extension StakingRewardFiltersPeriod {
             case .lastYear:
                 return R.string.localizable.stakingRewardFiltersPeriodLastYearShort(preferredLanguages: languages)
             case let .custom(customPeriod):
-                let startDate: Date?
-                let endDate: Date
-                switch customPeriod {
-                case let .interval(start, end):
-                    startDate = start
-                    endDate = end
-                case let .openEndDate(start):
-                    startDate = start
-                    endDate = Date()
-                case let .openStartDate(end):
-                    startDate = nil
-                    endDate = end
-                }
-
-                guard let startDate = startDate else {
-                    let formattedEndDate = DateFormatter.shortDate.value(for: locale).string(from: endDate) ?? ""
-                    return R.string.localizable.stakingRewardFiltersPeriodCustomOpenShortDate(
-                        formattedEndDate,
-                        preferredLanguages: languages
-                    )
-                }
-
-                guard let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day else {
-                    return ""
-                }
-
-                return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
-                    "\(days)",
-                    preferredLanguages: languages
-                )
+                return customPeriodTitle(customPeriod, dateFormatter: dateFormatter, calendar: calendar, locale: locale)
             }
         }
+    }
+
+    private func customPeriodTitle(
+        _ customPeriod: RewardFiltersCustomPeriod,
+        dateFormatter: LocalizableResource<DateFormatter>,
+        calendar: Calendar,
+        locale: Locale
+    ) -> String {
+        let startDate: Date?
+        let endDate: Date
+        switch customPeriod {
+        case let .interval(start, end):
+            startDate = start
+            endDate = end
+        case let .openEndDate(start):
+            startDate = start
+            endDate = Date()
+        case let .openStartDate(end):
+            startDate = nil
+            endDate = end
+        }
+
+        guard let startDate = startDate else {
+            let formattedEndDate = dateFormatter.value(for: locale).string(from: endDate) ?? ""
+            return R.string.localizable.stakingRewardFiltersPeriodCustomOpenShortDate(
+                formattedEndDate,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        guard let days = calendar.dateComponents([.day], from: startDate, to: endDate).day else {
+            return ""
+        }
+
+        return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
+            "\(days)",
+            preferredLanguages: locale.rLanguages
+        )
     }
 }

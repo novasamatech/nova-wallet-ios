@@ -15,7 +15,7 @@ extension ParachainStaking {
         let roundInfo: ParachainStaking.RoundInfo?
         let totalReward: TotalRewardItem?
         let yieldBoostState: ParaStkYieldBoostState?
-        let filter: StakingRewardFiltersPeriod?
+        let totalRewardFilter: StakingRewardFiltersPeriod?
 
         var roundCountdown: RoundCountdown? {
             if
@@ -50,7 +50,7 @@ extension ParachainStaking.CommonData {
             roundInfo: nil,
             totalReward: nil,
             yieldBoostState: nil,
-            filter: nil
+            totalRewardFilter: nil
         )
     }
 
@@ -68,7 +68,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -86,7 +86,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -104,7 +104,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -122,7 +122,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -140,7 +140,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -160,7 +160,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -180,7 +180,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -200,7 +200,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -220,7 +220,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -240,7 +240,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -260,7 +260,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -280,12 +280,12 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
     func byReplacing(
-        filter: StakingRewardFiltersPeriod?
+        totalRewardFilter: StakingRewardFiltersPeriod?
     ) -> ParachainStaking.CommonData {
         ParachainStaking.CommonData(
             account: account,
@@ -300,7 +300,7 @@ extension ParachainStaking.CommonData {
             roundInfo: roundInfo,
             totalReward: totalReward,
             yieldBoostState: yieldBoostState,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 }

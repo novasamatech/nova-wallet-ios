@@ -235,8 +235,8 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
-        stateMachine.state.process(filter: filter)
-        interactor.update(filter: filter)
+        stateMachine.state.process(totalRewardFilter: filter)
+        interactor.update(totalRewardFilter: filter)
     }
 }
 
