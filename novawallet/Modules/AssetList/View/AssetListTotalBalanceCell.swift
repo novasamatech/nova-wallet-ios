@@ -115,8 +115,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
     private func setupMotionEffect() {
         let identity = CATransform3DIdentity
-        let minimum = CATransform3DRotate(identity, (315 * .pi) / 180.0, 0.0, 1.0, 0.0)
-        let maximum = CATransform3DRotate(identity, (45 * .pi) / 180.0, 0.0, 1.0, 0.0)
+        let minimum = CATransform3DRotate(identity, (-2 * .pi) / 180.0, 0.0, 1.0, 0.0)
+        let maximum = CATransform3DRotate(identity, (2 * .pi) / 180.0, 0.0, 1.0, 0.0)
 
         contentView.layer.transform = identity
         let effect = UIInterpolatingMotionEffect(
