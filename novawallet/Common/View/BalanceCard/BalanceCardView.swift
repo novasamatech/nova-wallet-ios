@@ -2,7 +2,7 @@ import UIKit
 
 final class BalanceCardView: UIView {
     let backgroundImage = R.image.cardBg()!
-    let patternImage = R.image.cardPattern()!
+    let patternImage = R.image.cardBigPattern()!
 
     let gradientView = MultigradientView()
 
@@ -29,7 +29,7 @@ final class BalanceCardView: UIView {
         context.addPath(path.cgPath)
         context.clip()
 
-        let backgroundRect = aspectFillRect(for: rect, imageSize: backgroundImage.size)
+        let backgroundRect = centerFillRect(for: rect, imageSize: backgroundImage.size)
 
         backgroundImage.draw(in: backgroundRect)
     }
@@ -37,15 +37,11 @@ final class BalanceCardView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let maskImage = patternImage.crop(
-            targetSize: bounds.size,
-            cornerRadius: 12,
-            contentScale: patternImage.scale
-        )
-
         let mask = CALayer()
         mask.frame = CGRect(origin: .zero, size: bounds.size)
-        mask.contents = maskImage?.withRenderingMode(.alwaysTemplate).cgImage
+        mask.contents = patternImage.withRenderingMode(.alwaysTemplate).cgImage
+        mask.contentsGravity = .center
+        mask.contentsScale = patternImage.scale
 
         gradientView.customMask = mask
     }
@@ -118,5 +114,14 @@ final class BalanceCardView: UIView {
         )
 
         return CGRect(origin: origin, size: drawingSize)
+    }
+
+    private func centerFillRect(for rect: CGRect, imageSize: CGSize) -> CGRect {
+        let origin = CGPoint(
+            x: rect.midX - imageSize.width / 2,
+            y: rect.midY - imageSize.height / 2
+        )
+
+        return CGRect(origin: origin, size: imageSize)
     }
 }

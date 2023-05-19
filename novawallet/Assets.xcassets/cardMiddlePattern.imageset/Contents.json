@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "card-middle-pattern.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
