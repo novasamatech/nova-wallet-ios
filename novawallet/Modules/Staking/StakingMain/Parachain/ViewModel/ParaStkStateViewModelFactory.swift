@@ -140,18 +140,22 @@ final class ParaStkStateViewModelFactory {
 
             return LocalizableResource { locale in
                 let reward = localizableReward.value(for: locale)
+                let filter = commonData.totalRewardFilter.map { $0.title(
+                    dateFormatter: self.dateFormatter,
+                    calendar: self.calendar
+                ) }?.value(for: locale)
 
                 if let price = reward.price {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: .loaded(price),
-                        filter: commonData.totalRewardFilter.map(\.title)?.value(for: locale)
+                        filter: filter
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: nil,
-                        filter: commonData.totalRewardFilter.map(\.title)?.value(for: locale)
+                        filter: filter
                     )
                 }
             }
