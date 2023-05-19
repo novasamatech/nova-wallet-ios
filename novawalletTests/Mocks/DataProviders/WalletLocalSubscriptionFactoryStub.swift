@@ -24,7 +24,8 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
                 accountId: accountId,
                 freeInPlank: balance,
                 reservedInPlank: 0,
-                frozenInPlank: 0
+                frozenInPlank: 0,
+                blocked: false
             )
         } else {
             return nil

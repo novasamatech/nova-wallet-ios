@@ -69,7 +69,8 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                     accountId: accountId,
                     freeInPlank: newBalance,
                     reservedInPlank: 0,
-                    frozenInPlank: 0
+                    frozenInPlank: 0,
+                    blocked: false
                 )
             }
         }, {
