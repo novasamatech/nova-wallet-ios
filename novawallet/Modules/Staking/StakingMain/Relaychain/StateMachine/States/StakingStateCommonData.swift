@@ -16,7 +16,7 @@ struct StakingStateCommonData {
     let bagListSize: UInt32?
     let bagListScoreFactor: BigUInt?
     let eraCountdown: EraCountdown?
-    let filter: StakingRewardFiltersPeriod?
+    let totalRewardFilter: StakingRewardFiltersPeriod?
 }
 
 extension StakingStateCommonData {
@@ -36,7 +36,7 @@ extension StakingStateCommonData {
             bagListSize: nil,
             bagListScoreFactor: nil,
             eraCountdown: nil,
-            filter: nil
+            totalRewardFilter: nil
         )
     }
 
@@ -56,7 +56,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -76,7 +76,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -96,7 +96,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -116,7 +116,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -136,7 +136,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -156,7 +156,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -176,7 +176,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -196,7 +196,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -216,7 +216,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -236,7 +236,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -256,7 +256,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -276,7 +276,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -296,7 +296,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -316,11 +316,11 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 
-    func byReplacing(filter: StakingRewardFiltersPeriod?) -> StakingStateCommonData {
+    func byReplacing(totalRewardFilter: StakingRewardFiltersPeriod?) -> StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
@@ -336,7 +336,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            filter: filter
+            totalRewardFilter: totalRewardFilter
         )
     }
 }

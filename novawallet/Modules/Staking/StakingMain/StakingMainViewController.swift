@@ -551,6 +551,10 @@ extension StakingMainViewController: StakingMainViewProtocol {
             stateView.statics = viewModel
         }
     }
+
+    func deactivateControls() {
+        rewardView?.filterView.control.deactivate(animated: true)
+    }
 }
 
 extension StakingMainViewController: NetworkInfoViewDelegate {

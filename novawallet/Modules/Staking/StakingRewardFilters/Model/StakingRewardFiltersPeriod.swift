@@ -11,7 +11,6 @@ enum StakingRewardFiltersPeriod: Hashable, Codable {
 
     enum RewardFiltersCustomPeriod: Hashable, Codable {
         case interval(Date, Date)
-        case openStartDate(endDate: Date)
         case openEndDate(startDate: Date)
     }
 }
@@ -43,8 +42,6 @@ extension StakingRewardFiltersPeriod {
                     startTimestamp: Int64(start.timeIntervalSince1970),
                     endTimestamp: Int64(end.timeIntervalSince1970)
                 )
-            case let .openStartDate(end):
-                return (startTimestamp: nil, endTimestamp: Int64(end.timeIntervalSince1970))
             case let .openEndDate(start):
                 return (startTimestamp: Int64(start.timeIntervalSince1970), endTimestamp: nil)
             }

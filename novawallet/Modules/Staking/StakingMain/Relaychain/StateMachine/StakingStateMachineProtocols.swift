@@ -37,7 +37,7 @@ protocol StakingStateProtocol {
     func process(bagListNode: BagList.Node?)
     func process(bagListScoreFactor: BigUInt?)
     func process(eraCountdown: EraCountdown)
-    func process(filter: StakingRewardFiltersPeriod?)
+    func process(totalRewardFilter: StakingRewardFiltersPeriod?)
 }
 
 protocol StakingStateMachineProtocol: AnyObject {

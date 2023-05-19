@@ -181,7 +181,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         case .lastYear:
             return .init(period: .lastYear)
         case let .custom(customDate):
-            let startDate: Date?
+            let startDate: Date
             let endDate: StakingRewardFiltersViewModel.EndDayValue?
 
             switch customDate {
@@ -190,9 +190,6 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                 endDate = .exact(end)
             case let .openEndDate(start):
                 startDate = start
-                endDate = .alwaysToday
-            case let .openStartDate(end):
-                startDate = nil
                 endDate = .alwaysToday
             }
 
@@ -235,14 +232,10 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     return nil
                 }
             case let .exact(date):
-                guard let exactDate = date else {
+                guard let exactDate = date, let startDate = viewModel.customPeriod.startDay.value else {
                     return nil
                 }
-                if let startDate = viewModel.customPeriod.startDay.value {
-                    return .custom(.interval(startDate, exactDate))
-                } else {
-                    return .custom(.openStartDate(endDate: exactDate))
-                }
+                return .custom(.interval(startDate, exactDate))
             case .none:
                 return nil
             }

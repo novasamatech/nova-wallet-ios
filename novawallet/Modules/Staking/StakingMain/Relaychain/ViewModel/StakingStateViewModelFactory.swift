@@ -13,6 +13,8 @@ final class StakingStateViewModelFactory {
 
     private var lastViewModel: StakingViewState = .undefined
     private let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    private let calendar = Calendar.current
+    private let dateFormatter = DateFormatter.shortDate
 
     var balanceViewModelFactory: BalanceViewModelFactoryProtocol?
     private var cachedChainAsset: ChainAsset?
@@ -77,24 +79,22 @@ final class StakingStateViewModelFactory {
 
             return LocalizableResource { locale in
                 let reward = localizableReward.value(for: locale)
+                let filter = commonData.totalRewardFilter.map { $0.title(
+                    dateFormatter: self.dateFormatter,
+                    calendar: self.calendar
+                ) }?.value(for: locale)
 
                 if let price = reward.price {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: .loaded(price),
-                        filter: commonData.filter.map { $0.title(
-                            dateFormatter: dateFormatter,
-                            calendar: calendar
-                        ) }?.value(for: locale)
+                        filter: filter
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: nil,
-                        filter: commonData.filter.map { $0.title(
-                            dateFormatter: dateFormatter,
-                            calendar: calendar
-                        ) }?.value(for: locale)
+                        filter: filter
                     )
                 }
             }

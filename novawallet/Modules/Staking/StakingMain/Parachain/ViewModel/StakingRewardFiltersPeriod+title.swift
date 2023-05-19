@@ -26,11 +26,11 @@ extension StakingRewardFiltersPeriod {
 
     private func customPeriodTitle(
         _ customPeriod: RewardFiltersCustomPeriod,
-        dateFormatter: LocalizableResource<DateFormatter>,
+        dateFormatter _: LocalizableResource<DateFormatter>,
         calendar: Calendar,
         locale: Locale
     ) -> String {
-        let startDate: Date?
+        let startDate: Date
         let endDate: Date
         switch customPeriod {
         case let .interval(start, end):
@@ -39,17 +39,6 @@ extension StakingRewardFiltersPeriod {
         case let .openEndDate(start):
             startDate = start
             endDate = Date()
-        case let .openStartDate(end):
-            startDate = nil
-            endDate = end
-        }
-
-        guard let startDate = startDate else {
-            let formattedEndDate = dateFormatter.value(for: locale).string(from: endDate) ?? ""
-            return R.string.localizable.stakingRewardFiltersPeriodCustomOpenShortDate(
-                formattedEndDate,
-                preferredLanguages: locale.rLanguages
-            )
         }
 
         guard let days = calendar.dateComponents([.day], from: startDate, to: endDate).day else {

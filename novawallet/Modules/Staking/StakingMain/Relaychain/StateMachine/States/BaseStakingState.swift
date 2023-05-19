@@ -134,8 +134,8 @@ class BaseStakingState: StakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
-    func process(filter: StakingRewardFiltersPeriod?) {
-        commonData = commonData.byReplacing(filter: filter)
+    func process(totalRewardFilter: StakingRewardFiltersPeriod?) {
+        commonData = commonData.byReplacing(totalRewardFilter: totalRewardFilter)
 
         stateMachine?.transit(to: self)
     }

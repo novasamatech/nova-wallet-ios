@@ -151,7 +151,9 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
             from: view,
             initialState: period,
             delegate: self
-        ) {}
+        ) { [weak self] in
+            self?.view?.deactivateControls()
+        }
     }
 }
 
