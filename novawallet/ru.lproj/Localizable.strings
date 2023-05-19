@@ -1226,3 +1226,5 @@
 "wallet.connect.disconnect.error" = "Не удалось завершить сессию с dapp из-за проблем с сетью";
 "wallet.connect.signature.submit.error" = "Не удалось отправить подпись dapp из-за проблем с сетью";
 "wallet.connect.proposal.result.submit.error" = "Не удалось авторизовать dapp из-за проблем с сетью";
+"wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
+"wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";

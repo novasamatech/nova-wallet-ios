@@ -88,7 +88,8 @@ final class AccountInfoSubscription {
                 accountId: accountId,
                 freeInPlank: account?.data.free ?? 0,
                 reservedInPlank: account?.data.reserved ?? 0,
-                frozenInPlank: account?.data.locked ?? 0
+                frozenInPlank: account?.data.locked ?? 0,
+                blocked: false
             )
 
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {
