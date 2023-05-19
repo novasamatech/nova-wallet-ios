@@ -93,7 +93,11 @@ final class SettingsPresenter {
         }
 
         if biometrySettings.isEnabled == true {
-            interactor.updateBiometricAuthSettings(isOn: false)
+            wireframe.showPincodeAuthorization { [weak self] completed in
+                if completed {
+                    self?.interactor.updateBiometricAuthSettings(isOn: false)
+                }
+            }
         } else {
             enableBiometryUsage { [weak self] in
                 self?.interactor.updateBiometricAuthSettings(isOn: $0)
@@ -128,7 +132,7 @@ final class SettingsPresenter {
         let enabling = currentState == false && newState == true
 
         if disabling {
-            wireframe.showPincode { authorized in
+            wireframe.showAuthorization { authorized in
                 authorized ? completion(newState) : completion(currentState)
             }
         } else if enabling {
