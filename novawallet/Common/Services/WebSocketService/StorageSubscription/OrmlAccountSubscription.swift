@@ -88,7 +88,8 @@ final class OrmlAccountSubscription {
                 accountId: accountId,
                 freeInPlank: account?.free ?? 0,
                 reservedInPlank: account?.reserved ?? 0,
-                frozenInPlank: account?.frozen ?? 0
+                frozenInPlank: account?.frozen ?? 0,
+                blocked: false
             )
 
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {

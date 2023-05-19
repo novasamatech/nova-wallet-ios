@@ -86,11 +86,11 @@ final class AssetsBalanceUpdater {
     ) {
         if receivedAccount, receivedDetails {
             let assetAccountPath = StorageCodingPath.assetsAccount(from: extras.palletName)
-            let assetAccountWrapper: CompoundOperationWrapper<AssetAccount?> =
+            let assetAccountWrapper: CompoundOperationWrapper<PalletAssets.Account?> =
                 createStorageDecoderWrapper(for: lastAccountValue, path: assetAccountPath)
 
             let assetDetailsPath = StorageCodingPath.assetsDetails(from: extras.palletName)
-            let assetDetailsWrapper: CompoundOperationWrapper<AssetDetails?> =
+            let assetDetailsWrapper: CompoundOperationWrapper<PalletAssets.Details?> =
                 createStorageDecoderWrapper(for: lastDetailsValue, path: assetDetailsPath)
 
             let changesWrapper = createChangesOperationWrapper(
@@ -153,8 +153,8 @@ final class AssetsBalanceUpdater {
     }
 
     private func createChangesOperationWrapper(
-        dependingOn detailsWrapper: CompoundOperationWrapper<AssetDetails?>,
-        accountWrapper: CompoundOperationWrapper<AssetAccount?>,
+        dependingOn detailsWrapper: CompoundOperationWrapper<PalletAssets.Details?>,
+        accountWrapper: CompoundOperationWrapper<PalletAssets.Account?>,
         chainAssetId: ChainAssetId,
         accountId: AccountId
     ) -> CompoundOperationWrapper<DataProviderChange<AssetBalance>?> {
@@ -173,13 +173,15 @@ final class AssetsBalanceUpdater {
             let assetDetails = try detailsWrapper.targetOperation.extractNoCancellableResultData()
 
             let isFrozen = (assetAccount?.isFrozen ?? false) || (assetDetails?.isFrozen ?? false)
+            let isBlocked = assetAccount?.isBlocked ?? false
 
             let remoteModel = AssetBalance(
                 chainAssetId: chainAssetId,
                 accountId: accountId,
                 freeInPlank: balance,
                 reservedInPlank: 0,
-                frozenInPlank: isFrozen ? balance : 0
+                frozenInPlank: isFrozen ? balance : 0,
+                blocked: isBlocked
             )
 
             if localModel != remoteModel, balance > 0 {
