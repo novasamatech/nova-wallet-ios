@@ -59,7 +59,8 @@ class StakingBondMoreTests: XCTestCase {
             accountId: stashAccountId,
             freeInPlank: 100000000000000,
             reservedInPlank: 0,
-            frozenInPlank: 0
+            frozenInPlank: 0,
+            blocked: false
         )
 
         presenter.didReceiveAccountBalance(result: .success(assetBalance))
