@@ -8,6 +8,8 @@ protocol ParaStkStateViewModelFactoryProtocol {
 final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
     private(set) var priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    private let calendar = Calendar.current
+    private let dateFormatter = DateFormatter.shortDate
 
     init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
@@ -143,13 +145,13 @@ final class ParaStkStateViewModelFactory {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: .loaded(price),
-                        filter: commonData.filter.map(\.title)?.value(for: locale)
+                        filter: commonData.totalRewardFilter.map(\.title)?.value(for: locale)
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
                         price: nil,
-                        filter: commonData.filter.map(\.title)?.value(for: locale)
+                        filter: commonData.totalRewardFilter.map(\.title)?.value(for: locale)
                     )
                 }
             }

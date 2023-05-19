@@ -71,6 +71,11 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
 
         scheduledRequestsProvider = subscribeToScheduledRequests(for: chainId, delegatorId: delegatorId)
     }
+
+    func update(totalRewardFilter: StakingRewardFiltersPeriod) {
+        totalRewardInterval = totalRewardFilter.interval
+        performTotalRewardSubscription()
+    }
 }
 
 extension StakingParachainInteractor: EventVisitorProtocol {
@@ -96,11 +101,6 @@ extension StakingParachainInteractor: EventVisitorProtocol {
         }
 
         provideDurationInfo(for: blockTimeService)
-    }
-
-    func update(filter: StakingRewardFiltersPeriod) {
-        totalRewardInterval = filter.interval
-        performTotalRewardSubscription()
     }
 }
 

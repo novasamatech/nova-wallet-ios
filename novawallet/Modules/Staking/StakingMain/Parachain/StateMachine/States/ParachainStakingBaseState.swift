@@ -110,8 +110,8 @@ extension ParachainStaking {
 
         func process(scheduledRequests _: [ParachainStaking.DelegatorScheduledRequest]?) {}
 
-        func process(filter: StakingRewardFiltersPeriod?) {
-            commonData = commonData.byReplacing(filter: filter)
+        func process(totalRewardFilter: StakingRewardFiltersPeriod?) {
+            commonData = commonData.byReplacing(totalRewardFilter: totalRewardFilter)
 
             stateMachine?.transit(to: self)
         }
