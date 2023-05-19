@@ -654,6 +654,7 @@
 "dapp.auth.title" = "Разрешить “%@” доступ к адресам вашего кошелька?";
 "common.account.address" = "Адрес аккаунта";
 "dapp.sign.extrinsic.failed" = "Не удалось подписать запрошенную операцию";
+"dapp.sign.operation.details.subtitle" = "Убедитесь, что операция правильная";
 "common.all" = "Все";
 "dapp.list.search" = "Введите имя или URL";
 "dapp.browser.close.confirmation" = "Вы уверены, что хотите закрыть этот экран?\nВсе изменения не будут применены.";
