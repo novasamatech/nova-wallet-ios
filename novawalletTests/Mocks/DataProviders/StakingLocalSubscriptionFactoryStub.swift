@@ -303,9 +303,11 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
             chainId: chainId
         )
     }
-
+    
     func getTotalReward(
         for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
         api: LocalChainExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
