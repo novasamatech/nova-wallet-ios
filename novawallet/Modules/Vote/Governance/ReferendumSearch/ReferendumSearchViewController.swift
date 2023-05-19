@@ -7,8 +7,7 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         basePresenter as? ReferendumSearchPresenterProtocol
     }
 
-    private(set) var emptyStateType: EmptyState? = .start
-    private var viewModels: [ReferendumsCellViewModel] = []
+    private var viewModel: TableSearchResultViewModel<ReferendumsCellViewModel> = .start
 
     init(presenter: ReferendumSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         super.init(basePresenter: presenter)
@@ -25,7 +24,6 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         setupTableView()
         setupSearchView()
         applyLocalization()
-        applyState()
         setupHandlers()
 
         super.viewDidLoad()
@@ -55,22 +53,21 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
 
         let cancelButtonTitle = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
         rootView.cancelButton.imageWithTitleView?.title = cancelButtonTitle
+
+        rootView.tableView.reloadData()
     }
 
     private func setupHandlers() {
         rootView.cancelButton.addTarget(self, action: #selector(cancelAction), for: .touchUpInside)
     }
 
-    private func applyState() {
-        rootView.tableView.isHidden = shouldDisplayEmptyState
-        reloadEmptyState(animated: false)
-    }
-
     private func setupTableView() {
         rootView.tableView.separatorStyle = .none
+        rootView.tableView.contentInset = .init(top: 16, left: 0, bottom: 16, right: 0)
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ReferendumTableViewCell.self)
+        rootView.tableView.registerClassForCell(ReferendumEmptySearchTableViewCell.self)
     }
 
     private func updateTime(
@@ -87,27 +84,52 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         presenter?.cancel()
     }
 
-    private func update(viewModels: [ReferendumsCellViewModel]) {
-        guard viewModels != self.viewModels else {
-            return
-        }
-        self.viewModels = viewModels
-        rootView.tableView.reloadData()
-    }
-}
-
-extension ReferendumSearchViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    private func referendumTableViewCell(
+        _ tableView: UITableView,
+        indexPath: IndexPath,
+        model: ReferendumsCellViewModel?
+    ) -> ReferendumTableViewCell {
         let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        viewModels[safe: indexPath.row].map {
+        model.map {
             cell.view.bind(viewModel: $0.viewModel)
             cell.applyStyle()
         }
         return cell
     }
 
+    private func emptyTableViewCell(
+        _ tableView: UITableView,
+        indexPath: IndexPath
+    ) -> ReferendumEmptySearchTableViewCell {
+        let cell: ReferendumEmptySearchTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        let text = R.string.localizable.governanceReferendumsSearchEmpty(
+            preferredLanguages: selectedLocale.rLanguages)
+        cell.bind(text: text)
+        return cell
+    }
+}
+
+extension ReferendumSearchViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch viewModel {
+        case .start:
+            return UITableViewCell()
+        case .notFound:
+            return emptyTableViewCell(tableView, indexPath: indexPath)
+        case let .found(_, items):
+            return referendumTableViewCell(tableView, indexPath: indexPath, model: items[safe: indexPath.row])
+        }
+    }
+
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        viewModels.count
+        switch viewModel {
+        case .start:
+            return 0
+        case .notFound:
+            return 1
+        case let .found(_, items):
+            return items.count
+        }
     }
 }
 
@@ -115,7 +137,8 @@ extension ReferendumSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let referendumIndex = viewModels[safe: indexPath.row]?.referendumIndex else {
+        guard case let .found(_, referendums) = viewModel,
+              let referendumIndex = referendums[safe: indexPath.row]?.referendumIndex else {
             return
         }
 
@@ -125,24 +148,31 @@ extension ReferendumSearchViewController: UITableViewDelegate {
 
 extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
     func didReceive(viewModel: TableSearchResultViewModel<ReferendumsCellViewModel>) {
-        switch viewModel {
-        case .start:
-            emptyStateType = .start
-        case .notFound:
-            emptyStateType = .notFound
-        case let .found(_, viewModels):
-            emptyStateType = nil
-            update(viewModels: viewModels)
+        switch (viewModel, self.viewModel) {
+        case (.start, .start):
+            return
+        case (.notFound, .notFound):
+            return
+        case let (.found(newTitle, newItems), .found(oldTitle, oldItems)):
+            if newTitle == oldTitle, newItems == oldItems {
+                return
+            }
+        default:
+            break
         }
 
-        applyState()
+        self.viewModel = viewModel
+        rootView.tableView.reloadData()
     }
 
     func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
+        guard case let .found(_, referendums) = viewModel else {
+            return
+        }
         rootView.tableView.visibleCells.forEach { cell in
             guard let referendumCell = cell as? ReferendumTableViewCell,
                   let indexPath = rootView.tableView.indexPath(for: cell),
-                  let cellModel = viewModels[safe: indexPath.row] else {
+                  let cellModel = referendums[safe: indexPath.row] else {
                 return
             }
 
