@@ -63,7 +63,6 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
 
     private func setupTableView() {
         rootView.tableView.separatorStyle = .none
-        rootView.tableView.contentInset = .init(top: 16, left: 0, bottom: 16, right: 0)
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ReferendumTableViewCell.self)
