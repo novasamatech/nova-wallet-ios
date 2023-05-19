@@ -33,6 +33,7 @@ final class WalletConnectSessionCell: PlainBaseTableViewCell<WalletConnectSessio
         contentDisplayView.titleView.stackView.alignment = .center
 
         titleLabel.apply(style: .regularSubhedlinePrimary)
+        titleLabel.textAlignment = .left
 
         contentDisplayView.titleView.sView.spacing = 2.0
 
