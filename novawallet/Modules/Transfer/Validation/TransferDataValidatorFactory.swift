@@ -49,6 +49,8 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
+    func receiverNotBlocked(_ isBlocked: Bool?, locale: Locale) -> DataValidating
+
     func canPayCrossChainFee(
         for amount: Decimal?,
         fee: CrossChainValidationFee?,
@@ -254,6 +256,15 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }, preservesCondition: {
             let accountId = try? recepient?.toAccountId(using: chainFormat)
             return accountId != nil
+        })
+    }
+
+    func receiverNotBlocked(_ isBlocked: Bool?, locale: Locale) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            self?.presentable.presentReceivedBlocked(from: self?.view, locale: locale)
+
+        }, preservesCondition: {
+            !(isBlocked ?? false)
         })
     }
 
