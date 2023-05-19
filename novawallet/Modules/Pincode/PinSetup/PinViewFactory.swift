@@ -99,7 +99,7 @@ class PinViewFactory: PinViewFactoryProtocol {
         let interactor = LocalAuthInteractor(
             secretManager: KeychainManager.shared,
             settingsManager: SettingsManager.shared,
-            biometryAuth: BiometryAuth(),
+            biometryAuth: biometryAuth,
             locale: LocalizationManager.shared.selectedLocale
         )
 
