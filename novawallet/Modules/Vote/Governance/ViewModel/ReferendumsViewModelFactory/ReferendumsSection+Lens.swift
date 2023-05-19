@@ -12,9 +12,7 @@ extension ReferendumsSection {
                 }
             }, set: { part, whole in
                 switch whole {
-                case .personalActivities:
-                    return whole
-                case .settings:
+                case .personalActivities, .settings:
                     return whole
                 case let .active(title, _):
                     return .active(title, part)
