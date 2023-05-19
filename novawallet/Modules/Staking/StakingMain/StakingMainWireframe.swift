@@ -37,12 +37,15 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         from view: ControllerBackedProtocol?,
         initialState: StakingRewardFiltersPeriod?,
         delegate: StakingRewardFiltersDelegate,
-        completion _: @escaping () -> Void
+        completion: @escaping () -> Void
     ) {
-        guard let stakingRewardFiltersView = StakingRewardFiltersViewFactory.createView(initialState: initialState, delegate: delegate) else {
+        guard let stakingRewardFiltersView = StakingRewardFiltersViewFactory.createView(
+            initialState: initialState,
+            delegate: delegate
+        ) else {
             return
         }
         let navigationController = NovaNavigationController(rootViewController: stakingRewardFiltersView.controller)
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.present(navigationController, animated: true, completion: completion)
     }
 }

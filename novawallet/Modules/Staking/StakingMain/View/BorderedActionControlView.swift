@@ -16,10 +16,10 @@ final class BorderedActionControlView: UIView {
         $0.applyFilledBackgroundStyle()
         $0.fillColor = R.color.colorChipsBackground()!
         $0.highlightedFillColor = R.color.colorChipsBackground()!
-        $0.cornerRadius = 7
+        $0.cornerRadius = 8
     }
 
-    var contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8) {
+    var contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 3) {
         didSet {
             if oldValue != contentInsets {
                 updateLayout()

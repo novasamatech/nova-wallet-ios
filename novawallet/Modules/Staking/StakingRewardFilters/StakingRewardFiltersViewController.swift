@@ -86,9 +86,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     cell?.switchView.addTarget(self, action: #selector(self.toggleEndDay), for: .valueChanged)
                     cell?.bind(title: title, isOn: isEnabled)
                     return cell
-                case let .calendar(id, date):
+                case let .calendar(id, date, minDate, maxDate):
                     let cell: StakingRewardDateCell? = tableView.dequeueReusableCell(for: indexPath)
-                    cell?.bind(date: date)
+                    cell?.bind(date: date, minDate: minDate, maxDate: maxDate)
                     cell?.id = id.rawValue
                     cell?.delegate = self
                     return cell
@@ -280,10 +280,17 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         let customPeriod = viewModel.customPeriod
         let selectDateValue = dateStringValue(viewModel.customPeriod.startDay.value)
         let startDaySection = Section.start(selectDateValue)
+        let endDate = Lens.endDayValue.get(viewModel.customPeriod).map(Lens.endDayDate.get) ?? nil
+        let startDate = customPeriod.startDay.value
         snapshot.appendSections([startDaySection])
         if !customPeriod.startDay.collapsed {
             snapshot.appendItems(
-                [.calendar(.startDate, customPeriod.startDay.value)],
+                [.calendar(
+                    .startDate,
+                    date: startDate,
+                    minDate: nil,
+                    maxDate: endDate
+                )],
                 toSection: startDaySection
             )
         }
@@ -296,13 +303,17 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             snapshot.appendItems([.dateAlwaysToday(title, true)])
         case let .exact(day):
             snapshot.appendItems([.dateAlwaysToday(title, false)])
-            let endDate = Lens.endDayValue.get(viewModel.customPeriod).map(Lens.endDayDate.get)
             let dateValue = dateStringValue(endDate ?? nil)
             let endDaySection = Section.end(dateValue)
             snapshot.appendSections([endDaySection])
             let collapsed = customPeriod.endDay.collapsed ?? false
             if !collapsed {
-                snapshot.appendItems([.calendar(.endDate, day)], toSection: endDaySection)
+                snapshot.appendItems([.calendar(
+                    .endDate,
+                    date: day,
+                    minDate: startDate,
+                    maxDate: nil
+                )], toSection: endDaySection)
             }
         }
     }
