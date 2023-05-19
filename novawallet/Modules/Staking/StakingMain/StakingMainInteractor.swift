@@ -120,7 +120,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
             }
         }
 
-        operationQueue.addOperations([fetchFilterOperation], waitUntilFinished: false)
+        operationQueue.addOperation(fetchFilterOperation)
     }
 }
 

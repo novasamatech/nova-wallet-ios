@@ -293,6 +293,7 @@
 "staking.reward.filters.period.last.six.months.short" = "6М";
 "staking.reward.filters.period.last.year.short" = "1Г";
 "staking.reward.filters.period.custom.month.short" = "%@Д";
+"staking.reward.filters.period.custom.open.short.date" = "До %@";
 "common.call" = "Вызов";
 "common.module" = "Модуль";
 "wallet.asset.buy.with" = "Купить с";
