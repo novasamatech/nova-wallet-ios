@@ -59,7 +59,7 @@ class MultigradientView: UIView {
         }
     }
 
-    var customMask: CALayer? {
+    @objc var customMask: CALayer? {
         didSet {
             layer.mask = customMask
         }
