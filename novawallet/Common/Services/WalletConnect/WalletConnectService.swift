@@ -291,17 +291,15 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket.onEvent = { [weak self] event in
             switch event {
             case .connected:
-                self?.connected = true
-                self?.onConnect?()
+                self?.markConnectedAndNotify()
             case let .disconnected(message, code):
-                self?.connected = false
-                self?.onDisconnect?(WSError(type: .protocolError, message: message, code: code))
+                self?.markDisconnectedAndNotify(
+                    error: WSError(type: .protocolError, message: message, code: code)
+                )
             case .cancelled, .reconnectSuggested:
-                self?.connected = false
-                self?.onDisconnect?(nil)
+                self?.markDisconnectedAndNotify(error: nil)
             case let .error(error):
-                self?.connected = false
-                self?.onDisconnect?(error)
+                self?.markDisconnectedAndNotify(error: error)
             case let .text(text):
                 self?.onText?(text)
             default:
@@ -315,6 +313,10 @@ private final class DefaultWebSocket: WebSocketConnecting {
     }
 
     func disconnect() {
+        guard connected else {
+            return
+        }
+
         connected = false
 
         webSocket.forceDisconnect()
@@ -324,6 +326,25 @@ private final class DefaultWebSocket: WebSocketConnecting {
 
     func write(string: String, completion: (() -> Void)?) {
         webSocket.write(string: string, completion: completion)
+    }
+
+    private func markConnectedAndNotify() {
+        guard !connected else {
+            return
+        }
+
+        connected = true
+
+        onConnect?()
+    }
+
+    private func markDisconnectedAndNotify(error: Error?) {
+        guard connected else {
+            return
+        }
+
+        connected = false
+        onDisconnect?(error)
     }
 }
 
