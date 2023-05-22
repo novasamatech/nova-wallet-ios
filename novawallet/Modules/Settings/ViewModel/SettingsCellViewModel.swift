@@ -4,6 +4,7 @@ struct SettingsCellViewModel {
     enum Accessory {
         case title(String)
         case box(TitleIconViewModel)
+        case switchControl(isOn: Bool)
         case none
 
         init(optTitle: String?) {
