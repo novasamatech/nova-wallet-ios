@@ -13,6 +13,7 @@ final class StakingStateViewModelFactory {
 
     private var lastViewModel: StakingViewState = .undefined
     private let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    private let calendar = Calendar.current
 
     var balanceViewModelFactory: BalanceViewModelFactoryProtocol?
     private var cachedChainAsset: ChainAsset?
@@ -77,22 +78,31 @@ final class StakingStateViewModelFactory {
 
             return LocalizableResource { locale in
                 let reward = localizableReward.value(for: locale)
+                let filter = commonData.totalRewardFilter.map { $0.title(
+                    calendar: self.calendar
+                ) }?.value(for: locale)
 
                 if let price = reward.price {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: .loaded(price)
+                        price: .loaded(price),
+                        filter: filter
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: nil
+                        price: nil,
+                        filter: filter
                     )
                 }
             }
         } else {
             return LocalizableResource { _ in
-                StakingRewardViewModel(amount: .loading, price: .loading)
+                StakingRewardViewModel(
+                    amount: .loading,
+                    price: .loading,
+                    filter: nil
+                )
             }
         }
     }

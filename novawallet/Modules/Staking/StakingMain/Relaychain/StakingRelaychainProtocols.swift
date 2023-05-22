@@ -3,6 +3,7 @@ import BigInt
 
 protocol StakingRelaychainInteractorInputProtocol: AnyObject {
     func setup()
+    func update(totalRewardFilter: StakingRewardFiltersPeriod)
 }
 
 protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
@@ -66,5 +67,4 @@ protocol StakingRelaychainWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showRebagConfirm(from view: ControllerBackedProtocol?)
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)
-    func showPeriodSelection(from view: ControllerBackedProtocol?)
 }

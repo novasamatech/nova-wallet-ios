@@ -11,7 +11,7 @@ extension StakingRewardFiltersViewController {
     enum Row: Hashable {
         case selectable(title: String, selected: Bool)
         case dateAlwaysToday(String, Bool)
-        case calendar(CalendarIdentifier, Date?)
+        case calendar(CalendarIdentifier, date: Date?, minDate: Date?, maxDate: Date?)
     }
 
     enum CalendarIdentifier: String {

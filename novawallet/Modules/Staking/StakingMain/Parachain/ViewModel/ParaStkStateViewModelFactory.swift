@@ -8,6 +8,7 @@ protocol ParaStkStateViewModelFactoryProtocol {
 final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
     private(set) var priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    private let calendar = Calendar.current
 
     init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
@@ -138,22 +139,31 @@ final class ParaStkStateViewModelFactory {
 
             return LocalizableResource { locale in
                 let reward = localizableReward.value(for: locale)
+                let filter = commonData.totalRewardFilter.map { $0.title(
+                    calendar: self.calendar
+                ) }?.value(for: locale)
 
                 if let price = reward.price {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: .loaded(price)
+                        price: .loaded(price),
+                        filter: filter
                     )
                 } else {
                     return StakingRewardViewModel(
                         amount: .loaded(reward.amount),
-                        price: nil
+                        price: nil,
+                        filter: filter
                     )
                 }
             }
         } else {
             return LocalizableResource { _ in
-                StakingRewardViewModel(amount: .loading, price: .loading)
+                StakingRewardViewModel(
+                    amount: .loading,
+                    price: .loading,
+                    filter: nil
+                )
             }
         }
     }

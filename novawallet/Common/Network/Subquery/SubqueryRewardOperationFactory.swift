@@ -11,7 +11,9 @@ protocol SubqueryRewardOperationFactoryProtocol {
     ) -> BaseOperation<SubqueryRewardOrSlashData>
 
     func createTotalRewardOperation(
-        for address: AccountAddress
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?
     ) -> BaseOperation<BigUInt>
 }
 
@@ -70,20 +72,69 @@ final class SubqueryRewardOperationFactory {
         """
     }
 
-    private func prepareTotalRewardQuery(for address: AccountAddress) -> String {
+    private func prepareTotalRewardQuery(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?
+    ) -> String {
         """
         {
-             accumulatedRewards (
-                filter: {
-                     id: { equalTo: "\(address)"}
-                }
-             ) {
-                 nodes {
-                     amount
-                 }
-             }
+            start: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: true))
+            end: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: false))
         }
         """
+    }
+
+    func accountRewardsQuery(
+        address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        isAsc: Bool
+    ) -> String {
+        let filter = queryFilter(filters: [
+            addressQueryFilter(address),
+            timestampQueryFilter(startTimestamp: startTimestamp, endTimestamp: endTimestamp)
+        ])
+        let order = isAsc ? "BLOCK_NUMBER_ASC" : "BLOCK_NUMBER_DESC"
+        return """
+        accountRewards(
+                         \(filter)
+                         orderBy: \(order)
+                         first: 1
+                     ) {
+                         nodes {
+                             accumulatedAmount
+                             amount
+                         }
+                     }
+        """
+    }
+
+    func queryFilter(filters: [String]) -> String {
+        guard !filters.isEmpty else {
+            return ""
+        }
+
+        return "filter: { \(filters.joined(separator: ",")) }"
+    }
+
+    func addressQueryFilter(_ address: AccountAddress) -> String {
+        "address: { equalTo: \"\(address)\" }"
+    }
+
+    func timestampQueryFilter(startTimestamp: Int64?, endTimestamp: Int64?) -> String {
+        let timestampFilter = [
+            startTimestamp.map {
+                "greaterThanOrEqualTo:\"\($0)\""
+            },
+            endTimestamp.map {
+                "lessThanOrEqualTo:\"\($0)\""
+            }
+        ]
+        .compactMap { $0 }
+        .joined(separator: ",")
+
+        return timestampFilter.isEmpty ? "" : "timestamp: { \(timestampFilter) }"
     }
 }
 
@@ -132,8 +183,16 @@ extension SubqueryRewardOperationFactory: SubqueryRewardOperationFactoryProtocol
         return operation
     }
 
-    func createTotalRewardOperation(for address: AccountAddress) -> BaseOperation<BigUInt> {
-        let queryString = prepareTotalRewardQuery(for: address)
+    func createTotalRewardOperation(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?
+    ) -> BaseOperation<BigUInt> {
+        let queryString = prepareTotalRewardQuery(
+            for: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp
+        )
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: self.url)
@@ -156,12 +215,16 @@ extension SubqueryRewardOperationFactory: SubqueryRewardOperationFactoryProtocol
             case let .errors(error):
                 throw error
             case let .data(response):
-                if let rewardString = response.accumulatedRewards?
-                    .nodes?.arrayValue?.first?.amount?.stringValue {
-                    return BigUInt(rewardString) ?? 0
-                } else {
-                    return 0
-                }
+                let startRewardAccumulatedAmountString = response.start?
+                    .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
+                let startRewardAmountString = response.start?
+                    .nodes?.arrayValue?.first?.amount?.stringValue
+                let endRewardAccumulatedAmountString = response.end?
+                    .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
+                let startRewardAccumulatedAmount = startRewardAccumulatedAmountString.map { BigUInt($0) ?? 0 } ?? 0
+                let startRewardAmount = startRewardAmountString.map { BigUInt($0) ?? 0 } ?? 0
+                let endRewardAccumulatedAmount = endRewardAccumulatedAmountString.map { BigUInt($0) ?? 0 } ?? 0
+                return endRewardAccumulatedAmount - startRewardAccumulatedAmount + startRewardAmount
             }
         }
 

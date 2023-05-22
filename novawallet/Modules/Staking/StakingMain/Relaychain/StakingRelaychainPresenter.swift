@@ -363,8 +363,9 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
         }
     }
 
-    func selectPeriod() {
-        wireframe.showPeriodSelection(from: view)
+    func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
+        stateMachine.state.process(totalRewardFilter: filter)
+        interactor.update(totalRewardFilter: filter)
     }
 }
 

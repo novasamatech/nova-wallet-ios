@@ -15,6 +15,7 @@ extension ParachainStaking {
         let roundInfo: ParachainStaking.RoundInfo?
         let totalReward: TotalRewardItem?
         let yieldBoostState: ParaStkYieldBoostState?
+        let totalRewardFilter: StakingRewardFiltersPeriod?
 
         var roundCountdown: RoundCountdown? {
             if
@@ -48,7 +49,8 @@ extension ParachainStaking.CommonData {
             blockNumber: nil,
             roundInfo: nil,
             totalReward: nil,
-            yieldBoostState: nil
+            yieldBoostState: nil,
+            totalRewardFilter: nil
         )
     }
 
@@ -65,7 +67,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -82,7 +85,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -99,7 +103,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -116,7 +121,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -133,7 +139,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -152,7 +159,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -171,7 +179,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -190,7 +199,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -209,7 +219,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -228,7 +239,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -247,7 +259,8 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -266,7 +279,28 @@ extension ParachainStaking.CommonData {
             blockNumber: blockNumber,
             roundInfo: roundInfo,
             totalReward: totalReward,
-            yieldBoostState: yieldBoostState
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
+        )
+    }
+
+    func byReplacing(
+        totalRewardFilter: StakingRewardFiltersPeriod?
+    ) -> ParachainStaking.CommonData {
+        ParachainStaking.CommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo,
+            totalReward: totalReward,
+            yieldBoostState: yieldBoostState,
+            totalRewardFilter: totalRewardFilter
         )
     }
 }

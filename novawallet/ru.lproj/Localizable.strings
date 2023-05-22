@@ -286,6 +286,13 @@
 "staking.reward.filters.period.last.six.months" = "Последние 6 месяцев (6М)";
 "staking.reward.filters.period.last.year" = "Последний год (1Г)";
 "staking.reward.filters.period.custom" = "Свой период";
+"staking.reward.filters.period.all.time.short" = "Все";
+"staking.reward.filters.period.last.week.short" = "7Д";
+"staking.reward.filters.period.last.month.short" = "30Д";
+"staking.reward.filters.period.last.three.months.short" = "3М";
+"staking.reward.filters.period.last.six.months.short" = "6М";
+"staking.reward.filters.period.last.year.short" = "1Г";
+"staking.reward.filters.period.custom.month.short" = "%@Д";
 "common.call" = "Вызов";
 "common.module" = "Модуль";
 "wallet.asset.buy.with" = "Купить с";
