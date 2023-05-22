@@ -9,7 +9,6 @@ final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
     private(set) var priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     private let calendar = Calendar.current
-    private let dateFormatter = DateFormatter.shortDate
 
     init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
@@ -141,7 +140,6 @@ final class ParaStkStateViewModelFactory {
             return LocalizableResource { locale in
                 let reward = localizableReward.value(for: locale)
                 let filter = commonData.totalRewardFilter.map { $0.title(
-                    dateFormatter: self.dateFormatter,
                     calendar: self.calendar
                 ) }?.value(for: locale)
 

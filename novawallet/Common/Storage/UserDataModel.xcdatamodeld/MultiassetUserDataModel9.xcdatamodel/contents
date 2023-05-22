@@ -43,11 +43,13 @@
         <relationship name="chainAccounts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDChainAccount" inverseName="metaAccount" inverseEntity="CDChainAccount"/>
     </entity>
     <entity name="CDStakingRewardsFilter" representedClassName="CDStakingRewardsFilter" syncable="YES" codeGenerationType="class">
-        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
-        <attribute name="chainId" optional="YES" attributeType="String"/>
-        <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="period" optional="YES" attributeType="Binary"/>
-        <attribute name="stakingType" optional="YES" attributeType="String"/>
+        <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" attributeType="String"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="period" attributeType="String"/>
+        <attribute name="stakingType" attributeType="String"/>
+        <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
 </model>

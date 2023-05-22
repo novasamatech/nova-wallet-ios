@@ -21,7 +21,9 @@ extension StakingRewardsFilterMapper: CoreDataMapperProtocol {
         entity.chainId = model.chainAssetId.chainId
         entity.assetId = Int32(bitPattern: model.chainAssetId.assetId)
         entity.stakingType = model.stakingType.rawValue
-        entity.period = try JSONEncoder().encode(model.period)
+        entity.period = model.period.stringValue
+        entity.startDate = model.period.startDate
+        entity.endDate = model.period.endDate
     }
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
@@ -31,11 +33,12 @@ extension StakingRewardsFilterMapper: CoreDataMapperProtocol {
             chainId: entity.chainId!,
             assetId: UInt32(bitPattern: entity.assetId)
         )
+
         return .init(
             chainAccountId: chainAccountId,
             chainAssetId: chainAssetId,
             stakingType: StakingType(rawType: entity.stakingType),
-            period: try JSONDecoder().decode(StakingRewardFiltersPeriod.self, from: entity.period!)
+            period: .init(rawValue: entity.period!, startDate: entity.startDate, endDate: entity.endDate)
         )
     }
 }

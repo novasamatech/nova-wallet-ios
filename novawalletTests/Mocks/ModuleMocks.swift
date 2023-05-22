@@ -36317,7 +36317,7 @@ import SoraFoundation
     
     
     
-     func deactivateControls()  {
+     func didEditRewardFilters()  {
         
     return cuckoo_manager.call("deactivateControls()",
             parameters: (),
@@ -36326,7 +36326,7 @@ import SoraFoundation
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.deactivateControls())
+            defaultCall: __defaultImplStub!.didEditRewardFilters())
         
     }
     
@@ -36547,7 +36547,7 @@ import SoraFoundation
     
     
     
-     func deactivateControls()   {
+     func didEditRewardFilters()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

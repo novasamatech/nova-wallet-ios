@@ -552,7 +552,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
         }
     }
 
-    func deactivateControls() {
+    func didEditRewardFilters() {
         rewardView?.filterView.control.deactivate(animated: true)
     }
 }

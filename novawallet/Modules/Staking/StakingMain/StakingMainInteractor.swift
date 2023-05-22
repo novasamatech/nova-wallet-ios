@@ -106,15 +106,16 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         )
         let fetchFilterOperation = stakingRewardsFilterRepository.fetchOperation(by: { filterId }, options: .init())
 
-        fetchFilterOperation.completionBlock = {
-            do {
-                let period = try fetchFilterOperation.extractNoCancellableResultData()?.period ?? .allTime
-                self.stakingRewardFiltersPeriod = period
-                DispatchQueue.main.async {
-                    self.presenter?.didReceiveRewardFilter(period)
+        fetchFilterOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard let self = self else {
+                    return
                 }
-            } catch {
-                DispatchQueue.main.async {
+                do {
+                    let period = try fetchFilterOperation.extractNoCancellableResultData()?.period ?? .allTime
+                    self.stakingRewardFiltersPeriod = period
+                    self.presenter?.didReceiveRewardFilter(period)
+                } catch {
                     self.presenter?.didReceiveError(error)
                 }
             }
@@ -176,9 +177,9 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         let saveOperation = stakingRewardsFilterRepository.saveOperation({ [entity] }, { [] })
 
         saveOperation.completionBlock = { [weak self] in
-            self?.stakingRewardFiltersPeriod = filter
-
             DispatchQueue.main.async {
+                self?.stakingRewardFiltersPeriod = filter
+
                 if case .success = saveOperation.result {
                     self?.stakingRewardFiltersPeriod = filter
                     self?.presenter?.didReceiveRewardFilter(filter)
