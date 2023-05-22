@@ -3,34 +3,33 @@ import SoraUI
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
-        static let bottomInset: CGFloat = 20.0
+        static let insets = UIEdgeInsets(
+            top: 12,
+            left: 13,
+            bottom: 13,
+            right: 13
+        )
+
+        static let amountY: CGFloat = 50
+
+        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
+        static let elementMovingMotion: CGFloat = 5
     }
 
     let backgroundBlurView = GladingCardView()
 
-    let titleView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.mode = .detailsIcon
+    let displayContentView: UIView = .create { view in
+        view.backgroundColor = .clear
+    }
 
-        view.detailsLabel.numberOfLines = 1
-        view.detailsLabel.textColor = R.color.colorTextSecondary()
-        view.detailsLabel.font = .regularSubheadline
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .regularSubhedlineSecondary)
+    }
 
-        view.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
-
-        view.iconWidth = 16.0
-        view.spacing = 4.0
-
-        return view
-    }()
-
-    let amountLabel: UILabel = {
-        let view = UILabel()
+    let amountLabel: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
         view.font = .boldLargeTitle
-        view.textAlignment = .center
-        return view
-    }()
+    }
 
     let locksView: BorderedIconLabelView = .create {
         let color = R.color.colorChipText()!
@@ -41,6 +40,14 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
         $0.backgroundView.apply(style: .chips)
         $0.isHidden = true
+    }
+
+    let actionsBackgroundView: BlockBackgroundView = .create { view in
+        view.sideLength = 12
+    }
+
+    let actionsGladingView: GladingRectView = .create { view in
+        view.bind(model: .cardActionsStrokeGlading)
     }
 
     private var skeletonView: SkrullableView?
@@ -95,7 +102,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
     private func setupStateWithLocks(amount: String) {
         locksView.isHidden = false
-        titleView.hidesIcon = false
 
         locksView.iconDetailsView.detailsLabel.text = amount
     }
@@ -103,19 +109,24 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func setupStateWithoutLocks() {
         locksView.iconDetailsView.detailsLabel.text = nil
         locksView.isHidden = true
-        titleView.hidesIcon = true
     }
 
     private func setupLocalization() {
-        titleView.detailsLabel.text = R.string.localizable.walletTotalBalance(
+        titleLabel.text = R.string.localizable.walletTotalBalance(
             preferredLanguages: locale.rLanguages
         )
     }
 
     private func setupMotionEffect() {
+        setupBackgroundMotion()
+
+        setupMovingMotion(for: displayContentView)
+    }
+
+    private func setupBackgroundMotion() {
         let identity = CATransform3DIdentity
-        let minimum = CATransform3DRotate(identity, (-2 * .pi) / 180.0, 0.0, 1.0, 0.0)
-        let maximum = CATransform3DRotate(identity, (2 * .pi) / 180.0, 0.0, 1.0, 0.0)
+        let minimum = CATransform3DRotate(identity, -Constants.cardMotionAngle, 0.0, 1.0, 0.0)
+        let maximum = CATransform3DRotate(identity, Constants.cardMotionAngle, 0.0, 1.0, 0.0)
 
         contentView.layer.transform = identity
         let effect = UIInterpolatingMotionEffect(
@@ -128,6 +139,22 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         contentView.addMotionEffect(effect)
     }
 
+    private func setupMovingMotion(for view: UIView) {
+        let identity = CATransform3DIdentity
+        let minimum = CATransform3DTranslate(identity, Constants.elementMovingMotion, 0.0, 0.0)
+        let maximum = CATransform3DTranslate(identity, -Constants.elementMovingMotion, 0.0, 0.0)
+
+        view.layer.transform = identity
+        let effect = UIInterpolatingMotionEffect(
+            keyPath: "layer.transform",
+            type: .tiltAlongHorizontalAxis
+        )
+        effect.minimumRelativeValue = minimum
+        effect.maximumRelativeValue = maximum
+
+        view.addMotionEffect(effect)
+    }
+
     private func setupLayout() {
         contentView.addSubview(backgroundBlurView)
         backgroundBlurView.snp.makeConstraints { make in
@@ -135,26 +162,41 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             make.top.bottom.equalToSuperview()
         }
 
-        contentView.addSubview(titleView)
-        titleView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(backgroundBlurView.snp.top).offset(20.0)
+        contentView.addSubview(displayContentView)
+        displayContentView.snp.makeConstraints { make in
+            make.leading.equalTo(backgroundBlurView).offset(Constants.insets.left)
+            make.trailing.equalTo(backgroundBlurView).offset(-Constants.insets.right)
+            make.top.equalTo(backgroundBlurView).offset(Constants.insets.top)
+            make.bottom.equalTo(backgroundBlurView).offset(-Constants.insets.bottom)
         }
 
-        let amountView = UIStackView(arrangedSubviews: [
-            amountLabel,
-            locksView
-        ])
-        amountView.spacing = 8.0
-        amountView.axis = .vertical
-        amountView.alignment = .center
+        displayContentView.addSubview(locksView)
+        locksView.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview()
+        }
 
-        contentView.addSubview(amountView)
-        amountView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualTo(titleView.snp.bottom).offset(3)
-            make.leading.equalTo(backgroundBlurView).offset(8.0)
-            make.trailing.equalTo(backgroundBlurView).offset(-8.0)
-            make.bottom.equalToSuperview().inset(Constants.bottomInset)
+        displayContentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalTo(locksView.snp.centerY)
+            make.trailing.lessThanOrEqualTo(locksView.snp.leading).offset(-8)
+        }
+
+        displayContentView.addSubview(amountLabel)
+        amountLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(Constants.amountY - Constants.insets.top)
+        }
+
+        displayContentView.addSubview(actionsBackgroundView)
+        actionsBackgroundView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.size.height.equalTo(80)
+        }
+
+        actionsBackgroundView.addSubview(actionsGladingView)
+        actionsGladingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 
@@ -219,11 +261,11 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = spaceSize.height - Constants.bottomInset - amountLabel.font.lineHeight / 2.0 -
+        let offsetY = Constants.amountY + amountLabel.font.lineHeight / 2.0 -
             bigRowSize.height / 2.0
 
         let offset = CGPoint(
-            x: spaceSize.width / 2.0 - bigRowSize.width / 2.0,
+            x: UIConstants.horizontalInset + Constants.insets.left,
             y: offsetY
         )
 
