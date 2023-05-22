@@ -1,6 +1,6 @@
 import UIKit
 
-final class BalanceCardView: UIView {
+final class GladingCardView: UIView {
     let backgroundImage = R.image.cardBg()!
 
     let bigPatternView: GladingPatternView = .create { view in
@@ -13,6 +13,14 @@ final class BalanceCardView: UIView {
 
     let smallPatternView: GladingPatternView = .create { view in
         view.bind(model: .smallPattern)
+    }
+
+    let strokeGladingView: GladingRectView = .create { view in
+        view.bind(model: .cardStrokeGlading)
+    }
+
+    let fillGladingView: GladingRectView = .create { view in
+        view.bind(model: .cardGlading)
     }
 
     override init(frame: CGRect) {
@@ -93,6 +101,16 @@ final class BalanceCardView: UIView {
             make.leading.equalToSuperview().offset(5)
             make.top.equalToSuperview().offset(-25)
             make.bottom.equalToSuperview().offset(25)
+        }
+
+        addSubview(fillGladingView)
+        fillGladingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        addSubview(strokeGladingView)
+        strokeGladingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 }

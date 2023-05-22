@@ -4,7 +4,8 @@ struct GladingPatternModel {
     let gradient: GradientModel
     let slidingMin: CGFloat
     let slidingMax: CGFloat
-    let rotation: CGFloat
+    let gradientRotation: CGFloat
+    let gradientSize: CGSize
     let pattern: UIImage
 }
 
@@ -28,12 +29,18 @@ extension GladingPatternModel {
         )
     }
 
+    private static let gradientRotation: CGFloat = -CGFloat.pi / 4
+    private static let gradientSize = CGSize(width: 963, height: 246)
+    private static let slidingMin: CGFloat = -0.5
+    private static let slidingMax: CGFloat = 0.5
+
     static var bigPattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
-            slidingMin: -0.5,
-            slidingMax: 0.5,
-            rotation: -CGFloat.pi / 4,
+            slidingMin: Self.slidingMin,
+            slidingMax: Self.slidingMax,
+            gradientRotation: Self.gradientRotation,
+            gradientSize: Self.gradientSize,
             pattern: R.image.cardBigPattern()!
         )
     }
@@ -41,9 +48,10 @@ extension GladingPatternModel {
     static var middlePattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
-            slidingMin: -0.5,
-            slidingMax: 0.5,
-            rotation: -CGFloat.pi / 4,
+            slidingMin: Self.slidingMin,
+            slidingMax: Self.slidingMax,
+            gradientRotation: Self.gradientRotation,
+            gradientSize: Self.gradientSize,
             pattern: R.image.cardMiddlePattern()!.blurred(with: 2)!
         )
     }
@@ -51,9 +59,10 @@ extension GladingPatternModel {
     static var smallPattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
-            slidingMin: -0.5,
-            slidingMax: 0.5,
-            rotation: -CGFloat.pi / 4,
+            slidingMin: Self.slidingMin,
+            slidingMax: Self.slidingMax,
+            gradientRotation: Self.gradientRotation,
+            gradientSize: Self.gradientSize,
             pattern: R.image.cardSmallPattern()!.blurred(with: 4)!
         )
     }

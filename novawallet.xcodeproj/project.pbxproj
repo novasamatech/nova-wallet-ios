@@ -1813,6 +1813,9 @@
 		849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */; };
 		849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */; };
 		849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */; };
+		849C7BD72A1B212800434621 /* GladingRectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C7BD62A1B212800434621 /* GladingRectView.swift */; };
+		849C7BD92A1B21CF00434621 /* GladingRectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C7BD82A1B21CF00434621 /* GladingRectModel.swift */; };
+		849C7BDB2A1B236900434621 /* GladingBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C7BDA2A1B236900434621 /* GladingBaseView.swift */; };
 		849D14CA2994D9BC0048E947 /* StackIconTitleValueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D14C92994D9BC0048E947 /* StackIconTitleValueCell.swift */; };
 		849D14CC2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D14CB2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift */; };
 		849D3220291C26BA00D25839 /* GovernanceDAppList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D321F291C26BA00D25839 /* GovernanceDAppList.swift */; };
@@ -2553,7 +2556,7 @@
 		84F76ED829006BC400D7206C /* DiscreteGradientSlider+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */; };
 		84F77AAA265EE86B00F54885 /* CrowdloanErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F77AA9265EE86B00F54885 /* CrowdloanErrorPresentable.swift */; };
 		84F81318265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F81317265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift */; };
-		84F96FA52A136E1B00EB70E2 /* BalanceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F96FA42A136E1B00EB70E2 /* BalanceCardView.swift */; };
+		84F96FA52A136E1B00EB70E2 /* GladingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F96FA42A136E1B00EB70E2 /* GladingCardView.swift */; };
 		84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F98D8925E3DD3F0040418E /* StorageCodingPath.swift */; };
 		84F98D9625E3E2B10040418E /* InMemoryDataProviderRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F98D9525E3E2B10040418E /* InMemoryDataProviderRepository.swift */; };
 		84F9D4CF2664CCA500F7AAD2 /* CommonInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F9D4CE2664CCA500F7AAD2 /* CommonInputView.swift */; };
@@ -5327,6 +5330,9 @@
 		849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Matching.swift"; sourceTree = "<group>"; };
 		849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCancellableCleaning.swift; sourceTree = "<group>"; };
 		849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseOperation+Cancellable.swift"; sourceTree = "<group>"; };
+		849C7BD62A1B212800434621 /* GladingRectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GladingRectView.swift; sourceTree = "<group>"; };
+		849C7BD82A1B21CF00434621 /* GladingRectModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GladingRectModel.swift; sourceTree = "<group>"; };
+		849C7BDA2A1B236900434621 /* GladingBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GladingBaseView.swift; sourceTree = "<group>"; };
 		849D14C92994D9BC0048E947 /* StackIconTitleValueCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackIconTitleValueCell.swift; sourceTree = "<group>"; };
 		849D14CB2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateFlowDisplayInfo.swift; sourceTree = "<group>"; };
 		849D321F291C26BA00D25839 /* GovernanceDAppList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDAppList.swift; sourceTree = "<group>"; };
@@ -6076,7 +6082,7 @@
 		84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscreteGradientSlider+Style.swift"; sourceTree = "<group>"; };
 		84F77AA9265EE86B00F54885 /* CrowdloanErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanErrorPresentable.swift; sourceTree = "<group>"; };
 		84F81317265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansOperationFactoryStub.swift; sourceTree = "<group>"; };
-		84F96FA42A136E1B00EB70E2 /* BalanceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceCardView.swift; sourceTree = "<group>"; };
+		84F96FA42A136E1B00EB70E2 /* GladingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GladingCardView.swift; sourceTree = "<group>"; };
 		84F98D8925E3DD3F0040418E /* StorageCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageCodingPath.swift; sourceTree = "<group>"; };
 		84F98D9525E3E2B10040418E /* InMemoryDataProviderRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDataProviderRepository.swift; sourceTree = "<group>"; };
 		84F9D4CE2664CCA500F7AAD2 /* CommonInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonInputView.swift; sourceTree = "<group>"; };
@@ -11414,7 +11420,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
-				84F96FA32A136E0400EB70E2 /* BalanceCard */,
+				84F96FA32A136E0400EB70E2 /* GladingView */,
 				84D184E62A04D5880060C1BD /* ScrollableContainerView */,
 				847012642982ADCF00F29C87 /* StackTable */,
 				84C2063628D1BEBD006D0D52 /* AccountDetailsSelection */,
@@ -14408,14 +14414,17 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
-		84F96FA32A136E0400EB70E2 /* BalanceCard */ = {
+		84F96FA32A136E0400EB70E2 /* GladingView */ = {
 			isa = PBXGroup;
 			children = (
-				84F96FA42A136E1B00EB70E2 /* BalanceCardView.swift */,
+				84F96FA42A136E1B00EB70E2 /* GladingCardView.swift */,
 				840E59B62A187A9200BA6ADD /* GladingPatternView.swift */,
 				840E59B82A187E0700BA6ADD /* GladingPatternModel.swift */,
+				849C7BD62A1B212800434621 /* GladingRectView.swift */,
+				849C7BD82A1B21CF00434621 /* GladingRectModel.swift */,
+				849C7BDA2A1B236900434621 /* GladingBaseView.swift */,
 			);
-			path = BalanceCard;
+			path = GladingView;
 			sourceTree = "<group>";
 		};
 		84F98D9425E3E29B0040418E /* Repositories */ = {
@@ -17429,6 +17438,7 @@
 				84532D5D28E41D8500EF4ADC /* ConvictionVoting+StoragePath.swift in Sources */,
 				842876A824AE049B00D91AD8 /* SelectionListViewController.swift in Sources */,
 				84786E1A25FA6A470089DFF7 /* StashItem.swift in Sources */,
+				849C7BD72A1B212800434621 /* GladingRectView.swift in Sources */,
 				848FFE9025E6CF4300652AA5 /* StorageKeyEncodingOperation.swift in Sources */,
 				8443FDB6255540570092893D /* ExportMnemonicData.swift in Sources */,
 				845B89242959625000EE25B0 /* SecurityLayerService.swift in Sources */,
@@ -18298,7 +18308,7 @@
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
 				849014BF24AA87E4008F705E /* ScreenAuthorizationProtocol.swift in Sources */,
 				84CB2250270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift in Sources */,
-				84F96FA52A136E1B00EB70E2 /* BalanceCardView.swift in Sources */,
+				84F96FA52A136E1B00EB70E2 /* GladingCardView.swift in Sources */,
 				8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */,
 				8490145624A9404E008F705E /* AttributedStringDecorator.swift in Sources */,
 				D9046DBC27453D5C00C29F2E /* ParallelContributionResponse.swift in Sources */,
@@ -19282,6 +19292,7 @@
 				840DFF532894189D001B11EA /* ChainAddressDetailsMeasurement.swift in Sources */,
 				9565BEB636E6D386B0C0FBE5 /* StakingPayoutConfirmationViewFactory.swift in Sources */,
 				6F0CFDAB9D0C35075BD74A77 /* WalletHistoryFilterProtocols.swift in Sources */,
+				849C7BD92A1B21CF00434621 /* GladingRectModel.swift in Sources */,
 				60461B20A5DA9E9E3AF0BB84 /* WalletHistoryFilterWireframe.swift in Sources */,
 				8487583327F06AF300495306 /* QRScannerViewLayout.swift in Sources */,
 				84AF08DA2941BC7900D0572B /* TokenManageNetworkViewModel.swift in Sources */,
@@ -19451,6 +19462,7 @@
 				885A6C3229A374B600B65C1A /* ReferendumVotersLocalWrapperFactory.swift in Sources */,
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
+				849C7BDB2A1B236900434621 /* GladingBaseView.swift in Sources */,
 				84EE2FB32891442F00A98816 /* WalletManageViewFactory.swift in Sources */,
 				847A6C0B28817E4000477F77 /* AssetListBaseInteractor.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
