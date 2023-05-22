@@ -60,7 +60,8 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
                 accountId: accountId,
                 freeInPlank: newBalance,
                 reservedInPlank: 0,
-                frozenInPlank: 0
+                frozenInPlank: 0,
+                blocked: false
             )
 
             return [assetBalance]

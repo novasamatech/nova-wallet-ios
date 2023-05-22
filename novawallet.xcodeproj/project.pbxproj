@@ -1765,6 +1765,7 @@
 		849842FE26592C2B006BBB9F /* StatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849842FD26592C2B006BBB9F /* StatusSectionView.swift */; };
 		8498430326592D29006BBB9F /* VoteStatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498430226592D29006BBB9F /* VoteStatusSectionView.swift */; };
 		8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498430826592E5D006BBB9F /* CrowdloansViewModel.swift */; };
+		8498534F2A17390900993977 /* PalletAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498534E2A17390900993977 /* PalletAssets.swift */; };
 		849976B327B2430300B14A6C /* DAppMetamaskTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976B227B2430300B14A6C /* DAppMetamaskTransport.swift */; };
 		849976B827B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976B727B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift */; };
 		849976BA27B24C2200B14A6C /* DAppBrowserTransportProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976B927B24C2200B14A6C /* DAppBrowserTransportProtocol.swift */; };
@@ -5306,6 +5307,8 @@
 		849842FD26592C2B006BBB9F /* StatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSectionView.swift; sourceTree = "<group>"; };
 		8498430226592D29006BBB9F /* VoteStatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteStatusSectionView.swift; sourceTree = "<group>"; };
 		8498430826592E5D006BBB9F /* CrowdloansViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewModel.swift; sourceTree = "<group>"; };
+		8498534E2A17390900993977 /* PalletAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalletAssets.swift; sourceTree = "<group>"; };
+		849853502A17449700993977 /* SubstrateDataModel15.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel15.xcdatamodel; sourceTree = "<group>"; };
 		849976B227B2430300B14A6C /* DAppMetamaskTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskTransport.swift; sourceTree = "<group>"; };
 		849976B727B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppPolkadotExtensionTransport.swift; sourceTree = "<group>"; };
 		849976B927B24C2200B14A6C /* DAppBrowserTransportProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransportProtocol.swift; sourceTree = "<group>"; };
@@ -9073,6 +9076,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				8498534D2A1738EC00993977 /* Assets */,
 				885547E929C89104008782C1 /* Web3Names */,
 				84C1DBC129C27A5600F295A5 /* Paras */,
 				8436C79B29ACCFBB0024B409 /* ElectionProviderMultiPhase */,
@@ -9113,8 +9117,6 @@
 				848FFE9925E6E0E400652AA5 /* ValidatorExposure.swift */,
 				84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */,
 				2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */,
-				84B73AD3279B4D570071AE16 /* AssetAccount.swift */,
-				84B73AD5279B4E0B0071AE16 /* AssetDetails.swift */,
 				84F18D4927A1869E00CA7554 /* OrmlAccount.swift */,
 				84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */,
 				8499FEC327BEC5F400712589 /* UniquesClassMetadata.swift */,
@@ -11964,6 +11966,16 @@
 				848919DA26FB663D004DBAD5 /* CrowdloansChainViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		8498534D2A1738EC00993977 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				8498534E2A17390900993977 /* PalletAssets.swift */,
+				84B73AD3279B4D570071AE16 /* AssetAccount.swift */,
+				84B73AD5279B4E0B0071AE16 /* AssetDetails.swift */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		849976B627B24BA200B14A6C /* Transports */ = {
@@ -19445,6 +19457,7 @@
 				88BB0B3F29C1E17F00D041C1 /* KiltDid+StoragePath.swift in Sources */,
 				843A2C7326A8641400266F53 /* MultiValueView.swift in Sources */,
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
+				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,
 				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */,
@@ -21258,6 +21271,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				849853502A17449700993977 /* SubstrateDataModel15.xcdatamodel */,
 				848DCD0A29D71C5200E8A300 /* SubstrateDataModel14.xcdatamodel */,
 				840D627829CC314500D5E894 /* SubstrateDataModel13.xcdatamodel */,
 				840D626D29CB32F100D5E894 /* SubstrateDataModel12.xcdatamodel */,
@@ -21273,7 +21287,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 848DCD0A29D71C5200E8A300 /* SubstrateDataModel14.xcdatamodel */;
+			currentVersion = 849853502A17449700993977 /* SubstrateDataModel15.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
