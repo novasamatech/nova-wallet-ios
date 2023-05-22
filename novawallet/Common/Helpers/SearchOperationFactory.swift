@@ -28,7 +28,7 @@ enum SearchOperationFactory {
         text: String,
         in models: [Model],
         keyExtractor: @escaping (Model) -> Key,
-        searchKeyExtractor: @escaping (Key) -> String
+        searchKeysExtractor: @escaping (Key) -> [String]
     ) -> BaseOperation<[Model]> where Key: Hashable {
         ClosureOperation {
             guard !text.isEmpty else {
@@ -41,8 +41,10 @@ enum SearchOperationFactory {
 
             let weights = models.reduce(into: [Key: UInt]()) { result, item in
                 let key = keyExtractor(item)
-                let searchWord = searchKeyExtractor(key)
-                result[key] = calculatePoints(searchWord, text)
+                let searchWords = searchKeysExtractor(key)
+                result[key] = searchWords.reduce(0) {
+                    $0 + calculatePoints($1, text)
+                }
             }
 
             let result = models

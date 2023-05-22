@@ -1,12 +1,13 @@
 import UIKit
 
-final class AssetListEmptyCell: UICollectionViewCell {
+final class ReferendumEmptySearchTableViewCell: UITableViewCell {
     let view = EmptyCellContentView()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         setupLayout()
+        backgroundColor = .clear
     }
 
     @available(*, unavailable)

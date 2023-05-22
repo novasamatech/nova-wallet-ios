@@ -76,9 +76,26 @@ extension AuthorizationPresentable {
         authorize(animated: animated, cancellable: false, with: completionBlock)
     }
 
+    func authorizeByPinCode(
+        animated: Bool,
+        cancellable: Bool,
+        with completionBlock: @escaping AuthorizationCompletionBlock
+    ) {
+        authorize(animated: animated, cancellable: cancellable, usingBiometry: false, with: completionBlock)
+    }
+
     func authorize(
         animated: Bool,
         cancellable: Bool,
+        with completionBlock: @escaping AuthorizationCompletionBlock
+    ) {
+        authorize(animated: animated, cancellable: cancellable, usingBiometry: true, with: completionBlock)
+    }
+
+    func authorize(
+        animated: Bool,
+        cancellable: Bool,
+        usingBiometry: Bool,
         with completionBlock: @escaping AuthorizationCompletionBlock
     ) {
         guard !isAuthorizing else {
@@ -91,6 +108,7 @@ extension AuthorizationPresentable {
 
         guard let authorizationView = PinViewFactory.createScreenAuthorizationView(
             with: self,
+            usingBiometry: usingBiometry,
             cancellable: cancellable
         ) else {
             completionBlock(false)

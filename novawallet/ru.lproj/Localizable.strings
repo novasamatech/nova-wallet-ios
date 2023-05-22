@@ -1058,8 +1058,8 @@
 "governance.referendums.filter.not.voted" = "Не проголосованные";
 "governance.referendums.filter.title" = "Фильтры";
 "governance.referendums.filter.header" = "Показывать:";
-"governance.referendums.search.field.placeholder" = "Поиск по названию референдума или ID";
-"governance.referendums.search.empty" = "Не найдены референдумы с таким названием или ID";
+"governance.referendums.search.field.placeholder" = "Поиск по заголовку или ID";
+"governance.referendums.search.empty" = "Не найдены референдумы\nс таким названием или ID";
 "governance.referendums.settings.title" = "Референдумы";
 "gov.referendum.title.fallback" = "Референдум %@";
 "tabbar.governance.title" = "Демократия";
