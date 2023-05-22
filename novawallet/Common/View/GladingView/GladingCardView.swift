@@ -61,8 +61,8 @@ final class GladingCardView: UIView {
             type: .tiltAlongHorizontalAxis
         )
 
-        smallTilt.minimumRelativeValue = 50
-        smallTilt.maximumRelativeValue = -50
+        smallTilt.minimumRelativeValue = 25
+        smallTilt.maximumRelativeValue = -25
 
         smallPatternView.addMotionEffect(smallTilt)
 
@@ -71,8 +71,8 @@ final class GladingCardView: UIView {
             type: .tiltAlongHorizontalAxis
         )
 
-        middleTilt.minimumRelativeValue = 30
-        middleTilt.maximumRelativeValue = -30
+        middleTilt.minimumRelativeValue = 15
+        middleTilt.maximumRelativeValue = -15
 
         middlePatternView.addMotionEffect(middleTilt)
     }
