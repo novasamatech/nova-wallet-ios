@@ -23,6 +23,7 @@ extension AssetBalanceMapper: CoreDataMapperProtocol {
         entity.freeInPlank = String(model.freeInPlank)
         entity.reservedInPlank = String(model.reservedInPlank)
         entity.frozenInPlank = String(model.frozenInPlank)
+        entity.blocked = model.blocked
     }
 
     func transform(entity: CDAssetBalance) throws -> AssetBalance {
@@ -40,7 +41,8 @@ extension AssetBalanceMapper: CoreDataMapperProtocol {
             accountId: accountId,
             freeInPlank: free,
             reservedInPlank: reserved,
-            frozenInPlank: frozen
+            frozenInPlank: frozen,
+            blocked: entity.blocked
         )
     }
 }
