@@ -1,40 +1,21 @@
 import UIKit
 
-final class GladingPatternView: UIView {
-    let gradientView: MultigradientView = .create { view in
-        view.gradientType = .radial
-    }
-
-    private var calculatedBounds: CGSize = .zero
+final class GladingPatternView: GladingBaseView {
     private var model: GladingPatternModel?
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupStyle()
-
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        if calculatedBounds != bounds.size {
-            applyOnBoundsChange()
-        }
-    }
 
     func bind(model: GladingPatternModel) {
         self.model = model
 
+        gradientView.gradientType = .radial
         gradientView.colors = model.gradient.colors
         gradientView.startPoint = model.gradient.startPoint
         gradientView.endPoint = model.gradient.endPoint
+        gradientView.locations = model.gradient.locations
+
+        gradientView.snp.remakeConstraints { make in
+            make.center.equalToSuperview()
+            make.size.equalTo(model.gradientSize)
+        }
 
         applyMask()
         applyMotion()
@@ -42,26 +23,7 @@ final class GladingPatternView: UIView {
         setNeedsLayout()
     }
 
-    func setupStyle() {
-        backgroundColor = .clear
-    }
-
-    func setupLayout() {
-        addSubview(gradientView)
-        gradientView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.size.equalTo(CGSize(width: 963, height: 246))
-        }
-    }
-
-    private func applyOnBoundsChange() {
-        calculatedBounds = bounds.size
-
-        applyMask()
-        applyMotion()
-    }
-
-    private func applyMask() {
+    override func applyMask() {
         guard let model = model else {
             return
         }
@@ -75,7 +37,7 @@ final class GladingPatternView: UIView {
         layer.mask = mask
     }
 
-    private func applyMotion() {
+    override func applyMotion() {
         gradientView.motionEffects.forEach { effect in
             gradientView.removeMotionEffect(effect)
         }
@@ -95,8 +57,21 @@ final class GladingPatternView: UIView {
         let minTranslation = CATransform3DMakeTranslation(minOffset, 0, 0)
         let maxTranslation = CATransform3DMakeTranslation(maxOffset, 0, 0)
 
-        xTilt.minimumRelativeValue = CATransform3DRotate(maxTranslation, model.rotation, 0, 0, 1)
-        xTilt.maximumRelativeValue = CATransform3DRotate(minTranslation, model.rotation, 0, 0, 1)
+        xTilt.minimumRelativeValue = CATransform3DRotate(
+            maxTranslation,
+            model.gradientRotation,
+            0,
+            0,
+            1
+        )
+
+        xTilt.maximumRelativeValue = CATransform3DRotate(
+            minTranslation,
+            model.gradientRotation,
+            0,
+            0,
+            1
+        )
 
         gradientView.addMotionEffect(xTilt)
     }

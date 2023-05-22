@@ -6,8 +6,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         static let bottomInset: CGFloat = 20.0
     }
 
-    let backgroundBlurView: BalanceCardView = .create { _ in
-    }
+    let backgroundBlurView = GladingCardView()
 
     let titleView: IconDetailsView = {
         let view = IconDetailsView()
