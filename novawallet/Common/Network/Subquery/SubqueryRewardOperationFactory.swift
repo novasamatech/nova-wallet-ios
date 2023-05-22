@@ -104,6 +104,7 @@ final class SubqueryRewardOperationFactory {
                      ) {
                          nodes {
                              accumulatedAmount
+                             amount
                          }
                      }
         """
@@ -214,13 +215,16 @@ extension SubqueryRewardOperationFactory: SubqueryRewardOperationFactoryProtocol
             case let .errors(error):
                 throw error
             case let .data(response):
-                let startRewardString = response.start?
+                let startRewardAccumulatedAmountString = response.start?
                     .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
-                let endRewardString = response.end?
+                let startRewardAmountString = response.start?
+                    .nodes?.arrayValue?.first?.amount?.stringValue
+                let endRewardAccumulatedAmountString = response.end?
                     .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
-                let startReward = startRewardString.map { BigUInt($0) ?? 0 } ?? 0
-                let endReward = endRewardString.map { BigUInt($0) ?? 0 } ?? 0
-                return endReward - startReward
+                let startRewardAccumulatedAmount = startRewardAccumulatedAmountString.map { BigUInt($0) ?? 0 } ?? 0
+                let startRewardAmount = startRewardAmountString.map { BigUInt($0) ?? 0 } ?? 0
+                let endRewardAccumulatedAmount = endRewardAccumulatedAmountString.map { BigUInt($0) ?? 0 } ?? 0
+                return endRewardAccumulatedAmount - startRewardAccumulatedAmount + startRewardAmount
             }
         }
 
