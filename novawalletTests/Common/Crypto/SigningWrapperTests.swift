@@ -171,7 +171,8 @@ class SigningWrapperTests: XCTestCase {
             accountId: nil,
             isEthereumBased: false,
             cryptoType: .sr25519,
-            publicKeyData: publicKeyData
+            publicKeyData: publicKeyData,
+            settingsManager: InMemorySettingsManager()
         )
 
         let signature = try signer.sign(originalData)
@@ -200,7 +201,8 @@ class SigningWrapperTests: XCTestCase {
             accountId: nil,
             isEthereumBased: false,
             cryptoType: .ed25519,
-            publicKeyData: publicKeyData
+            publicKeyData: publicKeyData,
+            settingsManager: InMemorySettingsManager()
         )
 
         let signature = try signer.sign(originalData)
@@ -228,7 +230,8 @@ class SigningWrapperTests: XCTestCase {
             accountId: nil,
             isEthereumBased: false,
             cryptoType: .substrateEcdsa,
-            publicKeyData: publicKeyData
+            publicKeyData: publicKeyData,
+            settingsManager: InMemorySettingsManager()
         )
 
         let signature = try signer.sign(originalData)
@@ -256,7 +259,8 @@ class SigningWrapperTests: XCTestCase {
             accountId: nil,
             isEthereumBased: true,
             cryptoType: .ethereumEcdsa,
-            publicKeyData: publicKeyData
+            publicKeyData: publicKeyData,
+            settingsManager: InMemorySettingsManager()
         )
 
         let signature = try signer.sign(originalData)

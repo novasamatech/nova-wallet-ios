@@ -3,17 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 import IrohaCrypto
 
-protocol SettingsViewModelFactoryProtocol: AnyObject {
-    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
-
-    func createSectionViewModels(
-        language: Language?,
-        currency: String?,
-        parameters: SettingsParameters,
-        locale: Locale
-    ) -> [(SettingsSection, [SettingsCellViewModel])]
-}
-
 final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
     let quantityFormatter: LocalizableResource<NumberFormatter>
@@ -56,7 +45,17 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale)
             ]),
-            (.security, [createCommonViewViewModel(row: .changePin, locale: locale)]),
+            (.security, [
+                parameters.isBiometricAuthOn.map {
+                    createSwitchViewModel(row: .biometricAuth, isOn: $0, locale: locale)
+                },
+                createSwitchViewModel(
+                    row: .approveWithPin,
+                    isOn: parameters.isPinConfirmationOn,
+                    locale: locale
+                ),
+                createCommonViewViewModel(row: .changePin, locale: locale)
+            ].compactMap { $0 }),
             (.community, [
                 createCommonViewViewModel(row: .telegram, locale: locale),
                 createCommonViewViewModel(row: .twitter, locale: locale),
@@ -131,6 +130,18 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             row: row,
             title: .init(title: row.title(for: locale), icon: row.icon),
             accessory: .init(optTitle: value)
+        )
+    }
+
+    private func createSwitchViewModel(
+        row: SettingsRow,
+        isOn: Bool,
+        locale: Locale
+    ) -> SettingsCellViewModel {
+        SettingsCellViewModel(
+            row: row,
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .switchControl(isOn: isOn)
         )
     }
 }

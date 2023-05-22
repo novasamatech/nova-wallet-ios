@@ -9,6 +9,8 @@ final class SettingsPresenter {
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
     private var currency: String?
+    private var isPinConfirmationOn: Bool = false
+    private var biometrySettings: BiometrySettings?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -32,12 +34,19 @@ final class SettingsPresenter {
     private func updateView() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
+        let parameters = SettingsParameters(
+            walletConnectSessionsCount: walletConnectSessionsCount,
+            isBiometricAuthOn: biometrySettings?.isEnabled,
+            isPinConfirmationOn: isPinConfirmationOn
+        )
+
         let sectionViewModels = viewModelFactory.createSectionViewModels(
             language: localizationManager?.selectedLanguage,
             currency: currency,
-            parameters: .init(walletConnectSessionsCount: walletConnectSessionsCount),
+            parameters: parameters,
             locale: locale
         )
+
         view?.reload(sections: sectionViewModels)
     }
 
@@ -77,6 +86,64 @@ final class SettingsPresenter {
             )
         }
     }
+
+    private func toggleBiometryUsage() {
+        guard let biometrySettings = biometrySettings else {
+            return
+        }
+
+        if biometrySettings.isEnabled == true {
+            wireframe.showPincodeAuthorization { [weak self] completed in
+                if completed {
+                    self?.interactor.updateBiometricAuthSettings(isOn: false)
+                }
+            }
+        } else {
+            enableBiometryUsage { [weak self] in
+                self?.interactor.updateBiometricAuthSettings(isOn: $0)
+            }
+        }
+    }
+
+    private func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
+        guard let biometrySettings = biometrySettings, let view = view else {
+            completion(true)
+            return
+        }
+
+        wireframe.askBiometryUsage(
+            from: view,
+            biometrySettings: biometrySettings,
+            locale: selectedLocale,
+            useAction: { completion(true) },
+            skipAction: { completion(false) }
+        )
+    }
+
+    private func toggleConfirmationSettings(
+        _ currentState: Bool,
+        completion: @escaping (Bool) -> Void
+    ) {
+        guard let view = view else {
+            return
+        }
+        let newState = !currentState
+        let disabling = currentState == true && newState == false
+        let enabling = currentState == false && newState == true
+
+        if disabling {
+            wireframe.showAuthorization { authorized in
+                authorized ? completion(newState) : completion(currentState)
+            }
+        } else if enabling {
+            wireframe.presentConfirmPinHint(
+                from: view,
+                locale: selectedLocale,
+                enableAction: { completion(newState) },
+                cancelAction: { completion(currentState) }
+            )
+        }
+    }
 }
 
 extension SettingsPresenter: SettingsPresenterProtocol {
@@ -99,6 +166,12 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showCurrencies(from: view)
         case .language:
             wireframe.showLanguageSelection(from: view)
+        case .biometricAuth:
+            toggleBiometryUsage()
+        case .approveWithPin:
+            toggleConfirmationSettings(isPinConfirmationOn) { [weak self] newState in
+                self?.interactor.updatePinConfirmationSettings(isOn: newState)
+            }
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
@@ -162,16 +235,55 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         }
     }
 
+    func didReceive(biometrySettings: BiometrySettings) {
+        self.biometrySettings = biometrySettings
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
+
+    func didReceive(pinConfirmationEnabled: Bool) {
+        isPinConfirmationOn = pinConfirmationEnabled
+
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
+
+    func didReceive(error: SettingsError) {
+        logger?.error("Did receive wc error: \(error)")
+
+        switch error {
+        case .biometryAuthAndSystemSettingsOutOfSync:
+            guard let biometrySettings = biometrySettings else {
+                return
+            }
+
+            let biometryTypeName = biometrySettings.name
+            let title = R.string.localizable.settingsErrorBiometryDisabledInSettingsTitle(
+                biometryTypeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let message = R.string.localizable.settingsErrorBiometryDisabledInSettingsMessage(
+                biometryTypeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.askOpenApplicationSettings(
+                with: message,
+                title: title,
+                from: view,
+                locale: selectedLocale
+            )
+        case .walletConnectFailed:
+            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        }
+    }
+
     func didReceiveWalletConnect(sessionsCount: Int) {
         walletConnectSessionsCount = sessionsCount
 
         updateView()
-    }
-
-    func didFailConnection(walletConnect error: Error) {
-        logger?.error("Did receive wc error: \(error)")
-
-        wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
     }
 }
 
