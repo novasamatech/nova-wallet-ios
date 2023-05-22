@@ -53,6 +53,10 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
+        guard selectionStyle != .none else {
+            return
+        }
+
         roundView.fillColor = highlighted ? R.color.colorCellBackgroundPressed()! : R.color.colorBlockBackground()!
     }
 
