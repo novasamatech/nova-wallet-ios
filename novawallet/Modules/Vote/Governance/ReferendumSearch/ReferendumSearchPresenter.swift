@@ -81,10 +81,14 @@ extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
             do {
                 let referendums = try searchOperation.extractNoCancellableResultData()
                 DispatchQueue.main.async {
-                    self?.view?.didReceive(viewModel: .found(
-                        title: .init(title: ""),
-                        items: referendums
-                    ))
+                    if referendums.isEmpty {
+                        self?.view?.didReceive(viewModel: .notFound)
+                    } else {
+                        self?.view?.didReceive(viewModel: .found(
+                            title: .init(title: ""),
+                            items: referendums
+                        ))
+                    }
                 }
             } catch {
                 self?.didReceiveError(.searchFailed(text, error))

@@ -237,7 +237,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
         tableView.reloadData()
     }
 
-    func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
+    func updateReferendums(time: [ReferendumIdLocal: StatusTimeViewModel?]) {
         tableView.visibleCells.forEach { cell in
             guard let referendumCell = cell as? ReferendumTableViewCell,
                   let indexPath = tableView.indexPath(for: cell) else {

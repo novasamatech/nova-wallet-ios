@@ -50,6 +50,7 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showPincodeChange(from view: ControllerBackedProtocol?)
     func showCurrencies(from view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
-    func showPincode(completion: @escaping (Bool) -> Void)
+    func showAuthorization(completion: @escaping (Bool) -> Void)
     func showWalletConnect(from view: ControllerBackedProtocol?)
+    func showPincodeAuthorization(completion: @escaping (Bool) -> Void)
 }
