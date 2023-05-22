@@ -2,7 +2,7 @@ import RobinHood
 
 final class ReferendumsSearchManager {
     let cells: [ReferendumsCellViewModel]
-    let searchKeyExtractor: (ReferendumIdLocal) -> String
+    let searchKeysExtractor: (ReferendumIdLocal) -> [String]
     let keyExtractor: (ReferendumsCellViewModel) -> ReferendumIdLocal
 
     init(cells: [ReferendumsCellViewModel]) {
@@ -12,12 +12,15 @@ final class ReferendumsSearchManager {
             result[element.referendumIndex] = element
         }
 
-        searchKeyExtractor = {
-            mappedCells[$0]?.viewModel.value?.referendumInfo.title ?? "\($0)"
+        keyExtractor = { referendum in
+            referendum.referendumIndex
         }
 
-        keyExtractor = {
-            $0.referendumIndex
+        searchKeysExtractor = { referendumId in
+            [
+                mappedCells[referendumId]?.viewModel.value?.referendumInfo.title,
+                "\(referendumId)"
+            ].compactMap { $0 }
         }
     }
 
@@ -26,7 +29,7 @@ final class ReferendumsSearchManager {
             text: text,
             in: cells,
             keyExtractor: keyExtractor,
-            searchKeyExtractor: searchKeyExtractor
+            searchKeysExtractor: searchKeysExtractor
         )
     }
 }
