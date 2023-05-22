@@ -252,8 +252,6 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     }
 
     private func updateViewModel(viewModel: StakingRewardFiltersViewModel) {
-        setupSaveButton(isEnabled: map(viewModel: viewModel) != nil)
-
         self.viewModel = viewModel
         var snapshot = Snapshot()
 
@@ -261,6 +259,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             dataSource.apply(snapshot, animatingDifferences: false)
         }
 
+        setupSaveButton(isEnabled: map(viewModel: viewModel) != nil)
         let periodSection = Section.period
         snapshot.appendSections([periodSection])
         snapshot.appendItems(
@@ -289,7 +288,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     .startDate,
                     date: startDate,
                     minDate: nil,
-                    maxDate: endDate
+                    maxDate: endDate ?? Date()
                 )],
                 toSection: startDaySection
             )
@@ -306,7 +305,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             let dateValue = dateStringValue(endDate ?? nil)
             let endDaySection = Section.end(dateValue)
             snapshot.appendSections([endDaySection])
-            let collapsed = customPeriod.endDay.collapsed ?? false
+            let collapsed = customPeriod.endDay.collapsed
             if !collapsed {
                 snapshot.appendItems([.calendar(
                     .endDate,

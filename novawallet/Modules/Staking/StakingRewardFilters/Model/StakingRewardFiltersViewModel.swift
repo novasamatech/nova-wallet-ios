@@ -50,7 +50,7 @@ extension StakingRewardFiltersViewModel {
                 collapsed: false
             ),
             endDay: .init(
-                value: nil,
+                value: .alwaysToday,
                 collapsed: true
             )
         )
