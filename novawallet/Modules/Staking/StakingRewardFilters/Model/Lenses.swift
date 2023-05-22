@@ -3,9 +3,9 @@ import Foundation
 extension StakingRewardFiltersViewController {
     enum Lens {
         static let startDayCollapsed = GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Bool>(
-            get: { $0.startDay.isCollapsed },
+            get: { $0.startDay.collapsed },
             set: { .init(
-                startDay: .init(value: $1.startDay.value, isCollapsed: $0),
+                startDay: .init(value: $1.startDay.value, collapsed: $0),
                 endDay: $1.endDay
             )
             }
@@ -24,7 +24,7 @@ extension StakingRewardFiltersViewController {
             GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Date?>(
                 get: { $0.startDay.value },
                 set: { .init(
-                    startDay: .init(value: $0, isCollapsed: $1.startDay.isCollapsed),
+                    startDay: .init(value: $0, collapsed: $1.startDay.collapsed),
                     endDay: $1.endDay
                 )
                 }

@@ -7,10 +7,10 @@ protocol StakingRewardFiltersPresenterProtocol: AnyObject {
     func save(_ period: StakingRewardFiltersPeriod)
 }
 
-protocol StakingRewardFiltersInteractorInputProtocol: AnyObject {}
-
-protocol StakingRewardFiltersInteractorOutputProtocol: AnyObject {}
-
 protocol StakingRewardFiltersWireframeProtocol: AnyObject {
     func close(view: StakingRewardFiltersViewProtocol?)
+}
+
+protocol StakingRewardFiltersDelegate: AnyObject {
+    func stackingRewardFilter(didSelectFilter filter: StakingRewardFiltersPeriod)
 }

@@ -5,11 +5,12 @@ import CommonWallet
 
 extension StakingRelaychainInteractor {
     func handle(stashItem: StashItem?) {
+        self.stashItem = stashItem
+
         clear(dataProvider: &ledgerProvider)
         clear(dataProvider: &bagListNodeProvider)
         clear(dataProvider: &nominatorProvider)
         clear(dataProvider: &validatorProvider)
-        clear(singleValueProvider: &totalRewardProvider)
         clear(dataProvider: &payeeProvider)
         clear(streamableProvider: &controllerAccountProvider)
         clear(streamableProvider: &stashAccountProvider)
@@ -26,9 +27,28 @@ extension StakingRelaychainInteractor {
             validatorProvider = subscribeValidator(for: stashAccountId, chainId: chainId)
             payeeProvider = subscribePayee(for: stashAccountId, chainId: chainId)
 
+            performTotalRewardSubscription()
+
+            subscribeToControllerAccount(address: stashItem.controller, chain: chainAsset.chain)
+
+            if stashItem.controller != stashItem.stash {
+                subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
+            }
+        }
+
+        presenter?.didReceive(stashItem: stashItem)
+    }
+
+    func performTotalRewardSubscription() {
+        clear(singleValueProvider: &totalRewardProvider)
+        if
+            let stashItem = stashItem,
+            let chainAsset = selectedChainAsset {
             if let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
                 totalRewardProvider = subscribeTotalReward(
                     for: stashItem.stash,
+                    startTimestamp: totalRewardInterval?.startTimestamp,
+                    endTimestamp: totalRewardInterval?.endTimestamp,
                     api: rewardApi,
                     assetPrecision: Int16(chainAsset.asset.precision)
                 )
@@ -39,15 +59,7 @@ extension StakingRelaychainInteractor {
                 )
                 presenter?.didReceive(totalReward: zeroReward)
             }
-
-            subscribeToControllerAccount(address: stashItem.controller, chain: chainAsset.chain)
-
-            if stashItem.controller != stashItem.stash {
-                subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
-            }
         }
-
-        presenter?.didReceive(stashItem: stashItem)
     }
 
     func performPriceSubscription() {

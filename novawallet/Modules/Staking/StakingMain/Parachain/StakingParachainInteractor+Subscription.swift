@@ -126,6 +126,8 @@ extension StakingParachainInteractor {
     }
 
     func performTotalRewardSubscription() {
+        clear(singleValueProvider: &totalRewardProvider)
+
         guard let chainAsset = selectedChainAsset else {
             presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
             return
@@ -136,6 +138,8 @@ extension StakingParachainInteractor {
             let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
+                startTimestamp: totalRewardInterval?.startTimestamp,
+                endTimestamp: totalRewardInterval?.endTimestamp,
                 api: rewardApi,
                 assetPrecision: Int16(chainAsset.asset.precision)
             )

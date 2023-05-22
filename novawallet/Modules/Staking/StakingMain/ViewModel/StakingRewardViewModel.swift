@@ -17,4 +17,5 @@ struct StakingRewardViewModel {
 
     let amount: ValueState
     let price: ValueState?
+    let filter: String?
 }

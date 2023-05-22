@@ -47,10 +47,10 @@ extension StakingRewardFiltersViewModel {
         static let defaultValue = CustomPeriod(
             startDay: .init(
                 value: nil,
-                isCollapsed: true
+                collapsed: false
             ),
             endDay: .init(
-                value: nil,
+                value: .alwaysToday,
                 collapsed: true
             )
         )
@@ -58,7 +58,7 @@ extension StakingRewardFiltersViewModel {
 
     struct StartDay: Hashable {
         let value: Date?
-        let isCollapsed: Bool
+        let collapsed: Bool
     }
 
     struct EndDay: Hashable {

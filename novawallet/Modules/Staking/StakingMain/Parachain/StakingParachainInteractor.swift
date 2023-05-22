@@ -51,6 +51,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
+    var totalRewardInterval: (startTimestamp: Int64?, endTimestamp: Int64?)?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,

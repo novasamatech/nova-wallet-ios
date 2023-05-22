@@ -16,6 +16,7 @@ struct StakingStateCommonData {
     let bagListSize: UInt32?
     let bagListScoreFactor: BigUInt?
     let eraCountdown: EraCountdown?
+    let totalRewardFilter: StakingRewardFiltersPeriod?
 }
 
 extension StakingStateCommonData {
@@ -34,7 +35,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: nil,
             bagListSize: nil,
             bagListScoreFactor: nil,
-            eraCountdown: nil
+            eraCountdown: nil,
+            totalRewardFilter: nil
         )
     }
 
@@ -53,7 +55,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -72,7 +75,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -91,7 +95,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -110,7 +115,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -129,7 +135,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -148,7 +155,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -167,7 +175,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -186,7 +195,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -205,7 +215,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -224,7 +235,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -243,7 +255,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -262,7 +275,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -281,7 +295,8 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 
@@ -300,7 +315,28 @@ extension StakingStateCommonData {
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
+        )
+    }
+
+    func byReplacing(totalRewardFilter: StakingRewardFiltersPeriod?) -> StakingStateCommonData {
+        StakingStateCommonData(
+            address: address,
+            chainAsset: chainAsset,
+            accountBalance: accountBalance,
+            price: price,
+            calculatorEngine: calculatorEngine,
+            eraStakersInfo: eraStakersInfo,
+            minStake: minStake,
+            maxNominatorsPerValidator: maxNominatorsPerValidator,
+            minNominatorBond: minNominatorBond,
+            counterForNominators: counterForNominators,
+            maxNominatorsCount: maxNominatorsCount,
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown,
+            totalRewardFilter: totalRewardFilter
         )
     }
 }

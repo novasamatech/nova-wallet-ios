@@ -46,12 +46,17 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
             settings: settings
         )
 
+        let mapper = AnyCoreDataMapper(StakingRewardsFilterMapper())
+        let stakingRewardsFilterRepository = AnyDataProviderRepository(UserDataStorageFacade.shared.createRepository(mapper: mapper))
+
         return StakingMainInteractor(
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             selectedWalletSettings: SelectedWalletSettings.shared,
             stakingSettings: stakingSettings,
             commonSettings: settings,
-            eventCenter: EventCenter.shared
+            stakingRewardsFilterRepository: stakingRewardsFilterRepository,
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationQueue()
         )
     }
 }
