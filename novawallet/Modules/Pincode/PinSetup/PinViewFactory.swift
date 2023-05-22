@@ -86,18 +86,20 @@ class PinViewFactory: PinViewFactoryProtocol {
 
     static func createScreenAuthorizationView(
         with wireframe: ScreenAuthorizationWireframeProtocol,
+        usingBiometry: Bool,
         cancellable: Bool
     ) -> PinSetupViewProtocol? {
         let pinVerifyView = PinSetupViewController(nib: R.nib.pinSetupViewController)
         pinVerifyView.cancellable = cancellable
 
         pinVerifyView.mode = .securedInput
+        let biometryAuth: BiometryAuthProtocol = usingBiometry ? BiometryAuth() : NoBiometryAuth()
 
         let presenter = ScreenAuthorizationPresenter()
         let interactor = LocalAuthInteractor(
             secretManager: KeychainManager.shared,
             settingsManager: SettingsManager.shared,
-            biometryAuth: BiometryAuth(),
+            biometryAuth: biometryAuth,
             locale: LocalizationManager.shared.selectedLocale
         )
 
