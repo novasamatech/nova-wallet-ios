@@ -43,7 +43,8 @@ struct AcalaContributionSetupViewFactory {
         }()
         guard let address = accountAddressDependingOnChain else { return nil }
 
-        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+        let signingWrapperFactory = SigningWrapperFactory()
+        let signingWrapper = signingWrapperFactory.createSigningWrapper(
             for: selectedAccount.metaId,
             accountResponse: accountResponse
         )
@@ -53,7 +54,11 @@ struct AcalaContributionSetupViewFactory {
             signingWrapper: signingWrapper,
             operationManager: operationManager
         )
-        let wireframe = AcalaContributionSetupWireframe(state: state, acalaService: acalaService)
+        let wireframe = AcalaContributionSetupWireframe(
+            state: state,
+            acalaService: acalaService,
+            settingsManager: signingWrapperFactory.settingsManager
+        )
 
         let assetInfo = asset.displayInfo(with: chain.icon)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
