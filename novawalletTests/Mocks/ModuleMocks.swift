@@ -20827,7 +20827,7 @@ import UIKit.UIImage
     
     
     
-     func showPincode(completion: @escaping (Bool) -> Void)  {
+     func showAuthorization(completion: @escaping (Bool) -> Void)  {
         
     return cuckoo_manager.call("showPincode(completion: @escaping (Bool) -> Void)",
             parameters: (completion),
@@ -20836,7 +20836,7 @@ import UIKit.UIImage
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showPincode(completion: completion))
+            defaultCall: __defaultImplStub!.showAuthorization(completion: completion))
         
     }
     
@@ -21119,7 +21119,7 @@ import UIKit.UIImage
     
     
     
-     func showPincode(completion: @escaping (Bool) -> Void)   {
+     func showAuthorization(completion: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
