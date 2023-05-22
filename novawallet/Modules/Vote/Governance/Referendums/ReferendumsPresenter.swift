@@ -19,7 +19,7 @@ final class ReferendumsPresenter {
     private var selectedOption: GovernanceSelectedOption?
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
-    private var filteredReferendums: [ReferendumLocal]?
+    private var filteredReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var offchainVoting: GovernanceOffchainVotesLocal?
@@ -29,7 +29,7 @@ final class ReferendumsPresenter {
 
     private var maxStatusTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
-    private var timeModels: [UInt: StatusTimeViewModel?]? {
+    private var timeModels: [ReferendumIdLocal: StatusTimeViewModel?]? {
         didSet {
             observableState.state.timeModels = timeModels
         }
@@ -82,7 +82,7 @@ final class ReferendumsPresenter {
         freeBalance = nil
         price = nil
         referendums = nil
-        filteredReferendums = nil
+        filteredReferendums = [:]
         referendumsMetadata = nil
         voting = nil
         offchainVoting = nil
@@ -120,7 +120,7 @@ final class ReferendumsPresenter {
         }
         guard let currentBlock = blockNumber,
               let blockTime = blockTime,
-              let referendums = filteredReferendums,
+              let referendums = referendums,
               let chainModel = chain else {
             return
         }
@@ -159,15 +159,24 @@ final class ReferendumsPresenter {
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
 
         let allSections = [activitySection, settingsSection] + referendumsSections
-        view.update(model: .init(sections: allSections))
-        observableState.state.cells = referendumsSections.compactMap(\.referendumsCells).flatMap { $0 }
+
+        let filteredSections = allSections.map { section in
+            let referendumViewModels = ReferendumsSection.Lens.referendums.get(section)
+            let filteredViewModels = referendumViewModels.filter { referendumViewModel in
+                filteredReferendums[referendumViewModel.referendumIndex] != nil
+            }
+            return ReferendumsSection.Lens.referendums.set(filteredViewModels, section)
+        }
+
+        view.update(model: .init(sections: filteredSections))
+        observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
     }
 
     private func updateTimeModels() {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = filteredReferendums else {
+        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
             return
         }
 
@@ -253,7 +262,9 @@ final class ReferendumsPresenter {
     private func filterReferendums() {
         filteredReferendums = referendums?.filter {
             filter.match($0, voting: voting, offchainVoting: offchainVoting)
-        }
+        }.reduce(into: [ReferendumIdLocal: ReferendumLocal]()) {
+            $0[$1.index] = $1
+        } ?? [:]
         updateReferendumsView()
     }
 }
@@ -276,7 +287,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func select(referendumIndex: UInt) {
-        guard let referendum = filteredReferendums?.first(where: { $0.index == referendumIndex }) else {
+        guard let referendum = referendums?.first(where: { $0.index == referendumIndex }) else {
             return
         }
 
