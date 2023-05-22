@@ -5,7 +5,10 @@ import SoraUI
 class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPositioning where AccessoryView: UIView {
     let iconImageView = UIImageView()
 
-    let titleLabel: UILabel = .create { $0.apply(style: .regularSubhedlinePrimary) }
+    let titleLabel: UILabel = .create {
+        $0.apply(style: .regularSubhedlinePrimary)
+        $0.setContentCompressionResistancePriority(.high, for: .horizontal)
+    }
 
     private(set) var contentStackView: UIStackView?
 
@@ -44,6 +47,7 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
     func bind(titleViewModel: TitleIconViewModel) {
         iconImageView.image = titleViewModel.icon
         titleLabel.text = titleViewModel.title
+        setNeedsLayout()
     }
 
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
