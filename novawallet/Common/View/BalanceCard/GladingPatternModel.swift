@@ -2,6 +2,9 @@ import UIKit
 
 struct GladingPatternModel {
     let gradient: GradientModel
+    let slidingMin: CGFloat
+    let slidingMax: CGFloat
+    let rotation: CGFloat
     let pattern: UIImage
 }
 
@@ -9,7 +12,7 @@ extension GladingPatternModel {
     private static var gladingCard: GradientModel {
         .init(
             startPoint: .init(x: 0.5, y: 0.5),
-            endPoint: .init(x: 1, y: 0),
+            endPoint: .init(x: 1.0, y: 0),
             colors: [
                 UIColor(hex: "#FBACFF")!,
                 UIColor(hex: "#D99EFF")!.withAlphaComponent(0.76),
@@ -28,6 +31,9 @@ extension GladingPatternModel {
     static var bigPattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
+            slidingMin: -0.5,
+            slidingMax: 0.5,
+            rotation: -CGFloat.pi / 4,
             pattern: R.image.cardBigPattern()!
         )
     }
@@ -35,6 +41,9 @@ extension GladingPatternModel {
     static var middlePattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
+            slidingMin: -0.5,
+            slidingMax: 0.5,
+            rotation: -CGFloat.pi / 4,
             pattern: R.image.cardMiddlePattern()!.blurred(with: 2)!
         )
     }
@@ -42,6 +51,9 @@ extension GladingPatternModel {
     static var smallPattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
+            slidingMin: -0.5,
+            slidingMax: 0.5,
+            rotation: -CGFloat.pi / 4,
             pattern: R.image.cardSmallPattern()!.blurred(with: 4)!
         )
     }

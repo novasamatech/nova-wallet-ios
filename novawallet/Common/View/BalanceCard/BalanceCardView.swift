@@ -90,7 +90,7 @@ final class BalanceCardView: UIView {
 
         smallPatternView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().offset(5)
             make.top.equalToSuperview().offset(-25)
             make.bottom.equalToSuperview().offset(25)
         }
