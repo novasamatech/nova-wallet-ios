@@ -6,11 +6,11 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
 
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel)
     func update(model: ReferendumsViewModel)
-    func updateReferendums(time: [UInt: StatusTimeViewModel?])
+    func updateReferendums(time: [ReferendumIdLocal: StatusTimeViewModel?])
 }
 
 protocol ReferendumsPresenterProtocol: AnyObject {
-    func select(referendumIndex: UInt)
+    func select(referendumIndex: ReferendumIdLocal)
     func selectUnlocks()
     func selectDelegations()
     func showFilters()
