@@ -7,7 +7,7 @@ final class SecurityLayerWireframe: SecurityLayerWireframeProtocol, Authorizatio
 
     private var isPincodeVisible: Bool {
         let rootViewController = UIApplication.shared.keyWindow?.rootViewController
-        let presentedController = rootViewController?.presentedViewController
+        let presentedController = rootViewController?.topModalViewController
 
         return rootViewController as? PinSetupViewProtocol != nil || presentedController as? PinSetupViewProtocol != nil
     }
