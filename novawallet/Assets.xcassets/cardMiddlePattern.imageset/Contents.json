@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "card-middle-pattern.pdf",
-      "idiom" : "universal"
+      "filename" : "cardMiddlePattern.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "cardMiddlePattern@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "cardMiddlePattern@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
