@@ -1066,7 +1066,7 @@
 "governance.referendums.filter.title" = "Filters";
 "governance.referendums.filter.header" = "Show:";
 "governance.referendums.search.field.placeholder" = "Search by referendum title or ID";
-"governance.referendums.search.empty" = "No referenda with entered title or ID were found";
+"governance.referendums.search.empty" = "No referenda with entered title or ID\nwere found";
 "governance.referendums.settings.title" = "Referenda";
 "gov.referendum.title.fallback" = "Referendum %@";
 "tabbar.governance.title" = "Governance";
