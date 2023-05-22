@@ -18,6 +18,8 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
         balance: String,
         locale: Locale?
     )
+
+    func presentReceivedBlocked(from view: ControllerBackedProtocol?, locale: Locale?)
 }
 
 extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -71,6 +73,20 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         )
 
         let message = R.string.localizable.commonSameReceiveAddressMessage(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentReceivedBlocked(from view: ControllerBackedProtocol?, locale: Locale?) {
+        let title = R.string.localizable.walletSendRecipientBlockedTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.walletSendRecipientBlockedMessage(
             preferredLanguages: locale?.rLanguages
         )
 
