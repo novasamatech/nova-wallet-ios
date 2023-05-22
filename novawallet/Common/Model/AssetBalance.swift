@@ -8,6 +8,7 @@ struct AssetBalance: Equatable {
     let freeInPlank: BigUInt
     let reservedInPlank: BigUInt
     let frozenInPlank: BigUInt
+    let blocked: Bool
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
     var transferable: BigUInt { freeInPlank > frozenInPlank ? freeInPlank - frozenInPlank : 0 }
@@ -32,7 +33,8 @@ extension AssetBalance: Identifiable {
             accountId: accountId,
             freeInPlank: 0,
             reservedInPlank: 0,
-            frozenInPlank: 0
+            frozenInPlank: 0,
+            blocked: false
         )
     }
 }

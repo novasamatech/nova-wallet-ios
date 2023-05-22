@@ -131,6 +131,11 @@ class OnChainTransferPresenter {
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
+            ),
+
+            dataValidatingFactory.receiverNotBlocked(
+                recepientSendingAssetBalance?.blocked,
+                locale: selectedLocale
             )
         ]
 

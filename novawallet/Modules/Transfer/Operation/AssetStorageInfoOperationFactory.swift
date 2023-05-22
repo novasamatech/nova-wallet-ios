@@ -63,7 +63,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<AssetDetails>]> = requestFactory.queryItems(
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<PalletAssets.Details>]> = requestFactory.queryItems(
             engine: connection,
             keyParams: { [StringScaleMapper(value: extras.assetId)] },
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
