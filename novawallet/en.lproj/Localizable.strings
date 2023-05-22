@@ -1263,3 +1263,5 @@
 "wallet.connect.disconnect.error" = "Could not close session with the dapp due to the network issues";
 "wallet.connect.signature.submit.error" = "Could not submit signature to the dapp due to the network issues";
 "wallet.connect.proposal.result.submit.error" = "Could not authorize the dapp due to the network issues";
+"wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
+"wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";

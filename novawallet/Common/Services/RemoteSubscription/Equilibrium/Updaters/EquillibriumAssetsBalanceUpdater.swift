@@ -185,7 +185,8 @@ final class EquillibriumAssetsBalanceUpdater {
                         accountId: accountId,
                         freeInPlank: freeInPlank,
                         reservedInPlank: reservedInPlank,
-                        frozenInPlank: frozenInPlank
+                        frozenInPlank: frozenInPlank,
+                        blocked: false
                     )
                 }
 
