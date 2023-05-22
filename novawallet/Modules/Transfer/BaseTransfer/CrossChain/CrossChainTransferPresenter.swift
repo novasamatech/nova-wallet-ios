@@ -108,6 +108,7 @@ class CrossChainTransferPresenter {
         }
     }
 
+    // swiftlint:disable:next function_body_length
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
@@ -169,6 +170,11 @@ class CrossChainTransferPresenter {
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
                 minBalance: destSendingExistence?.minBalance,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.receiverNotBlocked(
+                recepientSendingAssetBalance?.blocked,
                 locale: selectedLocale
             )
         ]
