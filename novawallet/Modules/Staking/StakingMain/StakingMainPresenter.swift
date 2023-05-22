@@ -152,7 +152,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
             initialState: period,
             delegate: self
         ) { [weak self] in
-            self?.view?.deactivateControls()
+            self?.view?.didEditRewardFilters()
         }
     }
 }

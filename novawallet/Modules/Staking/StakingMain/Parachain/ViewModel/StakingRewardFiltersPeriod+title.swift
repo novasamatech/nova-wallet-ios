@@ -1,7 +1,7 @@
 import SoraFoundation
 
 extension StakingRewardFiltersPeriod {
-    func title(dateFormatter: LocalizableResource<DateFormatter>, calendar: Calendar) -> LocalizableResource<String> {
+    func title(calendar: Calendar) -> LocalizableResource<String> {
         .init { locale in
             let languages = locale.rLanguages
             switch self {
@@ -19,14 +19,13 @@ extension StakingRewardFiltersPeriod {
             case .lastYear:
                 return R.string.localizable.stakingRewardFiltersPeriodLastYearShort(preferredLanguages: languages)
             case let .custom(customPeriod):
-                return customPeriodTitle(customPeriod, dateFormatter: dateFormatter, calendar: calendar, locale: locale)
+                return customPeriodTitle(customPeriod, calendar: calendar, locale: locale)
             }
         }
     }
 
     private func customPeriodTitle(
         _ customPeriod: RewardFiltersCustomPeriod,
-        dateFormatter _: LocalizableResource<DateFormatter>,
         calendar: Calendar,
         locale: Locale
     ) -> String {
