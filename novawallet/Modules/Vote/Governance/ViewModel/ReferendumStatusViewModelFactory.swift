@@ -15,7 +15,7 @@ extension ReferendumStatusViewModelFactoryProtocol {
         currentBlock: BlockNumber,
         blockDuration: UInt64,
         locale: Locale
-    ) -> [UInt: StatusTimeViewModel?] {
+    ) -> [ReferendumIdLocal: StatusTimeViewModel?] {
         referendums.reduce(into: [UInt: StatusTimeViewModel?]()) { result, referendum in
             result[referendum.index] = createTimeViewModel(
                 for: referendum,
