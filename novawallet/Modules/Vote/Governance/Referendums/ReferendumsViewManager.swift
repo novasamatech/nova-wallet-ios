@@ -7,6 +7,7 @@ final class ReferendumsViewManager: NSObject {
         static let firstOrLastActivityCellHeight: CGFloat = 50
         static let referendumCellMinimumHeight: CGFloat = 185
         static let headerMinimumHeight: CGFloat = 56
+        static let settingsCellHeight: CGFloat = 32
     }
 
     let tableView: UITableView
@@ -42,6 +43,8 @@ extension ReferendumsViewManager: UITableViewDataSource {
         switch referendumsViewModel.sections[section] {
         case let .personalActivities(actions):
             return actions.count
+        case .settings:
+            return 1
         case let .active(_, cells), let .completed(_, cells):
             return !cells.isEmpty ? cells.count : 1
         }
@@ -89,6 +92,20 @@ extension ReferendumsViewManager: UITableViewDataSource {
         }
     }
 
+    func settingsCell(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath,
+        isFilterOn: Bool
+    ) -> UITableViewCell {
+        let settingsCell: ReferendumsSettingsCell = tableView.dequeueReusableCell(for: indexPath)
+        let title = R.string.localizable.governanceReferendumsSettingsTitle(preferredLanguages: locale.rLanguages)
+        settingsCell.bind(title: title, isFilterOn: isFilterOn)
+        settingsCell.filterButton.addTarget(self, action: #selector(filterAction), for: .touchUpInside)
+        settingsCell.searchButton.addTarget(self, action: #selector(searchAction), for: .touchUpInside)
+        settingsCell.selectionStyle = .none
+        return settingsCell
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section = referendumsViewModel.sections[indexPath.section]
 
@@ -101,9 +118,25 @@ extension ReferendumsViewManager: UITableViewDataSource {
                 activity: activity,
                 totalActivities: personalActivities.count
             )
+        case let .settings(isFilterOn):
+            return settingsCell(
+                tableView,
+                cellForRowAt: indexPath,
+                isFilterOn: isFilterOn
+            )
         case let .active(_, cells), let .completed(_, cells):
             return referendumCell(tableView, cellForRowAt: indexPath, items: cells)
         }
+    }
+
+    @objc
+    private func filterAction() {
+        presenter?.showFilters()
+    }
+
+    @objc
+    private func searchAction() {
+        presenter?.showSearch()
     }
 }
 
@@ -121,6 +154,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
             case .delegations:
                 presenter?.selectDelegations()
             }
+        case .settings:
+            break
         case let .active(_, cells), let .completed(_, cells):
             guard let referendumIndex = cells[safe: indexPath.row]?.referendumIndex else {
                 return
@@ -133,7 +168,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .personalActivities:
+        case .personalActivities, .settings:
             return nil
         case let .active(title, cells), let .completed(title, cells):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
@@ -153,7 +188,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .personalActivities:
+        case .personalActivities, .settings:
             return 0
         case let .active(title, _), let .completed(title, _):
             switch title {
@@ -171,6 +206,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
         switch section {
         case let .personalActivities(activities):
             return activities.count > 1 ? Constants.firstOrLastActivityCellHeight : Constants.singleActivityCellHeight
+        case .settings:
+            return Constants.settingsCellHeight
         case let .active(_, cells), let .completed(_, cells):
             switch cells[safe: indexPath.row]?.viewModel {
             case .loaded, .cached, .none:
@@ -200,7 +237,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
         tableView.reloadData()
     }
 
-    func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
+    func updateReferendums(time: [ReferendumIdLocal: StatusTimeViewModel?]) {
         tableView.visibleCells.forEach { cell in
             guard let referendumCell = cell as? ReferendumTableViewCell,
                   let indexPath = tableView.indexPath(for: cell) else {
@@ -209,7 +246,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             let section = referendumsViewModel.sections[indexPath.section]
 
             switch section {
-            case .personalActivities:
+            case .personalActivities, .settings:
                 break
             case let .active(_, cells), let .completed(_, cells):
                 let cellModel = cells[indexPath.row]
@@ -239,6 +276,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.registerClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.registerClassForCell(ReferendumsDelegationsTableViewCell.self)
         tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        tableView.registerClassForCell(ReferendumsSettingsCell.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }
@@ -250,6 +288,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.unregisterClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsDelegationsTableViewCell.self)
         tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        tableView.unregisterClassForCell(ReferendumsSettingsCell.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }

@@ -3,6 +3,7 @@ extension String {
         case slash = "/"
         case colon = ":"
         case hashtag = "#"
+        case space = " "
     }
 
     enum CompoundSeparator: String {

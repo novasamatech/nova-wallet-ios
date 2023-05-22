@@ -1,14 +1,19 @@
 import Foundation
+import SoraKeystore
 
 final class AcalaContributionSetupWireframe: CrowdloanContributionSetupWireframe {
     let acalaService: AcalaBonusService
 
     init(
         state: CrowdloanSharedState,
-        acalaService: AcalaBonusService
+        acalaService: AcalaBonusService,
+        settingsManager: SettingsManagerProtocol
     ) {
         self.acalaService = acalaService
-        super.init(state: state)
+        super.init(
+            state: state,
+            settingsManager: settingsManager
+        )
     }
 
     override func showConfirmation(
