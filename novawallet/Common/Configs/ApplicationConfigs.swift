@@ -21,6 +21,7 @@ protocol ApplicationConfigProtocol {
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
     var xcmTransfersURL: URL { get }
+    var multistakingURL: URL { get }
     var dAppsListURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
@@ -148,6 +149,15 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v3/transfers_dev.json")!
         #endif
+    }
+
+    var multistakingURL: URL {
+        // TODO: fix production url
+    #if F_RELEASE
+        URL(string: "https://subql.novasama.uz")!
+    #else
+        URL(string: "https://subql.novasama.uz")!
+    #endif
     }
 
     var dAppsListURL: URL {
