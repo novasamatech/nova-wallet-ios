@@ -23,9 +23,14 @@ enum ValueDirection<T> {
 
 struct AssetListHeaderViewModel {
     let title: String
-    let amount: LoadableViewModelState<String>
+    let amount: LoadableViewModelState<AssetListTotalAmountViewModel>
     let locksAmount: String?
     let walletSwitch: WalletSwitchViewModel
+}
+
+struct AssetListTotalAmountViewModel {
+    let amount: String
+    let decimalSeparator: String?
 }
 
 struct AssetListNftsViewModel {
