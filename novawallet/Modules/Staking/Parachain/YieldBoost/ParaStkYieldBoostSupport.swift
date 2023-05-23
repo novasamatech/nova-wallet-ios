@@ -8,6 +8,6 @@ protocol ParaStkYieldBoostSupportProtocol {
 
 final class ParaStkYieldBoostSupport: ParaStkYieldBoostSupportProtocol {
     func checkSupport(for chainAsset: ChainAsset) -> Bool {
-        StakingType(rawType: chainAsset.asset.staking) == .turing
+        chainAsset.asset.stakings?.contains(.turing) ?? false
     }
 }

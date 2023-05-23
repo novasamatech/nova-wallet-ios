@@ -20829,7 +20829,7 @@ import UIKit.UIImage
     
      func showAuthorization(completion: @escaping (Bool) -> Void)  {
         
-    return cuckoo_manager.call("showPincode(completion: @escaping (Bool) -> Void)",
+    return cuckoo_manager.call("showAuthorization(completion: @escaping (Bool) -> Void)",
             parameters: (completion),
             escapingParameters: (completion),
             superclassCall:
@@ -20852,6 +20852,21 @@ import UIKit.UIImage
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.showWalletConnect(from: view))
+        
+    }
+    
+    
+    
+     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)  {
+        
+    return cuckoo_manager.call("showPincodeAuthorization(completion: @escaping (Bool) -> Void)",
+            parameters: (completion),
+            escapingParameters: (completion),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showPincodeAuthorization(completion: completion))
         
     }
     
@@ -20954,14 +20969,19 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "show(url: URL, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func showPincode<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((Bool) -> Void)> where M1.MatchedType == (Bool) -> Void {
+	    func showAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((Bool) -> Void)> where M1.MatchedType == (Bool) -> Void {
 	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showPincode(completion: @escaping (Bool) -> Void)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showAuthorization(completion: @escaping (Bool) -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func showWalletConnect<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showWalletConnect(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showPincodeAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((Bool) -> Void)> where M1.MatchedType == (Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showPincodeAuthorization(completion: @escaping (Bool) -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -21037,15 +21057,21 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
-	    func showPincode<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((Bool) -> Void), Void> where M1.MatchedType == (Bool) -> Void {
+	    func showAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((Bool) -> Void), Void> where M1.MatchedType == (Bool) -> Void {
 	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
-	        return cuckoo_manager.verify("showPincode(completion: @escaping (Bool) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("showAuthorization(completion: @escaping (Bool) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
 	    func showWalletConnect<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("showWalletConnect(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showPincodeAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((Bool) -> Void), Void> where M1.MatchedType == (Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return cuckoo_manager.verify("showPincodeAuthorization(completion: @escaping (Bool) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -21126,6 +21152,12 @@ import UIKit.UIImage
     
     
      func showWalletConnect(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

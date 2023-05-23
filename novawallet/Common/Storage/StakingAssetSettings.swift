@@ -74,10 +74,10 @@ final class StakingAssetSettings: PersistentValueSettings<ChainAsset> {
             chainAsset = ChainAsset(chain: selectedChain, asset: selectedAsset)
         } else {
             let maybeChain = chains.first { chain in
-                chain.assets.contains { StakingType(rawType: $0.staking) != .unsupported }
+                chain.assets.contains { $0.hasStaking }
             }
 
-            let maybeAsset = maybeChain?.assets.first { StakingType(rawType: $0.staking) != .unsupported }
+            let maybeAsset = maybeChain?.assets.first { $0.hasStaking }
 
             if let chain = maybeChain, let asset = maybeAsset {
                 settings.stakingAsset = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
