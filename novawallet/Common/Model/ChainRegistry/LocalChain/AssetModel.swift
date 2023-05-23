@@ -17,7 +17,7 @@ struct AssetModel: Equatable, Codable, Hashable {
     let symbol: String
     let precision: UInt16
     let priceId: PriceId?
-    let staking: String?
+    let stakings: [StakingType]?
     let type: String?
     let typeExtras: JSON?
     let buyProviders: JSON?
@@ -28,6 +28,10 @@ struct AssetModel: Equatable, Codable, Hashable {
 
     var isUtility: Bool { assetId == 0 }
 
+    var hasStaking: Bool {
+        stakings?.contains { $0 != .unsupported } ?? false
+    }
+
     init(
         assetId: Id,
         icon: URL?,
@@ -35,7 +39,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         symbol: String,
         precision: UInt16,
         priceId: PriceId?,
-        staking: String?,
+        stakings: [StakingType]?,
         type: String?,
         typeExtras: JSON?,
         buyProviders: JSON?,
@@ -48,7 +52,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         self.symbol = symbol
         self.precision = precision
         self.priceId = priceId
-        self.staking = staking
+        self.stakings = stakings
         self.type = type
         self.typeExtras = typeExtras
         self.buyProviders = buyProviders
@@ -63,7 +67,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         symbol = remoteModel.symbol
         precision = remoteModel.precision
         priceId = remoteModel.priceId
-        staking = remoteModel.staking
+        stakings = remoteModel.staking?.map { StakingType(rawType: $0) }
         type = remoteModel.type
         typeExtras = remoteModel.typeExtras
         buyProviders = remoteModel.buyProviders
@@ -87,7 +91,7 @@ extension AssetModel {
             symbol: symbol,
             precision: precision,
             priceId: priceId,
-            staking: staking,
+            stakings: stakings,
             type: type,
             typeExtras: typeExtras,
             buyProviders: buyProviders,

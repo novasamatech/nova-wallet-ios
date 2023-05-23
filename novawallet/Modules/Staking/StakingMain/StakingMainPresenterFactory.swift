@@ -22,7 +22,7 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
         for stakingAssetSettings: StakingAssetSettings,
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol? {
-        let stakingType = StakingType(rawType: stakingAssetSettings.value?.asset.staking)
+        let stakingType = stakingAssetSettings.value?.asset.stakings?.first
 
         switch stakingType {
         case .relaychain:
@@ -33,7 +33,7 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
             return createParachainPresenter(for: stakingAssetSettings, view: view)
         case .azero:
             return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .aura)
-        case .unsupported:
+        case .unsupported, .none:
             return nil
         }
     }
