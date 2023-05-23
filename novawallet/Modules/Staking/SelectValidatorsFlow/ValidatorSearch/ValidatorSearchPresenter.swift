@@ -50,6 +50,7 @@ final class ValidatorSearchPresenter {
         let viewModel = viewModelFactory.createViewModel(
             from: filteredValidatorList,
             selectedValidatorList: selectedValidatorList,
+            referenceValidatorList: referenceValidatorList,
             locale: selectedLocale
         )
 
