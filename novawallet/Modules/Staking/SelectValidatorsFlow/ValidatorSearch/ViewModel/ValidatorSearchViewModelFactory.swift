@@ -59,6 +59,7 @@ extension ValidatorSearchViewModelFactory: ValidatorSearchViewModelFactoryProtoc
     func createViewModel(
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        referenceValidatorList: [SelectedValidatorInfo],
         locale: Locale
     ) -> ValidatorSearchViewModel {
         guard !displayValidatorList.isEmpty else {
@@ -76,9 +77,12 @@ extension ValidatorSearchViewModelFactory: ValidatorSearchViewModelFactoryProtoc
             locale: locale
         )
 
+        let differsFromInitial = selectedValidatorList != referenceValidatorList
+
         return ValidatorSearchViewModel(
             headerViewModel: headerViewModel,
-            cellViewModels: cellsViewModel
+            cellViewModels: cellsViewModel,
+            differsFromInitial: differsFromInitial
         )
     }
 }
