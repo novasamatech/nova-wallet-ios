@@ -14,6 +14,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
         static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
         static let elementMovingMotion: CGFloat = 5
+        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
     }
 
     let backgroundBlurView = GladingCardView()
@@ -31,14 +32,20 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.font = .boldLargeTitle
     }
 
-    let locksView: BorderedIconLabelView = .create {
-        let color = R.color.colorChipText()!
-        $0.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
-        $0.iconDetailsView.detailsLabel.font = .regularFootnote
-        $0.iconDetailsView.detailsLabel.textColor = color
-        $0.iconDetailsView.spacing = 4.0
-        $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+    let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
+        $0.contentInsets = Constants.locksContentInsets
         $0.backgroundView.apply(style: .chips)
+        $0.setupContentView = { contentView in
+            let color = R.color.colorChipText()!
+            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
+            contentView.detailsView.detailsLabel.font = .regularFootnote
+            contentView.detailsView.detailsLabel.textColor = color
+            contentView.spacing = 4
+            contentView.detailsView.spacing = 4
+            contentView.detailsView.mode = .detailsIcon
+            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.tinted(with: color)
+        }
+
         $0.isHidden = true
     }
 
@@ -84,7 +91,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.text = value
+            amountLabel.attributedText = totalAmountString(from: value)
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -100,14 +107,44 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         }
     }
 
+    private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
+        let defaultAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: R.color.colorTextPrimary()!,
+            .font: UIFont.boldLargeTitle
+        ]
+
+        let amount = model.amount
+        guard let decimalSeparator = model.decimalSeparator,
+              let range = amount.range(of: decimalSeparator) else {
+            return .init(string: amount, attributes: defaultAttributes)
+        }
+
+        let amountAttributedString = NSMutableAttributedString(string: amount)
+        let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
+        let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
+
+        amountAttributedString.setAttributes(
+            defaultAttributes,
+            range: intPartRange
+        )
+
+        amountAttributedString.setAttributes(
+            [.foregroundColor: R.color.colorTextSecondary()!,
+             .font: UIFont.boldTitle2],
+            range: fractionPartRange
+        )
+
+        return amountAttributedString
+    }
+
     private func setupStateWithLocks(amount: String) {
         locksView.isHidden = false
 
-        locksView.iconDetailsView.detailsLabel.text = amount
+        locksView.contentView.detailsView.detailsLabel.text = amount
     }
 
     private func setupStateWithoutLocks() {
-        locksView.iconDetailsView.detailsLabel.text = nil
+        locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
     }
 
