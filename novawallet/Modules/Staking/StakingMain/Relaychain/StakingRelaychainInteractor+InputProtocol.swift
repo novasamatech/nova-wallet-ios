@@ -61,7 +61,7 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
 
             let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
                 for: chainAsset,
-                stakingType: StakingType(rawType: chainAsset.asset.staking),
+                stakingType: chainAsset.asset.stakings?.first ?? .unsupported,
                 stakingLocalSubscriptionFactory: sharedState.stakingLocalSubscriptionFactory,
                 stakingDurationFactory: stakingDurationFactory,
                 validatorService: eraValidatorService

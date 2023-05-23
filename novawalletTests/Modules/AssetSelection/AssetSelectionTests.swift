@@ -51,7 +51,7 @@ class AssetSelectionTests: XCTestCase {
             repository: repository,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
-            assetFilter: { chainAsset in StakingType(rawType: chainAsset.asset.staking) != .unsupported },
+            assetFilter: { $0.asset.hasStaking },
             currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue
         )
@@ -91,7 +91,7 @@ class AssetSelectionTests: XCTestCase {
 
         stub(wireframe) { stub in
             stub.complete(on: any(), selecting: any()).then { (_, chainAsset) in
-                XCTAssertNotNil(chainAsset.asset.staking)
+                XCTAssertTrue(chainAsset.asset.hasStaking)
                 completionExpectation.fulfill()
             }
         }

@@ -140,7 +140,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
             let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
                 for: chainId,
-                stakingType: StakingType(rawType: chainAsset.asset.staking),
+                stakingType: chainAsset.asset.stakings?.first ?? .unsupported,
                 assetPrecision: Int16(chainAsset.asset.precision),
                 collatorService: collatorsService
             )

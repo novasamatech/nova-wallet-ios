@@ -1,6 +1,6 @@
 import Foundation
 
-enum StakingType: String, Equatable {
+enum StakingType: String, Codable, Equatable {
     case relaychain
     case parachain
     case azero = "aleph-zero"
