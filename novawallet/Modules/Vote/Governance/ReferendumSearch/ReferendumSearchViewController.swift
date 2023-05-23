@@ -3,6 +3,8 @@ import SoraFoundation
 import SoraUI
 
 final class ReferendumSearchViewController: BaseTableSearchViewController {
+    typealias RootViewType = ReferendumSearchViewLayout
+
     var presenter: ReferendumSearchPresenterProtocol? {
         basePresenter as? ReferendumSearchPresenterProtocol
     }
@@ -20,28 +22,22 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func loadView() {
+        view = ReferendumSearchViewLayout()
+    }
+
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         setupTableView()
-        setupSearchView()
         applyLocalization()
         setupHandlers()
-
-        super.viewDidLoad()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        rootView.searchView.searchBar.becomeFirstResponder()
-    }
-
-    private func setupSearchView() {
-        rootView.apply(style: .init(
-            background: .multigradient,
-            contentInsets: .init(top: 16, left: 0, bottom: 0, right: 0)
-        ))
-        rootView.cancelButton.isHidden = false
-        rootView.cancelButton.contentInsets = .init(top: 0, left: 16, bottom: 0, right: 16)
+        rootView.searchView.becomeFirstResponder()
     }
 
     private func setupLocalization() {
