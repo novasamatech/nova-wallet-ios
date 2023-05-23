@@ -62,6 +62,12 @@ open class BlurBackgroundView: UIView {
         }
     }
 
+    var blurStyle: UIBlurEffect = .init(style: .dark) {
+        didSet {
+            blurView?.effect = blurStyle
+        }
+    }
+
     open func configure() {
         backgroundColor = .clear
 
@@ -86,8 +92,7 @@ open class BlurBackgroundView: UIView {
     }
 
     private func addBlurView() {
-        let blur = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blur)
+        let blurView = UIVisualEffectView(effect: blurStyle)
         insertSubview(blurView, at: 0)
 
         self.blurView = blurView
