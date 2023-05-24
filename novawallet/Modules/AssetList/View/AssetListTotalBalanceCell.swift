@@ -250,13 +250,13 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             make.size.height.equalTo(80)
         }
 
-        actionsBackgroundView.addSubview(actionsView)
-        actionsView.snp.makeConstraints { make in
+        actionsBackgroundView.addSubview(actionsGladingView)
+        actionsGladingView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        actionsBackgroundView.addSubview(actionsGladingView)
-        actionsGladingView.snp.makeConstraints { make in
+        actionsBackgroundView.addSubview(actionsView)
+        actionsView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
@@ -357,7 +357,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         button.imageWithTitleView?.titleFont = .semiBoldCaption1
         button.contentOpacityWhenHighlighted = 0.2
         button.changesContentOpacityWhenHighlighted = true
-        button.isUserInteractionEnabled = true
         return button
     }
 }
