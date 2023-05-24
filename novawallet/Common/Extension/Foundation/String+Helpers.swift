@@ -19,4 +19,21 @@ extension String {
     func isHex() -> Bool {
         hasPrefix("0x") && lengthOfBytes(using: .ascii) % 2 == 0
     }
+
+    func withHexPrefix() -> String {
+        if hasPrefix("0x") {
+            return self
+        } else {
+            return "0x" + self
+        }
+    }
+
+    func withoutHexPrefix() -> String {
+        if hasPrefix("0x") {
+            let indexStart = index(startIndex, offsetBy: 2)
+            return String(self[indexStart...])
+        } else {
+            return self
+        }
+    }
 }

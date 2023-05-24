@@ -153,11 +153,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var multistakingURL: URL {
         // TODO: fix production url
-    #if F_RELEASE
-        URL(string: "https://subql.novasama.uz")!
-    #else
-        URL(string: "https://subql.novasama.uz")!
-    #endif
+        #if F_RELEASE
+            URL(string: "https://subql.novasama.uz")!
+        #else
+            URL(string: "https://subql.novasama.uz")!
+        #endif
     }
 
     var dAppsListURL: URL {

@@ -1,4 +1,6 @@
 import Foundation
+import BigInt
+import SubstrateSdk
 
 enum SubqueryMultistaking {
     struct ActiveStaker: Decodable {
@@ -16,7 +18,12 @@ enum SubqueryMultistaking {
     struct AccumulatedReward: Decodable {
         let networkId: String
         let stakingType: String
-        let amount: String
+        @StringCodable var amount: BigUInt
+    }
+
+    struct NetworkStaking: Hashable {
+        let networkId: String
+        let stakingType: String
     }
 
     struct StatsResponse: Decodable {
