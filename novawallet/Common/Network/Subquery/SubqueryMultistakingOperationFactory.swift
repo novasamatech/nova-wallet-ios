@@ -20,7 +20,7 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
 
             let networkFilter = SubqueryEqualToFilter(
                 fieldName: "networkId",
-                value: chain.chainId.withoutHexPrefix()
+                value: chain.chainId.withHexPrefix()
             )
 
             let addressFilter = SubqueryEqualToFilter(
@@ -37,7 +37,7 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
             return SubqueryCompoundFilter.and([networkFilter, addressFilter, typeFilter])
         }
 
-        let resultFilter = SubqueryCompoundFilter.and(filterItems)
+        let resultFilter = SubqueryCompoundFilter.or(filterItems)
 
         return SubqueryFilterBuilder.buildBlock(resultFilter)
     }
@@ -113,7 +113,7 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                     }
 
                     return Multistaking.OffchainStaking(
-                        chainId: node.networkId.withHexPrefix(),
+                        chainId: node.networkId.withoutHexPrefix(),
                         stakingType: StakingType(rawType: node.stakingType),
                         maxApy: node.maxApy,
                         state: state

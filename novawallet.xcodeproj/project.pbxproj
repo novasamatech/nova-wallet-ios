@@ -1127,6 +1127,8 @@
 		8455F1932A1DC64E003F072D /* Multistaking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455F1922A1DC64E003F072D /* Multistaking.swift */; };
 		8455F1962A1DD705003F072D /* SubqueryFilterBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455F1952A1DD705003F072D /* SubqueryFilterBuilder.swift */; };
 		8455F1982A1DD74D003F072D /* SubqueryFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455F1972A1DD74D003F072D /* SubqueryFilter.swift */; };
+		8455F19A2A1DEEAF003F072D /* SubqueryMultistakingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */; };
+		8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455F19B2A1DF088003F072D /* ChainsStore+Multistaking.swift */; };
 		84563D0924F46B7F0055591D /* ManagedAccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84563D0824F46B7F0055591D /* ManagedAccountItemMapperTests.swift */; };
 		8456C08227CF9DC9001282DE /* RemoteNftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08127CF9DC9001282DE /* RemoteNftModel.swift */; };
 		8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08327CFA4A7001282DE /* ImagePlaceholderView.swift */; };
@@ -4663,6 +4665,8 @@
 		8455F1922A1DC64E003F072D /* Multistaking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multistaking.swift; sourceTree = "<group>"; };
 		8455F1952A1DD705003F072D /* SubqueryFilterBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryFilterBuilder.swift; sourceTree = "<group>"; };
 		8455F1972A1DD74D003F072D /* SubqueryFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryFilter.swift; sourceTree = "<group>"; };
+		8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTests.swift; sourceTree = "<group>"; };
+		8455F19B2A1DF088003F072D /* ChainsStore+Multistaking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainsStore+Multistaking.swift"; sourceTree = "<group>"; };
 		84563D0824F46B7F0055591D /* ManagedAccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedAccountItemMapperTests.swift; sourceTree = "<group>"; };
 		8456C08127CF9DC9001282DE /* RemoteNftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteNftModel.swift; sourceTree = "<group>"; };
 		8456C08327CFA4A7001282DE /* ImagePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePlaceholderView.swift; sourceTree = "<group>"; };
@@ -9080,6 +9084,7 @@
 				843B6F4E28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift */,
 				840874DF2978882700ACFA55 /* Gov2DelegationTests.swift */,
 				8813702B29C13E7900829458 /* Web3NamesOperationFactoryTests.swift */,
+				8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -9620,6 +9625,7 @@
 			isa = PBXGroup;
 			children = (
 				8455F1922A1DC64E003F072D /* Multistaking.swift */,
+				8455F19B2A1DF088003F072D /* ChainsStore+Multistaking.swift */,
 			);
 			path = Multistaking;
 			sourceTree = "<group>";
@@ -17195,6 +17201,7 @@
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,
 				840874E02978882700ACFA55 /* Gov2DelegationTests.swift in Sources */,
 				8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */,
+				8455F19A2A1DEEAF003F072D /* SubqueryMultistakingTests.swift in Sources */,
 				AEE4E37225ECF83F00D6DF31 /* StakingInfoTests.swift in Sources */,
 				E2F3E726280823CF00CF31B5 /* ETHAccountInjection.swift in Sources */,
 				F441BE13263986BE0096B67B /* ExtrinsicServiceTests.swift in Sources */,
@@ -18046,6 +18053,7 @@
 				889F7F3B292373560024CB1E /* RemoteAssetModel+Evm.swift in Sources */,
 				849D3227291CE25E00D25839 /* MarkdownViewContainer.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
+				8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
 				84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */,
 				84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */,

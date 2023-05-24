@@ -10,6 +10,13 @@ enum SubqueryMultistaking {
     }
 
     struct Apy: Decodable {
+        // swiftlint:disable:next nesting
+        enum CodingKeys: String, CodingKey {
+            case networkId
+            case stakingType
+            case maxApy = "maxAPY"
+        }
+
         let networkId: String
         let stakingType: String
         let maxApy: Decimal

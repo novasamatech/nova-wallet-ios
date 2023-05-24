@@ -13,17 +13,20 @@ enum SubqueryResponse<D: Decodable>: Decodable {
     case data(_ value: D)
     case errors(_ value: SubqueryErrors)
 
+    struct Model: Decodable {
+        let data: D?
+        let errors: [SubqueryErrors.SubqueryError]?
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        let json = try container.decode(JSON.self)
+        let json = try container.decode(Model.self)
 
-        if let data = json.data {
-            let value = try data.map(to: D.self)
+        if let value = json.data {
             self = .data(value)
         } else if let errors = json.errors {
-            let values = try errors.map(to: [SubqueryErrors.SubqueryError].self)
-            self = .errors(SubqueryErrors(errors: values))
+            self = .errors(SubqueryErrors(errors: errors))
         } else {
             throw DecodingError.dataCorruptedError(
                 in: container,
