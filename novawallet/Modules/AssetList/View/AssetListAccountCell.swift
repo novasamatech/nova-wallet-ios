@@ -1,10 +1,13 @@
 import UIKit
 
 final class AssetListAccountCell: UICollectionViewCell {
+    let walletConnect = WalletConnectionsView()
+
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldTitle3
         label.textColor = R.color.colorTextPrimary()
+        label.textAlignment = .center
         return label
     }()
 
@@ -25,6 +28,21 @@ final class AssetListAccountCell: UICollectionViewCell {
         titleLabel.text = viewModel.title
 
         walletSwitch.bind(viewModel: viewModel.walletSwitch)
+
+        let walletConnectViewModel: WalletConnectionsView.Model
+        if let walletConnectionsCount = viewModel.walletConnectionsCount {
+            walletConnectViewModel = .activeConections(walletConnectionsCount)
+        } else {
+            walletConnectViewModel = .empty
+        }
+
+        walletConnect.bind(
+            model: walletConnectViewModel,
+            animated: true
+        )
+
+        setNeedsLayout()
+        layoutIfNeeded()
     }
 
     private func setupLayout() {
@@ -35,11 +53,16 @@ final class AssetListAccountCell: UICollectionViewCell {
             make.size.equalTo(UIConstants.walletSwitchSize)
         }
 
-        contentView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        contentView.addSubview(walletConnect)
+        walletConnect.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(walletSwitch)
-            make.trailing.equalTo(walletSwitch.snp.leading).offset(-8.0)
+        }
+
+        contentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(walletSwitch)
+            make.centerX.equalToSuperview()
         }
     }
 }

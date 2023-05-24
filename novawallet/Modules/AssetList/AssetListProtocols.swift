@@ -19,7 +19,9 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentSettings()
     func presentSearch()
     func presentAssetsManage()
-    func didTapTotalBalance()
+    func presentLocks()
+    func send()
+    func receive()
 }
 
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {

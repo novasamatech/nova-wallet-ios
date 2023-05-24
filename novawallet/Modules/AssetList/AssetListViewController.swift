@@ -64,11 +64,11 @@ final class AssetListViewController: UIViewController, ViewHolder {
         )
     }
 
-    @objc func actionSelectAccount() {
+    @objc private func actionSelectAccount() {
         presenter.selectWallet()
     }
 
-    @objc func actionRefresh() {
+    @objc private func actionRefresh() {
         let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
         if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
             nftCell.refresh()
@@ -77,16 +77,28 @@ final class AssetListViewController: UIViewController, ViewHolder {
         presenter.refresh()
     }
 
-    @objc func actionSettings() {
+    @objc private func actionSettings() {
         presenter.presentSettings()
     }
 
-    @objc func actionSearch() {
+    @objc private func actionSearch() {
         presenter.presentSearch()
     }
 
-    @objc func actionManage() {
+    @objc private func actionManage() {
         presenter.presentAssetsManage()
+    }
+
+    @objc private func actionLocks() {
+        presenter.presentLocks()
+    }
+
+    @objc private func actionSend() {
+        presenter.send()
+    }
+
+    @objc private func actionReceive() {
+        presenter.receive()
     }
 }
 
@@ -124,7 +136,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .settings, .emptyState:
+        case .account, .settings, .emptyState, .totalBalance:
             break
         case .asset:
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
@@ -135,8 +147,6 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             }
         case .yourNfts:
             presenter.selectNfts()
-        case .totalBalance:
-            presenter.didTapTotalBalance()
         }
     }
 
@@ -211,6 +221,20 @@ extension AssetListViewController: UICollectionViewDataSource {
         )!
 
         totalBalanceCell.locale = selectedLocale
+        totalBalanceCell.locksView.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(actionLocks)
+        ))
+        totalBalanceCell.sendButton.addTarget(
+            self,
+            action: #selector(actionSend),
+            for: .touchUpInside
+        )
+        totalBalanceCell.receiveButton.addTarget(
+            self,
+            action: #selector(actionReceive),
+            for: .touchUpInside
+        )
 
         if let viewModel = headerViewModel {
             totalBalanceCell.bind(viewModel: viewModel)

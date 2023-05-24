@@ -97,6 +97,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         if let prices = prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return AssetListHeaderViewModel(
+                walletConnectionsCount: nil,
                 title: title,
                 amount: totalPrice,
                 locksAmount: locks.map { formatTotalPrice(from: $0, locale: locale) },
@@ -104,6 +105,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             )
         } else {
             return AssetListHeaderViewModel(
+                walletConnectionsCount: nil,
                 title: title,
                 amount: .loading,
                 locksAmount: nil,

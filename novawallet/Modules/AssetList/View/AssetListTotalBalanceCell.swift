@@ -49,6 +49,25 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         $0.isHidden = true
     }
 
+    lazy var sendButton = createActionButton(
+        title:
+        R.string.localizable.walletSendTitle(preferredLanguages: locale.rLanguages),
+        icon: R.image.iconSend()
+    )
+    lazy var receiveButton = createActionButton(
+        title:
+        R.string.localizable.walletAssetReceive(preferredLanguages: locale.rLanguages),
+        icon: R.image.iconReceive()
+    )
+
+    lazy var actionsView = UIView.hStack(
+        distribution: .fillEqually,
+        [
+            sendButton,
+            receiveButton
+        ]
+    )
+
     let actionsBackgroundView: BlockBackgroundView = .create { view in
         view.sideLength = 12
     }
@@ -231,6 +250,11 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             make.size.height.equalTo(80)
         }
 
+        actionsBackgroundView.addSubview(actionsView)
+        actionsView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         actionsBackgroundView.addSubview(actionsGladingView)
         actionsGladingView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -315,5 +339,25 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
                 size: bigRowSize
             )
         ]
+    }
+
+    private func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
+        let button = RoundedButton()
+        button.roundedBackgroundView?.fillColor = .clear
+        button.roundedBackgroundView?.highlightedFillColor = .clear
+        button.roundedBackgroundView?.strokeColor = .clear
+        button.roundedBackgroundView?.highlightedStrokeColor = .clear
+        button.roundedBackgroundView?.shadowOpacity = 0
+        button.roundedBackgroundView?.cornerRadius = 0
+        button.imageWithTitleView?.title = title
+        button.imageWithTitleView?.iconImage = icon
+        button.imageWithTitleView?.layoutType = .verticalImageFirst
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
+        button.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
+        button.imageWithTitleView?.titleFont = .semiBoldCaption1
+        button.contentOpacityWhenHighlighted = 0.2
+        button.changesContentOpacityWhenHighlighted = true
+        button.isUserInteractionEnabled = true
+        return button
     }
 }
