@@ -15,15 +15,27 @@ struct EstimatedBlockTime: Codable {
     }
 }
 
-struct BlockTimeSubscriptionModel: JSONListConvertible {
+struct BlockTimeSubscriptionModel: BatchStorageSubscriptionResult {
     let blockNumber: BlockNumber
     let timestamp: BlockTime
     let blockHash: Data?
 
-    init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
-        blockNumber = try jsonList[0].map(to: StringScaleMapper<BlockNumber>.self, with: context).value
-        timestamp = try jsonList[1].map(to: StringScaleMapper<BlockTime>.self, with: context).value
-        blockHash = try jsonList[2].map(to: Data?.self, with: context)
+    init(
+        values: [BatchStorageSubscriptionResultValue],
+        blockHashJson: JSON,
+        context: [CodingUserInfoKey: Any]?
+    ) throws {
+        blockNumber = try values[0].value.map(
+            to: StringScaleMapper<BlockNumber>.self,
+            with: context
+        ).value
+
+        timestamp = try values[1].value.map(
+            to: StringScaleMapper<BlockTime>.self,
+            with: context
+        ).value
+
+        blockHash = try blockHashJson.map(to: Data?.self, with: context)
     }
 }
 
