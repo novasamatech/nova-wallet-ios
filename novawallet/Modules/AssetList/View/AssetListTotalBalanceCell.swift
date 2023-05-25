@@ -3,15 +3,8 @@ import SoraUI
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
-        static let insets = UIEdgeInsets(
-            top: 12,
-            left: 13,
-            bottom: 13,
-            right: 13
-        )
-
-        static let amountY: CGFloat = 50
-
+        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
+        static let amountTitleSpacing: CGFloat = 15
         static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
         static let elementMovingMotion: CGFloat = 5
         static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
@@ -24,7 +17,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     let titleLabel: UILabel = .create { view in
-        view.apply(style: .regularSubhedlineSecondary)
+        view.apply(style: .semiboldSubhedlineSecondary)
     }
 
     let amountLabel: UILabel = .create { view in
@@ -36,14 +29,13 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         $0.contentInsets = Constants.locksContentInsets
         $0.backgroundView.apply(style: .chips)
         $0.setupContentView = { contentView in
-            let color = R.color.colorChipText()!
-            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
+            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
             contentView.detailsView.detailsLabel.font = .regularFootnote
-            contentView.detailsView.detailsLabel.textColor = color
+            contentView.detailsView.detailsLabel.textColor = R.color.colorChipText()!
             contentView.spacing = 4
             contentView.detailsView.spacing = 4
             contentView.detailsView.mode = .detailsIcon
-            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.tinted(with: color)
+            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconChip()!)
         }
 
         $0.isHidden = true
@@ -77,6 +69,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     private var skeletonView: SkrullableView?
+    private var shadowsLayers = [CALayer(), CALayer()]
+    private var cachedBounds: CGRect?
 
     var locale = Locale.current {
         didSet {
@@ -105,6 +99,19 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         if skeletonView != nil {
             setupSkeleton()
         }
+
+        guard cachedBounds != layer.bounds else {
+            return
+        }
+        setupShadow(
+            shadowFrame: layer.bounds.inset(by: .init(
+                top: 0,
+                left: UIConstants.horizontalInset,
+                bottom: 0,
+                right: UIConstants.horizontalInset
+            ))
+        )
+        cachedBounds = layer.bounds
     }
 
     func bind(viewModel: AssetListHeaderViewModel) {
@@ -171,6 +178,10 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         titleLabel.text = R.string.localizable.walletTotalBalance(
             preferredLanguages: locale.rLanguages
         )
+        sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
+            preferredLanguages: locale.rLanguages)
+        receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
+            preferredLanguages: locale.rLanguages)
     }
 
     private func setupMotionEffect() {
@@ -241,7 +252,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         displayContentView.addSubview(amountLabel)
         amountLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview().inset(Constants.amountY - Constants.insets.top)
+            make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
 
         displayContentView.addSubview(actionsBackgroundView)
@@ -259,6 +270,9 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         actionsView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        // Add after motion fix
+        // shadowsLayers.reversed().forEach { layer.insertSublayer($0, at: 0) }
     }
 
     func startLoadingIfNeeded() {
@@ -322,7 +336,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = Constants.amountY + amountLabel.font.lineHeight / 2.0 -
+        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing + amountLabel.font.lineHeight / 2.0 -
             bigRowSize.height / 2.0
 
         let offset = CGPoint(
@@ -358,5 +372,24 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         button.contentOpacityWhenHighlighted = 0.2
         button.changesContentOpacityWhenHighlighted = true
         return button
+    }
+
+    private func setupShadow(shadowFrame: CGRect) {
+        let shadowPath = UIBezierPath(roundedRect: shadowFrame, cornerRadius: 12)
+        let shadowColor = UIColor.black.cgColor
+        shadowsLayers[0].shadowPath = shadowPath.cgPath
+        shadowsLayers[0].shadowColor = shadowColor
+        shadowsLayers[0].shadowOpacity = 0.16
+        shadowsLayers[0].shadowRadius = 12
+        shadowsLayers[0].shadowOffset = CGSize(width: 0, height: 4)
+        shadowsLayers[0].bounds = shadowFrame
+        shadowsLayers[0].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
+        shadowsLayers[1].shadowPath = shadowPath.cgPath
+        shadowsLayers[1].shadowColor = shadowColor
+        shadowsLayers[1].shadowOpacity = 0.25
+        shadowsLayers[1].shadowRadius = 4
+        shadowsLayers[1].shadowOffset = CGSize(width: 0, height: 4)
+        shadowsLayers[1].bounds = shadowFrame
+        shadowsLayers[1].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
     }
 }
