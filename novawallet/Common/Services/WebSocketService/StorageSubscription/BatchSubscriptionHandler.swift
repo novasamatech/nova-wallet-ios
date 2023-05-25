@@ -1,10 +1,14 @@
 import Foundation
 import SubstrateSdk
 
-struct BatchSubscriptionHandler: JSONListConvertible {
+struct BatchSubscriptionHandler: BatchStorageSubscriptionResult {
     let blockHash: Data?
 
-    init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
-        blockHash = try jsonList.last?.map(to: Data?.self, with: context)
+    init(
+        values _: [BatchStorageSubscriptionResultValue],
+        blockHashJson: JSON,
+        context: [CodingUserInfoKey: Any]?
+    ) throws {
+        blockHash = try blockHashJson.map(to: Data?.self, with: context)
     }
 }
