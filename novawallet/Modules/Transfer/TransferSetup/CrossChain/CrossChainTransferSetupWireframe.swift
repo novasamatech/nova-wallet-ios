@@ -11,7 +11,7 @@ final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframePr
     }
 
     func showConfirmation(
-        from _: TransferSetupChildViewProtocol?,
+        from view: TransferSetupChildViewProtocol?,
         originChainAsset: ChainAsset,
         destinationChainAsset: ChainAsset,
         sendingAmount: Decimal,
@@ -27,8 +27,16 @@ final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframePr
             return
         }
 
-        let command = commandFactory?.preparePresentationCommand(for: confirmView.controller)
-        command?.presentationStyle = .push(hidesBottomBar: true)
-        try? command?.execute()
+        if let commandFactory = commandFactory {
+            let command = commandFactory.preparePresentationCommand(for: confirmView.controller)
+            command.presentationStyle = .push(hidesBottomBar: true)
+            try? command.execute()
+        } else {
+            confirmView.controller.hidesBottomBarWhenPushed = true
+            view?.controller.navigationController?.pushViewController(
+                confirmView.controller,
+                animated: true
+            )
+        }
     }
 }

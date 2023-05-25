@@ -496,11 +496,33 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func send() {
-        // TODO:
+        let initState = AssetListInitState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains,
+            crowdloansResult: crowdloansResult
+        )
+
+        wireframe.showAssetsSelection(
+            from: view,
+            operation: .send,
+            state: initState
+        )
     }
 
     func receive() {
-        // TODO:
+        let initState = AssetListInitState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains,
+            crowdloansResult: crowdloansResult
+        )
+
+        wireframe.showAssetsSelection(
+            from: view,
+            operation: .receive,
+            state: initState
+        )
     }
 }
 
