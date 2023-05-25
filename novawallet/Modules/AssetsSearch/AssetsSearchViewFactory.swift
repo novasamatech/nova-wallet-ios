@@ -19,7 +19,7 @@ struct AssetsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetsSearchWireframe()
+        let wireframe = AssetsSearchWireframe(delegate: delegate)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
@@ -31,7 +31,6 @@ struct AssetsSearchViewFactory {
 
         let presenter = AssetsSearchPresenter(
             initState: initState,
-            delegate: delegate,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
@@ -39,6 +38,53 @@ struct AssetsSearchViewFactory {
         )
 
         let view = AssetsSearchViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    static func createView(
+        for initState: AssetListInitState,
+        operation: TokenOperation
+    ) -> AssetsSearchViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let interactor = AssetsSearchInteractor(
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
+            logger: Logger.shared
+        )
+
+        let wireframe = AssetsSelectionWireframe(operation: operation)
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let viewModelFactory = AssetListAssetViewModelFactory(
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            assetFormatterFactory: AssetBalanceFormatterFactory(),
+            percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            currencyManager: currencyManager
+        )
+
+        let presenter = AssetsSearchPresenter(
+            initState: initState,
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
+        )
+
+        let view = AssetsSearchViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        view.rootView.backgroundView.isHidden = true
+        view.rootView.backgroundColor = R.color.colorSecondaryScreenBackground()
+        view.title = "Send"
 
         presenter.view = view
         interactor.presenter = presenter
