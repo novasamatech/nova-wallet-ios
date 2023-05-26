@@ -5,16 +5,13 @@ import CommonWallet
 final class PurchaseViewFactory: PurchaseViewFactoryProtocol {
     static func createView(
         for action: PurchaseAction,
-        commandFactory: WalletCommandFactoryProtocol
+        delegate: PurchaseDelegate
     ) -> PurchaseViewProtocol? {
         let view = PurchaseViewController(url: action.url)
 
         let presenter = PurchasePresenter(action: action)
         let interactor = PurchaseInteractor(eventCenter: EventCenter.shared)
-        let wireframe = PurchaseWireframe(
-            localizationManager: LocalizationManager.shared,
-            commandFactory: commandFactory
-        )
+        let wireframe = PurchaseWireframe(delegate: delegate)
 
         view.presenter = presenter
         presenter.view = view

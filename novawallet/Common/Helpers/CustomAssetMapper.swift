@@ -104,4 +104,15 @@ extension CustomAssetMapper {
             equilibriumHandler: { String($0.assetId) }
         )
     }
+
+    func transfersEnabled() throws -> Bool {
+        try mapAssetWithExtras(
+            nativeHandler: { true },
+            statemineHandler: { _ in true },
+            ormlHandler: { $0.transfersEnabled ?? true },
+            evmHandler: { _ in true },
+            evmNativeHandler: { true },
+            equilibriumHandler: { $0.transfersEnabled ?? true }
+        )
+    }
 }

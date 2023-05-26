@@ -37,7 +37,7 @@ class OperationDetailsTests: XCTestCase {
         )
 
         let interactor = OperationDetailsInteractor(
-            txData: txData,
+            transaction: txData,
             chainAsset: chainAsset,
             wallet: wallet,
             walletRepository: walletRepository,

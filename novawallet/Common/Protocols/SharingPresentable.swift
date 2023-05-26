@@ -8,11 +8,28 @@ protocol SharingPresentable {
         from view: ControllerBackedProtocol?,
         with completionHandler: SharingCompletionHandler?
     )
+    func share(
+        items: [Any],
+        from view: ControllerBackedProtocol?,
+        with completionHandler: SharingCompletionHandler?
+    )
 }
 
 extension SharingPresentable {
     func share(
         source: UIActivityItemSource,
+        from view: ControllerBackedProtocol?,
+        with completionHandler: SharingCompletionHandler?
+    ) {
+        share(
+            items: [source],
+            from: view,
+            with: completionHandler
+        )
+    }
+
+    func share(
+        items: [Any],
         from view: ControllerBackedProtocol?,
         with completionHandler: SharingCompletionHandler?
     ) {
@@ -27,7 +44,7 @@ extension SharingPresentable {
         }
 
         let activityController = UIActivityViewController(
-            activityItems: [source],
+            activityItems: items,
             applicationActivities: nil
         )
 

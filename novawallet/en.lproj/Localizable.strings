@@ -185,6 +185,7 @@
 "network.status.connecting" = "Connecting…";
 "network.status.connected" = "Connected";
 "wallet.receive.description" = "Share this QR to sender";
+"wallet.receive.error.generateQRCode.message" = "QR code generation failed. Would you like to retry?";
 "wallet.search.accounts" = "my accounts";
 "wallet.receive.share.message" = "My %@ address to receive %@:";
 "account.export.action" = "Export";
@@ -1100,6 +1101,10 @@
 "common.more.format" = "%@ (+%@ more)";
 "common.token.decimals" = "Decimals";
 "tokens.manage.partial.selected" = "%@ (%@ more)";
+"tokens.manage.search.empty" = "No tokens with entered name were\nfound";
+"add.token.network.selection.title" = "Select network to add ERC-20 token";
+"common.today" = "Today";
+"common.yesterday" = "Yesterday";
 "add.token.invalid.contract.address.message" = "The entered contract address is not ERC-20 contract.";
 "add.token.completion.message" = "%@ token added";
 "add.token.contract.metadata.error.title" = "Metadata fetch failed";
