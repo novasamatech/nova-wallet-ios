@@ -3,27 +3,34 @@ import UIKit
 import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
-    let walletUpdater: WalletDetailsUpdating
-
-    init(walletUpdater: WalletDetailsUpdating) {
-        self.walletUpdater = walletUpdater
-    }
-
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        guard let context = try? WalletContextFactory().createContext(for: chain, asset: asset) else {
+        guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
+            chain: chain,
+            asset: asset
+        ),
+            let navigationController = view?.controller.navigationController else {
             return
         }
+        navigationController.pushViewController(
+            assetDetailsView.controller,
+            animated: true
+        )
+    }
 
-        let assetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId).walletId
-
+    func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+        guard let history = TransactionHistoryViewFactory.createView(
+            chainAsset: .init(chain: chain, asset: asset)
+        ) else {
+            return
+        }
         guard let navigationController = view?.controller.navigationController else {
             return
         }
 
-        try? context.createAssetDetails(for: assetId, in: navigationController)
-
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
-        walletUpdater.setup(context: context, chainAsset: chainAsset)
+        navigationController.pushViewController(
+            history.controller,
+            animated: true
+        )
     }
 
     func showAssetsSettings(from view: AssetListViewProtocol?) {

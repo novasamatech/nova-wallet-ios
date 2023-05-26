@@ -1,6 +1,6 @@
 import Foundation
 
-enum TransactionType: String, CaseIterable {
+enum TransactionType: String, CaseIterable, Equatable {
     case incoming = "INCOMING"
     case outgoing = "OUTGOING"
     case reward = "REWARD"

@@ -2,8 +2,6 @@ import Foundation
 import CommonWallet
 
 final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframeProtocol {
-    weak var commandFactory: WalletCommandFactoryProtocol?
-
     let xcmTransfers: XcmTransfers
 
     init(xcmTransfers: XcmTransfers) {
@@ -27,16 +25,11 @@ final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframePr
             return
         }
 
-        if let commandFactory = commandFactory {
-            let command = commandFactory.preparePresentationCommand(for: confirmView.controller)
-            command.presentationStyle = .push(hidesBottomBar: true)
-            try? command.execute()
-        } else {
-            confirmView.controller.hidesBottomBarWhenPushed = true
-            view?.controller.navigationController?.pushViewController(
-                confirmView.controller,
-                animated: true
-            )
+        guard let navigationViewController = view?.controller.navigationController else {
+            return
         }
+
+        confirmView.controller.hidesBottomBarWhenPushed = true
+        navigationViewController.pushViewController(confirmView.controller, animated: true)
     }
 }

@@ -6,8 +6,7 @@ import RobinHood
 struct TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
-        recepient: DisplayAddress?,
-        commandFactory: WalletCommandFactoryProtocol?
+        recepient: DisplayAddress?
     ) -> TransferSetupViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -19,7 +18,7 @@ struct TransferSetupViewFactory {
 
         let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
 
-        let presenterFactory = createPresenterFactory(for: wallet, commandFactory: commandFactory)
+        let presenterFactory = createPresenterFactory(for: wallet)
 
         let localizationManager = LocalizationManager.shared
 
@@ -59,14 +58,11 @@ struct TransferSetupViewFactory {
     }
 
     private static func createPresenterFactory(
-        for wallet: MetaAccountModel,
-        commandFactory: WalletCommandFactoryProtocol?
-    ) -> TransferSetupPresenterFactory {
+        for wallet: MetaAccountModel) -> TransferSetupPresenterFactory {
         TransferSetupPresenterFactory(
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             storageFacade: SubstrateDataStorageFacade.shared,
-            commandFactory: commandFactory,
             eventCenter: EventCenter.shared,
             logger: Logger.shared
         )

@@ -57,6 +57,30 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
         .transfers
     }
 
+    func createTransaction(chainAsset: ChainAsset) -> TransactionHistoryItem? {
+        let senderAddress = (try? sender.toAddress(using: .ethereum)) ?? sender.toHex(includePrefix: true)
+        let receiverAddress = try? recepient.toAddress(using: .ethereum)
+
+        let feeInPlank = gasUsed * gasPrice
+
+        return .init(
+            source: .evmAsset,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId,
+            sender: senderAddress,
+            receiver: receiverAddress,
+            amountInPlank: String(value),
+            status: .success,
+            txHash: hash.toHex(includePrefix: true),
+            timestamp: timeStamp,
+            fee: String(feeInPlank),
+            blockNumber: itemBlockNumber,
+            txIndex: itemExtrinsicIndex,
+            callPath: .erc20Tranfer,
+            call: nil
+        )
+    }
+
     func createTransactionForAddress(
         _ address: String,
         assetId: String,
