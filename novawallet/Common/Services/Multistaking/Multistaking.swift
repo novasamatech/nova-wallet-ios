@@ -7,6 +7,14 @@ enum Multistaking {
         let chainAsset: ChainAsset
         let stakingTypes: Set<StakingType>
         let accountId: AccountId
+
+        func adding(newStakingTypes: Set<StakingType>) -> OffchainFilter {
+            .init(
+                chainAsset: chainAsset,
+                stakingTypes: stakingTypes.union(newStakingTypes),
+                accountId: accountId
+            )
+        }
     }
 
     struct OffchainRequest {
