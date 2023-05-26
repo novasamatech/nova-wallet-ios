@@ -1,30 +1,34 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 final class RelaychainMultistakingUpdateService: BaseSyncService {
     let accountId: AccountId
+    let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
-    let offchainService: OffchainMultistakingUpdateServiceProtocol
+    let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>
     let operationQueue: OperationQueue
 
-    private var stateSubscription: CallbackBatchStorageSubscription<Multistaking.OnchainStateChange>?
+    private var stateSubscription: CallbackBatchStorageSubscription<Multistaking.RelaychainStateChange>?
 
-    private var controllerSubscription: CallbackStorageSubscription<BytesCodable>?
+    private var controllerSubscription: CallbackBatchStorageSubscription<Multistaking.RelaychainAccountsChange>?
 
     init(
+        walletId: MetaAccountModel.Id,
         accountId: AccountId,
         chainAsset: ChainAsset,
-        offchainService: OffchainMultistakingUpdateServiceProtocol,
+        dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.walletId = walletId
         self.accountId = accountId
         self.chainAsset = chainAsset
-        self.offchainService = offchainService
+        self.dashboardRepository = dashboardRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.operationQueue = operationQueue
@@ -35,7 +39,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
     override func performSyncUp() {
         clearSubscriptions()
 
-        subscribeController(for: accountId)
+        subscribeControllerResolution(for: accountId)
     }
 
     override func stopSyncUp() {
@@ -55,16 +59,23 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         stateSubscription = nil
     }
 
-    private func subscribeController(for accountId: AccountId) {
+    private func subscribeControllerResolution(for accountId: AccountId) {
         let controllerRequest = MapSubscriptionRequest(
             storagePath: .controller,
-            localKey: ""
+            localKey: Multistaking.RelaychainAccountsChange.Key.controller.rawValue
         ) {
             BytesCodable(wrappedValue: accountId)
         }
 
-        controllerSubscription = CallbackStorageSubscription(
-            request: controllerRequest,
+        let ledgerRequest = MapSubscriptionRequest(
+            storagePath: .stakingLedger,
+            localKey: Multistaking.RelaychainAccountsChange.Key.stash.rawValue
+        ) {
+            BytesCodable(wrappedValue: accountId)
+        }
+
+        controllerSubscription = CallbackBatchStorageSubscription(
+            requests: [controllerRequest, ledgerRequest],
             connection: connection,
             runtimeService: runtimeService,
             repository: nil,
@@ -76,73 +87,99 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
     }
 
     private func handleControllerSubscription(
-        result: Result<BytesCodable?, Error>,
+        result: Result<Multistaking.RelaychainAccountsChange, Error>,
         accountId: AccountId
     ) {
         switch result {
-        case let .success(optData):
-            if let controller = optData?.wrappedValue {
-                subscribeState(for: controller)
+        case let .success(accounts):
+            if
+                case let .defined(stash) = accounts.stash,
+                case let .defined(controller) = accounts.controller {
+                saveStashChange(stash ?? accountId)
 
-                notifyStashChange(accountId)
-            } else {
-                subscribeState(for: accountId)
+                subscribeState(
+                    for: controller ?? accountId,
+                    stash: stash ?? accountId
+                )
             }
-
         case let .failure(error):
             complete(error)
         }
     }
 
-    private func subscribeState(for controller: AccountId) {
+    private func subscribeState(for controller: AccountId, stash: AccountId) {
+        clearStateSubscription()
+
         let ledgerRequest = MapSubscriptionRequest(
             storagePath: .stakingLedger,
-            localKey: Multistaking.OnchainStateChange.Key.ledger.rawValue
+            localKey: Multistaking.RelaychainStateChange.Key.ledger.rawValue
         ) {
             BytesCodable(wrappedValue: controller)
         }
 
+        let nominationRequest = MapSubscriptionRequest(
+            storagePath: .nominators,
+            localKey: Multistaking.RelaychainStateChange.Key.nomination.rawValue
+        ) {
+            BytesCodable(wrappedValue: stash)
+        }
+
         let eraRequest = UnkeyedSubscriptionRequest(
             storagePath: .activeEra,
-            localKey: Multistaking.OnchainStateChange.Key.era.rawValue
+            localKey: Multistaking.RelaychainStateChange.Key.era.rawValue
         )
 
         stateSubscription = CallbackBatchStorageSubscription(
-            requests: [ledgerRequest, eraRequest],
+            requests: [ledgerRequest, nominationRequest, eraRequest],
             connection: connection,
             runtimeService: runtimeService,
             repository: nil,
             operationQueue: operationQueue,
             callbackQueue: .global(qos: .default)
         ) { [weak self] result in
-            self?.handleLedgerSubscription(
-                result: result,
-                controller: controller
-            )
+            self?.handleStateSubscription(result: result)
         }
     }
 
-    private func handleLedgerSubscription(
-        result: Result<Multistaking.OnchainStateChange, Error>,
-        controller _: AccountId
-    ) {
+    private func handleStateSubscription(result: Result<Multistaking.RelaychainStateChange, Error>) {
         switch result {
         case let .success(change):
             saveState(change: change)
-
-            if let stash = change.ledger.value??.stash {
-                notifyStashChange(stash)
-            }
         case let .failure(error):
             complete(error)
         }
     }
 
-    private func notifyStashChange(_ newStash: AccountId) {
-        offchainService.resolveAccountId(newStash, chainAssetId: chainAsset.chainAssetId)
+    private func saveStashChange(_: AccountId) {
+        // TODO: Implement when repository is ready
     }
 
-    private func saveState(change _: Multistaking.OnchainStateChange) {
-        complete(nil)
+    private func saveState(change: Multistaking.RelaychainStateChange) {
+        let stakingOption = Multistaking.OptionWithWallet(
+            walletId: walletId,
+            option: .init(chainAssetId: chainAsset.chainAssetId, type: .relaychain)
+        )
+
+        let dashboardItem = Multistaking.DashboardItemRelaychainPart(
+            stakingOption: stakingOption,
+            stateChange: change
+        )
+
+        let saveOperation = dashboardRepository.saveOperation({
+            [dashboardItem]
+        }, {
+            []
+        })
+
+        saveOperation.completionBlock = { [weak self] in
+            do {
+                _ = try saveOperation.extractNoCancellableResultData()
+                self?.complete(nil)
+            } catch {
+                self?.complete(error)
+            }
+        }
+
+        operationQueue.addOperation(saveOperation)
     }
 }
