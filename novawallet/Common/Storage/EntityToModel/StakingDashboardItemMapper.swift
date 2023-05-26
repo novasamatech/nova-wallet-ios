@@ -16,7 +16,7 @@ final class StakingDashboardItemMapper {
     typealias CoreDataEntity = CDStakingDashboardItem
 }
 
-extension StakingDashboardItemMapper {
+extension StakingDashboardItemMapper: CoreDataMapperProtocol {
     func populate(
         entity _: CoreDataEntity,
         from _: DataProviderModel,

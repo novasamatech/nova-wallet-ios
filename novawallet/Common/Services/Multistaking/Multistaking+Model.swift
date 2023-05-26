@@ -5,6 +5,11 @@ extension Multistaking {
     struct Option {
         let chainAssetId: ChainAssetId
         let type: StakingType
+
+        var stringValue: String {
+            "\(chainAssetId.chainId)" + "-" + "\(chainAssetId.assetId)" + "-" +
+                "\(type.rawValue)"
+        }
     }
 
     struct OptionWithWallet {
@@ -12,8 +17,7 @@ extension Multistaking {
         let option: Multistaking.Option
 
         var stringValue: String {
-            "\(walletId)" + "-" + "\(option.chainAssetId.chainId)" + "-" +
-                "\(option.chainAssetId.assetId)" + "-" + "\(option.type.rawValue)"
+            "\(walletId)" + "-" + option.stringValue
         }
     }
 
@@ -42,5 +46,11 @@ extension Multistaking {
         let stake: BigUInt?
         let totalRewards: BigUInt?
         let maxApy: Decimal?
+    }
+
+    struct ResolvedAccount {
+        let stakingOption: Option
+        let walletAccountId: AccountId
+        let resolvedAccountId: AccountId
     }
 }

@@ -9,6 +9,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>
+    let accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>
     let operationQueue: OperationQueue
 
     private var stateSubscription: CallbackBatchStorageSubscription<Multistaking.RelaychainStateChange>?
@@ -20,6 +21,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         accountId: AccountId,
         chainAsset: ChainAsset,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>,
+        accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -29,6 +31,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.dashboardRepository = dashboardRepository
+        self.accountRepository = accountRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.operationQueue = operationQueue
@@ -150,8 +153,33 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         }
     }
 
-    private func saveStashChange(_: AccountId) {
-        // TODO: Implement when repository is ready
+    private func saveStashChange(_ stashAccountId: AccountId) {
+        let stakingOption = Multistaking.Option(
+            chainAssetId: chainAsset.chainAssetId,
+            type: .relaychain
+        )
+
+        let resolvedAccount = Multistaking.ResolvedAccount(
+            stakingOption: stakingOption,
+            walletAccountId: accountId,
+            resolvedAccountId: stashAccountId
+        )
+
+        let saveOperation = accountRepository.saveOperation({
+            [resolvedAccount]
+        }, {
+            []
+        })
+
+        saveOperation.completionBlock = { [weak self] in
+            do {
+                _ = try saveOperation.extractNoCancellableResultData()
+            } catch {
+                self?.logger?.error("Can't save stash account id")
+            }
+        }
+
+        operationQueue.addOperation(saveOperation)
     }
 
     private func saveState(change: Multistaking.RelaychainStateChange) {
