@@ -142,6 +142,14 @@
         <attribute name="identifier" attributeType="String"/>
         <attribute name="payload" attributeType="Binary"/>
     </entity>
+    <entity name="CDStakingAccount" representedClassName="CDStakingAccount" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="resolvedAccountId" attributeType="String"/>
+        <attribute name="stakingType" attributeType="String"/>
+        <attribute name="walletAccountId" attributeType="String"/>
+    </entity>
     <entity name="CDStakingDashboardItem" representedClassName="CDStakingDashboardItem" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
