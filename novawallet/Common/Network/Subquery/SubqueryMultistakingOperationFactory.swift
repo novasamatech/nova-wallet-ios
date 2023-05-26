@@ -106,8 +106,7 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                     )
 
                     if activeStakers[networkStaking] != nil {
-                        let totalRewards = rewards[networkStaking] ?? 0
-                        state = .active(.init(totalRewards: totalRewards))
+                        state = .active
                     } else {
                         state = .inactive
                     }
@@ -116,7 +115,8 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                         chainId: node.networkId.withoutHexPrefix(),
                         stakingType: StakingType(rawType: node.stakingType),
                         maxApy: node.maxApy,
-                        state: state
+                        state: state,
+                        totalRewards: rewards[networkStaking]
                     )
                 }
 

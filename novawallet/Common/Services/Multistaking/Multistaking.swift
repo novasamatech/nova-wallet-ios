@@ -13,12 +13,8 @@ enum Multistaking {
         let filters: Set<OffchainFilter>
     }
 
-    struct OffchainActiveStaking: Hashable {
-        let totalRewards: BigUInt
-    }
-
     enum OffchainStakingState: Hashable {
-        case active(OffchainActiveStaking)
+        case active
         case inactive
     }
 
@@ -27,6 +23,7 @@ enum Multistaking {
         let stakingType: StakingType
         let maxApy: Decimal
         let state: OffchainStakingState
+        let totalRewards: BigUInt?
     }
 
     typealias OffchainResponse = Set<OffchainStaking>

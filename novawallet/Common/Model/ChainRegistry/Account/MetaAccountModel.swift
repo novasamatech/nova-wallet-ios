@@ -18,7 +18,9 @@ enum MetaAccountModelType: UInt8 {
 }
 
 struct MetaAccountModel: Equatable {
-    let metaId: String
+    typealias Id = String
+
+    let metaId: Id
     let name: String
     let substrateAccountId: Data?
     let substrateCryptoType: UInt8?
