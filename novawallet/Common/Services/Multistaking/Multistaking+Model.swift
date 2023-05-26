@@ -2,13 +2,12 @@ import Foundation
 import BigInt
 
 extension Multistaking {
-    struct Option {
+    struct Option: Hashable {
         let chainAssetId: ChainAssetId
         let type: StakingType
 
         var stringValue: String {
-            "\(chainAssetId.chainId)" + "-" + "\(chainAssetId.assetId)" + "-" +
-                "\(type.rawValue)"
+            "\(chainAssetId.chainId)" + "-" + "\(chainAssetId.assetId)" + "-" + "\(type.rawValue)"
         }
     }
 
@@ -48,7 +47,7 @@ extension Multistaking {
         let maxApy: Decimal?
     }
 
-    struct ResolvedAccount {
+    struct ResolvedAccount: Equatable {
         let stakingOption: Option
         let walletAccountId: AccountId
         let resolvedAccountId: AccountId

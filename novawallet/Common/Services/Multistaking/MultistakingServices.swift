@@ -10,30 +10,44 @@ protocol MultistakingOffchainOperationFactoryProtocol {
 extension MultistakingOffchainOperationFactoryProtocol {
     func createWrapper(
         from wallet: MetaAccountModel,
+        resolvedAccounts: [Multistaking.Option: AccountId],
         chainAssets: Set<ChainAsset>
     ) -> CompoundOperationWrapper<Multistaking.OffchainResponse> {
-        let filters: [Multistaking.OffchainFilter] = chainAssets.compactMap { chainAsset in
+        let filters: [Multistaking.OffchainFilter] = chainAssets.flatMap { chainAsset in
             guard
                 chainAsset.asset.hasStaking,
                 let account = wallet.fetch(for: chainAsset.chain.accountRequest()) else {
-                return nil
+                return [Multistaking.OffchainFilter]()
             }
 
             let stakingTypes = (chainAsset.asset.stakings ?? []).filter { $0 != .unsupported }
 
-            return Multistaking.OffchainFilter(
-                chainAsset: chainAsset,
-                stakingTypes: Set(stakingTypes),
-                accountId: account.accountId
-            )
+            let accountIds = stakingTypes.reduce(
+                into: [AccountId: Multistaking.OffchainFilter]()
+            ) { result, stakingType in
+                let stakingOption = Multistaking.Option(
+                    chainAssetId: chainAsset.chainAssetId,
+                    type: stakingType
+                )
+
+                let accountId = resolvedAccounts[stakingOption] ?? account.accountId
+
+                if let existingFilter = result[accountId] {
+                    result[accountId] = existingFilter.adding(newStakingTypes: [stakingType])
+                } else {
+                    result[accountId] = Multistaking.OffchainFilter(
+                        chainAsset: chainAsset,
+                        stakingTypes: [stakingType],
+                        accountId: accountId
+                    )
+                }
+            }
+
+            return Array(accountIds.values)
         }
 
         let request = Multistaking.OffchainRequest(filters: Set(filters))
 
         return createWrapper(for: request)
     }
-}
-
-protocol OffchainMultistakingUpdateServiceProtocol: ApplicationServiceProtocol {
-    func resolveAccountId(_ accountId: AccountId, chainAssetId: ChainAssetId)
 }

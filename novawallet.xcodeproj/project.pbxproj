@@ -1359,6 +1359,7 @@
 		846CDECD258D212D009F3E75 /* AlertImageWithTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CDECC258D212D009F3E75 /* AlertImageWithTitleView.swift */; };
 		846CF0CD2914DC25008A96A1 /* RemoteStateCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CF0CC2914DC25008A96A1 /* RemoteStateCallRequest.swift */; };
 		846DA5592A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846DA5582A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift */; };
+		846DA55B2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846DA55A2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift */; };
 		846E5010277998040049B659 /* DAppAuthRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E500F277998040049B659 /* DAppAuthRequest.swift */; };
 		846E5013277999FC0049B659 /* DAppAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E5012277999FC0049B659 /* DAppAuthViewModel.swift */; };
 		846E501527799B3E0049B659 /* DAppAuthViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */; };
@@ -4909,6 +4910,7 @@
 		846CDECC258D212D009F3E75 /* AlertImageWithTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertImageWithTitleView.swift; sourceTree = "<group>"; };
 		846CF0CC2914DC25008A96A1 /* RemoteStateCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteStateCallRequest.swift; sourceTree = "<group>"; };
 		846DA5582A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingResolvedAccountMapper.swift; sourceTree = "<group>"; };
+		846DA55A2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffchainMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		846E500F277998040049B659 /* DAppAuthRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthRequest.swift; sourceTree = "<group>"; };
 		846E5012277999FC0049B659 /* DAppAuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModel.swift; sourceTree = "<group>"; };
 		846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModelFactory.swift; sourceTree = "<group>"; };
@@ -9648,6 +9650,7 @@
 				8455F1922A1DC64E003F072D /* Multistaking.swift */,
 				8455F19B2A1DF088003F072D /* ChainsStore+Multistaking.swift */,
 				8455F19D2A1E4956003F072D /* RelaychainMultistakingUpdateService.swift */,
+				846DA55A2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift */,
 				8455F19F2A1E7265003F072D /* Multistaking+Relaychain.swift */,
 				849346AE2A1F7F7D00CB75B7 /* MultistakingServices.swift */,
 				8473B4712A1F9154003DE213 /* Multistaking+Model.swift */,
@@ -20240,6 +20243,7 @@
 				7C0135CA49EF6B535030643E /* ParaStkYieldBoostSetupPresenter.swift in Sources */,
 				84D184EA2A04D9980060C1BD /* StackStatusCell.swift in Sources */,
 				21B297239CC294307EF20B58 /* ParaStkYieldBoostSetupInteractor.swift in Sources */,
+				846DA55B2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift in Sources */,
 				AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */,
 				8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */,
 				88B1862A28EF30A600D49854 /* YourVoteView.swift in Sources */,
