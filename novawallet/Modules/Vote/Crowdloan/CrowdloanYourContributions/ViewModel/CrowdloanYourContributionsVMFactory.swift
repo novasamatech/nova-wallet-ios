@@ -230,7 +230,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
                 return nil
             }
 
-            return WalletStaticImageViewModel(staticImage: icon)
+            return StaticImageViewModel(image: icon)
         }
     }
 

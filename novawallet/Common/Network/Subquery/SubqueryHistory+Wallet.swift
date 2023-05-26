@@ -105,7 +105,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: reward.validator?.normalize(for: chainFormat) ?? "",
-            receiver: nil,
+            receiver: address.normalize(for: chainFormat) ?? address,
             amountInPlank: reward.amount,
             status: .success,
             txHash: extrinsicHash ?? identifier,

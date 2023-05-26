@@ -2,16 +2,17 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
-// TODO: Rename
-protocol TransactionHistoryViewModelFactory2Protocol {
+protocol TransactionHistoryViewModelFactoryProtocol {
     func createItemFromData(
         _ data: TransactionHistoryItem,
+        priceCalculator: TokenPriceCalculatorProtocol?,
         address: AccountAddress,
         locale: Locale
     ) -> TransactionItemViewModel?
 
     func createGroupModel(
         _ data: [TransactionHistoryItem],
+        priceCalculator: TokenPriceCalculatorProtocol?,
         address: AccountAddress,
         locale: Locale
     ) -> [Date: [TransactionItemViewModel]]
@@ -19,30 +20,40 @@ protocol TransactionHistoryViewModelFactory2Protocol {
     func formatHeader(date: Date, locale: Locale) -> String
 }
 
-final class TransactionHistoryViewModelFactory2 {
+final class TransactionHistoryViewModelFactory {
     let chainAsset: ChainAsset
-    let dateFormatter: LocalizableResource<DateFormatter>
     let groupDateFormatter: LocalizableResource<DateFormatter>
-    var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
-    let tokenFormatter: LocalizableResource<TokenFormatter>
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let iconGenerator = PolkadotIconGenerator()
     let calendar = Calendar.current
 
+    var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
+
     init(
         chainAsset: ChainAsset,
-        tokenFormatter: LocalizableResource<TokenFormatter>,
-        dateFormatter: LocalizableResource<DateFormatter>,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         groupDateFormatter: LocalizableResource<DateFormatter>
     ) {
         self.chainAsset = chainAsset
-        self.tokenFormatter = tokenFormatter
-        self.dateFormatter = dateFormatter
+        self.balanceViewModelFactory = balanceViewModelFactory
         self.groupDateFormatter = groupDateFormatter
+    }
+
+    private func createBalance(
+        from amount: Decimal,
+        priceCalculator: TokenPriceCalculatorProtocol?,
+        timestamp: Int64,
+        locale: Locale
+    ) -> BalanceViewModelProtocol {
+        let optPrice = priceCalculator?.calculatePrice(for: UInt64(bitPattern: timestamp))
+        let priceData = optPrice.map { PriceData.amount($0) }
+        return balanceViewModelFactory.balanceFromPrice(amount, priceData: priceData).value(for: locale)
     }
 
     private func createTransferItemFromData(
         _ data: TransactionHistoryItem,
         address: AccountAddress,
+        priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
@@ -51,9 +62,13 @@ final class TransactionHistoryViewModelFactory2 {
             amountInPlank,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
-        let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
-        let time = dateFormatter.value(for: locale)
-            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
+
+        let balance = createBalance(
+            from: amount,
+            priceCalculator: priceCalculator,
+            timestamp: data.timestamp,
+            locale: locale
+        )
 
         let icon = txType == .incoming ? R.image.iconIncomingTransfer() : R.image.iconOutgoingTransfer()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
@@ -65,8 +80,8 @@ final class TransactionHistoryViewModelFactory2 {
             timestamp: data.timestamp,
             title: peerAddress,
             subtitle: subtitle,
-            time: time,
-            amount: formattedAmount,
+            time: balance.price ?? "",
+            amount: balance.amount,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
@@ -75,6 +90,7 @@ final class TransactionHistoryViewModelFactory2 {
 
     private func createRewardOrSlashItemFromData(
         _ data: TransactionHistoryItem,
+        priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
@@ -83,10 +99,14 @@ final class TransactionHistoryViewModelFactory2 {
             amountInPlank,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
-        let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount)
-            ?? ""
-        let time = dateFormatter.value(for: locale)
-            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
+
+        let balance = createBalance(
+            from: amount,
+            priceCalculator: priceCalculator,
+            timestamp: data.timestamp,
+            locale: locale
+        )
+
         let icon = R.image.iconRewardOperation()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
         let title = txType == .reward ?
@@ -99,8 +119,8 @@ final class TransactionHistoryViewModelFactory2 {
             timestamp: data.timestamp,
             title: title,
             subtitle: subtitle,
-            time: time,
-            amount: formattedAmount,
+            time: balance.price ?? "",
+            amount: balance.amount,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
@@ -109,6 +129,7 @@ final class TransactionHistoryViewModelFactory2 {
 
     private func createExtrinsicItemFromData(
         _ data: TransactionHistoryItem,
+        priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
@@ -117,10 +138,13 @@ final class TransactionHistoryViewModelFactory2 {
             feeValue,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
-        let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount)
-            ?? ""
-        let time = dateFormatter.value(for: locale)
-            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
+
+        let balance = createBalance(
+            from: amount,
+            priceCalculator: priceCalculator,
+            timestamp: data.timestamp,
+            locale: locale
+        )
 
         let iconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
@@ -132,8 +156,8 @@ final class TransactionHistoryViewModelFactory2 {
             timestamp: data.timestamp,
             title: peerFirstName,
             subtitle: peerLastName,
-            time: time,
-            amount: formattedAmount,
+            time: balance.price ?? "",
+            amount: balance.amount,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
@@ -141,18 +165,24 @@ final class TransactionHistoryViewModelFactory2 {
     }
 }
 
-extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactory2Protocol {
+extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactoryProtocol {
     func formatHeader(date: Date, locale: Locale) -> String {
         groupDateFormatter.value(for: locale).string(from: date)
     }
 
     func createGroupModel(
         _ data: [TransactionHistoryItem],
+        priceCalculator: TokenPriceCalculatorProtocol?,
         address: AccountAddress,
         locale: Locale
     ) -> [Date: [TransactionItemViewModel]] {
         let items = data.compactMap {
-            createItemFromData($0, address: address, locale: locale)
+            createItemFromData(
+                $0,
+                priceCalculator: priceCalculator,
+                address: address,
+                locale: locale
+            )
         }
 
         let sections = Dictionary(grouping: items, by: {
@@ -166,6 +196,7 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
 
     func createItemFromData(
         _ data: TransactionHistoryItem,
+        priceCalculator: TokenPriceCalculatorProtocol?,
         address: AccountAddress,
         locale: Locale
     ) -> TransactionItemViewModel? {
@@ -177,18 +208,21 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
             return createTransferItemFromData(
                 data,
                 address: address,
+                priceCalculator: priceCalculator,
                 locale: locale,
                 txType: transactionType
             )
         case .reward, .slash:
             return createRewardOrSlashItemFromData(
                 data,
+                priceCalculator: priceCalculator,
                 locale: locale,
                 txType: transactionType
             )
         case .extrinsic:
             return createExtrinsicItemFromData(
                 data,
+                priceCalculator: priceCalculator,
                 locale: locale,
                 txType: transactionType
             )

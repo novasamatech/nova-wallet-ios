@@ -42,9 +42,14 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         }
     }
 
-    init(presenter: TransactionHistoryPresenterProtocol) {
+    init(
+        presenter: TransactionHistoryPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -479,7 +484,7 @@ extension TransactionHistoryViewController {
         static let cellHeight: CGFloat = 56.0
         static let headerCompactHeight: CGFloat = 42
         static let headerFullHeight: CGFloat = 98
-        static let sectionHeight: CGFloat = 44.0
+        static let sectionHeight: CGFloat = 37.0
         static let multiplierToActivateNextLoading: CGFloat = 1.5
         static let draggableProgressFinal: Double = 1.0
         static let triggerProgressThreshold: Double = 0.8
