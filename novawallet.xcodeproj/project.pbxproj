@@ -1219,6 +1219,9 @@
 		845E49832636C87B002F8C22 /* ActionManageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845E49822636C87B002F8C22 /* ActionManageViewModel.swift */; };
 		845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F49EC2928F31100BD6D11 /* ChainModel+Evm.swift */; };
 		845F49EF292901D200BD6D11 /* CallCodingPath+Evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F49EE292901D200BD6D11 /* CallCodingPath+Evm.swift */; };
+		845FB6732A22285C0003BCA6 /* MultistakingSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FB6722A22285C0003BCA6 /* MultistakingSyncService.swift */; };
+		845FB6752A2274890003BCA6 /* MultistakingRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FB6742A2274890003BCA6 /* MultistakingRepositoryFactory.swift */; };
+		845FB6772A227F050003BCA6 /* MultistakingProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */; };
 		845FC93426B09EDB0021EC48 /* RoundedButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */; };
 		846042C02666E2C800CFFCFC /* KaruraResultData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846042BF2666E2C800CFFCFC /* KaruraResultData.swift */; };
 		8460E1162541E03400826F55 /* WalletFormCellStyle+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8460E1152541E03400826F55 /* WalletFormCellStyle+Internal.swift */; };
@@ -4770,6 +4773,9 @@
 		845F49EC2928F31100BD6D11 /* ChainModel+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Evm.swift"; sourceTree = "<group>"; };
 		845F49EE292901D200BD6D11 /* CallCodingPath+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallCodingPath+Evm.swift"; sourceTree = "<group>"; };
 		845F8E1E293771BA00EA6AD0 /* SubstrateDataModel7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel7.xcdatamodel; sourceTree = "<group>"; };
+		845FB6722A22285C0003BCA6 /* MultistakingSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingSyncService.swift; sourceTree = "<group>"; };
+		845FB6742A2274890003BCA6 /* MultistakingRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingRepositoryFactory.swift; sourceTree = "<group>"; };
+		845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingProviderFactory.swift; sourceTree = "<group>"; };
 		845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedButton+Style.swift"; sourceTree = "<group>"; };
 		846042BF2666E2C800CFFCFC /* KaruraResultData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaruraResultData.swift; sourceTree = "<group>"; };
 		8460E1152541E03400826F55 /* WalletFormCellStyle+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletFormCellStyle+Internal.swift"; sourceTree = "<group>"; };
@@ -9654,6 +9660,9 @@
 				8455F19F2A1E7265003F072D /* Multistaking+Relaychain.swift */,
 				849346AE2A1F7F7D00CB75B7 /* MultistakingServices.swift */,
 				8473B4712A1F9154003DE213 /* Multistaking+Model.swift */,
+				845FB6722A22285C0003BCA6 /* MultistakingSyncService.swift */,
+				845FB6742A2274890003BCA6 /* MultistakingRepositoryFactory.swift */,
+				845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */,
 			);
 			path = Multistaking;
 			sourceTree = "<group>";
@@ -17946,6 +17955,7 @@
 				F4488CF226143E0000AEE6DB /* EraRewardPoints.swift in Sources */,
 				849DF02F26C53DB900B702F4 /* RuntimeSyncEvents.swift in Sources */,
 				844DD65525EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift in Sources */,
+				845FB6732A22285C0003BCA6 /* MultistakingSyncService.swift in Sources */,
 				84AE7ABD27D55E3400495267 /* NftDetailsProgress.swift in Sources */,
 				8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */,
 				8499FE6C27BD319300712589 /* RMRKV2OperationFactory.swift in Sources */,
@@ -18004,6 +18014,7 @@
 				8422F2F02888193F00C7B840 /* UsernameViewModel+Handler.swift in Sources */,
 				8419377F25441D5E00CFA50C /* ReceiveHeaderView.swift in Sources */,
 				844A539729BF606D00C77111 /* BlockchainWeightFactory.swift in Sources */,
+				845FB6772A227F050003BCA6 /* MultistakingProviderFactory.swift in Sources */,
 				84452F5825D5C30600F47EC5 /* FilesRepository.swift in Sources */,
 				84B73AD2279B47700071AE16 /* AssetsBalanceUpdater.swift in Sources */,
 				881BA30529DBCB8100EB8C48 /* Web3NameIntegrityVerifier.swift in Sources */,
@@ -18794,6 +18805,7 @@
 				2AF8204F274FD2120092E3E7 /* BaseAccountCreatePresenter.swift in Sources */,
 				84282294289BB79300163031 /* ParitySignerSigningWrapper.swift in Sources */,
 				848DE76226D62AFE0045CD29 /* PersistentStoreCoordinator+Extensions.swift in Sources */,
+				845FB6752A2274890003BCA6 /* MultistakingRepositoryFactory.swift in Sources */,
 				9942034DCB680824831B0AC1 /* AccountCreatePresenter.swift in Sources */,
 				AEA2C1B82681E9BD0069492E /* ValidatorSearchWireframe.swift in Sources */,
 				846952A62852A1E60083E0B4 /* AuraStakingDurationFactory.swift in Sources */,

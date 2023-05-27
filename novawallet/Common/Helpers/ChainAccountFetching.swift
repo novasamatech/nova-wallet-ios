@@ -267,6 +267,14 @@ extension MetaAccountModel {
             ethereumAddress == accountId ||
             chainAccounts.contains(where: { $0.accountId == accountId })
     }
+
+    func has(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
+        if let chainAccount = chainAccounts.first(where: { $0.chainId == chainId }) {
+            return chainAccount.accountId == accountId
+        } else {
+            return substrateAccountId == accountId || ethereumAddress == accountId
+        }
+    }
 }
 
 extension ChainModel {
