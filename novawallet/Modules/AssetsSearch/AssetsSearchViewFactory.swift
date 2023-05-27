@@ -49,7 +49,8 @@ struct AssetsSearchViewFactory {
         for initState: AssetListInitState,
         operation: TokenOperation
     ) -> AssetsSearchViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard let currencyManager = CurrencyManager.shared,
+              let selectedMetaAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -63,7 +64,7 @@ struct AssetsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetsSelectionWireframe(operation: operation)
+        let wireframe = AssetsSelectionWireframe(operation: operation, selectedAccount: selectedMetaAccount)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(

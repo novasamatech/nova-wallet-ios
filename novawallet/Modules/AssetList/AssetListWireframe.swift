@@ -126,8 +126,3 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(viewController.controller, animated: true)
     }
 }
-
-enum TokenOperation {
-    case send
-    case receive
-}
