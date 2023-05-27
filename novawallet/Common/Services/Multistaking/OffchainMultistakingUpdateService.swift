@@ -1,11 +1,12 @@
 import Foundation
 import RobinHood
 
-protocol OffchainMultistakingUpdateServiceProtocol {
+protocol OffchainMultistakingUpdateServiceProtocol: ApplicationServiceProtocol {
     func apply(newChainAssets: Set<ChainAsset>)
 }
 
-final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCleaning {
+final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCleaning,
+    OffchainMultistakingUpdateServiceProtocol {
     let wallet: MetaAccountModel
     let accountResolveProvider: StreamableProvider<Multistaking.ResolvedAccount>
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemOffchainPart>
@@ -35,7 +36,7 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
 
         super.init(logger: logger)
 
-        subscribeAccounts()
+        subscribeAccounts(for: wallet)
     }
 
     func apply(newChainAssets: Set<ChainAsset>) {
@@ -125,7 +126,7 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
         clear(cancellable: &pendingOperation)
     }
 
-    private func subscribeAccounts() {
+    private func subscribeAccounts(for wallet: MetaAccountModel) {
         let updateClosure: ([DataProviderChange<Multistaking.ResolvedAccount>]) -> Void
         updateClosure = { [weak self] changes in
             guard var newAccounts = self?.resolvedAccounts else {
@@ -135,7 +136,13 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
             newAccounts = changes.reduce(into: newAccounts) { result, change in
                 switch change {
                 case let .insert(newItem), let .update(newItem):
-                    result[newItem.stakingOption] = newItem
+                    if
+                        wallet.has(
+                            accountId: newItem.walletAccountId,
+                            chainId: newItem.stakingOption.chainAssetId.chainId
+                        ) {
+                        result[newItem.stakingOption] = newItem
+                    }
                 case let .delete(deletedIdentifier):
                     // it is a rare operation so it is ok to have it O(n)
                     result = result.filter { $0.value.identifier != deletedIdentifier }

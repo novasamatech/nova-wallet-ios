@@ -6,6 +6,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
+    let stakingType: StakingType
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>
@@ -20,6 +21,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         walletId: MetaAccountModel.Id,
         accountId: AccountId,
         chainAsset: ChainAsset,
+        stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>,
         accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>,
         connection: JSONRPCEngine,
@@ -30,6 +32,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         self.walletId = walletId
         self.accountId = accountId
         self.chainAsset = chainAsset
+        self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.accountRepository = accountRepository
         self.connection = connection
@@ -185,7 +188,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
     private func saveState(change: Multistaking.RelaychainStateChange) {
         let stakingOption = Multistaking.OptionWithWallet(
             walletId: walletId,
-            option: .init(chainAssetId: chainAsset.chainAssetId, type: .relaychain)
+            option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)
         )
 
         let dashboardItem = Multistaking.DashboardItemRelaychainPart(

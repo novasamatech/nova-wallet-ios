@@ -18,6 +18,7 @@ enum MetaAccountModelType: UInt8 {
 }
 
 struct MetaAccountModel: Equatable {
+    // swiftlint:disable:next type_name
     typealias Id = String
 
     let metaId: Id
