@@ -11,6 +11,8 @@ struct AssetModel: Equatable, Codable, Hashable {
     typealias Id = UInt32
     typealias PriceId = String
 
+    static let utilityAssetId: Id = 0
+
     let assetId: Id
     let icon: URL?
     let name: String?
@@ -26,7 +28,7 @@ struct AssetModel: Equatable, Codable, Hashable {
     let enabled: Bool
     let source: Source
 
-    var isUtility: Bool { assetId == 0 }
+    var isUtility: Bool { assetId == Self.utilityAssetId }
 
     var hasStaking: Bool {
         stakings?.contains { $0 != .unsupported } ?? false
