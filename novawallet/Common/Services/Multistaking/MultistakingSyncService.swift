@@ -51,7 +51,16 @@ final class MultistakingSyncService {
     }
 
     private func handleChain(changes: [DataProviderChange<ChainModel>]) {
-
+        changes.forEach { change in
+            switch change {
+            case let .insert(newItem):
+                setupOnchainServices(for: newItem)
+            case let .update(newItem):
+                updateOnchainServices(for: newItem)
+            case let .delete(deletedIdentifier):
+                removeOnchainServices(for: deletedIdentifier)
+            }
+        }
     }
 
     private func setupOffchainService() {
@@ -72,32 +81,71 @@ final class MultistakingSyncService {
     }
 
     private func setupOnchainServices(for chain: ChainModel) {
-        chain.assets.forEach { asset in
-            asset.stakings?.forEach { stakingType in
-                let stakingOption = Multistaking.Option(
-                    chainAssetId: .init(chainId: chain.chainId, assetId: asset.assetId),
-                    type: stakingType
-                )
+        chain.getAllStakingChainAssetOptions().forEach { chainAssetOption in
+            createOnchainService(for: chainAssetOption)
+        }
+    }
 
-                switch stakingType {
-                case .relaychain, .azero, .auraRelaychain:
-                    if let service = createRelaychainStaking(
-                        for: ChainAsset(chain: chain, asset: asset),
-                        stakingType: stakingType
-                    ) {
-                        onchainUpdaters[stakingOption] = service
+    private func updateOnchainServices(for chain: ChainModel) {
+        let updatedChainAssetOptions = chain.getAllStakingChainAssetOptions()
+        let currentStakingOptions = Set(onchainUpdaters.keys).filter {
+            $0.chainAssetId.chainId == chain.chainId
+        }
 
-                        if isActive {
-                            service.setup()
-                        }
-                    }
-                case .parachain, .turing:
-                    return
-                case .unsupported:
-                    return
+        let newOptions = updatedChainAssetOptions.filter {
+            !currentStakingOptions.contains($0.option)
+        }
+
+        let updatedStakingOptions = Set(updatedChainAssetOptions.map(\.option))
+
+        let removedOptions = currentStakingOptions.filter { !updatedStakingOptions.contains($0) }
+
+        newOptions.forEach { chainAssetOption in
+            createOnchainService(for: chainAssetOption)
+        }
+
+        removedOptions.forEach { stakingOption in
+            removeOnchainService(for: stakingOption)
+        }
+    }
+
+    private func removeOnchainServices(for chainId: ChainModel.Id) {
+        let removingStakingOptions = onchainUpdaters.keys.filter {
+            $0.chainAssetId.chainId == chainId
+        }
+
+        removingStakingOptions.forEach { stakingOption in
+            removeOnchainService(for: stakingOption)
+        }
+    }
+
+    private func createOnchainService(for chainAssetOption: Multistaking.ChainAssetOption) {
+        let stakingOption = chainAssetOption.option
+
+        switch chainAssetOption.type {
+        case .relaychain, .azero, .auraRelaychain:
+            if let service = createRelaychainStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            ) {
+                onchainUpdaters[stakingOption] = service
+
+                if isActive {
+                    service.setup()
                 }
             }
+        case .parachain, .turing:
+            // TODO: add parachain support
+            return
+        case .unsupported:
+            logger.warning("Trying to create service for unsupported staking")
         }
+    }
+
+    private func removeOnchainService(for stakingOption: Multistaking.Option) {
+        let service = onchainUpdaters[stakingOption]
+        onchainUpdaters[stakingOption] = nil
+        service?.throttle()
     }
 
     private func createRelaychainStaking(
@@ -134,7 +182,7 @@ final class MultistakingSyncService {
 
 extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel) {
-        self.wallet = selectedMetaAccount
+        wallet = selectedMetaAccount
 
         offchainUpdater?.throttle()
         offchainUpdater = nil

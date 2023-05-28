@@ -11,6 +11,15 @@ extension Multistaking {
         }
     }
 
+    struct ChainAssetOption: Hashable {
+        let chainAsset: ChainAsset
+        let type: StakingType
+
+        var option: Option {
+            .init(chainAssetId: chainAsset.chainAssetId, type: type)
+        }
+    }
+
     struct OptionWithWallet {
         let walletId: MetaAccountModel.Id
         let option: Multistaking.Option
@@ -51,5 +60,20 @@ extension Multistaking {
         let stakingOption: Option
         let walletAccountId: AccountId
         let resolvedAccountId: AccountId
+    }
+}
+
+extension ChainModel {
+    func getAllStakingChainAssetOptions() -> Set<Multistaking.ChainAssetOption> {
+        let stakingOptions = assets.flatMap { asset in
+            (asset.stakings ?? []).map { staking in
+                Multistaking.ChainAssetOption(
+                    chainAsset: .init(chain: self, asset: asset),
+                    type: staking
+                )
+            }
+        }
+
+        return Set(stakingOptions)
     }
 }
