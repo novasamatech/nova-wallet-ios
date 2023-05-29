@@ -524,6 +524,12 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             state: initState
         )
     }
+        // TODO:
+    }
+
+    func receive() {
+        // TODO:
+    }
 }
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
