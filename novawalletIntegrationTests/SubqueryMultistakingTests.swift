@@ -54,6 +54,7 @@ final class SubqueryMultistakingTests: XCTestCase {
 
         let wrapper = operationFactory.createWrapper(
             from: wallet,
+            resolvedAccounts: [:],
             chainAssets: chainAssets
         )
 
