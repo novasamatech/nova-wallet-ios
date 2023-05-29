@@ -14,11 +14,7 @@ protocol AssetsSearchInteractorInputProtocol: AssetListBaseInteractorInputProtoc
 protocol AssetsSearchInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {}
 
 protocol AssetsSearchWireframeProtocol: AnyObject {
-    func finish(
-        selection: ChainAsset,
-        view: AssetsSearchViewProtocol?
-    )
-    func cancel(from view: AssetsSearchViewProtocol?)
+    func close(view: AssetsSearchViewProtocol?)
 }
 
 protocol AssetsSearchDelegate: AnyObject {
