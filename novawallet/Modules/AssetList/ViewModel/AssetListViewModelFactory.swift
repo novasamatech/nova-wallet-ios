@@ -65,16 +65,16 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     private func createTotalPrice(
         from prices: LoadableViewModelState<[AssetListAssetAccountPrice]>,
         locale: Locale
-    ) -> LoadableViewModelState<String> {
+    ) -> LoadableViewModelState<AssetListTotalAmountViewModel> {
         switch prices {
         case .loading:
             return .loading
         case let .cached(value):
             let formattedPrice = formatTotalPrice(from: value, locale: locale)
-            return .cached(value: formattedPrice)
+            return .cached(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
         case let .loaded(value):
             let formattedPrice = formatTotalPrice(from: value, locale: locale)
-            return .loaded(value: formattedPrice)
+            return .loaded(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
         }
     }
 }
@@ -97,6 +97,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         if let prices = prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return AssetListHeaderViewModel(
+                walletConnectionsCount: nil,
                 title: title,
                 amount: totalPrice,
                 locksAmount: locks.map { formatTotalPrice(from: $0, locale: locale) },
@@ -104,6 +105,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             )
         } else {
             return AssetListHeaderViewModel(
+                walletConnectionsCount: nil,
                 title: title,
                 amount: .loading,
                 locksAmount: nil,
