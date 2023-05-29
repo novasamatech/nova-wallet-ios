@@ -6,25 +6,17 @@ import SubstrateSdk
 enum SigningWrapperError: Error {
     case missingSelectedAccount
     case missingSecretKey
+    case pinCheckNotPassed
 }
 
-final class SigningWrapper: SigningWrapperProtocol {
+final class SigningWrapper: SigningWrapperProtocol, AuthorizationPresentable {
     let keystore: KeystoreProtocol
     let metaId: String
     let accountId: AccountId?
     let isEthereumBased: Bool
     let cryptoType: MultiassetCryptoType
     let publicKeyData: Data
-
-    @available(*, deprecated, message: "Use init(keystore:metaId:accountId:cryptoType:) instead")
-    init(keystore: KeystoreProtocol, settings _: SettingsManagerProtocol) {
-        self.keystore = keystore
-        metaId = ""
-        accountId = nil
-        cryptoType = .sr25519
-        isEthereumBased = false
-        publicKeyData = Data(repeating: 0, count: 32)
-    }
+    let settingsManager: SettingsManagerProtocol
 
     init(
         keystore: KeystoreProtocol,
@@ -32,7 +24,8 @@ final class SigningWrapper: SigningWrapperProtocol {
         accountId: AccountId?,
         isEthereumBased: Bool,
         cryptoType: MultiassetCryptoType,
-        publicKeyData: Data
+        publicKeyData: Data,
+        settingsManager: SettingsManagerProtocol
     ) {
         self.keystore = keystore
         self.metaId = metaId
@@ -40,27 +33,81 @@ final class SigningWrapper: SigningWrapperProtocol {
         self.cryptoType = cryptoType
         self.isEthereumBased = isEthereumBased
         self.publicKeyData = publicKeyData
+        self.settingsManager = settingsManager
     }
 
-    init(keystore: KeystoreProtocol, metaId: String, accountResponse: ChainAccountResponse) {
+    init(
+        keystore: KeystoreProtocol,
+        metaId: String,
+        accountResponse: ChainAccountResponse,
+        settingsManager: SettingsManagerProtocol
+    ) {
         self.keystore = keystore
         self.metaId = metaId
         accountId = accountResponse.isChainAccount ? accountResponse.accountId : nil
         isEthereumBased = accountResponse.isEthereumBased
         cryptoType = accountResponse.cryptoType
         publicKeyData = accountResponse.publicKey
+        self.settingsManager = settingsManager
     }
 
-    init(keystore: KeystoreProtocol, ethereumAccountResponse: MetaEthereumAccountResponse) {
+    init(
+        keystore: KeystoreProtocol,
+        ethereumAccountResponse: MetaEthereumAccountResponse,
+        settingsManager: SettingsManagerProtocol
+    ) {
         self.keystore = keystore
         metaId = ethereumAccountResponse.metaId
         accountId = ethereumAccountResponse.isChainAccount ? ethereumAccountResponse.address : nil
         isEthereumBased = true
         cryptoType = MultiassetCryptoType.ethereumEcdsa
         publicKeyData = ethereumAccountResponse.publicKey
+        self.settingsManager = settingsManager
     }
 
     func sign(_ originalData: Data) throws -> IRSignatureProtocol {
+        if settingsManager.pinConfirmationEnabled == true {
+            let signingResult = signAfterAutorization(originalData)
+            switch signingResult {
+            case let .success(signature):
+                return signature
+            case let .failure(error):
+                throw error
+            }
+        } else {
+            return try _sign(originalData)
+        }
+    }
+
+    private func signAfterAutorization(_ originalData: Data) -> Result<IRSignatureProtocol, Error> {
+        let semaphore = DispatchSemaphore(value: 0)
+        var signResult: Result<IRSignatureProtocol, Error>?
+
+        DispatchQueue.main.async {
+            self.authorize(animated: true, cancellable: true) { [weak self] completed in
+                defer {
+                    semaphore.signal()
+                }
+                guard let self = self else {
+                    return
+                }
+                if completed {
+                    do {
+                        let sign = try self._sign(originalData)
+                        signResult = .success(sign)
+                    } catch {
+                        signResult = .failure(error)
+                    }
+                }
+            }
+        }
+
+        semaphore.wait()
+
+        return signResult ?? .failure(SigningWrapperError.pinCheckNotPassed)
+    }
+
+    private func _sign(_ originalData: Data) throws -> IRSignatureProtocol {
         let tag: String = isEthereumBased ?
             KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId) :
             KeystoreTagV2.substrateSecretKeyTagForMetaId(metaId, accountId: accountId)

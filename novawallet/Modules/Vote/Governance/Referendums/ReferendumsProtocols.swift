@@ -6,13 +6,15 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
 
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel)
     func update(model: ReferendumsViewModel)
-    func updateReferendums(time: [UInt: StatusTimeViewModel?])
+    func updateReferendums(time: [ReferendumIdLocal: StatusTimeViewModel?])
 }
 
 protocol ReferendumsPresenterProtocol: AnyObject {
-    func select(referendumIndex: UInt)
+    func select(referendumIndex: ReferendumIdLocal)
     func selectUnlocks()
     func selectDelegations()
+    func showFilters()
+    func showSearch()
 }
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
@@ -56,4 +58,15 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showAddDelegation(from view: ControllerBackedProtocol?)
     func showYourDelegations(from view: ControllerBackedProtocol?)
+    func showFilters(
+        from view: ControllerBackedProtocol?,
+        delegate: ReferendumsFiltersDelegate,
+        filter: ReferendumsFilter
+    )
+
+    func showSearch(
+        from view: ControllerBackedProtocol?,
+        referendumsState: Observable<ReferendumsState>,
+        delegate: ReferendumSearchDelegate?
+    )
 }

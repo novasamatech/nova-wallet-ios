@@ -7,7 +7,7 @@ class BaseTableSearchViewController: UIViewController, ViewHolder {
     let basePresenter: TableSearchPresenterProtocol
 
     lazy var searchActivityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .white)
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
         activityIndicator.color = R.color.colorIndicatorShimmering()!
         return activityIndicator
     }()

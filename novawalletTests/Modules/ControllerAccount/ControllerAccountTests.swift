@@ -110,7 +110,8 @@ class ControllerAccountTests: XCTestCase {
             accountId: stashAccountId,
             freeInPlank: 100000000000000,
             reservedInPlank: 0,
-            frozenInPlank: 0
+            frozenInPlank: 0,
+            blocked: false
         )
 
         presenter.didReceiveAccountBalance(result: .success(stashBalance), address: stashAddress)
@@ -140,7 +141,8 @@ class ControllerAccountTests: XCTestCase {
             accountId: stashAccountId,
             freeInPlank: 10,
             reservedInPlank: 0,
-            frozenInPlank: 0
+            frozenInPlank: 0,
+            blocked: false
         )
 
         presenter.didReceiveAccountBalance(result: .success(assetSmallBalance), address: stashAddress)

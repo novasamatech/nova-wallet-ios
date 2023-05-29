@@ -4,6 +4,7 @@ struct ReferendumsViewModel {
 
 enum ReferendumsSection {
     case personalActivities([ReferendumPersonalActivity])
+    case settings(isFilterOn: Bool)
     case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
     case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
 }

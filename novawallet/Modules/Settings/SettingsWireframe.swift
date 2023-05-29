@@ -29,6 +29,18 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         }
     }
 
+    func showAuthorization(completion: @escaping (Bool) -> Void) {
+        authorize(animated: true, cancellable: true) { completed in
+            completion(completed)
+        }
+    }
+
+    func showPincodeAuthorization(completion: @escaping (Bool) -> Void) {
+        authorizeByPinCode(animated: true, cancellable: true) { completed in
+            completion(completed)
+        }
+    }
+
     func showAccountSelection(from view: ControllerBackedProtocol?) {
         guard let accountManagement = WalletManageViewFactory.createViewForAdding() else {
             return
