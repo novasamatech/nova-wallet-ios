@@ -186,15 +186,8 @@ extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     }
 
     func selectAsset(for chainAssetId: ChainAssetId) {
-        let chainId = chainAssetId.chainId
-        let assetId = chainAssetId.assetId
-
-        guard let chain = allChains[chainId],
-              let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-            return
-        }
-
         delegate?.assetSearchDidSelect(chainAssetId: chainAssetId)
+
         wireframe.close(view: view)
     }
 

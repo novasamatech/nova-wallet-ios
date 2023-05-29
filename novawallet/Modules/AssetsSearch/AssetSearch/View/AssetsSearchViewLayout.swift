@@ -8,7 +8,6 @@ final class AssetsSearchViewLayout: BaseAssetsSearchViewLayout {
         let view = CustomSearchView()
         view.searchBar.textField.autocorrectionType = .no
         view.searchBar.textField.autocapitalizationType = .none
-        view.optionalCancelButton?.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
         return view
     }
 
