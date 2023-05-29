@@ -298,7 +298,7 @@ final class XcmTransferFactory {
             case Xcm.Instruction.fieldReserveAssetDeposited:
                 return .reserveAssetDeposited([asset])
             case Xcm.Instruction.fieldBuyExecution:
-                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .limited(weight: .init(value: 0)))
+                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
                 return .buyExecution(value)
             case Xcm.Instruction.fieldDepositAsset:
                 let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
