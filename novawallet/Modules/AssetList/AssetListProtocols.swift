@@ -26,6 +26,7 @@ protocol AssetListPresenterProtocol: AnyObject {
 
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
     func refresh()
+    func connectWalletConnect(uri: String)
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
@@ -37,9 +38,11 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
     func didReceiveLocks(result: Result<[AssetLock], Error>)
+    func didReceiveWalletConnect(connections: [WalletConnectSession])
+    func didReceiveWalletConnect(error: Error)
 }
 
-protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
+protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable, CommonRetryable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsSettings(from view: AssetListViewProtocol?)
     func showTokensManage(from view: AssetListViewProtocol?)

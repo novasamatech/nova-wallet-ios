@@ -503,8 +503,3 @@ extension Array where Element == DataProviderChange<ChainModel> {
         }
     }
 }
-
-struct CalculatedAssetBalance {
-    var balance: AssetBalance?
-    var total: BigUInt
-}
