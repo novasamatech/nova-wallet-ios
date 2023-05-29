@@ -24,7 +24,8 @@ extension SupportedLedgerApp {
             SupportedLedgerApp(chainId: KnowChainId.nodle, coin: 1003, cla: 0x98, type: .substrate),
             SupportedLedgerApp(chainId: KnowChainId.edgeware, coin: 523, cla: 0x94, type: .substrate),
             SupportedLedgerApp(chainId: KnowChainId.polymesh, coin: 595, cla: 0x91, type: .substrate),
-            SupportedLedgerApp(chainId: KnowChainId.xxNetwork, coin: 1955, cla: 0xA3, type: .substrate)
+            SupportedLedgerApp(chainId: KnowChainId.xxNetwork, coin: 1955, cla: 0xA3, type: .substrate),
+            SupportedLedgerApp(chainId: KnowChainId.astar, coin: 810, cla: 0xA9, type: .substrate)
         ]
     }
 
