@@ -21,16 +21,7 @@ struct AssetListViewFactory {
             logger: Logger.shared
         )
 
-        let walletUpdater = WalletDetailsUpdater(
-            eventCenter: EventCenter.shared,
-            crowdloansLocalSubscriptionFactory: interactor.crowdloansLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: interactor.walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: interactor.priceLocalSubscriptionFactory,
-            walletSettings: interactor.selectedWalletSettings,
-            currencyManager: currencyManager
-        )
-
-        let wireframe = AssetListWireframe(walletUpdater: walletUpdater)
+        let wireframe = AssetListWireframe()
 
         let nftDownloadService = NftFileDownloadService(
             cacheBasePath: ApplicationConfig.shared.fileCachePath,
