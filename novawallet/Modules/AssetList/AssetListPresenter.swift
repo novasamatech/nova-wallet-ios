@@ -21,6 +21,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
+    private(set) var walletConnectConnections: [WalletConnectSession] = []
 
     private var scheduler: SchedulerProtocol?
 
@@ -56,6 +57,7 @@ final class AssetListPresenter: AssetListBasePresenter {
                 walletType: walletType,
                 prices: nil,
                 locks: nil,
+                walletConnectionsCount: walletConnectConnections.count,
                 locale: selectedLocale
             )
 
@@ -142,6 +144,7 @@ final class AssetListPresenter: AssetListBasePresenter {
             walletType: walletType,
             prices: totalValue,
             locks: totalLocks,
+            walletConnectionsCount: walletConnectConnections.count,
             locale: selectedLocale
         )
 
@@ -551,6 +554,20 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
     func didReceiveLocks(result: Result<[AssetLock], Error>) {
         locksResult = result
 
+        updateHeaderView()
+    }
+
+    func didReceiveWalletConnect(error: Error) {
+        wireframe.presentTryAgainOperation(
+            on: view,
+            title: "Wallet Connect",
+            message: "\(error.localizedDescription)",
+            actionTitle: R.string.localizable.commonRetry(preferredLanguages: selectedLocale.rLanguages)
+        ) {}
+    }
+
+    func didReceiveWalletConnect(connections: [WalletConnectSession]) {
+        walletConnectConnections = connections
         updateHeaderView()
     }
 }

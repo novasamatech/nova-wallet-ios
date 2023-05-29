@@ -18,6 +18,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
+    let walletConnect: WalletConnectDelegateInputProtocol
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
@@ -35,11 +36,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
         currencyManager: CurrencyManagerProtocol,
+        walletConnect: WalletConnectDelegateInputProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
+        self.walletConnect = walletConnect
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -143,6 +146,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     override func setup() {
+        walletConnect.add(delegate: self)
+
         provideHidesZeroBalances()
         providerWalletInfo()
 
@@ -172,6 +177,22 @@ final class AssetListInteractor: AssetListBaseInteractor {
             presenter?.didReceiveLocks(result: .failure(error))
         }
     }
+
+    private func provideWalletConnectSessionsCount() {
+        walletConnect.fetchSessions { [weak self] result in
+            guard let selectedMetaAccount = self?.selectedWalletSettings.value else {
+                return
+            }
+
+            switch result {
+            case let .success(connections):
+                let walletConnections = connections.filter { $0.wallet == selectedMetaAccount }
+                self?.presenter?.didReceiveWalletConnect(connections: walletConnections)
+            case let .failure(error):
+                self?.presenter?.didReceiveWalletConnect(error: error)
+            }
+        }
+    }
 }
 
 extension AssetListInteractor: AssetListInteractorInputProtocol {
@@ -183,6 +204,14 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         }
 
         nftSubscription?.refresh()
+    }
+
+    func connectWalletConnect(uri: String) {
+        walletConnect.connect(uri: uri) { [weak self] optError in
+            if let error = optError {
+                self?.presenter?.didReceiveWalletConnect(error: error)
+            }
+        }
     }
 }
 
@@ -267,5 +296,11 @@ extension AssetListInteractor: EventVisitorProtocol {
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {
         provideHidesZeroBalances()
+    }
+}
+
+extension AssetListInteractor: WalletConnectDelegateOutputProtocol {
+    func walletConnectDidChangeSessions() {
+        provideWalletConnectSessionsCount()
     }
 }

@@ -29,7 +29,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             inAppUpdatesService: inAppUpdatesService
         )
 
-        guard let walletController = createWalletController(for: localizationManager) else {
+        guard let walletController = createWalletController(
+            for: localizationManager,
+            dappMediator: serviceCoordinator.dappMediator
+        ) else {
             return nil
         }
 
@@ -75,9 +78,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func createWalletController(
-        for localizationManager: LocalizationManagerProtocol
+        for localizationManager: LocalizationManagerProtocol,
+        dappMediator: DAppInteractionMediating
     ) -> UIViewController? {
-        guard let viewController = AssetListViewFactory.createView()?.controller else {
+        guard let viewController = AssetListViewFactory.createView(with: dappMediator)?.controller else {
             return nil
         }
 
