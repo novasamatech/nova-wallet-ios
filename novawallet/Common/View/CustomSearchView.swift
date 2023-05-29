@@ -33,6 +33,20 @@ final class CustomSearchView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        super.becomeFirstResponder()
+
+        return searchBar.becomeFirstResponder()
+    }
+
+    @discardableResult
+    override func resignFirstResponder() -> Bool {
+        super.resignFirstResponder()
+
+        return searchBar.resignFirstResponder()
+    }
+
     private func setupLayout() {
         addSubview(blurBackgroundView)
 

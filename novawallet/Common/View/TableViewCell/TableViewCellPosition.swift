@@ -21,3 +21,7 @@ enum TableViewCellPosition {
         }
     }
 }
+
+protocol TableViewCellPositioning {
+    func apply(position: TableViewCellPosition)
+}
