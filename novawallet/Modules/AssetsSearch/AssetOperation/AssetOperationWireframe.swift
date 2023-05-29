@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 final class AssetOperationWireframe: AssetOperationWireframeProtocol {
-    func showSendTokens(from view: AssetsSearchViewProtocol?, chainAsset: ChainAsset) {
+    func showSendTokens(from view: AssetOperationViewProtocol?, chainAsset: ChainAsset) {
         guard let transferSetupView = TransferSetupViewFactory.createView(
             from: chainAsset,
             recepient: nil
@@ -13,7 +13,7 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
     }
 
     func showReceiveTokens(
-        from view: AssetsSearchViewProtocol?,
+        from view: AssetOperationViewProtocol?,
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
     ) {
@@ -27,7 +27,7 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
         view?.controller.navigationController?.pushViewController(receiveTokensView.controller, animated: true)
     }
 
-    func showNoLedgerSupport(from view: AssetsSearchViewProtocol?, tokenName: String) {
+    func showNoLedgerSupport(from view: AssetOperationViewProtocol?, tokenName: String) {
         guard let confirmationView = LedgerMessageSheetViewFactory.createLedgerNotSupportTokenView(
             for: tokenName,
             cancelClosure: nil
@@ -43,7 +43,7 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
         view?.controller.present(confirmationView.controller, animated: true)
     }
 
-    func showNoKeys(from view: AssetsSearchViewProtocol?) {
+    func showNoKeys(from view: AssetOperationViewProtocol?) {
         guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: {}) else {
             return
         }
@@ -57,7 +57,7 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
     }
 
     func showPurchaseProviders(
-        from view: AssetsSearchViewProtocol?,
+        from view: AssetOperationViewProtocol?,
         actions: [PurchaseAction],
         delegate: ModalPickerViewControllerDelegate
     ) {
@@ -75,7 +75,7 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
     }
 
     func showPurchaseTokens(
-        from view: AssetsSearchViewProtocol?,
+        from view: AssetOperationViewProtocol?,
         action: PurchaseAction,
         delegate: PurchaseDelegate
     ) {
@@ -89,13 +89,13 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
         view?.controller.present(purchaseView.controller, animated: true)
     }
 
-    func presentSuccessAlert(from view: AssetsSearchViewProtocol?, message: String) {
+    func presentSuccessAlert(from view: AssetOperationViewProtocol?, message: String) {
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)
     }
 }
 
-extension AssetsSelectionWireframe: AssetsSearchWireframeProtocol {
+extension AssetOperationWireframe: AssetsSearchWireframeProtocol {
     func close(view: AssetsSearchViewProtocol?) {
         view?.controller.presentingViewController?.dismiss(animated: true)
     }

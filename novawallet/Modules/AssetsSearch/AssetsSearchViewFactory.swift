@@ -97,9 +97,22 @@ struct AssetsSearchViewFactory {
             localizationManager: localizationManager
         )
 
+        let title: LocalizableResource<String> = .init {
+            let languages = $0.rLanguages
+            switch operation {
+            case .send:
+                return R.string.localizable.assetOperationSendTitle(preferredLanguages: languages)
+            case .receive:
+                return R.string.localizable.assetOperationReceiveTitle(preferredLanguages: languages)
+            case .buy:
+                return R.string.localizable.assetOperationBuyTitle(preferredLanguages: languages)
+            }
+        }
+
         let view = AssetsSearchViewController(
             presenter: presenter,
             createViewClosure: { AssetsOperationViewLayout() },
+            localizableTitle: title,
             localizationManager: localizationManager
         )
 

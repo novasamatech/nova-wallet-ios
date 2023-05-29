@@ -4,7 +4,7 @@ import RobinHood
 import SoraFoundation
 
 final class AssetOperationPresenter {
-    weak var view: AssetsSearchViewProtocol? {
+    weak var view: AssetOperationViewProtocol? {
         searchPresenter.view
     }
 

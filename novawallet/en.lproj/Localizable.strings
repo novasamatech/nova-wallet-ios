@@ -1233,3 +1233,6 @@
 "wallet.connect.proposal.result.submit.error" = "Could not authorize the dapp due to the network issues";
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
+"asset.operation.send.title" = "Send";
+"asset.operation.receive.title" = "Receive";
+"asset.operation.buy.title" = "Buy";
