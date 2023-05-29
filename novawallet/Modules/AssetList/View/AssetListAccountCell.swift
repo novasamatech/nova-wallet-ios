@@ -63,6 +63,8 @@ final class AssetListAccountCell: UICollectionViewCell {
         titleLabel.snp.makeConstraints { make in
             make.centerY.equalTo(walletSwitch)
             make.centerX.equalToSuperview()
+            make.leading.greaterThanOrEqualTo(walletConnect.snp.trailing)
+            make.trailing.lessThanOrEqualTo(walletSwitch.snp.leading)
         }
     }
 }

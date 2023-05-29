@@ -25,7 +25,7 @@ struct AssetListViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetListWireframe()
+        let wireframe = AssetListWireframe(dappMediator: dappMediator)
 
         let nftDownloadService = NftFileDownloadService(
             cacheBasePath: ApplicationConfig.shared.fileCachePath,

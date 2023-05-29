@@ -60,6 +60,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearLocksSubscription()
 
         providerWalletInfo()
+        provideWalletConnectSessionsCount()
 
         super.resetWallet()
     }
@@ -150,6 +151,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         provideHidesZeroBalances()
         providerWalletInfo()
+        provideWalletConnectSessionsCount()
 
         subscribeChains()
 
@@ -204,14 +206,6 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         }
 
         nftSubscription?.refresh()
-    }
-
-    func connectWalletConnect(uri: String) {
-        walletConnect.connect(uri: uri) { [weak self] optError in
-            if let error = optError {
-                self?.presenter?.didReceiveWalletConnect(error: error)
-            }
-        }
     }
 }
 

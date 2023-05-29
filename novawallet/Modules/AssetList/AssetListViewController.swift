@@ -68,6 +68,10 @@ final class AssetListViewController: UIViewController, ViewHolder {
         presenter.selectWallet()
     }
 
+    @objc private func actionSelectWalletConnect() {
+        presenter.presentWalletConnect()
+    }
+
     @objc private func actionRefresh() {
         let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
         if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
@@ -150,6 +154,16 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         }
     }
 
+    func collectionView(_: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
+        switch cellType {
+        case .account:
+            return false
+        default:
+            return true
+        }
+    }
+
     func collectionView(
         _: UICollectionView,
         layout _: UICollectionViewLayout,
@@ -207,6 +221,11 @@ extension AssetListViewController: UICollectionViewDataSource {
             action: #selector(actionSelectAccount),
             for: .touchUpInside
         )
+
+        accountCell.walletConnect.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(actionSelectWalletConnect)
+        ))
 
         return accountCell
     }
