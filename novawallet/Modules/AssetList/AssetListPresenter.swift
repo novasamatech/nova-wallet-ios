@@ -505,6 +505,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     func receive() {
         // TODO:
     }
+
+    func presentWalletConnect() {
+        guard !walletConnectConnections.isEmpty else {
+            return
+        }
+
+        wireframe.showWalletConnect(from: view)
+    }
 }
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {

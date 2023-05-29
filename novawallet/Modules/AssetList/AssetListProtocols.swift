@@ -22,11 +22,11 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentLocks()
     func send()
     func receive()
+    func presentWalletConnect()
 }
 
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
     func refresh()
-    func connectWalletConnect(uri: String)
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
@@ -63,4 +63,6 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
         locks: [AssetLock],
         crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
     )
+
+    func showWalletConnect(from view: AssetListViewProtocol?)
 }
