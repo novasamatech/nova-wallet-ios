@@ -78,22 +78,10 @@ extension Xcm {
 
             return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
         } else {
-            let paramNameV2 = OrmlTransferCallV2.CodingKeys.destinationWeightLimit.rawValue
-
-            let optWeightJson = try BlockchainWeightFactory.convertCallVersionedWeightInWeightLimitToJson(
-                for: .init(path: path, argName: paramNameV2),
-                codingFactory: codingFactory,
-                weight: UInt64(weight)
-            )
-
-            guard let weightJson = optWeightJson else {
-                throw XcmTransferServiceError.noArgumentFound(paramNameV2)
-            }
-
             let call = OrmlTransferCallV2(
                 asset: asset,
                 destination: destination,
-                destinationWeightLimit: .limited(weight: weightJson)
+                destinationWeightLimit: .unlimited
             )
 
             return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)

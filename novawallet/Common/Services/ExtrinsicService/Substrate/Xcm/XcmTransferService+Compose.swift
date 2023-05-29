@@ -160,14 +160,11 @@ extension XcmTransferService {
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         callPathFactory: @escaping (String) -> CallCodingPath,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        maxWeight: BigUInt,
-        runtimeProvider: RuntimeProviderProtocol
+        maxWeight _: BigUInt,
+        runtimeProvider _: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<(ExtrinsicBuilderClosure, CallCodingPath)> {
-        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
         let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
-            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
             let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
             let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
@@ -175,31 +172,18 @@ extension XcmTransferService {
 
             let callPath = callPathFactory(module)
 
-            let argName = Xcm.PalletTransferCall.CodingKeys.weightLimit.rawValue
-            let optWeight = try BlockchainWeightFactory.convertCallVersionedWeightInWeightLimitToJson(
-                for: .init(path: callPath, argName: argName),
-                codingFactory: codingFactory,
-                weight: UInt64(maxWeight)
-            )
-
-            guard let weight = optWeight else {
-                throw XcmTransferServiceError.noArgumentFound(argName)
-            }
-
             let call = Xcm.PalletTransferCall(
                 destination: destination,
                 beneficiary: beneficiary,
                 assets: assets,
                 feeAssetItem: 0,
-                weightLimit: .limited(weight: weight)
+                weightLimit: .unlimited
             )
 
             return ({ try $0.adding(call: call.runtimeCall(for: callPath)) }, callPath)
         }
 
-        mapOperation.addDependency(coderFactoryOperation)
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [coderFactoryOperation])
+        return CompoundOperationWrapper(targetOperation: mapOperation)
     }
 
     private func createOrmlTransferMapping(
