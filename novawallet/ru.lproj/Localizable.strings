@@ -186,6 +186,7 @@
 "network.status.connected" = "Подключено";
 "wallet.receive.description" = "Поделитесь этим QR-кодом с отправителем";
 "wallet.search.accounts" = "мои аккаунты";
+"wallet.receive.error.generateQRCode.message" = "Генерация QR кода завершилась с ошибкой. Хотите повторить?";
 "wallet.receive.share.message" = "Мой %@ адрес для получения %@:";
 "account.export.action" = "Экспортировать";
 "account.export.warning.message" = "Передача или копирование вашего секрета - операция с высоким риском, не отправляйте ее никому. Хотите продолжить процесс обмена / копирования?";
@@ -357,7 +358,7 @@
 "crowdloan.cap.reached.amount.message" = "Невозможно вложить введённую сумму, поскольку общая сумма сбора будет превышать максимальную сумму краудлоуна. Максимально допустимый вклад составляет %@ .";
 "crowdloan.cap.reached.raised.message" = "Невозможно внести вклад в выбранный краудлоун, поскольку его максимальная сумма сбора уже достигнута.";
 "crowdloan.cap.reached.title" = "Превышена максимальная сумма краудлоуна";
-"crowdloan.too.small.contribution.message" = "Минимально допустимая сумма вклада составляет %@ .";
+"crowdloan.too.small.contribution.message" = "Минимально допустимая сумма ��клада составляет %@ .";
 "crowdloan.too.small.contribution.title" = "Сумма вклада слишком мала";
 "crowdloan.learn" = "О краудлоуне %@";
 "common.time.left" = "Оставшееся время";
@@ -941,7 +942,7 @@
 "common.chain.crowdloan.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелёк для того, чтобы внести вклад";
 "common.ledger.not.supported.message" = "Ledger не поддерживает подтверждение произвольных сообщений — только транзакции";
 "ledger.not.support.token.title" = "Ledger не поддерживает этот токен";
-"ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет будет недоступен для перевода на этом аккаунте";
+"ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет будет недоступен для перевода на этом ��ккаунте";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth будет использоваться для взаимодействия с устройством Ledger Nano X";
 "crowdloan.you.contributions.total" = "Всего";
 "common.yield.boost" = "Yield Boost";
@@ -1099,6 +1100,9 @@
 "tokens.manage.all.selected" = "Все сети";
 "common.more.format" = "%@ (и еще %@)";
 "common.token.decimals" = "Число десятичных знаков";
+"tokens.manage.search.empty" = "Для введенного имени токены\nне найдены";
+"common.today" = "Сегодня";
+"common.yesterday" = "Вчера";
 "tokens.manage.partial.selected" = "%@ (и ещё %@)";
 "add.token.invalid.contract.address.message" = "Введенный адрес не соответствует верному адресу ERC-20 контракта.";
 "add.token.completion.message" = "%@ токен добавлен";

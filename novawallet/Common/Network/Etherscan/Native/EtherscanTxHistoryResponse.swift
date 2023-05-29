@@ -67,71 +67,37 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
         isTransfer ? .transfers : .extrinsics
     }
 
-    var assetTransactionStatus: AssetTransactionStatus {
+    var transactionStatus: TransactionHistoryItem.Status {
         if let status = status {
-            return status == 1 ? .commited : .rejected
+            return status == 1 ? .success : .failed
         } else {
             return .pending
         }
     }
 
-    func createTransactionForAddress(
-        _ address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
-        let accountId = try? address.toAccountId(using: .ethereum)
+    func createTransaction(chainAsset: ChainAsset) -> TransactionHistoryItem? {
+        let senderAddress = (try? sender.toAddress(using: .ethereum)) ?? sender.toHex(includePrefix: true)
+        let receiverAddress = try? recepient?.toAddress(using: .ethereum)
 
         let feeInPlank = gasUsed * gasPrice
-        let fee = Decimal.fromSubstrateAmount(feeInPlank, precision: utilityAsset.decimalPrecision) ?? .zero
 
-        let amount: Decimal
-        let feeModels: [AssetTransactionFee]
-        let type: TransactionType
-        let peerId: Data?
+        let callData = functionName?.data(using: .utf8)
 
-        if isTransfer {
-            let isSender = sender == accountId
-
-            peerId = isSender ? recepient : sender
-
-            amount = Decimal.fromSubstrateAmount(value, precision: chainAsset.asset.decimalPrecision) ?? .zero
-
-            let feeModel = AssetTransactionFee(
-                identifier: assetId,
-                assetId: assetId,
-                amount: AmountDecimal(value: fee),
-                context: nil
-            )
-
-            feeModels = [feeModel]
-
-            type = isSender ? .outgoing : .incoming
-        } else {
-            amount = fee
-            feeModels = []
-            type = .extrinsic
-            peerId = recepient
-        }
-
-        let peerAddress = (try? peerId?.toAddress(using: .ethereum)) ?? peerId?.toHex(includePrefix: true)
-
-        return AssetTransactionData(
-            transactionId: hash.toHex(includePrefix: true),
-            status: assetTransactionStatus,
-            assetId: assetId,
-            peerId: peerId?.toHex() ?? "",
-            peerFirstName: nil,
-            peerLastName: nil,
-            peerName: peerAddress ?? "",
-            details: functionName ?? "",
-            amount: AmountDecimal(value: amount),
-            fees: feeModels,
-            timestamp: itemTimestamp,
-            type: type.rawValue,
-            reason: nil,
-            context: nil
+        return .init(
+            source: .evmNative,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId,
+            sender: senderAddress,
+            receiver: receiverAddress,
+            amountInPlank: String(value),
+            status: transactionStatus,
+            txHash: hash.toHex(includePrefix: true),
+            timestamp: timeStamp,
+            fee: String(feeInPlank),
+            blockNumber: itemBlockNumber,
+            txIndex: itemExtrinsicIndex,
+            callPath: isTransfer ? .evmNativeTransfer : .evmNativeTransaction,
+            call: callData
         )
     }
 }
