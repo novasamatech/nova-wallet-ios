@@ -61,9 +61,13 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
         crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
     )
 
-    func showAssetsSelection(
+    func showRecieveTokens(
         from view: AssetListViewProtocol?,
-        operation: TokenOperation,
+        state: AssetListInitState
+    )
+
+    func showSendTokens(
+        from view: AssetListViewProtocol?,
         state: AssetListInitState
     )
 }

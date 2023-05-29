@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class AssetsSelectionWireframe: AssetOperationWireframeProtocol {
+final class AssetOperationWireframe: AssetOperationWireframeProtocol {
     func showSendTokens(from view: AssetsSearchViewProtocol?, chainAsset: ChainAsset) {
         guard let transferSetupView = TransferSetupViewFactory.createView(
             from: chainAsset,

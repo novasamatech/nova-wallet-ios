@@ -3,7 +3,7 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class AssetsOperationPresenter {
+final class AssetOperationPresenter {
     weak var view: AssetsSearchViewProtocol? {
         searchPresenter.view
     }
@@ -109,7 +109,7 @@ final class AssetsOperationPresenter {
     }
 }
 
-extension AssetsOperationPresenter: AssetsSearchPresenterProtocol {
+extension AssetOperationPresenter: AssetsSearchPresenterProtocol {
     func setup() {
         searchPresenter.setup()
     }
@@ -135,13 +135,13 @@ extension AssetsOperationPresenter: AssetsSearchPresenterProtocol {
     }
 }
 
-extension AssetsOperationPresenter: Localizable {
+extension AssetOperationPresenter: Localizable {
     func applyLocalization() {
         searchPresenter.applyLocalization()
     }
 }
 
-extension AssetsOperationPresenter: ModalPickerViewControllerDelegate {
+extension AssetOperationPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
         wireframe.showPurchaseTokens(
             from: view,
@@ -151,7 +151,7 @@ extension AssetsOperationPresenter: ModalPickerViewControllerDelegate {
     }
 }
 
-extension AssetsOperationPresenter: PurchaseDelegate {
+extension AssetOperationPresenter: PurchaseDelegate {
     func purchaseDidComplete() {
         let languages = selectedLocale.rLanguages
         let message = R.string.localizable

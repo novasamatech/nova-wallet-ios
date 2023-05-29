@@ -503,9 +503,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             crowdloansResult: crowdloansResult
         )
 
-        wireframe.showAssetsSelection(
+        wireframe.showSendTokens(
             from: view,
-            operation: .send,
             state: initState
         )
     }
@@ -518,17 +517,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             crowdloansResult: crowdloansResult
         )
 
-        wireframe.showAssetsSelection(
+        wireframe.showRecieveTokens(
             from: view,
-            operation: .receive,
             state: initState
         )
-    }
-        // TODO:
-    }
-
-    func receive() {
-        // TODO:
     }
 }
 

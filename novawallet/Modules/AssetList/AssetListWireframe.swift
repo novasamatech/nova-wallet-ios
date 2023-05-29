@@ -72,9 +72,17 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
     }
 
-    func showAssetsSelection(
+    func showSendTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
+        showAssetsSelection(for: .send, from: view, state: state)
+    }
+
+    func showRecieveTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
+        showAssetsSelection(for: .receive, from: view, state: state)
+    }
+
+    private func showAssetsSelection(
+        for operation: TokenOperation,
         from view: AssetListViewProtocol?,
-        operation: TokenOperation,
         state: AssetListInitState
     ) {
         guard let assetsSearchView = AssetsSearchViewFactory.createView(
