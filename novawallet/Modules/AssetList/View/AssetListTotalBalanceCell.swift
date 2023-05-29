@@ -3,17 +3,11 @@ import SoraUI
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
-        static let insets = UIEdgeInsets(
-            top: 12,
-            left: 13,
-            bottom: 13,
-            right: 13
-        )
-
-        static let amountY: CGFloat = 50
-
+        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
+        static let amountTitleSpacing: CGFloat = 15
         static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
         static let elementMovingMotion: CGFloat = 5
+        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
     }
 
     let backgroundBlurView = GladingCardView()
@@ -23,7 +17,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     let titleLabel: UILabel = .create { view in
-        view.apply(style: .regularSubhedlineSecondary)
+        view.apply(style: .semiboldSubhedlineSecondary)
     }
 
     let amountLabel: UILabel = .create { view in
@@ -31,16 +25,40 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.font = .boldLargeTitle
     }
 
-    let locksView: BorderedIconLabelView = .create {
-        let color = R.color.colorChipText()!
-        $0.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
-        $0.iconDetailsView.detailsLabel.font = .regularFootnote
-        $0.iconDetailsView.detailsLabel.textColor = color
-        $0.iconDetailsView.spacing = 4.0
-        $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+    let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
+        $0.contentInsets = Constants.locksContentInsets
         $0.backgroundView.apply(style: .chips)
+        $0.setupContentView = { contentView in
+            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
+            contentView.detailsView.detailsLabel.font = .regularFootnote
+            contentView.detailsView.detailsLabel.textColor = R.color.colorChipText()!
+            contentView.spacing = 4
+            contentView.detailsView.spacing = 4
+            contentView.detailsView.mode = .detailsIcon
+            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconChip()!)
+        }
+
         $0.isHidden = true
     }
+
+    lazy var sendButton = createActionButton(
+        title:
+        R.string.localizable.walletSendTitle(preferredLanguages: locale.rLanguages),
+        icon: R.image.iconSend()
+    )
+    lazy var receiveButton = createActionButton(
+        title:
+        R.string.localizable.walletAssetReceive(preferredLanguages: locale.rLanguages),
+        icon: R.image.iconReceive()
+    )
+
+    lazy var actionsView = UIView.hStack(
+        distribution: .fillEqually,
+        [
+            sendButton,
+            receiveButton
+        ]
+    )
 
     let actionsBackgroundView: BlockBackgroundView = .create { view in
         view.sideLength = 12
@@ -51,6 +69,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     private var skeletonView: SkrullableView?
+    private var shadowsLayers = [CALayer(), CALayer()]
+    private var cachedBounds: CGRect?
 
     var locale = Locale.current {
         didSet {
@@ -79,12 +99,25 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         if skeletonView != nil {
             setupSkeleton()
         }
+
+        guard cachedBounds != layer.bounds else {
+            return
+        }
+        setupShadow(
+            shadowFrame: layer.bounds.inset(by: .init(
+                top: 0,
+                left: UIConstants.horizontalInset,
+                bottom: 0,
+                right: UIConstants.horizontalInset
+            ))
+        )
+        cachedBounds = layer.bounds
     }
 
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.text = value
+            amountLabel.attributedText = totalAmountString(from: value)
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -100,14 +133,44 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         }
     }
 
+    private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
+        let defaultAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: R.color.colorTextPrimary()!,
+            .font: UIFont.boldLargeTitle
+        ]
+
+        let amount = model.amount
+        guard let decimalSeparator = model.decimalSeparator,
+              let range = amount.range(of: decimalSeparator) else {
+            return .init(string: amount, attributes: defaultAttributes)
+        }
+
+        let amountAttributedString = NSMutableAttributedString(string: amount)
+        let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
+        let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
+
+        amountAttributedString.setAttributes(
+            defaultAttributes,
+            range: intPartRange
+        )
+
+        amountAttributedString.setAttributes(
+            [.foregroundColor: R.color.colorTextSecondary()!,
+             .font: UIFont.boldTitle2],
+            range: fractionPartRange
+        )
+
+        return amountAttributedString
+    }
+
     private func setupStateWithLocks(amount: String) {
         locksView.isHidden = false
 
-        locksView.iconDetailsView.detailsLabel.text = amount
+        locksView.contentView.detailsView.detailsLabel.text = amount
     }
 
     private func setupStateWithoutLocks() {
-        locksView.iconDetailsView.detailsLabel.text = nil
+        locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
     }
 
@@ -115,6 +178,10 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         titleLabel.text = R.string.localizable.walletTotalBalance(
             preferredLanguages: locale.rLanguages
         )
+        sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
+            preferredLanguages: locale.rLanguages)
+        receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
+            preferredLanguages: locale.rLanguages)
     }
 
     private func setupMotionEffect() {
@@ -185,7 +252,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         displayContentView.addSubview(amountLabel)
         amountLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview().inset(Constants.amountY - Constants.insets.top)
+            make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
 
         displayContentView.addSubview(actionsBackgroundView)
@@ -198,6 +265,14 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         actionsGladingView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        actionsBackgroundView.addSubview(actionsView)
+        actionsView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        // TODO: Add after motion fix
+        // shadowsLayers.reversed().forEach { layer.insertSublayer($0, at: 0) }
     }
 
     func startLoadingIfNeeded() {
@@ -261,7 +336,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = Constants.amountY + amountLabel.font.lineHeight / 2.0 -
+        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing + amountLabel.font.lineHeight / 2.0 -
             bigRowSize.height / 2.0
 
         let offset = CGPoint(
@@ -278,5 +353,43 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
                 size: bigRowSize
             )
         ]
+    }
+
+    private func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
+        let button = RoundedButton()
+        button.roundedBackgroundView?.fillColor = .clear
+        button.roundedBackgroundView?.highlightedFillColor = .clear
+        button.roundedBackgroundView?.strokeColor = .clear
+        button.roundedBackgroundView?.highlightedStrokeColor = .clear
+        button.roundedBackgroundView?.shadowOpacity = 0
+        button.roundedBackgroundView?.cornerRadius = 0
+        button.imageWithTitleView?.title = title
+        button.imageWithTitleView?.iconImage = icon
+        button.imageWithTitleView?.layoutType = .verticalImageFirst
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
+        button.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
+        button.imageWithTitleView?.titleFont = .semiBoldCaption1
+        button.contentOpacityWhenHighlighted = 0.2
+        button.changesContentOpacityWhenHighlighted = true
+        return button
+    }
+
+    private func setupShadow(shadowFrame: CGRect) {
+        let shadowPath = UIBezierPath(roundedRect: shadowFrame, cornerRadius: 12)
+        let shadowColor = UIColor.black.cgColor
+        shadowsLayers[0].shadowPath = shadowPath.cgPath
+        shadowsLayers[0].shadowColor = shadowColor
+        shadowsLayers[0].shadowOpacity = 0.16
+        shadowsLayers[0].shadowRadius = 12
+        shadowsLayers[0].shadowOffset = CGSize(width: 0, height: 4)
+        shadowsLayers[0].bounds = shadowFrame
+        shadowsLayers[0].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
+        shadowsLayers[1].shadowPath = shadowPath.cgPath
+        shadowsLayers[1].shadowColor = shadowColor
+        shadowsLayers[1].shadowOpacity = 0.25
+        shadowsLayers[1].shadowRadius = 4
+        shadowsLayers[1].shadowOffset = CGSize(width: 0, height: 4)
+        shadowsLayers[1].bounds = shadowFrame
+        shadowsLayers[1].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
     }
 }

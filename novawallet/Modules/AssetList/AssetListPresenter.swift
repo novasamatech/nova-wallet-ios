@@ -475,7 +475,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showTokensManage(from: view)
     }
 
-    func didTapTotalBalance() {
+    func presentLocks() {
         guard
             checkNonZeroLocks(),
             let priceResult = priceResult,
@@ -493,6 +493,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             locks: locks,
             crowdloans: crowdloans
         )
+    }
+
+    func send() {
+        // TODO:
+    }
+
+    func receive() {
+        // TODO:
     }
 }
 
