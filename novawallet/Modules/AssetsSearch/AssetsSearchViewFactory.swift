@@ -40,7 +40,7 @@ struct AssetsSearchViewFactory {
 
         let view = AssetsSearchViewController(
             presenter: presenter,
-            createViewClosure: { AssetsSearchViewLayoutCancellable() },
+            createViewClosure: { AssetsSearchViewLayout() },
             localizationManager: LocalizationManager.shared
         )
 
@@ -69,7 +69,7 @@ struct AssetsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetsSelectionWireframe()
+        let wireframe = AssetOperationWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
             priceAssetInfoFactory: priceAssetInfoFactory,
@@ -89,7 +89,7 @@ struct AssetsSearchViewFactory {
             localizationManager: localizationManager
         )
 
-        let presenter = AssetsOperationPresenter(
+        let presenter = AssetOperationPresenter(
             operation: operation,
             selectedAccount: selectedMetaAccount,
             searchPresenter: searchPresenter,
@@ -99,7 +99,7 @@ struct AssetsSearchViewFactory {
 
         let view = AssetsSearchViewController(
             presenter: presenter,
-            createViewClosure: { AssetsSearchViewLayout() },
+            createViewClosure: { AssetsOperationViewLayout() },
             localizationManager: localizationManager
         )
 

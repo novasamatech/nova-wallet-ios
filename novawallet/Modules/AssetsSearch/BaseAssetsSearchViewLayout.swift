@@ -1,41 +1,6 @@
 import UIKit
+import SnapKit
 import SoraUI
-
-final class AssetsSearchViewLayoutCancellable: BaseAssetsSearchViewLayout {
-    let backgroundView = MultigradientView.background
-
-    override func createSearchView() -> SearchViewProtocol {
-        let view = CustomSearchView()
-        view.searchBar.textField.autocorrectionType = .no
-        view.searchBar.textField.autocapitalizationType = .none
-        view.optionalCancelButton?.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
-        return view
-    }
-
-    override func setup() {
-        addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        super.setup()
-    }
-}
-
-final class AssetsSearchViewLayout: BaseAssetsSearchViewLayout {
-    override func setup() {
-        super.setup()
-
-        backgroundColor = R.color.colorSecondaryScreenBackground()
-    }
-
-    override func createSearchView() -> SearchViewProtocol {
-        let view = TopCustomSearchView()
-        view.searchBar.textField.autocorrectionType = .no
-        view.searchBar.textField.autocapitalizationType = .none
-        return view
-    }
-}
 
 class BaseAssetsSearchViewLayout: UIView {
     enum Constants {
@@ -90,22 +55,5 @@ class BaseAssetsSearchViewLayout: UIView {
             make.leading.top.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.searchBarHeight)
         }
-    }
-}
-
-protocol SearchViewProtocol: UIView {
-    var searchBar: CustomSearchBar { get }
-    var optionalCancelButton: RoundedButton? { get }
-}
-
-extension CustomSearchView: SearchViewProtocol {
-    var optionalCancelButton: RoundedButton? {
-        cancelButton
-    }
-}
-
-extension TopCustomSearchView: SearchViewProtocol {
-    var optionalCancelButton: RoundedButton? {
-        nil
     }
 }
