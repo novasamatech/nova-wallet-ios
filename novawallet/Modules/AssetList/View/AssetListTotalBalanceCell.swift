@@ -271,7 +271,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             make.edges.equalToSuperview()
         }
 
-        // Add after motion fix
+        // TODO: Add after motion fix
         // shadowsLayers.reversed().forEach { layer.insertSublayer($0, at: 0) }
     }
 
