@@ -1,27 +1,54 @@
 import UIKit
 import SoraUI
 
-final class AssetsSearchViewLayout: UIView {
+final class AssetsSearchViewLayoutCancellable: BaseAssetsSearchViewLayout {
+    let backgroundView = MultigradientView.background
+
+    override func createSearchView() -> SearchViewProtocol {
+        let view = CustomSearchView()
+        view.searchBar.textField.autocorrectionType = .no
+        view.searchBar.textField.autocapitalizationType = .none
+        view.optionalCancelButton?.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
+        return view
+    }
+
+    override func setup() {
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        super.setup()
+    }
+}
+
+final class AssetsSearchViewLayout: BaseAssetsSearchViewLayout {
+    override func setup() {
+        super.setup()
+
+        backgroundColor = R.color.colorSecondaryScreenBackground()
+    }
+
+    override func createSearchView() -> SearchViewProtocol {
+        let view = TopCustomSearchView()
+        view.searchBar.textField.autocorrectionType = .no
+        view.searchBar.textField.autocapitalizationType = .none
+        return view
+    }
+}
+
+class BaseAssetsSearchViewLayout: UIView {
     enum Constants {
         static let searchBarHeight: CGFloat = 54
     }
 
-    let searchView: CustomSearchView = {
-        let view = CustomSearchView()
-        view.searchBar.textField.autocorrectionType = .no
-        view.searchBar.textField.autocapitalizationType = .none
-        view.cancelButton.isHidden = true
-        view.cancelButton.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
-        return view
-    }()
+    lazy var searchView: SearchViewProtocol = createSearchView()
 
     var searchBar: CustomSearchBar { searchView.searchBar }
 
-    var cancelButton: RoundedButton { searchView.cancelButton }
+    var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
-    let backgroundView = MultigradientView.background
-
-    let collectionView: UICollectionView = {
+    lazy var collectionView: UICollectionView = {
         let flowLayout = AssetsSearchFlowLayout()
         flowLayout.scrollDirection = .vertical
         flowLayout.minimumLineSpacing = 0
@@ -47,12 +74,11 @@ final class AssetsSearchViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup() {
-        addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+    func createSearchView() -> SearchViewProtocol {
+        fatalError("Must be implemented in child class")
+    }
 
+    func setup() {
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -64,5 +90,22 @@ final class AssetsSearchViewLayout: UIView {
             make.leading.top.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.searchBarHeight)
         }
+    }
+}
+
+protocol SearchViewProtocol: UIView {
+    var searchBar: CustomSearchBar { get }
+    var optionalCancelButton: RoundedButton? { get }
+}
+
+extension CustomSearchView: SearchViewProtocol {
+    var optionalCancelButton: RoundedButton? {
+        cancelButton
+    }
+}
+
+extension TopCustomSearchView: SearchViewProtocol {
+    var optionalCancelButton: RoundedButton? {
+        nil
     }
 }

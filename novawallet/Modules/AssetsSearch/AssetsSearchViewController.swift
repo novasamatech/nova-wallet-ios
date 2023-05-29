@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 
 final class AssetsSearchViewController: UIViewController, ViewHolder {
-    typealias RootViewType = AssetsSearchViewLayout
+    typealias RootViewType = BaseAssetsSearchViewLayout
 
     let presenter: AssetsSearchPresenterProtocol
 
@@ -11,9 +11,15 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
     }
 
     private var groupsState: AssetListGroupState = .list(groups: [])
+    private let createViewClosure: () -> BaseAssetsSearchViewLayout
 
-    init(presenter: AssetsSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: AssetsSearchPresenterProtocol,
+        createViewClosure: @escaping () -> BaseAssetsSearchViewLayout,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.createViewClosure = createViewClosure
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -25,7 +31,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetsSearchViewLayout()
+        view = createViewClosure()
     }
 
     override func viewDidLoad() {
@@ -49,11 +55,11 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.cancelButton.imageWithTitleView?.title = R.string.localizable.commonCancel(
+        rootView.cancelButton?.imageWithTitleView?.title = R.string.localizable.commonCancel(
             preferredLanguages: languages
         )
 
-        rootView.cancelButton.invalidateLayout()
+        rootView.cancelButton?.invalidateLayout()
     }
 
     private func setupCollectionView() {
@@ -83,7 +89,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
         rootView.searchBar.textField.delegate = self
         rootView.searchBar.textField.returnKeyType = .done
 
-        rootView.cancelButton.addTarget(self, action: #selector(actionCancel), for: .touchUpInside)
+        rootView.cancelButton?.addTarget(self, action: #selector(actionCancel), for: .touchUpInside)
     }
 
     @objc private func actionCancel() {

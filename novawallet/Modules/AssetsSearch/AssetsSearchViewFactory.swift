@@ -19,7 +19,7 @@ struct AssetsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetsSearchWireframe(delegate: delegate)
+        let wireframe = AssetsSearchWireframe()
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
@@ -31,13 +31,18 @@ struct AssetsSearchViewFactory {
 
         let presenter = AssetsSearchPresenter(
             initState: initState,
+            delegate: delegate,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
-        let view = AssetsSearchViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        let view = AssetsSearchViewController(
+            presenter: presenter,
+            createViewClosure: { AssetsSearchViewLayoutCancellable() },
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
@@ -64,8 +69,7 @@ struct AssetsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetsSelectionWireframe(operation: operation, selectedAccount: selectedMetaAccount)
-
+        let wireframe = AssetsSelectionWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
             priceAssetInfoFactory: priceAssetInfoFactory,
@@ -74,21 +78,33 @@ struct AssetsSearchViewFactory {
             currencyManager: currencyManager
         )
 
-        let presenter = AssetsSearchPresenter(
+        let localizationManager = LocalizationManager.shared
+
+        let searchPresenter = AssetsSearchPresenter(
             initState: initState,
+            delegate: nil,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
-        let view = AssetsSearchViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
-        view.rootView.backgroundView.isHidden = true
-        view.rootView.backgroundColor = R.color.colorSecondaryScreenBackground()
-        view.title = "Send"
+        let presenter = AssetsOperationPresenter(
+            operation: operation,
+            selectedAccount: selectedMetaAccount,
+            searchPresenter: searchPresenter,
+            wireframe: wireframe,
+            localizationManager: localizationManager
+        )
 
-        presenter.view = view
-        interactor.presenter = presenter
+        let view = AssetsSearchViewController(
+            presenter: presenter,
+            createViewClosure: { AssetsSearchViewLayout() },
+            localizationManager: localizationManager
+        )
+
+        searchPresenter.view = view
+        interactor.presenter = searchPresenter
 
         return view
     }

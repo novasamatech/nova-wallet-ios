@@ -15,16 +15,16 @@ extension TokenOperation {
     ) -> ReceiveAvailableCheckResult {
         switch walletType {
         case .secrets, .paritySigner:
-            return .available
+            return .common(.available)
         case .ledger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .ledgerNotSupported
+                return .common(.ledgerNotSupported)
             } else {
-                return .available
+                return .common(.available)
             }
 
         case .watchOnly:
-            return .noSigning
+            return .common(.noSigning)
         }
     }
 
@@ -39,24 +39,20 @@ extension TokenOperation {
 
         switch walletType {
         case .secrets, .paritySigner:
-            return .available
+            return .common(.available)
         case .ledger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .ledgerNotSupported
+                return .common(.ledgerNotSupported)
             } else {
-                return .available
+                return .common(.available)
             }
         case .watchOnly:
-            return .noSigning
+            return .common(.noSigning)
         }
     }
 }
 
-enum OperationCheckCommonResult {
-    case ledgerNotSupported
-    case noSigning
-    case available
-}
+typealias TransferAvailableCheckResult = Bool
 
 enum ReceiveAvailableCheckResult {
     case common(OperationCheckCommonResult)
@@ -67,4 +63,8 @@ enum BuyAvailableCheckResult {
     case noBuyOptions
 }
 
-typealias TransferAvailableCheckResult = Bool
+enum OperationCheckCommonResult {
+    case ledgerNotSupported
+    case noSigning
+    case available
+}
