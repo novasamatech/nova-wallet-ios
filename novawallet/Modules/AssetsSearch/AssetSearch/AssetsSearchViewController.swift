@@ -12,14 +12,17 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
 
     private var groupsState: AssetListGroupState = .list(groups: [])
     private let createViewClosure: () -> BaseAssetsSearchViewLayout
+    private let localizableTitle: LocalizableResource<String>?
 
     init(
         presenter: AssetsSearchPresenterProtocol,
         createViewClosure: @escaping () -> BaseAssetsSearchViewLayout,
+        localizableTitle: LocalizableResource<String>? = nil,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.createViewClosure = createViewClosure
+        self.localizableTitle = localizableTitle
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -60,6 +63,9 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
         )
 
         rootView.cancelButton?.invalidateLayout()
+        localizableTitle.map {
+            title = $0.value(for: selectedLocale)
+        }
     }
 
     private func setupCollectionView() {
@@ -270,6 +276,7 @@ extension AssetsSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             rootView.collectionView.reloadData()
+            setupLocalization()
         }
     }
 }
