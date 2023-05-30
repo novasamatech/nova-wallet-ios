@@ -154,16 +154,6 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         }
     }
 
-    func collectionView(_: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-        switch cellType {
-        case .account:
-            return false
-        default:
-            return true
-        }
-    }
-
     func collectionView(
         _: UICollectionView,
         layout _: UICollectionViewLayout,

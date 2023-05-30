@@ -28,7 +28,7 @@ protocol AssetListPresenterProtocol: AnyObject {
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
     func refresh()
     func connectWalletConnect(uri: String)
-    func retryFetchWalletConnectSessions()
+    func retryFetchWalletConnectSessionsCount()
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {

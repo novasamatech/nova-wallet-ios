@@ -571,7 +571,7 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
             wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
         case let .sessionsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryFetchWalletConnectSessions()
+                self?.interactor.retryFetchWalletConnectSessionsCount()
             }
         }
     }
