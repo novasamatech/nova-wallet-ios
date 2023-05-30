@@ -30,7 +30,7 @@ final class AssetListAccountCell: UICollectionViewCell {
         walletSwitch.bind(viewModel: viewModel.walletSwitch)
 
         let walletConnectViewModel: WalletConnectionsView.Model
-        if let walletConnectionsCount = viewModel.walletConnectionsCount {
+        if let walletConnectionsCount = viewModel.walletConnectSessionsCount {
             walletConnectViewModel = .activeConections(walletConnectionsCount)
         } else {
             walletConnectViewModel = .empty

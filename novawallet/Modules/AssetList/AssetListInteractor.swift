@@ -188,10 +188,10 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
             switch result {
             case let .success(connections):
-                let walletConnections = connections.filter { $0.wallet == selectedMetaAccount }
-                self?.presenter?.didReceiveWalletConnect(connections: walletConnections)
+                let walletConnectSessions = connections.filter { $0.wallet == selectedMetaAccount }
+                self?.presenter?.didReceiveWalletConnect(sessionsCount: walletConnectSessions.count)
             case let .failure(error):
-                self?.presenter?.didReceiveWalletConnect(error: error)
+                self?.presenter?.didReceiveWalletConnect(error: .sessionsFetchFailed(error))
             }
         }
     }
@@ -206,6 +206,18 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         }
 
         nftSubscription?.refresh()
+    }
+
+    func connectWalletConnect(uri: String) {
+        walletConnect.connect(uri: uri) { [weak self] error in
+            if let error = error {
+                self?.presenter?.didReceiveWalletConnect(error: .connectionFailed(error))
+            }
+        }
+    }
+
+    func retryFetchWalletConnectSessions() {
+        provideWalletConnectSessionsCount()
     }
 }
 
