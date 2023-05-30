@@ -27,6 +27,8 @@ protocol AssetListPresenterProtocol: AnyObject {
 
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
     func refresh()
+    func connectWalletConnect(uri: String)
+    func retryFetchWalletConnectSessions()
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
@@ -38,11 +40,11 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
     func didReceiveLocks(result: Result<[AssetLock], Error>)
-    func didReceiveWalletConnect(connections: [WalletConnectSession])
-    func didReceiveWalletConnect(error: Error)
+    func didReceiveWalletConnect(sessionsCount: Int)
+    func didReceiveWalletConnect(error: WalletConnectSessionsError)
 }
 
-protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable, CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsSettings(from view: AssetListViewProtocol?)
     func showTokensManage(from view: AssetListViewProtocol?)
@@ -66,3 +68,5 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 
     func showWalletConnect(from view: AssetListViewProtocol?)
 }
+
+typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

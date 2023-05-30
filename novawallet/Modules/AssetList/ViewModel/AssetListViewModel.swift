@@ -22,7 +22,7 @@ enum ValueDirection<T> {
 }
 
 struct AssetListHeaderViewModel {
-    let walletConnectionsCount: String?
+    let walletConnectSessionsCount: String?
     let title: String
     let amount: LoadableViewModelState<AssetListTotalAmountViewModel>
     let locksAmount: String?
