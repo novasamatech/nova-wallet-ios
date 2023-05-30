@@ -183,6 +183,8 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         }
 
         let view = TitleValueView()
+        view.titleLabel.apply(style: .footnotePrimary)
+        view.valueLabel.apply(style: .footnotePrimary)
         view.titleLabel.text = R.string.localizable.crowdloanReward(preferredLanguages: locale.rLanguages)
 
         contentView.stackView.insertArrangedSubview(view, at: leasingPeriodIndex + 1)
