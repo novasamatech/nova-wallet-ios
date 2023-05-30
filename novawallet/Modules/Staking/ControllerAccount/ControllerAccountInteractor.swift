@@ -209,7 +209,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
 
             if let stashId = maybeStashId, let controllerId = maybeControllerId {
                 balanceProvider = subscribeToAssetBalanceProvider(
-                    for: controllerId,
+                    for: stashId,
                     chainId: chainAsset.chain.chainId,
                     assetId: chainAsset.asset.assetId
                 )
