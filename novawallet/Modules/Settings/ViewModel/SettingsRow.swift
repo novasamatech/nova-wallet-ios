@@ -72,7 +72,7 @@ extension SettingsRow {
         case .approveWithPin:
             return R.image.iconApproveWithPin()
         case .changePin:
-            return R.image.iconPinCode()
+            return R.image.iconPincode()
         case .telegram:
             return R.image.iconTelegram()
         case .youtube:
