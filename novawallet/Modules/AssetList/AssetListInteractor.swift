@@ -216,7 +216,7 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         }
     }
 
-    func retryFetchWalletConnectSessions() {
+    func retryFetchWalletConnectSessionsCount() {
         provideWalletConnectSessionsCount()
     }
 }
