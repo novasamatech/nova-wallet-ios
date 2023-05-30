@@ -950,7 +950,7 @@
 "with.yield.boost" = "with Yield Boost";
 "without.yield.boost" = "without Yield Boost";
 "common.no.changes" = "No changes";
-"common.not.enough.fee.message_v3.8.0" = "You don’t have enough balance to pay the network fee of %@.\nAvailable  balance to pay fee after operation: %@";
+"common.not.enough.fee.message_v3.8.0" = "You don’t have enough balance to pay the network fee of %@.\nAvailable balance to pay fee after operation: %@";
 "yield.boost.not.enough.execution.fee.message" = "You don’t have enough balance to pay the network fee of %@ and the yield boost execution fee of %@.\nAvailable balance to pay the fee: %@";
 "yield.boost.not.enough.execution.fee.title" = "Not enough tokens to pay first execution fee";
 "yield.boost.not.enough.threshold.message" = "You don’t have enough balance to pay the network fee of %@ and not drop below the threshold %@.\nAvailable balance to pay the fee: %@";
