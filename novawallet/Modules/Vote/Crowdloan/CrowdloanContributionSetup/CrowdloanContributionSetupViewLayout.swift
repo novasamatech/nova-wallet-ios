@@ -28,7 +28,16 @@ class CrowdloanContributionSetupViewLayout: UIView {
 
     private(set) var rewardDestinationAccountView: CrowdloanRewardDestinationView?
 
-    let networkFeeView = NetworkFeeView()
+    let networkFeeView: NetworkFeeView = .create { view in
+        view.style = .init(
+            titleColor: R.color.colorTextPrimary()!,
+            titleFont: .regularFootnote,
+            tokenColor: R.color.colorTextPrimary()!,
+            tokenFont: .regularFootnote,
+            fiatColor: R.color.colorTextSecondary()!,
+            fiatFont: .regularFootnote
+        )
+    }
 
     private(set) var estimatedRewardView: TitleValueView?
 
@@ -229,6 +238,8 @@ class CrowdloanContributionSetupViewLayout: UIView {
         }
 
         let view = TitleValueView()
+        view.titleLabel.apply(style: .footnotePrimary)
+        view.valueLabel.apply(style: .footnotePrimary)
         view.titleLabel.text = R.string.localizable.crowdloanReward(preferredLanguages: locale.rLanguages)
 
         contentView.stackView.insertArrangedSubview(view, at: leasingPeriodIndex + 1)
