@@ -12,6 +12,7 @@ enum KnowChainId {
     static let polymesh = "6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063"
     static let centrifuge = "b3db41421702df9a7fcac62b53ffeac85f7853cc4e689e0b93aeb3db18c09d82"
     static let xxNetwork = "50dd5d206917bf10502c68fb4d18a59fc8aa31586f4e8856b493e43544aa82aa"
+    static let astar = "9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6"
     static let kiltPelegrine = "a0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21"
     static let kiltSpiritnet = "411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21"
     static let moonbeam = "fe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d"

@@ -17,6 +17,7 @@ extension Xcm {
             switch self {
             case .unlimited:
                 try container.encode(WeightLimitFields.unlimited)
+                try container.encode(JSON.null)
             case let .limited(weight):
                 try container.encode(WeightLimitFields.limited)
                 try container.encode(weight)
