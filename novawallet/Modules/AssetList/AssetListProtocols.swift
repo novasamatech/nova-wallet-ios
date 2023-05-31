@@ -67,6 +67,16 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     )
 
     func showWalletConnect(from view: AssetListViewProtocol?)
+    
+	func showRecieveTokens(
+        from view: AssetListViewProtocol?,
+        state: AssetListInitState
+    )
+
+    func showSendTokens(
+        from view: AssetListViewProtocol?,
+        state: AssetListInitState
+    )
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

@@ -15,7 +15,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     init(
         initState: AssetListInitState,
-        delegate: AssetsSearchDelegate,
+        delegate: AssetsSearchDelegate?,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
