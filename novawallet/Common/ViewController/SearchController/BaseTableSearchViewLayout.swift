@@ -12,27 +12,22 @@ class BaseTableSearchViewLayout: UIView {
     }()
 
     var searchField: UITextField { searchView.searchBar.textField }
+    var cancelButton: RoundedButton { searchView.cancelButton }
 
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorSecondaryScreenBackground()
         tableView.rowHeight = UITableView.automaticDimension
         return tableView
     }()
 
-    let emptyStateContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = R.color.colorSecondaryScreenBackground()
-        return view
-    }()
+    let emptyStateContainer = UIView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorSecondaryScreenBackground()
-
         setupLayout()
+        setupStyle()
     }
 
     @available(*, unavailable)
@@ -40,11 +35,11 @@ class BaseTableSearchViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(searchView)
         searchView.snp.makeConstraints { make in
             make.leading.top.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(54)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.searchBarHeight)
         }
 
         addSubview(emptyStateContainer)
@@ -59,5 +54,18 @@ class BaseTableSearchViewLayout: UIView {
             make.leading.trailing.equalTo(safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
         }
+    }
+
+    func setupStyle() {
+        let color = R.color.colorSecondaryScreenBackground()!
+        backgroundColor = color
+        tableView.backgroundColor = color
+        emptyStateContainer.backgroundColor = color
+    }
+}
+
+extension BaseTableSearchViewLayout {
+    enum Constants {
+        static let searchBarHeight: CGFloat = 54
     }
 }

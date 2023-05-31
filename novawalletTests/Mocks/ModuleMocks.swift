@@ -20241,6 +20241,131 @@ import UIKit.UIImage
 
 
 
+ class MockSettingsViewModelFactoryProtocol: SettingsViewModelFactoryProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = SettingsViewModelFactoryProtocol
+    
+     typealias Stubbing = __StubbingProxy_SettingsViewModelFactoryProtocol
+     typealias Verification = __VerificationProxy_SettingsViewModelFactoryProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: SettingsViewModelFactoryProtocol?
+
+     func enableDefaultImplementation(_ stub: SettingsViewModelFactoryProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel {
+        
+    return cuckoo_manager.call("createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel",
+            parameters: (wallet),
+            escapingParameters: (wallet),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createAccountViewModel(for: wallet))
+        
+    }
+    
+    
+    
+     func createSectionViewModels(language: Language?, currency: String?, parameters: SettingsParameters, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])] {
+        
+    return cuckoo_manager.call("createSectionViewModels(language: Language?, currency: String?, parameters: SettingsParameters, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]",
+            parameters: (language, currency, parameters, locale),
+            escapingParameters: (language, currency, parameters, locale),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createSectionViewModels(language: language, currency: currency, parameters: parameters, locale: locale))
+        
+    }
+    
+
+	 struct __StubbingProxy_SettingsViewModelFactoryProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createAccountViewModel<M1: Cuckoo.Matchable>(for wallet: M1) -> Cuckoo.ProtocolStubFunction<(MetaAccountModel), SettingsAccountViewModel> where M1.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: wallet) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel", parameterMatchers: matchers))
+	    }
+	    
+	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(language: M1, currency: M2, parameters: M3, locale: M4) -> Cuckoo.ProtocolStubFunction<(Language?, String?, SettingsParameters, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.OptionalMatchedType == String, M3.MatchedType == SettingsParameters, M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(Language?, String?, SettingsParameters, Locale)>] = [wrap(matchable: language) { $0.0 }, wrap(matchable: currency) { $0.1 }, wrap(matchable: parameters) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createSectionViewModels(language: Language?, currency: String?, parameters: SettingsParameters, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_SettingsViewModelFactoryProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createAccountViewModel<M1: Cuckoo.Matchable>(for wallet: M1) -> Cuckoo.__DoNotUse<(MetaAccountModel), SettingsAccountViewModel> where M1.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: wallet) { $0 }]
+	        return cuckoo_manager.verify("createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(language: M1, currency: M2, parameters: M3, locale: M4) -> Cuckoo.__DoNotUse<(Language?, String?, SettingsParameters, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.OptionalMatchedType == String, M3.MatchedType == SettingsParameters, M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(Language?, String?, SettingsParameters, Locale)>] = [wrap(matchable: language) { $0.0 }, wrap(matchable: currency) { $0.1 }, wrap(matchable: parameters) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return cuckoo_manager.verify("createSectionViewModels(language: Language?, currency: String?, parameters: SettingsParameters, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class SettingsViewModelFactoryProtocolStub: SettingsViewModelFactoryProtocol {
+    
+
+    
+
+    
+    
+    
+     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel  {
+        return DefaultValueRegistry.defaultValue(for: (SettingsAccountViewModel).self)
+    }
+    
+    
+    
+     func createSectionViewModels(language: Language?, currency: String?, parameters: SettingsParameters, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]  {
+        return DefaultValueRegistry.defaultValue(for: ([(SettingsSection, [SettingsCellViewModel])]).self)
+    }
+    
+}
+
+
+
  class MockSettingsInteractorInputProtocol: SettingsInteractorInputProtocol, Cuckoo.ProtocolMock {
     
      typealias MocksType = SettingsInteractorInputProtocol
@@ -20281,6 +20406,36 @@ import UIKit.UIImage
     
     
     
+     func updateBiometricAuthSettings(isOn: Bool)  {
+        
+    return cuckoo_manager.call("updateBiometricAuthSettings(isOn: Bool)",
+            parameters: (isOn),
+            escapingParameters: (isOn),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateBiometricAuthSettings(isOn: isOn))
+        
+    }
+    
+    
+    
+     func updatePinConfirmationSettings(isOn: Bool)  {
+        
+    return cuckoo_manager.call("updatePinConfirmationSettings(isOn: Bool)",
+            parameters: (isOn),
+            escapingParameters: (isOn),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updatePinConfirmationSettings(isOn: isOn))
+        
+    }
+    
+    
+    
      func connectWalletConnect(uri: String)  {
         
     return cuckoo_manager.call("connectWalletConnect(uri: String)",
@@ -20306,6 +20461,16 @@ import UIKit.UIImage
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func updateBiometricAuthSettings<M1: Cuckoo.Matchable>(isOn: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isOn) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorInputProtocol.self, method: "updateBiometricAuthSettings(isOn: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func updatePinConfirmationSettings<M1: Cuckoo.Matchable>(isOn: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isOn) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorInputProtocol.self, method: "updatePinConfirmationSettings(isOn: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	    func connectWalletConnect<M1: Cuckoo.Matchable>(uri: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
@@ -20336,6 +20501,18 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
+	    func updateBiometricAuthSettings<M1: Cuckoo.Matchable>(isOn: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isOn) { $0 }]
+	        return cuckoo_manager.verify("updateBiometricAuthSettings(isOn: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func updatePinConfirmationSettings<M1: Cuckoo.Matchable>(isOn: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isOn) { $0 }]
+	        return cuckoo_manager.verify("updatePinConfirmationSettings(isOn: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func connectWalletConnect<M1: Cuckoo.Matchable>(uri: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: uri) { $0 }]
 	        return cuckoo_manager.verify("connectWalletConnect(uri: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -20353,6 +20530,18 @@ import UIKit.UIImage
     
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func updateBiometricAuthSettings(isOn: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func updatePinConfirmationSettings(isOn: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -20451,16 +20640,46 @@ import UIKit.UIImage
     
     
     
-     func didFailConnection(walletConnect error: Error)  {
+     func didReceive(biometrySettings: BiometrySettings)  {
         
-    return cuckoo_manager.call("didFailConnection(walletConnect: Error)",
+    return cuckoo_manager.call("didReceive(biometrySettings: BiometrySettings)",
+            parameters: (biometrySettings),
+            escapingParameters: (biometrySettings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(biometrySettings: biometrySettings))
+        
+    }
+    
+    
+    
+     func didReceive(pinConfirmationEnabled: Bool)  {
+        
+    return cuckoo_manager.call("didReceive(pinConfirmationEnabled: Bool)",
+            parameters: (pinConfirmationEnabled),
+            escapingParameters: (pinConfirmationEnabled),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(pinConfirmationEnabled: pinConfirmationEnabled))
+        
+    }
+    
+    
+    
+     func didReceive(error: SettingsError)  {
+        
+    return cuckoo_manager.call("didReceive(error: SettingsError)",
             parameters: (error),
             escapingParameters: (error),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didFailConnection(walletConnect: error))
+            defaultCall: __defaultImplStub!.didReceive(error: error))
         
     }
     
@@ -20493,9 +20712,19 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceiveWalletConnect(sessionsCount: Int)", parameterMatchers: matchers))
 	    }
 	    
-	    func didFailConnection<M1: Cuckoo.Matchable>(walletConnect error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
-	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didFailConnection(walletConnect: Error)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(biometrySettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(BiometrySettings)> where M1.MatchedType == BiometrySettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(BiometrySettings)>] = [wrap(matchable: biometrySettings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(biometrySettings: BiometrySettings)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(pinConfirmationEnabled: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: pinConfirmationEnabled) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(pinConfirmationEnabled: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SettingsError)> where M1.MatchedType == SettingsError {
+	        let matchers: [Cuckoo.ParameterMatcher<(SettingsError)>] = [wrap(matchable: error) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(error: SettingsError)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -20539,9 +20768,21 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
-	    func didFailConnection<M1: Cuckoo.Matchable>(walletConnect error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
-	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
-	        return cuckoo_manager.verify("didFailConnection(walletConnect: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(biometrySettings: M1) -> Cuckoo.__DoNotUse<(BiometrySettings), Void> where M1.MatchedType == BiometrySettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(BiometrySettings)>] = [wrap(matchable: biometrySettings) { $0 }]
+	        return cuckoo_manager.verify("didReceive(biometrySettings: BiometrySettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(pinConfirmationEnabled: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: pinConfirmationEnabled) { $0 }]
+	        return cuckoo_manager.verify("didReceive(pinConfirmationEnabled: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.__DoNotUse<(SettingsError), Void> where M1.MatchedType == SettingsError {
+	        let matchers: [Cuckoo.ParameterMatcher<(SettingsError)>] = [wrap(matchable: error) { $0 }]
+	        return cuckoo_manager.verify("didReceive(error: SettingsError)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -20579,7 +20820,19 @@ import UIKit.UIImage
     
     
     
-     func didFailConnection(walletConnect error: Error)   {
+     func didReceive(biometrySettings: BiometrySettings)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(pinConfirmationEnabled: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(error: SettingsError)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -20702,6 +20955,21 @@ import UIKit.UIImage
     
     
     
+     func showAuthorization(completion: @escaping (Bool) -> Void)  {
+        
+    return cuckoo_manager.call("showAuthorization(completion: @escaping (Bool) -> Void)",
+            parameters: (completion),
+            escapingParameters: (completion),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAuthorization(completion: completion))
+        
+    }
+    
+    
+    
      func showWalletConnect(from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("showWalletConnect(from: ControllerBackedProtocol?)",
@@ -20712,6 +20980,21 @@ import UIKit.UIImage
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.showWalletConnect(from: view))
+        
+    }
+    
+    
+    
+     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)  {
+        
+    return cuckoo_manager.call("showPincodeAuthorization(completion: @escaping (Bool) -> Void)",
+            parameters: (completion),
+            escapingParameters: (completion),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showPincodeAuthorization(completion: completion))
         
     }
     
@@ -20814,9 +21097,19 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "show(url: URL, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func showAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((Bool) -> Void)> where M1.MatchedType == (Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showAuthorization(completion: @escaping (Bool) -> Void)", parameterMatchers: matchers))
+	    }
+	    
 	    func showWalletConnect<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showWalletConnect(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showPincodeAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((Bool) -> Void)> where M1.MatchedType == (Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showPincodeAuthorization(completion: @escaping (Bool) -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -20892,9 +21185,21 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
+	    func showAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((Bool) -> Void), Void> where M1.MatchedType == (Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return cuckoo_manager.verify("showAuthorization(completion: @escaping (Bool) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showWalletConnect<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("showWalletConnect(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showPincodeAuthorization<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((Bool) -> Void), Void> where M1.MatchedType == (Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((Bool) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return cuckoo_manager.verify("showPincodeAuthorization(completion: @escaping (Bool) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -20968,7 +21273,19 @@ import UIKit.UIImage
     
     
     
+     func showAuthorization(completion: @escaping (Bool) -> Void)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
      func showWalletConnect(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -30890,16 +31207,16 @@ import SoraFoundation
     
     
     
-     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel {
+     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel {
         
-    return cuckoo_manager.call("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel",
-            parameters: (displayValidatorList, selectedValidatorList, locale),
-            escapingParameters: (displayValidatorList, selectedValidatorList, locale),
+    return cuckoo_manager.call("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel",
+            parameters: (displayValidatorList, selectedValidatorList, referenceValidatorList, locale),
+            escapingParameters: (displayValidatorList, selectedValidatorList, referenceValidatorList, locale),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createViewModel(from: displayValidatorList, selectedValidatorList: selectedValidatorList, locale: locale))
+            defaultCall: __defaultImplStub!.createViewModel(from: displayValidatorList, selectedValidatorList: selectedValidatorList, referenceValidatorList: referenceValidatorList, locale: locale))
         
     }
     
@@ -30912,9 +31229,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, locale: M3) -> Cuckoo.ProtocolStubFunction<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: locale) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorSearchViewModelFactoryProtocol.self, method: "createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", parameterMatchers: matchers))
+	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, referenceValidatorList: M3, locale: M4) -> Cuckoo.ProtocolStubFunction<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: referenceValidatorList) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorSearchViewModelFactoryProtocol.self, method: "createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -30934,9 +31251,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, locale: M3) -> Cuckoo.__DoNotUse<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: locale) { $0.2 }]
-	        return cuckoo_manager.verify("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, referenceValidatorList: M3, locale: M4) -> Cuckoo.__DoNotUse<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: referenceValidatorList) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return cuckoo_manager.verify("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -30950,7 +31267,7 @@ import SoraFoundation
     
     
     
-     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel  {
+     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel  {
         return DefaultValueRegistry.defaultValue(for: (ValidatorSearchViewModel).self)
     }
     

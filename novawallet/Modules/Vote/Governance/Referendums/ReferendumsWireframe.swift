@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     let state: GovernanceSharedState
@@ -70,5 +71,41 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         delegationsView.controller.hidesBottomBarWhenPushed = true
 
         view?.controller.navigationController?.pushViewController(delegationsView.controller, animated: true)
+    }
+
+    func showFilters(
+        from view: ControllerBackedProtocol?,
+        delegate: ReferendumsFiltersDelegate,
+        filter: ReferendumsFilter
+    ) {
+        guard let filtersView = ReferendumsFiltersViewFactory.createView(
+            delegate: delegate,
+            filter: filter
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: filtersView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
+    func showSearch(
+        from view: ControllerBackedProtocol?,
+        referendumsState: Observable<ReferendumsState>,
+        delegate: ReferendumSearchDelegate?
+    ) {
+        guard let searchView = ReferendumSearchViewFactory.createView(
+            state: referendumsState,
+            governanceState: state,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        searchView.controller.modalTransitionStyle = .crossDissolve
+        searchView.controller.modalPresentationStyle = .fullScreen
+
+        view?.controller.present(searchView.controller, animated: true, completion: nil)
     }
 }
