@@ -36,6 +36,7 @@ protocol ValidatorSearchViewModelFactoryProtocol {
     func createViewModel(
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        referenceValidatorList: [SelectedValidatorInfo],
         locale: Locale
     ) -> ValidatorSearchViewModel
 }
