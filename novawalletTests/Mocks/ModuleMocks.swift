@@ -31079,16 +31079,16 @@ import SoraFoundation
     
     
     
-     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel {
+     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel {
         
-    return cuckoo_manager.call("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel",
-            parameters: (displayValidatorList, selectedValidatorList, locale),
-            escapingParameters: (displayValidatorList, selectedValidatorList, locale),
+    return cuckoo_manager.call("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel",
+            parameters: (displayValidatorList, selectedValidatorList, referenceValidatorList, locale),
+            escapingParameters: (displayValidatorList, selectedValidatorList, referenceValidatorList, locale),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createViewModel(from: displayValidatorList, selectedValidatorList: selectedValidatorList, locale: locale))
+            defaultCall: __defaultImplStub!.createViewModel(from: displayValidatorList, selectedValidatorList: selectedValidatorList, referenceValidatorList: referenceValidatorList, locale: locale))
         
     }
     
@@ -31101,9 +31101,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, locale: M3) -> Cuckoo.ProtocolStubFunction<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: locale) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorSearchViewModelFactoryProtocol.self, method: "createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", parameterMatchers: matchers))
+	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, referenceValidatorList: M3, locale: M4) -> Cuckoo.ProtocolStubFunction<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: referenceValidatorList) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorSearchViewModelFactoryProtocol.self, method: "createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -31123,9 +31123,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, locale: M3) -> Cuckoo.__DoNotUse<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: locale) { $0.2 }]
-	        return cuckoo_manager.verify("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from displayValidatorList: M1, selectedValidatorList: M2, referenceValidatorList: M3, locale: M4) -> Cuckoo.__DoNotUse<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale), ValidatorSearchViewModel> where M1.MatchedType == [SelectedValidatorInfo], M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<([SelectedValidatorInfo], [SelectedValidatorInfo], [SelectedValidatorInfo], Locale)>] = [wrap(matchable: displayValidatorList) { $0.0 }, wrap(matchable: selectedValidatorList) { $0.1 }, wrap(matchable: referenceValidatorList) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return cuckoo_manager.verify("createViewModel(from: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -31139,7 +31139,7 @@ import SoraFoundation
     
     
     
-     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel  {
+     func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], referenceValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel  {
         return DefaultValueRegistry.defaultValue(for: (ValidatorSearchViewModel).self)
     }
     
