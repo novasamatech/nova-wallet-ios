@@ -35,6 +35,7 @@ extension UILabel.Style {
         textColor: R.color.colorButtonTextAccent(),
         font: .regularFootnote
     )
+
     static let semiboldBodyPrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .semiBoldBody

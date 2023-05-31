@@ -36351,7 +36351,7 @@ import SoraFoundation
     
      func didEditRewardFilters()  {
         
-    return cuckoo_manager.call("deactivateControls()",
+    return cuckoo_manager.call("didEditRewardFilters()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
@@ -36426,9 +36426,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)", parameterMatchers: matchers))
 	    }
 	    
-	    func deactivateControls() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func didEditRewardFilters() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "deactivateControls()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didEditRewardFilters()", parameterMatchers: matchers))
 	    }
 	    
 	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -36498,9 +36498,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func deactivateControls() -> Cuckoo.__DoNotUse<(), Void> {
+	    func didEditRewardFilters() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("deactivateControls()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("didEditRewardFilters()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
