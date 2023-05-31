@@ -30,7 +30,7 @@ final class AssetListAccountCell: UICollectionViewCell {
         walletSwitch.bind(viewModel: viewModel.walletSwitch)
 
         let walletConnectViewModel: WalletConnectionsView.Model
-        if let walletConnectionsCount = viewModel.walletConnectionsCount {
+        if let walletConnectionsCount = viewModel.walletConnectSessionsCount {
             walletConnectViewModel = .activeConections(walletConnectionsCount)
         } else {
             walletConnectViewModel = .empty
@@ -56,13 +56,16 @@ final class AssetListAccountCell: UICollectionViewCell {
         contentView.addSubview(walletConnect)
         walletConnect.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(walletSwitch)
+            make.top.equalToSuperview().inset(10.0)
+            make.size.equalTo(CGSize(width: 89.0, height: 40.0))
         }
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.centerY.equalTo(walletSwitch)
             make.centerX.equalToSuperview()
+            make.leading.greaterThanOrEqualTo(walletConnect.snp.trailing)
+            make.trailing.lessThanOrEqualTo(walletSwitch.snp.leading)
         }
     }
 }

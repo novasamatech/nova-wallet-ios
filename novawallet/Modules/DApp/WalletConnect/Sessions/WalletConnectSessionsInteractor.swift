@@ -1,19 +1,26 @@
 import UIKit
 
 final class WalletConnectSessionsInteractor {
+    typealias Filter = (WalletConnectSession) -> Bool
     weak var presenter: WalletConnectSessionsInteractorOutputProtocol?
 
     let walletConnect: WalletConnectDelegateInputProtocol
+    let sessionFilter: Filter?
 
-    init(walletConnect: WalletConnectDelegateInputProtocol) {
+    init(
+        walletConnect: WalletConnectDelegateInputProtocol,
+        sessionFilter: Filter? = nil
+    ) {
         self.walletConnect = walletConnect
+        self.sessionFilter = sessionFilter
     }
 
     private func provideSessions() {
         walletConnect.fetchSessions { [weak self] result in
             switch result {
             case let .success(sessions):
-                self?.presenter?.didReceive(sessions: sessions)
+                let filteredSessions = self?.sessionFilter.map { sessions.filter($0) } ?? sessions
+                self?.presenter?.didReceive(sessions: filteredSessions)
             case let .failure(error):
                 self?.presenter?.didReceive(error: .sessionsFetchFailed(error))
             }

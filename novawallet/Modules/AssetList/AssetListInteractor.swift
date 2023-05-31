@@ -18,6 +18,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
+    let walletConnect: WalletConnectDelegateInputProtocol
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
@@ -35,11 +36,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
         currencyManager: CurrencyManagerProtocol,
+        walletConnect: WalletConnectDelegateInputProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
+        self.walletConnect = walletConnect
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -57,6 +60,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearLocksSubscription()
 
         providerWalletInfo()
+        provideWalletConnectSessionsCount()
 
         super.resetWallet()
     }
@@ -143,8 +147,11 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     override func setup() {
+        walletConnect.add(delegate: self)
+
         provideHidesZeroBalances()
         providerWalletInfo()
+        provideWalletConnectSessionsCount()
 
         subscribeChains()
 
@@ -172,6 +179,22 @@ final class AssetListInteractor: AssetListBaseInteractor {
             presenter?.didReceiveLocks(result: .failure(error))
         }
     }
+
+    private func provideWalletConnectSessionsCount() {
+        walletConnect.fetchSessions { [weak self] result in
+            guard let selectedMetaAccount = self?.selectedWalletSettings.value else {
+                return
+            }
+
+            switch result {
+            case let .success(connections):
+                let walletConnectSessions = connections.filter { $0.wallet == selectedMetaAccount }
+                self?.presenter?.didReceiveWalletConnect(sessionsCount: walletConnectSessions.count)
+            case let .failure(error):
+                self?.presenter?.didReceiveWalletConnect(error: .sessionsFetchFailed(error))
+            }
+        }
+    }
 }
 
 extension AssetListInteractor: AssetListInteractorInputProtocol {
@@ -183,6 +206,18 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         }
 
         nftSubscription?.refresh()
+    }
+
+    func connectWalletConnect(uri: String) {
+        walletConnect.connect(uri: uri) { [weak self] error in
+            if let error = error {
+                self?.presenter?.didReceiveWalletConnect(error: .connectionFailed(error))
+            }
+        }
+    }
+
+    func retryFetchWalletConnectSessionsCount() {
+        provideWalletConnectSessionsCount()
     }
 }
 
@@ -267,5 +302,11 @@ extension AssetListInteractor: EventVisitorProtocol {
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {
         provideHidesZeroBalances()
+    }
+}
+
+extension AssetListInteractor: WalletConnectDelegateOutputProtocol {
+    func walletConnectDidChangeSessions() {
+        provideWalletConnectSessionsCount()
     }
 }

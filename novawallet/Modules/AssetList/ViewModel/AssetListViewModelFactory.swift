@@ -16,6 +16,7 @@ protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtoc
         walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
         locks: [AssetListAssetAccountPrice]?,
+        walletConnectSessionsCount: Int,
         locale: Locale
     ) -> AssetListHeaderViewModel
 
@@ -86,6 +87,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
         locks: [AssetListAssetAccountPrice]?,
+        walletConnectSessionsCount: Int,
         locale: Locale
     ) -> AssetListHeaderViewModel {
         let icon = walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
@@ -93,11 +95,13 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             type: WalletsListSectionViewModel.SectionType(walletType: walletType),
             iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
         )
+        let formattedWalletConnectSessionsCount = walletConnectSessionsCount > 0 ?
+            quantityFormatter.value(for: locale).string(from: NSNumber(value: walletConnectSessionsCount)) : nil
 
         if let prices = prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return AssetListHeaderViewModel(
-                walletConnectionsCount: nil,
+                walletConnectSessionsCount: formattedWalletConnectSessionsCount,
                 title: title,
                 amount: totalPrice,
                 locksAmount: locks.map { formatTotalPrice(from: $0, locale: locale) },
@@ -105,7 +109,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             )
         } else {
             return AssetListHeaderViewModel(
-                walletConnectionsCount: nil,
+                walletConnectSessionsCount: formattedWalletConnectSessionsCount,
                 title: title,
                 amount: .loading,
                 locksAmount: nil,

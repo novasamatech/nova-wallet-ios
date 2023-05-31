@@ -21,6 +21,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
+    private(set) var walletConnectSessionsCount: Int = 0
 
     private var scheduler: SchedulerProtocol?
 
@@ -56,6 +57,7 @@ final class AssetListPresenter: AssetListBasePresenter {
                 walletType: walletType,
                 prices: nil,
                 locks: nil,
+                walletConnectSessionsCount: walletConnectSessionsCount,
                 locale: selectedLocale
             )
 
@@ -142,6 +144,7 @@ final class AssetListPresenter: AssetListBasePresenter {
             walletType: walletType,
             prices: totalValue,
             locks: totalLocks,
+            walletConnectSessionsCount: walletConnectSessionsCount,
             locale: selectedLocale
         )
 
@@ -522,6 +525,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             state: initState
         )
     }
+
+    func presentWalletConnect() {
+        if walletConnectSessionsCount > 0 {
+            wireframe.showWalletConnect(from: view)
+        } else {
+            wireframe.showScan(from: view, delegate: self)
+        }
+    }
 }
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
@@ -573,6 +584,22 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
         updateHeaderView()
     }
+
+    func didReceiveWalletConnect(error: WalletConnectSessionsError) {
+        switch error {
+        case let .connectionFailed:
+            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case let .sessionsFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryFetchWalletConnectSessionsCount()
+            }
+        }
+    }
+
+    func didReceiveWalletConnect(sessionsCount: Int) {
+        walletConnectSessionsCount = sessionsCount
+        updateHeaderView()
+    }
 }
 
 extension AssetListPresenter: Localizable {
@@ -593,5 +620,13 @@ extension AssetListPresenter: SchedulerDelegate {
 extension AssetListPresenter: AssetsSearchDelegate {
     func assetSearchDidSelect(chainAssetId: ChainAssetId) {
         presentAssetDetails(for: chainAssetId)
+    }
+}
+
+extension AssetListPresenter: URIScanDelegate {
+    func uriScanDidReceive(uri: String, context _: AnyObject?) {
+        wireframe.hideUriScanAnimated(from: view) { [weak self] in
+            self?.interactor.connectWalletConnect(uri: uri)
+        }
     }
 }

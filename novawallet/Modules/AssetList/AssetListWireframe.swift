@@ -3,6 +3,12 @@ import UIKit
 import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
+    let dappMediator: DAppInteractionMediating
+
+    init(dappMediator: DAppInteractionMediating) {
+        self.dappMediator = dappMediator
+    }
+
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             chain: chain,
@@ -132,5 +138,17 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         viewController.controller.modalPresentationStyle = .custom
 
         view?.controller.present(viewController.controller, animated: true)
+    }
+
+    func showWalletConnect(from view: AssetListViewProtocol?) {
+        guard
+            let walletConnectView = WalletConnectSessionsViewFactory.createViewForCurrentWallet(
+                with: dappMediator
+            ) else {
+            return
+        }
+
+        walletConnectView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 }

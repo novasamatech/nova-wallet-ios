@@ -22,10 +22,13 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentLocks()
     func send()
     func receive()
+    func presentWalletConnect()
 }
 
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
     func refresh()
+    func connectWalletConnect(uri: String)
+    func retryFetchWalletConnectSessionsCount()
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
@@ -37,9 +40,11 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
     func didReceiveLocks(result: Result<[AssetLock], Error>)
+    func didReceiveWalletConnect(sessionsCount: Int)
+    func didReceiveWalletConnect(error: WalletConnectSessionsError)
 }
 
-protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
+protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable, CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsSettings(from view: AssetListViewProtocol?)
     func showTokensManage(from view: AssetListViewProtocol?)
@@ -61,6 +66,8 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
         crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
     )
 
+    func showWalletConnect(from view: AssetListViewProtocol?)
+
     func showRecieveTokens(
         from view: AssetListViewProtocol?,
         state: AssetListInitState
@@ -71,3 +78,5 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
         state: AssetListInitState
     )
 }
+
+typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError
