@@ -141,7 +141,7 @@ final class StakingRewardView: UIView {
         filterView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(20.0)
+            make.centerY.equalTo(titleLabel.snp.centerY)
         }
 
         addSubview(rewardView)

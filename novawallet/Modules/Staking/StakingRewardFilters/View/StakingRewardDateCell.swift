@@ -12,7 +12,6 @@ final class StakingRewardDateCell: UITableViewCell, Identifiable {
         }
         $0.backgroundColor = R.color.colorSecondaryScreenBackground()
         $0.datePickerMode = .date
-        $0.addTarget(self, action: #selector(selectDateAction), for: .valueChanged)
     }
 
     weak var delegate: StakingRewardDateCellDelegate?
@@ -22,6 +21,7 @@ final class StakingRewardDateCell: UITableViewCell, Identifiable {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         setupLayout()
+        datePicker.addTarget(self, action: #selector(selectDateAction), for: .valueChanged)
     }
 
     @available(*, unavailable)

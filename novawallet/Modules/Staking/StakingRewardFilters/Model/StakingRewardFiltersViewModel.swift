@@ -47,7 +47,7 @@ extension StakingRewardFiltersViewModel {
         static let defaultValue = CustomPeriod(
             startDay: .init(
                 value: nil,
-                collapsed: false
+                collapsed: true
             ),
             endDay: .init(
                 value: .alwaysToday,

@@ -153,6 +153,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
             self?.provideNewChain()
             self?.provideSelectedAccount()
             self?.updateAccountSubscription()
+            self?.provideStakingRewardsFilter()
         }
     }
 
@@ -195,6 +196,7 @@ extension StakingMainInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         updateAccountSubscription()
         provideSelectedAccount()
+        provideStakingRewardsFilter()
     }
 }
 
