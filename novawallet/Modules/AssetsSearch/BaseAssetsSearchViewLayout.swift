@@ -1,25 +1,19 @@
 import UIKit
+import SnapKit
 import SoraUI
 
-final class AssetsSearchViewLayout: UIView {
+class BaseAssetsSearchViewLayout: UIView {
     enum Constants {
         static let searchBarHeight: CGFloat = 54
     }
 
-    let searchView: CustomSearchView = {
-        let view = CustomSearchView()
-        view.searchBar.textField.autocorrectionType = .no
-        view.searchBar.textField.autocapitalizationType = .none
-        return view
-    }()
+    lazy var searchView: SearchViewProtocol = createSearchView()
 
     var searchBar: CustomSearchBar { searchView.searchBar }
 
-    var cancelButton: RoundedButton { searchView.cancelButton }
+    var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
-    let backgroundView = MultigradientView.background
-
-    let collectionView: UICollectionView = {
+    lazy var collectionView: UICollectionView = {
         let flowLayout = AssetsSearchFlowLayout()
         flowLayout.scrollDirection = .vertical
         flowLayout.minimumLineSpacing = 0
@@ -45,12 +39,11 @@ final class AssetsSearchViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup() {
-        addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+    func createSearchView() -> SearchViewProtocol {
+        fatalError("Must be implemented in child class")
+    }
 
+    func setup() {
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()

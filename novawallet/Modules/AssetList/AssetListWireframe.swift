@@ -72,6 +72,33 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
     }
 
+    func showSendTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
+        showAssetsSelection(for: .send, from: view, state: state)
+    }
+
+    func showRecieveTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
+        showAssetsSelection(for: .receive, from: view, state: state)
+    }
+
+    private func showAssetsSelection(
+        for operation: TokenOperation,
+        from view: AssetListViewProtocol?,
+        state: AssetListInitState
+    ) {
+        guard let assetsSearchView = AssetsSearchViewFactory.createView(
+            for: state,
+            operation: operation
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: assetsSearchView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
     func showNfts(from view: AssetListViewProtocol?) {
         guard let nftListView = NftListViewFactory.createView() else {
             return

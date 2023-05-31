@@ -1232,3 +1232,6 @@
 "wallet.connect.proposal.result.submit.error" = "Не удалось авторизовать dapp из-за проблем с сетью";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
+"asset.operation.send.title" = "Отправить";
+"asset.operation.receive.title" = "Получить";
+"asset.operation.buy.title" = "Купить";
