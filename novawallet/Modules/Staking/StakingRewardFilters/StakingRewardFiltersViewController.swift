@@ -7,17 +7,21 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     let presenter: StakingRewardFiltersPresenterProtocol
     typealias DataSource = UITableViewDiffableDataSource<Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
-    private lazy var dataSource = createDataSource()
+    private var dataSource: DataSource?
     var viewModel: StakingRewardFiltersViewModel?
     let dateFormatter: LocalizableResource<DateFormatter>
+    let calendar: Calendar
 
     init(
         presenter: StakingRewardFiltersPresenterProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        calendar: Calendar = .current
     ) {
         self.presenter = presenter
         self.dateFormatter = dateFormatter
+        self.calendar = calendar
+
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -45,6 +49,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         rootView.tableView.registerClassForCell(SelectableFilterCell.self)
         rootView.tableView.registerClassForCell(TitleSubtitleSwitchTableViewCell.self)
         rootView.tableView.registerClassForCell(StakingRewardDateCell.self)
+        dataSource = createDataSource()
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
     }
@@ -75,16 +80,16 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             cellProvider: { tableView, indexPath, model ->
                 UITableViewCell? in
                 switch model {
-                case let .selectable(model):
+                case let .selectable(title, selected):
                     let cell: SelectableFilterCell? = tableView.dequeueReusableCell(for: indexPath)
-                    cell?.bind(viewModel: .init(underlyingViewModel: model.title, selectable: model.selected))
+                    cell?.bind(viewModel: .init(underlyingViewModel: title, selectable: selected))
                     return cell
-                case let .dateAlwaysToday(title, isEnabled):
+                case let .dateAlwaysToday(title, enabled):
                     let cell: TitleSubtitleSwitchTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.titleLabel.apply(style: .footnoteSecondary)
                     cell?.horizontalInset = 0
                     cell?.switchView.addTarget(self, action: #selector(self.toggleEndDay), for: .valueChanged)
-                    cell?.bind(title: title, isOn: isEnabled)
+                    cell?.bind(title: title, isOn: enabled)
                     return cell
                 case let .calendar(id, date, minDate, maxDate):
                     let cell: StakingRewardDateCell? = tableView.dequeueReusableCell(for: indexPath)
@@ -255,10 +260,6 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         self.viewModel = viewModel
         var snapshot = Snapshot()
 
-        defer {
-            dataSource.apply(snapshot, animatingDifferences: false)
-        }
-
         setupSaveButton(isEnabled: map(viewModel: viewModel) != nil)
         let periodSection = Section.period
         snapshot.appendSections([periodSection])
@@ -273,6 +274,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         )
 
         guard viewModel.period == .custom else {
+            dataSource?.apply(snapshot, animatingDifferences: false)
             return
         }
 
@@ -288,7 +290,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     .startDate,
                     date: startDate,
                     minDate: nil,
-                    maxDate: endDate ?? Date()
+                    maxDate: calendar.startOfDay(for: endDate ?? Date()).addingTimeInterval(-.secondsInDay)
                 )],
                 toSection: startDaySection
             )
@@ -310,11 +312,13 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                 snapshot.appendItems([.calendar(
                     .endDate,
                     date: day,
-                    minDate: startDate,
+                    minDate: nil,
                     maxDate: nil
                 )], toSection: endDaySection)
             }
         }
+
+        dataSource?.apply(snapshot, animatingDifferences: false)
     }
 }
 
@@ -327,16 +331,13 @@ extension StakingRewardFiltersViewController: StakingRewardFiltersViewProtocol {
 
 extension StakingRewardFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionModel = dataSource.snapshot().sectionIdentifiers[section]
+        let sectionModel = dataSource?.snapshot().sectionIdentifiers[section]
         switch sectionModel {
         case .period:
             return createTitleHeaderView(for: tableView)
         case let .start(value):
             let title = R.string.localizable.stakingRewardFiltersPeriodDateStart(
                 preferredLanguages: selectedLocale.rLanguages)
-            let date = viewModel.map { model in
-                Lens.startDayValue.get(model.customPeriod)
-            } ?? nil
             let view = createActionHeaderView(for: tableView, title: title, value: value)
             view.control.addTarget(self, action: #selector(startDayAction), for: .touchUpInside)
             return view
@@ -345,9 +346,6 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
         case let .end(value):
             let title = R.string.localizable.stakingRewardFiltersPeriodDateEnd(
                 preferredLanguages: selectedLocale.rLanguages)
-            let date = viewModel.map { model in
-                model.customPeriod.endDay.value.map { Lens.endDayDate.get($0) }
-            } ?? nil
             let view = createActionHeaderView(for: tableView, title: title, value: value)
             view.control.addTarget(self, action: #selector(endDayAction), for: .touchUpInside)
             return view
@@ -357,7 +355,7 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let sectionModel = dataSource.snapshot().sectionIdentifiers[section]
+        let sectionModel = dataSource?.snapshot().sectionIdentifiers[section]
         switch sectionModel {
         case .period:
             return 52
@@ -369,7 +367,7 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let sectionModel = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        let sectionModel = dataSource?.snapshot().sectionIdentifiers[indexPath.section]
         switch sectionModel {
         case .period, .endAlwaysToday:
             return 44
