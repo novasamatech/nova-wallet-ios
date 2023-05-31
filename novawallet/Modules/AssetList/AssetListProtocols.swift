@@ -67,8 +67,8 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     )
 
     func showWalletConnect(from view: AssetListViewProtocol?)
-    
-	func showRecieveTokens(
+
+    func showRecieveTokens(
         from view: AssetListViewProtocol?,
         state: AssetListInitState
     )
