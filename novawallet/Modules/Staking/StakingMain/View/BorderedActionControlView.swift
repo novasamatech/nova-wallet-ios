@@ -6,8 +6,8 @@ final class BorderedActionControlView: UIView {
         $0.imageView.image = R.image.iconLinkChevron()?.tinted(with: tintColor)
         $0.titleLabel.textColor = tintColor
         $0.titleLabel.font = .semiBoldFootnote
-        $0.identityIconAngle = CGFloat.pi / 2
-        $0.activationIconAngle = -CGFloat.pi / 2
+        $0.identityIconAngle = 0
+        $0.activationIconAngle = 0
         $0.horizontalSpacing = 0
         $0.imageView.isUserInteractionEnabled = false
     }
@@ -16,7 +16,7 @@ final class BorderedActionControlView: UIView {
         $0.applyFilledBackgroundStyle()
         $0.fillColor = R.color.colorChipsBackground()!
         $0.highlightedFillColor = R.color.colorChipsBackground()!
-        $0.cornerRadius = 8
+        $0.cornerRadius = 6
     }
 
     var contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 3) {
