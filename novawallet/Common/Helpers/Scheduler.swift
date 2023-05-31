@@ -1,6 +1,8 @@
 import Foundation
 
 protocol SchedulerProtocol: AnyObject {
+    var isScheduled: Bool { get }
+
     func notifyAfter(_ seconds: TimeInterval)
     func cancel()
 }
@@ -26,6 +28,16 @@ final class Scheduler: NSObject, SchedulerProtocol {
 
     deinit {
         cancel()
+    }
+
+    var isScheduled: Bool {
+        lock.lock()
+
+        defer {
+            lock.unlock()
+        }
+
+        return timer != nil
     }
 
     func notifyAfter(_ seconds: TimeInterval) {

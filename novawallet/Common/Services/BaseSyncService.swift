@@ -3,9 +3,15 @@ import RobinHood
 import SubstrateSdk
 
 protocol SyncServiceProtocol {
-    func syncUp()
+    func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool)
     func stopSyncUp()
     func setup()
+}
+
+extension SyncServiceProtocol {
+    func syncUp() {
+        syncUp(afterDelay: 0, ignoreIfSyncing: true)
+    }
 }
 
 class BaseSyncService {
@@ -108,9 +114,7 @@ extension BaseSyncService: ApplicationServiceProtocol {
 
         isActive = false
 
-        if retryAttempt > 0, !isSyncing {
-            scheduler.cancel()
-        }
+        scheduler.cancel()
 
         if isSyncing {
             stopSyncUp()
@@ -136,19 +140,38 @@ extension BaseSyncService: SchedulerDelegate {
 }
 
 extension BaseSyncService: SyncServiceProtocol {
-    func syncUp() {
+    func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        guard isActive, !isSyncing else {
+        guard isActive else {
             return
         }
 
-        isSyncing = true
+        if ignoreIfSyncing, isSyncing {
+            return
+        }
 
-        performSyncUp()
+        if isSyncing {
+            stopSyncUp()
+        }
+
+        if afterDelay > 0 {
+            guard !scheduler.isScheduled else {
+                return
+            }
+
+            scheduler.notifyAfter(afterDelay)
+
+        } else {
+            scheduler.cancel()
+
+            isSyncing = true
+
+            performSyncUp()
+        }
     }
 }
