@@ -87,7 +87,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                 case let .dateAlwaysToday(title, enabled):
                     let cell: TitleSubtitleSwitchTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.titleLabel.apply(style: .footnoteSecondary)
-                    cell?.horizontalInset = 0
+                    cell?.horizontalInset = 16
                     cell?.switchView.addTarget(self, action: #selector(self.toggleEndDay), for: .valueChanged)
                     cell?.bind(title: title, isOn: enabled)
                     return cell
@@ -116,12 +116,15 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     private func createActionHeaderView(
         for tableView: UITableView,
         title: String,
-        value: String
+        value: String,
+        activated: Bool
     ) -> StakingRewardActionControl {
         let view: StakingRewardActionControl = tableView.dequeueReusableHeaderFooterView()
+        view.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         view.bind(
             title: title,
-            value: value
+            value: value,
+            activated: activated
         )
         return view
     }
@@ -280,7 +283,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
 
         let customPeriod = viewModel.customPeriod
         let selectDateValue = dateStringValue(viewModel.customPeriod.startDay.value)
-        let startDaySection = Section.start(selectDateValue)
+        let startDaySection = Section.start(date: selectDateValue, active: !customPeriod.startDay.collapsed)
         let endDate = Lens.endDayValue.get(viewModel.customPeriod).map(Lens.endDayDate.get) ?? nil
         let startDate = customPeriod.startDay.value
         snapshot.appendSections([startDaySection])
@@ -290,7 +293,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     .startDate,
                     date: startDate,
                     minDate: nil,
-                    maxDate: calendar.startOfDay(for: endDate ?? Date()).addingTimeInterval(-.secondsInDay)
+                    maxDate: calendar.startOfDay(for: endDate ?? Date()).addingTimeInterval(-1)
                 )],
                 toSection: startDaySection
             )
@@ -305,14 +308,15 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         case let .exact(day):
             snapshot.appendItems([.dateAlwaysToday(title, false)])
             let dateValue = dateStringValue(endDate ?? nil)
-            let endDaySection = Section.end(dateValue)
-            snapshot.appendSections([endDaySection])
             let collapsed = customPeriod.endDay.collapsed
+            let endDaySection = Section.end(date: dateValue, active: !collapsed)
+            snapshot.appendSections([endDaySection])
             if !collapsed {
+                let minDate = startDate.map { calendar.startOfDay(for: $0) }?.addingTimeInterval(.secondsInDay) ?? calendar.startOfDay(for: Date())
                 snapshot.appendItems([.calendar(
                     .endDate,
                     date: day,
-                    minDate: nil,
+                    minDate: minDate,
                     maxDate: nil
                 )], toSection: endDaySection)
             }
@@ -335,18 +339,18 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
         switch sectionModel {
         case .period:
             return createTitleHeaderView(for: tableView)
-        case let .start(value):
+        case let .start(date, activated):
             let title = R.string.localizable.stakingRewardFiltersPeriodDateStart(
                 preferredLanguages: selectedLocale.rLanguages)
-            let view = createActionHeaderView(for: tableView, title: title, value: value)
+            let view = createActionHeaderView(for: tableView, title: title, value: date, activated: activated)
             view.control.addTarget(self, action: #selector(startDayAction), for: .touchUpInside)
             return view
         case .endAlwaysToday:
             return nil
-        case let .end(value):
+        case let .end(date, activated):
             let title = R.string.localizable.stakingRewardFiltersPeriodDateEnd(
                 preferredLanguages: selectedLocale.rLanguages)
-            let view = createActionHeaderView(for: tableView, title: title, value: value)
+            let view = createActionHeaderView(for: tableView, title: title, value: date, activated: activated)
             view.control.addTarget(self, action: #selector(endDayAction), for: .touchUpInside)
             return view
         default:

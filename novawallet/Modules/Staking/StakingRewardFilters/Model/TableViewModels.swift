@@ -3,9 +3,9 @@ import Foundation
 extension StakingRewardFiltersViewController {
     enum Section: Hashable {
         case period
-        case start(String)
+        case start(date: String, active: Bool)
         case endAlwaysToday
-        case end(String)
+        case end(date: String, active: Bool)
     }
 
     enum Row: Hashable {
