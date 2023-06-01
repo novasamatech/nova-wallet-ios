@@ -969,6 +969,8 @@
 		8443045C2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */; };
 		8443045E2A28892000DE36DE /* Multistaking+Parachain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */; };
 		844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */; };
+		844304622A28C9FA00DE36DE /* MultistakingSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */; };
+		844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304642A28EB0D00DE36DE /* ObservableSyncService.swift */; };
 		844384AC28538D3000611CE2 /* RewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */; };
 		844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */; };
 		844384B0285391D800611CE2 /* RewardCalculatorEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */; };
@@ -4523,6 +4525,8 @@
 		8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+Parachain.swift"; sourceTree = "<group>"; };
 		8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardParachainMapper.swift; sourceTree = "<group>"; };
+		844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingSyncState.swift; sourceTree = "<group>"; };
+		844304642A28EB0D00DE36DE /* ObservableSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSyncService.swift; sourceTree = "<group>"; };
 		844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngine.swift; sourceTree = "<group>"; };
 		844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlephZeroRewardEngine.swift; sourceTree = "<group>"; };
 		844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngineFactory.swift; sourceTree = "<group>"; };
@@ -8381,6 +8385,7 @@
 				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
 				84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */,
 				848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */,
+				844304642A28EB0D00DE36DE /* ObservableSyncService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -9674,6 +9679,7 @@
 				845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */,
 				8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */,
 				8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */,
+				844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */,
 			);
 			path = Multistaking;
 			sourceTree = "<group>";
@@ -19038,6 +19044,7 @@
 				844D22A325EE7E4600C022F7 /* AnySingleValueProvider.swift in Sources */,
 				8440F4A22959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift in Sources */,
 				2AC7BC8B273435CE001D99B0 /* BottomSheetInfoTableCell.swift in Sources */,
+				844304622A28C9FA00DE36DE /* MultistakingSyncState.swift in Sources */,
 				8446F5EC2817107D00B7A86C /* TitleAmountView.swift in Sources */,
 				84CEAAF726D7B8010021B881 /* SettingsMigrator.swift in Sources */,
 				F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */,
@@ -20330,6 +20337,7 @@
 				84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */,
 				84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */,
 				DE52F23521D54A07F558EB1B /* ReferendumVoteConfirmInteractor.swift in Sources */,
+				844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */,
 				B30FEC6F62918BC6F38396A2 /* ReferendumVoteConfirmViewController.swift in Sources */,
 				840AE2E129C9A24C008FF665 /* EtherscanTxHistoryResponse.swift in Sources */,
 				163709FEE6203813261DD771 /* ReferendumVoteConfirmViewLayout.swift in Sources */,

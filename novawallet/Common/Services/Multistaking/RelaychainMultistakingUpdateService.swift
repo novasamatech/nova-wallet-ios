@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class RelaychainMultistakingUpdateService: BaseSyncService {
+final class RelaychainMultistakingUpdateService: ObservableSyncService {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
@@ -108,7 +108,6 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
             if
                 case let .defined(stash) = accounts.stash,
                 case let .defined(controller) = accounts.controller {
-
                 markSyncingImmediate()
 
                 saveStashChange(stash ?? accountId)

@@ -3,6 +3,9 @@ import RobinHood
 import SubstrateSdk
 
 protocol SyncServiceProtocol {
+    func getIsSyncing() -> Bool
+    func getIsActive() -> Bool
+
     func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool)
     func stopSyncUp()
     func setup()
@@ -144,6 +147,26 @@ extension BaseSyncService: SchedulerDelegate {
 }
 
 extension BaseSyncService: SyncServiceProtocol {
+    func getIsSyncing() -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return isSyncing
+    }
+
+    func getIsActive() -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return isActive
+    }
+
     func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool) {
         mutex.lock()
 

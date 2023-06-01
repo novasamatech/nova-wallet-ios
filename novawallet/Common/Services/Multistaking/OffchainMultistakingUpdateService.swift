@@ -1,11 +1,11 @@
 import Foundation
 import RobinHood
 
-protocol OffchainMultistakingUpdateServiceProtocol: ApplicationServiceProtocol {
+protocol OffchainMultistakingUpdateServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
     func apply(newChainAssets: Set<ChainAsset>)
 }
 
-final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCleaning,
+final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning,
     OffchainMultistakingUpdateServiceProtocol {
     let wallet: MetaAccountModel
     let accountResolveProvider: StreamableProvider<Multistaking.ResolvedAccount>

@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableCleaning {
+final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset

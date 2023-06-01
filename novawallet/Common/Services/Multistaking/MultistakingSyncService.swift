@@ -7,21 +7,26 @@ protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
 }
 
 final class MultistakingSyncService {
+    typealias OnchainSyncServiceProtocol = ObservableSyncServiceProtocol & ApplicationServiceProtocol
+
     let chainRegistry: ChainRegistryProtocol
     let repositoryFactory: MultistakingRepositoryFactoryProtocol
     let providerFactory: MultistakingProviderFactoryProtocol
     let offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol
     let operationQueue: OperationQueue
+    let workingQueue: DispatchQueue
     let logger: LoggerProtocol
 
     private var wallet: MetaAccountModel
 
     private(set) var isActive: Bool = false
 
-    private(set) var onchainUpdaters: [Multistaking.Option: ApplicationServiceProtocol] = [:]
+    private(set) var onchainUpdaters: [Multistaking.Option: OnchainSyncServiceProtocol] = [:]
     private(set) var offchainUpdater: OffchainMultistakingUpdateServiceProtocol?
 
     private let mutex = NSLock()
+
+    private var stateObserver = Observable<MultistakingSyncState>(state: .init())
 
     init(
         wallet: MetaAccountModel,
@@ -29,14 +34,16 @@ final class MultistakingSyncService {
         providerFactory: MultistakingProviderFactoryProtocol,
         repositoryFactory: MultistakingRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        workingQueue: DispatchQueue = .global(),
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.providerFactory = providerFactory
         self.repositoryFactory = repositoryFactory
         self.offchainOperationFactory = offchainOperationFactory
+        self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -47,7 +54,7 @@ final class MultistakingSyncService {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: .global()
+            runningInQueue: workingQueue
         ) { [weak self] changes in
             self?.mutex.lock()
 
@@ -79,9 +86,24 @@ final class MultistakingSyncService {
             accountResolveProvider: accountProvider,
             dashboardRepository: dashboardRepository,
             operationFactory: offchainOperationFactory,
-            workingQueue: .global(),
+            workingQueue: workingQueue,
             operationQueue: operationQueue
         )
+
+        offchainUpdater?.subscribeSyncState(
+            self,
+            queue: workingQueue
+        ) { [weak self] _, isSyncing in
+            guard let self = self else {
+                return
+            }
+
+            self.mutex.lock()
+
+            self.stateObserver.state = self.stateObserver.state.updating(isOffchainSyncing: isSyncing)
+
+            self.mutex.unlock()
+        }
 
         if isActive {
             offchainUpdater?.setup()
@@ -138,6 +160,8 @@ final class MultistakingSyncService {
             ) {
                 onchainUpdaters[stakingOption] = service
 
+                addSyncHandler(for: service, stakingOption: stakingOption)
+
                 if isActive {
                     service.setup()
                 }
@@ -148,6 +172,8 @@ final class MultistakingSyncService {
                 stakingType: chainAssetOption.type
             ) {
                 onchainUpdaters[stakingOption] = service
+
+                addSyncHandler(for: service, stakingOption: stakingOption)
 
                 if isActive {
                     service.setup()
@@ -167,7 +193,7 @@ final class MultistakingSyncService {
     private func createRelaychainStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> ApplicationServiceProtocol? {
+    ) -> OnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -185,7 +211,7 @@ final class MultistakingSyncService {
             connection: connection,
             runtimeService: runtimeService,
             operationQueue: operationQueue,
-            workingQueue: .global(),
+            workingQueue: workingQueue,
             logger: logger
         )
     }
@@ -193,7 +219,7 @@ final class MultistakingSyncService {
     private func createParachainStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> ApplicationServiceProtocol? {
+    ) -> OnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -226,7 +252,7 @@ final class MultistakingSyncService {
             runtimeService: runtimeService,
             operationFactory: operationFactory,
             operationQueue: operationQueue,
-            workingQueue: .global(),
+            workingQueue: workingQueue,
             logger: logger
         )
     }
@@ -235,6 +261,42 @@ final class MultistakingSyncService {
         onchainUpdaters.values.forEach {
             $0.throttle()
         }
+    }
+
+    private func removeOnchainSyncHandler() {
+        onchainUpdaters.values.forEach { $0.unsubscribeSyncState(self) }
+    }
+
+    private func addSyncHandler(for service: ObservableSyncServiceProtocol, stakingOption: Multistaking.Option) {
+        service.subscribeSyncState(
+            self,
+            queue: workingQueue
+        ) { [weak self] _, isSyncing in
+            guard let self = self else {
+                return
+            }
+
+            self.mutex.lock()
+
+            self.stateObserver.state = self.stateObserver.state.updating(
+                syncing: isSyncing,
+                stakingOption: stakingOption
+            )
+
+            self.mutex.unlock()
+        }
+    }
+
+    private func updateSyncState() {
+        let onchainSyncState = onchainUpdaters.mapValues { $0.getIsSyncing() }
+        let offchainSyncState = offchainUpdater?.getIsSyncing() ?? false
+
+        let newState = MultistakingSyncState(
+            isOnchainSyncing: onchainSyncState,
+            isOffchainSyncing: offchainSyncState
+        )
+
+        stateObserver.state = newState
     }
 }
 
@@ -248,11 +310,15 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
 
         wallet = selectedMetaAccount
 
+        offchainUpdater?.unsubscribeSyncState(self)
         offchainUpdater?.throttle()
         offchainUpdater = nil
 
+        removeOnchainSyncHandler()
         throttleOnchainServices()
         onchainUpdaters = [:]
+
+        stateObserver.state = .init()
 
         chainRegistry.chainsUnsubscribe(self)
 
@@ -296,5 +362,35 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
         offchainUpdater?.throttle()
 
         throttleOnchainServices()
+    }
+
+    func subscribeSyncState(
+        _ target: AnyObject,
+        queue: DispatchQueue?,
+        closure: @escaping (MultistakingSyncState, MultistakingSyncState) -> Void
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let state = stateObserver.state
+
+        dispatchInQueueWhenPossible(queue) {
+            closure(state, state)
+        }
+
+        stateObserver.addObserver(with: target, queue: queue, closure: closure)
+    }
+
+    func unsubscribeSyncState(_ target: AnyObject) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        stateObserver.removeObserver(by: target)
     }
 }
