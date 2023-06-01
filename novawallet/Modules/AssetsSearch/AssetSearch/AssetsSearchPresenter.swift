@@ -3,6 +3,8 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
+typealias ChainAssetsFilter = (ChainAsset) -> Bool
+
 final class AssetsSearchPresenter: AssetListBasePresenter {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
@@ -12,9 +14,11 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
     let viewModelFactory: AssetListAssetViewModelFactoryProtocol
 
     private var query: String = ""
+    private let chainAssetsFilter: ChainAssetsFilter?
 
     init(
         initState: AssetListInitState,
+        chainAssetsFilter: ChainAssetsFilter? = nil,
         delegate: AssetsSearchDelegate?,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
@@ -25,7 +29,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-
+        self.chainAssetsFilter = chainAssetsFilter
         super.init()
 
         self.localizationManager = localizationManager
@@ -39,7 +43,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
     }
 
     private func applyFilter() {
-        let filteredAssets = filterAssets(for: query, chains: allChains)
+        let filteredAssets = filterAssets(for: query, filter: chainAssetsFilter, chains: allChains)
         updateGroups(from: filteredAssets, allChains: allChains)
     }
 
@@ -67,9 +71,17 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         storeGroups(groupChainCalculator, groupLists: groupAssetCalculators)
     }
 
-    private func filterAssets(for query: String, chains: [ChainModel.Id: ChainModel]) -> [ChainAsset] {
-        let chainAssets = chains.values.flatMap { chain in
+    private func filterAssets(
+        for query: String,
+        filter: ChainAssetsFilter?,
+        chains: [ChainModel.Id: ChainModel]
+    ) -> [ChainAsset] {
+        var chainAssets = chains.values.flatMap { chain in
             chain.assets.map { ChainAsset(chain: chain, asset: $0) }
+        }
+
+        if let filter = filter {
+            chainAssets = chainAssets.filter(filter)
         }
 
         guard !query.isEmpty else {

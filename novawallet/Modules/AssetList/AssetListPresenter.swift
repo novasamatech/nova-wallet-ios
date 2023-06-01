@@ -12,6 +12,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     let wireframe: AssetListWireframeProtocol
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
+    let purchaseProvider: PurchaseProviderProtocol
 
     private(set) var nftList: ListDifferenceCalculator<NftModel>
 
@@ -19,6 +20,8 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
+    private var wallet: MetaAccountModel?
+
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
     private(set) var walletConnectSessionsCount: Int = 0
@@ -33,11 +36,13 @@ final class AssetListPresenter: AssetListBasePresenter {
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
         viewModelFactory: AssetListViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        purchaseProvider: PurchaseProviderProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.purchaseProvider = purchaseProvider
         nftList = Self.createNftDiffCalculator()
 
         super.init()
@@ -526,6 +531,28 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         )
     }
 
+    func buy() {
+        let initState = AssetListInitState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains,
+            crowdloansResult: crowdloansResult
+        )
+        wireframe.showBuyTokens(
+            from: view,
+            state: initState
+        ) { [weak self] chainAsset in
+            guard let purchaseProvider = self?.purchaseProvider else {
+                return false
+            }
+            guard let accountId = self?.wallet?.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
+                return false
+            }
+            let purchaseActions = purchaseProvider.buildPurchaseActions(for: chainAsset, accountId: accountId)
+            return !purchaseActions.isEmpty
+        }
+    }
+
     func presentWalletConnect() {
         if walletConnectSessionsCount > 0 {
             wireframe.showWalletConnect(from: view)
@@ -548,10 +575,11 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         nftList = Self.createNftDiffCalculator()
     }
 
-    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String) {
-        self.walletIdenticon = walletIdenticon
-        self.walletType = walletType
-        self.name = name
+    func didReceive(wallet: MetaAccountModel) {
+        walletIdenticon = wallet.walletIdenticonData()
+        walletType = wallet.type
+        name = wallet.name
+        self.wallet = wallet
 
         resetStorages()
 

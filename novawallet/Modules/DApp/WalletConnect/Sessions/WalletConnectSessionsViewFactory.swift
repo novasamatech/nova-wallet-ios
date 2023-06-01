@@ -87,6 +87,6 @@ struct WalletConnectSessionsViewFactory {
             return nil
         }
 
-        return .init(walletConnect: walletConnect, sessionFilter: { $0.wallet == wallet })
+        return .init(walletConnect: walletConnect, sessionFilter: { $0.wallet?.identifier == wallet.identifier })
     }
 }

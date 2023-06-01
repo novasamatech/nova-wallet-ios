@@ -31,7 +31,7 @@ final class AssetOperationPresenter {
     private func select(chainAsset: ChainAsset) {
         switch operation {
         case .send:
-            if TokenOperation.checkTransferOperationAvailable() == true {
+            if TokenOperation.checkTransferOperationAvailable() {
                 wireframe.showSendTokens(from: view, chainAsset: chainAsset)
             }
         case .receive:
@@ -39,35 +39,42 @@ final class AssetOperationPresenter {
                 walletType: selectedAccount.type,
                 chainAsset: chainAsset
             )
-            switch checkResult {
-            case let .common(operationCheckCommonResult):
-                handle(checkResult: operationCheckCommonResult, chainAsset: chainAsset) {
-                    if let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) {
-                        wireframe.showReceiveTokens(
-                            from: view,
-                            chainAsset: chainAsset,
-                            metaChainAccountResponse: metaChainAccountResponse
-                        )
-                    }
-                }
-            }
+            handle(receiveCheckResult: checkResult, chainAsset: chainAsset)
         case .buy:
             let checkResult = TokenOperation.checkBuyOperationAvailable(
                 purchaseActions: purchaseActions,
                 walletType: selectedAccount.type,
                 chainAsset: chainAsset
             )
+            handle(buyCheckResult: checkResult, chainAsset: chainAsset)
+        }
+    }
 
-            switch checkResult {
-            case let .common(commonCheckResult):
-                handle(checkResult: commonCheckResult, chainAsset: chainAsset) {
-                    if let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) {
-                        showPurchase()
-                    }
+    private func handle(receiveCheckResult: ReceiveAvailableCheckResult, chainAsset: ChainAsset) {
+        switch receiveCheckResult {
+        case let .common(operationCheckCommonResult):
+            handle(checkResult: operationCheckCommonResult, chainAsset: chainAsset) {
+                if let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) {
+                    wireframe.showReceiveTokens(
+                        from: view,
+                        chainAsset: chainAsset,
+                        metaChainAccountResponse: metaChainAccountResponse
+                    )
                 }
-            case .noBuyOptions:
-                break
             }
+        }
+    }
+
+    private func handle(buyCheckResult: BuyAvailableCheckResult, chainAsset: ChainAsset) {
+        switch buyCheckResult {
+        case let .common(commonCheckResult):
+            handle(checkResult: commonCheckResult, chainAsset: chainAsset) {
+                if let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) {
+                    showPurchase()
+                }
+            }
+        case .noBuyOptions:
+            break
         }
     }
 
@@ -92,19 +99,23 @@ final class AssetOperationPresenter {
 
     func handle(
         checkResult: OperationCheckCommonResult,
-        chainAsset: ChainAsset,
+        chainAsset _: ChainAsset,
         availableClosure: () -> Void
     ) {
+        guard let view = view else {
+            return
+        }
         switch checkResult {
         case .available:
             availableClosure()
         case .ledgerNotSupported:
-            wireframe.showNoLedgerSupport(
+            wireframe.presentSignerNotSupportedView(
                 from: view,
-                tokenName: chainAsset.asset.symbol
+                type: .ledger,
+                completion: {}
             )
         case .noSigning:
-            wireframe.showNoKeys(from: view)
+            wireframe.presentNoSigningView(from: view, completion: {})
         }
     }
 }

@@ -49,7 +49,8 @@ struct AssetListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            purchaseProvider: PurchaseAggregator.defaultAggregator()
         )
 
         let view = AssetListViewController(

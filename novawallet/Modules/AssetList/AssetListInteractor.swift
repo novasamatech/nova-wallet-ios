@@ -86,11 +86,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
             return
         }
 
-        presenter?.didReceive(
-            walletIdenticon: selectedMetaAccount.walletIdenticonData(),
-            walletType: selectedMetaAccount.type,
-            name: selectedMetaAccount.name
-        )
+        presenter?.didReceive(wallet: selectedMetaAccount)
     }
 
     private func provideHidesZeroBalances() {
@@ -307,6 +303,10 @@ extension AssetListInteractor: EventVisitorProtocol {
 
 extension AssetListInteractor: WalletConnectDelegateOutputProtocol {
     func walletConnectDidChangeSessions() {
+        provideWalletConnectSessionsCount()
+    }
+
+    func walletConnectDidChangeChains() {
         provideWalletConnectSessionsCount()
     }
 }

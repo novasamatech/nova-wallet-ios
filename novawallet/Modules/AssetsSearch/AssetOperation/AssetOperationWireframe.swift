@@ -27,35 +27,6 @@ final class AssetOperationWireframe: AssetOperationWireframeProtocol {
         view?.controller.navigationController?.pushViewController(receiveTokensView.controller, animated: true)
     }
 
-    func showNoLedgerSupport(from view: AssetOperationViewProtocol?, tokenName: String) {
-        guard let confirmationView = LedgerMessageSheetViewFactory.createLedgerNotSupportTokenView(
-            for: tokenName,
-            cancelClosure: nil
-        ) else {
-            return
-        }
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-
-        confirmationView.controller.modalTransitioningFactory = factory
-        confirmationView.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(confirmationView.controller, animated: true)
-    }
-
-    func showNoKeys(from view: AssetOperationViewProtocol?) {
-        guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: {}) else {
-            return
-        }
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-
-        confirmationView.controller.modalTransitioningFactory = factory
-        confirmationView.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(confirmationView.controller, animated: true)
-    }
-
     func showPurchaseProviders(
         from view: AssetOperationViewProtocol?,
         actions: [PurchaseAction],

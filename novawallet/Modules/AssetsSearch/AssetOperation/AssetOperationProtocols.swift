@@ -1,14 +1,12 @@
 typealias AssetOperationViewProtocol = AssetsSearchViewProtocol
 
-protocol AssetOperationWireframeProtocol: AssetsSearchWireframeProtocol {
+protocol AssetOperationWireframeProtocol: AssetsSearchWireframeProtocol, MessageSheetPresentable {
     func showSendTokens(from view: AssetOperationViewProtocol?, chainAsset: ChainAsset)
     func showReceiveTokens(
         from view: AssetOperationViewProtocol?,
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
     )
-    func showNoLedgerSupport(from view: AssetOperationViewProtocol?, tokenName: String)
-    func showNoKeys(from view: AssetOperationViewProtocol?)
     func showPurchaseProviders(
         from view: AssetOperationViewProtocol?,
         actions: [PurchaseAction],

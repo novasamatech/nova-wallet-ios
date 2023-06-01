@@ -52,7 +52,8 @@ struct AssetsSearchViewFactory {
 
     static func createView(
         for initState: AssetListInitState,
-        operation: TokenOperation
+        operation: TokenOperation,
+        filter: ChainAssetsFilter?
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let selectedMetaAccount = SelectedWalletSettings.shared.value else {
@@ -82,6 +83,7 @@ struct AssetsSearchViewFactory {
 
         let searchPresenter = AssetsSearchPresenter(
             initState: initState,
+            chainAssetsFilter: filter,
             delegate: nil,
             interactor: interactor,
             wireframe: wireframe,

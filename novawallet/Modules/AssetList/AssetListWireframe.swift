@@ -86,14 +86,24 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         showAssetsSelection(for: .receive, from: view, state: state)
     }
 
+    func showBuyTokens(
+        from view: AssetListViewProtocol?,
+        state: AssetListInitState,
+        filter: @escaping ChainAssetsFilter
+    ) {
+        showAssetsSelection(for: .buy, from: view, state: state, filter: filter)
+    }
+
     private func showAssetsSelection(
         for operation: TokenOperation,
         from view: AssetListViewProtocol?,
-        state: AssetListInitState
+        state: AssetListInitState,
+        filter: ChainAssetsFilter? = nil
     ) {
         guard let assetsSearchView = AssetsSearchViewFactory.createView(
             for: state,
-            operation: operation
+            operation: operation,
+            filter: filter
         ) else {
             return
         }
