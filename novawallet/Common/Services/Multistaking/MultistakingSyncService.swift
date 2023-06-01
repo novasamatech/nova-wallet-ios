@@ -16,10 +16,12 @@ final class MultistakingSyncService {
 
     private var wallet: MetaAccountModel
 
-    @Atomic(defaultValue: false) var isActive: Bool
+    private(set) var isActive: Bool = false
 
-    @Atomic(defaultValue: [:]) var onchainUpdaters: [Multistaking.Option: ApplicationServiceProtocol]
-    @Atomic(defaultValue: nil) var offchainUpdater: OffchainMultistakingUpdateServiceProtocol?
+    private(set) var onchainUpdaters: [Multistaking.Option: ApplicationServiceProtocol] = [:]
+    private(set) var offchainUpdater: OffchainMultistakingUpdateServiceProtocol?
+
+    private let mutex = NSLock()
 
     init(
         wallet: MetaAccountModel,
@@ -45,9 +47,13 @@ final class MultistakingSyncService {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: .global(qos: .default)
+            runningInQueue: .global()
         ) { [weak self] changes in
+            self?.mutex.lock()
+
             self?.handleChain(changes: changes)
+
+            self?.mutex.unlock()
         }
     }
 
@@ -73,6 +79,7 @@ final class MultistakingSyncService {
             accountResolveProvider: accountProvider,
             dashboardRepository: dashboardRepository,
             operationFactory: offchainOperationFactory,
+            workingQueue: .global(),
             operationQueue: operationQueue
         )
 
@@ -178,6 +185,7 @@ final class MultistakingSyncService {
             connection: connection,
             runtimeService: runtimeService,
             operationQueue: operationQueue,
+            workingQueue: .global(),
             logger: logger
         )
     }
@@ -218,7 +226,7 @@ final class MultistakingSyncService {
             runtimeService: runtimeService,
             operationFactory: operationFactory,
             operationQueue: operationQueue,
-            workingQueue: DispatchQueue.global(qos: .default),
+            workingQueue: .global(),
             logger: logger
         )
     }
@@ -232,6 +240,12 @@ final class MultistakingSyncService {
 
 extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         wallet = selectedMetaAccount
 
         offchainUpdater?.throttle()
@@ -247,6 +261,12 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     }
 
     func setup() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         guard !isActive else {
             return
         }
@@ -261,6 +281,12 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     }
 
     func throttle() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         guard isActive else {
             return
         }

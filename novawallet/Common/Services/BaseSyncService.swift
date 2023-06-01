@@ -44,6 +44,10 @@ class BaseSyncService {
         fatalError("Method must be overriden by child class")
     }
 
+    func markSyncingImmediate() {
+        isSyncing = true
+    }
+
     func complete(_ error: Error?) {
         mutex.lock()
 
@@ -157,6 +161,8 @@ extension BaseSyncService: SyncServiceProtocol {
 
         if isSyncing {
             stopSyncUp()
+
+            isSyncing = false
         }
 
         if afterDelay > 0 {

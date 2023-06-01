@@ -11,6 +11,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>
     let accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>
+    let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
     private var stateSubscription: CallbackBatchStorageSubscription<Multistaking.RelaychainStateChange>?
@@ -27,6 +28,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
+        workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.walletId = walletId
@@ -37,6 +39,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         self.accountRepository = accountRepository
         self.connection = connection
         self.runtimeService = runtimeService
+        self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
         super.init(logger: logger)
@@ -86,9 +89,13 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
             runtimeService: runtimeService,
             repository: nil,
             operationQueue: operationQueue,
-            callbackQueue: .global(qos: .default)
+            callbackQueue: workingQueue
         ) { [weak self] result in
+            self?.mutex.lock()
+
             self?.handleControllerSubscription(result: result, accountId: accountId)
+
+            self?.mutex.unlock()
         }
     }
 
@@ -101,6 +108,9 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
             if
                 case let .defined(stash) = accounts.stash,
                 case let .defined(controller) = accounts.controller {
+
+                markSyncingImmediate()
+
                 saveStashChange(stash ?? accountId)
 
                 subscribeState(
@@ -109,7 +119,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
                 )
             }
         case let .failure(error):
-            complete(error)
+            completeImmediate(error)
         }
     }
 
@@ -141,9 +151,13 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
             runtimeService: runtimeService,
             repository: nil,
             operationQueue: operationQueue,
-            callbackQueue: .global(qos: .default)
+            callbackQueue: workingQueue
         ) { [weak self] result in
+            self?.mutex.lock()
+
             self?.handleStateSubscription(result: result)
+
+            self?.mutex.unlock()
         }
     }
 
@@ -152,7 +166,7 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         case let .success(change):
             saveState(change: change)
         case let .failure(error):
-            complete(error)
+            completeImmediate(error)
         }
     }
 
@@ -175,10 +189,12 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         })
 
         saveOperation.completionBlock = { [weak self] in
-            do {
-                _ = try saveOperation.extractNoCancellableResultData()
-            } catch {
-                self?.logger?.error("Can't save stash account id")
+            self?.workingQueue.async {
+                do {
+                    _ = try saveOperation.extractNoCancellableResultData()
+                } catch {
+                    self?.logger?.error("Can't save stash account id")
+                }
             }
         }
 
@@ -203,11 +219,13 @@ final class RelaychainMultistakingUpdateService: BaseSyncService {
         })
 
         saveOperation.completionBlock = { [weak self] in
-            do {
-                _ = try saveOperation.extractNoCancellableResultData()
-                self?.complete(nil)
-            } catch {
-                self?.complete(error)
+            self?.workingQueue.async {
+                do {
+                    _ = try saveOperation.extractNoCancellableResultData()
+                    self?.complete(nil)
+                } catch {
+                    self?.complete(error)
+                }
             }
         }
 

@@ -14,9 +14,8 @@ final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableC
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
-    @Atomic(defaultValue: nil) private var subscription: CallbackStorageSubscription<ParachainStaking.Delegator>?
-
-    @Atomic(defaultValue: nil) private var collatorsCall: CancellableCall?
+    private var subscription: CallbackStorageSubscription<ParachainStaking.Delegator>?
+    private var collatorsCall: CancellableCall?
 
     init(
         walletId: MetaAccountModel.Id,
@@ -46,21 +45,12 @@ final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableC
     }
 
     override func performSyncUp() {
-        workingQueue.async { [weak self] in
-            guard let self = self else {
-                return
-            }
-
-            self.clearSubscription()
-
-            self.subscribeDelegatorState(for: self.accountId)
-        }
+        clearSubscription()
+        subscribeDelegatorState(for: accountId)
     }
 
     override func stopSyncUp() {
-        workingQueue.async { [weak self] in
-            self?.clearSubscription()
-        }
+        clearSubscription()
     }
 
     private func clearSubscription() {
@@ -80,9 +70,13 @@ final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableC
             runtimeService: runtimeService,
             repository: nil,
             operationQueue: operationQueue,
-            callbackQueue: .global(qos: .default)
+            callbackQueue: workingQueue
         ) { [weak self] result in
+            self?.mutex.lock()
+
             self?.handleDelegatorState(result: result)
+
+            self?.mutex.unlock()
         }
     }
 
@@ -91,11 +85,15 @@ final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableC
         case let .success(delegator):
             clearCollatorsFetchRequest()
 
+            markSyncingImmediate()
+
             if let delegator = delegator {
                 fetchCollatorsAndSaveState(for: delegator)
+            } else {
+                saveState(for: delegator, collators: [:])
             }
         case let .failure(error):
-            complete(error)
+            completeImmediate(error)
         }
     }
 
@@ -113,7 +111,17 @@ final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableC
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
-            self?.workingQueue.async {
+            guard let workingQueue = self?.workingQueue, let mutex = self?.mutex else {
+                return
+            }
+
+            dispatchInConcurrent(queue: workingQueue, locking: mutex) {
+                guard self?.collatorsCall === wrapper else {
+                    return
+                }
+
+                self?.collatorsCall = nil
+
                 do {
                     let collatorList = try wrapper.targetOperation.extractNoCancellableResultData()
                     let collatorDict = zip(collatorIds, collatorList).reduce(
@@ -124,10 +132,12 @@ final class ParachainMultistakingUpdateService: BaseSyncService, AnyCancellableC
 
                     self?.saveState(for: delegator, collators: collatorDict)
                 } catch {
-                    self?.complete(error)
+                    self?.completeImmediate(error)
                 }
             }
         }
+
+        collatorsCall = wrapper
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
