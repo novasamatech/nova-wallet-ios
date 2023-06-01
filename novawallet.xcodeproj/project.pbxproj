@@ -966,6 +966,9 @@
 		8442003828EAA16600C49C4A /* ReferendumsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003728EAA16600C49C4A /* ReferendumsPresenter.swift */; };
 		8442003A28EAA2D400C49C4A /* ReferendumsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */; };
 		8442003C28EAA2E400C49C4A /* ReferendumsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */; };
+		8443045C2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */; };
+		8443045E2A28892000DE36DE /* Multistaking+Parachain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */; };
+		844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */; };
 		844384AC28538D3000611CE2 /* RewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */; };
 		844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */; };
 		844384B0285391D800611CE2 /* RewardCalculatorEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */; };
@@ -4517,6 +4520,9 @@
 		8442003728EAA16600C49C4A /* ReferendumsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsPresenter.swift; sourceTree = "<group>"; };
 		8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsInteractor.swift; sourceTree = "<group>"; };
 		8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsWireframe.swift; sourceTree = "<group>"; };
+		8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainMultistakingUpdateService.swift; sourceTree = "<group>"; };
+		8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+Parachain.swift"; sourceTree = "<group>"; };
+		8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardParachainMapper.swift; sourceTree = "<group>"; };
 		844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngine.swift; sourceTree = "<group>"; };
 		844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlephZeroRewardEngine.swift; sourceTree = "<group>"; };
 		844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngineFactory.swift; sourceTree = "<group>"; };
@@ -9666,6 +9672,8 @@
 				845FB6722A22285C0003BCA6 /* MultistakingSyncService.swift */,
 				845FB6742A2274890003BCA6 /* MultistakingRepositoryFactory.swift */,
 				845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */,
+				8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */,
+				8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */,
 			);
 			path = Multistaking;
 			sourceTree = "<group>";
@@ -9697,6 +9705,7 @@
 				8473B4772A207FE0003DE213 /* StakingDashboardOffchainMapper.swift */,
 				8473B4792A2083B1003DE213 /* StakingDashboardItemMapper.swift */,
 				846DA5582A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift */,
+				8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -17903,6 +17912,7 @@
 				842876B224AE059700D91AD8 /* SupportData.swift in Sources */,
 				84D8754228EB5D66004065BD /* ChainBalanceViewModel.swift in Sources */,
 				84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */,
+				8443045C2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift in Sources */,
 				84893C0524DA8663008F6A3F /* AccountCreationError.swift in Sources */,
 				84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */,
 				842EBB3B2890B06500B952D8 /* WalletSelectionPresenter.swift in Sources */,
@@ -19977,6 +19987,7 @@
 				12734D7CC6ACA5B657F44519 /* DAppAddFavoriteViewFactory.swift in Sources */,
 				8483B15528F9406C0048B295 /* ReferendumVotersInteractorError.swift in Sources */,
 				84757E14299A1E1500616C6C /* BatchSubscriptionHandler.swift in Sources */,
+				8443045E2A28892000DE36DE /* Multistaking+Parachain.swift in Sources */,
 				4E184FFD1532C293BDF6D7C1 /* DAppAuthSettingsProtocols.swift in Sources */,
 				319124D11B1376B430B6C2EF /* DAppAuthSettingsWireframe.swift in Sources */,
 				849F1453294477DA00D9F9BA /* TextWithServiceInputView.swift in Sources */,
@@ -20092,6 +20103,7 @@
 				912ECC319A48CAD09FB694AC /* AssetsSearchProtocols.swift in Sources */,
 				8456D2C12993EE9F00D159A7 /* GovernanceDelegateStackCell.swift in Sources */,
 				8582395FEF296771447439FF /* AssetsSearchWireframe.swift in Sources */,
+				844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */,
 				CC1723581BAC50E8B9E6DE48 /* AssetsSearchPresenter.swift in Sources */,
 				8448F7A8288401A60080CEA9 /* AssetListInitState.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,

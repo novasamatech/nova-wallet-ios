@@ -12,6 +12,9 @@ protocol MultistakingRepositoryFactoryProtocol {
 
     func createRelaychainRepository(
     ) -> AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>
+
+    func createParachainRepository(
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItemParachainPart>
 }
 
 final class MultistakingRepositoryFactory {
@@ -40,6 +43,13 @@ extension MultistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol {
     func createRelaychainRepository(
     ) -> AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart> {
         let mapper = StakingDashboardRelaychainMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createParachainRepository(
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItemParachainPart> {
+        let mapper = StakingDashboardParachainMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(repository)
     }

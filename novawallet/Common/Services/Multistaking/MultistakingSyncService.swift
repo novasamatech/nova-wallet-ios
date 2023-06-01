@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel)
@@ -135,8 +136,16 @@ final class MultistakingSyncService {
                 }
             }
         case .parachain, .turing:
-            // TODO: add parachain support
-            return
+            if let service = createParachainStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            ) {
+                onchainUpdaters[stakingOption] = service
+
+                if isActive {
+                    service.setup()
+                }
+            }
         case .unsupported:
             logger.warning("Trying to create service for unsupported staking")
         }
@@ -169,6 +178,47 @@ final class MultistakingSyncService {
             connection: connection,
             runtimeService: runtimeService,
             operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
+    private func createParachainStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> ApplicationServiceProtocol? {
+        guard
+            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let identityFactory = IdentityOperationFactory(
+            requestFactory: requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
+        let operationFactory = ParaStkCollatorsOperationFactory(
+            requestFactory: requestFactory,
+            identityOperationFactory: identityFactory
+        )
+
+        return ParachainMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: repositoryFactory.createParachainRepository(),
+            connection: connection,
+            runtimeService: runtimeService,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            workingQueue: DispatchQueue.global(qos: .default),
             logger: logger
         )
     }
