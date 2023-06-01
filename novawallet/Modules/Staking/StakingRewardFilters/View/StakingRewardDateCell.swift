@@ -41,10 +41,23 @@ final class StakingRewardDateCell: UITableViewCell, Identifiable {
         }
     }
 
+    override func prepareForReuse() {
+        datePicker.minimumDate = nil
+        datePicker.maximumDate = nil
+        super.prepareForReuse()
+    }
+
     func bind(date: Date?, minDate: Date?, maxDate: Date?) {
-        date.map {
-            datePicker.date = $0
+        if let date = date {
+            if let minDate = minDate, date < minDate {
+                return
+            }
+            if let maxDate = maxDate, date > maxDate {
+                return
+            }
+            datePicker.date = date
         }
+
         datePicker.minimumDate = minDate
         datePicker.maximumDate = maxDate
     }

@@ -13,6 +13,20 @@ final class StakingRewardActionControl: UITableViewHeaderFooterView {
         $0.imageView.isUserInteractionEnabled = false
     }
 
+    lazy var bodyView = UIView.hStack(spacing: 4, [
+        titleLabel,
+        FlexibleSpaceView(),
+        control
+    ])
+
+    var contentInsets = UIEdgeInsets.zero {
+        didSet {
+            bodyView.snp.updateConstraints {
+                $0.edges.equalToSuperview().inset(contentInsets)
+            }
+        }
+    }
+
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
@@ -25,22 +39,19 @@ final class StakingRewardActionControl: UITableViewHeaderFooterView {
     }
 
     private func setupLayout() {
-        let contentView = UIView.hStack(spacing: 4, [
-            titleLabel,
-            FlexibleSpaceView(),
-            control
-        ])
-
-        addSubview(contentView)
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        contentView.addSubview(bodyView)
+        bodyView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(contentInsets)
         }
     }
 
-    func bind(title: String, value: String) {
+    func bind(title: String, value: String, activated: Bool) {
         titleLabel.text = title
         control.titleLabel.text = value
         control.invalidateLayout()
+        if control.isActivated != activated {
+            activated ? control.activate(animated: true) : control.deactivate(animated: true)
+        }
         setNeedsLayout()
     }
 }
