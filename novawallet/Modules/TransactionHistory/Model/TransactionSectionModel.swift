@@ -13,7 +13,7 @@ struct TransactionItemViewModel: Hashable {
             lhs.timestamp == rhs.timestamp &&
             lhs.title == rhs.title &&
             lhs.subtitle == rhs.subtitle &&
-            lhs.time == rhs.time &&
+            lhs.amountDetails == rhs.amountDetails &&
             lhs.amount == rhs.amount &&
             lhs.type == rhs.type &&
             lhs.status == rhs.status
@@ -28,8 +28,8 @@ struct TransactionItemViewModel: Hashable {
     let timestamp: Int64
     let title: String
     let subtitle: String
-    let time: String
     let amount: String
+    let amountDetails: String
     let type: TransactionType
     let status: AssetTransactionStatus
     let imageViewModel: ImageViewModelProtocol?

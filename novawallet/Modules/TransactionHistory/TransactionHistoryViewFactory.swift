@@ -28,6 +28,7 @@ struct TransactionHistoryViewFactory {
 
         let viewModelFactory = TransactionHistoryViewModelFactory(
             chainAsset: chainAsset,
+            dateFormatter: DateFormatter.txHistory,
             balanceViewModelFactory: balanceViewModelFactory,
             groupDateFormatter: DateFormatter.txHistoryDate.localizableResource()
         )

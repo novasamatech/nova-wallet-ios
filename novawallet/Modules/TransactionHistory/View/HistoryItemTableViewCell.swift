@@ -50,7 +50,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
         return label
     }()
 
-    private let timeLabel: UILabel = {
+    private let amountDetailsLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
         label.textColor = R.color.colorTextSecondary()
@@ -104,9 +104,9 @@ final class HistoryItemTableViewCell: UITableViewCell {
                 .offset(-Constants.titleSpacingForTransfer)
         }
 
-        contentView.addSubview(timeLabel)
+        contentView.addSubview(amountDetailsLabel)
 
-        timeLabel.snp.makeConstraints { make in
+        amountDetailsLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(amountLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
@@ -118,7 +118,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
             make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalTo(titleLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
-            make.trailing.lessThanOrEqualTo(timeLabel.snp.leading)
+            make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
                 .offset(-UIConstants.horizontalInset)
         }
     }
@@ -162,9 +162,10 @@ final class HistoryItemTableViewCell: UITableViewCell {
 
 extension HistoryItemTableViewCell {
     func bind(transactionModel: TransactionItemViewModel) {
+        let timePriceSeparator = ""
         titleLabel.text = transactionModel.title
         subtitleLabel.text = transactionModel.subtitle
-        timeLabel.text = transactionModel.time
+        amountDetailsLabel.text = transactionModel.amountDetails
 
         switch transactionModel.type {
         case .incoming, .reward:

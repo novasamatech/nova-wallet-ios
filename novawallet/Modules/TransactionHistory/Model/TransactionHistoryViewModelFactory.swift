@@ -26,15 +26,18 @@ final class TransactionHistoryViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let iconGenerator = PolkadotIconGenerator()
     let calendar = Calendar.current
+    let dateFormatter: LocalizableResource<DateFormatter>
 
     var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
 
     init(
         chainAsset: ChainAsset,
+        dateFormatter: LocalizableResource<DateFormatter>,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         groupDateFormatter: LocalizableResource<DateFormatter>
     ) {
         self.chainAsset = chainAsset
+        self.dateFormatter = dateFormatter
         self.balanceViewModelFactory = balanceViewModelFactory
         self.groupDateFormatter = groupDateFormatter
     }
@@ -62,6 +65,8 @@ final class TransactionHistoryViewModelFactory {
             amountInPlank,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
+        let time = dateFormatter.value(for: locale)
+            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
         let balance = createBalance(
             from: amount,
@@ -74,14 +79,15 @@ final class TransactionHistoryViewModelFactory {
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
         let subtitle = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
         let peerAddress = (data.sender == address ? data.receiver : data.sender) ?? data.sender
+        let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
 
         return TransactionItemViewModel(
             identifier: data.identifier,
             timestamp: data.timestamp,
             title: peerAddress,
             subtitle: subtitle,
-            time: balance.price ?? "",
             amount: balance.amount,
+            amountDetails: amountDetails,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
@@ -99,6 +105,8 @@ final class TransactionHistoryViewModelFactory {
             amountInPlank,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
+        let time = dateFormatter.value(for: locale)
+            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
         let balance = createBalance(
             from: amount,
@@ -113,14 +121,15 @@ final class TransactionHistoryViewModelFactory {
             R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
             R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
         let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
+        let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
 
         return TransactionItemViewModel(
             identifier: data.identifier,
             timestamp: data.timestamp,
             title: title,
             subtitle: subtitle,
-            time: balance.price ?? "",
             amount: balance.amount,
+            amountDetails: amountDetails,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
@@ -138,6 +147,8 @@ final class TransactionHistoryViewModelFactory {
             feeValue,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
+        let time = dateFormatter.value(for: locale)
+            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
         let balance = createBalance(
             from: amount,
@@ -150,17 +161,29 @@ final class TransactionHistoryViewModelFactory {
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
         let peerFirstName = data.callPath.moduleName.displayCall
         let peerLastName = data.callPath.callName.displayCall
+        let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
 
         return TransactionItemViewModel(
             identifier: data.identifier,
             timestamp: data.timestamp,
             title: peerFirstName,
             subtitle: peerLastName,
-            time: balance.price ?? "",
             amount: balance.amount,
+            amountDetails: amountDetails,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
+        )
+    }
+
+    private func amountDetails(price: String?, time: String, locale: Locale) -> String {
+        guard let price = price else {
+            return time
+        }
+        return R.string.localizable.walletHistoryAmountDetails(
+            price,
+            time,
+            preferredLanguages: locale.rLanguages
         )
     }
 }

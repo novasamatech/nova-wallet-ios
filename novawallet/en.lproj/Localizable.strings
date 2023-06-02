@@ -455,6 +455,7 @@
 "staking.validator.my.oversubscribed.message" = "Oversubscribed. You will not receive rewards from the validator in this era.";
 "staking.validator.other.oversubscribed.message" = "Oversubscribed. Only the top staked nominators are paid rewards.";
 "wallet.history.title_v1.9.0" = "History";
+"wallet.history.amount.details" = "%@ at %@";
 "staking.main.lockup.period.title_v1.9.0" = "Unstaking period";
 "staking.estimate.earning.title_v1.9.0" = "Estimated %@ earnings";
 "staking.setup.restake.title" = "Restake";
