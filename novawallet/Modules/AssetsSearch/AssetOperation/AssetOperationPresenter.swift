@@ -20,7 +20,7 @@ final class AssetOperationPresenter {
         selectedAccount: MetaAccountModel,
         searchPresenter: AssetsSearchPresenter,
         wireframe: AssetOperationWireframeProtocol,
-        localizationManager _: LocalizationManagerProtocol,
+        localizationManager: LocalizationManagerProtocol,
         purchaseProvider: PurchaseProviderProtocol
     ) {
         self.searchPresenter = searchPresenter
@@ -33,6 +33,7 @@ final class AssetOperationPresenter {
             selectedAccount: selectedAccount,
             purchaseProvider: purchaseProvider
         )
+        self.localizationManager = localizationManager
     }
 
     private static func filterAsset(
@@ -41,7 +42,18 @@ final class AssetOperationPresenter {
         purchaseProvider: PurchaseProviderProtocol
     ) -> ChainAssetsFilter? {
         switch operation {
-        case .send, .receive:
+        case .send:
+            return { chainAsset in
+                let assetMapper = CustomAssetMapper(
+                    type: chainAsset.asset.type,
+                    typeExtras: chainAsset.asset.typeExtras
+                )
+                guard let transfersEnabled = try? assetMapper.transfersEnabled() else {
+                    return false
+                }
+                return transfersEnabled
+            }
+        case .receive:
             return nil
         case .buy:
             return { chainAsset in
@@ -79,7 +91,7 @@ final class AssetOperationPresenter {
     private func handle(receiveCheckResult: ReceiveAvailableCheckResult, chainAsset: ChainAsset) {
         switch receiveCheckResult {
         case let .common(operationCheckCommonResult):
-            handle(checkResult: operationCheckCommonResult, chainAsset: chainAsset) {
+            handle(checkResult: operationCheckCommonResult) {
                 if let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) {
                     wireframe.showReceiveTokens(
                         from: view,
@@ -113,7 +125,6 @@ final class AssetOperationPresenter {
 
     func handle(
         checkResult: OperationCheckCommonResult,
-        chainAsset _: ChainAsset,
         availableClosure: () -> Void
     ) {
         guard let view = view else {

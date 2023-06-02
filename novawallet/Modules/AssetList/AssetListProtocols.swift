@@ -22,6 +22,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentLocks()
     func send()
     func receive()
+    func buy()
     func presentWalletConnect()
 }
 
