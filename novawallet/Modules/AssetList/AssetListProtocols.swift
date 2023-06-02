@@ -32,7 +32,7 @@ protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol 
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
-    func didReceive(wallet: MetaAccountModel)
+    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String)
     func didReceiveNft(changes: [DataProviderChange<NftModel>])
     func didReceiveNft(error: Error)
     func didResetNftProvider()
@@ -80,8 +80,7 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 
     func showBuyTokens(
         from view: AssetListViewProtocol?,
-        state: AssetListInitState,
-        filter: @escaping ChainAssetsFilter
+        state: AssetListInitState
     )
 }
 

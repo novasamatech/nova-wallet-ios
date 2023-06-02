@@ -8,17 +8,16 @@ typealias ChainAssetsFilter = (ChainAsset) -> Bool
 final class AssetsSearchPresenter: AssetListBasePresenter {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
+    var chainAssetsFilter: ChainAssetsFilter?
 
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
     let viewModelFactory: AssetListAssetViewModelFactoryProtocol
 
     private var query: String = ""
-    private let chainAssetsFilter: ChainAssetsFilter?
 
     init(
         initState: AssetListInitState,
-        chainAssetsFilter: ChainAssetsFilter? = nil,
         delegate: AssetsSearchDelegate?,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
@@ -29,7 +28,6 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.chainAssetsFilter = chainAssetsFilter
         super.init()
 
         self.localizationManager = localizationManager

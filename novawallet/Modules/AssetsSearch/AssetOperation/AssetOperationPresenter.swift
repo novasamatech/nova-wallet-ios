@@ -12,20 +12,49 @@ final class AssetOperationPresenter {
     let searchPresenter: AssetsSearchPresenter
     let operation: TokenOperation
     let selectedAccount: MetaAccountModel
-    let purchaseActions: [PurchaseAction] = []
+    let purchaseProvider: PurchaseProviderProtocol
+    private var purchaseActions: [PurchaseAction] = []
 
     init(
         operation: TokenOperation,
         selectedAccount: MetaAccountModel,
         searchPresenter: AssetsSearchPresenter,
         wireframe: AssetOperationWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager _: LocalizationManagerProtocol,
+        purchaseProvider: PurchaseProviderProtocol
     ) {
         self.searchPresenter = searchPresenter
         self.selectedAccount = selectedAccount
         self.wireframe = wireframe
         self.operation = operation
-        self.localizationManager = localizationManager
+        self.purchaseProvider = purchaseProvider
+        searchPresenter.chainAssetsFilter = Self.filterAsset(
+            for: operation,
+            selectedAccount: selectedAccount,
+            purchaseProvider: purchaseProvider
+        )
+    }
+
+    private static func filterAsset(
+        for operation: TokenOperation,
+        selectedAccount: MetaAccountModel,
+        purchaseProvider: PurchaseProviderProtocol
+    ) -> ChainAssetsFilter? {
+        switch operation {
+        case .send, .receive:
+            return nil
+        case .buy:
+            return { chainAsset in
+                guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
+                    return false
+                }
+                let purchaseActions = purchaseProvider.buildPurchaseActions(
+                    for: chainAsset,
+                    accountId: accountId
+                )
+                return !purchaseActions.isEmpty
+            }
+        }
     }
 
     private func select(chainAsset: ChainAsset) {
@@ -41,12 +70,9 @@ final class AssetOperationPresenter {
             )
             handle(receiveCheckResult: checkResult, chainAsset: chainAsset)
         case .buy:
-            let checkResult = TokenOperation.checkBuyOperationAvailable(
-                purchaseActions: purchaseActions,
-                walletType: selectedAccount.type,
-                chainAsset: chainAsset
-            )
-            handle(buyCheckResult: checkResult, chainAsset: chainAsset)
+            if let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId {
+                showPurchase(chainAsset: chainAsset, accountId: accountId)
+            }
         }
     }
 
@@ -65,20 +91,8 @@ final class AssetOperationPresenter {
         }
     }
 
-    private func handle(buyCheckResult: BuyAvailableCheckResult, chainAsset: ChainAsset) {
-        switch buyCheckResult {
-        case let .common(commonCheckResult):
-            handle(checkResult: commonCheckResult, chainAsset: chainAsset) {
-                if let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) {
-                    showPurchase()
-                }
-            }
-        case .noBuyOptions:
-            break
-        }
-    }
-
-    private func showPurchase() {
+    private func showPurchase(chainAsset: ChainAsset, accountId: AccountId) {
+        purchaseActions = purchaseProvider.buildPurchaseActions(for: chainAsset, accountId: accountId)
         guard !purchaseActions.isEmpty else {
             return
         }
