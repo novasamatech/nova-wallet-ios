@@ -971,6 +971,7 @@
 		844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */; };
 		844304622A28C9FA00DE36DE /* MultistakingSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */; };
 		844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304642A28EB0D00DE36DE /* ObservableSyncService.swift */; };
+		844304672A28F7A500DE36DE /* MultistakingSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */; };
 		844384AC28538D3000611CE2 /* RewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */; };
 		844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */; };
 		844384B0285391D800611CE2 /* RewardCalculatorEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */; };
@@ -4527,6 +4528,7 @@
 		8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardParachainMapper.swift; sourceTree = "<group>"; };
 		844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingSyncState.swift; sourceTree = "<group>"; };
 		844304642A28EB0D00DE36DE /* ObservableSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSyncService.swift; sourceTree = "<group>"; };
+		844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingSyncTests.swift; sourceTree = "<group>"; };
 		844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngine.swift; sourceTree = "<group>"; };
 		844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlephZeroRewardEngine.swift; sourceTree = "<group>"; };
 		844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngineFactory.swift; sourceTree = "<group>"; };
@@ -9128,6 +9130,7 @@
 				840874DF2978882700ACFA55 /* Gov2DelegationTests.swift */,
 				8813702B29C13E7900829458 /* Web3NamesOperationFactoryTests.swift */,
 				8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */,
+				844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -17257,6 +17260,7 @@
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
 				84BB3CE9267C9ADE00676FFE /* CrowdloanTests.swift in Sources */,
 				8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */,
+				844304672A28F7A500DE36DE /* MultistakingSyncTests.swift in Sources */,
 				84E8AC7727BBC8E400402635 /* NFTIntegrationTests.swift in Sources */,
 				849ABE8A262833C000011A2A /* PayoutRewardsServiceTests.swift in Sources */,
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,

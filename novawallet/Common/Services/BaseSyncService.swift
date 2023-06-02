@@ -22,8 +22,10 @@ class BaseSyncService {
     let logger: LoggerProtocol?
 
     private(set) var retryAttempt: Int = 0
-    private(set) var isSyncing: Bool = false
-    private(set) var isActive: Bool = false
+
+    var isSyncing: Bool = false
+    var isActive: Bool = false
+
     let mutex = NSLock()
 
     private lazy var scheduler: Scheduler = {

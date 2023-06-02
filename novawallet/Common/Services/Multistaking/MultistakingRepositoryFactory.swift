@@ -4,6 +4,8 @@ import RobinHood
 protocol MultistakingRepositoryFactoryProtocol {
     var storageFacade: StorageFacadeProtocol { get }
 
+    func createDashboardRepository(for walletId: MetaAccountModel.Id) -> AnyDataProviderRepository<Multistaking.DashboardItem>
+
     func createResolvedAccountRepository(
     ) -> AnyDataProviderRepository<Multistaking.ResolvedAccount>
 
@@ -51,6 +53,21 @@ extension MultistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol {
     ) -> AnyDataProviderRepository<Multistaking.DashboardItemParachainPart> {
         let mapper = StakingDashboardParachainMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createDashboardRepository(
+        for walletId: MetaAccountModel.Id
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItem> {
+        let mapper = StakingDashboardItemMapper()
+
+        let filter = NSPredicate(format: "%K == %@", #keyPath(CDStakingDashboardItem.walletId), walletId)
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         return AnyDataProviderRepository(repository)
     }
 }
