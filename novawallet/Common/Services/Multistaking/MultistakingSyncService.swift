@@ -23,6 +23,7 @@ final class MultistakingSyncService {
 
     private(set) var onchainUpdaters: [Multistaking.Option: OnchainSyncServiceProtocol] = [:]
     private(set) var offchainUpdater: OffchainMultistakingUpdateServiceProtocol?
+    private(set) var stakableChainAssets: Set<ChainAsset> = []
 
     private let mutex = NSLock()
 
@@ -56,25 +57,41 @@ final class MultistakingSyncService {
             self,
             runningInQueue: workingQueue
         ) { [weak self] changes in
-            self?.mutex.lock()
+            guard let self = self else {
+                return
+            }
 
-            self?.handleChain(changes: changes)
+            self.mutex.lock()
 
-            self?.mutex.unlock()
+            let stakableChainAssets = self.handleChain(changes: changes)
+
+            self.mutex.unlock()
+
+            self.offchainUpdater?.apply(newChainAssets: stakableChainAssets)
         }
     }
 
-    private func handleChain(changes: [DataProviderChange<ChainModel>]) {
+    private func handleChain(changes: [DataProviderChange<ChainModel>]) -> Set<ChainAsset> {
         changes.forEach { change in
             switch change {
             case let .insert(newItem):
                 setupOnchainServices(for: newItem)
+
+                let newChainAssets = newItem.getAllStakingChainAssetOptions().map(\.chainAsset)
+                stakableChainAssets.formUnion(newChainAssets)
             case let .update(newItem):
                 updateOnchainServices(for: newItem)
+
+                let newChainAssets = newItem.getAllStakingChainAssetOptions().map(\.chainAsset)
+                stakableChainAssets.formUnion(newChainAssets)
             case let .delete(deletedIdentifier):
                 removeOnchainServices(for: deletedIdentifier)
+
+                stakableChainAssets = stakableChainAssets.filter { $0.chain.chainId != deletedIdentifier }
             }
         }
+
+        return stakableChainAssets
     }
 
     private func setupOffchainService() {

@@ -6,8 +6,8 @@ final class MultistakingSyncTests: XCTestCase {
 
     func testAllStakableChainsSync() throws {
         let result = try performAllStakableOptionsSync(
-            for: "14B3z6xL9vGgKz8WptoZabPrgH6adH1ev2Ven4SiTcdznfqd",
-            ethereumAddress: "0xAe1730a04dA7fE52A42C130950f9193BD71690EF"
+            for: "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ",
+            ethereumAddress: "0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00"
         )
 
         Logger.shared.info("Result: \(result)")

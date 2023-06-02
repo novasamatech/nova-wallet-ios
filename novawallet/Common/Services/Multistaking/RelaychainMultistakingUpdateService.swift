@@ -61,10 +61,12 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     }
 
     private func clearControllerSubscription() {
+        controllerSubscription?.unsubscribe()
         controllerSubscription = nil
     }
 
     private func clearStateSubscription() {
+        stateSubscription?.unsubscribe()
         stateSubscription = nil
     }
 
@@ -97,6 +99,8 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
             self?.mutex.unlock()
         }
+
+        controllerSubscription?.subscribe()
     }
 
     private func handleControllerSubscription(
@@ -158,6 +162,8 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
             self?.mutex.unlock()
         }
+
+        stateSubscription?.subscribe()
     }
 
     private func handleStateSubscription(result: Result<Multistaking.RelaychainStateChange, Error>) {

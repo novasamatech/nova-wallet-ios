@@ -53,6 +53,13 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     }
 
     override func performSyncUp() {
+        cancelOperation()
+
+        guard !chainAssets.isEmpty else {
+            completeImmediate(nil)
+            return
+        }
+
         performSyncUpInternal()
     }
 
@@ -61,12 +68,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     }
 
     private func performSyncUpInternal() {
-        cancelOperation()
-
-        guard !chainAssets.isEmpty else {
-            completeImmediate(nil)
-            return
-        }
+        logger?.debug("Will start syncing...")
 
         let resolvedAccountIds = resolvedAccounts.mapValues { $0.resolvedAccountId }
 
@@ -112,6 +114,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
         saveOperation.completionBlock = { [weak self] in
             self?.workingQueue.async {
                 do {
+                    self?.logger?.debug("Did save synced data...")
                     _ = try saveOperation.extractNoCancellableResultData()
 
                     self?.complete(nil)
@@ -132,19 +135,27 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     }
 
     private func cancelOperation() {
+        logger?.debug("Cancelling syncing...")
+
         clear(cancellable: &pendingOperation)
     }
 
     private func subscribeAccounts(for wallet: MetaAccountModel) {
         let updateClosure: ([DataProviderChange<Multistaking.ResolvedAccount>]) -> Void
         updateClosure = { [weak self] changes in
-            self?.mutex.lock()
-
-            defer {
-                self?.mutex.unlock()
+            guard let self = self else {
+                return
             }
 
-            self?.handleAccountChanges(changes, wallet: wallet)
+            self.mutex.lock()
+
+            let shouldSyncup = self.handleAccountChanges(changes, wallet: wallet)
+
+            self.mutex.unlock()
+
+            if shouldSyncup {
+                self.syncUp(afterDelay: self.syncDelay, ignoreIfSyncing: false)
+            }
         }
 
         let failureClosure: (Error) -> Void = { [weak self] _ in
@@ -168,7 +179,9 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     private func handleAccountChanges(
         _ changes: [DataProviderChange<Multistaking.ResolvedAccount>],
         wallet: MetaAccountModel
-    ) {
+    ) -> Bool {
+        logger?.debug("Did receive staking accounts: \(changes.count)")
+
         var newAccounts = resolvedAccounts
 
         newAccounts = changes.reduce(into: newAccounts) { result, change in
@@ -190,15 +203,9 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
         if newAccounts != resolvedAccounts {
             resolvedAccounts = newAccounts
 
-            scheduleSyncAfterAccountsChange()
+            return isActive && !chainAssets.isEmpty
+        } else {
+            return false
         }
-    }
-
-    private func scheduleSyncAfterAccountsChange() {
-        guard isActive, !chainAssets.isEmpty else {
-            return
-        }
-
-        syncUp(afterDelay: syncDelay, ignoreIfSyncing: false)
     }
 }

@@ -27,6 +27,7 @@ extension StakingDashboardOffchainMapper: CoreDataMapperProtocol {
         from model: DataProviderModel,
         using _: NSManagedObjectContext
     ) throws {
+        entity.identifier = model.identifier
         entity.walletId = model.stakingOption.walletId
 
         let chainAssetId = model.stakingOption.option.chainAssetId
