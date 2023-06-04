@@ -1,7 +1,6 @@
 import UIKit
 
 final class StakingDashboardViewLayout: UIView {
-
     override init(frame: CGRect) {
         super.init(frame: frame)
     }

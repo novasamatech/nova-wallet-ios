@@ -4,7 +4,9 @@ protocol StakingDashboardPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol StakingDashboardInteractorInputProtocol: AnyObject {}
+protocol StakingDashboardInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
 protocol StakingDashboardInteractorOutputProtocol: AnyObject {}
 
