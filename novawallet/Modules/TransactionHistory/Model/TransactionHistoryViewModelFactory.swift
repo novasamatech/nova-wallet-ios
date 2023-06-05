@@ -77,21 +77,66 @@ final class TransactionHistoryViewModelFactory {
 
         let icon = txType == .incoming ? R.image.iconIncomingTransfer() : R.image.iconOutgoingTransfer()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
-        let subtitle = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
-        let peerAddress = (data.sender == address ? data.receiver : data.sender) ?? data.sender
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
+        let itemTitleWithSubtitle = createTransactionItemTitleWithSubtitle(
+            data: data,
+            address: address,
+            txType: txType,
+            locale: locale
+        )
 
         return TransactionItemViewModel(
             identifier: data.identifier,
             timestamp: data.timestamp,
-            title: peerAddress,
-            subtitle: subtitle,
+            title: itemTitleWithSubtitle.title,
+            subtitle: itemTitleWithSubtitle.subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
             type: txType,
             status: data.status.walletValue,
             imageViewModel: imageViewModel
         )
+    }
+
+    private func createTransactionItemTitleWithSubtitle(
+        data: TransactionHistoryItem,
+        address: AccountAddress,
+        txType: TransactionType,
+        locale: Locale
+    ) -> TitleWithSubtitleViewModel {
+        let peerAddress = (data.sender == address ? data.receiver : data.sender) ?? data.sender
+        let title = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
+
+        let subtitle = txType == .incoming ?
+            R.string.localizable.walletHistoryTransferIncomingDetails(
+                peerAddress,
+                preferredLanguages: locale.rLanguages
+            ) :
+            R.string.localizable.walletHistoryTransferOutgoingDetails(
+                peerAddress,
+                preferredLanguages: locale.rLanguages
+            )
+
+        return .init(title: title, subtitle: subtitle)
+    }
+
+    private func createEvmContractCallTitleWithSubtitle(
+        data: TransactionHistoryItem,
+        locale: Locale
+    ) -> TitleWithSubtitleViewModel {
+        let title = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
+
+        guard let call = data.call,
+              let functionName = String(data: call, encoding: .utf8),
+              !functionName.isEmpty, !functionName.lowercased().contains("transfer") else {
+            let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
+                data.receiver ?? "",
+                preferredLanguages: locale.rLanguages
+            )
+            return .init(title: title, subtitle: subtitle)
+        }
+
+        return .init(title: title, subtitle: functionName)
     }
 
     private func createRewardOrSlashItemFromData(
@@ -161,13 +206,16 @@ final class TransactionHistoryViewModelFactory {
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
         let peerFirstName = data.callPath.moduleName.displayCall
         let peerLastName = data.callPath.callName.displayCall
+        let extrinsicTitleWithSubtitle = chainAsset.asset.isEvmNative ?
+            createEvmContractCallTitleWithSubtitle(data: data, locale: locale) :
+            .init(title: peerFirstName, subtitle: peerLastName)
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
 
         return TransactionItemViewModel(
             identifier: data.identifier,
             timestamp: data.timestamp,
-            title: peerFirstName,
-            subtitle: peerLastName,
+            title: extrinsicTitleWithSubtitle.title,
+            subtitle: extrinsicTitleWithSubtitle.subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
             type: txType,

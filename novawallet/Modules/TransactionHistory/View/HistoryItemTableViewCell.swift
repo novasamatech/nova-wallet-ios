@@ -33,7 +33,6 @@ final class HistoryItemTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularSubheadline
         label.textColor = R.color.colorTextPrimary()
-        label.lineBreakMode = .byTruncatingMiddle
         return label
     }()
 
@@ -41,6 +40,8 @@ final class HistoryItemTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularFootnote
         label.textColor = R.color.colorTextSecondary()
+        label.lineBreakMode = .byTruncatingMiddle
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
     }()
 
@@ -101,7 +102,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
             make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalToSuperview().inset(Constants.verticalInset)
             make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
-                .offset(-Constants.titleSpacingForTransfer)
+                .offset(-Constants.titleSpacingForOthers)
         }
 
         contentView.addSubview(amountDetailsLabel)
@@ -119,7 +120,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
             make.top.equalTo(titleLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
             make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
-                .offset(-UIConstants.horizontalInset)
+                .offset(-Constants.titleSpacingForOthers)
         }
     }
 
@@ -178,18 +179,18 @@ extension HistoryItemTableViewCell {
 
         switch transactionModel.type {
         case .incoming, .outgoing:
-            titleLabel.lineBreakMode = .byTruncatingMiddle
+            subtitleLabel.lineBreakMode = .byTruncatingMiddle
 
-            titleLabel.snp.updateConstraints { make in
-                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+            subtitleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
                     .offset(-Constants.titleSpacingForTransfer)
             }
 
         case .slash, .reward, .extrinsic:
-            titleLabel.lineBreakMode = .byTruncatingTail
+            subtitleLabel.lineBreakMode = .byTruncatingTail
 
-            titleLabel.snp.updateConstraints { make in
-                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+            subtitleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
                     .offset(-Constants.titleSpacingForOthers)
             }
         }
