@@ -3,7 +3,7 @@ import RobinHood
 
 protocol StakingDashboardLocalStorageHandler {
     func handleDashboardItems(
-        _ dashboardItems: Result<[DataProviderChange<Multistaking.DashboardItem>], Error>,
+        _ result: Result<[DataProviderChange<Multistaking.DashboardItem>], Error>,
         walletId: MetaAccountModel.Id
     )
 }

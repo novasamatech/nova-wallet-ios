@@ -1,5 +1,6 @@
 import UIKit
 import RobinHood
+import SoraFoundation
 
 final class StakingDashboardInteractor {
     weak var presenter: StakingDashboardInteractorOutputProtocol?
@@ -11,12 +12,15 @@ final class StakingDashboardInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
+    let applicationHandler: ApplicationHandlerProtocol
+
+    private var modelBuilder: StakingDashboardBuilderProtocol?
 
     private var balanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var dashboardItemsProvider: StreamableProvider<Multistaking.DashboardItem>?
 
+    private var priceMappings: [AssetModel.PriceId: Set<String>] = [:]
     private var priceProviders: [AssetModel.PriceId: StreamableProvider<PriceData>] = [:]
-    private var priceMappings: [AssetModel.PriceId: ChainAssetId] = [:]
 
     private var stakableAssets: Set<ChainAsset> = []
 
@@ -28,6 +32,7 @@ final class StakingDashboardInteractor {
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.syncService = syncService
@@ -37,6 +42,7 @@ final class StakingDashboardInteractor {
         self.stakingDashboardProviderFactory = stakingDashboardProviderFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.applicationHandler = applicationHandler
         self.currencyManager = currencyManager
     }
 
@@ -50,8 +56,8 @@ final class StakingDashboardInteractor {
     }
 
     private func setupSyncStateSubscription() {
-        syncService.subscribeSyncState(self, queue: .main) { [weak self] _, _ in
-            // TODO: Notify
+        syncService.subscribeSyncState(self, queue: .main) { [weak self] _, state in
+            self?.modelBuilder?.applySync(state: state)
         }
     }
 
@@ -82,8 +88,8 @@ final class StakingDashboardInteractor {
     }
 
     private func resetPriceSubscription() {
-        priceMappings = [:]
         priceProviders = [:]
+        priceMappings = [:]
 
         updatePriceSubscriptions(for: stakableAssets.allInsertChanges())
     }
@@ -98,34 +104,49 @@ final class StakingDashboardInteractor {
                     return
                 }
 
-                priceMappings[priceId] = newItem.chainAssetId
+                var newAssets = priceMappings[priceId] ?? Set()
+                newAssets.insert(newItem.identifier)
+
+                priceMappings[priceId] = newAssets
                 priceProviders[priceId] = subscribeToPrice(for: priceId, currency: selectedCurrency)
             case let .delete(deletedIdentifier):
-                let priceIds = priceMappings
-                    .filter { $0.value.stringValue == deletedIdentifier }
-                    .map(\.key)
+                guard let priceIdKeyValue = priceMappings.first(where: { $0.value.contains(deletedIdentifier) }) else {
+                    return
+                }
 
-                priceIds.forEach { priceId in
-                    priceMappings[priceId] = nil
+                let priceId = priceIdKeyValue.key
+
+                var newAssets = priceIdKeyValue.value
+                newAssets.remove(deletedIdentifier)
+
+                if newAssets.isEmpty {
                     priceProviders[priceId] = nil
+                    priceMappings[priceId] = nil
+                } else {
+                    priceMappings[priceId] = newAssets
                 }
             }
         }
     }
 
     private func provideWallet() {
-        // TODO: Notify new wallet
+        modelBuilder?.applyWallet(model: walletSettings.value)
     }
 }
 
 extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
     func setup() {
+        modelBuilder = StakingDashboardBuilder { [weak self] model in
+            self?.presenter?.didReceive(model: model)
+        }
+
         provideWallet()
         setupChainsStore()
         setupDashboardItemsSubscription()
         setupSyncStateSubscription()
 
         eventCenter.add(observer: self, dispatchIn: .main)
+        applicationHandler.delegate = self
     }
 
     func retryBalancesSubscription() {
@@ -146,6 +167,8 @@ extension StakingDashboardInteractor: ChainsStoreDelegate {
     func didUpdateChainsStore(_ chainsStore: ChainsStoreProtocol) {
         let newChainAssets = chainsStore.getAllStakebleAssets()
 
+        modelBuilder?.applyAssets(models: newChainAssets)
+
         let changes = DataChangesDiffCalculator().calculateChanges(
             newItems: Array(newChainAssets),
             oldItems: Array(stakableAssets)
@@ -158,32 +181,49 @@ extension StakingDashboardInteractor: ChainsStoreDelegate {
 
 extension StakingDashboardInteractor: StakingDashboardLocalStorageSubscriber, StakingDashboardLocalStorageHandler {
     func handleDashboardItems(
-        _: Result<[DataProviderChange<Multistaking.DashboardItem>], Error>,
+        _ result: Result<[DataProviderChange<Multistaking.DashboardItem>], Error>,
         walletId _: MetaAccountModel.Id
     ) {
-        // TODO: Notify
+        switch result {
+        case let .success(changes):
+            modelBuilder?.applyDashboardItem(changes: changes)
+        case let .failure(error):
+            presenter?.didReceive(error: .stakingsFetchFailed(error))
+        }
     }
 }
 
 extension StakingDashboardInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
-        result _: Result<AssetBalance?, Error>,
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
     ) {
-        // TODO: Notify
+        let chainAssetId = ChainAssetId(chainId: chainId, assetId: assetId)
+
+        switch result {
+        case let .success(balance):
+            modelBuilder?.applyBalance(model: balance, chainAssetId: chainAssetId)
+        case let .failure(error):
+            presenter?.didReceive(error: .balanceFetchFailed(chainAssetId, error))
+        }
     }
 }
 
 extension StakingDashboardInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result _: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        // TODO: Notify
+    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
+        switch result {
+        case let .success(priceData):
+            modelBuilder?.applyPrice(model: priceData, priceId: priceId)
+        case let .failure(error):
+            presenter?.didReceive(error: .priceFetchFailed(priceId, error))
+        }
     }
 }
 
 extension StakingDashboardInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event: SelectedAccountChanged) {
+    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         provideWallet()
 
         syncService.update(selectedMetaAccount: walletSettings.value)
@@ -198,5 +238,15 @@ extension StakingDashboardInteractor: SelectedCurrencyDepending {
         }
 
         resetPriceSubscription()
+    }
+}
+
+extension StakingDashboardInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        syncService.setup()
+    }
+
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        syncService.throttle()
     }
 }

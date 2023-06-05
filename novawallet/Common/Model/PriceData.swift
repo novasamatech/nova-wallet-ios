@@ -16,4 +16,8 @@ extension PriceData {
     static func zero(for identifier: String = "", currencyId: Int? = nil) -> PriceData {
         PriceData(identifier: identifier, price: "0", dayChange: nil, currencyId: currencyId)
     }
+
+    var decimalRate: Decimal? {
+        Decimal(string: price)
+    }
 }

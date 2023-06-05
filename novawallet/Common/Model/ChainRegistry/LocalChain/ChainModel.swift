@@ -240,3 +240,10 @@ extension ChainModel {
         )
     }
 }
+
+extension ChainModel {
+    func getAllAssetPriceIds() -> Set<AssetModel.PriceId> {
+        let priceIds = assets.compactMap(\.priceId)
+        return Set(priceIds)
+    }
+}

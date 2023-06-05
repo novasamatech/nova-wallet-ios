@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct StakingDashboardViewFactory {
     static func createView() -> StakingDashboardViewProtocol? {
@@ -49,6 +50,7 @@ struct StakingDashboardViewFactory {
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            applicationHandler: ApplicationHandler(),
             currencyManager: currencyManager
         )
     }

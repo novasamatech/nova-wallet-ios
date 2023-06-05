@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 final class StakingDashboardPresenter {
     weak var view: StakingDashboardViewProtocol?
@@ -15,7 +16,15 @@ final class StakingDashboardPresenter {
 }
 
 extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 }
 
-extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {}
+extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
+    func didReceive(wallet _: MetaAccountModel) {}
+
+    func didReceive(model _: StakingDashboardModel) {}
+
+    func didReceive(error _: StakingDashboardInteractorError) {}
+}
