@@ -126,7 +126,8 @@ final class TransactionHistoryViewModelFactory {
     ) -> TitleWithSubtitleViewModel {
         let title = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
 
-        if let evmContractFunctionName = data.evmContractFunctionName {
+        if let evmContractFunctionName = data.evmContractFunctionName,
+           !evmContractFunctionName.lowercased().contains("transfer") {
             return .init(title: title, subtitle: evmContractFunctionName)
         } else {
             let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
