@@ -1,28 +1,30 @@
 import Foundation
 import RobinHood
 
-protocol OffchainMultistakingUpdateServiceProtocol: ApplicationServiceProtocol {
+protocol OffchainMultistakingUpdateServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
     func apply(newChainAssets: Set<ChainAsset>)
 }
 
-final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCleaning,
+final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning,
     OffchainMultistakingUpdateServiceProtocol {
     let wallet: MetaAccountModel
     let accountResolveProvider: StreamableProvider<Multistaking.ResolvedAccount>
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemOffchainPart>
     let operationFactory: MultistakingOffchainOperationFactoryProtocol
+    let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
     let syncDelay: TimeInterval
 
-    @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall?
-    @Atomic(defaultValue: [:]) private var resolvedAccounts: [Multistaking.Option: Multistaking.ResolvedAccount]
-    @Atomic(defaultValue: []) private var chainAssets: Set<ChainAsset>
+    private var pendingOperation: CancellableCall?
+    private var resolvedAccounts: [Multistaking.Option: Multistaking.ResolvedAccount] = [:]
+    private var chainAssets: Set<ChainAsset> = []
 
     init(
         wallet: MetaAccountModel,
         accountResolveProvider: StreamableProvider<Multistaking.ResolvedAccount>,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemOffchainPart>,
         operationFactory: MultistakingOffchainOperationFactoryProtocol,
+        workingQueue: DispatchQueue,
         operationQueue: OperationQueue,
         syncDelay: TimeInterval = 2,
         logger: LoggerProtocol = Logger.shared
@@ -31,6 +33,7 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
         self.accountResolveProvider = accountResolveProvider
         self.dashboardRepository = dashboardRepository
         self.operationFactory = operationFactory
+        self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.syncDelay = syncDelay
 
@@ -56,6 +59,16 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
             completeImmediate(nil)
             return
         }
+
+        performSyncUpInternal()
+    }
+
+    override func stopSyncUp() {
+        cancelOperation()
+    }
+
+    private func performSyncUpInternal() {
+        logger?.debug("Will start syncing...")
 
         let resolvedAccountIds = resolvedAccounts.mapValues { $0.resolvedAccountId }
 
@@ -99,12 +112,15 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
         saveOperation.addDependency(wrapper.targetOperation)
 
         saveOperation.completionBlock = { [weak self] in
-            do {
-                _ = try saveOperation.extractNoCancellableResultData()
+            self?.workingQueue.async {
+                do {
+                    self?.logger?.debug("Did save synced data...")
+                    _ = try saveOperation.extractNoCancellableResultData()
 
-                self?.complete(nil)
-            } catch {
-                self?.complete(error)
+                    self?.complete(nil)
+                } catch {
+                    self?.complete(error)
+                }
             }
         }
 
@@ -118,44 +134,28 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
         operationQueue.addOperations(compoundWrapper.allOperations, waitUntilFinished: false)
     }
 
-    override func stopSyncUp() {
-        cancelOperation()
-    }
-
     private func cancelOperation() {
+        logger?.debug("Cancelling syncing...")
+
         clear(cancellable: &pendingOperation)
     }
 
     private func subscribeAccounts(for wallet: MetaAccountModel) {
         let updateClosure: ([DataProviderChange<Multistaking.ResolvedAccount>]) -> Void
         updateClosure = { [weak self] changes in
-            guard var newAccounts = self?.resolvedAccounts else {
+            guard let self = self else {
                 return
             }
 
-            newAccounts = changes.reduce(into: newAccounts) { result, change in
-                switch change {
-                case let .insert(newItem), let .update(newItem):
-                    if
-                        wallet.has(
-                            accountId: newItem.walletAccountId,
-                            chainId: newItem.stakingOption.chainAssetId.chainId
-                        ) {
-                        result[newItem.stakingOption] = newItem
-                    }
-                case let .delete(deletedIdentifier):
-                    // it is a rare operation so it is ok to have it O(n)
-                    result = result.filter { $0.value.identifier != deletedIdentifier }
-                }
+            self.mutex.lock()
+
+            let shouldSyncup = self.handleAccountChanges(changes, wallet: wallet)
+
+            self.mutex.unlock()
+
+            if shouldSyncup {
+                self.syncUp(afterDelay: self.syncDelay, ignoreIfSyncing: false)
             }
-
-            if newAccounts != self?.resolvedAccounts {
-                self?.resolvedAccounts = newAccounts
-
-                self?.scheduleSyncAfterAccountsChange()
-            }
-
-            return
         }
 
         let failureClosure: (Error) -> Void = { [weak self] _ in
@@ -169,18 +169,43 @@ final class OffchainMultistakingUpdateService: BaseSyncService, AnyCancellableCl
 
         accountResolveProvider.addObserver(
             self,
-            deliverOn: .global(qos: .default),
+            deliverOn: workingQueue,
             executing: updateClosure,
             failing: failureClosure,
             options: options
         )
     }
 
-    private func scheduleSyncAfterAccountsChange() {
-        guard isActive, !chainAssets.isEmpty else {
-            return
+    private func handleAccountChanges(
+        _ changes: [DataProviderChange<Multistaking.ResolvedAccount>],
+        wallet: MetaAccountModel
+    ) -> Bool {
+        logger?.debug("Did receive staking accounts: \(changes.count)")
+
+        var newAccounts = resolvedAccounts
+
+        newAccounts = changes.reduce(into: newAccounts) { result, change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                if
+                    wallet.has(
+                        accountId: newItem.walletAccountId,
+                        chainId: newItem.stakingOption.chainAssetId.chainId
+                    ) {
+                    result[newItem.stakingOption] = newItem
+                }
+            case let .delete(deletedIdentifier):
+                // it is a rare operation so it is ok to have it O(n)
+                result = result.filter { $0.value.identifier != deletedIdentifier }
+            }
         }
 
-        syncUp(afterDelay: syncDelay, ignoreIfSyncing: false)
+        if newAccounts != resolvedAccounts {
+            resolvedAccounts = newAccounts
+
+            return isActive && !chainAssets.isEmpty
+        } else {
+            return false
+        }
     }
 }

@@ -21,6 +21,7 @@ extension StakingResolvedAccountMapper: CoreDataMapperProtocol {
         from model: DataProviderModel,
         using _: NSManagedObjectContext
     ) throws {
+        entity.identifier = model.identifier
         entity.chainId = model.stakingOption.chainAssetId.chainId
         entity.assetId = Int32(bitPattern: model.stakingOption.chainAssetId.assetId)
         entity.stakingType = model.stakingOption.type.rawValue

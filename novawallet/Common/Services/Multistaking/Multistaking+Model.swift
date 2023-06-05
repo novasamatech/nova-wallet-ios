@@ -34,6 +34,11 @@ extension Multistaking {
         let stateChange: Multistaking.RelaychainStateChange
     }
 
+    struct DashboardItemParachainPart {
+        let stakingOption: OptionWithWallet
+        let stateChange: Multistaking.ParachainStateChange
+    }
+
     struct DashboardItemOffchainPart {
         let stakingOption: OptionWithWallet
         let maxApy: Decimal

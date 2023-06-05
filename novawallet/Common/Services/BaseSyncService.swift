@@ -3,6 +3,9 @@ import RobinHood
 import SubstrateSdk
 
 protocol SyncServiceProtocol {
+    func getIsSyncing() -> Bool
+    func getIsActive() -> Bool
+
     func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool)
     func stopSyncUp()
     func setup()
@@ -19,8 +22,10 @@ class BaseSyncService {
     let logger: LoggerProtocol?
 
     private(set) var retryAttempt: Int = 0
-    private(set) var isSyncing: Bool = false
-    private(set) var isActive: Bool = false
+
+    var isSyncing: Bool = false
+    var isActive: Bool = false
+
     let mutex = NSLock()
 
     private lazy var scheduler: Scheduler = {
@@ -42,6 +47,10 @@ class BaseSyncService {
 
     func stopSyncUp() {
         fatalError("Method must be overriden by child class")
+    }
+
+    func markSyncingImmediate() {
+        isSyncing = true
     }
 
     func complete(_ error: Error?) {
@@ -140,6 +149,26 @@ extension BaseSyncService: SchedulerDelegate {
 }
 
 extension BaseSyncService: SyncServiceProtocol {
+    func getIsSyncing() -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return isSyncing
+    }
+
+    func getIsActive() -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return isActive
+    }
+
     func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool) {
         mutex.lock()
 
@@ -157,6 +186,8 @@ extension BaseSyncService: SyncServiceProtocol {
 
         if isSyncing {
             stopSyncUp()
+
+            isSyncing = false
         }
 
         if afterDelay > 0 {

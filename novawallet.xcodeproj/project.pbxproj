@@ -966,6 +966,12 @@
 		8442003828EAA16600C49C4A /* ReferendumsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003728EAA16600C49C4A /* ReferendumsPresenter.swift */; };
 		8442003A28EAA2D400C49C4A /* ReferendumsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */; };
 		8442003C28EAA2E400C49C4A /* ReferendumsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */; };
+		8443045C2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */; };
+		8443045E2A28892000DE36DE /* Multistaking+Parachain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */; };
+		844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */; };
+		844304622A28C9FA00DE36DE /* MultistakingSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */; };
+		844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304642A28EB0D00DE36DE /* ObservableSyncService.swift */; };
+		844304672A28F7A500DE36DE /* MultistakingSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */; };
 		844384AC28538D3000611CE2 /* RewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */; };
 		844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */; };
 		844384B0285391D800611CE2 /* RewardCalculatorEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */; };
@@ -4517,6 +4523,12 @@
 		8442003728EAA16600C49C4A /* ReferendumsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsPresenter.swift; sourceTree = "<group>"; };
 		8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsInteractor.swift; sourceTree = "<group>"; };
 		8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsWireframe.swift; sourceTree = "<group>"; };
+		8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainMultistakingUpdateService.swift; sourceTree = "<group>"; };
+		8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+Parachain.swift"; sourceTree = "<group>"; };
+		8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardParachainMapper.swift; sourceTree = "<group>"; };
+		844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingSyncState.swift; sourceTree = "<group>"; };
+		844304642A28EB0D00DE36DE /* ObservableSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSyncService.swift; sourceTree = "<group>"; };
+		844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingSyncTests.swift; sourceTree = "<group>"; };
 		844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngine.swift; sourceTree = "<group>"; };
 		844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlephZeroRewardEngine.swift; sourceTree = "<group>"; };
 		844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngineFactory.swift; sourceTree = "<group>"; };
@@ -8375,6 +8387,7 @@
 				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
 				84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */,
 				848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */,
+				844304642A28EB0D00DE36DE /* ObservableSyncService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -9117,6 +9130,7 @@
 				840874DF2978882700ACFA55 /* Gov2DelegationTests.swift */,
 				8813702B29C13E7900829458 /* Web3NamesOperationFactoryTests.swift */,
 				8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */,
+				844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -9666,6 +9680,9 @@
 				845FB6722A22285C0003BCA6 /* MultistakingSyncService.swift */,
 				845FB6742A2274890003BCA6 /* MultistakingRepositoryFactory.swift */,
 				845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */,
+				8443045B2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift */,
+				8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */,
+				844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */,
 			);
 			path = Multistaking;
 			sourceTree = "<group>";
@@ -9697,6 +9714,7 @@
 				8473B4772A207FE0003DE213 /* StakingDashboardOffchainMapper.swift */,
 				8473B4792A2083B1003DE213 /* StakingDashboardItemMapper.swift */,
 				846DA5582A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift */,
+				8443045F2A28946B00DE36DE /* StakingDashboardParachainMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -17242,6 +17260,7 @@
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
 				84BB3CE9267C9ADE00676FFE /* CrowdloanTests.swift in Sources */,
 				8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */,
+				844304672A28F7A500DE36DE /* MultistakingSyncTests.swift in Sources */,
 				84E8AC7727BBC8E400402635 /* NFTIntegrationTests.swift in Sources */,
 				849ABE8A262833C000011A2A /* PayoutRewardsServiceTests.swift in Sources */,
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,
@@ -17903,6 +17922,7 @@
 				842876B224AE059700D91AD8 /* SupportData.swift in Sources */,
 				84D8754228EB5D66004065BD /* ChainBalanceViewModel.swift in Sources */,
 				84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */,
+				8443045C2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift in Sources */,
 				84893C0524DA8663008F6A3F /* AccountCreationError.swift in Sources */,
 				84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */,
 				842EBB3B2890B06500B952D8 /* WalletSelectionPresenter.swift in Sources */,
@@ -19028,6 +19048,7 @@
 				844D22A325EE7E4600C022F7 /* AnySingleValueProvider.swift in Sources */,
 				8440F4A22959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift in Sources */,
 				2AC7BC8B273435CE001D99B0 /* BottomSheetInfoTableCell.swift in Sources */,
+				844304622A28C9FA00DE36DE /* MultistakingSyncState.swift in Sources */,
 				8446F5EC2817107D00B7A86C /* TitleAmountView.swift in Sources */,
 				84CEAAF726D7B8010021B881 /* SettingsMigrator.swift in Sources */,
 				F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */,
@@ -19977,6 +19998,7 @@
 				12734D7CC6ACA5B657F44519 /* DAppAddFavoriteViewFactory.swift in Sources */,
 				8483B15528F9406C0048B295 /* ReferendumVotersInteractorError.swift in Sources */,
 				84757E14299A1E1500616C6C /* BatchSubscriptionHandler.swift in Sources */,
+				8443045E2A28892000DE36DE /* Multistaking+Parachain.swift in Sources */,
 				4E184FFD1532C293BDF6D7C1 /* DAppAuthSettingsProtocols.swift in Sources */,
 				319124D11B1376B430B6C2EF /* DAppAuthSettingsWireframe.swift in Sources */,
 				849F1453294477DA00D9F9BA /* TextWithServiceInputView.swift in Sources */,
@@ -20092,6 +20114,7 @@
 				912ECC319A48CAD09FB694AC /* AssetsSearchProtocols.swift in Sources */,
 				8456D2C12993EE9F00D159A7 /* GovernanceDelegateStackCell.swift in Sources */,
 				8582395FEF296771447439FF /* AssetsSearchWireframe.swift in Sources */,
+				844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */,
 				CC1723581BAC50E8B9E6DE48 /* AssetsSearchPresenter.swift in Sources */,
 				8448F7A8288401A60080CEA9 /* AssetListInitState.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
@@ -20318,6 +20341,7 @@
 				84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */,
 				84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */,
 				DE52F23521D54A07F558EB1B /* ReferendumVoteConfirmInteractor.swift in Sources */,
+				844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */,
 				B30FEC6F62918BC6F38396A2 /* ReferendumVoteConfirmViewController.swift in Sources */,
 				840AE2E129C9A24C008FF665 /* EtherscanTxHistoryResponse.swift in Sources */,
 				163709FEE6203813261DD771 /* ReferendumVoteConfirmViewLayout.swift in Sources */,

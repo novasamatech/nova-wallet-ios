@@ -3,25 +3,34 @@ import BigInt
 import RobinHood
 import CoreData
 
-extension Multistaking.DashboardItemOffchainPart: Identifiable {
+extension Multistaking.DashboardItemParachainPart: Identifiable {
     var identifier: String { stakingOption.stringValue }
 }
 
-final class StakingDashboardOffchainMapper {
+final class StakingDashboardParachainMapper {
     var entityIdentifierFieldName: String { #keyPath(CDStakingDashboardItem.identifier) }
 
-    typealias DataProviderModel = Multistaking.DashboardItemOffchainPart
+    typealias DataProviderModel = Multistaking.DashboardItemParachainPart
     typealias CoreDataEntity = CDStakingDashboardItem
 
     private func move(
         state: Multistaking.DashboardItem.State?,
-        hasAssignedStake: Bool
+        onchainState: Multistaking.ParachainStateChange
     ) -> Multistaking.DashboardItem.State? {
-        hasAssignedStake ? .active : state
+        guard onchainState.stake != nil else {
+            return nil
+        }
+
+        switch state {
+        case .active:
+            return state
+        case .inactive, .waiting, .none:
+            return onchainState.shouldHaveActiveCollator ? .waiting : .inactive
+        }
     }
 }
 
-extension StakingDashboardOffchainMapper: CoreDataMapperProtocol {
+extension StakingDashboardParachainMapper: CoreDataMapperProtocol {
     func populate(
         entity: CoreDataEntity,
         from model: DataProviderModel,
@@ -36,13 +45,16 @@ extension StakingDashboardOffchainMapper: CoreDataMapperProtocol {
 
         entity.stakingType = model.stakingOption.option.type.rawValue
 
+        entity.stake = model.stateChange.stake.map { String($0) }
+
         var currentState = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }
 
-        currentState = move(state: currentState, hasAssignedStake: model.hasAssignedStake)
-        entity.state = currentState?.rawValue
+        currentState = move(
+            state: currentState,
+            onchainState: model.stateChange
+        )
 
-        entity.maxApy = model.maxApy as NSDecimalNumber
-        entity.totalRewards = model.totalRewards.map { String($0) }
+        entity.state = currentState?.rawValue
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {
