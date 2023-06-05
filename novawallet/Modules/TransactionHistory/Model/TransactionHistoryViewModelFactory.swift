@@ -126,17 +126,15 @@ final class TransactionHistoryViewModelFactory {
     ) -> TitleWithSubtitleViewModel {
         let title = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
 
-        guard let call = data.call,
-              let functionName = String(data: call, encoding: .utf8),
-              !functionName.isEmpty, !functionName.lowercased().contains("transfer") else {
+        if let evmContractFunctionName = data.evmContractFunctionName {
+            return .init(title: title, subtitle: evmContractFunctionName)
+        } else {
             let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
                 data.receiver ?? "",
                 preferredLanguages: locale.rLanguages
             )
             return .init(title: title, subtitle: subtitle)
         }
-
-        return .init(title: title, subtitle: functionName)
     }
 
     private func createRewardOrSlashItemFromData(
@@ -314,6 +312,16 @@ extension TransactionHistoryItem {
             } else {
                 return TransactionType.extrinsic
             }
+        }
+    }
+
+    var evmContractFunctionName: String? {
+        if let call = call,
+           let functionName = String(data: call, encoding: .utf8),
+           !functionName.isEmpty {
+            return functionName.displayContractFunction
+        } else {
+            return nil
         }
     }
 }
