@@ -49,7 +49,9 @@ struct AssetsSearchViewFactory {
 
         return view
     }
+}
 
+enum AssetOperationViewFactory {
     static func createView(
         for initState: AssetListInitState,
         operation: TokenOperation
@@ -69,7 +71,6 @@ struct AssetsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = AssetOperationWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
             priceAssetInfoFactory: priceAssetInfoFactory,
@@ -79,24 +80,40 @@ struct AssetsSearchViewFactory {
         )
 
         let localizationManager = LocalizationManager.shared
+        let presenter: AssetsSearchPresenter?
+        switch operation {
+        case .send:
+            presenter = SendAssetOperationPresenter(
+                initState: initState,
+                interactor: interactor,
+                viewModelFactory: viewModelFactory,
+                localizationManager: LocalizationManager.shared,
+                wireframe: SendAssetOperationWireframe()
+            )
+        case .receive:
+            presenter = ReceiveAssetOperationPresenter(
+                initState: initState,
+                interactor: interactor,
+                viewModelFactory: viewModelFactory,
+                localizationManager: LocalizationManager.shared,
+                selectedAccount: selectedMetaAccount,
+                wireframe: ReceiveAssetOperationWireframe()
+            )
+        case .buy:
+            presenter = BuyAssetOperationPresenter(
+                initState: initState,
+                interactor: interactor,
+                viewModelFactory: viewModelFactory,
+                selectedAccount: selectedMetaAccount,
+                purchaseProvider: PurchaseAggregator.defaultAggregator(),
+                wireframe: BuyAssetOperationWireframe(),
+                localizationManager: LocalizationManager.shared
+            )
+        }
 
-        let searchPresenter = AssetsSearchPresenter(
-            initState: initState,
-            delegate: nil,
-            interactor: interactor,
-            wireframe: wireframe,
-            viewModelFactory: viewModelFactory,
-            localizationManager: localizationManager
-        )
-
-        let presenter = AssetOperationPresenter(
-            operation: operation,
-            selectedAccount: selectedMetaAccount,
-            searchPresenter: searchPresenter,
-            wireframe: wireframe,
-            localizationManager: localizationManager,
-            purchaseProvider: PurchaseAggregator.defaultAggregator()
-        )
+        guard let presenter = presenter else {
+            return nil
+        }
 
         let title: LocalizableResource<String> = .init {
             let languages = $0.rLanguages
@@ -117,8 +134,8 @@ struct AssetsSearchViewFactory {
             localizationManager: localizationManager
         )
 
-        searchPresenter.view = view
-        interactor.presenter = searchPresenter
+        presenter.view = view
+        interactor.presenter = presenter
 
         return view
     }

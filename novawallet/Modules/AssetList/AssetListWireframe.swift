@@ -98,7 +98,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         from view: AssetListViewProtocol?,
         state: AssetListInitState
     ) {
-        guard let assetsSearchView = AssetsSearchViewFactory.createView(
+        guard let assetsSearchView = AssetOperationViewFactory.createView(
             for: state,
             operation: operation
         ) else {

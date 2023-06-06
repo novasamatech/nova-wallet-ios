@@ -5,7 +5,7 @@ import SoraFoundation
 
 typealias ChainAssetsFilter = (ChainAsset) -> Bool
 
-final class AssetsSearchPresenter: AssetListBasePresenter {
+class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtocol {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
     var chainAssetsFilter: ChainAssetsFilter?
@@ -98,7 +98,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
         let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
 
-        let allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
+        var allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
             let match = SearchMatch<ChainAsset>.matchInclusion(
                 for: query,
                 recordField: chain.name,
@@ -117,6 +117,10 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
                     result.append(chainAsset)
                 }
             }
+        }
+
+        if let filter = filter {
+            allMatchedChains = allMatchedChains.filter(filter)
         }
 
         return allMatchedAssets + allMatchedChains
@@ -186,9 +190,9 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
         filterAndUpdateView()
     }
-}
 
-extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
+    // MARK: - AssetsSearchPresenterProtocol
+
     func setup() {
         filterAndUpdateView()
 
