@@ -1,18 +1,34 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 final class StakingDashboardPresenter {
     weak var view: StakingDashboardViewProtocol?
     let wireframe: StakingDashboardWireframeProtocol
     let interactor: StakingDashboardInteractorInputProtocol
+    let viewModelFactory: StakingDashboardViewModelFactoryProtocol
+    let logger: LoggerProtocol
+
+    private var model: StakingDashboardModel?
+    private var wallet: MetaAccountModel?
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
-        wireframe: StakingDashboardWireframeProtocol
+        wireframe: StakingDashboardWireframeProtocol,
+        viewModelFactory: StakingDashboardViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
+        self.logger = logger
+        self.localizationManager = localizationManager
     }
+
+    private func updateWalletView() {}
+
+    private func updateStakingsView() {}
 }
 
 extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
@@ -22,9 +38,43 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
 }
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
-    func didReceive(wallet _: MetaAccountModel) {}
+    func didReceive(wallet: MetaAccountModel) {
+        self.wallet = wallet
 
-    func didReceive(model _: StakingDashboardModel) {}
+        updateWalletView()
+    }
 
-    func didReceive(error _: StakingDashboardInteractorError) {}
+    func didReceive(model: StakingDashboardModel) {
+        self.model = model
+
+        updateStakingsView()
+    }
+
+    func didReceive(error: StakingDashboardInteractorError) {
+        logger.debug("Did receive error: \(error)")
+
+        switch error {
+        case .balanceFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryBalancesSubscription()
+            }
+        case .priceFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryPricesSubscription()
+            }
+        case .stakingsFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryDashboardSubscription()
+            }
+        }
+    }
+}
+
+extension StakingDashboardPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            updateWalletView()
+            updateStakingsView()
+        }
+    }
 }

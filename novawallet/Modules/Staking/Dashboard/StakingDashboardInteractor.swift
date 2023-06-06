@@ -130,7 +130,13 @@ final class StakingDashboardInteractor {
     }
 
     private func provideWallet() {
-        modelBuilder?.applyWallet(model: walletSettings.value)
+        guard let wallet = walletSettings.value else {
+            return
+        }
+
+        presenter?.didReceive(wallet: wallet)
+
+        modelBuilder?.applyWallet(model: wallet)
     }
 }
 

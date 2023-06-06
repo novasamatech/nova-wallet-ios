@@ -3,13 +3,28 @@ import SoraFoundation
 
 struct StakingDashboardViewFactory {
     static func createView() -> StakingDashboardViewProtocol? {
-        guard let interactor = createInteractor() else {
+        guard let interactor = createInteractor(), let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = StakingDashboardWireframe()
 
-        let presenter = StakingDashboardPresenter(interactor: interactor, wireframe: wireframe)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let viewModelFactory = StakingDashboardViewModelFactory(
+            assetFormatterFactory: AssetBalanceFormatterFactory(),
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            networkViewModelFactory: NetworkViewModelFactory(),
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+        )
+
+        let presenter = StakingDashboardPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
         let view = StakingDashboardViewController(presenter: presenter)
 

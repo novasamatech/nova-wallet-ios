@@ -54,7 +54,7 @@ final class StakingDashboardViewModelFactory {
         assetDisplayInfo: AssetBalanceDisplayInfo,
         isSyncing: Bool,
         locale: Locale
-    ) -> LoadableViewModelState<BalanceViewModel> {
+    ) -> LoadableViewModelState<BalanceViewModelProtocol> {
         guard
             let value = value,
             let decimalValue = Decimal.fromSubstrateAmount(value, precision: assetDisplayInfo.assetPrecision) else {
@@ -72,13 +72,17 @@ final class StakingDashboardViewModelFactory {
             priceData: priceData
         ).value(for: locale)
 
-        return isSyncing ? .cached(value: viewModel) : .loaded(viewModel)
+        return isSyncing ? .cached(value: viewModel) : .loaded(value: viewModel)
     }
 
     private func createStakingStatus(
         for model: StakingDashboardItemModel
     ) -> LoadableViewModelState<StakingDashboardEnabledViewModel.Status> {
-        let state = StakingDashboardEnabledViewModel.Status(dashboardItem: model.dashboardItem)
+        guard let dashboardItem = model.dashboardItem else {
+            return .loading
+        }
+
+        let state = StakingDashboardEnabledViewModel.Status(dashboardItem: dashboardItem)
         return model.isOnchainSync || model.isOffchainSync ? .cached(value: state) : .loaded(value: state)
     }
 }

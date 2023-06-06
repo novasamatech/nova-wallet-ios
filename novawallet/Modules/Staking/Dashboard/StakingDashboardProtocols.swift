@@ -1,6 +1,6 @@
 import RobinHood
 
-protocol StakingDashboardViewProtocol: AnyObject {}
+protocol StakingDashboardViewProtocol: ControllerBackedProtocol {}
 
 protocol StakingDashboardPresenterProtocol: AnyObject {
     func setup()
@@ -20,4 +20,4 @@ protocol StakingDashboardInteractorOutputProtocol: AnyObject {
     func didReceive(error: StakingDashboardInteractorError)
 }
 
-protocol StakingDashboardWireframeProtocol: AnyObject {}
+protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {}
