@@ -45,10 +45,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
         }
     }
 
-    private func showPurchase(chainAsset: ChainAsset) {
-        guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
-            return
-        }
+    private func showPurchase(chainAsset _: ChainAsset, accountId _: AccountId) {
         if purchaseActions.count == 1 {
             buyAssetWireframe?.showPurchaseTokens(
                 from: view,
@@ -68,6 +65,10 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
         guard let chainAsset = chainAsset(for: chainAssetId) else {
             return
         }
+        guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
+            return
+        }
+
         purchaseActions = purchaseProvider.buildPurchaseActions(for: chainAsset, accountId: accountId)
 
         let checkResult = TokenOperation.checkBuyOperationAvailable(
@@ -82,7 +83,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
                 on: view,
                 by: commonCheckResult,
                 successRouteClosure: { [weak self] in
-                    self?.showPurchase(chainAsset: chainAsset)
+                    self?.showPurchase(chainAsset: chainAsset, accountId: accountId)
                 }
             )
         case .noBuyOptions:
