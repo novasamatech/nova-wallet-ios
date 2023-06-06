@@ -3,12 +3,12 @@ import SoraFoundation
 import BigInt
 
 protocol StakingDashboardViewModelFactoryProtocol {
-    func createEnabledStakingViewModel(
+    func createActiveStakingViewModel(
         for model: StakingDashboardItemModel,
         locale: Locale
     ) -> StakingDashboardEnabledViewModel
 
-    func createDisabledStakingViewModel(
+    func createInactiveStakingViewModel(
         for model: StakingDashboardItemModel,
         locale: Locale
     ) -> StakingDashboardDisabledViewModel
@@ -88,7 +88,7 @@ final class StakingDashboardViewModelFactory {
 }
 
 extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProtocol {
-    func createEnabledStakingViewModel(
+    func createActiveStakingViewModel(
         for model: StakingDashboardItemModel,
         locale: Locale
     ) -> StakingDashboardEnabledViewModel {
@@ -132,7 +132,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         )
     }
 
-    func createDisabledStakingViewModel(
+    func createInactiveStakingViewModel(
         for model: StakingDashboardItemModel,
         locale: Locale
     ) -> StakingDashboardDisabledViewModel {

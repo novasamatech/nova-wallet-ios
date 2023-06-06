@@ -26,4 +26,15 @@ final class StakingDashboardViewController: UIViewController {
     }
 }
 
-extension StakingDashboardViewController: StakingDashboardViewProtocol {}
+extension StakingDashboardViewController: StakingDashboardViewProtocol {
+    func didReceiveWallet(viewModel _: WalletSwitchViewModel) {
+        // TODO: Add implementation with UI
+    }
+
+    func didReceiveStakings(
+        active _: [StakingDashboardEnabledViewModel],
+        inactive _: [StakingDashboardDisabledViewModel]
+    ) {
+        // TODO: Add implementation with UI
+    }
+}

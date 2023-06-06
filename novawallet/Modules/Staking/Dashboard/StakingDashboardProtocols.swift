@@ -1,6 +1,12 @@
 import RobinHood
 
-protocol StakingDashboardViewProtocol: ControllerBackedProtocol {}
+protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
+    func didReceiveWallet(viewModel: WalletSwitchViewModel)
+    func didReceiveStakings(
+        active: [StakingDashboardEnabledViewModel],
+        inactive: [StakingDashboardDisabledViewModel]
+    )
+}
 
 protocol StakingDashboardPresenterProtocol: AnyObject {
     func setup()

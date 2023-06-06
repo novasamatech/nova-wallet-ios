@@ -9,6 +9,8 @@ final class StakingDashboardPresenter {
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
     let logger: LoggerProtocol
 
+    let walletViewModelFactory = WalletSwitchViewModelFactory()
+
     private var model: StakingDashboardModel?
     private var wallet: MetaAccountModel?
 
@@ -26,9 +28,40 @@ final class StakingDashboardPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func updateWalletView() {}
+    private func updateWalletView() {
+        guard let wallet = wallet else {
+            return
+        }
 
-    private func updateStakingsView() {}
+        let viewModel = walletViewModelFactory.createViewModel(
+            from: wallet.walletIdenticonData(),
+            walletType: wallet.type
+        )
+
+        view?.didReceiveWallet(viewModel: viewModel)
+    }
+
+    private func updateStakingsView() {
+        guard let model = model else {
+            return
+        }
+
+        let activeViewModels = model.active.map {
+            viewModelFactory.createActiveStakingViewModel(
+                for: $0,
+                locale: selectedLocale
+            )
+        }
+
+        let inactiveViewModels = model.inactive.map {
+            viewModelFactory.createInactiveStakingViewModel(
+                for: $0,
+                locale: selectedLocale
+            )
+        }
+
+        view?.didReceiveStakings(active: activeViewModels, inactive: inactiveViewModels)
+    }
 }
 
 extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
