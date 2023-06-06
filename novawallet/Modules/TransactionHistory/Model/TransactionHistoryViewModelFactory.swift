@@ -78,7 +78,7 @@ final class TransactionHistoryViewModelFactory {
         let icon = txType == .incoming ? R.image.iconIncomingTransfer() : R.image.iconOutgoingTransfer()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
-        let itemTitleWithSubtitle = createTransactionItemTitleWithSubtitle(
+        let itemTitleWithSubtitle = createTransferItemTitleWithSubtitle(
             data: data,
             address: address,
             txType: txType,
@@ -98,7 +98,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createTransactionItemTitleWithSubtitle(
+    private func createTransferItemTitleWithSubtitle(
         data: TransactionHistoryItem,
         address: AccountAddress,
         txType: TransactionType,
@@ -126,9 +126,8 @@ final class TransactionHistoryViewModelFactory {
     ) -> TitleWithSubtitleViewModel {
         let title = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
 
-        if let evmContractFunctionName = data.evmContractFunctionName,
-           !evmContractFunctionName.lowercased().contains("transfer") {
-            return .init(title: title, subtitle: evmContractFunctionName)
+        if let functionName = data.evmContractFunctionName, functionName.hasAmbiguousFunctionName {
+            return .init(title: title, subtitle: functionName)
         } else {
             let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
                 data.receiver ?? "",
@@ -205,7 +204,7 @@ final class TransactionHistoryViewModelFactory {
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
         let peerFirstName = data.callPath.moduleName.displayCall
         let peerLastName = data.callPath.callName.displayCall
-        let extrinsicTitleWithSubtitle = chainAsset.asset.isEvmNative ?
+        let extrinsicTitleWithSubtitle = data.callPath.isEvmNativeTransaction ?
             createEvmContractCallTitleWithSubtitle(data: data, locale: locale) :
             .init(title: peerFirstName, subtitle: peerLastName)
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
