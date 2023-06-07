@@ -251,7 +251,8 @@ final class OperationDetailsInteractor: AccountFetching {
             completion(nil)
             return
         }
-        let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender) ?? transaction.sender
+        let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
+            ?? transaction.sender
         let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
         let peerId = accountId?.toHex() ?? peerAddress
 

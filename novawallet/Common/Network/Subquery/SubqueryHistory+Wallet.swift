@@ -82,7 +82,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             status: transfer.success ? .success : .failed,
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
-            fee: transfer.amount,
+            fee: transfer.fee,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: CallCodingPath.transfer,
