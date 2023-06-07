@@ -96,6 +96,11 @@ extension UILabel.Style {
         font: .semiBoldTitle3
     )
 
+    static let title3Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary()!,
+        font: .semiBoldTitle3
+    )
+
     static let sourceCodePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .regularFootnote

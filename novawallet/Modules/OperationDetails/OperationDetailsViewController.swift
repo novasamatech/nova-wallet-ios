@@ -63,7 +63,8 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
             rootView.amountLabel.textColor = R.color.colorTextSecondary()
         }
 
-        rootView.amountLabel.text = viewModel.amount
+        rootView.amountLabel.text = viewModel.amount?.amount
+        rootView.priceLabel.text = viewModel.amount?.price
     }
 
     private func applyStatus(from viewModel: OperationDetailsViewModel) {

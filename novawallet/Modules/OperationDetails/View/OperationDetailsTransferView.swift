@@ -7,7 +7,7 @@ final class OperationDetailsTransferView: LocalizableView {
 
     let senderView = StackInfoTableCell()
     let networkView = StackNetworkCell()
-    let networkFeeView = StackTableCell()
+    let networkFeeView = StackNetworkFeeCell()
 
     let recepientView: StackInfoTableCell = {
         let view = StackInfoTableCell()
@@ -49,7 +49,7 @@ final class OperationDetailsTransferView: LocalizableView {
         senderView.detailsLabel.lineBreakMode = viewModel.sender.lineBreakMode
         senderView.bind(viewModel: viewModel.sender.cellViewModel)
 
-        networkFeeView.bind(details: viewModel.fee)
+        networkFeeView.rowContentView.bind(viewModel: viewModel.fee)
 
         recepientView.detailsLabel.lineBreakMode = viewModel.recepient.lineBreakMode
         recepientView.bind(viewModel: viewModel.recepient.cellViewModel)
@@ -65,9 +65,7 @@ final class OperationDetailsTransferView: LocalizableView {
         networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
         )
 
-        networkFeeView.titleLabel.text = R.string.localizable.commonNetworkFee(
-            preferredLanguages: locale.rLanguages
-        )
+        networkFeeView.rowContentView.locale = locale
 
         recepientView.titleLabel.text = R.string.localizable.commonRecipient(
             preferredLanguages: locale.rLanguages

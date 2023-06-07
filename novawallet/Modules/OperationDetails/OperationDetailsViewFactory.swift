@@ -37,7 +37,9 @@ struct OperationDetailsViewFactory {
             wallet: SelectedWalletSettings.shared.value,
             walletRepository: AnyDataProviderRepository(walletRepository),
             transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            currencyManager: currencyManager,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared
         )
 
         let wireframe = OperationDetailsWireframe()
