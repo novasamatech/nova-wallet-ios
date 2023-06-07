@@ -13,6 +13,10 @@ extension String {
         cuttingOffArguments().replacingSnakeCase().replacingCamelCase().capitalized
     }
 
+    var hasAmbiguousFunctionName: Bool {
+        lowercased().contains("transfer")
+    }
+
     func cuttingOffArguments() -> String {
         // maps transfer(address _to, uint256 _value) to transfer
         let result = prefix(while: { $0 != "(" })
