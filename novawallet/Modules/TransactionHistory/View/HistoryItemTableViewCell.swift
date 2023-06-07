@@ -33,7 +33,6 @@ final class HistoryItemTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularSubheadline
         label.textColor = R.color.colorTextPrimary()
-        label.lineBreakMode = .byTruncatingMiddle
         return label
     }()
 
@@ -41,6 +40,8 @@ final class HistoryItemTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularFootnote
         label.textColor = R.color.colorTextSecondary()
+        label.lineBreakMode = .byTruncatingMiddle
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
     }()
 
@@ -50,7 +51,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
         return label
     }()
 
-    private let timeLabel: UILabel = {
+    private let amountDetailsLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
         label.textColor = R.color.colorTextSecondary()
@@ -101,12 +102,12 @@ final class HistoryItemTableViewCell: UITableViewCell {
             make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalToSuperview().inset(Constants.verticalInset)
             make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
-                .offset(-Constants.titleSpacingForTransfer)
+                .offset(-Constants.titleSpacingForOthers)
         }
 
-        contentView.addSubview(timeLabel)
+        contentView.addSubview(amountDetailsLabel)
 
-        timeLabel.snp.makeConstraints { make in
+        amountDetailsLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(amountLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
@@ -118,8 +119,8 @@ final class HistoryItemTableViewCell: UITableViewCell {
             make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalTo(titleLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
-            make.trailing.lessThanOrEqualTo(timeLabel.snp.leading)
-                .offset(-UIConstants.horizontalInset)
+            make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
+                .offset(-Constants.titleSpacingForOthers)
         }
     }
 
@@ -162,9 +163,10 @@ final class HistoryItemTableViewCell: UITableViewCell {
 
 extension HistoryItemTableViewCell {
     func bind(transactionModel: TransactionItemViewModel) {
+        let timePriceSeparator = ""
         titleLabel.text = transactionModel.title
         subtitleLabel.text = transactionModel.subtitle
-        timeLabel.text = transactionModel.time
+        amountDetailsLabel.text = transactionModel.amountDetails
 
         switch transactionModel.type {
         case .incoming, .reward:
@@ -177,18 +179,18 @@ extension HistoryItemTableViewCell {
 
         switch transactionModel.type {
         case .incoming, .outgoing:
-            titleLabel.lineBreakMode = .byTruncatingMiddle
+            subtitleLabel.lineBreakMode = .byTruncatingMiddle
 
-            titleLabel.snp.updateConstraints { make in
-                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+            subtitleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
                     .offset(-Constants.titleSpacingForTransfer)
             }
 
         case .slash, .reward, .extrinsic:
-            titleLabel.lineBreakMode = .byTruncatingTail
+            subtitleLabel.lineBreakMode = .byTruncatingTail
 
-            titleLabel.snp.updateConstraints { make in
-                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+            subtitleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountDetailsLabel.snp.leading)
                     .offset(-Constants.titleSpacingForOthers)
             }
         }

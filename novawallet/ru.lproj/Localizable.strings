@@ -455,6 +455,10 @@
 "staking.validator.my.oversubscribed.message" = "Превышен лимит номинаторов для валидатора. В этой эре вы не получите награду от этого валидатора.";
 "staking.validator.other.oversubscribed.message" = "Превышен лимит номинаторов для валидатора. Только номинаторы с наибольшим стейком получат награду.";
 "wallet.history.title_v1.9.0" = "История";
+"wallet.history.amount.details" = "%@ в %@";
+"wallet.history.transfer.incoming.details" = "От: %@";
+"wallet.history.transfer.outgoing.details" = "К: %@";
+"wallet.history.transfer.contract.call.title" = "Вызов контракта";
 "staking.main.lockup.period.title_v1.9.0" = "Время вывода";
 "staking.estimate.earning.title_v1.9.0" = "Расчёт доходности %@";
 "staking.setup.restake.title" = "Увеличения стейка";
@@ -1241,7 +1245,7 @@
 "governance.referendums.filter.title" = "Фильтры";
 "governance.referendums.filter.header" = "Показывать:";
 "governance.referendums.search.field.placeholder" = "Поиск по заголовку или ID";
-"governance.referendums.search.empty" = "Не найдены референдумы\nс таким названием или ID";
+"governance.referendums.search.empty" = "Н�� найдены референдумы\nс таким названием или ID";
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
