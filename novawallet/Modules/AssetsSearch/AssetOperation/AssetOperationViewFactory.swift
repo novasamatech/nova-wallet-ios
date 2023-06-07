@@ -6,8 +6,7 @@ enum AssetOperationViewFactory {
         for initState: AssetListInitState,
         operation: TokenOperation
     ) -> AssetsSearchViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared,
-              let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
