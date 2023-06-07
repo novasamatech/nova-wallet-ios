@@ -114,7 +114,7 @@ final class OperationDetailsViewModelFactory {
             sender: sender,
             transactionHash: model.txHash,
             contract: contract,
-            functionName: model.functionSignature?.displayContractFunction
+            functionName: model.functionName
         )
     }
 

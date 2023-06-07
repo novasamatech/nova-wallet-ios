@@ -231,15 +231,13 @@ final class OperationDetailsInteractor: AccountFetching {
         let contractAddress = transaction.receiver.flatMap { try? Data(hex: $0).toAddress(using: chain.chainFormat) }
         let contractDisplayAddress = DisplayAddress(address: contractAddress ?? "", username: "")
 
-        let functionSignature = transaction.call.flatMap { String(data: $0, encoding: .utf8) }
-
         let model = OperationContractCallModel(
             txHash: transaction.txHash,
             fee: fee,
             feePriceData: feePriceData,
             sender: currentDisplayAddress,
             contract: contractDisplayAddress,
-            functionSignature: functionSignature
+            functionName: transaction.evmContractFunctionName
         )
 
         completion(.contract(model))

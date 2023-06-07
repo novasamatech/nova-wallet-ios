@@ -7,5 +7,5 @@ struct OperationContractCallModel {
     let feePriceData: PriceData?
     let sender: DisplayAddress
     let contract: DisplayAddress
-    let functionSignature: String?
+    let functionName: String?
 }
