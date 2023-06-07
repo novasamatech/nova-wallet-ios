@@ -206,11 +206,11 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                 customPeriod: .init(
                     startDay: .init(
                         value: startDate,
-                        collapsed: viewModel?.customPeriod.startDay.collapsed ?? false
+                        collapsed: viewModel?.customPeriod.startDay.collapsed ?? true
                     ),
                     endDay: .init(
                         value: endDate,
-                        collapsed: viewModel?.customPeriod.endDay.collapsed ?? false
+                        collapsed: viewModel?.customPeriod.endDay.collapsed ?? true
                     )
                 )
             )
@@ -394,16 +394,17 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
 
 extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
     func datePicker(id: String, selectedDate: Date) {
-        guard let viewModel = viewModel, let calendar = CalendarIdentifier(rawValue: id) else {
+        guard let viewModel = viewModel, let calendarIdentifier = CalendarIdentifier(rawValue: id) else {
             return
         }
+        let date = calendar.startOfDay(for: selectedDate)
         let updatedPeriod: StakingRewardFiltersViewModel.CustomPeriod
-        switch calendar {
+        switch calendarIdentifier {
         case .startDate:
-            updatedPeriod = Lens.startDayValue.set(selectedDate, viewModel.customPeriod)
+            updatedPeriod = Lens.startDayValue.set(date, viewModel.customPeriod)
         case .endDate:
             let endDate = Lens.endDayValue.get(viewModel.customPeriod).map {
-                Lens.endDayDate.set(selectedDate, $0)
+                Lens.endDayDate.set(date, $0)
             }
 
             updatedPeriod = Lens.endDayValue.set(endDate, viewModel.customPeriod)
