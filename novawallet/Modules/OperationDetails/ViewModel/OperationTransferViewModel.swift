@@ -1,7 +1,7 @@
 import Foundation
 
 struct OperationTransferViewModel {
-    let fee: String
+    let fee: BalanceViewModelProtocol?
     let isOutgoing: Bool
     let sender: DisplayAddressViewModel
     let recepient: DisplayAddressViewModel

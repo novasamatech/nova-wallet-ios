@@ -63,25 +63,31 @@ final class OperationDetailsViewModelFactory {
         from model: OperationDetailsModel.OperationData,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale
-    ) -> String {
+    ) -> BalanceViewModelProtocol? {
         let amount: BigUInt
+        let priceData: PriceData?
         let prefix: String
 
         switch model {
         case let .transfer(model):
             amount = model.amount
+            priceData = model.amountPriceData
             prefix = model.outgoing ? "−" : "+"
         case let .extrinsic(model):
             amount = model.fee
+            priceData = model.feePriceData
             prefix = "−"
         case let .contract(model):
             amount = model.fee
+            priceData = model.feePriceData
             prefix = "−"
         case let .reward(model):
             amount = model.amount
+            priceData = model.priceData
             prefix = "+"
         case let .slash(model):
             amount = model.amount
+            priceData = model.priceData
             prefix = "−"
         }
 
@@ -89,10 +95,13 @@ final class OperationDetailsViewModelFactory {
             amount,
             precision: assetInfo.assetPrecision
         ).map { amountDecimal in
-            let amountString = balanceViewModelFactory.amountFromValue(amountDecimal)
-                .value(for: locale)
-            return prefix + amountString
-        } ?? ""
+            let amountViewModel = balanceViewModelFactory.balanceFromPrice(
+                amountDecimal,
+                priceData: priceData
+            ).value(for: locale)
+
+            return BalanceViewModel(amount: prefix + amountViewModel.amount, price: amountViewModel.price)
+        }
     }
 
     private func createContractViewModel(
@@ -114,19 +123,21 @@ final class OperationDetailsViewModelFactory {
         feeAssetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationTransferViewModel {
-        let feeString = Decimal.fromSubstrateAmount(
+        let fee = Decimal.fromSubstrateAmount(
             model.fee,
             precision: feeAssetInfo.assetPrecision
         ).map { amount in
             let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
-            return viewModelFactory.amountFromValue(amount).value(for: locale)
-        } ?? ""
-
+            return viewModelFactory.balanceFromPrice(
+                amount,
+                priceData: model.feePriceData
+            ).value(for: locale)
+        }
         let sender = displayAddressViewModelFactory.createViewModel(from: model.sender)
         let recepient = displayAddressViewModelFactory.createViewModel(from: model.receiver)
 
         return OperationTransferViewModel(
-            fee: feeString,
+            fee: fee,
             isOutgoing: model.outgoing,
             sender: sender,
             recepient: recepient,
