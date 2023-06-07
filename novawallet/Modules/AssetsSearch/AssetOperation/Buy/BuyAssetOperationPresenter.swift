@@ -45,7 +45,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
         }
     }
 
-    private func showPurchase(chainAsset _: ChainAsset, accountId _: AccountId) {
+    private func showPurchase() {
         if purchaseActions.count == 1 {
             buyAssetWireframe?.showPurchaseTokens(
                 from: view,
@@ -83,7 +83,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
                 on: view,
                 by: commonCheckResult,
                 successRouteClosure: { [weak self] in
-                    self?.showPurchase(chainAsset: chainAsset, accountId: accountId)
+                    self?.showPurchase()
                 }
             )
         case .noBuyOptions:
