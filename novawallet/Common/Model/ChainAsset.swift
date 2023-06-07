@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 struct ChainAsset: Equatable, Hashable {
     let chain: ChainModel
@@ -48,4 +49,8 @@ extension ChainAssetId {
     }
 
     var walletId: String { chainId + "-" + String(assetId) }
+}
+
+extension ChainAsset: Identifiable {
+    var identifier: String { chainAssetId.stringValue }
 }

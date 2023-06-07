@@ -3,6 +3,14 @@ import RobinHood
 import SubstrateSdk
 
 protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
+    func subscribeSyncState(
+        _ target: AnyObject,
+        queue: DispatchQueue?,
+        closure: @escaping (MultistakingSyncState, MultistakingSyncState) -> Void
+    )
+
+    func unsubscribeSyncState(_ target: AnyObject)
+
     func update(selectedMetaAccount: MetaAccountModel)
 }
 

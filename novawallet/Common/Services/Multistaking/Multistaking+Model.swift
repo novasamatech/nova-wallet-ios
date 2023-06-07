@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 import BigInt
 
 extension Multistaking {
@@ -11,13 +12,15 @@ extension Multistaking {
         }
     }
 
-    struct ChainAssetOption: Hashable {
+    struct ChainAssetOption: Hashable, Identifiable {
         let chainAsset: ChainAsset
         let type: StakingType
 
         var option: Option {
             .init(chainAssetId: chainAsset.chainAssetId, type: type)
         }
+
+        var identifier: String { option.stringValue }
     }
 
     struct OptionWithWallet {
