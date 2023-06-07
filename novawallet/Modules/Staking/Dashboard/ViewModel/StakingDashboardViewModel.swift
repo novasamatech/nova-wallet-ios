@@ -35,3 +35,10 @@ struct StakingDashboardDisabledViewModel {
     let estimatedEarnings: LoadableViewModelState<String>
     let balance: String?
 }
+
+struct StakingDashboardViewModel {
+    let active: [StakingDashboardEnabledViewModel]
+    let inactive: [StakingDashboardDisabledViewModel]
+    let hasMoreOptions: Bool
+    let isSyncing: Bool
+}

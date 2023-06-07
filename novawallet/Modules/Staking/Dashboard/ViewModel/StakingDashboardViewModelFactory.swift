@@ -12,6 +12,11 @@ protocol StakingDashboardViewModelFactoryProtocol {
         for model: StakingDashboardItemModel,
         locale: Locale
     ) -> StakingDashboardDisabledViewModel
+
+    func createViewModel(
+        from model: StakingDashboardModel,
+        locale: Locale
+    ) -> StakingDashboardViewModel
 }
 
 final class StakingDashboardViewModelFactory {
@@ -161,6 +166,34 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             networkViewModel: networkViewModel,
             estimatedEarnings: estimatedEarnings,
             balance: balance
+        )
+    }
+
+    func createViewModel(
+        from model: StakingDashboardModel,
+        locale: Locale
+    ) -> StakingDashboardViewModel {
+        let activeViewModels = model.active.map {
+            createActiveStakingViewModel(
+                for: $0,
+                locale: locale
+            )
+        }
+
+        let inactiveViewModels = model.inactive.map {
+            createInactiveStakingViewModel(
+                for: $0,
+                locale: locale
+            )
+        }
+
+        let isSyncing = model.active.isEmpty && model.inactive.isEmpty && model.more.isEmpty
+
+        return .init(
+            active: activeViewModels,
+            inactive: inactiveViewModels,
+            hasMoreOptions: true,
+            isSyncing: isSyncing
         )
     }
 }

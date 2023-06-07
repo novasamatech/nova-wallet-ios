@@ -1241,3 +1241,6 @@
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
+"staking.nominator.status.waiting" = "Ожидание";
+"staking.estimated.earnings" = "Примерный доход";
+"multistaking.more.options" = "Еще возможности стейкинга";

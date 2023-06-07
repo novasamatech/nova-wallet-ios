@@ -46,3 +46,31 @@ final class StakingStatusView: UIView {
         }
     }
 }
+
+extension StakingStatusView {
+    func bind(status: StakingDashboardEnabledViewModel.Status, locale: Locale) {
+        switch status {
+        case .active:
+            glowingView.outerFillColor = R.color.colorTextPositive()!.withAlphaComponent(0.4)
+            glowingView.innerFillColor = R.color.colorTextPositive()!
+            detailsLabel.textColor = R.color.colorTextPositive()!
+            detailsLabel.text = R.string.localizable.stakingNominatorStatusActive(
+                preferredLanguages: locale.rLanguages
+            ).uppercased()
+        case .inactive:
+            glowingView.outerFillColor = R.color.colorTextNegative()!.withAlphaComponent(0.4)
+            glowingView.innerFillColor = R.color.colorTextNegative()!
+            detailsLabel.textColor = R.color.colorTextNegative()!
+            detailsLabel.text = R.string.localizable.stakingNominatorStatusInactive(
+                preferredLanguages: locale.rLanguages
+            ).uppercased()
+        case .waiting:
+            glowingView.outerFillColor = R.color.colorTextSecondary()!.withAlphaComponent(0.4)
+            glowingView.innerFillColor = R.color.colorTextSecondary()!
+            detailsLabel.textColor = R.color.colorTextPrimary()!
+            detailsLabel.text = R.string.localizable.stakingNominatorStatusWaiting(
+                preferredLanguages: locale.rLanguages
+            ).uppercased()
+        }
+    }
+}

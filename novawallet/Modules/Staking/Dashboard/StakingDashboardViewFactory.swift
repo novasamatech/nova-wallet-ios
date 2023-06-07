@@ -26,7 +26,10 @@ struct StakingDashboardViewFactory {
             logger: Logger.shared
         )
 
-        let view = StakingDashboardViewController(presenter: presenter)
+        let view = StakingDashboardViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
