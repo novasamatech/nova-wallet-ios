@@ -19,6 +19,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
+
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
     private(set) var walletConnectSessionsCount: Int = 0
@@ -521,6 +522,19 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         )
 
         wireframe.showRecieveTokens(
+            from: view,
+            state: initState
+        )
+    }
+
+    func buy() {
+        let initState = AssetListInitState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains,
+            crowdloansResult: crowdloansResult
+        )
+        wireframe.showBuyTokens(
             from: view,
             state: initState
         )

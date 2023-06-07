@@ -309,4 +309,8 @@ extension AssetListInteractor: WalletConnectDelegateOutputProtocol {
     func walletConnectDidChangeSessions() {
         provideWalletConnectSessionsCount()
     }
+
+    func walletConnectDidChangeChains() {
+        provideWalletConnectSessionsCount()
+    }
 }

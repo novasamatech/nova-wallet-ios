@@ -3,9 +3,12 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class AssetsSearchPresenter: AssetListBasePresenter {
+typealias ChainAssetsFilter = (ChainAsset) -> Bool
+
+class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtocol {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
+    var chainAssetsFilter: ChainAssetsFilter?
 
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
@@ -25,7 +28,6 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-
         super.init()
 
         self.localizationManager = localizationManager
@@ -39,7 +41,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
     }
 
     private func applyFilter() {
-        let filteredAssets = filterAssets(for: query, chains: allChains)
+        let filteredAssets = filterAssets(for: query, filter: chainAssetsFilter, chains: allChains)
         updateGroups(from: filteredAssets, allChains: allChains)
     }
 
@@ -67,9 +69,17 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         storeGroups(groupChainCalculator, groupLists: groupAssetCalculators)
     }
 
-    private func filterAssets(for query: String, chains: [ChainModel.Id: ChainModel]) -> [ChainAsset] {
-        let chainAssets = chains.values.flatMap { chain in
+    private func filterAssets(
+        for query: String,
+        filter: ChainAssetsFilter?,
+        chains: [ChainModel.Id: ChainModel]
+    ) -> [ChainAsset] {
+        var chainAssets = chains.values.flatMap { chain in
             chain.assets.map { ChainAsset(chain: chain, asset: $0) }
+        }
+
+        if let filter = filter {
+            chainAssets = chainAssets.filter(filter)
         }
 
         guard !query.isEmpty else {
@@ -88,7 +98,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
         let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
 
-        let allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
+        var allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
             let match = SearchMatch<ChainAsset>.matchInclusion(
                 for: query,
                 recordField: chain.name,
@@ -107,6 +117,10 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
                     result.append(chainAsset)
                 }
             }
+        }
+
+        if let filter = filter {
+            allMatchedChains = allMatchedChains.filter(filter)
         }
 
         return allMatchedAssets + allMatchedChains
@@ -176,9 +190,9 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
         filterAndUpdateView()
     }
-}
 
-extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
+    // MARK: - AssetsSearchPresenterProtocol
+
     func setup() {
         filterAndUpdateView()
 

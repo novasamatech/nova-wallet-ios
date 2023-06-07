@@ -22,6 +22,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentLocks()
     func send()
     func receive()
+    func buy()
     func presentWalletConnect()
 }
 
@@ -74,6 +75,11 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     )
 
     func showSendTokens(
+        from view: AssetListViewProtocol?,
+        state: AssetListInitState
+    )
+
+    func showBuyTokens(
         from view: AssetListViewProtocol?,
         state: AssetListInitState
     )

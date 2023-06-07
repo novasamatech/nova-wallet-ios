@@ -51,12 +51,20 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         R.string.localizable.walletAssetReceive(preferredLanguages: locale.rLanguages),
         icon: R.image.iconReceive()
     )
+    lazy var buyButton = createActionButton(
+        title: R.string.localizable.walletAssetBuy(
+            preferredLanguages: locale.rLanguages
+        ),
+        icon: R.image.iconBuy()
+    )
 
     lazy var actionsView = UIView.hStack(
         distribution: .fillEqually,
         [
             sendButton,
             receiveButton
+            // TODO: Add buy button when Apple will approve buy operation
+            // buyButton
         ]
     )
 
@@ -182,6 +190,9 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             preferredLanguages: locale.rLanguages)
         receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
             preferredLanguages: locale.rLanguages)
+        buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func setupMotionEffect() {
