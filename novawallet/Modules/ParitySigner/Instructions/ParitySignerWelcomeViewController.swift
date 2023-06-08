@@ -5,9 +5,16 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
     typealias RootViewType = ParitySignerWelcomeViewLayout
 
     let presenter: ParitySignerWelcomePresenterProtocol
+    let type: ParitySignerType
 
-    init(presenter: ParitySignerWelcomePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: ParitySignerWelcomePresenterProtocol,
+        type: ParitySignerType,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.type = type
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -26,11 +33,21 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupHandlers()
+        setupGraphics()
         setupLocalization()
     }
 
     private func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+    }
+
+    private func setupGraphics() {
+        switch type {
+        case .legacy:
+            rootView.integrationImageView.image = R.image.imageNovaParitySigner()
+        case .vault:
+            rootView.integrationImageView.image = R.image.imageNovaPolkadotVault()
+        }
     }
 
     private func setupLocalization() {
@@ -40,7 +57,10 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
 
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.welcomeParitySignerTitle(preferredLanguages: languages)
+        rootView.titleLabel.text = R.string.localizable.welcomeParitySignerTitle(
+            type.getName(for: selectedLocale),
+            preferredLanguages: languages
+        )
 
         let step1Decorator = HighlightingAttributedStringDecorator(
             pattern: R.string.localizable.welcomeParitySignerStep1Highlighted(preferredLanguages: languages),

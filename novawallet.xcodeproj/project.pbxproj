@@ -2559,6 +2559,7 @@
 		84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */; };
 		84F4A9182550331D000CF0A3 /* SecretSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4A9172550331D000CF0A3 /* SecretSource.swift */; };
 		84F4A9A42551A8F3000CF0A3 /* AccountExportPasswordError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4A9A32551A8F3000CF0A3 /* AccountExportPasswordError.swift */; };
+		84F4B2372A31D2F300113DDD /* ParitySignerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4B2362A31D2F300113DDD /* ParitySignerType.swift */; };
 		84F51053263AB440005D15AE /* StakingUnbondSetupLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F51052263AB440005D15AE /* StakingUnbondSetupLayout.swift */; };
 		84F5105B263AB9F2005D15AE /* NetworkFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F5105A263AB9F2005D15AE /* NetworkFeeView.swift */; };
 		84F51060263AE530005D15AE /* TitleValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F5105F263AE530005D15AE /* TitleValueView.swift */; };
@@ -6110,6 +6111,7 @@
 		84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreExportWrapperTests.swift; sourceTree = "<group>"; };
 		84F4A9172550331D000CF0A3 /* SecretSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretSource.swift; sourceTree = "<group>"; };
 		84F4A9A32551A8F3000CF0A3 /* AccountExportPasswordError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordError.swift; sourceTree = "<group>"; };
+		84F4B2362A31D2F300113DDD /* ParitySignerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerType.swift; sourceTree = "<group>"; };
 		84F51052263AB440005D15AE /* StakingUnbondSetupLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupLayout.swift; sourceTree = "<group>"; };
 		84F5105A263AB9F2005D15AE /* NetworkFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkFeeView.swift; sourceTree = "<group>"; };
 		84F5105F263AE530005D15AE /* TitleValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleValueView.swift; sourceTree = "<group>"; };
@@ -8234,6 +8236,7 @@
 				840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */,
 				8428228F289BB3C700163031 /* ParitySignerWalletOperationFactory.swift */,
 				84282291289BB45700163031 /* ParitySignerWallet.swift */,
+				84F4B2362A31D2F300113DDD /* ParitySignerType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -17813,6 +17816,7 @@
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,
 				845B07F729162AB3005785D3 /* Democracy+ConstantPath.swift in Sources */,
+				84F4B2372A31D2F300113DDD /* ParitySignerType.swift in Sources */,
 				84DBEA56265ED62700FDF73C /* BaseErrorPresentable.swift in Sources */,
 				845B811928F43D4C0040CE84 /* Treasury+CodingPath.swift in Sources */,
 				842876B224AE059700D91AD8 /* SupportData.swift in Sources */,

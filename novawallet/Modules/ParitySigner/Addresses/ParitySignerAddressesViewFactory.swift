@@ -3,22 +3,42 @@ import SubstrateSdk
 import SoraFoundation
 
 struct ParitySignerAddressesViewFactory {
-    static func createOnboardingView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
-        createView(with: addressScan, wireframe: ParitySignerAddressesWireframe())
+    static func createOnboardingView(
+        with addressScan: ParitySignerAddressScan,
+        type: ParitySignerType
+    ) -> ParitySignerAddressesViewProtocol? {
+        createView(
+            with: addressScan,
+            type: type,
+            wireframe: ParitySignerAddressesWireframe()
+        )
     }
 
-    static func createAddAccountView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
-        createView(with: addressScan, wireframe: AddAccount.ParitySignerAddressesWireframe())
+    static func createAddAccountView(
+        with addressScan: ParitySignerAddressScan,
+        type: ParitySignerType
+    ) -> ParitySignerAddressesViewProtocol? {
+        createView(
+            with: addressScan,
+            type: type,
+            wireframe: AddAccount.ParitySignerAddressesWireframe()
+        )
     }
 
     static func createSwitchAccountView(
-        with addressScan: ParitySignerAddressScan
+        with addressScan: ParitySignerAddressScan,
+        type: ParitySignerType
     ) -> ParitySignerAddressesViewProtocol? {
-        createView(with: addressScan, wireframe: SwitchAccount.ParitySignerAddressesWireframe())
+        createView(
+            with: addressScan,
+            type: type,
+            wireframe: SwitchAccount.ParitySignerAddressesWireframe()
+        )
     }
 
     private static func createView(
         with addressScan: ParitySignerAddressScan,
+        type: ParitySignerType,
         wireframe: ParitySignerAddressesWireframeProtocol
     ) -> ParitySignerAddressesViewProtocol? {
         let interactor = ParitySignerAddressesInteractor(
@@ -36,6 +56,7 @@ struct ParitySignerAddressesViewFactory {
 
         let view = ParitySignerAddressesViewController(
             presenter: presenter,
+            type: type,
             localizationManager: LocalizationManager.shared
         )
 

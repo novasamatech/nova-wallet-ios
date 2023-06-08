@@ -17,7 +17,7 @@ protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, Aler
     func showAccountRestore(from view: OnboardingMainViewProtocol?)
     func showKeystoreImport(from view: OnboardingMainViewProtocol?)
     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)
-    func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?)
+    func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType)
     func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?)
 }
 

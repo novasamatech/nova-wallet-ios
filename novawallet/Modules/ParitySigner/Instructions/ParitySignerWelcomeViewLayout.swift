@@ -27,7 +27,6 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
     let integrationImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = R.image.imageNovaParitySigner()
         return imageView
     }()
 
