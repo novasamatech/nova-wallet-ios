@@ -5,12 +5,18 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingDashboardViewLayout
 
     let presenter: StakingDashboardPresenterProtocol
+    let localizationManager: LocalizationManagerProtocol
+
+    private var dashboardViewModel: StakingDashboardViewModel?
+    private var walletViewModel: WalletSwitchViewModel?
 
     init(
         presenter: StakingDashboardPresenterProtocol,
-        localizationManager _: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.localizationManager = localizationManager
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -31,8 +37,6 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    private func setupLocalization() {}
-
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(WalletSwitchCollectionViewCell.self)
 
@@ -45,8 +49,8 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(StakingDashboardInactiveCell.self)
         rootView.collectionView.registerCellClass(StakingDashboardMoreOptionsCell.self)
 
-        // rootView.collectionView.dataSource = self
-        // rootView.collectionView.delegate = self
+        rootView.collectionView.dataSource = self
+        rootView.collectionView.delegate = self
 
         rootView.collectionView.refreshControl?.addTarget(
             self,
@@ -55,23 +59,95 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         )
     }
 
-    @objc private func actionRefresh() {}
+    @objc private func actionRefresh() {
+        presenter.refresh()
+    }
+
+    @objc private func actionSwitchWallet() {
+        presenter.switchWallet()
+    }
 }
 
 extension StakingDashboardViewController: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        3
+        StakingDashboardSection.allCases.count
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        guard let sectionModel = StakingDashboardSection(rawValue: section) else {
+            return 0
+        }
 
+        switch sectionModel {
+        case .walletSwitch:
+            return 1
+        case .activeStakings:
+            return dashboardViewModel?.active.count ?? 0
+        case .inactiveStakings:
+            return dashboardViewModel?.inactive.count ?? 0
+        case .moreOptions:
+            return dashboardViewModel?.hasMoreOptions == true ? 1 : 0
+        }
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        guard let section = StakingDashboardSection(rawValue: indexPath.section) else {
+            return UICollectionViewCell()
+        }
 
+        switch section {
+        case .walletSwitch:
+            let cell: WalletSwitchCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
+
+            cell.titleLabel.apply(style: .boldLargePrimary)
+
+            cell.walletSwitch.addTarget(
+                self,
+                action: #selector(actionSwitchWallet),
+                for: .touchUpInside
+            )
+
+            let title = R.string.localizable.stakingTitle(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            )
+
+            cell.bind(title: title)
+
+            if let walletViewModel = walletViewModel {
+                cell.bind(viewModel: walletViewModel)
+            }
+
+            return cell
+        case .activeStakings:
+            let cell: StakingDashboardActiveCell = collectionView.dequeueReusableCell(for: indexPath)!
+
+            if let activeViewModel = dashboardViewModel?.active[indexPath.row] {
+                cell.view.view.bind(
+                    viewModel: activeViewModel,
+                    locale: localizationManager.selectedLocale
+                )
+            }
+
+            return cell
+        case .inactiveStakings:
+            let cell: StakingDashboardInactiveCell = collectionView.dequeueReusableCell(for: indexPath)!
+
+            if let inactiveViewModel = dashboardViewModel?.inactive[indexPath.row] {
+                cell.view.view.bind(
+                    viewModel: inactiveViewModel,
+                    locale: localizationManager.selectedLocale
+                )
+            }
+
+            return cell
+        case .moreOptions:
+            let cell: StakingDashboardMoreOptionsCell = collectionView.dequeueReusableCell(for: indexPath)!
+            cell.bind(locale: localizationManager.selectedLocale)
+            return cell
+        }
     }
 
     func collectionView(
@@ -79,7 +155,26 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         viewForSupplementaryElementOfKind kind: String,
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
+        let section = StakingDashboardSection(rawValue: indexPath.section)
 
+        switch section {
+        case .inactiveStakings:
+            let header = collectionView.dequeueReusableSupplementaryViewWithType(
+                TitleCollectionHeaderView.self,
+                forSupplementaryViewOfKind: kind,
+                for: indexPath
+            )!
+
+            let title = R.string.localizable.multistakingInactiveHeader(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            )
+
+            header.bind(title: title)
+
+            return header
+        case .walletSwitch, .activeStakings, .moreOptions, .none:
+            return UICollectionReusableView()
+        }
     }
 }
 
@@ -89,6 +184,9 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
+        let height = StakingDashboardSection(rawValue: indexPath.section)?.rowHeight ?? 0
+
+        return CGSize(width: collectionView.frame.width, height: height)
     }
 
     func collectionView(
@@ -96,11 +194,32 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
+        let height = StakingDashboardSection(rawValue: section)?.headerHeight ?? 0
 
+        if height > 0 {
+            return CGSize(width: collectionView.frame.width, height: height)
+        } else {
+            return .zero
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
 
+        guard let sectionModel = StakingDashboardSection(rawValue: indexPath.section) else {
+            return
+        }
+
+        switch sectionModel {
+        case .activeStakings:
+            presenter.selectActiveStaking(at: indexPath.row)
+        case .inactiveStakings:
+            presenter.selectInactiveStaking(at: indexPath.row)
+        case .moreOptions:
+            presenter.selectMoreOptions()
+        case .walletSwitch:
+            break
+        }
     }
 
     func collectionView(
@@ -108,7 +227,7 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-
+        StakingDashboardSection(rawValue: section)?.spacing ?? 0
     }
 
     func collectionView(
@@ -116,23 +235,22 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
+        StakingDashboardSection(rawValue: section)?.insets ?? .zero
     }
 }
 
 extension StakingDashboardViewController: StakingDashboardViewProtocol {
-    func didReceiveWallet(viewModel _: WalletSwitchViewModel) {
-        // TODO: Add implementation with UI
+    func didReceiveWallet(viewModel: WalletSwitchViewModel) {
+        walletViewModel = viewModel
+
+        rootView.collectionView.reloadData()
     }
 
     func didReceiveStakings(viewModel: StakingDashboardViewModel) {
-        // TODO: Add implementation with UI
+        dashboardViewModel = viewModel
+
+        rootView.collectionView.reloadData()
     }
 }
 
-extension StakingDashboardViewController: Localizable {
-    func applyLocalization() {
-        if isViewLoaded {
-            setupLocalization()
-        }
-    }
-}
+extension StakingDashboardViewController: HiddableBarWhenPushed {}

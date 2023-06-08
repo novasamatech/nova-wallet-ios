@@ -1244,3 +1244,4 @@
 "staking.nominator.status.waiting" = "Ожидание";
 "staking.estimated.earnings" = "Примерный доход";
 "multistaking.more.options" = "Еще возможности стейкинга";
+"multistaking.inactive.header" = "Стейкайте и зарабатывайте награды";

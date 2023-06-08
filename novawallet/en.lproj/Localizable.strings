@@ -1244,3 +1244,4 @@
 "staking.nominator.status.waiting" = "Waiting";
 "staking.estimated.earnings" = "Estimated earnings";
 "multistaking.more.options" = "More staking options";
+"multistaking.inactive.header" = "Stake and earn rewards";

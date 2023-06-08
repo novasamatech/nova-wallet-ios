@@ -74,7 +74,7 @@ final class StakingDashboardViewModelFactory {
 
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             decimalValue,
-            priceData: priceData
+            priceData: priceData ?? PriceData.zero()
         ).value(for: locale)
 
         return isSyncing ? .cached(value: viewModel) : .loaded(value: viewModel)

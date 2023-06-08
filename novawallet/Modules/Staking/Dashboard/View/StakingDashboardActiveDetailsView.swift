@@ -23,6 +23,7 @@ final class StakingDashboardActiveDetailsView: UIView {
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
 
+        view.stackView.alignment = .leading
         view.valueBottom.fView.apply(style: .semiboldFootnotePositive)
         view.valueBottom.sView.apply(style: .caption2Secondary)
         view.valueBottom.makeHorizontal()
@@ -88,7 +89,7 @@ final class StakingDashboardActiveDetailsView: UIView {
     }
 
     private func setupLayout() {
-        let contentView = UIView.hStack(
+        let contentView = UIView.vStack(
             spacing: 12,
             [
                 internalStatusView,

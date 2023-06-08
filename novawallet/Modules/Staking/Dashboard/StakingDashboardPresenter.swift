@@ -56,6 +56,18 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func selectActiveStaking(at _: Int) {}
+
+    func selectInactiveStaking(at _: Int) {}
+
+    func selectMoreOptions() {}
+
+    func switchWallet() {
+        wireframe.showWalletSwitch(from: view)
+    }
+
+    func refresh() {}
 }
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {

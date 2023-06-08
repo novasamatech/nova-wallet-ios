@@ -15,7 +15,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         static let iconSize = CGSize(width: 36, height: 36)
     }
 
-    var networkNameLabel: UILabel { titleView.detailsLabel }
+    var networkView: UILabel { titleView.detailsLabel }
     var estimatedEarningsLabel: UILabel { valueView.detailsView.valueTop }
 
     override init(frame: CGRect) {
@@ -51,6 +51,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         valueView.detailsView.valueTop.apply(style: .semiboldCalloutPositive)
         valueView.detailsView.valueBottom.apply(style: .caption1Secondary)
+        valueView.mode = .detailsIcon
         valueView.spacing = 8
 
         valueView.iconWidth = 16

@@ -115,4 +115,9 @@ extension UILabel.Style {
         textColor: R.color.colorTextPrimary()!,
         font: .regularFootnote
     )
+
+    static let boldLargePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldLargeTitle
+    )
 }

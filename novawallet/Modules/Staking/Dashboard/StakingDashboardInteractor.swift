@@ -56,6 +56,8 @@ final class StakingDashboardInteractor {
     }
 
     private func setupSyncStateSubscription() {
+        syncService.setup()
+
         syncService.subscribeSyncState(self, queue: .main) { [weak self] _, state in
             self?.modelBuilder?.applySync(state: state)
         }
