@@ -1242,3 +1242,10 @@
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
 "common.polkadot.vault" = "Polkadot Vault";
+"welcome.polkadot.vault.step1" = "Open Polkadot Vault application on your smartphone";
+"welcome.polkadot.vault.step1.highlighted" = "Open Polkadot Vault";
+"welcome.polkadot.vault.step2" = "Go to “Key Sets” tab. Select your Key set, then account you would like to add to Nova Wallet";
+"welcome.polkadot.vault.step2.highlighted" = "Go to “Key Sets” tab.";
+"welcome.polkadot.vault.step2.details" = "Pay attention, the derivation path should be empty";
+"welcome.polkadot.vault.step3" = "Polkadot Vault will provide you QR code to scan";
+"welcome.polkadot.vault.step3.highlighted" = "QR code to scan";

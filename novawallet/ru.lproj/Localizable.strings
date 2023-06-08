@@ -1242,3 +1242,10 @@
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
 "common.polkadot.vault" = "Polkadot Vault";
+"welcome.polkadot.vault.step1" = "Откройте приложение Polkadot Vault на смартфоне.";
+"welcome.polkadot.vault.step1.highlighted" = "Откройте приложение Polkadot Vault";
+"welcome.polkadot.vault.step2" = "Перейдите на вкладку «Key Sets». Выберите множество ключей, затем аккаунт, который вы хотите добавить в Nova Wallet.";
+"welcome.polkadot.vault.step2.highlighted" = "Перейдите на вкладку «Key Sets».";
+"welcome.polkadot.vault.step2.details" = "Убедитесь, что путь деривации пуст";
+"welcome.polkadot.vault.step3" = "Polkadot Vault предоставит вам QR-код для сканирования";
+"welcome.polkadot.vault.step3.highlighted" = "QR-код для сканирования";

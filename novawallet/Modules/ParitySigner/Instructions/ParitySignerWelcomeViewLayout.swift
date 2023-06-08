@@ -54,7 +54,6 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
     let step2DetailsImageView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
-        view.image = R.image.imageParitySignerIntegrationHint()
         return view
     }()
 
