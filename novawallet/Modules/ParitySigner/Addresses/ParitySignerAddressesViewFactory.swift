@@ -48,6 +48,7 @@ struct ParitySignerAddressesViewFactory {
 
         let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: PolkadotIconGenerator())
         let presenter = ParitySignerAddressesPresenter(
+            type: type,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
