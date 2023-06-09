@@ -150,7 +150,7 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         }
 
         wireframe.showWeb(
-            url: applicationConfig.paritySignerTroubleshoutingURL,
+            url: type.getTroubleshootingUrl(for: applicationConfig),
             from: view,
             style: .automatic
         )

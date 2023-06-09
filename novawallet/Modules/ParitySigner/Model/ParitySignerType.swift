@@ -52,4 +52,13 @@ enum ParitySignerType {
             return R.image.iconPolkadotVaultInSheet()
         }
     }
+
+    func getTroubleshootingUrl(for applicationConfig: ApplicationConfigProtocol) -> URL {
+        switch self {
+        case .legacy:
+            return applicationConfig.paritySignerTroubleshoutingURL
+        case .vault:
+            return applicationConfig.polkadotVaultTroubleshoutingURL
+        }
+    }
 }
