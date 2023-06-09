@@ -82,7 +82,6 @@ final class Web3NameService: AnyCancellableCleaning {
                 repositoryOperations.compactMap { operation in
                     try? operation.targetOperation.extractNoCancellableResultData()
                 }
-                .flatMap { $0 }
                 .reduce([:]) { $0.merging($1) { current, new in current + new } }
             }
 
