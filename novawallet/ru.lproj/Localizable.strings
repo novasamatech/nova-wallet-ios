@@ -921,7 +921,7 @@
 "ledger.instructions.step3.highlighted" = "доступ к Bluetooth";
 "ledger.instructions.step4" = "Выберите аккаунт для добавления в кошелёк";
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
-"welcome.hardware.wallet.subtitle.v3_7" = "Использовать Parity Signer или Ledger";
+"welcome.hardware.wallet.subtitle.v3_7" = "Использовать Polkadot Vault, Ledger или Parity Signer";
 "ledger.sign.transaction.details" = "Нажмите обе кнопки на Вашем %@ для подтверждения транзакции";
 "common.transaction.expired" = "Срок действия транзакции истек";
 "ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подтвердите транзакцию с помощью Ledger";
@@ -1242,7 +1242,7 @@
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
 "common.polkadot.vault" = "Polkadot Vault";
-"welcome.polkadot.vault.step1" = "Откройте приложение Polkadot Vault на смартфоне.";
+"welcome.polkadot.vault.step1" = "Откройте приложение Polkadot Vault на смартфоне";
 "welcome.polkadot.vault.step1.highlighted" = "Откройте приложение Polkadot Vault";
 "welcome.polkadot.vault.step2" = "Перейдите на вкладку «Key Sets». Выберите множество ключей, затем аккаунт, который вы хотите добавить в Nova Wallet.";
 "welcome.polkadot.vault.step2.highlighted" = "Перейдите на вкладку «Key Sets».";
