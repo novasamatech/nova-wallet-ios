@@ -62,9 +62,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         distribution: .fillEqually,
         [
             sendButton,
-            receiveButton
-            // TODO: Add buy button when Apple will approve buy operation
-            // buyButton
+            receiveButton,
+            buyButton
         ]
     )
 
