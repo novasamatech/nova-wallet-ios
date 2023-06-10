@@ -136,7 +136,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
 
         cancellable = wrapper
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func extractBalances(

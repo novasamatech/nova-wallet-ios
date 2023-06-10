@@ -77,7 +77,7 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
 
         pendingOperation = wrapper
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
