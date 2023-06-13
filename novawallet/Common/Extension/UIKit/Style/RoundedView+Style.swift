@@ -137,6 +137,18 @@ extension RoundedView.Style {
         )
     }
 
+    static func outlineSelectableContainer(radius: CGFloat) -> RoundedView.Style {
+        RoundedView.Style(
+            shadowOpacity: 0,
+            strokeWidth: 1,
+            strokeColor: R.color.colorContainerBorder(),
+            highlightedStrokeColor: R.color.colorContainerBorder(),
+            fillColor: .clear,
+            highlightedFillColor: R.color.colorCellBackgroundPressed()!,
+            rounding: .init(radius: radius, corners: .allCorners)
+        )
+    }
+
     static func roundedContainer(radius: CGFloat) -> RoundedView.Style {
         var containerStyle = RoundedView.Style.container
         containerStyle.rounding = .init(radius: radius, corners: .allCorners)

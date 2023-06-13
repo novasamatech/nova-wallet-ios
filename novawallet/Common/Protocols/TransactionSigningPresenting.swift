@@ -9,6 +9,7 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        type: ParitySignerType,
         completion: @escaping TransactionSigningClosure
     )
 
@@ -52,12 +53,14 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        type: ParitySignerType,
         completion: @escaping TransactionSigningClosure
     ) {
         guard let paritySignerView = ParitySignerTxQrViewFactory.createView(
             with: data,
             metaId: metaId,
             chainId: chainId,
+            type: type,
             completion: completion
         ) else {
             completion(.failure(CommonError.dataCorruption))

@@ -70,8 +70,16 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
             case .paritySigner:
                 return LocalizableResource { locale in
                     ActionManageViewModel(
-                        icon: R.image.iconParitySignerAction(),
-                        title: R.string.localizable.commonParitySigner(preferredLanguages: locale.rLanguages),
+                        icon: ParitySignerType.legacy.iconForAction,
+                        title: ParitySignerType.legacy.getName(for: locale),
+                        details: nil
+                    )
+                }
+            case .polkadotVault:
+                return LocalizableResource { locale in
+                    ActionManageViewModel(
+                        icon: ParitySignerType.vault.iconForAction,
+                        title: ParitySignerType.vault.getName(for: locale),
                         details: nil
                     )
                 }
@@ -114,7 +122,9 @@ extension OnboardingMainPresenter: ModalPickerViewControllerDelegate {
 
         switch option {
         case .paritySigner:
-            wireframe.showParitySignerWalletCreation(from: view)
+            wireframe.showParitySignerWalletCreation(from: view, type: .legacy)
+        case .polkadotVault:
+            wireframe.showParitySignerWalletCreation(from: view, type: .vault)
         case .ledger:
             wireframe.showLedgerWalletCreation(from: view)
         }

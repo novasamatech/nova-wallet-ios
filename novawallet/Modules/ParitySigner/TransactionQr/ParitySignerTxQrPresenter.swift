@@ -10,6 +10,7 @@ final class ParitySignerTxQrPresenter {
     let completion: TransactionSigningClosure
     let expirationViewModelFactory: ExpirationViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
+    let type: ParitySignerType
 
     private var transactionCode: TransactionDisplayCode?
     private var wallet: ChainWalletDisplayAddress?
@@ -18,6 +19,7 @@ final class ParitySignerTxQrPresenter {
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
 
     init(
+        type: ParitySignerType,
         interactor: ParitySignerTxQrInteractorInputProtocol,
         wireframe: ParitySignerTxQrWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
@@ -26,6 +28,7 @@ final class ParitySignerTxQrPresenter {
         logger: LoggerProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        self.type = type
         self.interactor = interactor
         self.wireframe = wireframe
         self.completion = completion
@@ -105,30 +108,21 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func presentQrExpiredAlert() {
+        guard let view = view else {
+            return
+        }
+
         let expirationTimeInterval = transactionCode?.expirationTime.minutesFromSeconds
 
-        let title = R.string.localizable.commonQrCodeExpired(preferredLanguages: selectedLocale.rLanguages)
-        let minutes = expirationTimeInterval.map { R.string.localizable.commonMinutesFormat(format: $0) } ?? ""
-        let message = R.string.localizable.commonTxQrExpiredMessage(
-            minutes,
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        let action = AlertPresentableAction(
-            title: R.string.localizable.commonOkBack(preferredLanguages: selectedLocale.rLanguages)
+        wireframe.presentTransactionExpired(
+            on: view,
+            typeName: type.getName(for: selectedLocale),
+            validInMinutes: expirationTimeInterval,
+            locale: selectedLocale
         ) { [weak self] in
             self?.wireframe.close(view: self?.view)
             self?.completion(.failure(HardwareSigningError.signingCancelled))
         }
-
-        let viewModel = AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [action],
-            closeAction: nil
-        )
-
-        wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 }
 
@@ -156,7 +150,7 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         }
 
         wireframe.showWeb(
-            url: applicationConfig.paritySignerTroubleshoutingURL,
+            url: type.getTroubleshootingUrl(for: applicationConfig),
             from: view,
             style: .automatic
         )
@@ -169,7 +163,13 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
             return
         }
 
-        wireframe.proceed(from: view, accountId: accountId, timer: timer, completion: completion)
+        wireframe.proceed(
+            from: view,
+            accountId: accountId,
+            type: type,
+            timer: timer,
+            completion: completion
+        )
     }
 
     func close() {

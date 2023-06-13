@@ -26,13 +26,13 @@ protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {
 }
 
 protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable,
-    WebPresentable {
+    AddressOptionsPresentable, WebPresentable, TransactionExpiredPresentable {
     func close(view: ParitySignerTxQrViewProtocol?)
 
     func proceed(
         from view: ParitySignerTxQrViewProtocol?,
         accountId: AccountId,
+        type: ParitySignerType,
         timer: CountdownTimerMediating,
         completion: @escaping TransactionSigningClosure
     )

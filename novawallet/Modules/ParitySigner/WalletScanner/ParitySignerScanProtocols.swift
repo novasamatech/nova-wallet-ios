@@ -1,7 +1,11 @@
 import Foundation
 
 protocol ParitySignerScanWireframeProtocol: AnyObject {
-    func completeScan(on view: ControllerBackedProtocol?, addressScan: ParitySignerAddressScan)
+    func completeScan(
+        on view: ControllerBackedProtocol?,
+        addressScan: ParitySignerAddressScan,
+        type: ParitySignerType
+    )
 }
 
 protocol ParitySignerScanInteractorInputProtocol: AnyObject {

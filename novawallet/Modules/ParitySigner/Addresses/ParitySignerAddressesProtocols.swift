@@ -22,5 +22,9 @@ protocol ParitySignerAddressesInteractorOutputProtocol: AnyObject {
 }
 
 protocol ParitySignerAddressesWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {
-    func showConfirmation(on view: ParitySignerAddressesViewProtocol?, accountId: AccountId)
+    func showConfirmation(
+        on view: ParitySignerAddressesViewProtocol?,
+        accountId: AccountId,
+        type: ParitySignerType
+    )
 }

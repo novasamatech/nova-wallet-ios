@@ -3,7 +3,8 @@ import Foundation
 protocol TransactionExpiredPresentable {
     func presentTransactionExpired(
         on view: ControllerBackedProtocol,
-        validInMinutes: Int,
+        typeName: String,
+        validInMinutes: Int?,
         locale: Locale,
         completingClosure: @escaping () -> Void
     )
@@ -12,18 +13,22 @@ protocol TransactionExpiredPresentable {
 extension TransactionExpiredPresentable where Self: AlertPresentable {
     func presentTransactionExpired(
         on view: ControllerBackedProtocol,
-        validInMinutes: Int,
+        typeName: String,
+        validInMinutes: Int?,
         locale: Locale,
         completingClosure: @escaping () -> Void
     ) {
         let title = R.string.localizable.commonQrCodeExpired(preferredLanguages: locale.rLanguages)
-        let minutes = R.string.localizable.commonMinutesFormat(
-            format: validInMinutes,
-            preferredLanguages: locale.rLanguages
-        )
+        let minutes = validInMinutes.map { value in
+            R.string.localizable.commonMinutesFormat(
+                format: value,
+                preferredLanguages: locale.rLanguages
+            )
+        } ?? ""
 
         let message = R.string.localizable.commonTxQrExpiredMessage(
             minutes,
+            typeName,
             preferredLanguages: locale.rLanguages
         )
 
