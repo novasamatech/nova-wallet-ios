@@ -125,7 +125,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
 
         cancellable = wrapper
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func extractBalance(from result: Result<String, Error>) -> BigUInt? {
