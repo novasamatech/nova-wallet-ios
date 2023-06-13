@@ -45,4 +45,3 @@ final class Web3TransferRecipientRepositoryFactory: Web3TransferRecipientReposit
         cache = [:]
     }
 }
-

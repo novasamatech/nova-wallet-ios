@@ -16,11 +16,10 @@ final class Web3TransferRecipientIntegrityVerifierFactory: Web3TransferRecipient
         case KnownServices.transferAssetRecipientV1:
             return Web3NameIntegrityVerifier()
         case KnownServices.transferAssetRecipientV2:
-            return Web3NameIntegrityVerifier()
+            return Web3NameIntegrityVerifierWithCanonicalizationData(jsonCanonicalizer: JsonCanonicalizer())
         default:
             assertionFailure("Integrity checker for service \(serviceName) is not resolved. Please use service from knownServices")
             return Web3NameIntegrityVerifier()
         }
     }
 }
-
