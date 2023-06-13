@@ -18,19 +18,22 @@ final class JsonCanonicalizer: JsonCanonicalizerProtocol {
         if let string = object as? String {
             result += "\"\(canonicalize(string: string))\""
         } else if let array = object as? [Any] {
-            result += "["
-            var next = false
-            array.forEach { element in
-                if next {
-                    result += ","
-                }
-                next = true
-                result += canonicalize(element)
-            }
-            result += "]"
+            result += canonicalize(array: array)
         } else if let dictionary = object as? [String: Any] {
-            result += "{"
-            var next = false
+            result += canonicalize(dictionary: dictionary)
+        } else if object is NSNull {
+            result += "null"
+        }
+
+        return result
+    }
+
+    private func canonicalize(array: [Any]) -> String {
+        "[" + array.map(canonicalize).joined(separator: ",") + "]"
+    }
+
+    private func canonicalize(dictionary: [String: Any]) -> String {
+        "{" +
             dictionary.keys.sorted { (str1, str2) -> Bool in
                 let utfView1 = Array(str1.utf16)
                 let utfView2 = Array(str2.utf16)
@@ -46,22 +49,11 @@ final class JsonCanonicalizer: JsonCanonicalizerProtocol {
                         return utfView1[safe: index] == nil
                     }
                 }
-
                 return true
-            }.forEach { key in
-                if next {
-                    result += ","
-                }
-                next = true
-                result += "\"\(canonicalize(string: key))\":"
-                result += canonicalize(dictionary[key])
-            }
-            result += "}"
-        } else if object is NSNull {
-            result += "null"
-        }
-
-        return result
+            }.map { key in
+                "\"\(canonicalize(string: key))\":" + canonicalize(dictionary[key])
+            }.joined(separator: ",") +
+            "}"
     }
 
     private func canonicalize(string: String) -> String {
@@ -83,9 +75,11 @@ final class JsonCanonicalizer: JsonCanonicalizerProtocol {
                 if var asciiValue = char.unicodeScalars.first?.value,
                    char.isASCII, asciiValue < 0x20 {
                     result += escape("u")
-                    for _ in 0 ..< 4 {
+                    result += (0 ..< 4).reduce(into: "") { result, _ in
                         let hex = asciiValue >> 12
-                        result.append(Character(UnicodeScalar(hex > 9 ? hex + 87 : hex + 48)!))
+                        if let unicodeScalar = UnicodeScalar(hex > 9 ? hex + 87 : hex + 48) {
+                            result.append(Character(unicodeScalar))
+                        }
                         asciiValue <<= 4
                     }
                 } else {
