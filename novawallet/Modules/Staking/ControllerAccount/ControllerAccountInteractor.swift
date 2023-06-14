@@ -25,7 +25,6 @@ final class ControllerAccountInteractor: AccountFetching {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
-    private var coderFactory: RuntimeCoderFactoryProtocol?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -56,11 +55,42 @@ final class ControllerAccountInteractor: AccountFetching {
     }
 
     private func provideDeprecationFlag() {
-        let isDeprecated = coderFactory.map { Staking.SetController.isDeprecated(for: $0) } ?? false
-        presenter.didReceiveIsDeprecated(isDeprecated)
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                let isDeprecated = Staking.SetController.isDeprecated(for: coderFactory)
+                self?.presenter.didReceiveIsDeprecated(result: .success(isDeprecated))
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didReceiveIsDeprecated(result: .failure(error))
+            }
+        )
     }
 
-    private func continueSetup() {
+    private func estimateFee(
+        for account: ChainAccountResponse,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) {
+        guard
+            let extrinsicService = extrinsicService,
+            let address = account.toAddress() else {
+            return
+        }
+
+        let identifier = Staking.SetController.path.callName + address
+
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+            let builderClosure = try Staking.SetController.appendCall(
+                for: .accoundId(account.accountId),
+                codingFactory: coderFactory
+            )
+
+            return try builderClosure(builder)
+        }
+    }
+}
+
+extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol {
+    func setup() {
         provideDeprecationFlag()
 
         if let accountAddress = selectedAccount.toAddress() {
@@ -90,47 +120,15 @@ final class ControllerAccountInteractor: AccountFetching {
         feeProxy.delegate = self
     }
 
-    private func setupCoderFactoryAndContinue() {
-        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        coderFactoryOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    self?.coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
-                    self?.continueSetup()
-                } catch {
-                    self?.presenter.didReceiveStashItem(result: .failure(error))
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: [coderFactoryOperation], in: .transient)
-    }
-}
-
-extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol {
-    func setup() {
-        setupCoderFactoryAndContinue()
-    }
-
     func estimateFee(for account: ChainAccountResponse) {
-        guard
-            let extrinsicService = extrinsicService,
-            let address = account.toAddress(),
-            let coderFactory = coderFactory else {
-            return
-        }
-
-        let identifier = Staking.SetController.path.callName + address
-
-        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-            let builderClosure = try Staking.SetController.appendCall(
-                for: .accoundId(account.accountId),
-                codingFactory: coderFactory
-            )
-
-            return try builderClosure(builder)
-        }
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                self?.estimateFee(for: account, coderFactory: coderFactory)
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didReceiveFee(result: .failure(error))
+            }
+        )
     }
 
     func fetchControllerAccountInfo(controllerAddress: AccountAddress) {

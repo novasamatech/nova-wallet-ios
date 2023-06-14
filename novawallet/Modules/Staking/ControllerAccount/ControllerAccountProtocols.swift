@@ -38,7 +38,7 @@ protocol ControllerAccountInteractorOutputProtocol: AnyObject {
     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>, address: AccountAddress)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
-    func didReceiveIsDeprecated(_ isDeprecated: Bool)
+    func didReceiveIsDeprecated(result: Result<Bool, Error>)
 }
 
 protocol ControllerAccountWireframeProtocol: WebPresentable,

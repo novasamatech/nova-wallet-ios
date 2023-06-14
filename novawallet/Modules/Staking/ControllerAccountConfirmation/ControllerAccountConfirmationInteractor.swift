@@ -27,7 +27,6 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
-    private var coderFactory: RuntimeCoderFactoryProtocol?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -86,7 +85,24 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    private func continueSetup() {
+    private func createBuilderClosure(
+        for coderFactory: RuntimeCoderFactoryProtocol
+    ) -> ExtrinsicBuilderClosure {
+        let controller = controllerAccountItem.accountId
+
+        return { builder in
+            let appendCallClosure = try Staking.SetController.appendCall(
+                for: .accoundId(controller),
+                codingFactory: coderFactory
+            )
+
+            return try appendCallClosure(builder)
+        }
+    }
+}
+
+extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmationInteractorInputProtocol {
+    func setup() {
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address)
         } else {
@@ -103,72 +119,52 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
         feeProxy.delegate = self
     }
 
-    private func setupCoderFactoryAndContinue() {
-        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        coderFactoryOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    self?.coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
-                    self?.continueSetup()
-                } catch {
-                    self?.presenter.didReceiveStashItem(result: .failure(error))
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: [coderFactoryOperation], in: .transient)
-    }
-
-    private func createBuilderClosure() -> ExtrinsicBuilderClosure? {
-        guard let coderFactory = coderFactory else {
-            return nil
-        }
-
-        let controller = controllerAccountItem.accountId
-
-        return { builder in
-            let appendCallClosure = try Staking.SetController.appendCall(
-                for: .accoundId(controller),
-                codingFactory: coderFactory
-            )
-
-            return try appendCallClosure(builder)
-        }
-    }
-}
-
-extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmationInteractorInputProtocol {
-    func setup() {
-        setupCoderFactoryAndContinue()
-    }
-
     func confirm() {
-        guard let builderClosure = createBuilderClosure() else {
-            return
-        }
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                guard
+                    let signingWrapper = self?.signingWrapper,
+                    let builderClosure = self?.createBuilderClosure(for: coderFactory) else {
+                    return
+                }
 
-        extrinsicService?.submit(
-            builderClosure,
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                self?.presenter.didConfirmed(result: result)
+                self?.extrinsicService?.submit(
+                    builderClosure,
+                    signer: signingWrapper,
+                    runningIn: .main,
+                    completion: { [weak self] result in
+                        self?.presenter.didConfirmed(result: result)
+                    }
+                )
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didConfirmed(result: .failure(error))
             }
         )
     }
 
     func estimateFee() {
-        guard
-            let extrinsicService = extrinsicService,
-            let builderClosure = createBuilderClosure(),
-            let accountAddress = controllerAccountItem.toAddress() else {
-            return
-        }
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                guard
+                    let extrinsicService = self?.extrinsicService,
+                    let builderClosure = self?.createBuilderClosure(for: coderFactory),
+                    let accountAddress = self?.controllerAccountItem.toAddress() else {
+                    return
+                }
 
-        let identifier = Staking.SetController.path.callName + accountAddress
+                let identifier = Staking.SetController.path.callName + accountAddress
 
-        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier, setupBy: builderClosure)
+                self?.feeProxy.estimateFee(
+                    using: extrinsicService,
+                    reuseIdentifier: identifier,
+                    setupBy: builderClosure
+                )
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didReceiveFee(result: .failure(error))
+            }
+        )
     }
 
     func fetchLedger() {

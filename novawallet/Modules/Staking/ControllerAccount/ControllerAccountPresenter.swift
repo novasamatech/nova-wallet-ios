@@ -294,10 +294,15 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveIsDeprecated(_ isDeprecated: Bool) {
-        self.isDeprecated = isDeprecated
+    func didReceiveIsDeprecated(result: Result<Bool, Error>) {
+        switch result {
+        case let .success(isDeprecated):
+            self.isDeprecated = isDeprecated
 
-        updateView()
+            updateView()
+        case let .failure(failure):
+            logger?.error("Can't extract deprecated flag")
+        }
     }
 }
 
