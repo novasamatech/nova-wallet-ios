@@ -1249,3 +1249,6 @@
 "welcome.polkadot.vault.step2.details" = "Убедитесь, что путь деривации пуст";
 "welcome.polkadot.vault.step3" = "Polkadot Vault предоставит вам QR-код для сканирования";
 "welcome.polkadot.vault.step3.highlighted" = "QR-код для сканирования";
+"staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
+"staking.controller.deprecated.details" = "Сеть мигрирует в сторону замены контроллеров на прокси. Nova Wallet будет поддерживать прокси в будущих обновлениях";
+"staking.controller.deprecated.action" = "Изменить контроллер на стэш";

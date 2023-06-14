@@ -14,7 +14,8 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
     func createViewModel(
         stashItem: StashItem,
         stashAccountItem: MetaChainAccountResponse?,
-        chosenAccountItem: MetaChainAccountResponse?
+        chosenAccountItem: MetaChainAccountResponse?,
+        isDeprecated: Bool
     ) -> ControllerAccountViewModel {
         let stashAddress = stashItem.stash
         let stashViewModel: WalletAccountViewModel
@@ -42,7 +43,7 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             (stashItem.stash != stashItem.controller) &&
             stashItem.controller == selectedAddress
 
-        let actionButtonIsEnabled: Bool = {
+        let hasChangesToSave: Bool = {
             if stashAddress != selectedAddress {
                 return false
             }
@@ -62,7 +63,8 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             stashViewModel: stashViewModel,
             controllerViewModel: controllerViewModel,
             currentAccountIsController: currentAccountIsController,
-            actionButtonIsEnabled: actionButtonIsEnabled
+            isDeprecated: isDeprecated,
+            hasChangesToSave: hasChangesToSave
         )
     }
 }

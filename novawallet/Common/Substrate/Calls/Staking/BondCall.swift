@@ -39,11 +39,7 @@ extension Staking {
                         call: RuntimeCall(moduleName: path.moduleName, callName: path.callName, args: call)
                     )
                 } else {
-                    let call = V1(
-                        controller: controller,
-                        value: value,
-                        payee: payee
-                    )
+                    let call = V2(value: value, payee: payee)
 
                     return try builder.adding(
                         call: RuntimeCall(moduleName: path.moduleName, callName: path.callName, args: call)

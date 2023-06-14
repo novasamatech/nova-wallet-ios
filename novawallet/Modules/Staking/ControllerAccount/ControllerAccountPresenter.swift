@@ -22,6 +22,7 @@ final class ControllerAccountPresenter {
     private var balance: Decimal?
     private var controllerBalance: Decimal?
     private var stakingLedger: StakingLedger?
+    private var isDeprecated: Bool = false
 
     init(
         wireframe: ControllerAccountWireframeProtocol,
@@ -47,11 +48,14 @@ final class ControllerAccountPresenter {
         guard let stashItem = stashItem else {
             return
         }
+
         let viewModel = viewModelFactory.createViewModel(
             stashItem: stashItem,
             stashAccountItem: stashAccountItem,
-            chosenAccountItem: chosenAccountItem
+            chosenAccountItem: chosenAccountItem,
+            isDeprecated: isDeprecated
         )
+
         canChooseOtherController = viewModel.canChooseOtherController
         view?.reload(with: viewModel)
     }
@@ -76,6 +80,48 @@ final class ControllerAccountPresenter {
             controllerBalance = nil
             interactor.fetchLedger(controllerAddress: chosenControllerAddress)
             interactor.fetchControllerAccountInfo(controllerAddress: chosenControllerAddress)
+        }
+    }
+
+    private func proceedWithStash() {
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
+                self?.refreshFeeIfNeeded()
+            }),
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale)
+        ]).runValidation { [weak self] in
+            guard
+                let self = self,
+                let stashAccount = self.stashAccountItem
+            else { return }
+
+            self.wireframe.showConfirmation(from: self.view, controllerAccountItem: stashAccount)
+        }
+    }
+
+    private func proceedWithChoosenAccount() {
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
+                self?.refreshFeeIfNeeded()
+            }),
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale),
+            dataValidatingFactory.controllerBalanceIsNotZero(controllerBalance, locale: locale),
+            dataValidatingFactory.ledgerNotExist(
+                stakingLedger: stakingLedger,
+                locale: locale
+            )
+        ]).runValidation { [weak self] in
+            guard
+                let self = self,
+                let controllerAccountItem = self.chosenAccountItem
+            else { return }
+
+            self.wireframe.showConfirmation(
+                from: self.view,
+                controllerAccountItem: controllerAccountItem
+            )
         }
     }
 }
@@ -133,35 +179,22 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
 
     func selectLearnMore() {
         guard let view = view else { return }
+
+        let url = isDeprecated ? applicationConfig.controllerDeprecationURL :
+            applicationConfig.learnControllerAccountURL
+
         wireframe.showWeb(
-            url: applicationConfig.learnControllerAccountURL,
+            url: url,
             from: view,
             style: .automatic
         )
     }
 
     func proceed() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
-        DataValidationRunner(validators: [
-            dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
-                self?.refreshFeeIfNeeded()
-            }),
-            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale),
-            dataValidatingFactory.controllerBalanceIsNotZero(controllerBalance, locale: locale),
-            dataValidatingFactory.ledgerNotExist(
-                stakingLedger: stakingLedger,
-                locale: locale
-            )
-        ]).runValidation { [weak self] in
-            guard
-                let self = self,
-                let controllerAccountItem = self.chosenAccountItem
-            else { return }
-
-            self.wireframe.showConfirmation(
-                from: self.view,
-                controllerAccountItem: controllerAccountItem
-            )
+        if isDeprecated {
+            proceedWithStash()
+        } else {
+            proceedWithChoosenAccount()
         }
     }
 }
@@ -259,6 +292,12 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         case let .failure(error):
             logger?.error("Staking ledger subscription error: \(error)")
         }
+    }
+
+    func didReceiveIsDeprecated(_ isDeprecated: Bool) {
+        self.isDeprecated = isDeprecated
+
+        updateView()
     }
 }
 

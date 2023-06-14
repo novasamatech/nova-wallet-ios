@@ -9,7 +9,8 @@ protocol ControllerAccountViewModelFactoryProtocol: AnyObject {
     func createViewModel(
         stashItem: StashItem,
         stashAccountItem: MetaChainAccountResponse?,
-        chosenAccountItem: MetaChainAccountResponse?
+        chosenAccountItem: MetaChainAccountResponse?,
+        isDeprecated: Bool
     ) -> ControllerAccountViewModel
 }
 
@@ -37,6 +38,7 @@ protocol ControllerAccountInteractorOutputProtocol: AnyObject {
     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>, address: AccountAddress)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveIsDeprecated(_ isDeprecated: Bool)
 }
 
 protocol ControllerAccountWireframeProtocol: WebPresentable,

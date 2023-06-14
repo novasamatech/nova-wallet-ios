@@ -55,7 +55,14 @@ final class ControllerAccountInteractor: AccountFetching {
         self.operationManager = operationManager
     }
 
+    private func provideDeprecationFlag() {
+        let isDeprecated = coderFactory.map { Staking.SetController.isDeprecated(for: $0) } ?? false
+        presenter.didReceiveIsDeprecated(isDeprecated)
+    }
+
     private func continueSetup() {
+        provideDeprecationFlag()
+
         if let accountAddress = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: accountAddress)
         } else {

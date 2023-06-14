@@ -6,8 +6,6 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
     let nomination: PreparedNomination<InitiatedBonding>
     let selectedAccount: WalletDisplayAddress
 
-    private var coderFactory: RuntimeCoderFactoryProtocol?
-
     init(
         selectedAccount: WalletDisplayAddress,
         chainAsset: ChainAsset,
@@ -67,13 +65,14 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         presenter.didReceiveModel(result: .success(confirmation))
     }
 
-    private func createExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure? {
+    private func createExtrinsicBuilderClosure(
+        for coderFactory: RuntimeCoderFactoryProtocol
+    ) -> ExtrinsicBuilderClosure? {
         guard
             let amount = nomination.bonding.amount.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ),
-            let rewardDestination = nomination.bonding.rewardDestination.accountAddress,
-            let coderFactory = coderFactory else {
+            let rewardDestination = nomination.bonding.rewardDestination.accountAddress else {
             return nil
         }
 
@@ -101,67 +100,69 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         return closure
     }
 
-    private func setupCoderFactoryAndConfirmationModel() {
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        codingFactoryOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    self?.coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
-                    self?.provideConfirmationModel()
-                } catch {
-                    self?.presenter.didReceiveModel(result: .failure(error))
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: [codingFactoryOperation], in: .transient)
-    }
-
     override func setup() {
-        super.setup()
+        provideConfirmationModel()
 
-        setupCoderFactoryAndConfirmationModel()
+        super.setup()
     }
 
     override func estimateFee() {
-        guard let closure = createExtrinsicBuilderClosure() else {
-            return
-        }
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                guard
+                    let closure = self?.createExtrinsicBuilderClosure(
+                        for: coderFactory
+                    ) else {
+                    return
+                }
 
-        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(info):
-                self?.presenter.didReceive(paymentInfo: info)
-            case let .failure(error):
+                self?.extrinsicService.estimateFee(closure, runningIn: .main) { result in
+                    switch result {
+                    case let .success(info):
+                        self?.presenter.didReceive(paymentInfo: info)
+                    case let .failure(error):
+                        self?.presenter.didReceive(feeError: error)
+                    }
+                }
+            }, errorClosure: { [weak self] error in
                 self?.presenter.didReceive(feeError: error)
             }
-        }
+        )
     }
 
     override func submitNomination() {
+        presenter.didStartNomination()
+
         guard !nomination.targets.isEmpty else {
             presenter.didFailNomination(error: SelectValidatorsConfirmError.extrinsicFailed)
             return
         }
 
-        guard let closure = createExtrinsicBuilderClosure() else {
-            return
-        }
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                guard
+                    let closure = self?.createExtrinsicBuilderClosure(for: coderFactory),
+                    let signer = self?.signer else {
+                    return
+                }
 
-        presenter.didStartNomination()
-
-        extrinsicService.submit(
-            closure,
-            signer: signer,
-            runningIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(txHash):
-                self?.presenter.didCompleteNomination(txHash: txHash)
-            case let .failure(error):
+                self?.extrinsicService.submit(
+                    closure,
+                    signer: signer,
+                    runningIn: .main
+                ) { result in
+                    switch result {
+                    case let .success(txHash):
+                        self?.presenter.didCompleteNomination(txHash: txHash)
+                    case let .failure(error):
+                        self?.presenter.didFailNomination(error: error)
+                    }
+                }
+            }, errorClosure: { [weak self] error in
                 self?.presenter.didFailNomination(error: error)
             }
-        }
+        )
     }
 }

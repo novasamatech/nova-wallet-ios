@@ -28,8 +28,6 @@ final class StakingAmountInteractor {
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
     private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
 
-    private var coderFactory: RuntimeCoderFactoryProtocol?
-
     init(
         selectedAccount: ChainAccountResponse,
         chainAsset: ChainAsset,
@@ -98,88 +96,13 @@ final class StakingAmountInteractor {
         )
     }
 
-    private func continueSetup() {
-        if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-        } else {
-            presenter.didReceive(price: nil)
-        }
-
-        balanceProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.accountId,
-            chainId: chainAsset.chain.chainId,
-            assetId: chainAsset.asset.assetId
-        )
-
-        minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
-        counterForNominatorsProvider = subscribeToCounterForNominators(for: chainAsset.chain.chainId)
-        maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainAsset.chain.chainId)
-        bagListSizeProvider = subscribeBagsListSize(for: chainAsset.chain.chainId)
-
-        provideRewardCalculator()
-        provideNetworkInfo()
-
-        fetchConstant(
-            for: .existentialDeposit,
-            runtimeCodingService: runtimeService,
-            operationManager: operationManager
-        ) { [weak self] (result: Result<BigUInt, Error>) in
-            switch result {
-            case let .success(amount):
-                self?.presenter.didReceive(minimalBalance: amount)
-            case let .failure(error):
-                self?.presenter.didReceive(error: error)
-            }
-        }
-    }
-
-    private func setupCoderFactoryAndContinue() {
-        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        coderFactoryOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    self?.coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
-                    self?.continueSetup()
-                } catch {
-                    self?.presenter.didReceive(error: error)
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: [coderFactoryOperation], in: .transient)
-    }
-}
-
-extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, RuntimeConstantFetching,
-    AccountFetching {
-    func setup() {
-        setupCoderFactoryAndContinue()
-    }
-
-    func fetchAccounts() {
-        fetchAllMetaAccountResponses(
-            for: chainAsset.chain.accountRequest(),
-            repository: repository,
-            operationManager: operationManager
-        ) { [weak self] result in
-            switch result {
-            case let .success(responses):
-                self?.presenter.didReceive(accounts: responses)
-            case let .failure(error):
-                self?.presenter.didReceive(error: error)
-            }
-        }
-    }
-
-    func estimateFee(
+    private func estimateFee(
         for address: String,
         amount: BigUInt,
-        rewardDestination: RewardDestination<ChainAccountResponse>
+        rewardDestination: RewardDestination<ChainAccountResponse>,
+        coderFactory: RuntimeCoderFactoryProtocol
     ) {
-        guard
-            let accountAddress = rewardDestination.accountAddress,
-            let coderFactory = coderFactory else {
+        guard let accountAddress = rewardDestination.accountAddress else {
             return
         }
 
@@ -217,6 +140,79 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
                 self?.presenter.didReceive(error: error)
             }
         }
+    }
+}
+
+extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, RuntimeConstantFetching,
+    AccountFetching {
+    func setup() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        } else {
+            presenter.didReceive(price: nil)
+        }
+
+        balanceProvider = subscribeToAssetBalanceProvider(
+            for: selectedAccount.accountId,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
+        )
+
+        minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
+        counterForNominatorsProvider = subscribeToCounterForNominators(for: chainAsset.chain.chainId)
+        maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainAsset.chain.chainId)
+        bagListSizeProvider = subscribeBagsListSize(for: chainAsset.chain.chainId)
+
+        provideRewardCalculator()
+        provideNetworkInfo()
+
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(amount):
+                self?.presenter.didReceive(minimalBalance: amount)
+            case let .failure(error):
+                self?.presenter.didReceive(error: error)
+            }
+        }
+    }
+
+    func fetchAccounts() {
+        fetchAllMetaAccountResponses(
+            for: chainAsset.chain.accountRequest(),
+            repository: repository,
+            operationManager: operationManager
+        ) { [weak self] result in
+            switch result {
+            case let .success(responses):
+                self?.presenter.didReceive(accounts: responses)
+            case let .failure(error):
+                self?.presenter.didReceive(error: error)
+            }
+        }
+    }
+
+    func estimateFee(
+        for address: String,
+        amount: BigUInt,
+        rewardDestination: RewardDestination<ChainAccountResponse>
+    ) {
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                self?.estimateFee(
+                    for: address,
+                    amount: amount,
+                    rewardDestination: rewardDestination,
+                    coderFactory: coderFactory
+                )
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didReceive(error: error)
+            }
+        )
     }
 }
 
