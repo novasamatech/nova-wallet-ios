@@ -28,6 +28,8 @@ final class StakingAmountInteractor {
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
     private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
 
+    private var coderFactory: RuntimeCoderFactoryProtocol?
+
     init(
         selectedAccount: ChainAccountResponse,
         chainAsset: ChainAsset,
@@ -95,11 +97,8 @@ final class StakingAmountInteractor {
             in: .transient
         )
     }
-}
 
-extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, RuntimeConstantFetching,
-    AccountFetching {
-    func setup() {
+    private func continueSetup() {
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
@@ -134,6 +133,30 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
         }
     }
 
+    private func setupCoderFactoryAndContinue() {
+        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        coderFactoryOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    self?.coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                    self?.continueSetup()
+                } catch {
+                    self?.presenter.didReceive(error: error)
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [coderFactoryOperation], in: .transient)
+    }
+}
+
+extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, RuntimeConstantFetching,
+    AccountFetching {
+    func setup() {
+        setupCoderFactoryAndContinue()
+    }
+
     func fetchAccounts() {
         fetchAllMetaAccountResponses(
             for: chainAsset.chain.accountRequest(),
@@ -154,18 +177,24 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
         amount: BigUInt,
         rewardDestination: RewardDestination<ChainAccountResponse>
     ) {
-        guard let accountAddress = rewardDestination.accountAddress else {
+        guard
+            let accountAddress = rewardDestination.accountAddress,
+            let coderFactory = coderFactory else {
             return
         }
 
         let closure: ExtrinsicBuilderClosure = { builder in
-            let callFactory = SubstrateCallFactory()
+            let controller = try address.toAccountId()
+            let payee = try Staking.RewardDestinationArg(rewardDestination: accountAddress)
 
-            let bondCall = try callFactory.bond(
-                amount: amount,
-                controller: address,
-                rewardDestination: accountAddress
+            let bondClosure = try Staking.Bond.appendCall(
+                for: .accoundId(controller),
+                value: amount,
+                payee: payee,
+                codingFactory: coderFactory
             )
+
+            let callFactory = SubstrateCallFactory()
 
             let targets = Array(
                 repeating: SelectedValidatorInfo(address: address),
@@ -173,9 +202,7 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
             )
             let nominateCall = try callFactory.nominate(targets: targets)
 
-            return try builder
-                .adding(call: bondCall)
-                .adding(call: nominateCall)
+            return try bondClosure(builder).adding(call: nominateCall)
         }
 
         extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in

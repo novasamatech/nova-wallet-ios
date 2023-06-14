@@ -25,6 +25,7 @@ final class ControllerAccountInteractor: AccountFetching {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var coderFactory: RuntimeCoderFactoryProtocol?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -53,10 +54,8 @@ final class ControllerAccountInteractor: AccountFetching {
         self.storageRequestFactory = storageRequestFactory
         self.operationManager = operationManager
     }
-}
 
-extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol {
-    func setup() {
+    private func continueSetup() {
         if let accountAddress = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: accountAddress)
         } else {
@@ -84,17 +83,46 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         feeProxy.delegate = self
     }
 
-    func estimateFee(for account: ChainAccountResponse) {
-        guard let extrinsicService = extrinsicService, let address = account.toAddress() else { return }
-        do {
-            let setController = try callFactory.setController(address)
-            let identifier = setController.callName + address
+    private func setupCoderFactoryAndContinue() {
+        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-            feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-                try builder.adding(call: setController)
+        coderFactoryOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    self?.coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                    self?.continueSetup()
+                } catch {
+                    self?.presenter.didReceiveStashItem(result: .failure(error))
+                }
             }
-        } catch {
-            presenter.didReceiveFee(result: .failure(error))
+        }
+
+        operationManager.enqueue(operations: [coderFactoryOperation], in: .transient)
+    }
+}
+
+extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol {
+    func setup() {
+        setupCoderFactoryAndContinue()
+    }
+
+    func estimateFee(for account: ChainAccountResponse) {
+        guard
+            let extrinsicService = extrinsicService,
+            let address = account.toAddress(),
+            let coderFactory = coderFactory else {
+            return
+        }
+
+        let identifier = Staking.SetController.path.callName + address
+
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+            let builderClosure = try Staking.SetController.appendCall(
+                for: .accoundId(account.accountId),
+                codingFactory: coderFactory
+            )
+
+            return try builderClosure(builder)
         }
     }
 

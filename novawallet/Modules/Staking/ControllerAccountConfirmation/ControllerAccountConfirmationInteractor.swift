@@ -27,6 +27,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var coderFactory: RuntimeCoderFactoryProtocol?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -84,10 +85,8 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
-}
 
-extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmationInteractorInputProtocol {
-    func setup() {
+    private func continueSetup() {
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address)
         } else {
@@ -104,45 +103,72 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
         feeProxy.delegate = self
     }
 
-    func confirm() {
-        do {
-            guard let accountAddress = controllerAccountItem.toAddress() else {
-                return
-            }
+    private func setupCoderFactoryAndContinue() {
+        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-            let setController = try callFactory.setController(accountAddress)
-
-            extrinsicService?.submit(
-                { builder in
-                    try builder.adding(call: setController)
-                },
-                signer: signingWrapper,
-                runningIn: .main,
-                completion: { [weak self] result in
-                    self?.presenter.didConfirmed(result: result)
+        coderFactoryOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    self?.coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                    self?.continueSetup()
+                } catch {
+                    self?.presenter.didReceiveStashItem(result: .failure(error))
                 }
-            )
-        } catch {
-            presenter.didConfirmed(result: .failure(error))
+            }
         }
+
+        operationManager.enqueue(operations: [coderFactoryOperation], in: .transient)
+    }
+
+    private func createBuilderClosure() -> ExtrinsicBuilderClosure? {
+        guard let coderFactory = coderFactory else {
+            return nil
+        }
+
+        let controller = controllerAccountItem.accountId
+
+        return { builder in
+            let appendCallClosure = try Staking.SetController.appendCall(
+                for: .accoundId(controller),
+                codingFactory: coderFactory
+            )
+
+            return try appendCallClosure(builder)
+        }
+    }
+}
+
+extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmationInteractorInputProtocol {
+    func setup() {
+        setupCoderFactoryAndContinue()
+    }
+
+    func confirm() {
+        guard let builderClosure = createBuilderClosure() else {
+            return
+        }
+
+        extrinsicService?.submit(
+            builderClosure,
+            signer: signingWrapper,
+            runningIn: .main,
+            completion: { [weak self] result in
+                self?.presenter.didConfirmed(result: result)
+            }
+        )
     }
 
     func estimateFee() {
-        guard let extrinsicService = extrinsicService else { return }
-        do {
-            guard let accountAddress = controllerAccountItem.toAddress() else {
-                return
-            }
-
-            let setController = try callFactory.setController(accountAddress)
-            let identifier = setController.callName + accountAddress
-
-            feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-                try builder.adding(call: setController)
-            }
-        } catch {
-            presenter.didReceiveFee(result: .failure(error))
+        guard
+            let extrinsicService = extrinsicService,
+            let builderClosure = createBuilderClosure(),
+            let accountAddress = controllerAccountItem.toAddress() else {
+            return
         }
+
+        let identifier = Staking.SetController.path.callName + accountAddress
+
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier, setupBy: builderClosure)
     }
 
     func fetchLedger() {

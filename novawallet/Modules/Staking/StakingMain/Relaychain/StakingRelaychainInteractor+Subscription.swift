@@ -201,7 +201,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handlePayee(
-        result: Result<RewardDestinationArg?, Error>,
+        result: Result<Staking.RewardDestinationArg?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

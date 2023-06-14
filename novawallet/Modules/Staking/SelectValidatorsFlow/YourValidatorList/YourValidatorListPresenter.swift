@@ -14,7 +14,7 @@ final class YourValidatorListPresenter {
     private var controllerAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var ledger: StakingLedger?
-    private var rewardDestinationArg: RewardDestinationArg?
+    private var rewardDestinationArg: Staking.RewardDestinationArg?
     private var lastError: Error?
 
     init(
@@ -181,7 +181,7 @@ extension YourValidatorListPresenter: YourValidatorListInteractorOutputProtocol 
         }
     }
 
-    func didReceiveRewardDestination(result: Result<RewardDestinationArg?, Error>) {
+    func didReceiveRewardDestination(result: Result<Staking.RewardDestinationArg?, Error>) {
         switch result {
         case let .success(item):
             rewardDestinationArg = item

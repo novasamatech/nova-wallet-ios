@@ -6,6 +6,8 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
     let nomination: PreparedNomination<InitiatedBonding>
     let selectedAccount: WalletDisplayAddress
 
+    private var coderFactory: RuntimeCoderFactoryProtocol?
+
     init(
         selectedAccount: WalletDisplayAddress,
         chainAsset: ChainAsset,
@@ -70,7 +72,8 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
             let amount = nomination.bonding.amount.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ),
-            let rewardDestination = nomination.bonding.rewardDestination.accountAddress else {
+            let rewardDestination = nomination.bonding.rewardDestination.accountAddress,
+            let coderFactory = coderFactory else {
             return nil
         }
 
@@ -78,28 +81,47 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         let targets = nomination.targets
 
         let closure: ExtrinsicBuilderClosure = { builder in
-            let callFactory = SubstrateCallFactory()
+            let controller = try controllerAddress.toAccountId()
+            let payee = try Staking.RewardDestinationArg(rewardDestination: rewardDestination)
 
-            let bondCall = try callFactory.bond(
-                amount: amount,
-                controller: controllerAddress,
-                rewardDestination: rewardDestination
+            let bondClosure = try Staking.Bond.appendCall(
+                for: .accoundId(controller),
+                value: amount,
+                payee: payee,
+                codingFactory: coderFactory
             )
+
+            let callFactory = SubstrateCallFactory()
 
             let nominateCall = try callFactory.nominate(targets: targets)
 
-            return try builder
-                .adding(call: bondCall)
-                .adding(call: nominateCall)
+            return try bondClosure(builder).adding(call: nominateCall)
         }
 
         return closure
     }
 
-    override func setup() {
-        provideConfirmationModel()
+    private func setupCoderFactoryAndConfirmationModel() {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
+        codingFactoryOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    self?.coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                    self?.provideConfirmationModel()
+                } catch {
+                    self?.presenter.didReceiveModel(result: .failure(error))
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [codingFactoryOperation], in: .transient)
+    }
+
+    override func setup() {
         super.setup()
+
+        setupCoderFactoryAndConfirmationModel()
     }
 
     override func estimateFee() {

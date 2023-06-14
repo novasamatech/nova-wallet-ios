@@ -11,7 +11,7 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
         ledgerInfo: StakingLedger,
         prefs: ValidatorPrefs,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?
+        payee: Staking.RewardDestinationArg?
     ) {
         self.ledgerInfo = ledgerInfo
         self.prefs = prefs

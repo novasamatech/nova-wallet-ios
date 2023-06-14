@@ -9198,6 +9198,15 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		843ADAC12A38FC4C003AE2B5 /* Staking */ = {
+			isa = PBXGroup;
+			children = (
+				845BB8C825E45D1500E5FCDC /* BondCall.swift */,
+				F4B06BF9264509E8003214D5 /* SetControllerCall.swift */,
+			);
+			path = Staking;
+			sourceTree = "<group>";
+		};
 		843B1D78263EED4B00AF8957 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -9401,7 +9410,6 @@
 		8445CC252836654B003B26CD /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				845BB8C825E45D1500E5FCDC /* BondCall.swift */,
 				845BB8D025E45F1300E5FCDC /* NominateCall.swift */,
 				848C3D0826248A3B005481C3 /* TransferCall.swift */,
 				AE6DE7312627EA930018D5B5 /* PayoutCall.swift */,
@@ -9411,7 +9419,6 @@
 				849DEC5825ED756F00C64C19 /* SubstrateCallFactory.swift */,
 				84690782264132AB0030E693 /* WithdrawUnbondedCall.swift */,
 				AEE5FB08264289FD002B8FDC /* RebondCall.swift */,
-				F4B06BF9264509E8003214D5 /* SetControllerCall.swift */,
 				84DEAA7A265DB987000DDADE /* CrowdloanContributeCall.swift */,
 				8444D13E267133CF00AF6D8C /* CrowdloanAddMemo.swift */,
 				F4C2009B2727ED1C00B0F3D0 /* SystemRemarkCall.swift */,
@@ -9755,6 +9762,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				843ADAC12A38FC4C003AE2B5 /* Staking */,
 				88B1C33D29B9C85200DCA101 /* BagList */,
 				845B080B2918D4E9005785D3 /* Democracy */,
 				84A9ECBE29128D130094C763 /* ConvictionVoting */,
