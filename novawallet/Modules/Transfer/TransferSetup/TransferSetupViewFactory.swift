@@ -114,8 +114,6 @@ struct TransferSetupViewFactory {
 
         let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory())
 
-        KiltTransferAssetRecipient.Version1.Repository(integrityVerifier: Web3NameIntegrityVerifier())
-
         let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
         let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
             for: slip44CoinsUrl
