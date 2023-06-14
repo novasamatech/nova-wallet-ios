@@ -1,13 +1,15 @@
 import UIKit
 
 final class StakingRewardFiltersViewLayout: UIView {
-    let tableView: UITableView = .create { tableView in
+    let tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         tableView.showsVerticalScrollIndicator = false
-    }
+        return tableView
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

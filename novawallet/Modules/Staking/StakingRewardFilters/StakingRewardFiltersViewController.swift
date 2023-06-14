@@ -364,7 +364,7 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
         case .period:
             return 52
         case .start, .end:
-            return 44
+            return 24
         default:
             return 0
         }
