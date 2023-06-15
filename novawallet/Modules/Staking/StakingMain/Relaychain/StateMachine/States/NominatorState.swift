@@ -11,7 +11,7 @@ final class NominatorState: BaseStashNextState, StashLedgerStateProtocol {
         ledgerInfo: StakingLedger,
         nomination: Nomination,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?,
+        payee: Staking.RewardDestinationArg?,
         bagListNode: BagList.Node?
     ) {
         self.ledgerInfo = ledgerInfo

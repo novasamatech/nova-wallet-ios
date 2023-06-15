@@ -263,7 +263,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
     }
 
     func handlePayee(
-        result: Result<RewardDestinationArg?, Error>,
+        result: Result<Staking.RewardDestinationArg?, Error>,
         accountId: AccountId,
         chainId _: ChainModel.Id
     ) {

@@ -9,7 +9,7 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
         stashItem: StashItem,
         ledgerInfo: StakingLedger,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?,
+        payee: Staking.RewardDestinationArg?,
         bagListNode: BagList.Node?
     ) {
         self.ledgerInfo = ledgerInfo

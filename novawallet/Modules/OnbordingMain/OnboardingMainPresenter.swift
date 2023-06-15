@@ -65,7 +65,9 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
             return
         }
 
-        let viewModels: [LocalizableResource<ActionManageViewModel>] = HardwareWalletOptions.allCases.map { option in
+        let hwWalletOptions: [HardwareWalletOptions] = [.polkadotVault, .ledger, .paritySigner]
+
+        let viewModels: [LocalizableResource<ActionManageViewModel>] = hwWalletOptions.map { option in
             switch option {
             case .paritySigner:
                 return LocalizableResource { locale in
