@@ -290,6 +290,14 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
             update(for: draggableState, progress: Constants.draggableProgressFinal, forcesLayoutUpdate: didSetupLayout)
         }
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if isLoading {
+            rootView.pageLoadingView.start()
+        }
+    }
 }
 
 extension TransactionHistoryViewController: Draggable {
@@ -355,15 +363,16 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
     func startLoading() {
         rootView.pageLoadingView.start()
         isLoading = true
+        reloadEmptyState(animated: false)
     }
 
     func stopLoading() {
         rootView.pageLoadingView.stop()
         isLoading = false
+        reloadEmptyState(animated: false)
     }
 
     func didReceive(viewModel: [TransactionSectionModel]) {
-        isLoading = false
         self.viewModel = viewModel
         var snapshot = NSDiffableDataSourceSnapshot<TransactionSectionModel, TransactionItemViewModel>()
         snapshot.appendSections(viewModel)

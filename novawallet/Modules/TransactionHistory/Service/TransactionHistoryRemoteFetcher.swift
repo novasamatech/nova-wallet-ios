@@ -10,7 +10,11 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     let pageSize: Int
 
     @Atomic(defaultValue: nil) private var pagination: Pagination?
-    @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall?
+    @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall? {
+        didSet {
+            delegate?.didUpdateFetchingState()
+        }
+    }
 
     weak var delegate: TransactionHistoryFetcherDelegate?
 

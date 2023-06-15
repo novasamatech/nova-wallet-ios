@@ -24,6 +24,7 @@ protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
     func didReceive(error: TransactionHistoryError)
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
     func didReceive(priceCalculator: TokenPriceCalculatorProtocol)
+    func didReceiveFetchingState(isComplete: Bool)
 }
 
 protocol TransactionHistoryWireframeProtocol: AnyObject {

@@ -17,7 +17,7 @@ extension TransactionHistoryLocalFetcher: TransactionHistoryFetching {
     }
 
     var isFetching: Bool {
-        true
+        false
     }
 
     func start() {
