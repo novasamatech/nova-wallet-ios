@@ -44,6 +44,11 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             stashItem.controller == selectedAddress
 
         let hasChangesToSave: Bool = {
+            if isDeprecated, stashItem.stash != stashItem.controller {
+                // we always allow to reset controller to stash
+                return true
+            }
+
             if stashAddress != selectedAddress {
                 return false
             }
