@@ -51,12 +51,18 @@ class ControllerAccountTests: XCTestCase {
         }
 
         stub(viewModelFactory) { stub in
-            when(stub).createViewModel(stashItem: any(), stashAccountItem: any(), chosenAccountItem: any())
+            when(stub).createViewModel(
+                stashItem: any(),
+                stashAccountItem: any(),
+                chosenAccountItem: any(),
+                isDeprecated: any()
+            )
                 .then { _ in ControllerAccountViewModel(
                     stashViewModel: WalletAccountViewModel.empty,
                     controllerViewModel: WalletAccountViewModel.empty,
                     currentAccountIsController: false,
-                    actionButtonIsEnabled: true
+                    isDeprecated: false,
+                    hasChangesToSave: true
                 )}
         }
         stub(view) { stub in
