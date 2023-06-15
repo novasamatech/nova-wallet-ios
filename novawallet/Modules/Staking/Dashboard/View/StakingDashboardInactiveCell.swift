@@ -9,13 +9,14 @@ final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashb
 }
 
 final class StakingDashboardInactiveCellView: GenericTitleValueView<
-    LoadableIconDetailsView, IconDetailsGenericView<MultiValueView>
+    LoadableGenericIconDetailsView<MultiValueView>, IconDetailsGenericView<MultiValueView>
 > {
     private enum Constants {
         static let iconSize = CGSize(width: 36, height: 36)
     }
 
-    var networkView: UILabel { titleView.detailsLabel }
+    var networkLabel: UILabel { titleView.detailsView.valueTop }
+    var balanceLabel: UILabel { titleView.detailsView.valueBottom }
     var estimatedEarningsLabel: UILabel { valueView.detailsView.valueTop }
 
     override init(frame: CGRect) {
@@ -25,7 +26,8 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     }
 
     func bind(viewModel: StakingDashboardDisabledViewModel, locale: Locale) {
-        titleView.bind(viewModel: viewModel.networkViewModel.cellViewModel)
+        titleView.bind(imageViewModel: viewModel.networkViewModel.icon)
+        titleView.detailsView.bind(topValue: viewModel.networkViewModel.name, bottomValue: viewModel.balance)
         estimatedEarningsLabel.text = viewModel.estimatedEarnings.value
 
         if viewModel.estimatedEarnings.isLoading {
@@ -36,8 +38,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     }
 
     func setupStaticLocalization(for locale: Locale) {
-        valueView.detailsView.valueBottom.text = R.string.localizable.parachainStakingRewardsFormat(
-            "",
+        valueView.detailsView.valueBottom.text = R.string.localizable.commonPerYear(
             preferredLanguages: locale.rLanguages
         )
     }
@@ -46,8 +47,11 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         titleView.iconWidth = Constants.iconSize.width
         titleView.spacing = 12
 
-        networkNameLabel.apply(style: .regularSubhedlinePrimary)
-        networkNameLabel.numberOfLines = 1
+        networkLabel.apply(style: .regularSubhedlinePrimary)
+        networkLabel.textAlignment = .left
+
+        balanceLabel.apply(style: .caption1Secondary)
+        balanceLabel.textAlignment = .left
 
         valueView.detailsView.valueTop.apply(style: .semiboldCalloutPositive)
         valueView.detailsView.valueBottom.apply(style: .caption1Secondary)

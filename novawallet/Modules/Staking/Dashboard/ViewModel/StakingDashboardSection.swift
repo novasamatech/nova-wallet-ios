@@ -35,11 +35,11 @@ enum StakingDashboardSection: Int, CaseIterable {
     var insets: UIEdgeInsets {
         switch self {
         case .walletSwitch:
-            return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+            return UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
         case .activeStakings:
             return UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
         case .inactiveStakings:
-            return UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0)
+            return UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
         case .moreOptions:
             return UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         }

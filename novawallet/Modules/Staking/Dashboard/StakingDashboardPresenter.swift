@@ -78,6 +78,8 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     }
 
     func didReceive(model: StakingDashboardModel) {
+        logger.debug("Did receive model: \(model)")
+
         self.model = model
 
         updateStakingsView()

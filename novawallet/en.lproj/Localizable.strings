@@ -1245,3 +1245,4 @@
 "staking.estimated.earnings" = "Estimated earnings";
 "multistaking.more.options" = "More staking options";
 "multistaking.inactive.header" = "Stake and earn rewards";
+"common.per.year" = "per year";
