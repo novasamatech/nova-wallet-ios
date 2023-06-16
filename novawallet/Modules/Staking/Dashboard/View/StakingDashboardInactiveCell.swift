@@ -27,7 +27,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
     func bind(viewModel: StakingDashboardDisabledViewModel, locale: Locale) {
         titleView.bind(imageViewModel: viewModel.networkViewModel.icon)
-        titleView.detailsView.bind(topValue: viewModel.networkViewModel.name, bottomValue: viewModel.balance)
+
+        let balanceString = viewModel.balance.map {
+            R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
+        }
+
+        titleView.detailsView.bind(topValue: viewModel.networkViewModel.name, bottomValue: balanceString)
         estimatedEarningsLabel.text = viewModel.estimatedEarnings.value
 
         if viewModel.estimatedEarnings.isLoading {

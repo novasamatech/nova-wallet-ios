@@ -111,7 +111,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         )
 
         let totalRewards = createAmount(
-            for: model.dashboardItem?.totalRewards,
+            for: model.dashboardItem?.totalRewards ?? 0,
             priceData: model.price,
             assetDisplayInfo: assetDisplayInfo,
             isSyncing: model.isOffchainSync,

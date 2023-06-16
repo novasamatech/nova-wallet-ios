@@ -108,7 +108,7 @@ extension UILabel.Style {
 
     static let boldTitle2Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
-        font: .title2
+        font: .boldTitle2
     )
 
     static let sourceCodePrimary = UILabel.Style(

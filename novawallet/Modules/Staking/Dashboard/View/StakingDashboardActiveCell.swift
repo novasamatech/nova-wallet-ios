@@ -8,6 +8,7 @@ final class StakingDashboardActiveCellView: UIView {
     let detailsView: BlurredView<StakingDashboardActiveDetailsView> = .create { view in
         view.contentInsets = .zero
         view.innerInsets = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
+        view.backgroundBlurView.contentView?.fillColor = R.color.colorInfoStakingCardBackground()!
     }
 
     let rewardsView: GenericMultiValueView<MultilineBalanceView> = .create { view in

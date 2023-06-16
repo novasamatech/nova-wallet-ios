@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-struct StakingDashboardItemModel {
+struct StakingDashboardItemModel: Equatable {
     let stakingOption: Multistaking.ChainAssetOption
     let dashboardItem: Multistaking.DashboardItem?
     let accountId: AccountId?
@@ -33,10 +33,20 @@ struct StakingDashboardItemModel {
     }
 }
 
-struct StakingDashboardModel {
+struct StakingDashboardModel: Equatable {
     let active: [StakingDashboardItemModel]
     let inactive: [StakingDashboardItemModel]
     let more: [StakingDashboardItemModel]
+
+    init(
+        active: [StakingDashboardItemModel] = [],
+        inactive: [StakingDashboardItemModel] = [],
+        more: [StakingDashboardItemModel] = []
+    ) {
+        self.active = active
+        self.inactive = inactive
+        self.more = more
+    }
 }
 
 extension Array where Element == StakingDashboardItemModel {

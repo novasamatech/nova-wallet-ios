@@ -13,6 +13,7 @@ final class StakingDashboardInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
+    let stateObserver: Observable<StakingDashboardModel>
 
     private var modelBuilder: StakingDashboardBuilderProtocol?
 
@@ -32,6 +33,7 @@ final class StakingDashboardInteractor {
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stateObserver: Observable<StakingDashboardModel>,
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -43,6 +45,7 @@ final class StakingDashboardInteractor {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.applicationHandler = applicationHandler
+        self.stateObserver = stateObserver
         self.currencyManager = currencyManager
     }
 
@@ -66,6 +69,11 @@ final class StakingDashboardInteractor {
     private func resetBalanceSubscription() {
         balanceProviders = [:]
         updateBalanceSubscriptions(for: stakableAssets.allInsertChanges())
+    }
+
+    private func resetDashboardItemsSubscription() {
+        dashboardItemsProvider = nil
+        setupDashboardItemsSubscription()
     }
 
     private func updateBalanceSubscriptions(for changes: [DataProviderChange<ChainAsset>]) {
@@ -146,6 +154,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
     func setup() {
         modelBuilder = StakingDashboardBuilder { [weak self] model in
             self?.presenter?.didReceive(model: model)
+            self?.stateObserver.state = model
         }
 
         provideWallet()
@@ -166,8 +175,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
     }
 
     func retryDashboardSubscription() {
-        dashboardItemsProvider = nil
-        setupDashboardItemsSubscription()
+        resetDashboardItemsSubscription()
     }
 }
 
@@ -235,6 +243,7 @@ extension StakingDashboardInteractor: EventVisitorProtocol {
         provideWallet()
 
         syncService.update(selectedMetaAccount: walletSettings.value)
+        resetDashboardItemsSubscription()
         resetBalanceSubscription()
     }
 }

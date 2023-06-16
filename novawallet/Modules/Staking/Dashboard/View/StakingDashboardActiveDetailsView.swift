@@ -2,7 +2,7 @@ import UIKit
 
 final class StakingDashboardActiveDetailsView: UIView {
     private let internalStatusView: GenericTitleValueView<StakingStatusView, UIImageView> = .create { view in
-        view.valueView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
+        view.valueView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorTextSecondary()!)
         view.titleView.backgroundView.apply(style: .chips)
     }
 
@@ -11,6 +11,7 @@ final class StakingDashboardActiveDetailsView: UIView {
     private let internalYourStakeView: GenericMultiValueView<MultilineBalanceView> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
+        view.spacing = 2
 
         view.valueBottom.amountLabel.apply(style: .semiboldFootnotePrimary)
         view.valueBottom.amountLabel.textAlignment = .left
@@ -22,6 +23,7 @@ final class StakingDashboardActiveDetailsView: UIView {
     let estimatedEarningsView: GenericMultiValueView<GenericPairValueView<UILabel, UILabel>> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
+        view.spacing = 2
 
         view.stackView.alignment = .leading
         view.valueBottom.fView.apply(style: .semiboldFootnotePositive)
@@ -100,7 +102,7 @@ final class StakingDashboardActiveDetailsView: UIView {
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.left.right.equalToSuperview()
         }
     }
 }
