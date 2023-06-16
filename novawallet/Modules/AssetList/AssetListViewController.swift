@@ -33,14 +33,14 @@ final class AssetListViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupTableView()
+        setupCollectionView()
         presenter.setup()
     }
 
-    private func setupTableView() {
+    private func setupCollectionView() {
         rootView.collectionView.registerCellClass(AssetListAssetCell.self)
         rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
-        rootView.collectionView.registerCellClass(AssetListAccountCell.self)
+        rootView.collectionView.registerCellClass(WalletSwitchCollectionViewCell.self)
         rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
         rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         rootView.collectionView.registerCellClass(AssetListNftsCell.self)
@@ -182,14 +182,15 @@ extension AssetListViewController: UICollectionViewDataSource {
     private func provideAccountCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
-    ) -> AssetListAccountCell {
+    ) -> WalletSwitchCollectionViewCell {
         let accountCell = collectionView.dequeueReusableCellWithType(
-            AssetListAccountCell.self,
+            WalletSwitchCollectionViewCell.self,
             for: indexPath
         )!
 
         if let viewModel = headerViewModel {
-            accountCell.bind(viewModel: viewModel)
+            accountCell.bind(title: viewModel.title)
+            accountCell.bind(viewModel: viewModel.walletSwitch)
         }
 
         accountCell.walletSwitch.addTarget(

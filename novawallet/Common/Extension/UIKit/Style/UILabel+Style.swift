@@ -41,8 +41,28 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
+    static let semiboldFootnotePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnotePositive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldCalloutPositive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldCallout
+    )
+
     static let footnoteIconChip = UILabel.Style(
         textColor: R.color.colorIconChip(),
+        font: .regularFootnote
+    )
+
+    static let footnoteAccentText = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
         font: .regularFootnote
     )
 
@@ -86,8 +106,18 @@ extension UILabel.Style {
         font: .semiBoldTitle3
     )
 
+    static let boldTitle2Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle2
+    )
+
     static let sourceCodePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .regularFootnote
+    )
+
+    static let boldLargePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldLargeTitle
     )
 }

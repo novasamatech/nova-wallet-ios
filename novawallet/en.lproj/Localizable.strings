@@ -1242,3 +1242,8 @@
 "governance.referendums.settings.title" = "Referenda";
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
+"staking.nominator.status.waiting" = "Waiting";
+"staking.estimated.earnings" = "Estimated earnings";
+"multistaking.more.options" = "More staking options";
+"multistaking.inactive.header" = "Stake and earn rewards";
+"common.per.year" = "per year";

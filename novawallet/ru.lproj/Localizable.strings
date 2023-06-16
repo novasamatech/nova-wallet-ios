@@ -391,7 +391,7 @@
 "karura.referral.code.action" = "Введите реферальный код";
 "crowdloan.astar.invalid.referral.message" = "Реферальный код Astar должен являться корректным Polkadot адресом";
 "staking.add.controller" = "Чтобы выполнить это действие, добавьте контроллер аккаунт %@ в приложение";
-"crowdloan.empty.bonus.title" = "Получите специальный бонус";
+"crowdloan.empty.bonus.title" = "Получите специальный бон��с";
 "staking.recommended.banner.title" = "Стекинг с рекомендованными валидаторами";
 "staking.select.validators.custom.title" = "Стейкинг с выбранными валидаторами";
 "common.applied" = "Применено";
@@ -1242,3 +1242,8 @@
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
+"staking.nominator.status.waiting" = "Ожидание";
+"staking.estimated.earnings" = "Примерный доход";
+"multistaking.more.options" = "Еще возможности стейкинга";
+"multistaking.inactive.header" = "Стейкайте и зарабатывайте награды";
+"common.per.year" = "в год";
