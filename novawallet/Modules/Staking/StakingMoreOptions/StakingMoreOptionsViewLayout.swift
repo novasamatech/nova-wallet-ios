@@ -32,8 +32,8 @@ final class StakingMoreOptionsViewLayout: UIView {
     }
 
     private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
-        .init { [weak self] sectionIndex, _ -> NSCollectionLayoutSection? in
-            switch Section(rawValue: sectionIndex) {
+        .init { sectionIndex, _ -> NSCollectionLayoutSection? in
+            switch StakingMoreOptionsSection(rawValue: sectionIndex) {
             case .options:
                 return Self.createOptionsSection()
             case .dApps:
@@ -102,7 +102,7 @@ final class StakingMoreOptionsViewLayout: UIView {
     }
 }
 
-enum Section: Int {
+enum StakingMoreOptionsSection: Int, CaseIterable {
     case options
     case dApps
 }

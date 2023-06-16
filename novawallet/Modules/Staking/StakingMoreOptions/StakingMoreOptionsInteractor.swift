@@ -47,4 +47,8 @@ final class StakingMoreOptionsInteractor {
     }
 }
 
-extension StakingMoreOptionsInteractor: StakingMoreOptionsInteractorInputProtocol {}
+extension StakingMoreOptionsInteractor: StakingMoreOptionsInteractorInputProtocol {
+    func setup() {
+        subscribeDApps()
+    }
+}

@@ -15,7 +15,10 @@ struct StakingMoreOptionsViewFactory {
 
         let presenter = StakingMoreOptionsPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = StakingMoreOptionsViewController(presenter: presenter)
+        let view = StakingMoreOptionsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

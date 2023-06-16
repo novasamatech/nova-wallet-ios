@@ -216,6 +216,7 @@
 "staking.reward.payout.account" = "Аккаунт для выплат";
 "common.learn.more" = "Узнать больше";
 "staking.recommended.title" = "Валидаторы";
+"staking.more.options.dApps.title" = "Стейкинг с Nova DApp браузером";
 "staking.recommended.section.title" = "Рекомендованные валидаторы";
 "staking.recommended.hint1" = "Самые доходные";
 "staking.recommended.hint2" = "Не превышен лимит номинаторов";
