@@ -35,8 +35,11 @@ extension AddAccount {
             view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
         }
 
-        func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?) {
-            guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createAddAccountView() else {
+        func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType) {
+            guard
+                let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createAddAccountView(
+                    with: type
+                ) else {
                 return
             }
 

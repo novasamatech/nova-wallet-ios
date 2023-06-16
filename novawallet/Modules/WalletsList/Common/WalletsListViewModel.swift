@@ -13,6 +13,7 @@ struct WalletsListSectionViewModel {
         case watchOnly
         case paritySigner
         case ledger
+        case polkadotVault
 
         init(walletType: MetaAccountModelType) {
             switch walletType {
@@ -24,6 +25,8 @@ struct WalletsListSectionViewModel {
                 self = .paritySigner
             case .ledger:
                 self = .ledger
+            case .polkadotVault:
+                self = .polkadotVault
             }
         }
     }

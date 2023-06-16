@@ -2,5 +2,5 @@ import Foundation
 import SubstrateSdk
 
 struct SetPayeeCall: Codable {
-    let payee: RewardDestinationArg
+    let payee: Staking.RewardDestinationArg
 }

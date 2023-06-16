@@ -129,7 +129,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
 
     func handleReceive() {
         switch selectedAccount.type {
-        case .secrets, .paritySigner:
+        case .secrets, .paritySigner, .polkadotVault:
             showReceiveTokens()
         case .ledger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
@@ -149,7 +149,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         }
 
         switch selectedAccount.type {
-        case .secrets, .paritySigner:
+        case .secrets, .paritySigner, .polkadotVault:
             showPurchase()
         case .ledger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {

@@ -5,6 +5,7 @@ struct ParitySignerTxScanViewFactory {
     static func createView(
         from signingData: Data,
         accountId: AccountId,
+        type: ParitySignerType,
         expirationTimer: CountdownTimerMediating,
         completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxScanViewProtocol? {
@@ -30,11 +31,17 @@ struct ParitySignerTxScanViewFactory {
         )
 
         let title = LocalizableResource { locale in
-            R.string.localizable.paritySignerTxTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.paritySignerTxTitle(
+                type.getName(for: locale),
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.paritySignerScanTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.paritySignerScanTitle(
+                type.getName(for: locale),
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         let settings = QRScannerViewSettings(canUploadFromGallery: false, extendsUnderSafeArea: false)

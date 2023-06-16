@@ -87,6 +87,10 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconParitySigner()
+        case .polkadotVault:
+            applyCommonStyle(to: controlBackgroundView)
+
+            typeImageView.image = R.image.iconPolkadotVault()
         case .ledger:
             applyCommonStyle(to: controlBackgroundView)
 

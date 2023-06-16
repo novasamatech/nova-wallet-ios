@@ -165,8 +165,17 @@ extension AssetSelectionBasePresenter: AssetSelectionInteractorOutputProtocol {
             accountBalances = [:]
         }
 
-        results.forEach { key, value in
-            accountBalances?[key] = value
+        results.forEach { key, result in
+            switch result {
+            case let .success(maybeAmount):
+                if let amount = maybeAmount {
+                    accountBalances?[key] = .success(amount)
+                } else if accountBalances?[key] == nil {
+                    accountBalances?[key] = .success(0)
+                }
+            case let .failure(error):
+                accountBalances?[key] = .failure(error)
+            }
         }
 
         updateSorting()

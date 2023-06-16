@@ -1,8 +1,8 @@
 import Foundation
 
 final class ParitySignerWelcomeWireframe: ParitySignerWelcomeWireframeProtocol {
-    func showScanQR(from view: ParitySignerWelcomeViewProtocol?) {
-        guard let scanView = ParitySignerScanViewFactory.createOnboardingView() else {
+    func showScanQR(from view: ParitySignerWelcomeViewProtocol?, type: ParitySignerType) {
+        guard let scanView = ParitySignerScanViewFactory.createOnboardingView(with: type) else {
             return
         }
 

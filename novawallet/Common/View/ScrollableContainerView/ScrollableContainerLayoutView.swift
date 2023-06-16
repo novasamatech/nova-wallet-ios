@@ -50,6 +50,14 @@ class ScrollableContainerLayoutView: UIView {
         }
     }
 
+    func insertArrangedSubview(_ view: UIView, at index: Int, spacingAfter value: CGFloat = 0) {
+        stackView.insertSubview(view, at: index)
+
+        if value > 0 {
+            stackView.setCustomSpacing(value, after: view)
+        }
+    }
+
     func applyWarning(
         on warningView: inout InlineAlertView?,
         after view: UIView?,

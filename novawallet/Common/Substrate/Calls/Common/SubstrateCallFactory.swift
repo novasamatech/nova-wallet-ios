@@ -31,12 +31,6 @@ protocol SubstrateCallFactoryProtocol {
         receiverId: AccountId
     ) -> RuntimeCall<OrmlTokenTransferAll>
 
-    func bond(
-        amount: BigUInt,
-        controller: String,
-        rewardDestination: RewardDestination<AccountAddress>
-    ) throws -> RuntimeCall<BondCall>
-
     func bondExtra(amount: BigUInt) -> RuntimeCall<BondExtraCall>
 
     func unbond(amount: BigUInt) -> RuntimeCall<UnbondCall>
@@ -47,11 +41,9 @@ protocol SubstrateCallFactoryProtocol {
 
     func payout(validatorId: Data, era: EraIndex) throws -> RuntimeCall<PayoutCall>
 
-    func setPayee(for destination: RewardDestinationArg) -> RuntimeCall<SetPayeeCall>
+    func setPayee(for destination: Staking.RewardDestinationArg) -> RuntimeCall<SetPayeeCall>
 
     func withdrawUnbonded(for numberOfSlashingSpans: UInt32) -> RuntimeCall<WithdrawUnbondedCall>
-
-    func setController(_ controller: AccountAddress) throws -> RuntimeCall<SetControllerCall>
 
     func chill() -> RuntimeCall<NoRuntimeArgs>
 
@@ -72,32 +64,6 @@ protocol SubstrateCallFactoryProtocol {
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
-    func bond(
-        amount: BigUInt,
-        controller: String,
-        rewardDestination: RewardDestination<String>
-    ) throws -> RuntimeCall<BondCall> {
-        let controllerId = try controller.toAccountId()
-
-        let destArg: RewardDestinationArg
-
-        switch rewardDestination {
-        case .restake:
-            destArg = .staked
-        case let .payout(address):
-            let accountId = try address.toAccountId()
-            destArg = .account(accountId)
-        }
-
-        let args = BondCall(
-            controller: .accoundId(controllerId),
-            value: amount,
-            payee: destArg
-        )
-
-        return RuntimeCall(moduleName: "Staking", callName: "bond", args: args)
-    }
-
     func bondExtra(amount: BigUInt) -> RuntimeCall<BondExtraCall> {
         let args = BondExtraCall(amount: amount)
         return RuntimeCall(moduleName: "Staking", callName: "bond_extra", args: args)
@@ -211,7 +177,7 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return RuntimeCall(moduleName: moduleName, callName: "transfer_all", args: args)
     }
 
-    func setPayee(for destination: RewardDestinationArg) -> RuntimeCall<SetPayeeCall> {
+    func setPayee(for destination: Staking.RewardDestinationArg) -> RuntimeCall<SetPayeeCall> {
         let args = SetPayeeCall(payee: destination)
         return RuntimeCall(moduleName: "Staking", callName: "set_payee", args: args)
     }
@@ -219,12 +185,6 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
     func withdrawUnbonded(for numberOfSlashingSpans: UInt32) -> RuntimeCall<WithdrawUnbondedCall> {
         let args = WithdrawUnbondedCall(numberOfSlashingSpans: numberOfSlashingSpans)
         return RuntimeCall(moduleName: "Staking", callName: "withdraw_unbonded", args: args)
-    }
-
-    func setController(_ controller: AccountAddress) throws -> RuntimeCall<SetControllerCall> {
-        let controllerId = try controller.toAccountId()
-        let args = SetControllerCall(controller: .accoundId(controllerId))
-        return RuntimeCall(moduleName: "Staking", callName: "set_controller", args: args)
     }
 
     func chill() -> RuntimeCall<NoRuntimeArgs> {
@@ -268,7 +228,7 @@ extension SubstrateCallFactory {
         _ rewardDestination: RewardDestination<AccountAddress>,
         stashItem: StashItem
     ) throws -> RuntimeCall<SetPayeeCall> {
-        let arg: RewardDestinationArg = try {
+        let arg: Staking.RewardDestinationArg = try {
             switch rewardDestination {
             case .restake:
                 return .staked

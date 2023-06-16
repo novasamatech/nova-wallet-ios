@@ -11,11 +11,14 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
     let scanWireframe: ParitySignerScanWireframeProtocol
 
+    let type: ParitySignerType
+
     private var lastHandledCode: String?
 
     private var mutex = NSLock()
 
     init(
+        type: ParitySignerType,
         matcher: ParitySignerScanMatcherProtocol,
         interactor: ParitySignerScanInteractorInputProtocol,
         scanWireframe: ParitySignerScanWireframeProtocol,
@@ -26,6 +29,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
+        self.type = type
         self.matcher = matcher
         self.interactor = interactor
         self.scanWireframe = scanWireframe
@@ -95,7 +99,7 @@ extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
     func didReceiveValidation(result: Result<ParitySignerAddressScan, Error>) {
         switch result {
         case let .success(addressScan):
-            scanWireframe.completeScan(on: view, addressScan: addressScan)
+            scanWireframe.completeScan(on: view, addressScan: addressScan, type: type)
         case .failure:
             handleFailure()
             setLastCode(nil)

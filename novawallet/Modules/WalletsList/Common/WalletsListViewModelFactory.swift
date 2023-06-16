@@ -102,6 +102,16 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
 
         if
+            let polkadotVaultSection = createSection(
+                type: .polkadotVault,
+                wallets: wallets,
+                balancesCalculator: balancesCalculator,
+                locale: locale
+            ) {
+            sections.append(polkadotVaultSection)
+        }
+
+        if
             let paritySignerSection = createSection(
                 type: .paritySigner,
                 wallets: wallets,
