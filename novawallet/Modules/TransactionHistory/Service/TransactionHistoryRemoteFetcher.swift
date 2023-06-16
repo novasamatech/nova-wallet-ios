@@ -10,13 +10,7 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     let pageSize: Int
 
     @Atomic(defaultValue: nil) private var pagination: Pagination?
-    @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall? {
-        didSet {
-            DispatchQueue.main.async {
-                self.delegate?.didUpdateFetchingState()
-            }
-        }
-    }
+    @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall?
 
     weak var delegate: TransactionHistoryFetcherDelegate?
 
@@ -60,6 +54,7 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 self?.pendingOperation = nil
+                self?.delegate?.didUpdateFetchingState()
 
                 guard let strongSelf = self else {
                     return
@@ -84,6 +79,10 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
         pendingOperation = wrapper
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        DispatchQueue.main.async {
+            self.delegate?.didUpdateFetchingState()
+        }
     }
 }
 
