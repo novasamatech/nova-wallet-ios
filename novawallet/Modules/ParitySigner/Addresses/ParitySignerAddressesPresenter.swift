@@ -6,6 +6,7 @@ final class ParitySignerAddressesPresenter {
     let wireframe: ParitySignerAddressesWireframeProtocol
     let interactor: ParitySignerAddressesInteractorInputProtocol
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
+    let type: ParitySignerType
 
     let logger: LoggerProtocol
 
@@ -13,11 +14,13 @@ final class ParitySignerAddressesPresenter {
     private var accountId: AccountId?
 
     init(
+        type: ParitySignerType,
         interactor: ParitySignerAddressesInteractorInputProtocol,
         wireframe: ParitySignerAddressesWireframeProtocol,
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
+        self.type = type
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -66,7 +69,7 @@ extension ParitySignerAddressesPresenter: ParitySignerAddressesPresenterProtocol
             return
         }
 
-        wireframe.showConfirmation(on: view, accountId: accountId)
+        wireframe.showConfirmation(on: view, accountId: accountId, type: type)
     }
 }
 

@@ -136,7 +136,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             claimedRewards: []
         )
 
-        let payee = RewardDestinationArg.staked
+        let payee = Staking.RewardDestinationArg.staked
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
             ledgerInfo: ledgerInfo,

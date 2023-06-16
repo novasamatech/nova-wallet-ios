@@ -2,19 +2,22 @@ import Foundation
 import SoraFoundation
 
 struct ParitySignerScanViewFactory {
-    static func createOnboardingView() -> QRScannerViewProtocol? {
-        createView(wireframe: ParitySignerScanWireframe())
+    static func createOnboardingView(with type: ParitySignerType) -> QRScannerViewProtocol? {
+        createView(wireframe: ParitySignerScanWireframe(), type: type)
     }
 
-    static func createAddAccountView() -> QRScannerViewProtocol? {
-        createView(wireframe: AddAccount.ParitySignerScanWireframe())
+    static func createAddAccountView(with type: ParitySignerType) -> QRScannerViewProtocol? {
+        createView(wireframe: AddAccount.ParitySignerScanWireframe(), type: type)
     }
 
-    static func createSwitchAccountView() -> QRScannerViewProtocol? {
-        createView(wireframe: SwitchAccount.ParitySignerScanWireframe())
+    static func createSwitchAccountView(with type: ParitySignerType) -> QRScannerViewProtocol? {
+        createView(wireframe: SwitchAccount.ParitySignerScanWireframe(), type: type)
     }
 
-    private static func createView(wireframe: ParitySignerScanWireframeProtocol) -> QRScannerViewProtocol? {
+    private static func createView(
+        wireframe: ParitySignerScanWireframeProtocol,
+        type: ParitySignerType
+    ) -> QRScannerViewProtocol? {
         let interactor = ParitySignerScanInterator(chainRegistry: ChainRegistryFacade.sharedRegistry)
 
         let processingQueue = QRCaptureService.processingQueue
@@ -28,6 +31,7 @@ struct ParitySignerScanViewFactory {
         }
 
         let presenter = ParitySignerScanPresenter(
+            type: type,
             matcher: ParitySignerScanMatcher(),
             interactor: interactor,
             scanWireframe: wireframe,
@@ -40,7 +44,10 @@ struct ParitySignerScanViewFactory {
         )
 
         let message = LocalizableResource { locale in
-            R.string.localizable.paritySignerScanTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.paritySignerScanTitle(
+                type.getName(for: locale),
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         let settings = QRScannerViewSettings(canUploadFromGallery: false, extendsUnderSafeArea: true)

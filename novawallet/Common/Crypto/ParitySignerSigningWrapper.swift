@@ -12,15 +12,18 @@ final class ParitySignerSigningWrapper {
     let uiPresenter: TransactionSigningPresenting
     let metaId: String
     let chainId: ChainModel.Id
+    let type: ParitySignerType
 
     init(
         uiPresenter: TransactionSigningPresenting,
         metaId: String,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        type: ParitySignerType
     ) {
         self.uiPresenter = uiPresenter
         self.metaId = metaId
         self.chainId = chainId
+        self.type = type
     }
 }
 
@@ -34,7 +37,8 @@ extension ParitySignerSigningWrapper: SigningWrapperProtocol {
             self.uiPresenter.presentParitySignerFlow(
                 for: originalData,
                 metaId: self.metaId,
-                chainId: self.chainId
+                chainId: self.chainId,
+                type: self.type
             ) { result in
                 signingResult = result
 

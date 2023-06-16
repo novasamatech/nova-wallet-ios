@@ -6,7 +6,7 @@ import SubstrateSdk
 protocol Web3NamesOperationFactoryProtocol {
     func searchWeb3NameWrapper(
         name: String,
-        service: String,
+        services: [String],
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Web3NameSearchResponse?>
@@ -22,7 +22,7 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
 
     func searchWeb3NameWrapper(
         name: String,
-        service: String,
+        services types: [String],
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Web3NameSearchResponse?> {
@@ -61,18 +61,27 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
                 fetchServicesWrapper.addDependency(operations: [codingFactoryOperation])
 
                 let mappingOperation = ClosureOperation<Web3NameSearchResponse> {
-                    let services = try fetchServicesWrapper.targetOperation.extractNoCancellableResultData()
+                    let fetchedServices = try fetchServicesWrapper.targetOperation.extractNoCancellableResultData()
 
-                    let transferAssetService = services.values.first(where: {
-                        $0.serviceTypes.contains { $0.wrappedValue == service }
-                    })
-
-                    let urls = transferAssetService?.urls.compactMap { URL(string: $0.wrappedValue) } ?? []
+                    let services = fetchedServices.values.flatMap { service in
+                        service.serviceTypes
+                            .compactMap { type in
+                                if types.contains(type.wrappedValue) {
+                                    let urls = service.urls.compactMap { URL(string: $0.wrappedValue) } ?? []
+                                    return Web3NameSearchResponse.Service(
+                                        id: service.serviceId,
+                                        URLs: urls,
+                                        type: type.wrappedValue
+                                    )
+                                } else {
+                                    return nil
+                                }
+                            }
+                    }
 
                     return Web3NameSearchResponse(
                         owner: ownership.owner,
-                        serviceId: transferAssetService?.serviceId,
-                        serviceURLs: urls
+                        service: services
                     )
                 }
 
@@ -131,5 +140,6 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
 }
 
 enum KnownServices {
-    static let transferAssetRecipient = "KiltTransferAssetRecipientV1"
+    static let transferAssetRecipientV1 = "KiltTransferAssetRecipientV1"
+    static let transferAssetRecipientV2 = "KiltTransferAssetRecipientV2"
 }

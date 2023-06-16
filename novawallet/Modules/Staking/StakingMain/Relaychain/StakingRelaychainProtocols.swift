@@ -27,7 +27,7 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceive(eraStakersInfoError: Error)
     func didReceive(networkStakingInfo: NetworkStakingInfo)
     func didReceive(networkStakingInfoError: Error)
-    func didReceive(payee: RewardDestinationArg?)
+    func didReceive(payee: Staking.RewardDestinationArg?)
     func didReceive(payeeError: Error)
     func didReceive(newChainAsset: ChainAsset)
     func didReceiveMinNominatorBond(result: Result<BigUInt?, Error>)

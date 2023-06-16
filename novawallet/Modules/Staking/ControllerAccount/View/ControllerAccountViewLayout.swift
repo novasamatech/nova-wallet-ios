@@ -1,22 +1,10 @@
 import UIKit
 
-final class ControllerAccountViewLayout: UIView {
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView()
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 0.0, right: 16.0)
-        view.stackView.alignment = .fill
-        view.stackView.spacing = 0.0
-        return view
-    }()
-
-    let bannerView: GradientBannerView = {
-        let view = GradientBannerView()
+final class ControllerAccountViewLayout: ScrollableContainerLayoutView {
+    let bannerView: GradientBannerView = .create { view in
         view.infoView.imageView.image = R.image.iconBannerShield()
         view.bind(model: .stakingController())
-
-        return view
-    }()
+    }
 
     let stashAccountView = WalletAccountInfoView()
 
@@ -33,6 +21,8 @@ final class ControllerAccountViewLayout: UIView {
         button.applyDefaultStyle()
         return button
     }()
+
+    private var isDeprecated: Bool = false
 
     var locale = Locale.current {
         didSet {
@@ -55,11 +45,41 @@ final class ControllerAccountViewLayout: UIView {
     func setIsControllerHintShown(_ isShown: Bool) {
         currentAccountIsControllerHint.isHidden = !isShown
 
-        let spacing = isShown ? 16.0 : 24.0
+        let spacing = calculateBannerSpacing()
+
         containerView.stackView.setCustomSpacing(spacing, after: bannerView)
     }
 
-    private func setupLayout() {
+    func applyIsDeprecated(_ isDeprecated: Bool) {
+        guard self.isDeprecated != isDeprecated else {
+            return
+        }
+
+        self.isDeprecated = isDeprecated
+
+        if isDeprecated {
+            setupDeprecatedControllerBanner()
+        } else {
+            setupActualControllerBanner()
+        }
+
+        applyBannerLocalization()
+        applyActionButtonLocalization()
+    }
+
+    private func setupDeprecatedControllerBanner() {
+        bannerView.infoView.imageView.image = R.image.iconControllerDeprecated()
+        bannerView.bind(model: .criticalUpdate())
+    }
+
+    private func setupActualControllerBanner() {
+        bannerView.infoView.imageView.image = R.image.iconBannerShield()
+        bannerView.bind(model: .stakingController())
+    }
+
+    override func setupLayout() {
+        super.setupLayout()
+
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -67,43 +87,25 @@ final class ControllerAccountViewLayout: UIView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionButton.snp.top).offset(-16.0)
-        }
+        addArrangedSubview(bannerView, spacingAfter: calculateBannerSpacing())
 
-        containerView.stackView.addArrangedSubview(bannerView)
-        bannerView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
-        }
+        addArrangedSubview(currentAccountIsControllerHint, spacingAfter: 24)
 
-        containerView.stackView.setCustomSpacing(16.0, after: bannerView)
+        addArrangedSubview(stashHintView, spacingAfter: 12)
 
-        containerView.stackView.addArrangedSubview(currentAccountIsControllerHint)
-        containerView.stackView.setCustomSpacing(24.0, after: currentAccountIsControllerHint)
+        addArrangedSubview(stashAccountView, spacingAfter: 24)
 
-        containerView.stackView.addArrangedSubview(stashHintView)
-        containerView.stackView.setCustomSpacing(12.0, after: stashHintView)
+        addArrangedSubview(controllerHintView, spacingAfter: 12)
 
-        containerView.stackView.addArrangedSubview(stashAccountView)
-        containerView.stackView.setCustomSpacing(24.0, after: stashAccountView)
+        addArrangedSubview(controllerAccountView)
+    }
 
-        containerView.stackView.addArrangedSubview(controllerHintView)
-        containerView.stackView.setCustomSpacing(12.0, after: controllerHintView)
-
-        containerView.stackView.addArrangedSubview(controllerAccountView)
+    private func calculateBannerSpacing() -> CGFloat {
+        currentAccountIsControllerHint.isHidden ? 24 : 16
     }
 
     private func applyLocalization() {
-        bannerView.infoView.titleLabel.text = R.string.localizable.stakingControllerBannerTitle(
-            preferredLanguages: locale.rLanguages
-        )
-
-        bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingControllerBannerMessage(
-            preferredLanguages: locale.rLanguages
-        )
+        applyBannerLocalization()
 
         bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.commonFindMore(
             preferredLanguages: locale.rLanguages
@@ -129,9 +131,39 @@ final class ControllerAccountViewLayout: UIView {
             preferredLanguages: locale.rLanguages
         )
 
-        actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: locale.rLanguages
-        )
+        applyActionButtonLocalization()
+    }
+
+    private func applyBannerLocalization() {
+        if isDeprecated {
+            bannerView.infoView.titleLabel.text = R.string.localizable.stakingControllerDeprecatedTitle(
+                preferredLanguages: locale.rLanguages
+            )
+
+            bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingControllerDeprecatedDetails(
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            bannerView.infoView.titleLabel.text = R.string.localizable.stakingControllerBannerTitle(
+                preferredLanguages: locale.rLanguages
+            )
+
+            bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingControllerBannerMessage(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+    }
+
+    private func applyActionButtonLocalization() {
+        if isDeprecated {
+            actionButton.imageWithTitleView?.title = R.string.localizable.stakingControllerDeprecatedAction(
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+                preferredLanguages: locale.rLanguages
+            )
+        }
     }
 
     private static func createMultivalueView() -> MultiValueView {

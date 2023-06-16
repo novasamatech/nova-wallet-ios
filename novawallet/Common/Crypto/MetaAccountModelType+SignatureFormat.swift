@@ -6,7 +6,7 @@ extension MetaAccountModelType {
         switch self {
         case .secrets, .watchOnly:
             return .regular
-        case .paritySigner:
+        case .paritySigner, .polkadotVault:
             return .paritySigner
         case .ledger:
             return .extrinsicPayload
@@ -21,6 +21,8 @@ extension MetaAccountModelType {
             return .paritySigner
         case .ledger:
             return .ledger
+        case .polkadotVault:
+            return .polkadotVault
         }
     }
 }
