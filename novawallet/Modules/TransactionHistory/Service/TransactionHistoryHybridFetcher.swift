@@ -83,7 +83,9 @@ extension TransactionHistoryHybridFetcher: TransactionHistoryFetching {
         ) { [weak self] result in
             self?.syncService = nil
             self?.createRemoteFetcher(from: result)
-            self?.delegate?.didUpdateFetchingState()
+            DispatchQueue.main.async {
+                self?.delegate?.didUpdateFetchingState()
+            }
         }
 
         syncService?.setup()

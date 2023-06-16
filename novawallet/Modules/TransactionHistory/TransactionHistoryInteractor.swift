@@ -84,17 +84,15 @@ extension TransactionHistoryInteractor: PriceLocalStorageSubscriber, PriceLocalS
         result: Result<PriceHistory?, Error>,
         priceId _: AssetModel.PriceId
     ) {
-        DispatchQueue.main.async {
-            switch result {
-            case let .success(optHistory):
-                if let history = optHistory {
-                    let calculator = TokenPriceCalculator(history: history)
-                    self.presenter?.didReceive(priceCalculator: calculator)
-                }
-
-            case let .failure(error):
-                self.presenter?.didReceive(error: .priceFailed(error))
+        switch result {
+        case let .success(optHistory):
+            if let history = optHistory {
+                let calculator = TokenPriceCalculator(history: history)
+                presenter?.didReceive(priceCalculator: calculator)
             }
+
+        case let .failure(error):
+            presenter?.didReceive(error: .priceFailed(error))
         }
     }
 }
@@ -104,22 +102,16 @@ extension TransactionHistoryInteractor: TransactionHistoryFetcherDelegate {
         _: TransactionHistoryFetching,
         changes: [DataProviderChange<TransactionHistoryItem>]
     ) {
-        DispatchQueue.main.async {
-            self.presenter?.didReceive(changes: changes)
-        }
+        presenter?.didReceive(changes: changes)
     }
 
     func didReceiveHistoryError(_: TransactionHistoryFetching, error: TransactionHistoryFetcherError) {
-        DispatchQueue.main.async {
-            self.presenter?.didReceive(error: .fetchFailed(error))
-        }
+        presenter?.didReceive(error: .fetchFailed(error))
     }
 
     func didUpdateFetchingState() {
         guard let fetcher = fetcher else { return }
-        DispatchQueue.main.async {
-            self.presenter?.didReceiveFetchingState(isComplete: !fetcher.isFetching)
-        }
+        presenter?.didReceiveFetchingState(isComplete: !fetcher.isFetching)
     }
 }
 

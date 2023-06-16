@@ -12,7 +12,9 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     @Atomic(defaultValue: nil) private var pagination: Pagination?
     @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall? {
         didSet {
-            delegate?.didUpdateFetchingState()
+            DispatchQueue.main.async {
+                self.delegate?.didUpdateFetchingState()
+            }
         }
     }
 
