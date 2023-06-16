@@ -5,9 +5,16 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
     typealias RootViewType = ParitySignerTxQrViewLayout
 
     let presenter: ParitySignerTxQrPresenterProtocol
+    let type: ParitySignerType
 
-    init(presenter: ParitySignerTxQrPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: ParitySignerTxQrPresenterProtocol,
+        type: ParitySignerType,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.type = type
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -66,10 +73,18 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.paritySignerTxTitle(preferredLanguages: languages)
-        rootView.titleLabel.text = R.string.localizable.paritySignerTxScan(preferredLanguages: languages)
+        title = R.string.localizable.paritySignerTxTitle(
+            type.getName(for: selectedLocale),
+            preferredLanguages: languages
+        )
+
+        rootView.titleLabel.text = R.string.localizable.paritySignerTxScan(
+            type.getName(for: selectedLocale),
+            preferredLanguages: languages
+        )
 
         rootView.helpButton.imageWithTitleView?.title = R.string.localizable.paritySignerTxSecondaryAction(
+            type.getName(for: selectedLocale),
             preferredLanguages: languages
         )
 

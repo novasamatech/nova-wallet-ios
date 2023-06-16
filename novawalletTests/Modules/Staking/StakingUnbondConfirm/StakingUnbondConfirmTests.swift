@@ -103,7 +103,7 @@ class StakingUnbondConfirmTests: XCTestCase {
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
             ledgerInfo: stakingLedger,
-            payee: RewardDestinationArg.staked,
+            payee: Staking.RewardDestinationArg.staked,
             stashItem: stashItem
         )
 

@@ -512,7 +512,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         handle(error: networkStakingInfoError)
     }
 
-    func didReceive(payee: RewardDestinationArg?) {
+    func didReceive(payee: Staking.RewardDestinationArg?) {
         stateMachine.state.process(payee: payee)
     }
 

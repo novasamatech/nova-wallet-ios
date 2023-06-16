@@ -21,7 +21,7 @@ protocol YourValidatorListInteractorOutputProtocol: AnyObject {
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveLedger(result: Result<StakingLedger?, Error>)
-    func didReceiveRewardDestination(result: Result<RewardDestinationArg?, Error>)
+    func didReceiveRewardDestination(result: Result<Staking.RewardDestinationArg?, Error>)
 }
 
 protocol YourValidatorListWireframeProtocol: AlertPresentable, ErrorPresentable,

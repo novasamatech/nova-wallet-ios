@@ -2,24 +2,47 @@ import Foundation
 import SoraFoundation
 
 struct ParitySignerAddConfirmViewFactory {
-    static func createOnboardingView(with substrateAccountId: AccountId) -> ControllerBackedProtocol? {
-        createView(with: substrateAccountId, wireframe: ParitySignerAddConfirmWireframe())
+    static func createOnboardingView(
+        with substrateAccountId: AccountId,
+        type: ParitySignerType
+    ) -> ControllerBackedProtocol? {
+        createView(
+            with: substrateAccountId,
+            type: type,
+            wireframe: ParitySignerAddConfirmWireframe()
+        )
     }
 
-    static func createAddAccountView(with substrateAccountId: AccountId) -> ControllerBackedProtocol? {
-        createView(with: substrateAccountId, wireframe: AddAccount.ParitySignerAddConfirmWireframe())
+    static func createAddAccountView(
+        with substrateAccountId: AccountId,
+        type: ParitySignerType
+    ) -> ControllerBackedProtocol? {
+        createView(
+            with: substrateAccountId,
+            type: type,
+            wireframe: AddAccount.ParitySignerAddConfirmWireframe()
+        )
     }
 
-    static func createSwitchAccountView(with substrateAccountId: AccountId) -> ControllerBackedProtocol? {
-        createView(with: substrateAccountId, wireframe: SwitchAccount.ParitySignerAddConfirmWireframe())
+    static func createSwitchAccountView(
+        with substrateAccountId: AccountId,
+        type: ParitySignerType
+    ) -> ControllerBackedProtocol? {
+        createView(
+            with: substrateAccountId,
+            type: type,
+            wireframe: SwitchAccount.ParitySignerAddConfirmWireframe()
+        )
     }
 
     private static func createView(
         with substrateAccountId: AccountId,
+        type: ParitySignerType,
         wireframe: ParitySignerAddConfirmWireframeProtocol
     ) -> ControllerBackedProtocol? {
         let interactor = ParitySignerAddConfirmInteractor(
             substrateAccountId: substrateAccountId,
+            type: type,
             settings: SelectedWalletSettings.shared,
             walletOperationFactory: ParitySignerWalletOperationFactory(),
             eventCenter: EventCenter.shared,

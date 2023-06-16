@@ -112,7 +112,7 @@ struct TransferSetupViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
 
-        let recipientRepository = KiltTransferAssetRecipientRepository(integrityVerifier: Web3NameIntegrityVerifier())
+        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory())
 
         let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
         let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
@@ -125,7 +125,7 @@ struct TransferSetupViewFactory {
             web3NamesOperationFactory: web3NamesOperationFactory,
             runtimeService: kiltRuntimeService,
             connection: kiltConnection,
-            transferRecipientRepository: recipientRepository,
+            transferRecipientRepositoryFactory: recipientRepositoryFactory,
             operationQueue: operationQueue
         )
     }

@@ -53,10 +53,46 @@ final class ControllerAccountInteractor: AccountFetching {
         self.storageRequestFactory = storageRequestFactory
         self.operationManager = operationManager
     }
+
+    private func provideDeprecationFlag() {
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                let isDeprecated = Staking.SetController.isDeprecated(for: coderFactory)
+                self?.presenter.didReceiveIsDeprecated(result: .success(isDeprecated))
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didReceiveIsDeprecated(result: .failure(error))
+            }
+        )
+    }
+
+    private func estimateFee(
+        for account: ChainAccountResponse,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) {
+        guard
+            let extrinsicService = extrinsicService,
+            let address = account.toAddress() else {
+            return
+        }
+
+        let identifier = Staking.SetController.path.callName + address
+
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+            let builderClosure = try Staking.SetController.appendCall(
+                for: .accoundId(account.accountId),
+                codingFactory: coderFactory
+            )
+
+            return try builderClosure(builder)
+        }
+    }
 }
 
 extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol {
     func setup() {
+        provideDeprecationFlag()
+
         if let accountAddress = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: accountAddress)
         } else {
@@ -85,17 +121,14 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
     }
 
     func estimateFee(for account: ChainAccountResponse) {
-        guard let extrinsicService = extrinsicService, let address = account.toAddress() else { return }
-        do {
-            let setController = try callFactory.setController(address)
-            let identifier = setController.callName + address
-
-            feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-                try builder.adding(call: setController)
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                self?.estimateFee(for: account, coderFactory: coderFactory)
+            }, errorClosure: { [weak self] error in
+                self?.presenter.didReceiveFee(result: .failure(error))
             }
-        } catch {
-            presenter.didReceiveFee(result: .failure(error))
-        }
+        )
     }
 
     func fetchControllerAccountInfo(controllerAddress: AccountAddress) {

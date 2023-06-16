@@ -275,7 +275,7 @@ final class AccountManagementPresenter {
             if let wallet = wallet {
                 wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
             }
-        case .paritySigner, .ledger:
+        case .paritySigner, .polkadotVault, .ledger:
             // change account not supported for Parity Signer and Ledger Wallets
             break
         }
@@ -375,7 +375,7 @@ final class AccountManagementPresenter {
         let handlingClosure: () -> Void
 
         switch walletType {
-        case .secrets, .watchOnly, .paritySigner:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault:
             handlingClosure = { [weak self] in
                 self?.activateChangeAccount(for: chain, walletType: walletType)
             }
@@ -456,7 +456,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             } else {
                 displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
-        case .paritySigner:
+        case .paritySigner, .polkadotVault:
             if chainViewModel.address != nil {
                 displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
             }

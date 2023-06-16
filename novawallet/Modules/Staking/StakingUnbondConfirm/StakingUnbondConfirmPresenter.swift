@@ -24,7 +24,7 @@ final class StakingUnbondConfirmPresenter {
     private var fee: Decimal?
     private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
-    private var payee: RewardDestinationArg?
+    private var payee: Staking.RewardDestinationArg?
     private var stakingDuration: StakingDuration?
     private var bondingDuration: UInt32?
 
@@ -294,7 +294,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         }
     }
 
-    func didReceivePayee(result: Result<RewardDestinationArg?, Error>) {
+    func didReceivePayee(result: Result<Staking.RewardDestinationArg?, Error>) {
         switch result {
         case let .success(payee):
             self.payee = payee

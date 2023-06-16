@@ -5,11 +5,18 @@ final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
     typealias RootViewType = ParitySignerAddressesViewLayout
 
     let presenter: ParitySignerAddressesPresenterProtocol
+    let type: ParitySignerType
 
     private var viewModels: [ChainAccountViewModelItem] = []
 
-    init(presenter: ParitySignerAddressesPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: ParitySignerAddressesPresenterProtocol,
+        type: ParitySignerType,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.type = type
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -49,7 +56,10 @@ final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.titleLabel.text = R.string.localizable.paritySignerAddressesTitle(preferredLanguages: languages)
-        rootView.subtitleLabel.text = R.string.localizable.paritySignerAddressesSubtitle(preferredLanguages: languages)
+        rootView.subtitleLabel.text = R.string.localizable.paritySignerAddressesSubtitle(
+            type.getName(for: selectedLocale),
+            preferredLanguages: languages
+        )
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: languages

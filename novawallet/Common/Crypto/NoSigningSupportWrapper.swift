@@ -4,6 +4,7 @@ import IrohaCrypto
 enum NoSigningSupportType {
     case paritySigner
     case ledger
+    case polkadotVault
 }
 
 enum NoSigningSupportError: Error {

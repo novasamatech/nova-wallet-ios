@@ -9,5 +9,5 @@ protocol ParitySignerWelcomeInteractorInputProtocol: AnyObject {}
 protocol ParitySignerWelcomeInteractorOutputProtocol: AnyObject {}
 
 protocol ParitySignerWelcomeWireframeProtocol: AnyObject {
-    func showScanQR(from view: ParitySignerWelcomeViewProtocol?)
+    func showScanQR(from view: ParitySignerWelcomeViewProtocol?, type: ParitySignerType)
 }

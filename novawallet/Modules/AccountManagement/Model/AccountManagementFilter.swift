@@ -13,7 +13,7 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
 
     func accountManagementSupports(wallet: MetaAccountModel, for chain: ChainModel) -> Bool {
         switch wallet.type {
-        case .watchOnly, .paritySigner, .secrets:
+        case .watchOnly, .paritySigner, .polkadotVault, .secrets:
             return true
         case .ledger:
             return supportedLedgerChains.contains(chain.chainId)
@@ -24,7 +24,7 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
         switch wallet.type {
         case .watchOnly, .secrets:
             return true
-        case .paritySigner:
+        case .paritySigner, .polkadotVault:
             return !chain.isEthereumBased
         case .ledger:
             return supportedLedgerChains.contains(chain.chainId)

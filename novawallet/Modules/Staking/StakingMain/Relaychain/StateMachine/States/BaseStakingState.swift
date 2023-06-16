@@ -125,7 +125,7 @@ class BaseStakingState: StakingStateProtocol {
     func process(nomination _: Nomination?) {}
     func process(validatorPrefs _: ValidatorPrefs?) {}
     func process(totalReward _: TotalRewardItem?) {}
-    func process(payee _: RewardDestinationArg?) {}
+    func process(payee _: Staking.RewardDestinationArg?) {}
     func process(bagListNode _: BagList.Node?) {}
 
     func process(eraCountdown: EraCountdown) {
