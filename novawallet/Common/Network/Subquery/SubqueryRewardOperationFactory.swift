@@ -77,10 +77,24 @@ final class SubqueryRewardOperationFactory {
         startTimestamp: Int64?,
         endTimestamp: Int64?
     ) -> String {
-        """
+        let startQuery = accountRewardsQuery(
+            address: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            isAsc: true
+        )
+
+        let endQuery = accountRewardsQuery(
+            address: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            isAsc: false
+        )
+
+        return """
         {
-            start: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: true))
-            end: \(accountRewardsQuery(address: address, startTimestamp: startTimestamp, endTimestamp: endTimestamp, isAsc: false))
+            start: \(startQuery)
+            end: \(endQuery)
         }
         """
     }

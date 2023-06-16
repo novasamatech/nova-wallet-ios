@@ -1,1 +1,1 @@
-{"data":{"accumulatedRewards":{"nodes":[{"amount":"5000000000000"}]}}}
+{"data":{"start":{"nodes":[{"amount":"5000000000000", "accumulatedAmount":"5000000000000"}]}, "end":{"nodes":[{"amount":"5000000000000", "accumulatedAmount":"5000000000000"}]}}}
