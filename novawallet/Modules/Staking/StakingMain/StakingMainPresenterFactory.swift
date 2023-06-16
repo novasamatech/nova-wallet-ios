@@ -4,7 +4,7 @@ import SoraFoundation
 
 protocol StakingMainPresenterFactoryProtocol {
     func createPresenter(
-        for stakingAssetSettings: StakingAssetSettings,
+        for stakingOption: Multistaking.ChainAssetOption,
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol?
 }
@@ -19,20 +19,18 @@ final class StakingMainPresenterFactory {
 
 extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
     func createPresenter(
-        for stakingAssetSettings: StakingAssetSettings,
+        for stakingOption: Multistaking.ChainAssetOption,
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol? {
-        let stakingType = stakingAssetSettings.value?.asset.stakings?.first
-
-        switch stakingType {
+        switch stakingOption.type {
         case .relaychain:
-            return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .babe)
+            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .babe)
         case .auraRelaychain:
-            return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .aura)
+            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .aura)
         case .parachain, .turing:
-            return createParachainPresenter(for: stakingAssetSettings, view: view)
+            return createParachainPresenter(for: stakingOption, view: view)
         case .azero:
-            return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .aura)
+            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .aura)
         case .unsupported, .none:
             return nil
         }

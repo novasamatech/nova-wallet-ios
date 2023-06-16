@@ -6,11 +6,11 @@ import SoraKeystore
 
 extension StakingMainPresenterFactory {
     func createRelaychainPresenter(
-        for stakingAssetSettings: StakingAssetSettings,
+        for stakingOption: Multistaking.ChainAssetOption,
         view: StakingMainViewProtocol,
         consensus: ConsensusType
     ) -> StakingRelaychainPresenter? {
-        let sharedState = createRelaychainSharedState(for: stakingAssetSettings, consensus: consensus)
+        let sharedState = createRelaychainSharedState(for: stakingOption, consensus: consensus)
 
         // MARK: - Interactor
 
@@ -56,6 +56,7 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
+    // swiftlint:disable:next function_body_length
     func createRelaychainInteractor(
         state: StakingSharedState
     ) -> StakingRelaychainInteractor? {
@@ -131,8 +132,8 @@ extension StakingMainPresenterFactory {
         )
     }
 
-    func createRelaychainSharedState(
-        for stakingAssetSettings: StakingAssetSettings,
+    private func createRelaychainSharedState(
+        for stakingOption: Multistaking.ChainAssetOption,
         consensus: ConsensusType
     ) -> StakingSharedState {
         let storageFacade = SubstrateDataStorageFacade.shared
@@ -146,7 +147,7 @@ extension StakingMainPresenterFactory {
 
         return StakingSharedState(
             consensus: consensus,
-            settings: stakingAssetSettings,
+            stakingOption: stakingOption,
             eraValidatorService: nil,
             rewardCalculationService: nil,
             blockTimeService: nil,

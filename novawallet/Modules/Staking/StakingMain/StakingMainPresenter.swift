@@ -10,12 +10,10 @@ final class StakingMainPresenter {
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let stakingOption: Multistaking.ChainAssetOption
     let logger: LoggerProtocol?
 
     private var childPresenter: StakingMainChildPresenterProtocol?
-    private var wallet: MetaAccountModel?
-    private var chainAsset: ChainAsset?
-    private var accountBalance: AssetBalance?
 
     init(
         childPresenterFactory: StakingMainPresenterFactoryProtocol,

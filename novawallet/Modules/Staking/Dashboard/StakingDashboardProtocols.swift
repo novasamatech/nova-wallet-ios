@@ -29,4 +29,9 @@ protocol StakingDashboardInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,
-    WalletSwitchPresentable {}
+    WalletSwitchPresentable {
+    func showStakingDetails(
+        from view: StakingDashboardViewProtocol?,
+        option: Multistaking.ChainAssetOption
+    )
+}

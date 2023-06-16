@@ -6,4 +6,9 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     init(stateObserver: Observable<StakingDashboardModel>) {
         self.stateObserver = stateObserver
     }
+
+    func showStakingDetails(
+        from _: StakingDashboardViewProtocol?,
+        option _: Multistaking.ChainAssetOption
+    ) {}
 }
