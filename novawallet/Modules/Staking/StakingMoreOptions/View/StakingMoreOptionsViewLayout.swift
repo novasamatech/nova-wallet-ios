@@ -1,15 +1,28 @@
 import UIKit
+import SnapKit
 
 final class StakingMoreOptionsViewLayout: UIView {
+    let backgroundView = MultigradientView.background
+
+    let navBarBlurView: UIView = {
+        let blurView = BlurBackgroundView()
+        blurView.cornerCut = []
+        return blurView
+    }()
+
+    var navBarBlurViewHeightConstraint: Constraint!
+
     lazy var collectionView: UICollectionView = {
-        let view = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
+        let view = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: compositionalLayout
+        )
         compositionalLayout.register(
             BlurBackgroundCollectionReusableView.self,
             forDecorationViewOfKind: BlurBackgroundCollectionReusableView.reuseIdentifier
         )
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
-        view.contentInset = .init(top: 16, left: 16, bottom: 16, right: 16)
         return view
     }()
 
@@ -25,14 +38,30 @@ final class StakingMoreOptionsViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(backgroundView)
+
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         addSubview(collectionView)
         collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+
+        addSubview(navBarBlurView)
+        navBarBlurView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            self.navBarBlurViewHeightConstraint = make.height.equalTo(0).constraint
+            self.navBarBlurViewHeightConstraint.activate()
+        }
     }
 
     private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
-        .init { sectionIndex, _ -> NSCollectionLayoutSection? in
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        configuration.scrollDirection = .vertical
+
+        return .init(sectionProvider: { sectionIndex, _ -> NSCollectionLayoutSection? in
             switch StakingMoreOptionsSection(rawValue: sectionIndex) {
             case .options:
                 return Self.createOptionsSection()
@@ -41,7 +70,7 @@ final class StakingMoreOptionsViewLayout: UIView {
             default:
                 return nil
             }
-        }
+        }, configuration: configuration)
     }()
 
     static func createOptionsSection() -> NSCollectionLayoutSection {
@@ -57,7 +86,7 @@ final class StakingMoreOptionsViewLayout: UIView {
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .zero
+        section.contentInsets = .init(top: 16, leading: 0, bottom: 28, trailing: 0)
         section.interGroupSpacing = 8
 
         return section
@@ -83,7 +112,7 @@ final class StakingMoreOptionsViewLayout: UIView {
         )
 
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .zero
+        section.contentInsets = .init(top: 0, leading: 16, bottom: 13, trailing: 16)
         section.interGroupSpacing = 0
 
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
@@ -95,14 +124,12 @@ final class StakingMoreOptionsViewLayout: UIView {
         sectionHeader.pinToVisibleBounds = false
 
         section.boundarySupplementaryItems = [sectionHeader]
+        let decorationItem = NSCollectionLayoutDecorationItem.background(elementKind: BlurBackgroundCollectionReusableView.reuseIdentifier)
+        decorationItem.contentInsets = .init(top: 44, leading: 16, bottom: 13, trailing: 16)
+
         section.decorationItems = [
-            NSCollectionLayoutDecorationItem.background(elementKind: BlurBackgroundCollectionReusableView.reuseIdentifier)
+            decorationItem
         ]
         return section
     }
-}
-
-enum StakingMoreOptionsSection: Int, CaseIterable {
-    case options
-    case dApps
 }

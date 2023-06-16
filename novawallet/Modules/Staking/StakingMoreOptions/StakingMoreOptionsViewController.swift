@@ -5,7 +5,8 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingMoreOptionsViewLayout
 
     let presenter: StakingMoreOptionsPresenterProtocol
-    private var dAppModels: [ReferendumDAppView.Model] = []
+    private var dAppModels: [DAppView.Model] = []
+    private var moreOptionsModels: [StakingDashboardDisabledViewModel] = []
 
     init(
         presenter: StakingMoreOptionsPresenterProtocol,
@@ -28,24 +29,47 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigationBarStyle()
         setupCollectionView()
+        setupLocalization()
         presenter.setup()
     }
 
     private func setupCollectionView() {
+        rootView.collectionView.registerCellClass(StakingMoreOptionCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppCollectionViewCell.self)
         rootView.collectionView.registerClass(
             TitleHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
+
         rootView.collectionView.delegate = self
         rootView.collectionView.dataSource = self
+    }
+
+    private func setupLocalization() {
+        title = R.string.localizable.multistakingMoreOptions(preferredLanguages: selectedLocale.rLanguages)
+        rootView.collectionView.reloadData()
+    }
+
+    private func setupNavigationBarStyle() {
+        guard let navigationBar = navigationController?.navigationBar else { return }
+
+        let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
+        let navBarHeight = navigationBar.bounds.height
+        let blurHeight = statusBarHeight + navBarHeight
+        rootView.navBarBlurViewHeightConstraint.update(offset: blurHeight)
     }
 }
 
 extension StakingMoreOptionsViewController: StakingMoreOptionsViewProtocol {
-    func didReceive(dAppModels: [ReferendumDAppView.Model]) {
+    func didReceive(dAppModels: [DAppView.Model]) {
         self.dAppModels = dAppModels
+        rootView.collectionView.reloadData()
+    }
+
+    func didReceive(moreOptionsModels: [StakingDashboardDisabledViewModel]) {
+        self.moreOptionsModels = moreOptionsModels
         rootView.collectionView.reloadData()
     }
 }
@@ -60,7 +84,7 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
         case .dApps:
             return dAppModels.count
         case .options:
-            return 0
+            return moreOptionsModels.count
         case .none:
             return 0
         }
@@ -73,7 +97,9 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
             cell.bodyView.bind(viewModel: dAppModels[indexPath.row])
             return cell
         case .options:
-            return UICollectionViewCell()
+            let cell: StakingMoreOptionCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
+            cell.view.view.bind(viewModel: moreOptionsModels[indexPath.row], locale: selectedLocale)
+            return cell
         case .none:
             return UICollectionViewCell()
         }
@@ -95,12 +121,23 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
     }
 }
 
-extension StakingMoreOptionsViewController: UICollectionViewDelegate {}
+extension StakingMoreOptionsViewController: UICollectionViewDelegate {
+    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch StakingMoreOptionsSection(rawValue: indexPath.section) {
+        case .dApps:
+            presenter.selectDApp(at: indexPath.row)
+        case .options:
+            presenter.selectOption(at: indexPath.row)
+        case .none:
+            break
+        }
+    }
+}
 
 extension StakingMoreOptionsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            rootView.collectionView.reloadData()
+            setupLocalization()
         }
     }
 }

@@ -415,6 +415,9 @@
 		77A0B2ED2A3B7F3300CBF653 /* DAppCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2EC2A3B7F3300CBF653 /* DAppCollectionViewCell.swift */; };
 		77A0B2EF2A3B85B700CBF653 /* BlurBackgroundCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2EE2A3B85B700CBF653 /* BlurBackgroundCollectionReusableView.swift */; };
 		77A0B2F12A3C6D4F00CBF653 /* TitleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F02A3C6D4F00CBF653 /* TitleHeaderView.swift */; };
+		77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */; };
+		77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */; };
+		77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */; };
 		78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B309EC85D8897A4ADD98A /* CustomValidatorListViewController.swift */; };
 		78E0B6963A8D0A07E742232C /* GovernanceEditDelegationTracksWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3B84FA1F22CC12B16C79AE /* GovernanceEditDelegationTracksWireframe.swift */; };
 		790129F3CB6AEA611639E886 /* ParaStkUnstakeViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5467B9B6AEDB33F565D130A1 /* ParaStkUnstakeViewFactory.swift */; };
@@ -2908,7 +2911,7 @@
 		88A6BCFF28CA15400047E4C2 /* LocksBalanceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A6BCFE28CA15400047E4C2 /* LocksBalanceViewModelFactory.swift */; };
 		88A6BD0128CA15710047E4C2 /* LocksViewInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */; };
 		88A95FA628F8664100BE26F3 /* ReferendumTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A95FA528F8664100BE26F3 /* ReferendumTimelineView.swift */; };
-		88A95FA828FAA99D00BE26F3 /* ReferendumDAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A95FA728FAA99D00BE26F3 /* ReferendumDAppView.swift */; };
+		88A95FA828FAA99D00BE26F3 /* DAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A95FA728FAA99D00BE26F3 /* DAppView.swift */; };
 		88AA0FB828B60E6A00931800 /* YourWalletsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */; };
 		88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186028CA3EE100892A9B /* LocksViewLayout.swift */; };
 		88AC186328CA3F0000892A9B /* GenericCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */; };
@@ -4000,6 +4003,9 @@
 		77A0B2EC2A3B7F3300CBF653 /* DAppCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCollectionViewCell.swift; sourceTree = "<group>"; };
 		77A0B2EE2A3B85B700CBF653 /* BlurBackgroundCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurBackgroundCollectionReusableView.swift; sourceTree = "<group>"; };
 		77A0B2F02A3C6D4F00CBF653 /* TitleHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleHeaderView.swift; sourceTree = "<group>"; };
+		77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsViewModelFactory.swift; sourceTree = "<group>"; };
+		77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionCollectionViewCell.swift; sourceTree = "<group>"; };
+		77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsSection.swift; sourceTree = "<group>"; };
 		77F3F175AFC554763696CB2A /* StakingMoreOptionsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsPresenter.swift; sourceTree = "<group>"; };
 		781FA4C896AF31B4035AFB38 /* ChainAddressDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsViewFactory.swift; sourceTree = "<group>"; };
 		782CC21A2F9EEF5DBA3AB1AA /* PurchaseProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseProtocols.swift; sourceTree = "<group>"; };
@@ -6534,7 +6540,7 @@
 		88A6BCFE28CA15400047E4C2 /* LocksBalanceViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksBalanceViewModelFactory.swift; sourceTree = "<group>"; };
 		88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksViewInput.swift; sourceTree = "<group>"; };
 		88A95FA528F8664100BE26F3 /* ReferendumTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumTimelineView.swift; sourceTree = "<group>"; };
-		88A95FA728FAA99D00BE26F3 /* ReferendumDAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumDAppView.swift; sourceTree = "<group>"; };
+		88A95FA728FAA99D00BE26F3 /* DAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppView.swift; sourceTree = "<group>"; };
 		88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsControlView.swift; sourceTree = "<group>"; };
 		88AC186028CA3EE100892A9B /* LocksViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksViewLayout.swift; sourceTree = "<group>"; };
 		88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericCollectionViewLayout.swift; sourceTree = "<group>"; };
@@ -7854,15 +7860,15 @@
 		441CFEEE3C55585F7764C9EE /* StakingMoreOptions */ = {
 			isa = PBXGroup;
 			children = (
+				77A0B2F72A3CA40200CBF653 /* Model */,
+				77A0B2F62A3CA3B200CBF653 /* View */,
 				07D165A41A0F3F0EC1926175 /* StakingMoreOptionsProtocols.swift */,
 				E13BDB2E7FF04670131408DB /* StakingMoreOptionsWireframe.swift */,
 				77F3F175AFC554763696CB2A /* StakingMoreOptionsPresenter.swift */,
 				74E4A8D1E4FEA5936AA38B24 /* StakingMoreOptionsInteractor.swift */,
 				CC2FE7131747C08259EB98AC /* StakingMoreOptionsViewController.swift */,
-				BC767DE76479F70A8FA3292A /* StakingMoreOptionsViewLayout.swift */,
 				3157288B4033B2264628C866 /* StakingMoreOptionsViewFactory.swift */,
-				77A0B2EC2A3B7F3300CBF653 /* DAppCollectionViewCell.swift */,
-				77A0B2EE2A3B85B700CBF653 /* BlurBackgroundCollectionReusableView.swift */,
+				77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */,
 			);
 			path = StakingMoreOptions;
 			sourceTree = "<group>";
@@ -8139,6 +8145,25 @@
 			children = (
 				777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */,
 				777BD86129F97322004969A2 /* ReferendumsFilter.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		77A0B2F62A3CA3B200CBF653 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				77A0B2EE2A3B85B700CBF653 /* BlurBackgroundCollectionReusableView.swift */,
+				77A0B2EC2A3B7F3300CBF653 /* DAppCollectionViewCell.swift */,
+				77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */,
+				BC767DE76479F70A8FA3292A /* StakingMoreOptionsViewLayout.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		77A0B2F72A3CA40200CBF653 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -11818,6 +11843,7 @@
 				84D184EB2A04DA810060C1BD /* GlowingStatusView.swift */,
 				7796C7022A17846B00D56094 /* EmptyCellContentView.swift */,
 				77A0B2F02A3C6D4F00CBF653 /* TitleHeaderView.swift */,
+				88A95FA728FAA99D00BE26F3 /* DAppView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -15289,7 +15315,6 @@
 				888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */,
 				888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */,
 				88B560BB28F80DCB00A5EB59 /* VoteRowView.swift */,
-				88A95FA728FAA99D00BE26F3 /* ReferendumDAppView.swift */,
 				88FAE78728FCF8E200130B47 /* ReferendumDetailsTitleView.swift */,
 				88F34FD128FF045400712BDE /* BindableView.swift */,
 				88107D6029015FAB001AB0B0 /* TrackTagsView.swift */,
@@ -17780,6 +17805,7 @@
 				AEE0C43A272A8B1F009F9AD5 /* AddChainAccount+AccountCreateWireframe.swift in Sources */,
 				84038FF226FFBE1900C73F3F /* JsonLocalSubscriptionHandler.swift in Sources */,
 				842898D1265A955A002D5D65 /* ImageViewModel.swift in Sources */,
+				77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */,
 				88F34FDB28FFE6AA00712BDE /* RequestedAmountRow.swift in Sources */,
 				880CC0AA29E7F151008C7F65 /* EquilibriumLocksSubscription.swift in Sources */,
 				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
@@ -18053,6 +18079,7 @@
 				84644A30256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift in Sources */,
 				84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */,
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
+				77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
 				8846F74229D759DD00B8B776 /* Data+proquint.swift in Sources */,
@@ -18480,7 +18507,7 @@
 				AEE5FAFB26414C4F002B8FDC /* StakingRebondSetupProtocols.swift in Sources */,
 				84FA7C1C284F8EB400B648E1 /* PendingExtrinsicInteracting.swift in Sources */,
 				84BC7043289EEF85008A9758 /* NoSigningSupportWrapper.swift in Sources */,
-				88A95FA828FAA99D00BE26F3 /* ReferendumDAppView.swift in Sources */,
+				88A95FA828FAA99D00BE26F3 /* DAppView.swift in Sources */,
 				84838A3C299CD38300E030C4 /* GovernanceUndelegateValidatingParams.swift in Sources */,
 				AEA0C8BE2681141700F9666F /* YourValidatorList+SelectedList.swift in Sources */,
 				F466AA90273D188600D14021 /* SettingsRow.swift in Sources */,
@@ -20407,6 +20434,7 @@
 				843ADAC32A3C30A1003AE2B5 /* Decimal+Fiat.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,
 				84D184E82A04D5DC0060C1BD /* ScrollableContainerLayoutView.swift in Sources */,
+				77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */,
 				1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */,
 				887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */,
 				042799797DF7E6FD02D1D1E6 /* ParitySignerTxScanPresenter.swift in Sources */,

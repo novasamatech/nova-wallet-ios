@@ -2,12 +2,13 @@ import UIKit
 import SnapKit
 
 final class DAppCollectionViewCell: UICollectionViewCell {
-    let bodyView = ReferendumDAppView()
+    let bodyView = DAppView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+        bodyView.arrowView.isHidden = true
     }
 
     @available(*, unavailable)
@@ -15,7 +16,7 @@ final class DAppCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var contentInsets: UIEdgeInsets = .zero {
+    var contentInsets: UIEdgeInsets = .init(top: 0, left: 16, bottom: 0, right: 16) {
         didSet {
             bodyView.snp.updateConstraints {
                 $0.edges.equalToSuperview().inset(contentInsets)

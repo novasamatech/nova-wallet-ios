@@ -1,9 +1,12 @@
 protocol StakingMoreOptionsViewProtocol: ControllerBackedProtocol {
-    func didReceive(dAppModels: [ReferendumDAppView.Model])
+    func didReceive(dAppModels: [DAppView.Model])
+    func didReceive(moreOptionsModels: [StakingDashboardDisabledViewModel])
 }
 
 protocol StakingMoreOptionsPresenterProtocol: AnyObject {
     func setup()
+    func selectDApp(at index: Int)
+    func selectOption(at index: Int)
 }
 
 protocol StakingMoreOptionsInteractorInputProtocol: AnyObject {
@@ -12,6 +15,9 @@ protocol StakingMoreOptionsInteractorInputProtocol: AnyObject {
 
 protocol StakingMoreOptionsInteractorOutputProtocol: AnyObject {
     func didReceive(dAppsResult: Result<DAppList, Error>?)
+    func didReceive(moreOptions: [StakingDashboardItemModel])
 }
 
-protocol StakingMoreOptionsWireframeProtocol: AnyObject {}
+protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {
+    func showBrowser(from view: ControllerBackedProtocol?, for dApp: DApp)
+}
