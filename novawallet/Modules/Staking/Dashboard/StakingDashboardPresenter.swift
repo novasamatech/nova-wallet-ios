@@ -46,21 +46,9 @@ final class StakingDashboardPresenter {
             return
         }
 
-        let activeViewModels = model.active.map {
-            viewModelFactory.createActiveStakingViewModel(
-                for: $0,
-                locale: selectedLocale
-            )
-        }
+        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
 
-        let inactiveViewModels = model.inactive.map {
-            viewModelFactory.createInactiveStakingViewModel(
-                for: $0,
-                locale: selectedLocale
-            )
-        }
-
-        view?.didReceiveStakings(active: activeViewModels, inactive: inactiveViewModels)
+        view?.didReceiveStakings(viewModel: viewModel)
     }
 }
 
@@ -68,6 +56,18 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func selectActiveStaking(at _: Int) {}
+
+    func selectInactiveStaking(at _: Int) {}
+
+    func selectMoreOptions() {}
+
+    func switchWallet() {
+        wireframe.showWalletSwitch(from: view)
+    }
+
+    func refresh() {}
 }
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
@@ -78,6 +78,8 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     }
 
     func didReceive(model: StakingDashboardModel) {
+        logger.debug("Did receive model: \(model)")
+
         self.model = model
 
         updateStakingsView()

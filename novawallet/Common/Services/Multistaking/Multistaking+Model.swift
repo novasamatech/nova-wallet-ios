@@ -23,7 +23,7 @@ extension Multistaking {
         var identifier: String { option.stringValue }
     }
 
-    struct OptionWithWallet {
+    struct OptionWithWallet: Equatable {
         let walletId: MetaAccountModel.Id
         let option: Multistaking.Option
 
@@ -49,9 +49,9 @@ extension Multistaking {
         let totalRewards: BigUInt?
     }
 
-    struct DashboardItem {
+    struct DashboardItem: Equatable {
         // swiftlint:disable:next nesting
-        enum State: String {
+        enum State: String, Equatable {
             case active
             case inactive
             case waiting

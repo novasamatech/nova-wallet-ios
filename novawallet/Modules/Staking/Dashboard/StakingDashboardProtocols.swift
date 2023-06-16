@@ -2,14 +2,16 @@ import RobinHood
 
 protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletSwitchViewModel)
-    func didReceiveStakings(
-        active: [StakingDashboardEnabledViewModel],
-        inactive: [StakingDashboardDisabledViewModel]
-    )
+    func didReceiveStakings(viewModel: StakingDashboardViewModel)
 }
 
 protocol StakingDashboardPresenterProtocol: AnyObject {
     func setup()
+    func selectActiveStaking(at index: Int)
+    func selectInactiveStaking(at index: Int)
+    func selectMoreOptions()
+    func switchWallet()
+    func refresh()
 }
 
 protocol StakingDashboardInteractorInputProtocol: AnyObject {
@@ -26,4 +28,5 @@ protocol StakingDashboardInteractorOutputProtocol: AnyObject {
     func didReceive(error: StakingDashboardInteractorError)
 }
 
-protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {}
+protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,
+    WalletSwitchPresentable {}
