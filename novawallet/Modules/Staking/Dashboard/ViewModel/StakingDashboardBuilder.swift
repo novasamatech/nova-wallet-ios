@@ -81,9 +81,9 @@ final class StakingDashboardBuilder {
         }
 
         let model = StakingDashboardModel(
-            active: activeStakings.sortedByStaking(),
-            inactive: Array(inactiveStakings.values).sortedByStaking(),
-            more: moreOptions.sortedByStaking()
+            active: activeStakings.sortedByStake(),
+            inactive: Array(inactiveStakings.values).sortedByBalance(),
+            more: moreOptions.sortedByBalance()
         )
 
         callbackQueue.async { [weak self] in

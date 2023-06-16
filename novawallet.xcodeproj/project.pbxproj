@@ -934,6 +934,7 @@
 		843A2C7126A85B5B00266F53 /* GenericTitleValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843A2C7026A85B5B00266F53 /* GenericTitleValueView.swift */; };
 		843A2C7326A8641400266F53 /* MultiValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843A2C7226A8641400266F53 /* MultiValueView.swift */; };
 		843A2C7726A86FD000266F53 /* TitleStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843A2C7626A86FD000266F53 /* TitleStatusView.swift */; };
+		843ADAC32A3C30A1003AE2B5 /* Decimal+Fiat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843ADAC22A3C30A1003AE2B5 /* Decimal+Fiat.swift */; };
 		843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843B1D79263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift */; };
 		843B6F4F28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843B6F4E28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift */; };
 		843C49D824DD98CC00B71DDA /* DerivationPathConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */; };
@@ -4515,6 +4516,7 @@
 		843A2C7026A85B5B00266F53 /* GenericTitleValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericTitleValueView.swift; sourceTree = "<group>"; };
 		843A2C7226A8641400266F53 /* MultiValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiValueView.swift; sourceTree = "<group>"; };
 		843A2C7626A86FD000266F53 /* TitleStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleStatusView.swift; sourceTree = "<group>"; };
+		843ADAC22A3C30A1003AE2B5 /* Decimal+Fiat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Fiat.swift"; sourceTree = "<group>"; };
 		843B1D79263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmLayout.swift; sourceTree = "<group>"; };
 		843B6F4E28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov2OperationFactoryTests.swift; sourceTree = "<group>"; };
 		843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationPathConstants.swift; sourceTree = "<group>"; };
@@ -11596,6 +11598,7 @@
 				881ED96729758088000C0457 /* Array+safe.swift */,
 				8849AD6129C3532600F4F7FF /* String+split.swift */,
 				8849AD6D29C4690F00F4F7FF /* String+checkLength.swift */,
+				843ADAC22A3C30A1003AE2B5 /* Decimal+Fiat.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -20349,6 +20352,7 @@
 				84B24FAC2A2F25FF00F9BF59 /* StakingDashboardActiveDetailsView.swift in Sources */,
 				84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */,
 				821518375113295E41E0481C /* ParitySignerTxQrViewFactory.swift in Sources */,
+				843ADAC32A3C30A1003AE2B5 /* Decimal+Fiat.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,
 				84D184E82A04D5DC0060C1BD /* ScrollableContainerLayoutView.swift in Sources */,
 				1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */,

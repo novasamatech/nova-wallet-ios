@@ -19,17 +19,19 @@ struct StakingDashboardItemModel: Equatable {
     }
 
     func balanceValue() -> Decimal {
-        guard let balance = balance,
-              let rate = price?.decimalRate else {
-            return 0
-        }
-
-        let decimalBalance = Decimal.fromSubstrateAmount(
-            balance.totalInPlank,
+        Decimal.fiatValue(
+            from: balance?.freeInPlank,
+            price: price,
             precision: stakingOption.chainAsset.assetDisplayInfo.assetPrecision
-        ) ?? 0
+        )
+    }
 
-        return decimalBalance * rate
+    func stakeValue() -> Decimal {
+        Decimal.fiatValue(
+            from: dashboardItem?.stake,
+            price: price,
+            precision: stakingOption.chainAsset.assetDisplayInfo.assetPrecision
+        )
     }
 }
 
@@ -50,7 +52,27 @@ struct StakingDashboardModel: Equatable {
 }
 
 extension Array where Element == StakingDashboardItemModel {
-    func sortedByStaking() -> [StakingDashboardItemModel] {
+    func sortedByStake() -> [StakingDashboardItemModel] {
+        sorted { item1, item2 in
+            let stake1 = item1.stakeValue()
+            let stake2 = item2.stakeValue()
+
+            if stake1 > 0, stake2 > 0 {
+                return stake1 > stake2
+            } else if stake1 > 0 {
+                return true
+            } else if stake2 > 0 {
+                return false
+            } else {
+                let chain1 = item1.stakingOption.chainAsset.chain
+                let chain2 = item2.stakingOption.chainAsset.chain
+
+                return chain1.name.lexicographicallyPrecedes(chain2.name)
+            }
+        }
+    }
+
+    func sortedByBalance() -> [StakingDashboardItemModel] {
         sorted { item1, item2 in
             let chain1 = item1.stakingOption.chainAsset.chain
             let chain2 = item2.stakingOption.chainAsset.chain

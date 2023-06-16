@@ -190,6 +190,8 @@ extension StakingDashboardInteractor: ChainsStoreDelegate {
             oldItems: Array(stakableAssets)
         )
 
+        stakableAssets = newChainAssets
+
         updateBalanceSubscriptions(for: changes)
         updatePriceSubscriptions(for: changes)
     }
