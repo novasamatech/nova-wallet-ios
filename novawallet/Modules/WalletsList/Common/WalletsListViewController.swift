@@ -87,10 +87,15 @@ class WalletsListViewController<
             return view
         case .paritySigner:
             let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconParitySignerHeader()
-            let title = R.string.localizable.commonParitySigner(
-                preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            let icon = ParitySignerType.legacy.iconForHeader
+            let title = ParitySignerType.legacy.getName(for: selectedLocale).uppercased()
+
+            view.bind(title: title, icon: icon)
+            return view
+        case .polkadotVault:
+            let view = dequeueCommonHeader(from: tableView)
+            let icon = ParitySignerType.vault.iconForHeader
+            let title = ParitySignerType.vault.getName(for: selectedLocale).uppercased()
 
             view.bind(title: title, icon: icon)
             return view
@@ -118,7 +123,7 @@ class WalletsListViewController<
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly, .paritySigner, .ledger:
+        case .watchOnly, .paritySigner, .polkadotVault, .ledger:
             return 46.0
         }
     }

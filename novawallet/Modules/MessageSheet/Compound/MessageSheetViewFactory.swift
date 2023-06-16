@@ -59,7 +59,18 @@ struct MessageSheetViewFactory {
         case .paritySigner:
             icon = R.image.iconParitySignerInSheet()
             message = LocalizableResource { locale in
-                R.string.localizable.commonParitySignerNotSupportedMessage(preferredLanguages: locale.rLanguages)
+                R.string.localizable.commonParitySignerNotSupportedMessage(
+                    ParitySignerType.legacy.getName(for: locale),
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        case .polkadotVault:
+            icon = R.image.iconPolkadotVaultInSheet()
+            message = LocalizableResource { locale in
+                R.string.localizable.commonParitySignerNotSupportedMessage(
+                    ParitySignerType.vault.getName(for: locale),
+                    preferredLanguages: locale.rLanguages
+                )
             }
         case .ledger:
             icon = R.image.iconLedgerInSheet()

@@ -27,7 +27,7 @@ final class Web3NameService: AnyCancellableCleaning {
     let web3NamesOperationFactory: Web3NamesOperationFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
-    let transferRecipientRepository: Web3TransferRecipientRepositoryProtocol
+    let transferRecipientRepositoryFactory: Web3TransferRecipientRepositoryFactoryProtocol
     let providerName: String
 
     init(
@@ -36,7 +36,7 @@ final class Web3NameService: AnyCancellableCleaning {
         web3NamesOperationFactory: Web3NamesOperationFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
-        transferRecipientRepository: Web3TransferRecipientRepositoryProtocol,
+        transferRecipientRepositoryFactory: Web3TransferRecipientRepositoryFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.providerName = providerName
@@ -44,7 +44,7 @@ final class Web3NameService: AnyCancellableCleaning {
         self.web3NamesOperationFactory = web3NamesOperationFactory
         self.runtimeService = runtimeService
         self.connection = connection
-        self.transferRecipientRepository = transferRecipientRepository
+        self.transferRecipientRepositoryFactory = transferRecipientRepositoryFactory
         self.operationQueue = operationQueue
     }
 
@@ -52,7 +52,7 @@ final class Web3NameService: AnyCancellableCleaning {
         CompoundOperationWrapper<Web3TransferRecipientResponse?> {
         let searchNameWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
             name: name,
-            service: KnownServices.transferAssetRecipient,
+            services: transferRecipientRepositoryFactory.knownServices,
             connection: connection,
             runtimeService: runtimeService
         )
@@ -68,12 +68,28 @@ final class Web3NameService: AnyCancellableCleaning {
             guard let web3Name = try searchNameWrapper.targetOperation.extractNoCancellableResultData() else {
                 throw Web3NameServiceError.accountNotFound(name)
             }
-            guard let serviceId = web3Name.serviceId,
-                  let serviceURL = web3Name.serviceURLs.first else {
+            let services = web3Name.service.filter { !$0.URLs.isEmpty }
+            guard !services.isEmpty else {
                 throw Web3NameServiceError.serviceNotFound(name, chainName)
             }
 
-            return self.transferRecipientRepository.fetchRecipients(url: serviceURL, hash: serviceId)
+            let repositoryOperations = services.map { service in
+                let repository = self.transferRecipientRepositoryFactory.createRepository(for: service.type)
+                return repository.fetchRecipients(url: service.URLs[0], hash: service.id)
+            }
+
+            let mergeOperation = ClosureOperation<Web3TransferRecipientResponse> {
+                repositoryOperations.compactMap { operation in
+                    try? operation.targetOperation.extractNoCancellableResultData()
+                }
+                .reduce([:]) { $0.merging($1) { current, new in current + new } }
+            }
+
+            repositoryOperations.forEach { mergeOperation.addDependency($0.targetOperation) }
+
+            let dependencies = repositoryOperations.flatMap(\.allOperations)
+
+            return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
         }
 
         recipientsWrapper.addDependency(wrapper: searchNameWrapper)

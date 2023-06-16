@@ -80,15 +80,17 @@ extension ControllerAccountViewController: ControllerAccountViewProtocol {
 
         rootView.controllerAccountView.bind(viewModel: viewModel.controllerViewModel)
 
-        let isEnabled = viewModel.actionButtonIsEnabled
+        let isEnabled = viewModel.hasChangesToSave
         rootView.actionButton.set(enabled: isEnabled)
 
         let shouldShowAccountWarning = viewModel.currentAccountIsController
 
         rootView.setIsControllerHintShown(shouldShowAccountWarning)
-        rootView.actionButton.isHidden = shouldShowAccountWarning
+        rootView.actionButton.isHidden = viewModel.shouldHideActionButton
 
         rootView.controllerAccountView.shouldEnableAction = viewModel.canChooseOtherController
+
+        rootView.applyIsDeprecated(viewModel.isDeprecated)
     }
 
     func didCompleteControllerSelection() {

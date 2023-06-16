@@ -21,7 +21,7 @@ final class Web3NamesOperationFactoryTests: XCTestCase {
         let operationFactory = KiltWeb3NamesOperationFactory(operationQueue: queue)
         
         let wrapper = operationFactory.searchWeb3NameWrapper(name: "53898297f3d4d529d9bb6511a39d",
-                                                             service: KnownServices.transferAssetRecipient,
+                                                             services: [KnownServices.transferAssetRecipientV1],
                                                              connection: connection,
                                                              runtimeService: runtimeService)
         
@@ -45,7 +45,7 @@ final class Web3NamesOperationFactoryTests: XCTestCase {
         let operationFactory = KiltWeb3NamesOperationFactory(operationQueue: queue)
         
         let wrapper = operationFactory.searchWeb3NameWrapper(name: "john_doe",
-                                                             service: KnownServices.transferAssetRecipient,
+                                                             services: [KnownServices.transferAssetRecipientV1],
                                                              connection: connection,
                                                              runtimeService: runtimeService)
         
@@ -69,7 +69,7 @@ final class Web3NamesOperationFactoryTests: XCTestCase {
         let operationFactory = KiltWeb3NamesOperationFactory(operationQueue: queue)
         
         let wrapper = operationFactory.searchWeb3NameWrapper(name: "john_doe",
-                                                             service: "KiltPublishedCredentialCollectionV1",
+                                                             services: ["KiltPublishedCredentialCollectionV1"],
                                                              connection: connection,
                                                              runtimeService: runtimeService)
         
@@ -80,7 +80,8 @@ final class Web3NamesOperationFactoryTests: XCTestCase {
         
         let result = try wrapper.targetOperation.extractNoCancellableResultData()
         XCTAssertNotNil(result)
-        XCTAssertTrue(!result!.serviceURLs.isEmpty)
+        XCTAssertNotNil(result!.service.first)
+        XCTAssertTrue(!result!.service.first!.URLs.isEmpty)
     }
 }
 

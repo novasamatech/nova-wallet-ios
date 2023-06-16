@@ -9,7 +9,7 @@ final class YourWalletsPresenter {
     let metaAccounts: [MetaAccountChainResponse]
     let accountIconGenerator: IconGenerating
     let chainIconGenerator: IconGenerating
-    let sectionTypes: [MetaAccountModelType] = [.secrets, .paritySigner, .ledger, .watchOnly]
+    let sectionTypes: [MetaAccountModelType] = [.secrets, .polkadotVault, .paritySigner, .ledger, .watchOnly]
 
     private(set) var selectedAddress: AccountAddress?
     private(set) var sections: [YourWalletsViewSectionModel] = []
@@ -67,12 +67,11 @@ final class YourWalletsPresenter {
         case .watchOnly, .secrets:
             return nil
         case .paritySigner:
-            return .init(
-                title: R.string.localizable.commonParitySigner(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).uppercased(),
-                icon: R.image.iconParitySigner()
-            )
+            let type = ParitySignerType.legacy
+            return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
+        case .polkadotVault:
+            let type = ParitySignerType.vault
+            return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
         case .ledger:
             return .init(
                 title: R.string.localizable.commonLedger(
