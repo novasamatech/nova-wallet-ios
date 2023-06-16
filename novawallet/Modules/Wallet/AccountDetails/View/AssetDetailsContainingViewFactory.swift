@@ -106,7 +106,7 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         let actions: [PurchaseAction] = []
 
         switch selectedAccountType {
-        case .secrets, .paritySigner:
+        case .secrets, .paritySigner, .polkadotVault:
             receiveCommand = commandFactory.prepareReceiveCommand(for: assetId)
 
             buyCommand = actions.isEmpty ? nil :

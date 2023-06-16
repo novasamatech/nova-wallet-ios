@@ -1,6 +1,7 @@
 import Foundation
 
 enum HardwareWalletOptions: UInt8, CaseIterable {
-    case paritySigner
+    case polkadotVault
     case ledger
+    case paritySigner
 }

@@ -6,6 +6,7 @@ struct ParitySignerTxQrViewFactory {
         with signingData: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        type: ParitySignerType,
         completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxQrViewProtocol? {
         guard let interactor = createInteractor(from: signingData, metaId: metaId, chainId: chainId) else {
@@ -15,6 +16,7 @@ struct ParitySignerTxQrViewFactory {
         let wireframe = ParitySignerTxQrWireframe(sharedSigningPayload: signingData)
 
         let presenter = ParitySignerTxQrPresenter(
+            type: type,
             interactor: interactor,
             wireframe: wireframe,
             completion: completion,
@@ -26,6 +28,7 @@ struct ParitySignerTxQrViewFactory {
 
         let view = ParitySignerTxQrViewController(
             presenter: presenter,
+            type: type,
             localizationManager: LocalizationManager.shared
         )
 

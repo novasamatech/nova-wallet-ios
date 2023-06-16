@@ -2,10 +2,15 @@ import Foundation
 
 extension SwitchAccount {
     final class ParitySignerScanWireframe: ParitySignerScanWireframeProtocol {
-        func completeScan(on view: ControllerBackedProtocol?, addressScan: ParitySignerAddressScan) {
+        func completeScan(
+            on view: ControllerBackedProtocol?,
+            addressScan: ParitySignerAddressScan,
+            type: ParitySignerType
+        ) {
             guard
                 let addressesView = ParitySignerAddressesViewFactory.createSwitchAccountView(
-                    with: addressScan
+                    with: addressScan,
+                    type: type
                 ) else {
                 return
             }

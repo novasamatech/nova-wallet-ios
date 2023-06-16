@@ -30,7 +30,7 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceivePayee(result: Result<RewardDestinationArg?, Error>)
+    func didReceivePayee(result: Result<Staking.RewardDestinationArg?, Error>)
     func didReceiveMinBonded(result: Result<BigUInt?, Error>)
     func didReceiveNomination(result: Result<Nomination?, Error>)
     func didReceiveBondingDuration(result: Result<UInt32, Error>)

@@ -39,7 +39,7 @@ enum RewardDestination<A> {
 }
 
 extension RewardDestination: Equatable where A == AccountAddress {
-    init(payee: RewardDestinationArg, stashItem: StashItem, chainFormat: ChainFormat) throws {
+    init(payee: Staking.RewardDestinationArg, stashItem: StashItem, chainFormat: ChainFormat) throws {
         switch payee {
         case .staked:
             self = .restake

@@ -108,9 +108,19 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             rootView.headerView.showsHintView = true
 
             let text = R.string.localizable.paritySignerDetailsHint(
+                ParitySignerType.legacy.getName(for: selectedLocale),
                 preferredLanguages: selectedLocale.rLanguages
             )
             let icon = R.image.iconParitySigner()
+            rootView.headerView.bindHint(text: text, icon: icon)
+        case .polkadotVault:
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.paritySignerDetailsHint(
+                ParitySignerType.vault.getName(for: selectedLocale),
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let icon = R.image.iconPolkadotVault()
             rootView.headerView.bindHint(text: text, icon: icon)
         case .ledger:
             rootView.headerView.showsHintView = true
