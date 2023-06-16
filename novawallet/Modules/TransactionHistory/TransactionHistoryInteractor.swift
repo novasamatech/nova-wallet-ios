@@ -43,6 +43,7 @@ final class TransactionHistoryInteractor {
             fetcher?.delegate = self
 
             fetcher?.start()
+            presenter?.didReceiveFetchingState(isComplete: false)
         } catch {
             presenter?.didReceive(error: .setupFailed(error))
         }
@@ -106,6 +107,11 @@ extension TransactionHistoryInteractor: TransactionHistoryFetcherDelegate {
 
     func didReceiveHistoryError(_: TransactionHistoryFetching, error: TransactionHistoryFetcherError) {
         presenter?.didReceive(error: .fetchFailed(error))
+    }
+
+    func didUpdateFetchingState() {
+        guard let fetcher = fetcher else { return }
+        presenter?.didReceiveFetchingState(isComplete: !fetcher.isFetching)
     }
 }
 

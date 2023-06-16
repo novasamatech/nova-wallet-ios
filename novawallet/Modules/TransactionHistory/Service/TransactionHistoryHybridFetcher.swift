@@ -63,7 +63,7 @@ extension TransactionHistoryHybridFetcher: TransactionHistoryFetching {
     }
 
     var isFetching: Bool {
-        remoteFetcher?.isFetching ?? syncService?.isActive ?? false
+        remoteFetcher?.isFetching ?? syncService?.isSyncing ?? false
     }
 
     func start() {
@@ -83,6 +83,9 @@ extension TransactionHistoryHybridFetcher: TransactionHistoryFetching {
         ) { [weak self] result in
             self?.syncService = nil
             self?.createRemoteFetcher(from: result)
+            DispatchQueue.main.async {
+                self?.delegate?.didUpdateFetchingState()
+            }
         }
 
         syncService?.setup()

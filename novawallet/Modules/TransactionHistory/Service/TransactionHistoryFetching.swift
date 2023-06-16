@@ -12,6 +12,8 @@ protocol TransactionHistoryFetcherDelegate: AnyObject {
     )
 
     func didReceiveHistoryError(_ fetcher: TransactionHistoryFetching, error: TransactionHistoryFetcherError)
+
+    func didUpdateFetchingState()
 }
 
 protocol TransactionHistoryFetching: AnyObject {

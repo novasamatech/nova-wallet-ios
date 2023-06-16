@@ -77,7 +77,6 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
     }
 
     func loadNext() {
-        view?.startLoading()
         interactor.loadNext()
     }
 
@@ -109,8 +108,6 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
     }
 
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>]) {
-        view?.stopLoading()
-
         if !changes.isEmpty {
             items = changes.mergeToDict(items)
             reloadView()
@@ -121,6 +118,14 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
         self.priceCalculator = priceCalculator
 
         reloadView()
+    }
+
+    func didReceiveFetchingState(isComplete: Bool) {
+        if isComplete {
+            view?.stopLoading()
+        } else {
+            view?.startLoading()
+        }
     }
 }
 
