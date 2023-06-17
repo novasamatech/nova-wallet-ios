@@ -1,11 +1,13 @@
 import Foundation
 
 enum Staking {
+    static let module = "Staking"
+
     static var historyDepthStoragePath: StorageCodingPath {
-        StorageCodingPath(moduleName: "Staking", itemName: "HistoryDepth")
+        StorageCodingPath(moduleName: module, itemName: "HistoryDepth")
     }
 
     static var historyDepthCostantPath: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Staking", constantName: "HistoryDepth")
+        ConstantCodingPath(moduleName: module, constantName: "HistoryDepth")
     }
 }

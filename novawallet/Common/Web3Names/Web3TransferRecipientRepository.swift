@@ -9,68 +9,50 @@ protocol Web3TransferRecipientRepositoryProtocol {
     ) -> CompoundOperationWrapper<Web3TransferRecipientResponse>
 }
 
-final class KiltTransferAssetRecipientRepository: BaseFetchOperationFactory {
+enum KiltTransferAssetRecipient {
+    enum Version1 {}
+    enum Version2 {}
+}
+
+extension KiltTransferAssetRecipient.Version1 {
     typealias Response = [String: [Web3TransferRecipient]]
 
-    let integrityVerifier: Web3NameIntegrityVerifierProtocol
-    let timeout: TimeInterval?
-
-    init(
-        integrityVerifier: Web3NameIntegrityVerifierProtocol,
-        timeout: TimeInterval? = 60
-    ) {
-        self.integrityVerifier = integrityVerifier
-        self.timeout = timeout
-    }
-
-    private func createResultFactory<T>(hash: String?) -> AnyNetworkResultFactory<T> where T: Decodable {
-        AnyNetworkResultFactory<T> { data in
-            guard let content = String(data: data, encoding: .utf8) else {
-                throw KiltTransferAssetRecipientError.corruptedData
-            }
-
-            if let hash = hash {
-                let isValid = self.integrityVerifier.verify(
-                    serviceEndpointId: hash,
-                    serviceEndpointContent: content
-                )
-
-                guard isValid else {
-                    throw KiltTransferAssetRecipientError.verificationFailed
+    final class Repository: GenericKiltTransferAssetRecipientRepository<Response> {
+        init(
+            integrityVerifier: Web3NameIntegrityVerifierProtocol,
+            timeout: TimeInterval? = 60
+        ) {
+            super.init(integrityVerifier: integrityVerifier, timeout: timeout) { fetchResult in
+                fetchResult.reduce(into: Web3TransferRecipientResponse()) { result, next in
+                    if let assetId = try? Caip19.AssetId(raw: next.key) {
+                        result[assetId] = next.value
+                    }
                 }
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                return try decoder.decode(T.self, from: data)
-            } catch {
-                throw KiltTransferAssetRecipientError.decodingDataFailed(error)
             }
         }
     }
 }
 
-extension KiltTransferAssetRecipientRepository: Web3TransferRecipientRepositoryProtocol {
-    func fetchRecipients(
-        url: URL,
-        hash: String?
-    ) -> CompoundOperationWrapper<Web3TransferRecipientResponse> {
-        let requestFactory = createRequestFactory(from: url, shouldUseCache: false, timeout: timeout)
-        let resultFactory: AnyNetworkResultFactory<Response> = createResultFactory(hash: hash)
+extension KiltTransferAssetRecipient.Version2 {
+    typealias Response = [String: [String: Account?]]
+    struct Account: Decodable {
+        let description: String?
+    }
 
-        let networkOperation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-
-        let mapOperation = ClosureOperation {
-            let fetchResult = try networkOperation.extractNoCancellableResultData()
-            return fetchResult.reduce(into: Web3TransferRecipientResponse()) { result, next in
-                if let assetId = try? Caip19.AssetId(raw: next.key) {
-                    result[assetId] = next.value
+    final class Repository: GenericKiltTransferAssetRecipientRepository<Response> {
+        init(
+            integrityVerifier: Web3NameIntegrityVerifierProtocol,
+            timeout: TimeInterval? = 60
+        ) {
+            super.init(integrityVerifier: integrityVerifier, timeout: timeout) { fetchResult in
+                fetchResult.reduce(into: Web3TransferRecipientResponse()) { result, next in
+                    if let assetId = try? Caip19.AssetId(raw: next.key) {
+                        result[assetId] = next.value.map {
+                            Web3TransferRecipient(account: $0.key, description: $0.value?.description)
+                        }
+                    }
                 }
             }
         }
-
-        mapOperation.addDependency(networkOperation)
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [networkOperation])
     }
 }

@@ -31,7 +31,7 @@ protocol StakingLocalSubscriptionHandler {
     )
 
     func handlePayee(
-        result: Result<RewardDestinationArg?, Error>,
+        result: Result<Staking.RewardDestinationArg?, Error>,
         accountId: AccountId,
         chainId: ChainModel.Id
     )
@@ -85,7 +85,7 @@ extension StakingLocalSubscriptionHandler {
     ) {}
 
     func handlePayee(
-        result _: Result<RewardDestinationArg?, Error>,
+        result _: Result<Staking.RewardDestinationArg?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}

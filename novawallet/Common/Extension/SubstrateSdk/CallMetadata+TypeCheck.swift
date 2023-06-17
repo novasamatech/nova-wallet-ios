@@ -13,4 +13,8 @@ extension CallMetadata {
 
         return try closure(argument.type)
     }
+
+    func hasArgument(named value: String) -> Bool {
+        arguments.contains { $0.name == value }
+    }
 }

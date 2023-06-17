@@ -95,6 +95,52 @@ final class StakingAmountInteractor {
             in: .transient
         )
     }
+
+    private func estimateFee(
+        for address: String,
+        amount: BigUInt,
+        rewardDestination: RewardDestination<ChainAccountResponse>,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) {
+        guard let accountAddress = rewardDestination.accountAddress else {
+            return
+        }
+
+        let closure: ExtrinsicBuilderClosure = { builder in
+            let controller = try address.toAccountId()
+            let payee = try Staking.RewardDestinationArg(rewardDestination: accountAddress)
+
+            let bondClosure = try Staking.Bond.appendCall(
+                for: .accoundId(controller),
+                value: amount,
+                payee: payee,
+                codingFactory: coderFactory
+            )
+
+            let callFactory = SubstrateCallFactory()
+
+            let targets = Array(
+                repeating: SelectedValidatorInfo(address: address),
+                count: SubstrateConstants.maxNominations
+            )
+            let nominateCall = try callFactory.nominate(targets: targets)
+
+            return try bondClosure(builder).adding(call: nominateCall)
+        }
+
+        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
+            switch result {
+            case let .success(info):
+                self?.presenter.didReceive(
+                    paymentInfo: info,
+                    for: amount,
+                    rewardDestination: rewardDestination
+                )
+            case let .failure(error):
+                self?.presenter.didReceive(error: error)
+            }
+        }
+    }
 }
 
 extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, RuntimeConstantFetching,
@@ -154,42 +200,19 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
         amount: BigUInt,
         rewardDestination: RewardDestination<ChainAccountResponse>
     ) {
-        guard let accountAddress = rewardDestination.accountAddress else {
-            return
-        }
-
-        let closure: ExtrinsicBuilderClosure = { builder in
-            let callFactory = SubstrateCallFactory()
-
-            let bondCall = try callFactory.bond(
-                amount: amount,
-                controller: address,
-                rewardDestination: accountAddress
-            )
-
-            let targets = Array(
-                repeating: SelectedValidatorInfo(address: address),
-                count: SubstrateConstants.maxNominations
-            )
-            let nominateCall = try callFactory.nominate(targets: targets)
-
-            return try builder
-                .adding(call: bondCall)
-                .adding(call: nominateCall)
-        }
-
-        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(info):
-                self?.presenter.didReceive(
-                    paymentInfo: info,
-                    for: amount,
-                    rewardDestination: rewardDestination
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                self?.estimateFee(
+                    for: address,
+                    amount: amount,
+                    rewardDestination: rewardDestination,
+                    coderFactory: coderFactory
                 )
-            case let .failure(error):
+            }, errorClosure: { [weak self] error in
                 self?.presenter.didReceive(error: error)
             }
-        }
+        )
     }
 }
 

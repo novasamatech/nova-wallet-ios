@@ -3,7 +3,7 @@ import Foundation
 final class StashState: BaseStakingState {
     private(set) var stashItem: StashItem
     private(set) var totalReward: TotalRewardItem?
-    private(set) var payee: RewardDestinationArg?
+    private(set) var payee: Staking.RewardDestinationArg?
     private(set) var ledgerInfo: StakingLedger?
     private(set) var bagListNode: BagList.Node?
 
@@ -145,7 +145,7 @@ final class StashState: BaseStakingState {
         stateMachine?.transit(to: self)
     }
 
-    override func process(payee: RewardDestinationArg?) {
+    override func process(payee: Staking.RewardDestinationArg?) {
         self.payee = payee
 
         stateMachine?.transit(to: self)

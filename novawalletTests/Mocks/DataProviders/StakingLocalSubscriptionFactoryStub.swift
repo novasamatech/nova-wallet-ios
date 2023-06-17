@@ -15,7 +15,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let ledgerInfo: StakingLedger?
     let activeEra: ActiveEraInfo?
     let currentEra: EraIndex?
-    let payee: RewardDestinationArg?
+    let payee: Staking.RewardDestinationArg?
     let totalReward: TotalRewardItem?
     let totalIssuance: BigUInt?
     let stashItem: StashItem?
@@ -32,7 +32,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         ledgerInfo: StakingLedger? = nil,
         activeEra: ActiveEraInfo? = nil,
         currentEra: EraIndex? = nil,
-        payee: RewardDestinationArg? = nil,
+        payee: Staking.RewardDestinationArg? = nil,
         totalIssuance: BigUInt? = nil,
         totalReward: TotalRewardItem? = nil,
         stashItem: StashItem? = nil,

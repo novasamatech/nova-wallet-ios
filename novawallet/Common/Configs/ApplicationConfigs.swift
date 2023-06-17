@@ -28,6 +28,8 @@ protocol ApplicationConfigProtocol {
     var learnControllerAccountURL: URL { get }
     var learnRecommendedValidatorsURL: URL { get }
     var paritySignerTroubleshoutingURL: URL { get }
+    var polkadotVaultTroubleshoutingURL: URL { get }
+    var controllerDeprecationURL: URL { get }
     var ledgerGuideURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
@@ -195,7 +197,12 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var paritySignerTroubleshoutingURL: URL {
         // swiftlint:disable:next line_length
-        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/welcome-to-nova-wallet/hardware-wallets#parity-signer-troubleshooting")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/welcome-to-nova-wallet/hardware-wallets/parity-signer/troubleshooting")!
+    }
+
+    var polkadotVaultTroubleshoutingURL: URL {
+        // swiftlint:disable:next line_length
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/welcome-to-nova-wallet/hardware-wallets/polkadot-vault/troubleshooting")!
     }
 
     var ledgerGuideURL: URL {
@@ -205,6 +212,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     var learnRecommendedValidatorsURL: URL {
         // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-how-does-nova-wallet-select-validators-collators")!
+    }
+
+    var controllerDeprecationURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/controller-account-deprecation")!
     }
 
     var learnGovernanceDelegateMetadata: URL {

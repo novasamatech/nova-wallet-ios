@@ -27,7 +27,7 @@ protocol StakingStateProtocol {
     func process(validatorPrefs: ValidatorPrefs?)
     func process(eraStakersInfo: EraStakersInfo?)
     func process(totalReward: TotalRewardItem?)
-    func process(payee: RewardDestinationArg?)
+    func process(payee: Staking.RewardDestinationArg?)
     func process(minStake: BigUInt?)
     func process(maxNominatorsPerValidator: UInt32?)
     func process(minNominatorBond: BigUInt?)

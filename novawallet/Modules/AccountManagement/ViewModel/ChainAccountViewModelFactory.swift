@@ -93,7 +93,17 @@ final class ChainAccountViewModelFactory {
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             case .paritySigner:
-                warning = R.string.localizable.paritySignerNotSupportedChain(preferredLanguages: locale.rLanguages)
+                warning = R.string.localizable.paritySignerNotSupportedChain(
+                    ParitySignerType.legacy.getName(for: locale),
+                    preferredLanguages: locale.rLanguages
+                )
+                hasAction = accountAddress != nil
+            case .polkadotVault:
+                warning = R.string.localizable.paritySignerNotSupportedChain(
+                    ParitySignerType.vault.getName(for: locale),
+                    preferredLanguages: locale.rLanguages
+                )
+
                 hasAction = accountAddress != nil
             }
 
@@ -154,7 +164,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 
         switch wallet.type {
-        case .secrets, .watchOnly, .paritySigner:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault:
             guard !customSecretAccountList.isEmpty else {
                 return [ChainAccountListSectionViewModel(
                     section: .sharedSecret,

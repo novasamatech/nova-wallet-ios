@@ -12,7 +12,7 @@ final class PendingNominatorState: BaseStashNextState {
         ledgerInfo: StakingLedger?,
         nomination: Nomination?,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?,
+        payee: Staking.RewardDestinationArg?,
         bagListNode: BagList.Node?
     ) {
         self.ledgerInfo = ledgerInfo
