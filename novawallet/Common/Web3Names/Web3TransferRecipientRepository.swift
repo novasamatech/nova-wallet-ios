@@ -50,9 +50,18 @@ extension KiltTransferAssetRecipient.Version2 {
                         result[assetId] = next.value.map {
                             Web3TransferRecipient(account: $0.key, description: $0.value?.description)
                         }.sorted { item1, item2 in
-                            (item1.description ?? "").lexicographicallyPrecedes(
-                                item2.description ?? ""
-                            )
+                            let desc1 = item1.description ?? ""
+                            let desc2 = item2.description ?? ""
+
+                            if !desc1.isEmpty, !desc2.isEmpty {
+                                return desc1.lexicographicallyPrecedes(desc2)
+                            } else if !desc1.isEmpty {
+                                return true
+                            } else if !desc2.isEmpty {
+                                return false
+                            } else {
+                                return item1.account.lexicographicallyPrecedes(item2.account)
+                            }
                         }
                     }
                 }
