@@ -11,6 +11,7 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 xcuserdata/
+novawallet.xcworkspace/xcshareddata/swiftpm/
 ## Other
 *.moved-aside
 *.xccheckout
