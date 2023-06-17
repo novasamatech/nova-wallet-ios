@@ -34,10 +34,6 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveExpansion(_ isExpanded: Bool)
 }
 
-protocol StakingMainViewFactoryProtocol: AnyObject {
-    static func createView() -> StakingMainViewProtocol?
-}
-
 protocol StakingMainChildPresenterProtocol: AnyObject {
     func setup()
     func performMainAction()

@@ -14,21 +14,6 @@ final class StakingMainViewLayout: UIView {
         return view
     }()
 
-    let headerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
-
-    let headerLabel: UILabel = {
-        let label = UILabel()
-        label.font = .boldLargeTitle
-        label.textColor = R.color.colorTextPrimary()
-        return label
-    }()
-
-    let walletSwitch = WalletSwitchControl()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -48,26 +33,8 @@ final class StakingMainViewLayout: UIView {
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalTo(safeAreaLayoutGuide)
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide)
         }
-
-        containerView.stackView.addArrangedSubview(headerView)
-
-        headerView.addSubview(walletSwitch)
-        walletSwitch.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.bottom.equalToSuperview()
-            make.size.equalTo(UIConstants.walletSwitchSize)
-        }
-
-        headerView.addSubview(headerLabel)
-        headerLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(walletSwitch.snp.centerY)
-            make.trailing.equalTo(walletSwitch.snp.leading).offset(-8.0)
-        }
-
-        containerView.stackView.setCustomSpacing(16.0, after: headerView)
     }
 }
