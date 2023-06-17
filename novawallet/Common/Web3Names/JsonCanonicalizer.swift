@@ -1,5 +1,4 @@
 import Foundation
-import OrderedCollections
 
 protocol JsonCanonicalizerProtocol {
     func canonicalizeJSON(_ data: Data) throws -> String?
