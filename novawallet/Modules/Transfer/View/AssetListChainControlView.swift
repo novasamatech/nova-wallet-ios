@@ -6,7 +6,7 @@ final class AssetListChainControlView: UIView {
         view.apply(style: .roundedChips(radius: 7))
     }
 
-    let iconView: UIImageView = UIImageView()
+    let iconView = UIImageView()
 
     let actionControl: ActionTitleControl = .create { view in
         let color = R.color.colorButtonTextAccent()!
