@@ -404,7 +404,7 @@
 		7796C7052A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7042A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift */; };
 		7796C7072A17CD0700D56094 /* NoBiometryAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7062A17CD0700D56094 /* NoBiometryAuth.swift */; };
 		7796C7092A17D24A00D56094 /* UILayoutPriority+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7082A17D24A00D56094 /* UILayoutPriority+Custom.swift */; };
-		77A6F5CB2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CA2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift */; };
+		77A6F5CB2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CA2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift */; };
 		77A6F5CD2A31C4AA004AFD1A /* Web3TransferRecipientIntegrityVerifierFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CC2A31C4AA004AFD1A /* Web3TransferRecipientIntegrityVerifierFactory.swift */; };
 		77A6F5CF2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */; };
 		77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */; };
@@ -3940,7 +3940,7 @@
 		7796C7042A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumEmptySearchTableViewCell.swift; sourceTree = "<group>"; };
 		7796C7062A17CD0700D56094 /* NoBiometryAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoBiometryAuth.swift; sourceTree = "<group>"; };
 		7796C7082A17D24A00D56094 /* UILayoutPriority+Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Custom.swift"; sourceTree = "<group>"; };
-		77A6F5CA2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericKiltTransferAssetRecipientRepository.swift; sourceTree = "<group>"; };
+		77A6F5CA2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseKiltTransferAssetRecipientRepository.swift; sourceTree = "<group>"; };
 		77A6F5CC2A31C4AA004AFD1A /* Web3TransferRecipientIntegrityVerifierFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientIntegrityVerifierFactory.swift; sourceTree = "<group>"; };
 		77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepositoryFactory.swift; sourceTree = "<group>"; };
 		77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizer.swift; sourceTree = "<group>"; };
@@ -15005,7 +15005,7 @@
 				8849AD6529C35B8900F4F7FF /* Web3TransferRecipientRepository.swift */,
 				8849AD6729C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift */,
 				88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */,
-				77A6F5CA2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift */,
+				77A6F5CA2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift */,
 			);
 			path = Web3Names;
 			sourceTree = "<group>";
@@ -18896,7 +18896,7 @@
 				84A2C90424E07F400020D3B7 /* AccountOperationFactoryError.swift in Sources */,
 				AE6DE7322627EA930018D5B5 /* PayoutCall.swift in Sources */,
 				84DD5F26263D72C400425ACF /* ExtrinsicFeeProxy.swift in Sources */,
-				77A6F5CB2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift in Sources */,
+				77A6F5CB2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift in Sources */,
 				8442003628EA9DF100C49C4A /* VoteViewFactory.swift in Sources */,
 				84BC7041289DBF62008A9758 /* QRDisplayView.swift in Sources */,
 				2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */,

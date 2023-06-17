@@ -17,7 +17,7 @@ enum KiltTransferAssetRecipient {
 extension KiltTransferAssetRecipient.Version1 {
     typealias Response = [String: [Web3TransferRecipient]]
 
-    final class Repository: GenericKiltTransferAssetRecipientRepository<Response> {
+    final class Repository: BaseKiltTransferAssetRecipientRepository<Response> {
         init(
             integrityVerifier: Web3NameIntegrityVerifierProtocol,
             timeout: TimeInterval? = 60
@@ -39,7 +39,7 @@ extension KiltTransferAssetRecipient.Version2 {
         let description: String?
     }
 
-    final class Repository: GenericKiltTransferAssetRecipientRepository<Response> {
+    final class Repository: BaseKiltTransferAssetRecipientRepository<Response> {
         init(
             integrityVerifier: Web3NameIntegrityVerifierProtocol,
             timeout: TimeInterval? = 60
@@ -49,6 +49,10 @@ extension KiltTransferAssetRecipient.Version2 {
                     if let assetId = try? Caip19.AssetId(raw: next.key) {
                         result[assetId] = next.value.map {
                             Web3TransferRecipient(account: $0.key, description: $0.value?.description)
+                        }.sorted { item1, item2 in
+                            (item1.description ?? "").lexicographicallyPrecedes(
+                                item2.description ?? ""
+                            )
                         }
                     }
                 }
