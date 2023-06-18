@@ -49,7 +49,10 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
     }
 
     func cancel(on imageView: UIImageView) {
-        imageView.kf.cancelDownloadTask()
+        imageView.kf.cancelDownloadTask() // cancel any dowload task
+
+        let url: URL? = nil
+        imageView.kf.setImage(with: url) // cancel any cache retrieval task
     }
 }
 

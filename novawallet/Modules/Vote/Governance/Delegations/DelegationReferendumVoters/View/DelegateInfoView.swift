@@ -40,8 +40,6 @@ final class DelegateInfoView: UIView {
         baseView.sView.sView.fView
     }
 
-    private var loadingImage: ImageViewModelProtocol?
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
