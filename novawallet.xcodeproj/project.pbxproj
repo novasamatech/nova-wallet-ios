@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -389,7 +389,6 @@
 		766FE2FAB8509BF0F56EA3C0 /* ParaStkCollatorInfoProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3B8502E5BF8CDD7ACE2DD0 /* ParaStkCollatorInfoProtocols.swift */; };
 		76B0B7147181747A7CEDDDF6 /* GovernanceUnavailableTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E25CF67173500E0AC19387 /* GovernanceUnavailableTracksViewController.swift */; };
 		76CF8508C6936FC9941F3C3E /* TokensManageAddProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C995D640129977CAB05982EC /* TokensManageAddProtocols.swift */; };
-		7718CA732A3315ED0027DE7A /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 7718CA722A3315ED0027DE7A /* OrderedCollections */; };
 		7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */; };
 		7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E58A2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift */; };
 		7728E58D2A123B42007901E0 /* SearchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E58C2A123B42007901E0 /* SearchOperationFactory.swift */; };
@@ -408,7 +407,7 @@
 		7796C7052A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7042A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift */; };
 		7796C7072A17CD0700D56094 /* NoBiometryAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7062A17CD0700D56094 /* NoBiometryAuth.swift */; };
 		7796C7092A17D24A00D56094 /* UILayoutPriority+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7082A17D24A00D56094 /* UILayoutPriority+Custom.swift */; };
-		77A6F5CB2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CA2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift */; };
+		77A6F5CB2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CA2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift */; };
 		77A6F5CD2A31C4AA004AFD1A /* Web3TransferRecipientIntegrityVerifierFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CC2A31C4AA004AFD1A /* Web3TransferRecipientIntegrityVerifierFactory.swift */; };
 		77A6F5CF2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */; };
 		77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */; };
@@ -3997,7 +3996,7 @@
 		7796C7042A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumEmptySearchTableViewCell.swift; sourceTree = "<group>"; };
 		7796C7062A17CD0700D56094 /* NoBiometryAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoBiometryAuth.swift; sourceTree = "<group>"; };
 		7796C7082A17D24A00D56094 /* UILayoutPriority+Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Custom.swift"; sourceTree = "<group>"; };
-		77A6F5CA2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericKiltTransferAssetRecipientRepository.swift; sourceTree = "<group>"; };
+		77A6F5CA2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseKiltTransferAssetRecipientRepository.swift; sourceTree = "<group>"; };
 		77A6F5CC2A31C4AA004AFD1A /* Web3TransferRecipientIntegrityVerifierFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientIntegrityVerifierFactory.swift; sourceTree = "<group>"; };
 		77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepositoryFactory.swift; sourceTree = "<group>"; };
 		77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizer.swift; sourceTree = "<group>"; };
@@ -7204,7 +7203,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7718CA732A3315ED0027DE7A /* OrderedCollections in Frameworks */,
 				352B75BEB10A48CC6CE64D4A /* Pods_novawalletAll_novawallet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -15209,7 +15207,7 @@
 				8849AD6529C35B8900F4F7FF /* Web3TransferRecipientRepository.swift */,
 				8849AD6729C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift */,
 				88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */,
-				77A6F5CA2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift */,
+				77A6F5CA2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift */,
 			);
 			path = Web3Names;
 			sourceTree = "<group>";
@@ -17093,7 +17091,6 @@
 			);
 			name = novawallet;
 			packageProductDependencies = (
-				7718CA722A3315ED0027DE7A /* OrderedCollections */,
 			);
 			productName = fearless;
 			productReference = 849013A824A80984008F705E /* novawallet.app */;
@@ -17155,7 +17152,6 @@
 			);
 			mainGroup = 8490139F24A80984008F705E;
 			packageReferences = (
-				7718CA712A3315ED0027DE7A /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = 849013A924A80984008F705E /* Products */;
 			projectDirPath = "";
@@ -19142,7 +19138,7 @@
 				84A2C90424E07F400020D3B7 /* AccountOperationFactoryError.swift in Sources */,
 				AE6DE7322627EA930018D5B5 /* PayoutCall.swift in Sources */,
 				84DD5F26263D72C400425ACF /* ExtrinsicFeeProxy.swift in Sources */,
-				77A6F5CB2A30BD71004AFD1A /* GenericKiltTransferAssetRecipientRepository.swift in Sources */,
+				77A6F5CB2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift in Sources */,
 				8442003628EA9DF100C49C4A /* VoteViewFactory.swift in Sources */,
 				84BC7041289DBF62008A9758 /* QRDisplayView.swift in Sources */,
 				2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */,
@@ -21661,25 +21657,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		7718CA712A3315ED0027DE7A /* XCRemoteSwiftPackageReference "swift-collections" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		7718CA722A3315ED0027DE7A /* OrderedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7718CA712A3315ED0027DE7A /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = OrderedCollections;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
