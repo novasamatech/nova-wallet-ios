@@ -1257,3 +1257,4 @@
 "staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
 "staking.controller.deprecated.details" = "Сеть мигрирует в сторону замены контроллеров на прокси. Nova Wallet будет поддерживать прокси в будущих обновлениях";
 "staking.controller.deprecated.action" = "Изменить контроллер на стэш";
+"staking.on.network" = "%@ стейкинг";
