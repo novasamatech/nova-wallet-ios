@@ -8,7 +8,16 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     }
 
     func showStakingDetails(
-        from _: StakingDashboardViewProtocol?,
-        option _: Multistaking.ChainAssetOption
-    ) {}
+        from view: StakingDashboardViewProtocol?,
+        option: Multistaking.ChainAssetOption
+    ) {
+        guard let detailsView = StakingMainViewFactory.createView(for: option) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            detailsView.controller,
+            animated: true
+        )
+    }
 }

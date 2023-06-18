@@ -18,7 +18,7 @@ final class StakingRebondSetupViewFactory {
 
         // MARK: - Presenter
 
-        let assetInfo = state.settings.value.assetDisplayInfo
+        let assetInfo = state.stakingOption.chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetInfo,
@@ -57,8 +57,9 @@ final class StakingRebondSetupViewFactory {
     ) -> StakingRebondSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedAccount = SelectedWalletSettings.shared.value.fetch(
                 for: chainAsset.chain.accountRequest()
             ),

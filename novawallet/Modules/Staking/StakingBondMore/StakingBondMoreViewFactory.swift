@@ -6,9 +6,10 @@ import CommonWallet
 
 struct StakingBondMoreViewFactory {
     static func createView(from state: StakingSharedState) -> StakingBondMoreViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
             let wallet = SelectedWalletSettings.shared.value,
-            let chainAsset = state.settings.value,
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
@@ -55,8 +56,9 @@ struct StakingBondMoreViewFactory {
     ) -> StakingBondMoreInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let currencyManager = CurrencyManager.shared else {
@@ -77,7 +79,7 @@ struct StakingBondMoreViewFactory {
 
         let interactor = StakingBondMoreInteractor(
             selectedAccount: selectedAccount,
-            chainAsset: state.settings.value,
+            chainAsset: chainAsset,
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,

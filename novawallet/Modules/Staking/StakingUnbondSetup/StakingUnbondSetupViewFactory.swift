@@ -5,8 +5,9 @@ import RobinHood
 
 struct StakingUnbondSetupViewFactory {
     static func createView(for state: StakingSharedState) -> StakingUnbondSetupViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let interactor = createInteractor(state: state),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -47,8 +48,9 @@ struct StakingUnbondSetupViewFactory {
     private static func createInteractor(
         state: StakingSharedState
     ) -> StakingUnbondSetupInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared,

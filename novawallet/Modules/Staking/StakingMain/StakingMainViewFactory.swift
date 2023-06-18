@@ -12,23 +12,26 @@ enum StakingMainViewFactory {
 
         let interactor = StakingMainInteractor(commonSettings: settings)
 
-        let wireframe = StakingMainWireframe()
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy
+            .addApplicationHandler()
 
-        let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         let presenter = StakingMainPresenter(
             interactor: interactor,
+            stakingOption: stakingOption,
             childPresenterFactory: StakingMainPresenterFactory(applicationHandler: applicationHandler),
             viewModelFactory: StakingMainViewModelFactory(),
             logger: Logger.shared
         )
 
-        let view = StakingMainViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        let view = StakingMainViewController(
+            presenter: presenter, localizationManager: LocalizationManager.shared
+        )
+
         view.iconGenerator = NovaIconGenerator()
         view.uiFactory = UIFactory()
 
         presenter.view = view
-        presenter.interactor = interactor
+        interactor.presenter = presenter
 
         return view
     }

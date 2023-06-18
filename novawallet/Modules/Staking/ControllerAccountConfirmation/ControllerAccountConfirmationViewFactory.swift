@@ -10,7 +10,6 @@ struct ControllerAccountConfirmationViewFactory {
         controllerAccountItem: MetaChainAccountResponse
     ) -> ControllerAccountConfirmationViewProtocol? {
         guard
-            let chainAsset = state.settings.value,
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
@@ -18,6 +17,8 @@ struct ControllerAccountConfirmationViewFactory {
             ) else {
             return nil
         }
+
+        let chainAsset = state.stakingOption.chainAsset
 
         let wireframe = ControllerAccountConfirmationWireframe()
 
@@ -55,9 +56,10 @@ struct ControllerAccountConfirmationViewFactory {
         for state: StakingSharedState,
         controllerAccountItem: ChainAccountResponse
     ) -> ControllerAccountConfirmationInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
-            let chainAsset = state.settings.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {
             return nil

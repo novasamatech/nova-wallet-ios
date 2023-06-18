@@ -43,6 +43,15 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
 
         provideMainViewModel()
 
+        if childPresenter == nil, let view = view {
+            childPresenter = childPresenterFactory.createPresenter(
+                for: stakingOption,
+                view: view
+            )
+
+            childPresenter?.setup()
+        }
+
         interactor.setup()
     }
 

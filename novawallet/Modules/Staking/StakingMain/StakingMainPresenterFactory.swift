@@ -31,7 +31,7 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
             return createParachainPresenter(for: stakingOption, view: view)
         case .azero:
             return createRelaychainPresenter(for: stakingOption, view: view, consensus: .aura)
-        case .unsupported, .none:
+        case .unsupported:
             return nil
         }
     }
