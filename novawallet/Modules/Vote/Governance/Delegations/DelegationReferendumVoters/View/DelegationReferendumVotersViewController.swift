@@ -8,8 +8,14 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
     let presenter: DelegationReferendumVotersPresenterProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
 
-    typealias DataSource = UICollectionViewDiffableDataSource<DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model>
+    typealias DataSource = UICollectionViewDiffableDataSource<
+        DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model
+    >
+
+    typealias Snapshot = NSDiffableDataSourceSnapshot<
+        DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model
+    >
+
     private var state: LoadableViewModelState<[DelegationReferendumVotersModel]>?
     private var votersCount: Int?
     private var openedSectionsIds: [String] = []
