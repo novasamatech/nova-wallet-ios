@@ -1,7 +1,7 @@
 import Foundation
 
 final class ParachainStakingSharedState {
-    let settings: StakingAssetSettings
+    let stakingOption: Multistaking.ChainAssetOption
     private(set) var collatorService: ParachainStakingCollatorServiceProtocol?
     private(set) var rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
@@ -9,14 +9,14 @@ final class ParachainStakingSharedState {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
 
     init(
-        settings: StakingAssetSettings,
+        stakingOption: Multistaking.ChainAssetOption,
         collatorService: ParachainStakingCollatorServiceProtocol?,
         rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol?,
         blockTimeService: BlockTimeEstimationServiceProtocol?,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     ) {
-        self.settings = settings
+        self.stakingOption = stakingOption
         self.collatorService = collatorService
         self.rewardCalculationService = rewardCalculationService
         self.blockTimeService = blockTimeService

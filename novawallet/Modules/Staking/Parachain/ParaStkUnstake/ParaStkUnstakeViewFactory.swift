@@ -9,8 +9,9 @@ struct ParaStkUnstakeViewFactory {
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     ) -> ParaStkUnstakeViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -73,8 +74,9 @@ struct ParaStkUnstakeViewFactory {
         let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let blocktimeService = state.blockTimeService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),

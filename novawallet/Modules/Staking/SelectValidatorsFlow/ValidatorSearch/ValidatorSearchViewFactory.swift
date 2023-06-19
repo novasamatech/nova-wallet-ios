@@ -9,8 +9,9 @@ struct ValidatorSearchViewFactory {
     ) -> ValidatorSearchInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let eraValidatorService = state.eraValidatorService,

@@ -4,54 +4,35 @@ import SubstrateSdk
 import SoraKeystore
 import RobinHood
 
-final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
-    static func createView() -> StakingMainViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
+enum StakingMainViewFactory {
+    static func createView(for stakingOption: Multistaking.ChainAssetOption) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
         // MARK: - View
 
-        let interactor = createInteractor(with: settings)
+        let interactor = StakingMainInteractor(commonSettings: settings)
 
-        let wireframe = StakingMainWireframe()
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy
+            .addApplicationHandler()
 
-        let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         let presenter = StakingMainPresenter(
+            interactor: interactor,
+            stakingOption: stakingOption,
             childPresenterFactory: StakingMainPresenterFactory(applicationHandler: applicationHandler),
-            viewModelFactory: StakingMainViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory),
-            accountManagementFilter: AccountManagementFilter(),
+            viewModelFactory: StakingMainViewModelFactory(),
             logger: Logger.shared
         )
 
-        let view = StakingMainViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        let view = StakingMainViewController(
+            presenter: presenter, localizationManager: LocalizationManager.shared
+        )
+
         view.iconGenerator = NovaIconGenerator()
         view.uiFactory = UIFactory()
 
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
 
         return view
-    }
-
-    private static func createInteractor(
-        with settings: SettingsManagerProtocol
-    ) -> StakingMainInteractor {
-        let stakingSettings = StakingAssetSettings(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            settings: settings
-        )
-
-        return StakingMainInteractor(
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            selectedWalletSettings: SelectedWalletSettings.shared,
-            stakingSettings: stakingSettings,
-            commonSettings: settings,
-            eventCenter: EventCenter.shared
-        )
     }
 }

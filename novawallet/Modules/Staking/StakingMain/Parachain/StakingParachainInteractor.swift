@@ -50,7 +50,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var yieldBoostTasksProvider: AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?
 
     var selectedAccount: MetaChainAccountResponse?
-    var selectedChainAsset: ChainAsset?
+    var selectedChainAsset: ChainAsset { sharedState.stakingOption.chainAsset }
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -95,9 +95,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     }
 
     deinit {
-        if let selectedChainAsset = selectedChainAsset {
-            clearChainRemoteSubscription(for: selectedChainAsset.chain.chainId)
-        }
+        clearChainRemoteSubscription(for: selectedChainAsset.chain.chainId)
 
         clearAccountRemoteSubscription()
         clearCancellable()
@@ -115,22 +113,16 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(cancellable: &durationCancellable)
     }
 
-    func setupSelectedAccountAndChainAsset() {
-        guard let chainAsset = sharedState.settings.value else {
-            return
-        }
+    func setupSelectedAccount() {
+        let chainAsset = sharedState.stakingOption.chainAsset
 
         selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
             for: chainAsset.chain.accountRequest()
         )
-
-        selectedChainAsset = chainAsset
     }
 
     func createInitialServices() {
-        guard let chainAsset = sharedState.settings.value else {
-            return
-        }
+        let chainAsset = sharedState.stakingOption.chainAsset
 
         do {
             let chainId = chainAsset.chain.chainId
@@ -159,7 +151,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     }
 
     func continueSetup() {
-        setupSelectedAccountAndChainAsset()
+        setupSelectedAccount()
         setupChainRemoteSubscription()
         setupAccountRemoteSubscription()
 
@@ -193,30 +185,5 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         eventCenter.add(observer: self, dispatchIn: .main)
 
         applicationHandler.delegate = self
-    }
-
-    func updateAfterSelectedAccountChange() {
-        clearAccountRemoteSubscription()
-        clear(streamableProvider: &balanceProvider)
-        clear(dataProvider: &delegatorProvider)
-        clear(singleValueProvider: &totalRewardProvider)
-        clear(singleValueProvider: &yieldBoostTasksProvider)
-
-        guard let selectedChain = selectedChainAsset?.chain else {
-            return
-        }
-
-        selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
-            for: selectedChain.accountRequest()
-        )
-
-        provideSelectedAccount()
-
-        setupAccountRemoteSubscription()
-
-        performAssetBalanceSubscription()
-        performDelegatorSubscription()
-        performTotalRewardSubscription()
-        performYieldBoostTasksSubscription()
     }
 }

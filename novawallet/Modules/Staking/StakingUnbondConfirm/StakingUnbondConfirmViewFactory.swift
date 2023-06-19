@@ -19,7 +19,7 @@ struct StakingUnbondConfirmViewFactory {
             from: interactor,
             wireframe: wireframe,
             amount: amount,
-            chainAsset: state.settings.value,
+            chainAsset: state.stakingOption.chainAsset,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -65,8 +65,9 @@ struct StakingUnbondConfirmViewFactory {
     }
 
     private static func createInteractor(state: StakingSharedState) -> StakingUnbondConfirmInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {

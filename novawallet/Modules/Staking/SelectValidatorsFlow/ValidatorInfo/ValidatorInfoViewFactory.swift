@@ -52,8 +52,9 @@ extension ValidatorInfoViewFactory {
         with validatorInfo: ValidatorInfoProtocol,
         state: StakingSharedState
     ) -> ValidatorInfoViewProtocol? {
-        guard let chainAsset = state.settings.value,
-              let currencyManager = CurrencyManager.shared else { return nil }
+        let chainAsset = state.stakingOption.chainAsset
+
+        guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let interactor = AnyValidatorInfoInteractor(
             selectedAsset: chainAsset.asset,
@@ -75,8 +76,9 @@ extension ValidatorInfoViewFactory {
     ) -> ValidatorInfoViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let eraValidatorService = state.eraValidatorService,

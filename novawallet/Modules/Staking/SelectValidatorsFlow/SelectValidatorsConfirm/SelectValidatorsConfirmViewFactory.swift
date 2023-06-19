@@ -11,9 +11,10 @@ final class SelectValidatorsConfirmViewFactory {
     ) -> SelectValidatorsConfirmViewProtocol? {
         let keystore = Keychain()
 
+        let chainAsset = stakingState.stakingOption.chainAsset
+
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
-            let chainAsset = stakingState.settings.value,
             let metaAccountResponse = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared,
             let interactor = createInitiatedBondingInteractor(
@@ -92,9 +93,7 @@ final class SelectValidatorsConfirmViewFactory {
         title: LocalizableResource<String>,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
-        guard let chainAsset = stakingState.settings.value else {
-            return nil
-        }
+        let chainAsset = stakingState.stakingOption.chainAsset
 
         let confirmViewModelFactory = SelectValidatorsConfirmViewModelFactory()
 
@@ -144,8 +143,9 @@ final class SelectValidatorsConfirmViewFactory {
 
         let operationManager = OperationManagerFacade.sharedManager
 
+        let chainAsset = stakingState.stakingOption.chainAsset
+
         guard
-            let chainAsset = stakingState.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress(),
@@ -192,8 +192,9 @@ final class SelectValidatorsConfirmViewFactory {
 
         let operationManager = OperationManagerFacade.sharedManager
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let currencyManager = CurrencyManager.shared,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),

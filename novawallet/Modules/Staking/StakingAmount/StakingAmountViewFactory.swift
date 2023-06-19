@@ -9,8 +9,9 @@ final class StakingAmountViewFactory {
         with amount: Decimal?,
         stakingState: StakingSharedState
     ) -> StakingAmountViewProtocol? {
+        let chainAsset = stakingState.stakingOption.chainAsset
+
         guard
-            let chainAsset = stakingState.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
             let chainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
@@ -67,8 +68,9 @@ final class StakingAmountViewFactory {
     private static func createInteractor(
         state: StakingSharedState
     ) -> StakingAmountInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
             let rewardCalculationService = state.rewardCalculationService,

@@ -5,10 +5,10 @@ import SubstrateSdk
 
 extension StakingMainPresenterFactory {
     func createParachainPresenter(
-        for stakingAssetSettings: StakingAssetSettings,
+        for stakingOption: Multistaking.ChainAssetOption,
         view: StakingMainViewProtocol
     ) -> StakingParachainPresenter? {
-        let sharedState = createParachainSharedState(for: stakingAssetSettings)
+        let sharedState = createParachainSharedState(for: stakingOption)
 
         // MARK: - Interactor
 
@@ -85,7 +85,9 @@ extension StakingMainPresenterFactory {
 
         let networkInfoFactory = ParaStkNetworkInfoOperationFactory()
 
-        let blockTimeFactory = BlockTimeOperationFactory(chain: state.settings.value.chain)
+        let chainAsset = state.stakingOption.chainAsset
+
+        let blockTimeFactory = BlockTimeOperationFactory(chain: chainAsset.chain)
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -126,7 +128,7 @@ extension StakingMainPresenterFactory {
     }
 
     func createParachainSharedState(
-        for stakingAssetSettings: StakingAssetSettings
+        for stakingOption: Multistaking.ChainAssetOption
     ) -> ParachainStakingSharedState {
         let storageFacade = SubstrateDataStorageFacade.shared
 
@@ -145,7 +147,7 @@ extension StakingMainPresenterFactory {
         )
 
         return ParachainStakingSharedState(
-            settings: stakingAssetSettings,
+            stakingOption: stakingOption,
             collatorService: nil,
             rewardCalculationService: nil,
             blockTimeService: nil,

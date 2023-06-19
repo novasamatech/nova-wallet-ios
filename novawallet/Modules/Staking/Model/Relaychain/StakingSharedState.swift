@@ -6,7 +6,7 @@ enum StakingSharedStateError: Error {
 
 final class StakingSharedState {
     let consensus: ConsensusType
-    let settings: StakingAssetSettings
+    let stakingOption: Multistaking.ChainAssetOption
     private(set) var eraValidatorService: EraValidatorServiceProtocol?
     private(set) var rewardCalculationService: RewardCalculatorServiceProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
@@ -15,7 +15,7 @@ final class StakingSharedState {
 
     init(
         consensus: ConsensusType,
-        settings: StakingAssetSettings,
+        stakingOption: Multistaking.ChainAssetOption,
         eraValidatorService: EraValidatorServiceProtocol?,
         rewardCalculationService: RewardCalculatorServiceProtocol?,
         blockTimeService: BlockTimeEstimationServiceProtocol?,
@@ -23,7 +23,7 @@ final class StakingSharedState {
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
     ) {
         self.consensus = consensus
-        self.settings = settings
+        self.stakingOption = stakingOption
         self.eraValidatorService = eraValidatorService
         self.rewardCalculationService = rewardCalculationService
         self.blockTimeService = blockTimeService

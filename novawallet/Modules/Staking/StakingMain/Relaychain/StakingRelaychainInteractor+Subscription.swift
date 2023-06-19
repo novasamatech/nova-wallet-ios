@@ -51,10 +51,7 @@ extension StakingRelaychainInteractor {
     }
 
     func performPriceSubscription() {
-        guard let chainAsset = stakingSettings.value else {
-            presenter?.didReceive(priceError: PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainAsset = stakingOption.chainAsset
 
         guard let priceId = chainAsset.asset.priceId else {
             presenter?.didReceive(price: nil)
@@ -65,12 +62,12 @@ extension StakingRelaychainInteractor {
     }
 
     func performAccountInfoSubscription() {
-        guard
-            let selectedAccount = selectedWalletSettings.value,
-            let chainAsset = stakingSettings.value else {
+        guard let selectedAccount = selectedWalletSettings.value else {
             presenter?.didReceive(balanceError: PersistentValueSettingsError.missingValue)
             return
         }
+
+        let chainAsset = stakingOption.chainAsset
 
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
@@ -255,7 +252,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
 
 extension StakingRelaychainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        if let chainAsset = stakingSettings.value, chainAsset.asset.priceId == priceId {
+        if stakingOption.chainAsset.asset.priceId == priceId {
             switch result {
             case let .success(priceData):
                 presenter?.didReceive(price: priceData)
@@ -299,9 +296,11 @@ extension StakingRelaychainInteractor: AccountLocalSubscriptionHandler, AccountL
 
 extension StakingRelaychainInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard presenter != nil,
-              let chainAsset = stakingSettings.value,
-              let priceId = chainAsset.asset.priceId else {
+        let chainAsset = stakingOption.chainAsset
+
+        guard
+            presenter != nil,
+            let priceId = chainAsset.asset.priceId else {
             return
         }
 

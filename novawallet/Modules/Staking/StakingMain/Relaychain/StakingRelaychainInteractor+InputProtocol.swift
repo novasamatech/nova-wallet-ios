@@ -41,9 +41,7 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
     }
 
     private func createInitialServices() {
-        guard let chainAsset = sharedState.settings.value else {
-            return
-        }
+        let chainAsset = stakingOption.chainAsset
 
         do {
             let blockTimeService = try stakingServiceFactory.createBlockTimeService(
@@ -78,35 +76,9 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
         createInitialServices()
         continueSetup()
     }
-
-    private func updateAfterSelectedAccountChange() {
-        clearAccountRemoteSubscription()
-        clear(streamableProvider: &balanceProvider)
-        clearStashControllerSubscription()
-
-        guard let selectedChain = selectedChainAsset?.chain,
-              let selectedMetaAccount = selectedWalletSettings.value,
-              let newSelectedAccount = selectedMetaAccount.fetch(for: selectedChain.accountRequest()) else {
-            return
-        }
-
-        selectedAccount = newSelectedAccount
-
-        setupAccountRemoteSubscription()
-
-        performAccountInfoSubscription()
-
-        provideSelectedAccount()
-
-        performStashControllerSubscription()
-    }
 }
 
 extension StakingRelaychainInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        updateAfterSelectedAccountChange()
-    }
-
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
         guard
             let eraValidatorService = sharedState.eraValidatorService,

@@ -9,9 +9,9 @@ final class StakingRewardPayoutsViewFactory {
         for state: StakingSharedState,
         stashAddress: AccountAddress
     ) -> StakingRewardPayoutsViewProtocol? {
-        guard
-            let chainAsset = state.settings.value,
-            let rewardsUrl = chainAsset.chain.externalApis?.staking()?.first?.url else {
+        let chainAsset = state.stakingOption.chainAsset
+
+        guard let rewardsUrl = chainAsset.chain.externalApis?.staking()?.first?.url else {
             return nil
         }
 
@@ -33,9 +33,7 @@ final class StakingRewardPayoutsViewFactory {
         for state: StakingSharedState,
         stashAddress: AccountAddress
     ) -> StakingRewardPayoutsViewProtocol? {
-        guard let chainAsset = state.settings.value else {
-            return nil
-        }
+        let chainAsset = state.stakingOption.chainAsset
 
         let validatorsResolutionFactory = PayoutValidatorsForValidatorFactory()
 
@@ -55,9 +53,7 @@ final class StakingRewardPayoutsViewFactory {
         validatorsResolutionFactory: PayoutValidatorsFactoryProtocol,
         payoutInfoFactory: PayoutInfoFactoryProtocol
     ) -> StakingRewardPayoutsViewProtocol? {
-        guard let chainAsset = state.settings.value else {
-            return nil
-        }
+        let chainAsset = state.stakingOption.chainAsset
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -96,8 +92,9 @@ final class StakingRewardPayoutsViewFactory {
         for payoutService: PayoutRewardsServiceProtocol,
         state: StakingSharedState
     ) -> StakingRewardPayoutsViewProtocol? {
-        guard let chainAsset = state.settings.value,
-              let currencyManager = CurrencyManager.shared else {
+        let chainAsset = state.stakingOption.chainAsset
+
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 

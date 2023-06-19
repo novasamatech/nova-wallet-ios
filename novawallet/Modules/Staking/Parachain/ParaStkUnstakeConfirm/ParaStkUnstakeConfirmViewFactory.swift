@@ -9,8 +9,9 @@ struct ParaStkUnstakeConfirmViewFactory {
         callWrapper: UnstakeCallWrapper,
         collator: DisplayAddress
     ) -> ParaStkUnstakeConfirmViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state),
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
@@ -70,8 +71,9 @@ struct ParaStkUnstakeConfirmViewFactory {
         let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let blocktimeService = state.blockTimeService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
