@@ -28,7 +28,8 @@ struct StakingMoreOptionsViewFactory {
         let presenter = StakingMoreOptionsPresenter(
             interactor: interactor,
             viewModelFactory: viewModelFactory,
-            wireframe: wireframe
+            wireframe: wireframe,
+            logger: Logger.shared
         )
 
         let view = StakingMoreOptionsViewController(
