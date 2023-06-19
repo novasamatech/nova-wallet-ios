@@ -1,5 +1,5 @@
-"NSCameraUsageDescription" = "Camera is used to capture QR code";
+"NSCameraUsageDescription" = "Camera is used to capture QR code with public address or transaction";
 "NSFaceIDUsageDescription" = "Face ID is used to authorize in application";
-"NSPhotoLibraryUsageDescription" = "Load photos from library";
+"NSPhotoLibraryUsageDescription" = "Photo library access is used to allow selection of QR code with public address or transaction";
 "NSPhotoLibraryAddUsageDescription" = "Save transfer request as a qr code";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth is used to communicate with Ledger Nano X device";
