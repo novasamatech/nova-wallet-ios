@@ -165,8 +165,11 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             locale: locale
         ).value?.amount
 
+        let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
+            .cached(value: networkViewModel) : .loaded(value: networkViewModel)
+
         return .init(
-            networkViewModel: networkViewModel,
+            networkViewModel: network,
             estimatedEarnings: estimatedEarnings,
             balance: balance
         )
@@ -190,7 +193,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             )
         }
 
-        let isSyncing = model.active.isEmpty && model.inactive.isEmpty && model.more.isEmpty
+        let isSyncing = model.isEmpty
 
         return .init(
             active: activeViewModels,

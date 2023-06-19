@@ -31,7 +31,7 @@ struct StakingDashboardEnabledViewModel {
 }
 
 struct StakingDashboardDisabledViewModel {
-    let networkViewModel: NetworkViewModel
+    let networkViewModel: LoadableViewModelState<NetworkViewModel>
     let estimatedEarnings: LoadableViewModelState<String>
     let balance: String?
 }

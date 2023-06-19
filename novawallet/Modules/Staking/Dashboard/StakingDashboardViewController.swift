@@ -10,6 +10,12 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     private var dashboardViewModel: StakingDashboardViewModel?
     private var walletViewModel: WalletSwitchViewModel?
 
+    private var isLoading: Bool { dashboardViewModel?.isSyncing ?? false }
+
+    private var activeItems: [StakingDashboardEnabledViewModel] { dashboardViewModel?.active ?? [] }
+    private var inactiveItems: [StakingDashboardDisabledViewModel] { dashboardViewModel?.inactive ?? [] }
+    private var hasMoreOptions: Bool { dashboardViewModel?.hasMoreOptions ?? false }
+
     init(
         presenter: StakingDashboardPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -82,11 +88,11 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         case .walletSwitch:
             return 1
         case .activeStakings:
-            return dashboardViewModel?.active.count ?? 0
+            return isLoading ? sectionModel.loadingCellsCount : activeItems.count
         case .inactiveStakings:
-            return dashboardViewModel?.inactive.count ?? 0
+            return isLoading ? sectionModel.loadingCellsCount : inactiveItems.count
         case .moreOptions:
-            return dashboardViewModel?.hasMoreOptions == true ? 1 : 0
+            return hasMoreOptions ? 1 : 0
         }
     }
 
@@ -124,9 +130,11 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         case .activeStakings:
             let cell: StakingDashboardActiveCell = collectionView.dequeueReusableCell(for: indexPath)!
 
-            if let activeViewModel = dashboardViewModel?.active[indexPath.row] {
+            if isLoading {
+                cell.view.view.bindLoadingState()
+            } else {
                 cell.view.view.bind(
-                    viewModel: activeViewModel,
+                    viewModel: activeItems[indexPath.row],
                     locale: localizationManager.selectedLocale
                 )
             }
@@ -135,9 +143,11 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         case .inactiveStakings:
             let cell: StakingDashboardInactiveCell = collectionView.dequeueReusableCell(for: indexPath)!
 
-            if let inactiveViewModel = dashboardViewModel?.inactive[indexPath.row] {
+            if isLoading {
+                cell.view.view.bindLoadingState()
+            } else {
                 cell.view.view.bind(
-                    viewModel: inactiveViewModel,
+                    viewModel: inactiveItems[indexPath.row],
                     locale: localizationManager.selectedLocale
                 )
             }
@@ -212,9 +222,13 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
 
         switch sectionModel {
         case .activeStakings:
-            presenter.selectActiveStaking(at: indexPath.row)
+            if !isLoading {
+                presenter.selectActiveStaking(at: indexPath.row)
+            }
         case .inactiveStakings:
-            presenter.selectInactiveStaking(at: indexPath.row)
+            if !isLoading {
+                presenter.selectInactiveStaking(at: indexPath.row)
+            }
         case .moreOptions:
             presenter.selectMoreOptions()
         case .walletSwitch:

@@ -19,6 +19,17 @@ enum StakingDashboardSection: Int, CaseIterable {
         }
     }
 
+    var loadingCellsCount: Int {
+        switch self {
+        case .walletSwitch, .moreOptions:
+            return 0
+        case .activeStakings:
+            return 1
+        case .inactiveStakings:
+            return 3
+        }
+    }
+
     var headerHeight: CGFloat {
         switch self {
         case .activeStakings, .walletSwitch, .moreOptions:
