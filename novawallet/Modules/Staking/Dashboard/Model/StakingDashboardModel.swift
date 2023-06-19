@@ -18,6 +18,10 @@ struct StakingDashboardItemModel: Equatable {
         return dashboardItem.stake != nil
     }
 
+    var hasAnySync: Bool {
+        isOnchainSync || isOffchainSync
+    }
+
     func balanceValue() -> Decimal {
         Decimal.fiatValue(
             from: balance?.freeInPlank,
@@ -48,6 +52,10 @@ struct StakingDashboardModel: Equatable {
         self.active = active
         self.inactive = inactive
         self.more = more
+    }
+
+    var isEmpty: Bool {
+        active.isEmpty && inactive.isEmpty && more.isEmpty
     }
 }
 

@@ -1,6 +1,13 @@
 import UIKit
+import SoraUI
 
 final class StakingDashboardActiveDetailsView: UIView {
+    private enum Constants {
+        static let statusOffset: CGFloat = 6
+        static let stakeOffset: CGFloat = 36
+        static let earningsOffset: CGFloat = 97
+    }
+
     private let internalStatusView: GenericTitleValueView<StakingStatusView, UIImageView> = .create { view in
         view.valueView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorTextSecondary()!)
         view.titleView.backgroundView.apply(style: .chips)
@@ -35,6 +42,10 @@ final class StakingDashboardActiveDetailsView: UIView {
 
     var estimatedEarningsLabel: UILabel { estimatedEarningsView.valueBottom.fView }
 
+    var skeletonView: SkrullableView?
+
+    private(set) var loadingState: LoadingState = .none
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -56,8 +67,10 @@ final class StakingDashboardActiveDetailsView: UIView {
             statusView.bind(status: status, locale: locale)
         }
 
+        var newLoadingState: LoadingState = .none
+
         if stakingStatus.isLoading {
-            // TODO: Implement loading state
+            newLoadingState.formUnion(.status)
         }
 
         if let stakeViewModel = stake.value {
@@ -65,14 +78,32 @@ final class StakingDashboardActiveDetailsView: UIView {
         }
 
         if stake.isLoading {
-            // TODO: Implement loading state
+            newLoadingState.formUnion(.stake)
         }
 
-        if let estimatedEarnings = estimatedEarnings.value {
-            estimatedEarningsLabel.text = estimatedEarnings
+        estimatedEarningsLabel.text = estimatedEarnings.value
+
+        if estimatedEarnings.isLoading {
+            newLoadingState.formUnion(.earnings)
         }
+
+        stopLoadingIfNeeded()
 
         setupStaticLocalization(for: locale)
+
+        loadingState = newLoadingState
+
+        if loadingState != .none {
+            startLoadingIfNeeded()
+        }
+    }
+
+    func bindLoadingState() {
+        stopLoadingIfNeeded()
+
+        loadingState = .all
+
+        startLoadingIfNeeded()
     }
 
     func setupStaticLocalization(for locale: Locale) {
@@ -91,18 +122,148 @@ final class StakingDashboardActiveDetailsView: UIView {
     }
 
     private func setupLayout() {
-        let contentView = UIView.vStack(
-            spacing: 12,
-            [
+        addSubview(internalStatusView)
+        internalStatusView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(Constants.statusOffset)
+        }
+
+        addSubview(internalYourStakeView)
+        internalYourStakeView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(Constants.stakeOffset)
+        }
+
+        addSubview(estimatedEarningsView)
+        estimatedEarningsView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(Constants.earningsOffset)
+        }
+    }
+}
+
+extension StakingDashboardActiveDetailsView: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        if loadingState == .all {
+            return [
                 internalStatusView,
                 internalYourStakeView,
                 estimatedEarningsView
             ]
-        )
+        }
 
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+        var hidingViews: [UIView] = []
+
+        if loadingState.contains(.status) {
+            hidingViews.append(statusView)
+        }
+
+        if loadingState.contains(.stake) {
+            hidingViews.append(internalYourStakeView.valueBottom)
+        }
+
+        if loadingState.contains(.earnings) {
+            hidingViews.append(estimatedEarningsView.valueBottom)
+        }
+
+        return hidingViews
+    }
+
+    // swiftlint:disable:next function_body_length
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        var skeletons: [Skeletonable] = []
+
+        if loadingState.contains(.status) {
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    on: self,
+                    containerView: self,
+                    spaceSize: spaceSize,
+                    offset: CGPoint(x: 0, y: Constants.statusOffset),
+                    size: CGSize(width: 44, height: 10)
+                )
+            )
+        }
+
+        if loadingState.contains(.stake) {
+            if loadingState == .all {
+                skeletons.append(
+                    SingleSkeleton.createRow(
+                        on: self,
+                        containerView: self,
+                        spaceSize: spaceSize,
+                        offset: CGPoint(x: 0, y: Constants.stakeOffset),
+                        size: CGSize(width: 44, height: 8)
+                    )
+                )
+            }
+
+            skeletons.append(
+                contentsOf: [
+                    SingleSkeleton.createRow(
+                        on: self,
+                        containerView: self,
+                        spaceSize: spaceSize,
+                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 17),
+                        size: CGSize(width: 64, height: 10)
+                    ),
+                    SingleSkeleton.createRow(
+                        on: self,
+                        containerView: self,
+                        spaceSize: spaceSize,
+                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 35),
+                        size: CGSize(width: 53, height: 8)
+                    )
+                ]
+            )
+        }
+
+        if loadingState.contains(.earnings) {
+            if loadingState == .all {
+                skeletons.append(
+                    SingleSkeleton.createRow(
+                        on: self,
+                        containerView: self,
+                        spaceSize: spaceSize,
+                        offset: CGPoint(x: 0, y: Constants.earningsOffset),
+                        size: CGSize(width: 53, height: 8)
+                    )
+                )
+            }
+
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    on: self,
+                    containerView: self,
+                    spaceSize: spaceSize,
+                    offset: CGPoint(x: 0, y: Constants.earningsOffset + 16),
+                    size: CGSize(width: 41, height: 8)
+                )
+            )
+        }
+
+        return skeletons
+    }
+}
+
+extension StakingDashboardActiveDetailsView {
+    struct LoadingState: OptionSet {
+        typealias RawValue = UInt8
+
+        static let status = LoadingState(rawValue: 1 << 0)
+        static let stake = LoadingState(rawValue: 1 << 1)
+        static let earnings = LoadingState(rawValue: 1 << 2)
+        static let all: LoadingState = [.status, .stake, .earnings]
+        static let none: LoadingState = []
+
+        let rawValue: UInt8
+
+        init(rawValue: RawValue) {
+            self.rawValue = rawValue
         }
     }
 }

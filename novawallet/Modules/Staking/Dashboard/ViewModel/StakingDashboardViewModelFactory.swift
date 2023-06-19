@@ -88,7 +88,7 @@ final class StakingDashboardViewModelFactory {
         }
 
         let state = StakingDashboardEnabledViewModel.Status(dashboardItem: dashboardItem)
-        return model.isOnchainSync || model.isOffchainSync ? .cached(value: state) : .loaded(value: state)
+        return model.hasAnySync ? .cached(value: state) : .loaded(value: state)
     }
 }
 
@@ -128,8 +128,11 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let status = createStakingStatus(for: model)
 
+        let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
+            .cached(value: networkViewModel) : .loaded(value: networkViewModel)
+
         return .init(
-            networkViewModel: networkViewModel,
+            networkViewModel: network,
             totalRewards: totalRewards,
             status: status,
             yourStake: yourStake,
