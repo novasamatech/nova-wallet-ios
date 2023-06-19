@@ -3,17 +3,17 @@ import SoraUI
 
 final class StakingDashboardActiveDetailsView: UIView {
     private enum Constants {
-        static let statusOffset: CGFloat = 6
-        static let stakeOffset: CGFloat = 36
-        static let earningsOffset: CGFloat = 97
+        static let statusOffset: CGFloat = 0
+        static let stakeOffset: CGFloat = 34
+        static let earningsOffset: CGFloat = 94
     }
 
-    private let internalStatusView: GenericTitleValueView<StakingStatusView, UIImageView> = .create { view in
+    private let internalStatusView: GenericTitleValueView<LoadableStakingStatusView, UIImageView> = .create { view in
         view.valueView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorTextSecondary()!)
         view.titleView.backgroundView.apply(style: .chips)
     }
 
-    var statusView: StakingStatusView { internalStatusView.titleView }
+    var statusView: LoadableStakingStatusView { internalStatusView.titleView }
 
     private let internalYourStakeView: GenericMultiValueView<MultilineBalanceView> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
@@ -63,14 +63,18 @@ final class StakingDashboardActiveDetailsView: UIView {
         estimatedEarnings: LoadableViewModelState<String>,
         locale: Locale
     ) {
-        if let status = stakingStatus.value {
-            statusView.bind(status: status, locale: locale)
-        }
-
         var newLoadingState: LoadingState = .none
 
-        if stakingStatus.isLoading {
+        statusView.stopLoadingIfNeeded()
+
+        switch stakingStatus {
+        case .loading:
             newLoadingState.formUnion(.status)
+        case let .cached(value):
+            statusView.bind(status: value, locale: locale)
+            statusView.startLoadingIfNeeded()
+        case let .loaded(value):
+            statusView.bind(status: value, locale: locale)
         }
 
         if let stakeViewModel = stake.value {
@@ -183,7 +187,7 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
                     on: self,
                     containerView: self,
                     spaceSize: spaceSize,
-                    offset: CGPoint(x: 0, y: Constants.statusOffset),
+                    offset: CGPoint(x: 0, y: Constants.statusOffset + 6),
                     size: CGSize(width: 44, height: 10)
                 )
             )
@@ -196,7 +200,7 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 0, y: Constants.stakeOffset),
+                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 2),
                         size: CGSize(width: 44, height: 8)
                     )
                 )
@@ -208,14 +212,14 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 17),
+                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 19),
                         size: CGSize(width: 64, height: 10)
                     ),
                     SingleSkeleton.createRow(
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 35),
+                        offset: CGPoint(x: 0, y: Constants.stakeOffset + 37),
                         size: CGSize(width: 53, height: 8)
                     )
                 ]
@@ -229,7 +233,7 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 0, y: Constants.earningsOffset),
+                        offset: CGPoint(x: 0, y: Constants.earningsOffset + 4),
                         size: CGSize(width: 53, height: 8)
                     )
                 )
@@ -240,7 +244,7 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
                     on: self,
                     containerView: self,
                     spaceSize: spaceSize,
-                    offset: CGPoint(x: 0, y: Constants.earningsOffset + 16),
+                    offset: CGPoint(x: 0, y: Constants.earningsOffset + 20),
                     size: CGSize(width: 41, height: 8)
                 )
             )

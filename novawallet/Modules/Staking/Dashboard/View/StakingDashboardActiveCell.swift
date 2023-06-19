@@ -9,7 +9,7 @@ final class StakingDashboardActiveCellView: UIView {
         static let topOffset = 16
     }
 
-    let networkView = AssetListChainView()
+    let networkView = LoadableAssetListChainView()
 
     let detailsView: BlurredView<StakingDashboardActiveDetailsView> = .create { view in
         view.contentInsets = .zero
@@ -44,14 +44,18 @@ final class StakingDashboardActiveCellView: UIView {
     }
 
     func bind(viewModel: StakingDashboardEnabledViewModel, locale: Locale) {
-        if let network = viewModel.networkViewModel.value {
-            networkView.bind(viewModel: network)
-        }
-
         var newLoadingState: LoadingState = .none
 
-        if viewModel.networkViewModel.isLoading {
+        networkView.stopLoadingIfNeeded()
+
+        switch viewModel.networkViewModel {
+        case .loading:
             newLoadingState.formUnion(.network)
+        case let .cached(value):
+            networkView.bind(viewModel: value)
+            networkView.startLoadingIfNeeded()
+        case let .loaded(value):
+            networkView.bind(viewModel: value)
         }
 
         if let value = viewModel.totalRewards.value {

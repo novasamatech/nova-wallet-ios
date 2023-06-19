@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class AssetListChainView: UIView {
+class AssetListChainView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.apply(style: .chips)
@@ -22,6 +22,8 @@ final class AssetListChainView: UIView {
     }()
 
     let iconSize = CGSize(width: 24.0, height: 24.0)
+
+    let backgroundInset: CGFloat = 1.0
 
     private var iconViewModel: ImageViewModelProtocol?
 
@@ -70,8 +72,43 @@ final class AssetListChainView: UIView {
         }
 
         backgroundView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview().inset(1.0)
+            make.leading.top.bottom.equalToSuperview().inset(backgroundInset)
             make.trailing.equalToSuperview()
+        }
+    }
+}
+
+final class LoadableAssetListChainView: AssetListChainView, SkeletonableView {
+    var skeletonView: SkrullableView?
+
+    var skeletonSuperview: UIView {
+        backgroundView
+    }
+
+    var hidingViews: [UIView] {
+        []
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let corner = spaceSize.height > 0 ? backgroundView.cornerRadius / spaceSize.height : 0
+
+        return [
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: .zero,
+                size: spaceSize,
+                cornerRadii: CGSize(width: corner, height: corner)
+            )
+        ]
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView != nil {
+            updateLoadingState()
         }
     }
 }
