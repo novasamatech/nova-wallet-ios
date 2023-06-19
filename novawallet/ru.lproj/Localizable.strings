@@ -391,7 +391,7 @@
 "karura.referral.code.action" = "Введите реферальный код";
 "crowdloan.astar.invalid.referral.message" = "Реферальный код Astar должен являться корректным Polkadot адресом";
 "staking.add.controller" = "Чтобы выполнить это действие, добавьте контроллер аккаунт %@ в приложение";
-"crowdloan.empty.bonus.title" = "Получите специальный бон��с";
+"crowdloan.empty.bonus.title" = "Получите специальный бонус";
 "staking.recommended.banner.title" = "Стекинг с рекомендованными валидаторами";
 "staking.select.validators.custom.title" = "Стейкинг с выбранными валидаторами";
 "common.applied" = "Применено";

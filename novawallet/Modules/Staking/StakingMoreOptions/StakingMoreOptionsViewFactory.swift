@@ -13,8 +13,7 @@ struct StakingMoreOptionsViewFactory {
         let interactor = StakingMoreOptionsInteractor(
             dAppProvider: dAppProvider,
             stakingStateObserver: stateObserver,
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
+            operationQueue: OperationQueue()
         )
         let wireframe = StakingMoreOptionsWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

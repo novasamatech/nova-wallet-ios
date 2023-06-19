@@ -5,20 +5,17 @@ final class StakingMoreOptionsInteractor {
     weak var presenter: StakingMoreOptionsInteractorOutputProtocol?
 
     let dAppProvider: AnySingleValueProvider<DAppList>
-    let logger: LoggerProtocol
     let stakingStateObserver: Observable<StakingDashboardModel>
     private let operationQueue: OperationQueue
 
     init(
         dAppProvider: AnySingleValueProvider<DAppList>,
         stakingStateObserver: Observable<StakingDashboardModel>,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue
     ) {
         self.dAppProvider = dAppProvider
         self.stakingStateObserver = stakingStateObserver
         self.operationQueue = operationQueue
-        self.logger = logger
     }
 
     private func subscribeDApps() {
@@ -49,7 +46,7 @@ final class StakingMoreOptionsInteractor {
         )
     }
 
-    private func subscribeStakingStateObserver() {
+    private func subscribeStakingState() {
         presenter?.didReceive(moreOptions: stakingStateObserver.state.more)
 
         stakingStateObserver.addObserver(with: self, queue: .main) { [weak self] oldState, newState in
@@ -62,7 +59,7 @@ final class StakingMoreOptionsInteractor {
 
 extension StakingMoreOptionsInteractor: StakingMoreOptionsInteractorInputProtocol {
     func setup() {
-        subscribeStakingStateObserver()
+        subscribeStakingState()
         subscribeDApps()
     }
 }

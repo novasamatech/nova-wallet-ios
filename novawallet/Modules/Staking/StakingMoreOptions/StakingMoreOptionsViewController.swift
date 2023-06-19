@@ -94,7 +94,7 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
         switch StakingMoreOptionsSection(rawValue: indexPath.section) {
         case .dApps:
             let cell: DAppCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
-            cell.bodyView.bind(viewModel: dAppModels[indexPath.row])
+            cell.view.bind(viewModel: dAppModels[indexPath.row])
             return cell
         case .options:
             let cell: StakingMoreOptionCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!

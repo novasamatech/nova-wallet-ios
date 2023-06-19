@@ -2,13 +2,13 @@ import UIKit
 import SnapKit
 
 final class DAppCollectionViewCell: UICollectionViewCell {
-    let bodyView = DAppView()
+    let view = DAppView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
-        bodyView.arrowView.isHidden = true
+        view.arrowView.isHidden = true
     }
 
     @available(*, unavailable)
@@ -18,15 +18,15 @@ final class DAppCollectionViewCell: UICollectionViewCell {
 
     var contentInsets: UIEdgeInsets = .init(top: 0, left: 16, bottom: 0, right: 16) {
         didSet {
-            bodyView.snp.updateConstraints {
+            view.snp.updateConstraints {
                 $0.edges.equalToSuperview().inset(contentInsets)
             }
         }
     }
 
     private func setupLayout() {
-        contentView.addSubview(bodyView)
-        bodyView.snp.makeConstraints {
+        contentView.addSubview(view)
+        view.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(contentInsets)
         }
     }

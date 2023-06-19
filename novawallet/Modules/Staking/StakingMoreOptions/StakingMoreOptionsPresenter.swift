@@ -7,7 +7,7 @@ final class StakingMoreOptionsPresenter {
     let viewModelFactory: StakingMoreOptionsViewModelFactoryProtocol
     let interactor: StakingMoreOptionsInteractorInputProtocol
     let logger: LoggerProtocol
-    
+
     private var moreOptions: [StakingDashboardItemModel] = []
     private var dApps: [DApp] = []
 
@@ -35,7 +35,7 @@ final class StakingMoreOptionsPresenter {
         view?.didReceive(moreOptionsModels: viewModels)
     }
 
-    private func provideError(error: Error) {
+    private func provideError(_ error: Error) {
         logger.error(error.localizedDescription)
     }
 }
@@ -49,7 +49,7 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
         guard let option = moreOptions[safe: index] else {
             return
         }
-        // TODO: wireframe
+        // TODO: navigation
     }
 
     func selectDApp(at index: Int) {
