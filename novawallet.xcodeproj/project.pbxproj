@@ -816,6 +816,7 @@
 		842D1E8E24D2091A00C30A7A /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E8C24D2091A00C30A7A /* CommonMocks.swift */; };
 		842D1E9024D20B1500C30A7A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E8F24D20B1500C30A7A /* Constants.swift */; };
 		842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E9524D2DD6700C30A7A /* MnemonicDisplayView.swift */; };
+		842D8B782A4098C300660005 /* ShimmeringLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D8B772A4098C300660005 /* ShimmeringLabel.swift */; };
 		842E9E942A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E932A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift */; };
 		842E9E962A2A279800759972 /* StakingDashboardLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */; };
 		842E9E982A2A28A700759972 /* StakingDashboardProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */; };
@@ -4407,6 +4408,7 @@
 		842D1E8C24D2091A00C30A7A /* CommonMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonMocks.swift; sourceTree = "<group>"; };
 		842D1E8F24D20B1500C30A7A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		842D1E9524D2DD6700C30A7A /* MnemonicDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicDisplayView.swift; sourceTree = "<group>"; };
+		842D8B772A4098C300660005 /* ShimmeringLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmeringLabel.swift; sourceTree = "<group>"; };
 		842E9E932A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardLocalStorageHandler.swift; sourceTree = "<group>"; };
 		842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardProviderFactory.swift; sourceTree = "<group>"; };
@@ -11853,6 +11855,7 @@
 				777BD86329F979DA004969A2 /* SelectableFilterCell.swift */,
 				84D184EB2A04DA810060C1BD /* GlowingStatusView.swift */,
 				7796C7022A17846B00D56094 /* EmptyCellContentView.swift */,
+				842D8B772A4098C300660005 /* ShimmeringLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -18094,6 +18097,7 @@
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
 				8846F74229D759DD00B8B776 /* Data+proquint.swift in Sources */,
+				842D8B782A4098C300660005 /* ShimmeringLabel.swift in Sources */,
 				8814E858297E35D600A722FF /* GoveranaceDelegatePicker.swift in Sources */,
 				84F43C0F25DF016600AEDA56 /* DispatchQueueHelper.swift in Sources */,
 				8490147824A94A37008F705E /* RootPresenterFactory.swift in Sources */,
