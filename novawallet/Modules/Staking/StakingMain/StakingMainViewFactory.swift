@@ -8,16 +8,18 @@ enum StakingMainViewFactory {
     static func createView(for stakingOption: Multistaking.ChainAssetOption) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
-        // MARK: - View
-
         let interactor = StakingMainInteractor(commonSettings: settings)
+        let wireframe = StakingMainWireframe()
 
         let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy
             .addApplicationHandler()
 
         let presenter = StakingMainPresenter(
             interactor: interactor,
+            wireframe: wireframe,
+            wallet: SelectedWalletSettings.shared.value,
             stakingOption: stakingOption,
+            accountManagementFilter: AccountManagementFilter(),
             childPresenterFactory: StakingMainPresenterFactory(applicationHandler: applicationHandler),
             viewModelFactory: StakingMainViewModelFactory(),
             logger: Logger.shared

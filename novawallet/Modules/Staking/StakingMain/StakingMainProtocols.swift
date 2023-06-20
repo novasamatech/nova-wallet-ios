@@ -34,6 +34,10 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveExpansion(_ isExpanded: Bool)
 }
 
+protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable {
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
+}
+
 protocol StakingMainChildPresenterProtocol: AnyObject {
     func setup()
     func performMainAction()
