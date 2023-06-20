@@ -41,10 +41,14 @@ final class StakingDashboardBuilder {
 
     private func buildModel() {
         let dashboardItems = chainAssets.flatMap { chainAsset in
-            (chainAsset.asset.stakings ?? []).map { staking in
+            let chainStakings = chainAsset.asset.supportedStakings ?? []
+
+            let dashboardItems: [StakingDashboardItemModel] = chainStakings.map { staking in
                 let stakingOption = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: staking)
                 return buildDashboardItem(for: stakingOption)
             }
+
+            return dashboardItems
         }
 
         // separate active stakings

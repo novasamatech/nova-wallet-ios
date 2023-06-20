@@ -9,4 +9,18 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
         browserView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
     }
+
+    func showStakingDetails(
+        from view: StakingMoreOptionsViewProtocol?,
+        option: Multistaking.ChainAssetOption
+    ) {
+        guard let detailsView = StakingMainViewFactory.createView(for: option) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            detailsView.controller,
+            animated: true
+        )
+    }
 }

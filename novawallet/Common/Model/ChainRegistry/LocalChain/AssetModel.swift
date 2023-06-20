@@ -102,3 +102,9 @@ extension AssetModel {
         )
     }
 }
+
+extension AssetModel {
+    var supportedStakings: [StakingType]? {
+        stakings?.filter { $0 != .unsupported }
+    }
+}
