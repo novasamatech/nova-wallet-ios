@@ -1238,6 +1238,7 @@
 "governance.referendums.filter.header" = "Показывать:";
 "governance.referendums.search.field.placeholder" = "Поиск по заголовку или ID";
 "governance.referendums.search.empty" = "Не найдены референдумы\nс таким названием или ID";
+"governance.referendums.filter.empty" = "Нет референдумов с примененными\nфильтрами";
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";

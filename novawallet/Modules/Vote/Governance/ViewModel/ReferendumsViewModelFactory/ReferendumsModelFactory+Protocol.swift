@@ -33,6 +33,11 @@ protocol ReferendumsModelFactoryProtocol {
     func createViewModel(input: ReferendumsModelFactoryDetailsInput) -> ReferendumView.Model
 
     func createLoadingViewModel() -> [ReferendumsSection]
+
+    func filteredSections(
+        _ sections: [ReferendumsSection],
+        filter: (ReferendumsCellViewModel) -> Bool
+    ) -> [ReferendumsSection]
 }
 
 protocol SearchReferendumsModelFactoryProtocol {
@@ -51,11 +56,15 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
     }
 
     func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
+        let referendumsCellViewModels = createReferendumsCellViewModels(input: input)
+
+        if referendumsCellViewModels.active.isEmpty, referendumsCellViewModels.completed.isEmpty {
+            return [.empty(.referendumsNotFound)]
+        }
+
         var sections: [ReferendumsSection] = []
 
-        let referendumsCellViewModels = createReferendumsCellViewModels(input: input)
-        if !referendumsCellViewModels.active.isEmpty || referendumsCellViewModels.completed.isEmpty {
-            // still add empty section to display empty state
+        if !referendumsCellViewModels.active.isEmpty {
             let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
             sections.append(.active(.loaded(value: title), referendumsCellViewModels.active))
         }
@@ -63,7 +72,21 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
             sections.append(.completed(.loaded(value: title), referendumsCellViewModels.completed))
         }
+
         return sections
+    }
+
+    func filteredSections(
+        _ sections: [ReferendumsSection],
+        filter: (ReferendumsCellViewModel) -> Bool
+    ) -> [ReferendumsSection] {
+        let filteredReferendumsSections = sections.map { section in
+            let referendumViewModels = ReferendumsSection.Lens.referendums.get(section)
+            let filteredViewModels = referendumViewModels.filter(filter)
+            return ReferendumsSection.Lens.referendums.set(filteredViewModels, section)
+        }.filter { !ReferendumsSection.Lens.referendums.get($0).isEmpty }
+
+        return filteredReferendumsSections.isEmpty ? [.empty(.filteredListEmpty)] : filteredReferendumsSections
     }
 
     private func createReferendumsCellViewModels(input: ReferendumsModelFactoryInput) ->
