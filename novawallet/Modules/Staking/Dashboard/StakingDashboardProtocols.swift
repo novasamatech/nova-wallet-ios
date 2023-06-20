@@ -20,6 +20,8 @@ protocol StakingDashboardInteractorInputProtocol: AnyObject {
     func retryBalancesSubscription()
     func retryPricesSubscription()
     func retryDashboardSubscription()
+
+    func refresh()
 }
 
 protocol StakingDashboardInteractorOutputProtocol: AnyObject {

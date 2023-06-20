@@ -286,6 +286,10 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
         dashboardViewModel = viewModel
 
         rootView.collectionView.reloadData()
+
+        if !viewModel.isSyncing {
+            rootView.collectionView.refreshControl?.endRefreshing()
+        }
     }
 }
 

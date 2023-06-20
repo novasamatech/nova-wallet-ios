@@ -177,6 +177,10 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
     func retryDashboardSubscription() {
         resetDashboardItemsSubscription()
     }
+
+    func refresh() {
+        syncService.refreshOffchain()
+    }
 }
 
 extension StakingDashboardInteractor: ChainsStoreDelegate {

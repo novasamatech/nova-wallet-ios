@@ -12,6 +12,8 @@ protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
     func unsubscribeSyncState(_ target: AnyObject)
 
     func update(selectedMetaAccount: MetaAccountModel)
+
+    func refreshOffchain()
 }
 
 final class MultistakingSyncService {
@@ -417,5 +419,9 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
         }
 
         stateObserver.removeObserver(by: target)
+    }
+
+    func refreshOffchain() {
+        offchainUpdater?.syncUp()
     }
 }

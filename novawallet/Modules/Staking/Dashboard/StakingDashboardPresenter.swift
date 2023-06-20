@@ -81,7 +81,9 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         wireframe.showWalletSwitch(from: view)
     }
 
-    func refresh() {}
+    func refresh() {
+        interactor.refresh()
+    }
 }
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
