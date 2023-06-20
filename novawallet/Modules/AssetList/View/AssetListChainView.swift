@@ -89,6 +89,8 @@ final class LoadableAssetListChainView: AssetListChainView, SkeletonableView {
         []
     }
 
+    var skeletonSpaceSize: CGSize { backgroundView.frame.size }
+
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let corner = spaceSize.height > 0 ? backgroundView.cornerRadius / spaceSize.height : 0
 

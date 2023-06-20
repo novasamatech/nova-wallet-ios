@@ -14,12 +14,14 @@ class ObservableSyncService: BaseSyncService, ObservableSyncServiceProtocol {
     private let syncState = Observable<Bool>(state: false)
 
     override var isSyncing: Bool {
-        get {
-            syncState.state
+        didSet {
+            updateSyncState()
         }
+    }
 
-        set {
-            syncState.state = newValue
+    override var retryAttempt: Int {
+        didSet {
+            updateSyncState()
         }
     }
 
@@ -45,5 +47,9 @@ class ObservableSyncService: BaseSyncService, ObservableSyncServiceProtocol {
         }
 
         syncState.removeObserver(by: target)
+    }
+
+    private func updateSyncState() {
+        syncState.state = isSyncing || retryAttempt > 0
     }
 }

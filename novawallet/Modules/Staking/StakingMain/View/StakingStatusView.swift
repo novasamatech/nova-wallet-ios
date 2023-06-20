@@ -79,14 +79,16 @@ final class LoadableStakingStatusView: StakingStatusView, SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [backgroundView]
+        []
     }
+
+    var skeletonSpaceSize: CGSize { backgroundView.frame.size }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         [
             SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
+                on: backgroundView,
+                containerView: backgroundView,
                 spaceSize: spaceSize,
                 offset: CGPoint(x: 0, y: 0),
                 size: spaceSize
