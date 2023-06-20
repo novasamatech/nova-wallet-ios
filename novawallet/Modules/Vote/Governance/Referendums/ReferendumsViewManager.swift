@@ -43,7 +43,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
         switch referendumsViewModel.sections[section] {
         case let .personalActivities(actions):
             return actions.count
-        case .settings:
+        case .settings, .empty:
             return 1
         case let .active(_, cells), let .completed(_, cells):
             return !cells.isEmpty ? cells.count : 1
@@ -76,20 +76,35 @@ extension ReferendumsViewManager: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath,
         items: [ReferendumsCellViewModel]
     ) -> UITableViewCell {
-        if items.isEmpty {
-            let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
-            let text = R.string.localizable.govEmptyList(preferredLanguages: locale.rLanguages)
-            cell.view.bind(image: R.image.iconEmptyHistory(), text: text)
-            cell.applyStyle()
+        let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        cell.applyStyle()
+        let cellModel = items[indexPath.row].viewModel
+        cell.view.bind(viewModel: cellModel)
+        return cell
+    }
 
-            return cell
-        } else {
-            let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.applyStyle()
-            let cellModel = items[indexPath.row].viewModel
-            cell.view.bind(viewModel: cellModel)
-            return cell
+    func emptyCell(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath,
+        emptyModel: ReferendumsEmptyModel
+    ) -> UITableViewCell {
+        let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
+        let text: String
+        let image: UIImage?
+
+        switch emptyModel {
+        case .referendumsNotFound:
+            text = R.string.localizable.govEmptyList(preferredLanguages: locale.rLanguages)
+            image = R.image.iconEmptyHistory()
+        case .filteredListEmpty:
+            text = R.string.localizable.governanceReferendumsFilterEmpty(preferredLanguages: locale.rLanguages)
+            image = R.image.iconEmptySearch()
         }
+
+        cell.view.bind(image: image, text: text)
+        cell.applyStyle()
+
+        return cell
     }
 
     func settingsCell(
@@ -126,6 +141,8 @@ extension ReferendumsViewManager: UITableViewDataSource {
             )
         case let .active(_, cells), let .completed(_, cells):
             return referendumCell(tableView, cellForRowAt: indexPath, items: cells)
+        case let .empty(model):
+            return emptyCell(tableView, cellForRowAt: indexPath, emptyModel: model)
         }
     }
 
@@ -154,7 +171,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
             case .delegations:
                 presenter?.selectDelegations()
             }
-        case .settings:
+        case .settings, .empty:
             break
         case let .active(_, cells), let .completed(_, cells):
             guard let referendumIndex = cells[safe: indexPath.row]?.referendumIndex else {
@@ -168,7 +185,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .personalActivities, .settings:
+        case .personalActivities, .settings, .empty:
             return nil
         case let .active(title, cells), let .completed(title, cells):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
@@ -188,7 +205,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .personalActivities, .settings:
+        case .personalActivities, .settings, .empty:
             return 0
         case let .active(title, _), let .completed(title, _):
             switch title {
@@ -215,6 +232,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
             case .loading:
                 return Constants.referendumCellMinimumHeight
             }
+        case .empty:
+            return UITableView.automaticDimension
         }
     }
 
@@ -246,7 +265,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             let section = referendumsViewModel.sections[indexPath.section]
 
             switch section {
-            case .personalActivities, .settings:
+            case .personalActivities, .settings, .empty:
                 break
             case let .active(_, cells), let .completed(_, cells):
                 let cellModel = cells[indexPath.row]

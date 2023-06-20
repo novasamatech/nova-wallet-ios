@@ -158,17 +158,19 @@ final class ReferendumsPresenter {
 
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
 
-        let allSections = [activitySection, settingsSection] + referendumsSections
+        let filteredReferendumsSections: [ReferendumsSection]
 
-        let filteredSections = allSections.map { section in
-            let referendumViewModels = ReferendumsSection.Lens.referendums.get(section)
-            let filteredViewModels = referendumViewModels.filter { referendumViewModel in
-                filteredReferendums[referendumViewModel.referendumIndex] != nil
+        if filter != .all {
+            filteredReferendumsSections = viewModelFactory.filteredSections(referendumsSections) {
+                filteredReferendums[$0.referendumIndex] != nil
             }
-            return ReferendumsSection.Lens.referendums.set(filteredViewModels, section)
+        } else {
+            filteredReferendumsSections = referendumsSections
         }
 
-        view.update(model: .init(sections: filteredSections))
+        let allSections = [activitySection, settingsSection] + filteredReferendumsSections
+
+        view.update(model: .init(sections: allSections))
         observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
     }
 
