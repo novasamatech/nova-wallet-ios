@@ -121,7 +121,11 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         valueView.spacing = 0
 
         valueView.detailsView.fView.applyShimmer(style: .semiboldCalloutPositive)
+        valueView.detailsView.fView.textAlignment = .right
+
         valueView.detailsView.sView.apply(style: .caption1Secondary)
+        valueView.detailsView.sView.textAlignment = .right
+
         valueView.mode = .detailsIcon
         valueView.spacing = 8
 

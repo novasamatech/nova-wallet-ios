@@ -28,13 +28,22 @@ final class StakingDashboardBuilder {
 
         let priceData = stakingOption.chainAsset.asset.priceId.flatMap { prices[$0] }
 
+        let isOnchainSyncing: Bool
+
+        if account == nil {
+            // don't need onchain sync if no account
+            isOnchainSyncing = false
+        } else {
+            isOnchainSyncing = syncState?.isOnchainSyncing[stakingOption.option] ?? true
+        }
+
         return StakingDashboardItemModel(
             stakingOption: stakingOption,
             dashboardItem: dashboardItems[stakingOption.option],
             accountId: account?.accountId,
             balance: balances[stakingOption.chainAsset.chainAssetId],
             price: priceData,
-            isOnchainSync: syncState?.isOnchainSyncing[stakingOption.option] ?? true,
+            isOnchainSync: isOnchainSyncing,
             isOffchainSync: syncState?.isOffchainSyncing ?? true
         )
     }
