@@ -215,6 +215,7 @@
 "staking.payout.title" = "Payout";
 "staking.reward.payout.account" = "Payout account";
 "common.learn.more" = "Learn more";
+"staking.more.options.dApps.title" = "Staking via Nova DApp browser";
 "staking.recommended.title" = "Validators";
 "staking.recommended.section.title" = "Recommended validators";
 "staking.recommended.hint1" = "Most profitable";

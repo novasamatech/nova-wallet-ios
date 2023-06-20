@@ -73,7 +73,9 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         wireframe.showStakingDetails(from: view, option: option)
     }
 
-    func selectMoreOptions() {}
+    func selectMoreOptions() {
+        wireframe.showMoreOptions(from: view)
+    }
 
     func switchWallet() {
         wireframe.showWalletSwitch(from: view)
