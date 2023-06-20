@@ -43,6 +43,12 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        updateLoadingState()
+    }
+
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(WalletSwitchCollectionViewCell.self)
 
@@ -63,6 +69,14 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
             action: #selector(actionRefresh),
             for: .valueChanged
         )
+    }
+
+    private func updateLoadingState() {
+        rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
+    }
+
+    private func updateLoadingState(for cell: UICollectionViewCell) {
+        (cell as? LoadingUpdatibleView)?.updateLoadingAnimationIfActive()
     }
 
     @objc private func actionRefresh() {
@@ -250,6 +264,14 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
         StakingDashboardSection(rawValue: section)?.insets ?? .zero
+    }
+
+    func collectionView(
+        _: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt _: IndexPath
+    ) {
+        updateLoadingState(for: cell)
     }
 }
 

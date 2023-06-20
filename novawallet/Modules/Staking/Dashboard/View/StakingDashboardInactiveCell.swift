@@ -200,6 +200,19 @@ extension StakingDashboardInactiveCellView: SkeletonableView {
     }
 }
 
+extension StakingDashboardInactiveCellView: LoadingUpdatibleView {
+    func updateLoadingAnimationIfActive() {
+        if loadingState != .none {
+            updateLoadingState()
+
+            skeletonView?.restartSkrulling()
+        }
+
+        networkLabel.updateShimmeringIfActive()
+        estimatedEarningsLabel.updateShimmeringIfActive()
+    }
+}
+
 extension StakingDashboardInactiveCellView {
     struct LoadingState: OptionSet {
         typealias RawValue = UInt8

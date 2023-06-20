@@ -106,6 +106,14 @@ final class LoadableAssetListChainView: AssetListChainView, SkeletonableView {
         ]
     }
 
+    func updateLoadingAnimationIfActive() {
+        if skeletonView != nil {
+            updateLoadingState()
+
+            skeletonView?.restartSkrulling()
+        }
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 

@@ -1930,6 +1930,8 @@
 		849F144D29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F144C29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift */; };
 		849F144F29445A4600D9F9BA /* EvmInputViewModel+Handler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F144E29445A4600D9F9BA /* EvmInputViewModel+Handler.swift */; };
 		849F1453294477DA00D9F9BA /* TextWithServiceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F1452294477DA00D9F9BA /* TextWithServiceInputView.swift */; };
+		849F1AFE2A41A065003A2CF7 /* LoadingUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F1AFD2A41A065003A2CF7 /* LoadingUpdatibleView.swift */; };
+		849F1B002A41A5B3003A2CF7 /* ScrullableView+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F1AFF2A41A5B3003A2CF7 /* ScrullableView+Animation.swift */; };
 		849F33B729F7B270001AEFA4 /* DAppStateDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F33B629F7B270001AEFA4 /* DAppStateDataSource.swift */; };
 		849F33BA29F7BA86001AEFA4 /* DAppInteractionMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F33B929F7BA86001AEFA4 /* DAppInteractionMediator.swift */; };
 		849F33BC29F7C659001AEFA4 /* DAppInteractionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F33BB29F7C659001AEFA4 /* DAppInteractionProtocols.swift */; };
@@ -5543,6 +5545,8 @@
 		849F144C29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetModel+TokenAddRequest.swift"; sourceTree = "<group>"; };
 		849F144E29445A4600D9F9BA /* EvmInputViewModel+Handler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EvmInputViewModel+Handler.swift"; sourceTree = "<group>"; };
 		849F1452294477DA00D9F9BA /* TextWithServiceInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextWithServiceInputView.swift; sourceTree = "<group>"; };
+		849F1AFD2A41A065003A2CF7 /* LoadingUpdatibleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingUpdatibleView.swift; sourceTree = "<group>"; };
+		849F1AFF2A41A5B3003A2CF7 /* ScrullableView+Animation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScrullableView+Animation.swift"; sourceTree = "<group>"; };
 		849F33B629F7B270001AEFA4 /* DAppStateDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppStateDataSource.swift; sourceTree = "<group>"; };
 		849F33B929F7BA86001AEFA4 /* DAppInteractionMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppInteractionMediator.swift; sourceTree = "<group>"; };
 		849F33BB29F7C659001AEFA4 /* DAppInteractionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppInteractionProtocols.swift; sourceTree = "<group>"; };
@@ -11521,6 +11525,7 @@
 				8495C6EA29BA24350014293F /* MessageSheetPresentable+ErrorPresentable.swift */,
 				8846F71F29D56A0700B8B776 /* Web3NameAddressListPresentable.swift */,
 				844C3E762A09228200C4305F /* WalletChoosePresentable.swift */,
+				849F1AFD2A41A065003A2CF7 /* LoadingUpdatibleView.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -11594,6 +11599,7 @@
 				842B2FCE2947352A002829B6 /* UITextField+Attributes.swift */,
 				7796C7082A17D24A00D56094 /* UILayoutPriority+Custom.swift */,
 				842D8B792A416A9A00660005 /* UIView+Shimmering.swift */,
+				849F1AFF2A41A5B3003A2CF7 /* ScrullableView+Animation.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -17534,6 +17540,7 @@
 				849F33B729F7B270001AEFA4 /* DAppStateDataSource.swift in Sources */,
 				84EE2FA9289120A100A98816 /* WalletManagePresenter.swift in Sources */,
 				842A737727DC7AEB006EE1EA /* NetworkViewModelFactory.swift in Sources */,
+				849F1B002A41A5B3003A2CF7 /* ScrullableView+Animation.swift in Sources */,
 				848919D726FB238E004DBAD5 /* JsonDataProviderFactory.swift in Sources */,
 				886A278029E939D9003B269F /* EquilibriumAccountData.swift in Sources */,
 				88F34FD228FF045400712BDE /* BindableView.swift in Sources */,
@@ -18432,6 +18439,7 @@
 				84F4B2352A30D73900113DDD /* StakingDashboardSection.swift in Sources */,
 				845C40792702571200BFA50B /* StakingRemoteSubscriptionService.swift in Sources */,
 				8468B86A24F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift in Sources */,
+				849F1AFE2A41A065003A2CF7 /* LoadingUpdatibleView.swift in Sources */,
 				8846F72729D6BAD700B8B776 /* Data+base10.swift in Sources */,
 				849FFFD0298020C900A17471 /* GovernanceDelegationConstants.swift in Sources */,
 				84B66A0B26FDB70F0038B963 /* CrowdloansListInteractor+Protocols.swift in Sources */,

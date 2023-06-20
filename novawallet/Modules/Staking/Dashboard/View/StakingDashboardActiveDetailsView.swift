@@ -108,6 +108,18 @@ final class StakingDashboardActiveDetailsView: UIView {
         startLoadingIfNeeded()
     }
 
+    func updateLoadingAnimationIfActive() {
+        if loadingState != .none {
+            updateLoadingState()
+
+            skeletonView?.restartSkrulling()
+        }
+
+        statusView.updateLoadingAnimationIfActive()
+        internalStakeView.valueBottom.updateLoadingAnimationIfActive()
+        estimatedEarningsLabel.updateShimmeringIfActive()
+    }
+
     func setupStaticLocalization(for locale: Locale) {
         internalStakeView.valueTop.text = R.string.localizable.stakingYourStake(
             preferredLanguages: locale.rLanguages

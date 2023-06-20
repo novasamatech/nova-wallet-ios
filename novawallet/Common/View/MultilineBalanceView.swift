@@ -95,6 +95,11 @@ final class ShimmerMultibalanceView: GenericPairValueView<ShimmerLabel, ShimmerL
         amountLabel.stopShimmering()
         priceLabel.stopShimmering()
     }
+
+    func updateLoadingAnimationIfActive() {
+        amountLabel.updateShimmeringIfActive()
+        priceLabel.updateShimmeringIfActive()
+    }
 }
 
 extension ShimmerMultibalanceView {

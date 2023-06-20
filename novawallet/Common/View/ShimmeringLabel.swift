@@ -241,6 +241,14 @@ class ShimmerLabel: UILabel {
         stopAnimation()
     }
 
+    func updateShimmeringIfActive() {
+        guard isAnimating else {
+            return
+        }
+
+        addAnimation()
+    }
+
     private func addAnimation() {
         animator.stopAnimation(on: gradientLayer)
         animator.startAnimation(on: gradientLayer)

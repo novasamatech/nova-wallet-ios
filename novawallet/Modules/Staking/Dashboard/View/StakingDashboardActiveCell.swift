@@ -123,6 +123,20 @@ final class StakingDashboardActiveCellView: UIView {
     }
 }
 
+extension StakingDashboardActiveCellView: LoadingUpdatibleView {
+    func updateLoadingAnimationIfActive() {
+        if loadingState != .none {
+            updateLoadingState()
+
+            skeletonView?.restartSkrulling()
+        }
+
+        networkView.updateLoadingAnimationIfActive()
+        rewardsView.valueBottom.updateLoadingAnimationIfActive()
+        detailsView.view.updateLoadingAnimationIfActive()
+    }
+}
+
 extension StakingDashboardActiveCellView: SkeletonableView {
     var skeletonSuperview: UIView {
         self
