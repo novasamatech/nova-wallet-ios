@@ -817,6 +817,8 @@
 		842D1E9024D20B1500C30A7A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E8F24D20B1500C30A7A /* Constants.swift */; };
 		842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E9524D2DD6700C30A7A /* MnemonicDisplayView.swift */; };
 		842D8B782A4098C300660005 /* ShimmeringLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D8B772A4098C300660005 /* ShimmeringLabel.swift */; };
+		842D8B7A2A416A9A00660005 /* UIView+Shimmering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D8B792A416A9A00660005 /* UIView+Shimmering.swift */; };
+		842D8B7C2A4179A000660005 /* ShimmeringAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D8B7B2A4179A000660005 /* ShimmeringAnimator.swift */; };
 		842E9E942A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E932A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift */; };
 		842E9E962A2A279800759972 /* StakingDashboardLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */; };
 		842E9E982A2A28A700759972 /* StakingDashboardProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */; };
@@ -4409,6 +4411,8 @@
 		842D1E8F24D20B1500C30A7A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		842D1E9524D2DD6700C30A7A /* MnemonicDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicDisplayView.swift; sourceTree = "<group>"; };
 		842D8B772A4098C300660005 /* ShimmeringLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmeringLabel.swift; sourceTree = "<group>"; };
+		842D8B792A416A9A00660005 /* UIView+Shimmering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shimmering.swift"; sourceTree = "<group>"; };
+		842D8B7B2A4179A000660005 /* ShimmeringAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmeringAnimator.swift; sourceTree = "<group>"; };
 		842E9E932A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardLocalStorageHandler.swift; sourceTree = "<group>"; };
 		842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardProviderFactory.swift; sourceTree = "<group>"; };
@@ -11589,6 +11593,7 @@
 				849F143F29434E4B00D9F9BA /* TextInputView+Empty.swift */,
 				842B2FCE2947352A002829B6 /* UITextField+Attributes.swift */,
 				7796C7082A17D24A00D56094 /* UILayoutPriority+Custom.swift */,
+				842D8B792A416A9A00660005 /* UIView+Shimmering.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -11917,6 +11922,7 @@
 			isa = PBXGroup;
 			children = (
 				849014CA24AA8B75008F705E /* RootControllerAnimationCoordinator.swift */,
+				842D8B7B2A4179A000660005 /* ShimmeringAnimator.swift */,
 			);
 			path = Animation;
 			sourceTree = "<group>";
@@ -17549,6 +17555,7 @@
 				849014BD24AA87E4008F705E /* PinViewFactory.swift in Sources */,
 				8428765524ADDE0200D91AD8 /* SettingsAccountViewModel.swift in Sources */,
 				777BD86629F9C426004969A2 /* ReferendumsFiltersDelegate.swift in Sources */,
+				842D8B7A2A416A9A00660005 /* UIView+Shimmering.swift in Sources */,
 				842876B624AE05C700D91AD8 /* EmailPresentable.swift in Sources */,
 				847F2D5327AAB59200AFD476 /* GradientFactory.swift in Sources */,
 				84D1110E26B931C20016D962 /* ChainModel.swift in Sources */,
@@ -20562,6 +20569,7 @@
 				2B287EEF431ED9FE9510BAA4 /* ReferendumFullDetailsPresenter.swift in Sources */,
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,
+				842D8B7C2A4179A000660005 /* ShimmeringAnimator.swift in Sources */,
 				74F470AE889B0E49D9808802 /* ReferendumFullDetailsViewFactory.swift in Sources */,
 				84033055290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift in Sources */,
 				003063A17B04BA6327EA355F /* ReferendumVotersProtocols.swift in Sources */,

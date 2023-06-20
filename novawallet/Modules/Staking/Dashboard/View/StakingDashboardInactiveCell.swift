@@ -10,15 +10,16 @@ final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashb
 }
 
 final class StakingDashboardInactiveCellView: GenericTitleValueView<
-    LoadableGenericIconDetailsView<MultiValueView>, IconDetailsGenericView<MultiValueView>
+    LoadableGenericIconDetailsView<GenericPairValueView<ShimmerLabel, UILabel>>,
+    IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
 > {
     private enum Constants {
         static let iconSize = CGSize(width: 36, height: 36)
     }
 
-    var networkLabel: UILabel { titleView.detailsView.valueTop }
-    var balanceLabel: UILabel { titleView.detailsView.valueBottom }
-    var estimatedEarningsLabel: UILabel { valueView.detailsView.valueTop }
+    var networkLabel: ShimmerLabel { titleView.detailsView.fView }
+    var balanceLabel: UILabel { titleView.detailsView.sView }
+    var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
 
     var skeletonView: SkrullableView?
 
@@ -31,25 +32,13 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     }
 
     func bind(viewModel: StakingDashboardDisabledViewModel, locale: Locale) {
-        if let networkViewModel = viewModel.networkViewModel.value {
-            titleView.bind(imageViewModel: networkViewModel.icon)
-
-            let balanceString = viewModel.balance.map {
-                R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
-            }
-
-            titleView.detailsView.bind(topValue: networkViewModel.name, bottomValue: balanceString)
-        } else {
-            titleView.bind(imageViewModel: nil)
-        }
-
         var newLoadingState: LoadingState = .none
 
-        if viewModel.networkViewModel.isLoading {
+        if applyNetworkViewModel(from: viewModel, locale: locale) {
             newLoadingState.formUnion(.network)
         }
 
-        estimatedEarningsLabel.text = viewModel.estimatedEarnings.value
+        estimatedEarningsLabel.bind(viewModel: viewModel.estimatedEarnings)
 
         if viewModel.estimatedEarnings.isLoading {
             newLoadingState.formUnion(.earnings)
@@ -75,23 +64,64 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     }
 
     func setupStaticLocalization(for locale: Locale) {
-        valueView.detailsView.valueBottom.text = R.string.localizable.commonPerYear(
+        valueView.detailsView.sView.text = R.string.localizable.commonPerYear(
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    private func applyNetworkViewModel(
+        from model: StakingDashboardDisabledViewModel,
+        locale: Locale
+    ) -> Bool {
+        networkLabel.stopShimmering()
+        titleView.imageView.stopShimmeringOpacity()
+
+        switch model.networkViewModel {
+        case .loading:
+            titleView.bind(imageViewModel: nil)
+            return true
+        case let .cached(value):
+            setupNetworkView(from: value, balance: model.balance, locale: locale)
+            networkLabel.startShimmering()
+            titleView.imageView.startShimmeringOpacity()
+
+            return false
+        case let .loaded(value):
+            setupNetworkView(from: value, balance: model.balance, locale: locale)
+
+            return false
+        }
+    }
+
+    private func setupNetworkView(from viewModel: NetworkViewModel, balance: String?, locale: Locale) {
+        titleView.bind(imageViewModel: viewModel.icon)
+
+        let balanceString = balance.map {
+            R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
+        }
+
+        titleView.detailsView.fView.text = viewModel.name
+        titleView.detailsView.sView.text = balanceString
     }
 
     private func configure() {
         titleView.iconWidth = Constants.iconSize.width
         titleView.spacing = 12
 
-        networkLabel.apply(style: .regularSubhedlinePrimary)
+        titleView.detailsView.makeVertical()
+        titleView.detailsView.spacing = 0
+
+        networkLabel.applyShimmer(style: .regularSubheadlinePrimary)
         networkLabel.textAlignment = .left
 
         balanceLabel.apply(style: .caption1Secondary)
         balanceLabel.textAlignment = .left
 
-        valueView.detailsView.valueTop.apply(style: .semiboldCalloutPositive)
-        valueView.detailsView.valueBottom.apply(style: .caption1Secondary)
+        valueView.detailsView.makeVertical()
+        valueView.spacing = 0
+
+        valueView.detailsView.fView.applyShimmer(style: .semiboldCalloutPositive)
+        valueView.detailsView.sView.apply(style: .caption1Secondary)
         valueView.mode = .detailsIcon
         valueView.spacing = 8
 

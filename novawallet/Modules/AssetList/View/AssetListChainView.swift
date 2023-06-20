@@ -94,8 +94,8 @@ final class LoadableAssetListChainView: AssetListChainView, SkeletonableView {
 
         return [
             SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
+                on: backgroundView,
+                containerView: backgroundView,
                 spaceSize: spaceSize,
                 offset: .zero,
                 size: spaceSize,

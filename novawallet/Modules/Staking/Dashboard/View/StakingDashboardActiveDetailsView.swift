@@ -15,32 +15,32 @@ final class StakingDashboardActiveDetailsView: UIView {
 
     var statusView: LoadableStakingStatusView { internalStatusView.titleView }
 
-    private let internalYourStakeView: GenericMultiValueView<MultilineBalanceView> = .create { view in
+    private let internalStakeView: GenericMultiValueView<ShimmerMultibalanceView> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
         view.spacing = 2
 
-        view.valueBottom.amountLabel.apply(style: .semiboldFootnotePrimary)
+        view.valueBottom.amountLabel.applyShimmer(style: .semiboldFootnotePrimary)
         view.valueBottom.amountLabel.textAlignment = .left
 
-        view.valueBottom.priceLabel.apply(style: .caption2Secondary)
+        view.valueBottom.priceLabel.applyShimmer(style: .caption2Secondary)
         view.valueBottom.priceLabel.textAlignment = .left
     }
 
-    let estimatedEarningsView: GenericMultiValueView<GenericPairValueView<UILabel, UILabel>> = .create { view in
+    let estimatedEarningsView: GenericMultiValueView<GenericPairValueView<ShimmerLabel, UILabel>> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
         view.spacing = 2
 
         view.stackView.alignment = .leading
-        view.valueBottom.fView.apply(style: .semiboldFootnotePositive)
+        view.valueBottom.fView.applyShimmer(style: .semiboldFootnotePositive)
         view.valueBottom.sView.apply(style: .caption2Secondary)
         view.valueBottom.makeHorizontal()
         view.valueBottom.spacing = 0
         view.valueBottom.stackView.alignment = .bottom
     }
 
-    var estimatedEarningsLabel: UILabel { estimatedEarningsView.valueBottom.fView }
+    var estimatedEarningsLabel: ShimmerLabel { estimatedEarningsView.valueBottom.fView }
 
     var skeletonView: SkrullableView?
 
@@ -77,15 +77,13 @@ final class StakingDashboardActiveDetailsView: UIView {
             statusView.bind(status: value, locale: locale)
         }
 
-        if let stakeViewModel = stake.value {
-            internalYourStakeView.valueBottom.bind(viewModel: stakeViewModel)
-        }
+        internalStakeView.valueBottom.bind(viewModel: stake)
 
         if stake.isLoading {
             newLoadingState.formUnion(.stake)
         }
 
-        estimatedEarningsLabel.text = estimatedEarnings.value
+        estimatedEarningsLabel.bind(viewModel: estimatedEarnings)
 
         if estimatedEarnings.isLoading {
             newLoadingState.formUnion(.earnings)
@@ -111,7 +109,7 @@ final class StakingDashboardActiveDetailsView: UIView {
     }
 
     func setupStaticLocalization(for locale: Locale) {
-        internalYourStakeView.valueTop.text = R.string.localizable.stakingYourStake(
+        internalStakeView.valueTop.text = R.string.localizable.stakingYourStake(
             preferredLanguages: locale.rLanguages
         )
 
@@ -132,8 +130,8 @@ final class StakingDashboardActiveDetailsView: UIView {
             make.top.equalToSuperview().inset(Constants.statusOffset)
         }
 
-        addSubview(internalYourStakeView)
-        internalYourStakeView.snp.makeConstraints { make in
+        addSubview(internalStakeView)
+        internalStakeView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview().inset(Constants.stakeOffset)
         }
@@ -155,7 +153,7 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
         if loadingState == .all {
             return [
                 internalStatusView,
-                internalYourStakeView,
+                internalStakeView,
                 estimatedEarningsView
             ]
         }
@@ -167,7 +165,7 @@ extension StakingDashboardActiveDetailsView: SkeletonableView {
         }
 
         if loadingState.contains(.stake) {
-            hidingViews.append(internalYourStakeView.valueBottom)
+            hidingViews.append(internalStakeView.valueBottom)
         }
 
         if loadingState.contains(.earnings) {

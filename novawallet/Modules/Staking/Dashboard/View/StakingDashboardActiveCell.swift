@@ -17,14 +17,14 @@ final class StakingDashboardActiveCellView: UIView {
         view.backgroundBlurView.contentView?.fillColor = R.color.colorInfoStakingCardBackground()!
     }
 
-    let rewardsView: GenericMultiValueView<MultilineBalanceView> = .create { view in
+    let rewardsView: GenericMultiValueView<ShimmerMultibalanceView> = .create { view in
         view.valueTop.apply(style: .footnoteSecondary)
         view.valueTop.textAlignment = .left
 
-        view.valueBottom.amountLabel.apply(style: .boldTitle2Primary)
+        view.valueBottom.amountLabel.applyShimmer(style: .boldTitle2Primary)
         view.valueBottom.amountLabel.textAlignment = .left
 
-        view.valueBottom.priceLabel.apply(style: .regularSubhedlineSecondary)
+        view.valueBottom.priceLabel.applyShimmer(style: .regularSubheadlineSecondary)
         view.valueBottom.priceLabel.textAlignment = .left
     }
 
@@ -58,9 +58,7 @@ final class StakingDashboardActiveCellView: UIView {
             networkView.bind(viewModel: value)
         }
 
-        if let value = viewModel.totalRewards.value {
-            rewardsView.valueBottom.bind(viewModel: value)
-        }
+        rewardsView.valueBottom.bind(viewModel: viewModel.totalRewards)
 
         if viewModel.totalRewards.isLoading {
             newLoadingState.formUnion(.rewards)

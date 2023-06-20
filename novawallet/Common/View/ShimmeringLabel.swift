@@ -2,8 +2,18 @@ import Foundation
 import UIKit
 
 class ShimmerLabel: UILabel {
+    private enum Constants {
+        static let gradientStartPoint = CGPoint(x: 0.0, y: 0.5)
+        static let gradientEndPoint = CGPoint(x: 1.0, y: 0.5)
+        static let animationDuration: TimeInterval = 1.0
+    }
+
     private let topLabel = UILabel()
     private let gradientLayer = CAGradientLayer()
+
+    private let animator = ShimmeringAnimator(duration: Constants.animationDuration)
+
+    var isAnimating: Bool { !topLabel.isHidden }
 
     override var text: String? {
         get {
@@ -27,19 +37,29 @@ class ShimmerLabel: UILabel {
         }
     }
 
-    var shimmerColor: UIColor = .white {
-        didSet {
-            topLabel.textColor = shimmerColor
-        }
-    }
-
-    override var textColor: UIColor! {
+    var runningColor: UIColor? {
         get {
-            super.textColor
+            topLabel.textColor
         }
 
         set {
-            super.textColor = newValue
+            topLabel.textColor = newValue
+        }
+    }
+
+    var animatingColor: UIColor? = .white {
+        didSet {
+            if isAnimating {
+                textColor = animatingColor
+            }
+        }
+    }
+
+    var normalColor: UIColor? = .white {
+        didSet {
+            if !isAnimating {
+                textColor = normalColor
+            }
         }
     }
 
@@ -65,8 +85,6 @@ class ShimmerLabel: UILabel {
         }
     }
 
-
-    @available(iOS 6.0, *)
     override var attributedText: NSAttributedString? {
         get {
             super.attributedText
@@ -100,7 +118,6 @@ class ShimmerLabel: UILabel {
         }
     }
 
-
     override var isEnabled: Bool {
         get {
             super.isEnabled
@@ -122,7 +139,6 @@ class ShimmerLabel: UILabel {
             super.numberOfLines = newValue
         }
     }
-
 
     override var adjustsFontSizeToFitWidth: Bool {
         get {
@@ -146,7 +162,6 @@ class ShimmerLabel: UILabel {
         }
     }
 
-    @available(iOS 6.0, *)
     override var minimumScaleFactor: CGFloat {
         get {
             super.minimumScaleFactor
@@ -170,8 +185,6 @@ class ShimmerLabel: UILabel {
         }
     }
 
-
-    @available(iOS 6.0, *)
     override var preferredMaxLayoutWidth: CGFloat {
         get {
             super.preferredMaxLayoutWidth
@@ -190,17 +203,19 @@ class ShimmerLabel: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+        configure()
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     private func configure() {
-        gradientLayer.colors = [UIColor.white.cgColor, UIColor.clear.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.5, 1]
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor]
+        gradientLayer.startPoint = Constants.gradientStartPoint
+        gradientLayer.endPoint = Constants.gradientEndPoint
 
-        topLabel.textColor = shimmerColor
         topLabel.layer.mask = gradientLayer
     }
 
@@ -212,28 +227,108 @@ class ShimmerLabel: UILabel {
         }
     }
 
-    func start() {
+    func startShimmering() {
+        topLabel.isHidden = false
+        textColor = animatingColor
 
+        addAnimation()
+    }
+
+    func stopShimmering() {
+        topLabel.isHidden = true
+        textColor = normalColor
+
+        stopAnimation()
     }
 
     private func addAnimation() {
-        gradientLayer.removeAllAnimations()
-        let animation = CABasicAnimation(keyPath: "transform.translation.x")
-        animation.fromValue = -self.frame.size.width
-        animation.toValue = self.frame.size.width
-        animation.duration = 15.0
-        animation.repeatCount = .infinity
-        gradientLayer.add(animation, forKey: "animationKey")
+        animator.stopAnimation(on: gradientLayer)
+        animator.startAnimation(on: gradientLayer)
     }
 
     private func stopAnimation() {
-        gradientLayer.removeAllAnimations()
+        animator.stopAnimation(on: gradientLayer)
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = topLabel.frame
 
-        
+        if isAnimating {
+            addAnimation()
+        }
+    }
+}
+
+extension ShimmerLabel {
+    struct ShimmerStyle {
+        let normal: UILabel.Style
+        let animatingColor: UIColor
+        let runningColor: UIColor
+
+        static let regularSubheadlinePrimary = ShimmerStyle(
+            normal: .regularSubhedlinePrimary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.16),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let boldTitle2Primary = ShimmerStyle(
+            normal: .boldTitle2Primary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let regularSubheadlineSecondary = ShimmerStyle(
+            normal: .regularSubhedlineSecondary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let caption2Secondary = ShimmerStyle(
+            normal: .caption2Secondary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let semiboldFootnotePrimary = ShimmerStyle(
+            normal: .semiboldFootnotePrimary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let semiboldFootnotePositive = ShimmerStyle(
+            normal: .semiboldFootnotePositive,
+            animatingColor: R.color.colorTextPositive()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPositive()!
+        )
+
+        static let semiboldCalloutPositive = ShimmerStyle(
+            normal: .semiboldCalloutPositive,
+            animatingColor: R.color.colorTextPositive()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPositive()!
+        )
+    }
+
+    func applyShimmer(style: ShimmerStyle) {
+        normalColor = style.normal.textColor
+        font = style.normal.font
+        animatingColor = style.animatingColor
+        runningColor = style.runningColor
+    }
+}
+
+extension ShimmerLabel {
+    func bind(viewModel: LoadableViewModelState<String>) {
+        stopShimmering()
+
+        switch viewModel {
+        case .loading:
+            text = nil
+        case let .cached(value):
+            text = value
+            startShimmering()
+        case let .loaded(value):
+            text = value
+        }
     }
 }
