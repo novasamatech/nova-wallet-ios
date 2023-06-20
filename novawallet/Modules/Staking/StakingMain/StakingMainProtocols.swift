@@ -13,9 +13,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
 
 protocol StakingMainPresenterProtocol: AnyObject {
     func setup()
-    func performAssetSelection()
     func performMainAction()
-    func performAccountAction()
     func performRewardInfoAction()
     func performChangeValidatorsAction()
     func performSetupValidatorsForBondedAction()
@@ -30,30 +28,10 @@ protocol StakingMainPresenterProtocol: AnyObject {
 protocol StakingMainInteractorInputProtocol: AnyObject {
     func setup()
     func saveNetworkInfoViewExpansion(isExpanded: Bool)
-    func save(chainAsset: ChainAsset)
 }
 
 protocol StakingMainInteractorOutputProtocol: AnyObject {
-    func didReceiveAccountBalance(_ assetBalance: AssetBalance?)
-    func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)
-    func didReceiveStakingSettings(_ stakingSettings: StakingAssetSettings)
     func didReceiveExpansion(_ isExpanded: Bool)
-    func didReceiveError(_ error: Error)
-}
-
-protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable,
-    WalletSwitchPresentable, NoAccountSupportPresentable {
-    func showChainAssetSelection(
-        from view: StakingMainViewProtocol?,
-        selectedChainAssetId: ChainAssetId?,
-        delegate: AssetSelectionDelegate
-    )
-
-    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
-}
-
-protocol StakingMainViewFactoryProtocol: AnyObject {
-    static func createView() -> StakingMainViewProtocol?
 }
 
 protocol StakingMainChildPresenterProtocol: AnyObject {

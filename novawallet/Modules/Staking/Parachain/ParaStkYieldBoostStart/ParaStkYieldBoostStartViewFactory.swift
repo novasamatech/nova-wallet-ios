@@ -7,8 +7,9 @@ struct ParaStkYieldBoostStartViewFactory {
         with state: ParachainStakingSharedState,
         confirmModel: ParaStkYieldBoostConfirmModel
     ) -> ParaStkYieldBoostStartViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let wallet = SelectedWalletSettings.shared.value,
             let selectedAccount = wallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let interactor = createInteractor(for: chainAsset, selectedAccount: selectedAccount),

@@ -57,9 +57,21 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         interactor.setup()
     }
 
-    func selectActiveStaking(at _: Int) {}
+    func selectActiveStaking(at index: Int) {
+        guard let option = model?.active[index].stakingOption else {
+            return
+        }
 
-    func selectInactiveStaking(at _: Int) {}
+        wireframe.showStakingDetails(from: view, option: option)
+    }
+
+    func selectInactiveStaking(at index: Int) {
+        guard let option = model?.inactive[index].stakingOption else {
+            return
+        }
+
+        wireframe.showStakingDetails(from: view, option: option)
+    }
 
     func selectMoreOptions() {
         wireframe.showMoreOptions(from: view)

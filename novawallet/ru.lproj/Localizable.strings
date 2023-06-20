@@ -391,7 +391,7 @@
 "karura.referral.code.action" = "Введите реферальный код";
 "crowdloan.astar.invalid.referral.message" = "Реферальный код Astar должен являться корректным Polkadot адресом";
 "staking.add.controller" = "Чтобы выполнить это действие, добавьте контроллер аккаунт %@ в приложение";
-"crowdloan.empty.bonus.title" = "Получите специальный бонус";
+"crowdloan.empty.bonus.title" = "Получите специальный бон��с";
 "staking.recommended.banner.title" = "Стекинг с рекомендованными валидаторами";
 "staking.select.validators.custom.title" = "Стейкинг с выбранными валидаторами";
 "common.applied" = "Применено";
@@ -974,7 +974,7 @@
 "gov.voters.empty" = "Список голосовавших появится здесь";
 "tabbar.vote.title" = "Голосование";
 "gov.common.amount.conviction.format" = "%@ × %@x";
-"gov.referendum.description.fallback" = "Только автор референдума может редактировать это описание и заголовок. Если у вас есть доступ к аккаунту автора, посетите Polkassembly и заполните информацию о вашем референдуме";
+"gov.referendum.description.fallback" = "Только автор референдума может редактировать это описание и заголовок. Если у вас есть дос��уп к аккаунту автора, посетите Polkassembly и заполните информацию о вашем референдуме";
 "gov.voters.nay" = "Голоса \"против\"";
 "gov.voters.aye" = "Голоса \"за\"";
 "gov.support.curve" = "Кривая поддержки";
@@ -1258,3 +1258,4 @@
 "staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
 "staking.controller.deprecated.details" = "Сеть мигрирует в сторону замены контроллеров на прокси. Nova Wallet будет поддерживать прокси в будущих обновлениях";
 "staking.controller.deprecated.action" = "Изменить контроллер на стэш";
+"staking.on.network" = "%@ стейкинг";

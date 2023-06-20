@@ -6,7 +6,6 @@ enum SettingsKey: String {
     case selectedLocalization
     case biometryEnabled
     case crowdloadChainId
-    case stakingAsset
     case stakingNetworkExpansion
     case hidesZeroBalances
     case selectedCurrency
@@ -92,20 +91,6 @@ extension SettingsManagerProtocol {
                 )
             } else {
                 removeValue(for: SettingsKey.governanceType.rawValue)
-            }
-        }
-    }
-
-    var stakingAsset: ChainAssetId? {
-        get {
-            value(of: ChainAssetId.self, for: SettingsKey.stakingAsset.rawValue)
-        }
-
-        set {
-            if let existingValue = newValue {
-                set(value: existingValue, for: SettingsKey.stakingAsset.rawValue)
-            } else {
-                removeValue(for: SettingsKey.stakingAsset.rawValue)
             }
         }
     }

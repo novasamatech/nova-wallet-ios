@@ -10,10 +10,11 @@ enum CustomValidatorListViewFactory {
         validatorsSelectionParams: ValidatorsSelectionParams,
         wireframe: CustomValidatorListWireframeProtocol
     ) -> CustomValidatorListViewProtocol? {
-        guard let chainAsset = stakingState.settings.value,
-              let currencyManager = CurrencyManager.shared else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let chainAsset = stakingState.stakingOption.chainAsset
 
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,

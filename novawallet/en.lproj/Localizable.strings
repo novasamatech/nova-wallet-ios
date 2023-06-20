@@ -1258,3 +1258,4 @@
 "staking.controller.deprecated.title" = "Controller Accounts Are Being Deprecated";
 "staking.controller.deprecated.details" = "Network is migrating towards replacing Controllers to Proxies feature. Nova Wallet will support Proxies in future updates";
 "staking.controller.deprecated.action" = "Update Controller to Stash";
+"staking.on.network" = "%@ staking";

@@ -17,7 +17,7 @@ extension NavigationBarStyle {
 
         titleTextAttributes[.foregroundColor] = R.color.colorTextPrimary()!
 
-        titleTextAttributes[.font] = UIFont.h3Title
+        titleTextAttributes[.font] = UIFont.semiBoldBody
 
         return NavigationBarStyle(
             background: UIImage(),
