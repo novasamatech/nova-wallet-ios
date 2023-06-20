@@ -154,11 +154,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var multistakingURL: URL {
-        // TODO: fix production url
         #if F_RELEASE
-            URL(string: "https://subql.novasama.uz")!
+            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #else
-            URL(string: "https://subql.novasama.uz")!
+            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #endif
     }
 
