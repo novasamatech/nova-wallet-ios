@@ -140,6 +140,7 @@ final class StakingDashboardActiveDetailsView: UIView {
         internalStatusView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview().inset(Constants.statusOffset)
+            make.height.equalTo(22)
         }
 
         addSubview(internalStakeView)
