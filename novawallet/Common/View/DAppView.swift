@@ -1,6 +1,6 @@
 import UIKit
 
-final class ReferendumDAppView: UIView {
+final class DAppView: UIView {
     let iconImageView: DAppIconView = .create {
         $0.contentInsets = Constants.iconInsets
         $0.backgroundView.cornerRadius = 12
@@ -53,7 +53,7 @@ final class ReferendumDAppView: UIView {
 
 // MARK: - Model
 
-extension ReferendumDAppView {
+extension DAppView {
     struct Model {
         let icon: ImageViewModelProtocol?
         let title: String
@@ -83,7 +83,7 @@ extension ReferendumDAppView {
 
 // MARK: - Constants
 
-extension ReferendumDAppView {
+extension DAppView {
     enum Constants {
         static let arrowSize = CGSize(width: 16, height: 16)
         static let horizontalSpace: CGFloat = 12

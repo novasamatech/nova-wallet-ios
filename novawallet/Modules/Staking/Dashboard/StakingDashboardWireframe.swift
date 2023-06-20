@@ -7,6 +7,17 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
         self.stateObserver = stateObserver
     }
 
+    func showMoreOptions(from view: ControllerBackedProtocol?) {
+        guard let stakingMoreOptionsView = StakingMoreOptionsViewFactory.createView(stateObserver: stateObserver) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            stakingMoreOptionsView.controller,
+            animated: true
+        )
+    }
+
     func showStakingDetails(
         from view: StakingDashboardViewProtocol?,
         option: Multistaking.ChainAssetOption

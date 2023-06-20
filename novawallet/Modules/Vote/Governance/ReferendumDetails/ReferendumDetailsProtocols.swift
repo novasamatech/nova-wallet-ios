@@ -2,7 +2,7 @@ import Foundation
 
 protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(votingDetails: ReferendumVotingStatusDetailsView.Model)
-    func didReceive(dAppModels: [ReferendumDAppView.Model]?)
+    func didReceive(dAppModels: [DAppView.Model]?)
     func didReceive(timelineModel: [ReferendumTimelineView.Model]?)
     func didReceive(titleModel: ReferendumDetailsTitleView.Model)
     func didReceive(yourVoteModel: [YourVoteRow.Model])
