@@ -4,13 +4,9 @@ import SnapKit
 final class StakingMoreOptionsViewLayout: UIView {
     let backgroundView = MultigradientView.background
 
-    let navBarBlurView: UIView = {
-        let blurView = BlurBackgroundView()
-        blurView.cornerCut = []
-        return blurView
-    }()
-
-    var navBarBlurViewHeightConstraint: Constraint!
+    let navBarBlurView: BlurBackgroundView = .create {
+        $0.cornerCut = []
+    }
 
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(
@@ -52,8 +48,7 @@ final class StakingMoreOptionsViewLayout: UIView {
         addSubview(navBarBlurView)
         navBarBlurView.snp.makeConstraints { make in
             make.leading.top.trailing.equalToSuperview()
-            self.navBarBlurViewHeightConstraint = make.height.equalTo(0).constraint
-            self.navBarBlurViewHeightConstraint.activate()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top)
         }
     }
 

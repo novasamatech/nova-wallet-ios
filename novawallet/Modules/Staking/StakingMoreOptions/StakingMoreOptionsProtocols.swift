@@ -11,6 +11,7 @@ protocol StakingMoreOptionsPresenterProtocol: AnyObject {
 
 protocol StakingMoreOptionsInteractorInputProtocol: AnyObject {
     func setup()
+    func remakeDAppsSubscription()
 }
 
 protocol StakingMoreOptionsInteractorOutputProtocol: AnyObject {

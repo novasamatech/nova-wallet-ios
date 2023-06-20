@@ -17,6 +17,7 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
             animated: true
         )
     }
+
     func showStakingDetails(
         from view: StakingDashboardViewProtocol?,
         option: Multistaking.ChainAssetOption

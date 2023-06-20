@@ -19,10 +19,12 @@ final class StakingMoreOptionsInteractor {
     }
 
     private func subscribeDApps() {
+        dAppProvider.removeObserver(self)
+
         let updateClosure: ([DataProviderChange<DAppList>]) -> Void = { [weak self] changes in
             if let result = changes.reduceToLastChange() {
                 let dApps = result.dApps.filter {
-                    $0.categories.contains("staking") == true
+                    $0.categories.contains(KnownDAppCategory.staking.rawValue) == true
                 }
                 let stakingDApps = DAppList(categories: result.categories, dApps: dApps)
                 self?.presenter?.didReceive(dAppsResult: .success(stakingDApps))
@@ -60,6 +62,10 @@ final class StakingMoreOptionsInteractor {
 extension StakingMoreOptionsInteractor: StakingMoreOptionsInteractorInputProtocol {
     func setup() {
         subscribeStakingState()
+        subscribeDApps()
+    }
+
+    func remakeDAppsSubscription() {
         subscribeDApps()
     }
 }

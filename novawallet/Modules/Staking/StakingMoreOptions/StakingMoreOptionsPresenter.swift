@@ -34,10 +34,6 @@ final class StakingMoreOptionsPresenter {
         }
         view?.didReceive(moreOptionsModels: viewModels)
     }
-
-    private func provideError(_ error: Error) {
-        logger.error(error.localizedDescription)
-    }
 }
 
 extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
@@ -67,7 +63,10 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsInteractorOutputProtoco
             dApps = list.dApps
             provideDAppViewModel(dApps: list.dApps)
         case let .failure(error):
-            provideError(error)
+            logger.error(error.localizedDescription)
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeDAppsSubscription()
+            }
         case .none:
             break
         }

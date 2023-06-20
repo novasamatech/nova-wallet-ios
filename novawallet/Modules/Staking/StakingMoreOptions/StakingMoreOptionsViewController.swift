@@ -29,7 +29,6 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNavigationBarStyle()
         setupCollectionView()
         setupLocalization()
         presenter.setup()
@@ -39,7 +38,7 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(StakingMoreOptionCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppCollectionViewCell.self)
         rootView.collectionView.registerClass(
-            TitleHeaderView.self,
+            TitleCollectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
 
@@ -50,15 +49,6 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string.localizable.multistakingMoreOptions(preferredLanguages: selectedLocale.rLanguages)
         rootView.collectionView.reloadData()
-    }
-
-    private func setupNavigationBarStyle() {
-        guard let navigationBar = navigationController?.navigationBar else { return }
-
-        let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
-        let navBarHeight = navigationBar.bounds.height
-        let blurHeight = statusBarHeight + navBarHeight
-        rootView.navBarBlurViewHeightConstraint.update(offset: blurHeight)
     }
 }
 
@@ -108,12 +98,13 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch StakingMoreOptionsSection(rawValue: indexPath.section) {
         case .dApps:
-            let header: TitleHeaderView? = collectionView.dequeueReusableSupplementaryView(
+            let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
                 forSupplementaryViewOfKind: kind,
                 for: indexPath
             )
             header?.bind(title: R.string.localizable.stakingMoreOptionsDAppsTitle(preferredLanguages: selectedLocale.rLanguages))
             header?.titleLabel.apply(style: .title3Primary)
+            header?.contentInsets = .zero
             return header ?? .init()
         case .options, .none:
             return .init()

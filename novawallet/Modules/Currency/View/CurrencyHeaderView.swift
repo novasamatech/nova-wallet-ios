@@ -1,3 +1,3 @@
 import UIKit
 
-typealias CurrencyHeaderView = TitleHeaderView
+typealias CurrencyHeaderView = TitleCollectionHeaderView

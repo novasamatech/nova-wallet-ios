@@ -62,6 +62,7 @@ final class CurrencyViewController: UIViewController, ViewHolder {
             )
             let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
             header?.bind(title: section.title)
+            header?.contentInsets = .zero
             return header
         }
 
