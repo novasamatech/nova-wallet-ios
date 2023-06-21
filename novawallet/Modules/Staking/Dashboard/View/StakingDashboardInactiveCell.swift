@@ -31,6 +31,14 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         configure()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if loadingState != .none {
+            updateLoadingState()
+        }
+    }
+
     func bind(viewModel: StakingDashboardDisabledViewModel, locale: Locale) {
         var newLoadingState: LoadingState = .none
 
