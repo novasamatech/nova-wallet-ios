@@ -488,7 +488,6 @@
 		84002AA129924F9E00A80672 /* GovernanceDelegateProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84002AA029924F9E00A80672 /* GovernanceDelegateProtocols.swift */; };
 		84002AA32992508600A80672 /* GovernanceDelegateInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84002AA22992508600A80672 /* GovernanceDelegateInteractorError.swift */; };
 		84002AA52992516D00A80672 /* GovernanceDelegateState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84002AA42992516D00A80672 /* GovernanceDelegateState.swift */; };
-		8400F0BA252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8400F0B9252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift */; };
 		8401620625E130D60087A5F3 /* ViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401620525E130D60087A5F3 /* ViewAction.swift */; };
 		8401620B25E144D50087A5F3 /* AmountInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401620A25E144D50087A5F3 /* AmountInputAccessoryView.swift */; };
 		8401AE8D2641EF7B000B03E3 /* NetworkFeeConfirmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401AE8C2641EF7B000B03E3 /* NetworkFeeConfirmView.swift */; };
@@ -4047,7 +4046,6 @@
 		84002AA029924F9E00A80672 /* GovernanceDelegateProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateProtocols.swift; sourceTree = "<group>"; };
 		84002AA22992508600A80672 /* GovernanceDelegateInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInteractorError.swift; sourceTree = "<group>"; };
 		84002AA42992516D00A80672 /* GovernanceDelegateState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateState.swift; sourceTree = "<group>"; };
-		8400F0B9252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCommandFactoryProtocolMock.swift; sourceTree = "<group>"; };
 		8401620525E130D60087A5F3 /* ViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAction.swift; sourceTree = "<group>"; };
 		8401620A25E144D50087A5F3 /* AmountInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputAccessoryView.swift; sourceTree = "<group>"; };
 		8401AE8C2641EF7B000B03E3 /* NetworkFeeConfirmView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkFeeConfirmView.swift; sourceTree = "<group>"; };
@@ -8927,7 +8925,6 @@
 				F47F6401263BD8EC00FF67E9 /* ViewModel */,
 				844D228F25EE5CB700C022F7 /* DataProviders */,
 				84F4388325DA4F2A00AEDA56 /* Network */,
-				8400F0B9252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift */,
 				842D1E8C24D2091A00C30A7A /* CommonMocks.swift */,
 				842D1E8B24D2091A00C30A7A /* ModuleMocks.swift */,
 				84F43BB825DEFA0A00AEDA56 /* DefaultStub.swift */,
@@ -20803,7 +20800,6 @@
 				84B7C715289BFA79001A3566 /* AccountExportPasswordTests.swift in Sources */,
 				881BA30729DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift in Sources */,
 				84F4388D25DA4F4A00AEDA56 /* TypeDefFileMock.swift in Sources */,
-				8400F0BA252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift in Sources */,
 				84B7C729289BFA79001A3566 /* StartSelectValidatorsTests.swift in Sources */,
 				84B7C737289BFA79001A3566 /* StakingBondMoreTests.swift in Sources */,
 				84DD49F828EEAFFF00B804F3 /* DecimalTests.swift in Sources */,
