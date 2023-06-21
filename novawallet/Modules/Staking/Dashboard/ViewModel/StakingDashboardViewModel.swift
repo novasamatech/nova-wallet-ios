@@ -40,6 +40,7 @@ struct StakingDashboardViewModel {
     let active: [StakingDashboardEnabledViewModel]
     let inactive: [StakingDashboardDisabledViewModel]
     let hasMoreOptions: Bool
+    let isLoading: Bool
     let isSyncing: Bool
 
     func applyingUpdate(viewModel: StakingDashboardUpdateViewModel) -> StakingDashboardViewModel {
@@ -59,6 +60,7 @@ struct StakingDashboardViewModel {
             active: newActive,
             inactive: newInactive,
             hasMoreOptions: hasMoreOptions,
+            isLoading: isLoading,
             isSyncing: isSyncing
         )
     }
@@ -67,4 +69,5 @@ struct StakingDashboardViewModel {
 struct StakingDashboardUpdateViewModel {
     let active: [(Int, StakingDashboardEnabledViewModel)]
     let inactive: [(Int, StakingDashboardDisabledViewModel)]
+    let isSyncing: Bool
 }

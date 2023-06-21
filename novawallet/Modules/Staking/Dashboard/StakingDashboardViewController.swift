@@ -10,7 +10,7 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     private var dashboardViewModel: StakingDashboardViewModel?
     private var walletViewModel: WalletSwitchViewModel?
 
-    private var isLoading: Bool { dashboardViewModel?.isSyncing ?? false }
+    private var isLoading: Bool { dashboardViewModel?.isLoading ?? false }
 
     private var activeItems: [StakingDashboardEnabledViewModel] { dashboardViewModel?.active ?? [] }
     private var inactiveItems: [StakingDashboardDisabledViewModel] { dashboardViewModel?.inactive ?? [] }
@@ -293,6 +293,8 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
     }
 
     func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel) {
+        dashboardViewModel = dashboardViewModel?.applyingUpdate(viewModel: viewModel)
+
         viewModel.active.forEach { item in
             let indexPath = IndexPath(item: item.0, section: StakingDashboardSection.activeStakings.rawValue)
 
@@ -307,6 +309,10 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
             if let cell = rootView.collectionView.cellForItem(at: indexPath) as? StakingDashboardInactiveCell {
                 cell.view.view.bind(viewModel: item.1, locale: localizationManager.selectedLocale)
             }
+        }
+
+        if !viewModel.isSyncing {
+            rootView.collectionView.refreshControl?.endRefreshing()
         }
     }
 }
