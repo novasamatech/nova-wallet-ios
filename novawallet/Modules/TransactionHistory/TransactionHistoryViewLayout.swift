@@ -1,7 +1,6 @@
 import UIKit
 import SnapKit
 import SoraUI
-import CommonWallet
 
 final class TransactionHistoryViewLayout: UIView {
     private(set) var titleLeft: Constraint?

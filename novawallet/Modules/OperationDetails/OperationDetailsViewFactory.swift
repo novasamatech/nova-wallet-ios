@@ -1,17 +1,9 @@
 import Foundation
-import CommonWallet
+
 import SoraFoundation
 import RobinHood
 
 struct OperationDetailsViewFactory {
-    // TODO: remove
-    static func createView(
-        for _: AssetTransactionData,
-        chainAsset _: ChainAsset
-    ) -> OperationDetailsViewProtocol? {
-        nil
-    }
-
     static func createView(
         for transaction: TransactionHistoryItem,
         chainAsset: ChainAsset

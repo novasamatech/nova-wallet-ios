@@ -1,5 +1,5 @@
 import BigInt
-import CommonWallet
+
 import SoraFoundation
 
 protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {

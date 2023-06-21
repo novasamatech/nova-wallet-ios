@@ -1,5 +1,4 @@
 import BigInt
-import CommonWallet
 
 protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceive(referendumNumber: String)

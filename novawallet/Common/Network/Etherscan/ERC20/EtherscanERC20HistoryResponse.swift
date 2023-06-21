@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 import BigInt
 import SubstrateSdk
 
@@ -78,56 +77,6 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
             txIndex: itemExtrinsicIndex,
             callPath: .erc20Tranfer,
             call: nil
-        )
-    }
-
-    func createTransactionForAddress(
-        _ address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
-        let accountId = try? address.toAccountId(using: .ethereum)
-        let isSender = sender == accountId
-
-        let peerId = isSender ? recepient : sender
-        let peerAddress = (try? peerId.toAddress(using: .ethereum)) ?? peerId.toHex(includePrefix: true)
-
-        let amount = Decimal.fromSubstrateAmount(
-            value,
-            precision: chainAsset.asset.decimalPrecision
-        ) ?? .zero
-
-        let feeInPlank = gasUsed * gasPrice
-        let fee = Decimal.fromSubstrateAmount(
-            feeInPlank,
-            precision: utilityAsset.decimalPrecision
-        ) ?? .zero
-
-        let feeModel = AssetTransactionFee(
-            identifier: assetId,
-            assetId: assetId,
-            amount: AmountDecimal(value: fee),
-            context: nil
-        )
-
-        let type: TransactionType = isSender ? .outgoing : .incoming
-
-        return AssetTransactionData(
-            transactionId: hash.toHex(includePrefix: true),
-            status: .commited,
-            assetId: assetId,
-            peerId: peerId.toHex(),
-            peerFirstName: nil,
-            peerLastName: nil,
-            peerName: peerAddress,
-            details: "",
-            amount: AmountDecimal(value: amount),
-            fees: [feeModel],
-            timestamp: itemTimestamp,
-            type: type.rawValue,
-            reason: nil,
-            context: nil
         )
     }
 }

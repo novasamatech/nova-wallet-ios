@@ -2,19 +2,16 @@ import Foundation
 import RobinHood
 import CoreData
 import SoraFoundation
-import CommonWallet
 
-class PhishingCheckExecutor: WalletCommandProtocol {
+class PhishingCheckExecutor {
     private let storage: AnyDataProviderRepository<PhishingItem>
     private let nextActionBlock: () -> Void
     private let cancelActionBlock: () -> Void
     private let locale: Locale
-    private let commandFactory: WalletCommandFactoryProtocol?
     private let publicKey: String
     private let displayName: String
 
     init(
-        commandFactory: WalletCommandFactoryProtocol,
         storage: AnyDataProviderRepository<PhishingItem>,
         nextAction nextActionBlock: @escaping () -> Void,
         cancelAction cancelActionBlock: @escaping () -> Void,
@@ -22,7 +19,6 @@ class PhishingCheckExecutor: WalletCommandProtocol {
         publicKey: String,
         walletAddress displayName: String
     ) {
-        self.commandFactory = commandFactory
         self.storage = storage
         self.nextActionBlock = nextActionBlock
         self.cancelActionBlock = cancelActionBlock
@@ -52,10 +48,7 @@ class PhishingCheckExecutor: WalletCommandProtocol {
                         displayName: self.displayName
                     )
 
-                    let presentationCommand = self.commandFactory?.preparePresentationCommand(for: alertController)
-                    presentationCommand?.presentationStyle = .modal(inNavigation: false)
-
-                    try? presentationCommand?.execute()
+                    // TODO: Return phishing
                 }
             }
         }

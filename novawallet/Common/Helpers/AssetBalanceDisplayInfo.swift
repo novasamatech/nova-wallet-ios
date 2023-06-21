@@ -33,17 +33,6 @@ extension AssetBalanceDisplayInfo {
         )
     }
 
-    static func fromWallet(asset: WalletAsset) -> AssetBalanceDisplayInfo {
-        AssetBalanceDisplayInfo(
-            displayPrecision: 5,
-            assetPrecision: asset.precision,
-            symbol: asset.symbol,
-            symbolValueSeparator: " ",
-            symbolPosition: .suffix,
-            icon: nil
-        )
-    }
-
     static func from(currency: Currency) -> AssetBalanceDisplayInfo {
         AssetBalanceDisplayInfo(
             displayPrecision: 2,

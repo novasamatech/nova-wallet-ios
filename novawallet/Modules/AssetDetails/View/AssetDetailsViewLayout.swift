@@ -213,7 +213,8 @@ final class AssetDetailsViewLayout: UIView {
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
-        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace + buttonsRowHeight + Constants.bottomOffset
+        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace +
+            buttonsRowHeight + Constants.bottomOffset
     }
 }
 

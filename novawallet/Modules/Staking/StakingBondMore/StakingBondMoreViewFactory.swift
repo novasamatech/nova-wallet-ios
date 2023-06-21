@@ -2,7 +2,6 @@ import SoraFoundation
 import SoraKeystore
 import RobinHood
 import SubstrateSdk
-import CommonWallet
 
 struct StakingBondMoreViewFactory {
     static func createView(from state: StakingSharedState) -> StakingBondMoreViewProtocol? {

@@ -346,8 +346,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing + amountLabel.font.lineHeight / 2.0 -
-            bigRowSize.height / 2.0
+        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing +
+            amountLabel.font.lineHeight / 2.0 - bigRowSize.height / 2.0
 
         let offset = CGPoint(
             x: UIConstants.horizontalInset + Constants.insets.left,

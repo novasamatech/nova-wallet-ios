@@ -1,6 +1,5 @@
 import Foundation
 import RobinHood
-import CommonWallet
 
 final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     let operationFactory: WalletRemoteHistoryFactoryProtocol

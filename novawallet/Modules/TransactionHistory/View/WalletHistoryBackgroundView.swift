@@ -1,5 +1,4 @@
-import Foundation
-import CommonWallet
+import UIKit
 
 final class WalletHistoryBackgroundView: UIView {
     let minimizedSideLength: CGFloat = 12.0
@@ -37,9 +36,7 @@ final class WalletHistoryBackgroundView: UIView {
     }
 }
 
-extension WalletHistoryBackgroundView: HistoryBackgroundViewProtocol {
-    func apply(style _: HistoryViewStyleProtocol) {}
-
+extension WalletHistoryBackgroundView {
     func applyFullscreen(progress: CGFloat) {
         let sideLength = minimizedSideLength * (1 - progress)
 

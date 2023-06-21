@@ -39,6 +39,16 @@ class TitleAmountView: UIView {
         }
     }
 
+    var borderType: BorderType {
+        get {
+            borderView.borderType
+        }
+
+        set {
+            borderView.borderType = newValue
+        }
+    }
+
     private(set) var fiatLabel: UILabel?
 
     override init(frame: CGRect) {

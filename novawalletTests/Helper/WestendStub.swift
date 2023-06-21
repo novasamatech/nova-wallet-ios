@@ -2,7 +2,7 @@ import Foundation
 @testable import novawallet
 import BigInt
 import IrohaCrypto
-import CommonWallet
+
 import SubstrateSdk
 
 struct WestendStub {

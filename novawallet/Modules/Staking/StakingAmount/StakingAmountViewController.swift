@@ -2,7 +2,6 @@ import UIKit
 import SoraFoundation
 import SoraUI
 import SubstrateSdk
-import CommonWallet
 
 final class StakingAmountViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingAmountLayout

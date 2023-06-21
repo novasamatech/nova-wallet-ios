@@ -1,7 +1,6 @@
 import Foundation
 import SoraFoundation
 import SubstrateSdk
-import CommonWallet
 
 protocol RewardDestinationViewModelFactoryProtocol {
     func createRestake(from model: CalculatedReward?, priceData: PriceData?)

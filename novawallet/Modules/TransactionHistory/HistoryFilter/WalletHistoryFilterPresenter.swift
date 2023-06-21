@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 
 final class WalletHistoryFilterPresenter {
     weak var view: WalletHistoryFilterViewProtocol?

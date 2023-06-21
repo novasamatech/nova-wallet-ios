@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import CommonWallet
+
 import SoraFoundation
 import Cuckoo
 

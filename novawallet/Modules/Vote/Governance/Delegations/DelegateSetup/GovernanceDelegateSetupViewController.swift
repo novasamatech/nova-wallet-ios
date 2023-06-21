@@ -1,6 +1,5 @@
 import UIKit
 import SoraFoundation
-import CommonWallet
 
 final class GovernanceDelegateSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = GovernanceDelegateSetupViewLayout

@@ -1,7 +1,6 @@
 import Foundation
 import RobinHood
 import BigInt
-import CommonWallet
 
 extension StakingRelaychainInteractor {
     func handle(stashItem: StashItem?) {

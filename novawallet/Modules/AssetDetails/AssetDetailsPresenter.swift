@@ -102,7 +102,9 @@ final class AssetDetailsPresenter {
 
     private func showReceiveTokens() {
         guard let view = view,
-              let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
+              let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(
+                  for: chainAsset.chain.accountRequest()
+              ) else {
             return
         }
 

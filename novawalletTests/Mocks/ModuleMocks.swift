@@ -17226,7 +17226,7 @@ import Foundation
 import Cuckoo
 @testable import novawallet
 
-import CommonWallet
+
 
 
  class MockOperationDetailsViewProtocol: OperationDetailsViewProtocol, Cuckoo.ProtocolMock {
@@ -32275,7 +32275,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import CommonWallet
+
 import SoraFoundation
 
 
@@ -33338,7 +33338,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import CommonWallet
+
 import SoraFoundation
 
 
@@ -36320,7 +36320,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import CommonWallet
+
 import Foundation
 import SoraFoundation
 
@@ -40500,7 +40500,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import CommonWallet
+
 import Foundation
 import SoraFoundation
 
@@ -48566,7 +48566,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import CommonWallet
+
 import Foundation
 import SoraFoundation
 
@@ -49821,7 +49821,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import CommonWallet
+
 
 
  class MockWalletHistoryFilterViewProtocol: WalletHistoryFilterViewProtocol, Cuckoo.ProtocolMock {
@@ -52866,7 +52866,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import CommonWallet
+
 import Foundation
 import SoraFoundation
 

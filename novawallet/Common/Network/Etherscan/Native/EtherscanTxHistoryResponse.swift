@@ -1,6 +1,5 @@
 import Foundation
 import SubstrateSdk
-import CommonWallet
 import BigInt
 
 struct EtherscanTxHistoryResponse: Decodable {

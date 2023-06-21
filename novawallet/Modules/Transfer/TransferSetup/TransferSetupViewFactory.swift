@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
+
 import RobinHood
 
 struct TransferSetupViewFactory {
@@ -26,7 +26,9 @@ struct TransferSetupViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-        let viewModelFactory = Web3NameViewModelFactory(displayAddressViewModelFactory: DisplayAddressViewModelFactory())
+        let viewModelFactory = Web3NameViewModelFactory(
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory()
+        )
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
@@ -108,7 +110,9 @@ struct TransferSetupViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
 
-        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory())
+        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(
+            integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory()
+        )
 
         let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
         let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(

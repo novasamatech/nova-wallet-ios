@@ -214,10 +214,10 @@ extension WalletConnectService: WalletConnectServiceProtocol {
                     response: signingDecision.result
                 )
 
-                notify(completion: completion, error: nil)
+                self?.notify(completion: completion, error: nil)
             } catch {
                 self?.logger.error("Signature submission failed: \(error)")
-                notify(completion: completion, error: error)
+                self?.notify(completion: completion, error: error)
             }
         }
     }
@@ -247,12 +247,12 @@ extension WalletConnectService: WalletConnectServiceProtocol {
     func disconnect(from session: String, completion: @escaping (Error?) -> Void) {
         Task { [weak self] in
             do {
-                try await client?.disconnect(topic: session)
+                try await self?.client?.disconnect(topic: session)
 
                 self?.notify(completion: completion, error: nil)
 
             } catch {
-                logger.error("Disconnecting \(session) failed: \(error)")
+                self?.logger.error("Disconnecting \(session) failed: \(error)")
 
                 self?.notify(completion: completion, error: error)
             }

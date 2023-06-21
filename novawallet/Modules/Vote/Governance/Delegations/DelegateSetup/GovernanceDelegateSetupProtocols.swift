@@ -1,5 +1,4 @@
 import BigInt
-import CommonWallet
 
 protocol GovernanceDelegateSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveBalance(viewModel: String)

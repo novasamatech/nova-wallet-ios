@@ -16,7 +16,7 @@ protocol AmountInputViewModelProtocol: AnyObject {
 }
 
 extension AmountInputViewModelProtocol {
-    func didUpdateAmount(to newAmount: Decimal) { }
+    func didUpdateAmount(to _: Decimal) {}
 }
 
 final class AmountInputViewModel: AmountInputViewModelProtocol, MoneyPresentable {
@@ -62,12 +62,14 @@ final class AmountInputViewModel: AmountInputViewModelProtocol, MoneyPresentable
 
     public var observable: WalletViewModelObserverContainer<AmountInputViewModelObserver>
 
-    public init(symbol: String,
-                amount: Decimal?,
-                limit: Decimal,
-                formatter: NumberFormatter,
-                inputLocale: Locale = Locale.current,
-                precision: Int16 = 2) {
+    public init(
+        symbol: String,
+        amount: Decimal?,
+        limit: Decimal,
+        formatter: NumberFormatter,
+        inputLocale: Locale = Locale.current,
+        precision: Int16 = 2
+    ) {
         self.symbol = symbol
         self.limit = limit
         self.formatter = formatter
@@ -77,7 +79,7 @@ final class AmountInputViewModel: AmountInputViewModelProtocol, MoneyPresentable
         observable = WalletViewModelObserverContainer()
 
         if let amount = amount, amount <= limit,
-            let inputAmount = formatter.string(from: amount as NSNumber) {
+           let inputAmount = formatter.string(from: amount as NSNumber) {
             self.amount = set(inputAmount)
         }
     }
