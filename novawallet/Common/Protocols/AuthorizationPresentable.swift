@@ -102,7 +102,8 @@ extension AuthorizationPresentable {
             return
         }
 
-        guard let presentingController = UIApplication.shared.keyWindow?.rootViewController?.topModalViewController else {
+        guard let presentingController = UIApplication.shared.keyWindow?.rootViewController?
+            .topModalViewController else {
             return
         }
 

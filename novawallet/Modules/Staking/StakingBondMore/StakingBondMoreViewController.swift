@@ -1,6 +1,5 @@
 import UIKit
 import SoraFoundation
-import CommonWallet
 
 final class StakingBondMoreViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingBondMoreViewLayout

@@ -1,5 +1,4 @@
 import UIKit
-import CommonWallet
 
 protocol PurchaseViewProtocol: ControllerBackedProtocol {}
 

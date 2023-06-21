@@ -1,6 +1,5 @@
 import Foundation
 import RobinHood
-import CommonWallet
 
 typealias TransactionSyncResultClosure = (WalletRemoteHistoryData) -> Void
 

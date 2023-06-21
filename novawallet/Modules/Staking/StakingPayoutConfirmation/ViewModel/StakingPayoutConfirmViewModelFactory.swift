@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import CommonWallet
+
 import SoraFoundation
 
 protocol StakingPayoutConfirmViewModelFactoryProtocol {

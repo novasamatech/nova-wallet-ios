@@ -1,6 +1,5 @@
 import Foundation
 import RobinHood
-import CommonWallet
 
 extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
     func isComplete(pagination: Pagination) -> Bool {

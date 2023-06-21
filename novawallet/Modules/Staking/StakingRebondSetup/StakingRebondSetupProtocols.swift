@@ -1,6 +1,5 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
 
 protocol StakingRebondSetupViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)

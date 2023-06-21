@@ -1,6 +1,5 @@
 import Foundation
 import BigInt
-import CommonWallet
 
 final class StakingPayoutConfirmationPresenter {
     weak var view: StakingPayoutConfirmationViewProtocol?

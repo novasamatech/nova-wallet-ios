@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import CommonWallet
+
 import SubstrateSdk
 
 final class MainTabBarInteractor {

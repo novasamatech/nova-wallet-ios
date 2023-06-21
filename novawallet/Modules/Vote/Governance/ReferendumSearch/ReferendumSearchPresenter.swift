@@ -113,7 +113,7 @@ extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
 extension ReferendumSearchPresenter {
     func didReceiveError(_ error: ReferendumSearchError) {
         switch error {
-        case let .searchFailed(text, error):
+        case let .searchFailed(text, _):
             wireframe.presentRequestStatus(
                 on: view,
                 locale: localizationManager.selectedLocale

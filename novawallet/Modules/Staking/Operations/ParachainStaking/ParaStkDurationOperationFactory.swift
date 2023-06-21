@@ -32,7 +32,8 @@ final class ParaStkDurationOperationFactory: ParaStkDurationOperationFactoryProt
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<UInt32> {
-        let wrapper: CompoundOperationWrapper<StorageResponse<ParachainStaking.RoundInfo>> = storageRequestFactory.queryItem(
+        let wrapper: CompoundOperationWrapper<StorageResponse<ParachainStaking.RoundInfo>>
+        wrapper = storageRequestFactory.queryItem(
             engine: connection,
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
             storagePath: ParachainStaking.roundPath

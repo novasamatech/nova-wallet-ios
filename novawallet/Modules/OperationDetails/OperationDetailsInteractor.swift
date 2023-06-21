@@ -1,5 +1,5 @@
 import UIKit
-import CommonWallet
+
 import BigInt
 import RobinHood
 

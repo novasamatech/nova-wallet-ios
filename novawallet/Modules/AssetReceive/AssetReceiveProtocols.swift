@@ -23,4 +23,5 @@ protocol AssetReceiveInteractorOutputProtocol: AnyObject {
     func didReceive(error: AssetReceiveInteractorError)
 }
 
-protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable, AddressOptionsPresentable, ErrorPresentable, AlertPresentable, CommonRetryable {}
+protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable, AddressOptionsPresentable,
+    ErrorPresentable, AlertPresentable, CommonRetryable {}

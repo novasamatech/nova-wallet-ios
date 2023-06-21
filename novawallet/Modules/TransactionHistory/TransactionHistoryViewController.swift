@@ -2,7 +2,6 @@ import UIKit
 import SoraUI
 import RobinHood
 import SoraFoundation
-import CommonWallet
 
 private struct NavigationItemState {
     var title: String?
@@ -134,7 +133,6 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         switch draggableState {
         case .compact:
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
-            let headerTop = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
             let headerHeight = Constants.headerCompactHeight * CGFloat(adjustedProgress) +
                 fullInsets.top * CGFloat(1.0 - adjustedProgress)
             rootView.headerHeight?.update(offset: headerHeight)
@@ -142,7 +140,8 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
 
-            let headerTop = CGFloat(1.0 - adjustedProgress) * (fullInsets.top * CGFloat(adjustedProgress) - cornerRadius) + cornerRadius
+            let headerTop = CGFloat(1.0 - adjustedProgress) *
+                (fullInsets.top * CGFloat(adjustedProgress) - cornerRadius) + cornerRadius
             let headerHeight = Constants.headerCompactHeight * CGFloat(1.0 - adjustedProgress) +
                 fullInsets.top * CGFloat(adjustedProgress)
             rootView.headerHeight?.update(offset: headerHeight)
@@ -165,7 +164,9 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         switch draggableState {
         case .compact:
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
-            let backgroundProgress = max((progress - 1 + Constants.triggerProgressThreshold) / Constants.triggerProgressThreshold, 0)
+            let backgroundProgress = max(
+                (progress - 1 + Constants.triggerProgressThreshold) / Constants.triggerProgressThreshold, 0
+            )
 
             rootView.backgroundView.applyFullscreen(progress: 1 - backgroundProgress)
             rootView.closeButton.alpha = CGFloat(1.0 - adjustedProgress)

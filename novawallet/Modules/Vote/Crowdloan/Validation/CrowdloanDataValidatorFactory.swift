@@ -1,7 +1,6 @@
 import Foundation
 import SoraFoundation
 import BigInt
-import CommonWallet
 
 protocol CrowdloanDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func contributesAtLeastMinContribution(

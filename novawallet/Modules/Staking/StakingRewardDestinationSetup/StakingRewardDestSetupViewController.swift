@@ -1,5 +1,4 @@
 import UIKit
-import CommonWallet
 import SubstrateSdk
 import SoraFoundation
 

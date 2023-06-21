@@ -172,7 +172,9 @@ final class EquillibriumAssetsBalanceUpdater {
                 let utilityAsset = chainModel.utilityAsset()?.assetId
                 let lock = accountBalances?.lock ?? .zero
 
-                let mappedBalances = accountBalancesWithReservedData.enumerated().reduce(into: [AssetModel.Id: AssetBalance]()) { result, balance in
+                let mappedBalances = accountBalancesWithReservedData.enumerated().reduce(
+                    into: [AssetModel.Id: AssetBalance]()
+                ) { result, balance in
                     guard let assetId = self.assetsMapping[balance.element.asset] else {
                         return
                     }

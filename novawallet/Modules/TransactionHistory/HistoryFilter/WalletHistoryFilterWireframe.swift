@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 
 final class WalletHistoryFilterWireframe: WalletHistoryFilterWireframeProtocol {
     weak var delegate: TransactionHistoryFilterEditingDelegate?

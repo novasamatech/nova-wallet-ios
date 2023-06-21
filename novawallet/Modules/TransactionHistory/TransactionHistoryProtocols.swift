@@ -1,4 +1,3 @@
-import CommonWallet
 import RobinHood
 
 protocol TransactionHistoryViewProtocol: ControllerBackedProtocol, Draggable {

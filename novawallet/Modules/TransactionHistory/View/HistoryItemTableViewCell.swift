@@ -196,9 +196,9 @@ extension HistoryItemTableViewCell {
         }
 
         switch transactionModel.status {
-        case .commited:
+        case .success:
             removeStatusView()
-        case .rejected:
+        case .failed:
             addStatusViewIfNeeded()
             statusImageView?.image = R.image.iconErrorFilled()
             amountLabel.textColor = R.color.colorTextSecondary()
