@@ -50,7 +50,6 @@ extension Multistaking {
     }
 
     struct DashboardItem: Equatable {
-        // swiftlint:disable:next nesting
         enum State: String, Equatable {
             case active
             case inactive
