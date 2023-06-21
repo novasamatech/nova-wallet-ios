@@ -131,6 +131,9 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         valueView.iconWidth = 16
         valueView.imageView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
+
+        valueView.detailsView.fView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        valueView.detailsView.sView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 
