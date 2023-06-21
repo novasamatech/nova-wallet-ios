@@ -291,6 +291,24 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
             rootView.collectionView.refreshControl?.endRefreshing()
         }
     }
+
+    func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel) {
+        viewModel.active.forEach { item in
+            let indexPath = IndexPath(item: item.0, section: StakingDashboardSection.activeStakings.rawValue)
+
+            if let cell = rootView.collectionView.cellForItem(at: indexPath) as? StakingDashboardActiveCell {
+                cell.view.view.bind(viewModel: item.1, locale: localizationManager.selectedLocale)
+            }
+        }
+
+        viewModel.inactive.forEach { item in
+            let indexPath = IndexPath(item: item.0, section: StakingDashboardSection.inactiveStakings.rawValue)
+
+            if let cell = rootView.collectionView.cellForItem(at: indexPath) as? StakingDashboardInactiveCell {
+                cell.view.view.bind(viewModel: item.1, locale: localizationManager.selectedLocale)
+            }
+        }
+    }
 }
 
 extension StakingDashboardViewController: HiddableBarWhenPushed {}

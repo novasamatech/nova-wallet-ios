@@ -3,6 +3,7 @@ import RobinHood
 protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletSwitchViewModel)
     func didReceiveStakings(viewModel: StakingDashboardViewModel)
+    func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel)
 }
 
 protocol StakingDashboardPresenterProtocol: AnyObject {
@@ -26,7 +27,7 @@ protocol StakingDashboardInteractorInputProtocol: AnyObject {
 
 protocol StakingDashboardInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
-    func didReceive(model: StakingDashboardModel)
+    func didReceive(result: StakingDashboardBuilderResult)
     func didReceive(error: StakingDashboardInteractorError)
 }
 
