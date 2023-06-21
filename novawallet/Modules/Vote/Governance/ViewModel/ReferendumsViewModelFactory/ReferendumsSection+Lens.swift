@@ -3,7 +3,7 @@ extension ReferendumsSection {
         static let referendums = GenericLens<ReferendumsSection, [ReferendumsCellViewModel]>(
             get: { whole in
                 switch whole {
-                case .personalActivities, .settings:
+                case .personalActivities, .settings, .empty:
                     return []
                 case let .active(_, activeReferendums):
                     return activeReferendums
@@ -12,7 +12,7 @@ extension ReferendumsSection {
                 }
             }, set: { part, whole in
                 switch whole {
-                case .personalActivities, .settings:
+                case .personalActivities, .settings, .empty:
                     return whole
                 case let .active(title, _):
                     return .active(title, part)

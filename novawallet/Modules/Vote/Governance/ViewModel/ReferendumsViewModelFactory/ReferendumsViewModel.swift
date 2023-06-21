@@ -7,6 +7,7 @@ enum ReferendumsSection {
     case settings(isFilterOn: Bool)
     case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
     case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
+    case empty(ReferendumsEmptyModel)
 }
 
 enum ReferendumPersonalActivity {
@@ -25,4 +26,9 @@ struct ReferendumsCellViewModel: Hashable {
 
     var referendumIndex: ReferendumIdLocal
     var viewModel: LoadableViewModelState<ReferendumView.Model>
+}
+
+enum ReferendumsEmptyModel {
+    case referendumsNotFound
+    case filteredListEmpty
 }
