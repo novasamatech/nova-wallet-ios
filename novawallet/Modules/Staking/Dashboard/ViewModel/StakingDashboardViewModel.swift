@@ -40,5 +40,34 @@ struct StakingDashboardViewModel {
     let active: [StakingDashboardEnabledViewModel]
     let inactive: [StakingDashboardDisabledViewModel]
     let hasMoreOptions: Bool
+    let isLoading: Bool
+    let isSyncing: Bool
+
+    func applyingUpdate(viewModel: StakingDashboardUpdateViewModel) -> StakingDashboardViewModel {
+        var newActive = active
+
+        viewModel.active.forEach { item in
+            newActive[item.0] = item.1
+        }
+
+        var newInactive = inactive
+
+        viewModel.inactive.forEach { item in
+            newInactive[item.0] = item.1
+        }
+
+        return .init(
+            active: newActive,
+            inactive: newInactive,
+            hasMoreOptions: hasMoreOptions,
+            isLoading: isLoading,
+            isSyncing: isSyncing
+        )
+    }
+}
+
+struct StakingDashboardUpdateViewModel {
+    let active: [(Int, StakingDashboardEnabledViewModel)]
+    let inactive: [(Int, StakingDashboardDisabledViewModel)]
     let isSyncing: Bool
 }

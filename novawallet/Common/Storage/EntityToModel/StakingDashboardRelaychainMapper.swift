@@ -40,9 +40,16 @@ final class StakingDashboardRelaychainMapper {
         guard
             case let state = state,
             case let .defined(activeEra) = activeEraState,
-            case let .defined(optNomination) = nominationState,
-            let nomination = optNomination else {
+            case let .defined(optNomination) = nominationState else {
             return state
+        }
+
+        guard let nomination = optNomination else {
+            if state != nil {
+                return .inactive
+            } else {
+                return nil
+            }
         }
 
         if state == .inactive, activeEra.index <= nomination.submittedIn {
@@ -70,6 +77,10 @@ extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
 
         if case let .defined(activeStake) = model.stateChange.ledger.map({ $0?.active }) {
             entity.stake = activeStake.map { String($0) }
+        }
+
+        if case let .defined(hasTargets) = model.stateChange.nomination.map({ $0 != nil }) {
+            entity.hasTargets = hasTargets
         }
 
         var currentState = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }

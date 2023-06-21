@@ -13,6 +13,12 @@ protocol StakingDashboardViewModelFactoryProtocol {
         locale: Locale
     ) -> StakingDashboardDisabledViewModel
 
+    func createUpdateViewModel(
+        from model: StakingDashboardModel,
+        syncChange: Set<Multistaking.ChainAssetOption>,
+        locale: Locale
+    ) -> StakingDashboardUpdateViewModel
+
     func createViewModel(
         from model: StakingDashboardModel,
         locale: Locale
@@ -193,13 +199,47 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             )
         }
 
-        let isSyncing = model.isEmpty
+        let isLoading = model.isEmpty
 
         return .init(
             active: activeViewModels,
             inactive: inactiveViewModels,
             hasMoreOptions: true,
-            isSyncing: isSyncing
+            isLoading: isLoading,
+            isSyncing: model.all.contains { $0.isOffchainSync }
+        )
+    }
+
+    func createUpdateViewModel(
+        from model: StakingDashboardModel,
+        syncChange: Set<Multistaking.ChainAssetOption>,
+        locale: Locale
+    ) -> StakingDashboardUpdateViewModel {
+        let activeViewModels: [(Int, StakingDashboardEnabledViewModel)] = model.active.enumerated().compactMap { item in
+            guard syncChange.contains(item.1.stakingOption) else {
+                return nil
+            }
+
+            let viewModel = createActiveStakingViewModel(for: item.1, locale: locale)
+
+            return (item.0, viewModel)
+        }
+
+        let inactiveViewModels: [(Int, StakingDashboardDisabledViewModel)] = model.inactive
+            .enumerated().compactMap { item in
+                guard syncChange.contains(item.1.stakingOption) else {
+                    return nil
+                }
+
+                let viewModel = createInactiveStakingViewModel(for: item.1, locale: locale)
+
+                return (item.0, viewModel)
+            }
+
+        return .init(
+            active: activeViewModels,
+            inactive: inactiveViewModels,
+            isSyncing: model.all.contains { $0.isOffchainSync }
         )
     }
 }

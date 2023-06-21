@@ -12,6 +12,8 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
             return
         }
 
+        stakingMoreOptionsView.controller.hidesBottomBarWhenPushed = true
+
         view?.controller.navigationController?.pushViewController(
             stakingMoreOptionsView.controller,
             animated: true
@@ -25,6 +27,8 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
         guard let detailsView = StakingMainViewFactory.createView(for: option) else {
             return
         }
+
+        detailsView.controller.hidesBottomBarWhenPushed = true
 
         view?.controller.navigationController?.pushViewController(
             detailsView.controller,

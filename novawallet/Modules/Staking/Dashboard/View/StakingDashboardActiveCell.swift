@@ -38,6 +38,14 @@ final class StakingDashboardActiveCellView: UIView {
         setupLayout()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if loadingState != .none {
+            updateLoadingState()
+        }
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")

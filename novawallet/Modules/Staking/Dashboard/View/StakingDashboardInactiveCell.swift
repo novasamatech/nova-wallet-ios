@@ -31,6 +31,14 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         configure()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if loadingState != .none {
+            updateLoadingState()
+        }
+    }
+
     func bind(viewModel: StakingDashboardDisabledViewModel, locale: Locale) {
         var newLoadingState: LoadingState = .none
 
@@ -121,12 +129,19 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         valueView.spacing = 0
 
         valueView.detailsView.fView.applyShimmer(style: .semiboldCalloutPositive)
+        valueView.detailsView.fView.textAlignment = .right
+
         valueView.detailsView.sView.apply(style: .caption1Secondary)
+        valueView.detailsView.sView.textAlignment = .right
+
         valueView.mode = .detailsIcon
         valueView.spacing = 8
 
         valueView.iconWidth = 16
         valueView.imageView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
+
+        valueView.detailsView.fView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        valueView.detailsView.sView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 

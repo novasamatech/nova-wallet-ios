@@ -11,7 +11,7 @@ final class StakingDashboardPresenter {
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
 
-    private var model: StakingDashboardModel?
+    private var lastResult: StakingDashboardBuilderResult?
     private var wallet: MetaAccountModel?
 
     init(
@@ -42,13 +42,34 @@ final class StakingDashboardPresenter {
     }
 
     private func updateStakingsView() {
-        guard let model = model else {
+        guard let result = lastResult else {
             return
         }
 
-        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
+        switch result.changeKind {
+        case .reload:
+            reloadStakingView(using: result.model)
+        case let .sync(syncChange):
+            updateStakingView(using: result.model, syncChange: syncChange)
+        }
+    }
 
+    private func reloadStakingView(using model: StakingDashboardModel) {
+        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
         view?.didReceiveStakings(viewModel: viewModel)
+    }
+
+    private func updateStakingView(
+        using model: StakingDashboardModel,
+        syncChange: Set<Multistaking.ChainAssetOption>
+    ) {
+        let updateViewModel = viewModelFactory.createUpdateViewModel(
+            from: model,
+            syncChange: syncChange,
+            locale: selectedLocale
+        )
+
+        view?.didReceiveUpdate(viewModel: updateViewModel)
     }
 }
 
@@ -58,7 +79,7 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectActiveStaking(at index: Int) {
-        guard let option = model?.active[index].stakingOption else {
+        guard let option = lastResult?.model.active[index].stakingOption else {
             return
         }
 
@@ -66,7 +87,7 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectInactiveStaking(at index: Int) {
-        guard let option = model?.inactive[index].stakingOption else {
+        guard let option = lastResult?.model.inactive[index].stakingOption else {
             return
         }
 
@@ -81,7 +102,9 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         wireframe.showWalletSwitch(from: view)
     }
 
-    func refresh() {}
+    func refresh() {
+        interactor.refresh()
+    }
 }
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
@@ -91,8 +114,8 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
         updateWalletView()
     }
 
-    func didReceive(model: StakingDashboardModel) {
-        self.model = model
+    func didReceive(result: StakingDashboardBuilderResult) {
+        lastResult = result
 
         updateStakingsView()
     }

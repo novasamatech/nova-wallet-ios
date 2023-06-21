@@ -5,23 +5,32 @@ import BigInt
 final class StakingMainPresenter {
     weak var view: StakingMainViewProtocol?
     let interactor: StakingMainInteractorInputProtocol
+    let wireframe: StakingMainWireframeProtocol
 
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
     let stakingOption: Multistaking.ChainAssetOption
     let logger: LoggerProtocol?
+    let wallet: MetaAccountModel
+    let accountManagementFilter: AccountManagementFilterProtocol
 
     private var childPresenter: StakingMainChildPresenterProtocol?
 
     init(
         interactor: StakingMainInteractorInputProtocol,
+        wireframe: StakingMainWireframeProtocol,
+        wallet: MetaAccountModel,
         stakingOption: Multistaking.ChainAssetOption,
+        accountManagementFilter: AccountManagementFilterProtocol,
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
         logger: LoggerProtocol?
     ) {
         self.interactor = interactor
+        self.wireframe = wireframe
+        self.wallet = wallet
         self.stakingOption = stakingOption
+        self.accountManagementFilter = accountManagementFilter
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
         self.logger = logger
@@ -56,7 +65,46 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     }
 
     func performMainAction() {
-        childPresenter?.performMainAction()
+        let chain = stakingOption.chainAsset.chain
+
+        if wallet.fetchMetaChainAccount(for: chain.accountRequest()) != nil {
+            childPresenter?.performMainAction()
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
+            guard let view = view else {
+                return
+            }
+
+            let locale = view.selectedLocale
+
+            let message = R.string.localizable.commonChainAccountMissingMessageFormat(
+                chain.name,
+                preferredLanguages: locale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: locale
+            ) { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
+        } else {
+            guard let view = view, let locale = view.localizationManager?.selectedLocale else {
+                return
+            }
+
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: locale
+            )
+        }
     }
 
     func performRewardInfoAction() {
