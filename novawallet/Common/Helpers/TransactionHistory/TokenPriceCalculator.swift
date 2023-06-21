@@ -20,7 +20,7 @@ final class TokenPriceCalculator {
             return 0 ..< history.items.count
         }
 
-        if history.items[lastUsedIndex].startedAt <= time {
+        if time >= history.items[lastUsedIndex].startedAt {
             let startIndex = lastUsedIndex
             return startIndex ..< history.items.count
         } else {
@@ -31,17 +31,24 @@ final class TokenPriceCalculator {
 
 extension TokenPriceCalculator: TokenPriceCalculatorProtocol {
     func calculatePrice(for time: UInt64) -> Decimal? {
-        guard !history.items.isEmpty else {
+        guard
+            let priceStartTimestamp = history.items.first?.startedAt,
+            time >= priceStartTimestamp else {
             return nil
         }
 
         let searchRange = findSearchRange(for: time)
 
-        let partialIndex = history.items[searchRange].partitioningIndex { $0.startedAt >= time }
+        // this is the index of the element that is not less then time
+        let foundIndex = history.items[searchRange].partitioningIndex { time <= $0.startedAt }
 
-        let fullIndex = min(searchRange.startIndex + partialIndex, history.items.count - 1)
-        lastUsedIndex = fullIndex
-
-        return history.items[fullIndex].value
+        if history.items[foundIndex].startedAt > time {
+            let prevIndex = max(foundIndex - 1, 0)
+            lastUsedIndex = prevIndex
+            return history.items[prevIndex].value
+        } else {
+            lastUsedIndex = foundIndex
+            return history.items[foundIndex].value
+        }
     }
 }
