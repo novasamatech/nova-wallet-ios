@@ -38,6 +38,7 @@ struct TransactionHistoryViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            phishingFilter: TransactionHistoryPhishingFilter(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
