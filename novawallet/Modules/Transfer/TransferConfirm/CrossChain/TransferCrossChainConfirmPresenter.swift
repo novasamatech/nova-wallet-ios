@@ -15,6 +15,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
     let amount: Decimal
 
     private lazy var walletIconGenerator = NovaIconGenerator()
+    let transferCompletion: TransferCompletionClosure?
 
     init(
         interactor: TransferConfirmCrossChainInteractorInputProtocol,
@@ -30,6 +31,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        transferCompletion: TransferCompletionClosure?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,6 +40,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         recepientAccountAddress = recepient
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.transferCompletion = transferCompletion
 
         super.init(
             originChainAsset: originChainAsset,
@@ -320,7 +323,13 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
     func didCompleteSubmition() {
         view?.didStopLoading()
-        wireframe.complete(on: view, locale: selectedLocale)
+        let chain = originChainAsset.chain
+        let utilityAsset = originChainAsset.chain.utilityAsset()
+        wireframe.complete(on: view, locale: selectedLocale) { [chain, utilityAsset, transferCompletion] in
+            utilityAsset.map {
+                transferCompletion?(.init(chain: chain, asset: $0))
+            }
+        }
     }
 }
 

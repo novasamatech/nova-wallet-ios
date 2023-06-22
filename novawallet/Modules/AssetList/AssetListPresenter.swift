@@ -509,7 +509,9 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showSendTokens(
             from: view,
             state: initState
-        )
+        ) { [weak self] chainAsset in
+            self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
+        }
     }
 
     func receive() {

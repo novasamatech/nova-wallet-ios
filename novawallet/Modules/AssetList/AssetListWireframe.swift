@@ -78,29 +78,35 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
     }
 
-    func showSendTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
-        showAssetsSelection(for: .send, from: view, state: state)
+    func showSendTokens(
+        from view: AssetListViewProtocol?,
+        state: AssetListInitState,
+        transferCompletion: @escaping TransferCompletionClosure
+    ) {
+        showAssetsSelection(for: .send, from: view, state: state, transferCompletion: transferCompletion)
     }
 
     func showRecieveTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
-        showAssetsSelection(for: .receive, from: view, state: state)
+        showAssetsSelection(for: .receive, from: view, state: state, transferCompletion: nil)
     }
 
     func showBuyTokens(
         from view: AssetListViewProtocol?,
         state: AssetListInitState
     ) {
-        showAssetsSelection(for: .buy, from: view, state: state)
+        showAssetsSelection(for: .buy, from: view, state: state, transferCompletion: nil)
     }
 
     private func showAssetsSelection(
         for operation: TokenOperation,
         from view: AssetListViewProtocol?,
-        state: AssetListInitState
+        state: AssetListInitState,
+        transferCompletion: TransferCompletionClosure?
     ) {
         guard let assetsSearchView = AssetOperationViewFactory.createView(
             for: state,
-            operation: operation
+            operation: operation,
+            transferCompletion: transferCompletion
         ) else {
             return
         }
