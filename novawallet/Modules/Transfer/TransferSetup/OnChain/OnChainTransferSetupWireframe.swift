@@ -1,6 +1,12 @@
 import Foundation
 
 final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
+    let transferCompletion: TransferCompletionClosure?
+
+    init(transferCompletion: TransferCompletionClosure?) {
+        self.transferCompletion = transferCompletion
+    }
+
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
@@ -10,7 +16,8 @@ final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol
         guard let confirmView = TransferConfirmOnChainViewFactory.createView(
             chainAsset: chainAsset,
             recepient: recepient,
-            amount: sendingAmount
+            amount: sendingAmount,
+            transferCompletion: transferCompletion
         ) else {
             return
         }

@@ -9,7 +9,8 @@ struct TransferConfirmCrossChainViewFactory {
         destinationAsset: ChainAsset,
         xcmTransfers: XcmTransfers,
         recepient: AccountAddress,
-        amount: Decimal
+        amount: Decimal,
+        transferCompletion: TransferCompletionClosure?
     ) -> TransferConfirmOnChainViewProtocol? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -69,6 +70,7 @@ struct TransferConfirmCrossChainViewFactory {
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: localizationManager,
+            transferCompletion: transferCompletion,
             logger: Logger.shared
         )
 

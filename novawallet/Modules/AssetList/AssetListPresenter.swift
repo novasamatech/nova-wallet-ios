@@ -510,7 +510,11 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showSendTokens(
             from: view,
             state: initState
-        )
+        ) { [weak self] chainAsset in
+            DispatchQueue.main.async {
+                self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
+            }
+        }
     }
 
     func receive() {
@@ -642,5 +646,11 @@ extension AssetListPresenter: URIScanDelegate {
         wireframe.hideUriScanAnimated(from: view) { [weak self] in
             self?.interactor.connectWalletConnect(uri: uri)
         }
+    }
+}
+
+extension AssetListPresenter: TransferConfirmDelegate {
+    func transferCompleted(chainAsset: ChainAsset) {
+        wireframe.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
     }
 }

@@ -3,6 +3,10 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
+protocol TransferConfirmDelegate: AnyObject {
+    func transferCompleted(chainAsset: ChainAsset)
+}
+
 final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     weak var view: TransferConfirmOnChainViewProtocol?
     let wireframe: TransferConfirmWireframeProtocol
@@ -15,6 +19,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     let amount: OnChainTransferAmount<Decimal>
 
     private lazy var walletIconGenerator = NovaIconGenerator()
+    let transferCompletion: TransferCompletionClosure?
 
     init(
         interactor: TransferConfirmOnChainInteractorInputProtocol,
@@ -30,6 +35,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        transferCompletion: TransferCompletionClosure?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,7 +44,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         recepientAccountAddress = recepient
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-
+        self.transferCompletion = transferCompletion
         super.init(
             chainAsset: chainAsset,
             networkViewModelFactory: networkViewModelFactory,
@@ -243,7 +249,9 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
 extension TransferOnChainConfirmPresenter: TransferConfirmOnChainInteractorOutputProtocol {
     func didCompleteSubmition() {
         view?.didStopLoading()
-        wireframe.complete(on: view, locale: selectedLocale)
+        wireframe.complete(on: view, locale: selectedLocale) { [transferCompletion, chainAsset] in
+            transferCompletion?(chainAsset)
+        }
     }
 }
 
