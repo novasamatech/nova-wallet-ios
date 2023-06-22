@@ -1,5 +1,5 @@
 protocol StakingMoreOptionsViewProtocol: ControllerBackedProtocol {
-    func didReceive(dAppModels: [DAppView.Model])
+    func didReceive(dAppModels: [LoadableViewModelState<DAppView.Model>])
     func didReceive(moreOptionsModels: [StakingDashboardDisabledViewModel])
 }
 
