@@ -510,9 +510,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             from: view,
             state: initState
         ) { [weak self] chainAsset in
-            DispatchQueue.main.async {
-                self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
-            }
+            self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
     }
 

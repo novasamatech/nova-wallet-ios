@@ -7,8 +7,9 @@ final class TransferConfirmWireframe: TransferConfirmWireframeProtocol, ModalAle
 
         let presenter = view?.controller.navigationController?.presentingViewController
 
-        presenter?.dismiss(animated: true) { [weak self] in
-            self?.presentSuccessNotification(title, from: presenter, completion: completion)
+        presenter?.dismiss(animated: true) {
+            completion()
+            self.presentSuccessNotification(title, from: presenter, completion: nil)
         }
     }
 }
