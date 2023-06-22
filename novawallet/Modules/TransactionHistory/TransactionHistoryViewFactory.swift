@@ -44,7 +44,8 @@ struct TransactionHistoryViewFactory {
 
         let view = TransactionHistoryViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            supportsFilters: WalletHistoryFilter.hasSupport(for: chainAsset)
         )
 
         presenter.view = view

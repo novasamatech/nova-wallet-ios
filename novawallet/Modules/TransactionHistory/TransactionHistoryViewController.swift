@@ -23,6 +23,8 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     private var dataSource: TransactionHistoryDataSource?
 
     let presenter: TransactionHistoryPresenterProtocol
+    let supportsFilters: Bool
+
     private var draggableState: DraggableState = .compact
     private var didSetupLayout: Bool = false
     private let walletEmptyStateDataSource = WalletEmptyStateDataSource.history
@@ -43,9 +45,12 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
 
     init(
         presenter: TransactionHistoryPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        supportsFilters: Bool
     ) {
         self.presenter = presenter
+        self.supportsFilters = supportsFilters
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -57,7 +62,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     }
 
     override func loadView() {
-        view = TransactionHistoryViewLayout()
+        view = TransactionHistoryViewLayout(frame: .zero, supportsFilters: supportsFilters)
     }
 
     override func viewDidLoad() {
@@ -90,7 +95,9 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     }
 
     private func setupHandlers() {
-        rootView.filterButton.addTarget(self, action: #selector(didTapOnFilter), for: .touchUpInside)
+        if supportsFilters {
+            rootView.filterButton.addTarget(self, action: #selector(didTapOnFilter), for: .touchUpInside)
+        }
     }
 
     @objc private func didTapOnFilter() {
@@ -112,8 +119,8 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         updateHeaderHeight(for: draggableState, progress: progress, forcesLayoutUpdate: forcesLayoutUpdate)
     }
 
-    private func updateTableViewAfterTransition(to: DraggableState, animated: Bool) {
-        updateTableViewContentOffset(to: to, animated: animated)
+    private func updateTableViewAfterTransition(to state: DraggableState, animated: Bool) {
+        updateTableViewContentOffset(to: state, animated: animated)
     }
 
     private func setupLocalization() {
@@ -243,18 +250,26 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
                 target: self,
                 action: #selector(didTapOnClose)
             )
-            let filterItem = UIBarButtonItem(
-                image: rootView.filterIcon,
-                style: .plain,
-                target: self,
-                action: #selector(didTapOnFilter)
-            )
+
+            let filterItem: UIBarButtonItem?
+
+            if supportsFilters {
+                filterItem = UIBarButtonItem(
+                    image: rootView.filterIcon,
+                    style: .plain,
+                    target: self,
+                    action: #selector(didTapOnFilter)
+                )
+            } else {
+                filterItem = nil
+            }
 
             let state = NavigationItemState(
                 title: rootView.titleLabel.text,
                 leftBarItem: closeBarItem,
                 rightBarItem: filterItem
             )
+
             setNavigationItem(state: state)
         }
     }

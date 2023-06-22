@@ -15,8 +15,8 @@ final class TransactionHistoryViewLayout: UIView {
         return backgroundView
     }()
 
-    let filterIcon = R.image.iconFilter()?.tinted(with: R.color.colorIconPrimary()!)
     let closeIcon = R.image.iconClose()?.tinted(with: R.color.colorIconPrimary()!)
+    let filterIcon = R.image.iconFilter()?.tinted(with: R.color.colorIconPrimary()!)
 
     lazy var filterButton: RoundedButton = .create {
         $0.applyIconStyle()
@@ -63,10 +63,10 @@ final class TransactionHistoryViewLayout: UIView {
         $0.shadowOpacity = 0
     }
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, supportsFilters: Bool) {
         super.init(frame: frame)
 
-        setupLayout()
+        setupLayout(supportingFilters: supportsFilters)
     }
 
     @available(*, unavailable)
@@ -74,7 +74,7 @@ final class TransactionHistoryViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    private func setupLayout(supportingFilters: Bool) {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -101,11 +101,13 @@ final class TransactionHistoryViewLayout: UIView {
             $0.height.equalTo(5)
         }
 
-        headerView.addSubview(filterButton)
-        filterButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(10)
-            $0.width.height.equalTo(44)
-            $0.centerY.equalToSuperview()
+        if supportingFilters {
+            headerView.addSubview(filterButton)
+            filterButton.snp.makeConstraints {
+                $0.trailing.equalToSuperview().inset(10)
+                $0.width.height.equalTo(44)
+                $0.centerY.equalToSuperview()
+            }
         }
 
         headerView.addSubview(titleLabel)
