@@ -3,10 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
-protocol TransferConfirmDelegate: AnyObject {
-    func transferCompleted(chainAsset: ChainAsset)
-}
-
 final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     weak var view: TransferConfirmOnChainViewProtocol?
     let wireframe: TransferConfirmWireframeProtocol

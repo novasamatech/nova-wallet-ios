@@ -647,9 +647,3 @@ extension AssetListPresenter: URIScanDelegate {
         }
     }
 }
-
-extension AssetListPresenter: TransferConfirmDelegate {
-    func transferCompleted(chainAsset: ChainAsset) {
-        wireframe.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
-    }
-}
