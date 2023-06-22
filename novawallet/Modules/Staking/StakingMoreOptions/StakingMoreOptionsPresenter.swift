@@ -42,10 +42,11 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
     }
 
     func selectOption(at index: Int) {
-        guard let option = moreOptions[safe: index] else {
+        guard let dashboardItem = moreOptions[safe: index] else {
             return
         }
-        // TODO: navigation
+
+        wireframe.showStakingDetails(from: view, option: dashboardItem.stakingOption)
     }
 
     func selectDApp(at index: Int) {

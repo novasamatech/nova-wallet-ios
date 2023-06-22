@@ -18,6 +18,10 @@ struct StakingDashboardItemModel: Equatable {
         return dashboardItem.stake != nil
     }
 
+    var hasAnySync: Bool {
+        isOnchainSync || isOffchainSync
+    }
+
     func balanceValue() -> Decimal {
         Decimal.fiatValue(
             from: balance?.freeInPlank,
@@ -48,6 +52,14 @@ struct StakingDashboardModel: Equatable {
         self.active = active
         self.inactive = inactive
         self.more = more
+    }
+
+    var isEmpty: Bool {
+        active.isEmpty && inactive.isEmpty && more.isEmpty
+    }
+
+    var all: [StakingDashboardItemModel] {
+        active + inactive + more
     }
 }
 
@@ -97,5 +109,19 @@ extension Array where Element == StakingDashboardItemModel {
                 return chain1.name.lexicographicallyPrecedes(chain2.name)
             }
         }
+    }
+}
+
+extension StakingDashboardItemModel {
+    func byChangingSyncState(isOnchainSync: Bool, isOffchainSync: Bool) -> StakingDashboardItemModel {
+        StakingDashboardItemModel(
+            stakingOption: stakingOption,
+            dashboardItem: dashboardItem,
+            accountId: accountId,
+            balance: balance,
+            price: price,
+            isOnchainSync: isOnchainSync,
+            isOffchainSync: isOffchainSync
+        )
     }
 }

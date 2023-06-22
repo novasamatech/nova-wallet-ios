@@ -20,7 +20,7 @@ extension MultistakingOffchainOperationFactoryProtocol {
                 return [Multistaking.OffchainFilter]()
             }
 
-            let stakingTypes = (chainAsset.asset.stakings ?? []).filter { $0 != .unsupported }
+            let stakingTypes = chainAsset.asset.supportedStakings ?? []
 
             let accountIds = stakingTypes.reduce(
                 into: [AccountId: Multistaking.OffchainFilter]()

@@ -1,20 +1,16 @@
 import UIKit
 import SoraUI
 
-final class StakingStatusView: UIView {
-    let backgroundView: RoundedView = {
-        let view = RoundedView()
+class StakingStatusView: UIView {
+    let backgroundView: RoundedView = .create { view in
         view.applyFilledBackgroundStyle()
-        return view
-    }()
+    }
 
     let glowingView = GlowingView()
 
-    let detailsLabel: UILabel = {
-        let label = UILabel()
+    let detailsLabel: UILabel = .create { label in
         label.font = .semiBoldCaps2
-        return label
-    }()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -71,6 +67,48 @@ extension StakingStatusView {
             detailsLabel.text = R.string.localizable.stakingNominatorStatusWaiting(
                 preferredLanguages: locale.rLanguages
             ).uppercased()
+        }
+    }
+}
+
+final class LoadableStakingStatusView: StakingStatusView, SkeletonableView {
+    var skeletonView: SkrullableView?
+
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        []
+    }
+
+    var skeletonSpaceSize: CGSize { backgroundView.frame.size }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        [
+            SingleSkeleton.createRow(
+                on: backgroundView,
+                containerView: backgroundView,
+                spaceSize: spaceSize,
+                offset: CGPoint(x: 0, y: 0),
+                size: spaceSize
+            )
+        ]
+    }
+
+    func updateLoadingAnimationIfActive() {
+        if skeletonView != nil {
+            updateLoadingState()
+
+            skeletonView?.restartSkrulling()
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView != nil {
+            updateLoadingState()
         }
     }
 }

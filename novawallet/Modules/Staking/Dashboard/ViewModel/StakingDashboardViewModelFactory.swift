@@ -13,6 +13,12 @@ protocol StakingDashboardViewModelFactoryProtocol {
         locale: Locale
     ) -> StakingDashboardDisabledViewModel
 
+    func createUpdateViewModel(
+        from model: StakingDashboardModel,
+        syncChange: Set<Multistaking.ChainAssetOption>,
+        locale: Locale
+    ) -> StakingDashboardUpdateViewModel
+
     func createViewModel(
         from model: StakingDashboardModel,
         locale: Locale
@@ -88,7 +94,7 @@ final class StakingDashboardViewModelFactory {
         }
 
         let state = StakingDashboardEnabledViewModel.Status(dashboardItem: dashboardItem)
-        return model.isOnchainSync || model.isOffchainSync ? .cached(value: state) : .loaded(value: state)
+        return model.hasAnySync ? .cached(value: state) : .loaded(value: state)
     }
 }
 
@@ -128,8 +134,11 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let status = createStakingStatus(for: model)
 
+        let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
+            .cached(value: networkViewModel) : .loaded(value: networkViewModel)
+
         return .init(
-            networkViewModel: networkViewModel,
+            networkViewModel: network,
             totalRewards: totalRewards,
             status: status,
             yourStake: yourStake,
@@ -162,8 +171,11 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             locale: locale
         ).value?.amount
 
+        let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
+            .cached(value: networkViewModel) : .loaded(value: networkViewModel)
+
         return .init(
-            networkViewModel: networkViewModel,
+            networkViewModel: network,
             estimatedEarnings: estimatedEarnings,
             balance: balance
         )
@@ -187,13 +199,47 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             )
         }
 
-        let isSyncing = model.active.isEmpty && model.inactive.isEmpty && model.more.isEmpty
+        let isLoading = model.isEmpty
 
         return .init(
             active: activeViewModels,
             inactive: inactiveViewModels,
             hasMoreOptions: true,
-            isSyncing: isSyncing
+            isLoading: isLoading,
+            isSyncing: model.all.contains { $0.isOffchainSync }
+        )
+    }
+
+    func createUpdateViewModel(
+        from model: StakingDashboardModel,
+        syncChange: Set<Multistaking.ChainAssetOption>,
+        locale: Locale
+    ) -> StakingDashboardUpdateViewModel {
+        let activeViewModels: [(Int, StakingDashboardEnabledViewModel)] = model.active.enumerated().compactMap { item in
+            guard syncChange.contains(item.1.stakingOption) else {
+                return nil
+            }
+
+            let viewModel = createActiveStakingViewModel(for: item.1, locale: locale)
+
+            return (item.0, viewModel)
+        }
+
+        let inactiveViewModels: [(Int, StakingDashboardDisabledViewModel)] = model.inactive
+            .enumerated().compactMap { item in
+                guard syncChange.contains(item.1.stakingOption) else {
+                    return nil
+                }
+
+                let viewModel = createInactiveStakingViewModel(for: item.1, locale: locale)
+
+                return (item.0, viewModel)
+            }
+
+        return .init(
+            active: activeViewModels,
+            inactive: inactiveViewModels,
+            isSyncing: model.all.contains { $0.isOffchainSync }
         )
     }
 }

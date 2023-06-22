@@ -21,7 +21,7 @@ class BaseSyncService {
     let retryStrategy: ReconnectionStrategyProtocol
     let logger: LoggerProtocol?
 
-    private(set) var retryAttempt: Int = 0
+    var retryAttempt: Int = 0
 
     var isSyncing: Bool = false
     var isActive: Bool = false

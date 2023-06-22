@@ -152,9 +152,9 @@ final class StakingDashboardInteractor {
 
 extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
     func setup() {
-        modelBuilder = StakingDashboardBuilder { [weak self] model in
-            self?.presenter?.didReceive(model: model)
-            self?.stateObserver.state = model
+        modelBuilder = StakingDashboardBuilder { [weak self] result in
+            self?.presenter?.didReceive(result: result)
+            self?.stateObserver.state = result.model
         }
 
         provideWallet()
@@ -176,6 +176,10 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
     func retryDashboardSubscription() {
         resetDashboardItemsSubscription()
+    }
+
+    func refresh() {
+        syncService.refreshOffchain()
     }
 }
 

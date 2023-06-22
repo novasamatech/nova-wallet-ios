@@ -21,4 +21,9 @@ protocol StakingMoreOptionsInteractorOutputProtocol: AnyObject {
 
 protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {
     func showBrowser(from view: ControllerBackedProtocol?, for dApp: DApp)
+
+    func showStakingDetails(
+        from view: StakingMoreOptionsViewProtocol?,
+        option: Multistaking.ChainAssetOption
+    )
 }

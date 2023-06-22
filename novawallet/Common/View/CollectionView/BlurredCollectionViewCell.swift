@@ -37,3 +37,9 @@ class BlurredCollectionViewCell<TContentView>: UICollectionViewCell where TConte
         }
     }
 }
+
+extension BlurredCollectionViewCell: LoadingUpdatibleView where TContentView: LoadingUpdatibleView {
+    func updateLoadingAnimationIfActive() {
+        view.view.updateLoadingAnimationIfActive()
+    }
+}
