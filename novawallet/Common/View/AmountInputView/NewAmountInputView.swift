@@ -1,6 +1,5 @@
 import UIKit
 import SoraUI
-import CommonWallet
 
 class NewAmountInputView: BackgroundedContentControl {
     let priceLabel: UILabel = {

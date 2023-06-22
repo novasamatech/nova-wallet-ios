@@ -3,7 +3,6 @@ import RobinHood
 import SubstrateSdk
 import SoraFoundation
 import BigInt
-import CommonWallet
 
 final class AssetListPresenter: AssetListBasePresenter {
     static let viewUpdatePeriod: TimeInterval = 1.0
@@ -605,9 +604,9 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceiveWalletConnect(error: WalletConnectSessionsError) {
         switch error {
-        case let .connectionFailed:
+        case .connectionFailed:
             wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
-        case let .sessionsFetchFailed:
+        case .sessionsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryFetchWalletConnectSessionsCount()
             }

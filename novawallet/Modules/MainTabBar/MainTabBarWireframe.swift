@@ -1,5 +1,4 @@
-import Foundation
-import CommonWallet
+import UIKit
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAccountImport(on view: MainTabBarViewProtocol?) {

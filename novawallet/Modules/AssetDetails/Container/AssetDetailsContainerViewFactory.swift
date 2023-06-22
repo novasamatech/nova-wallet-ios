@@ -7,7 +7,9 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
                 chain: chain,
                 asset: asset
             ),
-            let historyView = TransactionHistoryViewFactory.createView(chainAsset: .init(chain: chain, asset: asset)) else {
+            let historyView = TransactionHistoryViewFactory.createView(
+                chainAsset: .init(chain: chain, asset: asset)
+            ) else {
             return nil
         }
         let view = AssetDetailsContainerViewController()

@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 
 final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframeProtocol {
     let xcmTransfers: XcmTransfers

@@ -1,6 +1,6 @@
 import Foundation
 @testable import novawallet
-import CommonWallet
+
 
 enum AssetTransactionGenerator {
     static func generateExtrinsic(

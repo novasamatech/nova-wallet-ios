@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 
 final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
     func showSend(

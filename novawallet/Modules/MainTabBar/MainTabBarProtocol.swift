@@ -1,5 +1,4 @@
 import UIKit
-import CommonWallet
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol {
     func didReplaceView(for newView: UIViewController, for index: Int)

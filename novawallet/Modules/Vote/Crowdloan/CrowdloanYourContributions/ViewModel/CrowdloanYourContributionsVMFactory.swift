@@ -46,19 +46,20 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         }
 
         let crowdloansCount = input.crowdloans.count
-        let externalIntervals: [ReturnInIntervalsViewModel] = (externalContributions ?? []).enumerated().compactMap { index, contribution in
-            guard let crowdloanInfo = crowdloansDict[contribution.paraId] else {
-                return nil
+        let externalIntervals: [ReturnInIntervalsViewModel] = (externalContributions ?? []).enumerated()
+            .compactMap { index, contribution in
+                guard let crowdloanInfo = crowdloansDict[contribution.paraId] else {
+                    return nil
+                }
+
+                let interval = chainDateCalculator.intervalTillPeriod(
+                    crowdloanInfo.lastPeriod + 1,
+                    metadata: metadata,
+                    calendar: calendar
+                )?.duration
+
+                return .init(index: index + crowdloansCount, interval: interval ?? 0)
             }
-
-            let interval = chainDateCalculator.intervalTillPeriod(
-                crowdloanInfo.lastPeriod + 1,
-                metadata: metadata,
-                calendar: calendar
-            )?.duration
-
-            return .init(index: index + crowdloansCount, interval: interval ?? 0)
-        }
 
         return (onChainIntervals + externalIntervals)
     }

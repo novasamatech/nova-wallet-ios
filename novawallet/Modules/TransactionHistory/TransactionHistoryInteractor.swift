@@ -1,7 +1,6 @@
 import UIKit
 import SoraUI
 import RobinHood
-import CommonWallet
 
 final class TransactionHistoryInteractor {
     weak var presenter: TransactionHistoryInteractorOutputProtocol?

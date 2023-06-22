@@ -1,7 +1,6 @@
 import UIKit
 import SoraFoundation
 import SoraUI
-import CommonWallet
 
 struct ModalInfoFactory {
     static let rowHeight: CGFloat = 50.0

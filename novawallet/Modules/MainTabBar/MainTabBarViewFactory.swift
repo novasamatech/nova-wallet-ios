@@ -1,7 +1,6 @@
 import UIKit
 import SoraFoundation
 import SoraKeystore
-import CommonWallet
 
 final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static let walletIndex: Int = 0

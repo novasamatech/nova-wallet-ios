@@ -1,6 +1,5 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
 
 final class PurchaseViewFactory: PurchaseViewFactoryProtocol {
     static func createView(

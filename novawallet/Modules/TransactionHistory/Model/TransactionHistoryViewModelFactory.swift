@@ -93,7 +93,7 @@ final class TransactionHistoryViewModelFactory {
             amount: balance.amount,
             amountDetails: amountDetails,
             type: txType,
-            status: data.status.walletValue,
+            status: data.status,
             imageViewModel: imageViewModel
         )
     }
@@ -174,7 +174,7 @@ final class TransactionHistoryViewModelFactory {
             amount: balance.amount,
             amountDetails: amountDetails,
             type: txType,
-            status: data.status.walletValue,
+            status: data.status,
             imageViewModel: imageViewModel
         )
     }
@@ -217,7 +217,7 @@ final class TransactionHistoryViewModelFactory {
             amount: balance.amount,
             amountDetails: amountDetails,
             type: txType,
-            status: data.status.walletValue,
+            status: data.status,
             imageViewModel: imageViewModel
         )
     }

@@ -1,6 +1,5 @@
 import Foundation
 import RobinHood
-import CommonWallet
 
 class EtherscanBaseOperationFactory {
     let baseUrl: URL

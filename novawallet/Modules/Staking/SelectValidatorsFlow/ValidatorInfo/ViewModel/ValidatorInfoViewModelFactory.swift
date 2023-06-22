@@ -1,7 +1,6 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
-import CommonWallet
 
 protocol ValidatorInfoViewModelFactoryProtocol {
     func createStakingAmountsViewModel(

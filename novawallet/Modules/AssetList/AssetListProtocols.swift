@@ -45,7 +45,8 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
 }
 
-protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable, CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
+protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
+    CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsSettings(from view: AssetListViewProtocol?)
     func showTokensManage(from view: AssetListViewProtocol?)

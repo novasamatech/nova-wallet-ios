@@ -48,7 +48,9 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.titleLabel.text = R.string.localizable.walletReceiveDescription(preferredLanguages: languages)
-        rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(preferredLanguages: languages)
+        rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(
+            preferredLanguages: languages
+        )
         update(token: token)
     }
 

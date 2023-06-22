@@ -1,5 +1,4 @@
-import Foundation
-import CommonWallet
+import UIKit
 
 final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     let chainAsset: ChainAsset

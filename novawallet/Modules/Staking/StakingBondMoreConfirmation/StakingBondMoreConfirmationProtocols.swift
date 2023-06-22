@@ -1,5 +1,5 @@
 import SoraFoundation
-import CommonWallet
+
 import BigInt
 
 protocol StakingBondMoreConfirmationViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {

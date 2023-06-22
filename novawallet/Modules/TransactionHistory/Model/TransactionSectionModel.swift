@@ -1,5 +1,4 @@
 import UIKit
-import CommonWallet
 
 struct TransactionSectionModel: Hashable {
     let title: String
@@ -31,6 +30,6 @@ struct TransactionItemViewModel: Hashable {
     let amount: String
     let amountDetails: String
     let type: TransactionType
-    let status: AssetTransactionStatus
+    let status: TransactionHistoryItem.Status
     let imageViewModel: ImageViewModelProtocol?
 }
