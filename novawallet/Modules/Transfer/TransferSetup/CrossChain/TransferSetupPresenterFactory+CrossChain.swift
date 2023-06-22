@@ -20,7 +20,10 @@ extension TransferSetupPresenterFactory {
             return nil
         }
 
-        let wireframe = CrossChainTransferSetupWireframe(xcmTransfers: xcmTransfers)
+        let wireframe = CrossChainTransferSetupWireframe(
+            xcmTransfers: xcmTransfers,
+            transferCompletion: transferCompletion
+        )
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)

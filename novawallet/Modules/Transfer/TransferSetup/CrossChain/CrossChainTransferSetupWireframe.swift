@@ -2,9 +2,11 @@ import Foundation
 
 final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframeProtocol {
     let xcmTransfers: XcmTransfers
+    let transferCompletion: TransferCompletionClosure?
 
-    init(xcmTransfers: XcmTransfers) {
+    init(xcmTransfers: XcmTransfers, transferCompletion: TransferCompletionClosure?) {
         self.xcmTransfers = xcmTransfers
+        self.transferCompletion = transferCompletion
     }
 
     func showConfirmation(
@@ -19,7 +21,8 @@ final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframePr
             destinationAsset: destinationChainAsset,
             xcmTransfers: xcmTransfers,
             recepient: recepient,
-            amount: sendingAmount
+            amount: sendingAmount,
+            transferCompletion: transferCompletion
         ) else {
             return
         }

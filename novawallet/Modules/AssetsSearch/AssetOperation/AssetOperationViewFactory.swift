@@ -4,7 +4,8 @@ import SoraFoundation
 enum AssetOperationViewFactory {
     static func createView(
         for initState: AssetListInitState,
-        operation: TokenOperation
+        operation: TokenOperation,
+        transferCompletion: TransferCompletionClosure?
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -32,7 +33,8 @@ enum AssetOperationViewFactory {
             for: operation,
             initState: initState,
             interactor: interactor,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            transferCompletion: transferCompletion
         ) else {
             return nil
         }
@@ -66,7 +68,8 @@ enum AssetOperationViewFactory {
         for operation: TokenOperation,
         initState: AssetListInitState,
         interactor: AssetsSearchInteractorInputProtocol,
-        viewModelFactory: AssetListAssetViewModelFactoryProtocol
+        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
+        transferCompletion: TransferCompletionClosure?
     ) -> AssetsSearchPresenter? {
         guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
             return nil
@@ -80,7 +83,7 @@ enum AssetOperationViewFactory {
                 interactor: interactor,
                 viewModelFactory: viewModelFactory,
                 localizationManager: localizationManager,
-                wireframe: SendAssetOperationWireframe()
+                wireframe: SendAssetOperationWireframe(transferCompletion: transferCompletion)
             )
         case .receive:
             return ReceiveAssetOperationPresenter(
