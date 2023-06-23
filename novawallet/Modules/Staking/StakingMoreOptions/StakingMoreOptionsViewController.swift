@@ -5,7 +5,7 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingMoreOptionsViewLayout
 
     let presenter: StakingMoreOptionsPresenterProtocol
-    private var dAppModels: [DAppView.Model] = []
+    private var dAppModels: [LoadableViewModelState<DAppView.Model>] = []
     private var moreOptionsModels: [StakingDashboardDisabledViewModel] = []
 
     init(
@@ -34,6 +34,12 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        rootView.collectionView.visibleCells.forEach(updateLoadingState)
+    }
+
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(StakingMoreOptionCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppCollectionViewCell.self)
@@ -50,10 +56,14 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
         title = R.string.localizable.multistakingMoreOptions(preferredLanguages: selectedLocale.rLanguages)
         rootView.collectionView.reloadData()
     }
+
+    private func updateLoadingState(for cell: UICollectionViewCell) {
+        (cell as? LoadingUpdatibleView)?.updateLoadingAnimationIfActive()
+    }
 }
 
 extension StakingMoreOptionsViewController: StakingMoreOptionsViewProtocol {
-    func didReceive(dAppModels: [DAppView.Model]) {
+    func didReceive(dAppModels: [LoadableViewModelState<DAppView.Model>]) {
         self.dAppModels = dAppModels
         rootView.collectionView.reloadData()
     }
@@ -84,7 +94,9 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
         switch StakingMoreOptionsSection(rawValue: indexPath.section) {
         case .dApps:
             let cell: DAppCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
-            cell.view.bind(viewModel: dAppModels[indexPath.row])
+            let cellModel = dAppModels[indexPath.row]
+            cell.bind(viewModel: cellModel)
+            cell.isUserInteractionEnabled = !cellModel.isLoading
             return cell
         case .options:
             let cell: StakingMoreOptionCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
@@ -110,10 +122,16 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
             return .init()
         }
     }
+
+    func collectionView(_: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt _: IndexPath) {
+        updateLoadingState(for: cell)
+    }
 }
 
 extension StakingMoreOptionsViewController: UICollectionViewDelegate {
-    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+
         switch StakingMoreOptionsSection(rawValue: indexPath.section) {
         case .dApps:
             presenter.selectDApp(at: indexPath.row)
