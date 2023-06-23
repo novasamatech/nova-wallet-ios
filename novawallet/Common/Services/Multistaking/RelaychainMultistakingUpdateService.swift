@@ -147,7 +147,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
         let validatorRequest = MapSubscriptionRequest(
             storagePath: .validatorPrefs,
-            localKey: Multistaking.RelaychainStateChange.Key.nomination.rawValue
+            localKey: Multistaking.RelaychainStateChange.Key.validatorPrefs.rawValue
         ) {
             BytesCodable(wrappedValue: stash)
         }
