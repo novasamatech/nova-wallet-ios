@@ -41,7 +41,7 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
         let stake = entity.stake.flatMap { BigUInt($0) }
         let totalRewards = entity.totalRewards.flatMap { BigUInt($0) }
         let maxApy = entity.maxApy as Decimal?
-        
+
         let startedAt = entity.startedAt?.int64Value
 
         return .init(

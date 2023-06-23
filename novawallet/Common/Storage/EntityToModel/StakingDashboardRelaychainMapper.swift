@@ -35,12 +35,12 @@ extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
 
         if case let .defined(optNomination) = model.stateChange.nomination {
             entity.startedAt = optNomination.map { NSNumber(value: Int64(bitPattern: UInt64($0.submittedIn))) }
-            
+
             if optNomination == nil {
                 entity.expectedOnchain = false
             }
         }
-        
+
         if case let .defined(activeEra) = model.stateChange.era {
             if let startedAt = entity.startedAt.map({ UInt32(bitPattern: Int32(truncating: $0)) }) {
                 entity.expectedOnchain = startedAt < activeEra.index
