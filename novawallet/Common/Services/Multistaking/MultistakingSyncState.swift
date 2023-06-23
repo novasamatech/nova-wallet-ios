@@ -6,7 +6,7 @@ struct MultistakingSyncState: Equatable {
 
     init(
         isOnchainSyncing: [Multistaking.Option: Bool] = [:],
-        isOffchainSyncing: Bool = false
+        isOffchainSyncing: Bool = true
     ) {
         self.isOnchainSyncing = isOnchainSyncing
         self.isOffchainSyncing = isOffchainSyncing

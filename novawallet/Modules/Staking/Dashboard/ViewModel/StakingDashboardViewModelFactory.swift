@@ -47,13 +47,13 @@ final class StakingDashboardViewModelFactory {
         from value: Decimal?,
         isSyncing: Bool,
         locale: Locale
-    ) -> LoadableViewModelState<String> {
+    ) -> LoadableViewModelState<String?> {
         guard let value = value else {
-            return .loading
+            return isSyncing ? .loading : .loaded(value: nil)
         }
 
         guard let valueString = estimatedEarningsFormatter.value(for: locale).stringFromDecimal(value) else {
-            return .loading
+            return isSyncing ? .loading : .loaded(value: nil)
         }
 
         return isSyncing ? .cached(value: valueString) : .loaded(value: valueString)

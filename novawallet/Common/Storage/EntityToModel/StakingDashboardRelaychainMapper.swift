@@ -12,52 +12,6 @@ final class StakingDashboardRelaychainMapper {
 
     typealias DataProviderModel = Multistaking.DashboardItemRelaychainPart
     typealias CoreDataEntity = CDStakingDashboardItem
-
-    private func move(
-        state: Multistaking.DashboardItem.State?,
-        ledgerState: UncertainStorage<StakingLedger?>
-    ) -> Multistaking.DashboardItem.State? {
-        guard case let .defined(optLedger) = ledgerState else {
-            return state
-        }
-
-        guard optLedger != nil else {
-            return nil
-        }
-
-        if state == nil {
-            return .inactive
-        } else {
-            return state
-        }
-    }
-
-    private func move(
-        state: Multistaking.DashboardItem.State?,
-        activeEraState: UncertainStorage<ActiveEraInfo>,
-        nominationState: UncertainStorage<Nomination?>
-    ) -> Multistaking.DashboardItem.State? {
-        guard
-            case let state = state,
-            case let .defined(activeEra) = activeEraState,
-            case let .defined(optNomination) = nominationState else {
-            return state
-        }
-
-        guard let nomination = optNomination else {
-            if state != nil {
-                return .inactive
-            } else {
-                return nil
-            }
-        }
-
-        if state == .inactive, activeEra.index <= nomination.submittedIn {
-            return .waiting
-        } else {
-            return state
-        }
-    }
 }
 
 extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
@@ -75,28 +29,8 @@ extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
 
         entity.stakingType = model.stakingOption.option.type.rawValue
 
-        if case let .defined(activeStake) = model.stateChange.ledger.map({ $0?.active }) {
-            entity.stake = activeStake.map { String($0) }
-        }
-
-        if case let .defined(hasTargets) = model.stateChange.nomination.map({ $0 != nil }) {
-            entity.hasTargets = hasTargets
-        }
-
-        var currentState = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }
-
-        currentState = move(
-            state: currentState,
-            ledgerState: model.stateChange.ledger
-        )
-
-        currentState = move(
-            state: currentState,
-            activeEraState: model.stateChange.era,
-            nominationState: model.stateChange.nomination
-        )
-
-        entity.state = currentState?.rawValue
+        entity.stake = model.state.ledger.map { String($0.active) }
+        entity.onchainState = Multistaking.DashboardItemOnchainState.from(relaychainState: model.state)?.rawValue
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {

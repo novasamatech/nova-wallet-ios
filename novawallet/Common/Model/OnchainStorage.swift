@@ -22,6 +22,15 @@ enum UncertainStorage<T> {
             return .undefined
         }
     }
+
+    func valueWhenDefined(else defaultValue: T) -> T {
+        switch self {
+        case let .defined(value):
+            return value
+        case .undefined:
+            return defaultValue
+        }
+    }
 }
 
 extension UncertainStorage where T: Decodable {

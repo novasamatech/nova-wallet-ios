@@ -154,7 +154,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
             return metadata.isStakeShouldBeActive(for: bond.amount)
         } ?? false
 
-        let stateChange = Multistaking.ParachainStateChange(
+        let state = Multistaking.ParachainState(
             stake: delegator?.staked,
             shouldHaveActiveCollator: shouldHaveActiveCollator
         )
@@ -166,7 +166,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
 
         let dashboardItem = Multistaking.DashboardItemParachainPart(
             stakingOption: stakingOption,
-            stateChange: stateChange
+            state: state
         )
 
         let operation = dashboardRepository.saveOperation({
