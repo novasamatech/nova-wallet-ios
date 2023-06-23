@@ -38,13 +38,15 @@ struct TransactionHistoryViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            phishingFilter: TransactionHistoryPhishingFilter(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
         let view = TransactionHistoryViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            supportsFilters: WalletHistoryFilter.hasSupport(for: chainAsset)
         )
 
         presenter.view = view

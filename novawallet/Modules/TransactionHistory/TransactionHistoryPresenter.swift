@@ -8,6 +8,7 @@ final class TransactionHistoryPresenter {
     let wireframe: TransactionHistoryWireframeProtocol
     let interactor: TransactionHistoryInteractorInputProtocol
     let viewModelFactory: TransactionHistoryViewModelFactoryProtocol
+    let phishingFilter: TransactionHistoryPhishingFilterProtocol
     let logger: LoggerProtocol?
     let address: AccountAddress
 
@@ -20,12 +21,14 @@ final class TransactionHistoryPresenter {
         interactor: TransactionHistoryInteractorInputProtocol,
         wireframe: TransactionHistoryWireframeProtocol,
         viewModelFactory: TransactionHistoryViewModelFactoryProtocol,
+        phishingFilter: TransactionHistoryPhishingFilterProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
         self.address = address
         self.interactor = interactor
         self.wireframe = wireframe
+        self.phishingFilter = phishingFilter
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -36,8 +39,10 @@ final class TransactionHistoryPresenter {
             return
         }
 
+        let models = Array(items.values).filter { !phishingFilter.isPhishing(transaction: $0) }
+
         let viewModel = viewModelFactory.createGroupModel(
-            Array(items.values),
+            models,
             priceCalculator: priceCalculator,
             address: address,
             locale: selectedLocale

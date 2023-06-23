@@ -43,6 +43,7 @@
 		0CA307BC2F570941CD22C9AA /* ExportMnemonicConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF4688AF0658F8BB7A90C2BE /* ExportMnemonicConfirmViewFactory.swift */; };
 		0CB064682A403ADE00BFBA3F /* AmountDecimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB064672A403ADE00BFBA3F /* AmountDecimal.swift */; };
 		0CB0646A2A40572C00BFBA3F /* AmountInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB064692A40572C00BFBA3F /* AmountInputViewModel.swift */; };
+		0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */; };
 		0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F1EEBF48485F02BF690A4 /* ParaStkStakeSetupViewController.swift */; };
 		0CE5BF4A6BC02563113DFDB8 /* GovernanceDelegateInfoInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E7AAE54BF5E6A35BDD29B /* GovernanceDelegateInfoInteractor.swift */; };
 		0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD8B98AB03AAF06AA891695 /* TransferConfirmViewLayout.swift */; };
@@ -3597,6 +3598,7 @@
 		0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetProtocols.swift; sourceTree = "<group>"; };
 		0CB064672A403ADE00BFBA3F /* AmountDecimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountDecimal.swift; sourceTree = "<group>"; };
 		0CB064692A40572C00BFBA3F /* AmountInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputViewModel.swift; sourceTree = "<group>"; };
+		0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryPhishingFilter.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0D3FE2CE7F9F2836755DBA63 /* GovernanceUnlockConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmProtocols.swift; sourceTree = "<group>"; };
 		0D6E67AD564867E121601F18 /* WalletsListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletsListPresenter.swift; sourceTree = "<group>"; };
@@ -15281,6 +15283,7 @@
 				88AC5AD92948A8CC0056DD40 /* TransactionSectionModel.swift */,
 				88AC5ADD2948CB540056DD40 /* TransactionHistoryViewModelFactory.swift */,
 				88FB7DD62951B1AF00784E08 /* WalletHistoryFilter+CallCodingPath.swift */,
+				0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -20367,6 +20370,7 @@
 				7C0135CA49EF6B535030643E /* ParaStkYieldBoostSetupPresenter.swift in Sources */,
 				84D184EA2A04D9980060C1BD /* StackStatusCell.swift in Sources */,
 				21B297239CC294307EF20B58 /* ParaStkYieldBoostSetupInteractor.swift in Sources */,
+				0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */,
 				77A6F5C62A2F17BE004AFD1A /* SendAssetOperationPresenter.swift in Sources */,
 				AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */,
 				8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */,

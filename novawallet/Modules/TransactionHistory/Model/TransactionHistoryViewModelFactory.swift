@@ -202,8 +202,8 @@ final class TransactionHistoryViewModelFactory {
 
         let iconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
-        let peerFirstName = data.callPath.moduleName.displayCall
-        let peerLastName = data.callPath.callName.displayCall
+        let peerFirstName = data.callPath.callName.displayCall
+        let peerLastName = data.callPath.moduleName.displayCall
         let extrinsicTitleWithSubtitle = data.callPath.isEvmNativeTransaction ?
             createEvmContractCallTitleWithSubtitle(data: data, locale: locale) :
             .init(title: peerFirstName, subtitle: peerLastName)
