@@ -3,7 +3,6 @@ import SubstrateSdk
 
 extension Multistaking {
     struct RelaychainAccountsChange: BatchStorageSubscriptionResult {
-        // swiftlint:disable:next nesting
         enum Key: String {
             case controller
             case stash
@@ -31,17 +30,39 @@ extension Multistaking {
         }
     }
 
+    struct RelaychainState {
+        let era: ActiveEraInfo
+        let ledger: StakingLedger?
+        let nomination: Nomination?
+        let validatorPrefs: ValidatorPrefs?
+
+        func applying(change: RelaychainStateChange) -> RelaychainState {
+            let newEra: ActiveEraInfo = change.era.valueWhenDefined(else: era)
+            let newLedger = change.ledger.valueWhenDefined(else: ledger)
+            let newNomination = change.nomination.valueWhenDefined(else: nomination)
+            let newValidatorPrefs = change.validatorPrefs.valueWhenDefined(else: validatorPrefs)
+
+            return .init(
+                era: newEra,
+                ledger: newLedger,
+                nomination: newNomination,
+                validatorPrefs: newValidatorPrefs
+            )
+        }
+    }
+
     struct RelaychainStateChange: BatchStorageSubscriptionResult {
-        // swiftlint:disable:next nesting
         enum Key: String {
             case era
             case ledger
             case nomination
+            case validatorPrefs
         }
 
         let era: UncertainStorage<ActiveEraInfo>
         let ledger: UncertainStorage<StakingLedger?>
         let nomination: UncertainStorage<Nomination?>
+        let validatorPrefs: UncertainStorage<ValidatorPrefs?>
 
         init(
             values: [BatchStorageSubscriptionResultValue],
@@ -57,6 +78,12 @@ extension Multistaking {
             nomination = try UncertainStorage(
                 values: values,
                 localKey: Key.nomination.rawValue,
+                context: context
+            )
+
+            validatorPrefs = try UncertainStorage(
+                values: values,
+                localKey: Key.validatorPrefs.rawValue,
                 context: context
             )
 

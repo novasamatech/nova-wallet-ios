@@ -12,22 +12,6 @@ final class StakingDashboardParachainMapper {
 
     typealias DataProviderModel = Multistaking.DashboardItemParachainPart
     typealias CoreDataEntity = CDStakingDashboardItem
-
-    private func move(
-        state: Multistaking.DashboardItem.State?,
-        onchainState: Multistaking.ParachainStateChange
-    ) -> Multistaking.DashboardItem.State? {
-        guard onchainState.stake != nil else {
-            return nil
-        }
-
-        switch state {
-        case .active:
-            return state
-        case .inactive, .waiting, .none:
-            return onchainState.shouldHaveActiveCollator ? .waiting : .inactive
-        }
-    }
 }
 
 extension StakingDashboardParachainMapper: CoreDataMapperProtocol {
@@ -45,9 +29,8 @@ extension StakingDashboardParachainMapper: CoreDataMapperProtocol {
 
         entity.stakingType = model.stakingOption.option.type.rawValue
 
-        entity.stake = model.stateChange.stake.map { String($0) }
-        entity.startedAt = model.stateChange.hasSelectedCollators ? 1 : nil
-        entity.expectedOnchain = model.stateChange.shouldHaveActiveCollator
+        entity.stake = model.state.stake.map { String($0) }
+        entity.onchainState = Multistaking.DashboardItemOnchainState.from(parachainState: model.state)?.rawValue
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {

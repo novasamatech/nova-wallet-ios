@@ -3,9 +3,8 @@ import SubstrateSdk
 import BigInt
 
 extension Multistaking {
-    struct ParachainStateChange {
+    struct ParachainState {
         let stake: BigUInt?
-        let hasSelectedCollators: Bool
         let shouldHaveActiveCollator: Bool
     }
 }

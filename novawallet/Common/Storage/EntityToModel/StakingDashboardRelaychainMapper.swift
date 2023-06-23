@@ -29,25 +29,8 @@ extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
 
         entity.stakingType = model.stakingOption.option.type.rawValue
 
-        if case let .defined(activeStake) = model.stateChange.ledger.map({ $0?.active }) {
-            entity.stake = activeStake.map { String($0) }
-        }
-
-        if case let .defined(optNomination) = model.stateChange.nomination {
-            entity.startedAt = optNomination.map { NSNumber(value: Int64(bitPattern: UInt64($0.submittedIn))) }
-
-            if optNomination == nil {
-                entity.expectedOnchain = false
-            }
-        }
-
-        if case let .defined(activeEra) = model.stateChange.era {
-            if let startedAt = entity.startedAt.map({ UInt32(bitPattern: Int32(truncating: $0)) }) {
-                entity.expectedOnchain = startedAt < activeEra.index
-            } else {
-                entity.expectedOnchain = false
-            }
-        }
+        entity.stake = model.state.ledger.map { String($0.active) }
+        entity.onchainState = Multistaking.DashboardItemOnchainState.from(relaychainState: model.state)?.rawValue
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {
