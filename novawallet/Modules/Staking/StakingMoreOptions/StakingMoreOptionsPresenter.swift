@@ -15,12 +15,14 @@ final class StakingMoreOptionsPresenter {
         interactor: StakingMoreOptionsInteractorInputProtocol,
         viewModelFactory: StakingMoreOptionsViewModelFactoryProtocol,
         wireframe: StakingMoreOptionsWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
         self.wireframe = wireframe
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 
     private func provideDAppViewModel(dApps: [DApp]) {
