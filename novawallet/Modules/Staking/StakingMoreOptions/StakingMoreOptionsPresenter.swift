@@ -38,6 +38,7 @@ final class StakingMoreOptionsPresenter {
 
 extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
     func setup() {
+        view?.didReceive(dAppModels: viewModelFactory.createLoadingDAppModel())
         interactor.setup()
     }
 
