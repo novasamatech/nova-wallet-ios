@@ -12,52 +12,6 @@ final class StakingDashboardRelaychainMapper {
 
     typealias DataProviderModel = Multistaking.DashboardItemRelaychainPart
     typealias CoreDataEntity = CDStakingDashboardItem
-
-    private func move(
-        state: Multistaking.DashboardItem.State?,
-        ledgerState: UncertainStorage<StakingLedger?>
-    ) -> Multistaking.DashboardItem.State? {
-        guard case let .defined(optLedger) = ledgerState else {
-            return state
-        }
-
-        guard optLedger != nil else {
-            return nil
-        }
-
-        if state == nil {
-            return .inactive
-        } else {
-            return state
-        }
-    }
-
-    private func move(
-        state: Multistaking.DashboardItem.State?,
-        activeEraState: UncertainStorage<ActiveEraInfo>,
-        nominationState: UncertainStorage<Nomination?>
-    ) -> Multistaking.DashboardItem.State? {
-        guard
-            case let state = state,
-            case let .defined(activeEra) = activeEraState,
-            case let .defined(optNomination) = nominationState else {
-            return state
-        }
-
-        guard let nomination = optNomination else {
-            if state != nil {
-                return .inactive
-            } else {
-                return nil
-            }
-        }
-
-        if state == .inactive, activeEra.index <= nomination.submittedIn {
-            return .waiting
-        } else {
-            return state
-        }
-    }
 }
 
 extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
@@ -79,8 +33,20 @@ extension StakingDashboardRelaychainMapper: CoreDataMapperProtocol {
             entity.stake = activeStake.map { String($0) }
         }
 
-        if case let .defined(hasTargets) = model.stateChange.nomination.map({ $0 != nil }) {
-            entity.hasTargets = hasTargets
+        if case let .defined(optNomination) = model.stateChange.nomination {
+            entity.startedAt = optNomination.map { Int64(bitPattern: UInt64($0.submittedIn)) }
+            
+            if optNomination == nil {
+                entity.expectedOnchain = false
+            }
+        }
+        
+        if case let .defined(activeEra) = model.stateChange.era {
+            if let startedAt = entity.startedAt.map({ UInt32(bitPattern: Int32($0)) }) {
+                entity.expectedOnchain = startedAt < activeEra.index
+            } else {
+                entity.expectedOnchain = false
+            }
         }
 
         var currentState = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }

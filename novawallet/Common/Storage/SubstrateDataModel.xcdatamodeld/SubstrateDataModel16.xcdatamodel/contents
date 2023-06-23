@@ -153,12 +153,13 @@
     <entity name="CDStakingDashboardItem" representedClassName="CDStakingDashboardItem" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
-        <attribute name="hasTargets" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="expectedOnchain" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hasAssignedStake" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
         <attribute name="maxApy" optional="YES" attributeType="Decimal"/>
         <attribute name="stake" optional="YES" attributeType="String"/>
         <attribute name="stakingType" attributeType="String"/>
-        <attribute name="state" optional="YES" attributeType="String"/>
+        <attribute name="startedAt" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
         <attribute name="totalRewards" optional="YES" attributeType="String"/>
         <attribute name="walletId" attributeType="String"/>
     </entity>

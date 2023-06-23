@@ -57,10 +57,31 @@ extension Multistaking {
         }
 
         let stakingOption: OptionWithWallet
-        let state: State?
+        let hasAssignedStake: Bool
+        let expectedOnchain: Bool
+        let startedAt: Int64?
         let stake: BigUInt?
         let totalRewards: BigUInt?
         let maxApy: Decimal?
+
+        var state: State? {
+            guard stake != nil else {
+                // no stake
+                return nil
+            }
+
+            if startedAt == nil {
+                // only bonded but no nominations
+                return .inactive
+            }
+
+            if hasAssignedStake {
+                // have assigned collator/validator
+                return .active
+            }
+
+            return expectedOnchain ? .inactive : .waiting
+        }
     }
 
     struct ResolvedAccount: Equatable {

@@ -156,6 +156,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
 
         let stateChange = Multistaking.ParachainStateChange(
             stake: delegator?.staked,
+            hasSelectedCollators: !(delegator?.delegations ?? []).isEmpty
             shouldHaveActiveCollator: shouldHaveActiveCollator
         )
 

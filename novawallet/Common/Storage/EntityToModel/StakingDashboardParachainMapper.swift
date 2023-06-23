@@ -46,16 +46,8 @@ extension StakingDashboardParachainMapper: CoreDataMapperProtocol {
         entity.stakingType = model.stakingOption.option.type.rawValue
 
         entity.stake = model.stateChange.stake.map { String($0) }
-        entity.hasTargets = model.stateChange.shouldHaveActiveCollator
-
-        var currentState = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }
-
-        currentState = move(
-            state: currentState,
-            onchainState: model.stateChange
-        )
-
-        entity.state = currentState?.rawValue
+        entity.startedAt = model.stateChange.hasSelectedCollators ? 1 : nil
+        entity.expectedOnchain = model.stateChange.shouldHaveActiveCollator
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {

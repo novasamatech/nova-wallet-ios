@@ -12,14 +12,6 @@ final class StakingDashboardOffchainMapper {
 
     typealias DataProviderModel = Multistaking.DashboardItemOffchainPart
     typealias CoreDataEntity = CDStakingDashboardItem
-
-    private func move(
-        state: Multistaking.DashboardItem.State?,
-        hasAssignedStake: Bool,
-        hasTargets: Bool
-    ) -> Multistaking.DashboardItem.State? {
-        hasAssignedStake && hasTargets ? .active : state
-    }
 }
 
 extension StakingDashboardOffchainMapper: CoreDataMapperProtocol {
@@ -37,15 +29,7 @@ extension StakingDashboardOffchainMapper: CoreDataMapperProtocol {
 
         entity.stakingType = model.stakingOption.option.type.rawValue
 
-        var currentState = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }
-
-        currentState = move(
-            state: currentState,
-            hasAssignedStake: model.hasAssignedStake,
-            hasTargets: entity.hasTargets
-        )
-
-        entity.state = currentState?.rawValue
+        entity.hasAssignedStake = model.hasAssignedStake
 
         entity.maxApy = model.maxApy as NSDecimalNumber
         entity.totalRewards = model.totalRewards.map { String($0) }
