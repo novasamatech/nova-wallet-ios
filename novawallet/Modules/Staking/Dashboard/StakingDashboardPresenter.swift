@@ -121,7 +121,7 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     }
 
     func didReceive(error: StakingDashboardInteractorError) {
-        logger.debug("Did receive error: \(error)")
+        logger.error("Did receive error: \(error)")
 
         switch error {
         case .balanceFetchFailed:
