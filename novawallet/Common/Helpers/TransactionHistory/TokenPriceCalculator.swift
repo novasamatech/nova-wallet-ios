@@ -40,7 +40,8 @@ extension TokenPriceCalculator: TokenPriceCalculatorProtocol {
         let searchRange = findSearchRange(for: time)
 
         // this is the index of the element that is not less then time
-        let foundIndex = history.items[searchRange].partitioningIndex { time <= $0.startedAt }
+        let result = history.items[searchRange].partitioningIndex { time <= $0.startedAt }
+        let foundIndex = min(result, history.items.count - 1)
 
         if history.items[foundIndex].startedAt > time {
             let prevIndex = max(foundIndex - 1, 0)
