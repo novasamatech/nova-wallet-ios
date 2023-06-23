@@ -110,7 +110,12 @@ final class StakingDashboardBuilder {
         )
 
         currentModel = model
-        let result = StakingDashboardBuilderResult(model: model, changeKind: .reload)
+
+        let result = StakingDashboardBuilderResult(
+            walletId: wallet?.metaId,
+            model: model,
+            changeKind: .reload
+        )
 
         callbackQueue.async { [weak self] in
             self?.resultClosure(result)
@@ -166,6 +171,7 @@ final class StakingDashboardBuilder {
 
         self.currentModel = newModel
         let result = StakingDashboardBuilderResult(
+            walletId: wallet?.metaId,
             model: newModel,
             changeKind: .sync(syncChange)
         )
