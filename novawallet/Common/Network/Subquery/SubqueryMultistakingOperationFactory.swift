@@ -65,13 +65,15 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
                 }
             }
 
-            accumulatedRewards(
+            rewards(
                 \(accountFilter)
             ) {
-                nodes {
-                    networkId
-                    stakingType
-                    amount
+                groupedAggregates(groupBy: [NETWORK_ID,  STAKING_TYPE]) {
+                    sum {
+                        amount
+                    }
+
+                    keys
                 }
             }
            }
@@ -93,8 +95,12 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
 
                 let rewards: [SubqueryMultistaking.NetworkStaking: BigUInt]
 
-                rewards = result.accumulatedRewards.nodes.reduce(into: [:]) {
-                    $0[.init(networkId: $1.networkId, stakingType: $1.stakingType)] = $1.amount
+                rewards = result.rewards.groupedAggregates.reduce(into: [:]) {
+                    guard let networkId = $1.keys.first, let stakingType = $1.keys.last else {
+                        return
+                    }
+
+                    $0[.init(networkId: networkId, stakingType: stakingType)] = $1.sum.amount
                 }
 
                 let stakings = result.stakingApies.nodes.map { node in
