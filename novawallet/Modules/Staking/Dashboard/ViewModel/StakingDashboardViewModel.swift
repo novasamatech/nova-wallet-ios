@@ -27,12 +27,12 @@ struct StakingDashboardEnabledViewModel {
     let totalRewards: LoadableViewModelState<BalanceViewModelProtocol>
     let status: LoadableViewModelState<Status>
     let yourStake: LoadableViewModelState<BalanceViewModelProtocol>
-    let estimatedEarnings: LoadableViewModelState<String>
+    let estimatedEarnings: LoadableViewModelState<String?>
 }
 
 struct StakingDashboardDisabledViewModel {
     let networkViewModel: LoadableViewModelState<NetworkViewModel>
-    let estimatedEarnings: LoadableViewModelState<String>
+    let estimatedEarnings: LoadableViewModelState<String?>
     let balance: String?
 }
 

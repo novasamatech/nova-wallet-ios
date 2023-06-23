@@ -68,9 +68,11 @@ final class StakingDashboardActiveDetailsView: UIView {
     func bind(
         stakingStatus: LoadableViewModelState<StakingDashboardEnabledViewModel.Status>,
         stake: LoadableViewModelState<BalanceViewModelProtocol>,
-        estimatedEarnings: LoadableViewModelState<String>,
+        estimatedEarnings: LoadableViewModelState<String?>,
         locale: Locale
     ) {
+        stopLoadingIfNeeded()
+
         var newLoadingState: LoadingState = .none
 
         statusView.stopLoadingIfNeeded()
@@ -91,15 +93,14 @@ final class StakingDashboardActiveDetailsView: UIView {
             newLoadingState.formUnion(.stake)
         }
 
-        estimatedEarningsLabel.bind(viewModel: estimatedEarnings)
+        estimatedEarningsLabel.bind(viewModel: estimatedEarnings.map(with: { $0 ?? "" }))
 
         if estimatedEarnings.isLoading {
             newLoadingState.formUnion(.earnings)
         }
 
-        stopLoadingIfNeeded()
-
-        setupStaticLocalization(for: locale)
+        let hasEstimatedRewards = estimatedEarnings.isLoading || estimatedEarnings.satisfies { $0 != nil }
+        setupStaticLocalization(for: locale, hasEstimatedRewards: hasEstimatedRewards)
 
         loadingState = newLoadingState
 
@@ -128,19 +129,24 @@ final class StakingDashboardActiveDetailsView: UIView {
         estimatedEarningsLabel.updateShimmeringIfActive()
     }
 
-    func setupStaticLocalization(for locale: Locale) {
+    private func setupStaticLocalization(for locale: Locale, hasEstimatedRewards: Bool) {
         internalStakeView.valueTop.text = R.string.localizable.stakingYourStake(
             preferredLanguages: locale.rLanguages
         )
 
-        estimatedEarningsView.valueTop.text = R.string.localizable.stakingEstimatedEarnings(
-            preferredLanguages: locale.rLanguages
-        )
+        if hasEstimatedRewards {
+            estimatedEarningsView.valueTop.text = R.string.localizable.stakingEstimatedEarnings(
+                preferredLanguages: locale.rLanguages
+            )
 
-        estimatedEarningsView.valueBottom.sView.text = R.string.localizable.parachainStakingRewardsFormat(
-            "",
-            preferredLanguages: locale.rLanguages
-        )
+            estimatedEarningsView.valueBottom.sView.text = R.string.localizable.parachainStakingRewardsFormat(
+                "",
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            estimatedEarningsView.valueTop.text = ""
+            estimatedEarningsView.valueBottom.sView.text = ""
+        }
     }
 
     private func setupLayout() {

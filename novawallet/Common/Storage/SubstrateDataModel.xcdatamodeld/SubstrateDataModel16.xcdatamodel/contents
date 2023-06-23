@@ -155,7 +155,7 @@
         <attribute name="chainId" attributeType="String"/>
         <attribute name="hasTargets" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="maxApy" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="maxApy" optional="YES" attributeType="Decimal"/>
         <attribute name="stake" optional="YES" attributeType="String"/>
         <attribute name="stakingType" attributeType="String"/>
         <attribute name="state" optional="YES" attributeType="String"/>
