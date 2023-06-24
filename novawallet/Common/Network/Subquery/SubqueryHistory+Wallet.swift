@@ -71,7 +71,9 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         chainAssetId: ChainAssetId,
         chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
-        .init(
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: .substrate)
+        return .init(
+            remoteIdentifier: remoteIdentifier,
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
@@ -99,7 +101,11 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             era: reward.era,
             eventId: identifier
         )
+
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: .substrate)
+
         return .init(
+            remoteIdentifier: remoteIdentifier,
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
@@ -122,7 +128,10 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         chainAssetId: ChainAssetId,
         chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
-        .init(
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: .substrate)
+
+        return .init(
+            remoteIdentifier: remoteIdentifier,
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,

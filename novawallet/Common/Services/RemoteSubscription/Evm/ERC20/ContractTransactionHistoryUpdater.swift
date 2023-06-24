@@ -70,9 +70,12 @@ final class ContractTransactionHistoryUpdater {
             logger.debug("Tx receipt \(transactionHashString): \(String(describing: receipt))")
 
             let fee = receipt?.fee.map { String($0) }
+            
+            let source: TransactionHistoryItemSource = .evmAsset
 
             let historyItem = TransactionHistoryItem(
-                source: .evmAsset,
+                identifier: TransactionHistoryItem.createIdentifier(from: transactionHashString, source: source),
+                source: source,
                 chainId: assetContract.chainAssetId.chainId,
                 assetId: assetContract.chainAssetId.assetId,
                 sender: transferEvent.sender,

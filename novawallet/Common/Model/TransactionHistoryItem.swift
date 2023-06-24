@@ -32,6 +32,7 @@ struct TransactionHistoryItem: Codable {
         case failed
     }
 
+    let identifier: String
     let source: TransactionHistoryItemSource
     let chainId: String
     let assetId: UInt32
@@ -49,18 +50,12 @@ struct TransactionHistoryItem: Codable {
 }
 
 extension TransactionHistoryItem: Identifiable {
-    var identifier: String { Self.createIdentifier(from: txHash, source: source) }
-
     static func createIdentifier(from txHash: String, source: TransactionHistoryItemSource) -> String {
         txHash + " - " + String(source.rawValue)
     }
 }
 
 extension TransactionHistoryItem {
-    var walletAssetId: String {
-        ChainAssetId(chainId: chainId, assetId: assetId).walletId
-    }
-
     var amountInPlankIntOrZero: BigUInt {
         amountInPlank.map { BigUInt($0) ?? 0 } ?? 0
     }
