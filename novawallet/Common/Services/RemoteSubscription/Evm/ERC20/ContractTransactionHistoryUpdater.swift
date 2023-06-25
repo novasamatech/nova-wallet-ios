@@ -70,7 +70,7 @@ final class ContractTransactionHistoryUpdater {
             logger.debug("Tx receipt \(transactionHashString): \(String(describing: receipt))")
 
             let fee = receipt?.fee.map { String($0) }
-            
+
             let source: TransactionHistoryItemSource = .evmAsset
 
             let historyItem = TransactionHistoryItem(

@@ -10,6 +10,7 @@ enum TransactionHistoryItemSource: Int16, Codable {
 
 struct TransactionHistoryItem: Codable {
     enum CodingKeys: String, CodingKey {
+        case identifier
         case source
         case chainId
         case assetId
@@ -62,6 +63,10 @@ extension TransactionHistoryItem {
 
     var feeInPlankIntOrZero: BigUInt {
         fee.map { BigUInt($0) ?? 0 } ?? 0
+    }
+
+    var isIdentifierMatchesLocal: Bool {
+        identifier == TransactionHistoryItem.createIdentifier(from: txHash, source: source)
     }
 }
 

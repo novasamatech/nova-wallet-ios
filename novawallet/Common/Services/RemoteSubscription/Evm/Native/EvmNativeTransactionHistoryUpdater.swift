@@ -55,8 +55,12 @@ final class EvmNativeTransactionHistoryUpdater {
             let sender = try? transaction.sender.toAddress(using: .ethereum)
             let receiver = try? transaction.recepient?.toAddress(using: .ethereum)
 
+            let source: TransactionHistoryItemSource = .evmNative
+            let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
             let historyItem = TransactionHistoryItem(
-                source: .evmNative,
+                identifier: identifier,
+                source: source,
                 chainId: chainAssetId.chainId,
                 assetId: chainAssetId.assetId,
                 sender: sender ?? "",

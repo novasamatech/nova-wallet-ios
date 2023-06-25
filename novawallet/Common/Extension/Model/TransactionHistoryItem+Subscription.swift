@@ -39,16 +39,20 @@ extension TransactionHistoryItem {
 
             let maybeFee = result.processingResult.fee.map { String($0) }
 
-            let txHash = extrinsic.extrinsicHash ?? result.extrinsicHash
+            let txHash = (extrinsic.extrinsicHash ?? result.extrinsicHash).toHex(includePrefix: true)
+            let source: TransactionHistoryItemSource = .substrate
+            let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
             return TransactionHistoryItem(
-                source: .substrate,
+                identifier: identifier,
+                source: source,
                 chainId: chain.chainId,
                 assetId: asset.assetId,
                 sender: sender,
                 receiver: receiver,
                 amountInPlank: amountString,
                 status: result.processingResult.isSuccess ? .success : .failed,
-                txHash: txHash.toHex(includePrefix: true),
+                txHash: txHash,
                 timestamp: timestamp,
                 fee: maybeFee,
                 blockNumber: result.blockNumber,

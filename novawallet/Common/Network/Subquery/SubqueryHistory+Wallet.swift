@@ -71,10 +71,11 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         chainAssetId: ChainAssetId,
         chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
-        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: .substrate)
+        let source = TransactionHistoryItemSource.substrate
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
         return .init(
-            remoteIdentifier: remoteIdentifier,
-            source: .substrate,
+            identifier: remoteIdentifier,
+            source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: transfer.sender.normalize(for: chainFormat) ?? transfer.sender,
@@ -102,11 +103,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             eventId: identifier
         )
 
-        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: .substrate)
+        let source = TransactionHistoryItemSource.substrate
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
 
         return .init(
-            remoteIdentifier: remoteIdentifier,
-            source: .substrate,
+            identifier: remoteIdentifier,
+            source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: reward.validator?.normalize(for: chainFormat) ?? "",
@@ -128,11 +130,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         chainAssetId: ChainAssetId,
         chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
-        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: .substrate)
+        let source = TransactionHistoryItemSource.substrate
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
 
         return .init(
-            remoteIdentifier: remoteIdentifier,
-            source: .substrate,
+            identifier: remoteIdentifier,
+            source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: address.normalize(for: chainFormat) ?? address,

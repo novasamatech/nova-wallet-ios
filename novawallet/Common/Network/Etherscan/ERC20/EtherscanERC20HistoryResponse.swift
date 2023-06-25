@@ -66,23 +66,23 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
         let source: TransactionHistoryItemSource = .evmAsset
         let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
 
-            return .init(
-                identifier: remoteIdentifier,
-                source: source,
-                chainId: chainAsset.chain.chainId,
-                assetId: chainAsset.asset.assetId,
-                sender: senderAddress,
-                receiver: receiverAddress,
-                amountInPlank: String(value),
-                status: .success,
-                txHash: txHash,
-                timestamp: timeStamp,
-                fee: String(feeInPlank),
-                blockNumber: itemBlockNumber,
-                txIndex: itemExtrinsicIndex,
-                callPath: .erc20Tranfer,
-                call: nil
-            )
+        return .init(
+            identifier: remoteIdentifier,
+            source: source,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId,
+            sender: senderAddress,
+            receiver: receiverAddress,
+            amountInPlank: String(value),
+            status: .success,
+            txHash: txHash,
+            timestamp: timeStamp,
+            fee: String(feeInPlank),
+            blockNumber: itemBlockNumber,
+            txIndex: itemExtrinsicIndex,
+            callPath: .erc20Tranfer,
+            call: nil
+        )
     }
 }
 

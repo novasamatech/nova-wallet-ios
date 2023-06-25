@@ -82,15 +82,20 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
 
         let callData = functionName?.data(using: .utf8)
 
+        let txHash = hash.toHex(includePrefix: true)
+        let source: TransactionHistoryItemSource = .evmNative
+        let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
         return .init(
-            source: .evmNative,
+            identifier: identifier,
+            source: source,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId,
             sender: senderAddress,
             receiver: receiverAddress,
             amountInPlank: String(value),
             status: transactionStatus,
-            txHash: hash.toHex(includePrefix: true),
+            txHash: txHash,
             timestamp: timeStamp,
             fee: String(feeInPlank),
             blockNumber: itemBlockNumber,
