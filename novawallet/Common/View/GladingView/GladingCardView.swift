@@ -84,23 +84,23 @@ final class GladingCardView: UIView {
 
         bigPatternView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.leading.equalToSuperview().offset(23.5)
-            make.top.equalToSuperview().offset(-25)
-            make.bottom.equalToSuperview().offset(25)
+            make.leading.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
 
         middlePatternView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.leading.equalToSuperview().offset(35.5)
-            make.top.equalToSuperview().offset(-25)
-            make.bottom.equalToSuperview().offset(25)
+            make.leading.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
 
         smallPatternView.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.leading.equalToSuperview()
-            make.top.equalToSuperview().offset(-25)
-            make.bottom.equalToSuperview().offset(25)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
 
         addSubview(fillGladingView)
