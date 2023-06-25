@@ -5,7 +5,7 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetReceiveViewLayout
 
     let presenter: AssetReceivePresenterProtocol
-    private var cachedBounds: CGRect?
+    private var cachedBoundsWidth: CGFloat?
     private var token: String = ""
 
     init(
@@ -36,12 +36,12 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        guard cachedBounds != view.bounds,
-              let qrCodeSize = AssetReceiveViewLayout.Constants.calculateQRsize(view.bounds) else {
+        guard cachedBoundsWidth != view.bounds.width,
+              let qrCodeSize = AssetReceiveViewLayout.Constants.calculateQRsize(view.bounds.width) else {
             return
         }
 
-        cachedBounds = view.bounds
+        cachedBoundsWidth = view.bounds.width
         presenter.set(qrCodeSize: qrCodeSize)
     }
 

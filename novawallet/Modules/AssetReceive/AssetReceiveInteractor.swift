@@ -47,12 +47,13 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         )
 
         qrCreationOperation.completionBlock = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.currentQRCodeOperation = nil
-
             DispatchQueue.main.async {
+                guard let self = self, self.currentQRCodeOperation === qrCreationOperation else {
+                    return
+                }
+
+                self.currentQRCodeOperation = nil
+
                 do {
                     let qrImage = try qrCreationOperation.extractNoCancellableResultData()
                     self.presenter.didReceive(qrCodeInfo: .init(

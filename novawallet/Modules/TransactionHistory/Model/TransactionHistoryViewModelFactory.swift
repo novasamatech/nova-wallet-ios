@@ -126,7 +126,16 @@ final class TransactionHistoryViewModelFactory {
     ) -> TitleWithSubtitleViewModel {
         let title = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
 
-        if let functionName = data.evmContractFunctionName, functionName.hasAmbiguousFunctionName {
+        guard let functionName = data.evmContractFunctionName else {
+            let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
+                data.receiver ?? "",
+                preferredLanguages: locale.rLanguages
+            )
+
+            return .init(title: title, subtitle: subtitle)
+        }
+
+        if !functionName.hasAmbiguousFunctionName {
             return .init(title: title, subtitle: functionName)
         } else {
             let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
