@@ -147,27 +147,35 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         ]
 
         let amount = model.amount
-        guard let decimalSeparator = model.decimalSeparator,
-              let range = amount.range(of: decimalSeparator) else {
+
+        if
+            let lastChar = model.amount.last?.asciiValue,
+            !NSCharacterSet.decimalDigits.contains(UnicodeScalar(lastChar)) {
             return .init(string: amount, attributes: defaultAttributes)
+        } else {
+            guard let decimalSeparator = model.decimalSeparator,
+                  let range = amount.range(of: decimalSeparator) else {
+                return .init(string: amount, attributes: defaultAttributes)
+            }
+
+            let amountAttributedString = NSMutableAttributedString(string: amount)
+            let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
+
+            let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
+
+            amountAttributedString.setAttributes(
+                defaultAttributes,
+                range: intPartRange
+            )
+
+            amountAttributedString.setAttributes(
+                [.foregroundColor: R.color.colorTextSecondary()!,
+                 .font: UIFont.boldTitle2],
+                range: fractionPartRange
+            )
+
+            return amountAttributedString
         }
-
-        let amountAttributedString = NSMutableAttributedString(string: amount)
-        let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
-        let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
-
-        amountAttributedString.setAttributes(
-            defaultAttributes,
-            range: intPartRange
-        )
-
-        amountAttributedString.setAttributes(
-            [.foregroundColor: R.color.colorTextSecondary()!,
-             .font: UIFont.boldTitle2],
-            range: fractionPartRange
-        )
-
-        return amountAttributedString
     }
 
     private func setupStateWithLocks(amount: String) {
