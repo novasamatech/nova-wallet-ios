@@ -23,7 +23,7 @@ enum SubqueryMultistaking {
 
     struct AccumulatedReward: Decodable {
         struct Sum: Decodable {
-            @StringCodable var amount: BigUInt
+            let amount: String
         }
 
         let keys: [String]
