@@ -576,12 +576,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         updateNftView()
     }
 
-    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
-        connectionStates[chainId] = state
-
-        scheduleViewUpdate()
-    }
-
     func didChange(name: String) {
         self.name = name
 
