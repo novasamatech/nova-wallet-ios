@@ -37,6 +37,7 @@
 		0C1BE19E2A46EDB40010933C /* String+ScientificInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19D2A46EDB40010933C /* String+ScientificInt.swift */; };
 		0C1BE1A02A46F1F00010933C /* ScientificStringParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */; };
 		0C1BE1A22A46F93B0010933C /* BigUInt+Scientific.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */; };
+		0C1BE1A62A47FC240010933C /* MultistakingSyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE1A52A47FC240010933C /* MultistakingSyncServiceFactory.swift */; };
 		0C2AA829B5CB89B39E0FA95E /* CrowdloanContributionConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF01941105BCD02536538362 /* CrowdloanContributionConfirmProtocols.swift */; };
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
 		0CA307BC2F570941CD22C9AA /* ExportMnemonicConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF4688AF0658F8BB7A90C2BE /* ExportMnemonicConfirmViewFactory.swift */; };
@@ -838,7 +839,6 @@
 		842E9E942A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E932A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift */; };
 		842E9E962A2A279800759972 /* StakingDashboardLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */; };
 		842E9E982A2A28A700759972 /* StakingDashboardProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */; };
-		842E9E9A2A2C504100759972 /* MultistakingServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E992A2C504100759972 /* MultistakingServiceFactory.swift */; };
 		842E9E9D2A2C591C00759972 /* StakingDashboardInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E9C2A2C591C00759972 /* StakingDashboardInteractorError.swift */; };
 		842E9EA02A2DC23900759972 /* StakingDashboardBuilderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9E9F2A2DC23900759972 /* StakingDashboardBuilderProtocol.swift */; };
 		842E9EA22A2DC6F600759972 /* StakingDashboardBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842E9EA12A2DC6F600759972 /* StakingDashboardBuilder.swift */; };
@@ -3643,6 +3643,7 @@
 		0C1BE19D2A46EDB40010933C /* String+ScientificInt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ScientificInt.swift"; sourceTree = "<group>"; };
 		0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScientificStringParsing.swift; sourceTree = "<group>"; };
 		0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BigUInt+Scientific.swift"; sourceTree = "<group>"; };
+		0C1BE1A52A47FC240010933C /* MultistakingSyncServiceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultistakingSyncServiceFactory.swift; sourceTree = "<group>"; };
 		0C2437D345C3D9B12AEE1E28 /* ParaStkYieldBoostSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupProtocols.swift; sourceTree = "<group>"; };
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
@@ -4451,7 +4452,6 @@
 		842E9E932A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardLocalStorageHandler.swift; sourceTree = "<group>"; };
 		842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardProviderFactory.swift; sourceTree = "<group>"; };
-		842E9E992A2C504100759972 /* MultistakingServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultistakingServiceFactory.swift; sourceTree = "<group>"; };
 		842E9E9C2A2C591C00759972 /* StakingDashboardInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardInteractorError.swift; sourceTree = "<group>"; };
 		842E9E9F2A2DC23900759972 /* StakingDashboardBuilderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardBuilderProtocol.swift; sourceTree = "<group>"; };
 		842E9EA12A2DC6F600759972 /* StakingDashboardBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardBuilder.swift; sourceTree = "<group>"; };
@@ -9922,7 +9922,7 @@
 				8443045D2A28892000DE36DE /* Multistaking+Parachain.swift */,
 				844304612A28C9FA00DE36DE /* MultistakingSyncState.swift */,
 				845FB6762A227F050003BCA6 /* MultistakingProviderFactory.swift */,
-				842E9E992A2C504100759972 /* MultistakingServiceFactory.swift */,
+				0C1BE1A52A47FC240010933C /* MultistakingSyncServiceFactory.swift */,
 			);
 			path = Multistaking;
 			sourceTree = "<group>";
@@ -19262,6 +19262,7 @@
 				84EBC55124F660A700459D15 /* EventVisitor.swift in Sources */,
 				842B2FCF2947352A002829B6 /* UITextField+Attributes.swift in Sources */,
 				8452585127ABC531004F9082 /* AssetsSettingsViewModel.swift in Sources */,
+				0C1BE1A62A47FC240010933C /* MultistakingSyncServiceFactory.swift in Sources */,
 				84E8BA2A2A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift in Sources */,
 				8454C21D2632A78900657DAD /* EventRecord.swift in Sources */,
 				84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */,
@@ -19543,7 +19544,6 @@
 				847C9659255362F7002D288F /* RestoreJson.swift in Sources */,
 				8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */,
 				8487583227F06AF300495306 /* AddressScanViewFactory.swift in Sources */,
-				842E9E9A2A2C504100759972 /* MultistakingServiceFactory.swift in Sources */,
 				849632072555CE9D00B8E316 /* ExportSeedData.swift in Sources */,
 				847EA1D62A1CA47500F1CBD8 /* SubqueryMultistaking.swift in Sources */,
 				8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */,
