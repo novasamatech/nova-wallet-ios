@@ -7,3 +7,6 @@ excluded:
 identifier_name:
   excluded:
     - id
+nesting:
+  type_level: 3
+  statement_level: 3

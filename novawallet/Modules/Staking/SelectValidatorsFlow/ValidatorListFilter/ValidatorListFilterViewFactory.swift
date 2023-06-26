@@ -8,9 +8,7 @@ struct ValidatorListFilterViewFactory {
         hasIdentity: Bool,
         delegate: ValidatorListFilterDelegate?
     ) -> ValidatorListFilterViewProtocol? {
-        guard let assetInfo = state.settings.value?.assetDisplayInfo else {
-            return nil
-        }
+        let chainAsset = state.stakingOption.chainAsset
 
         let wireframe = ValidatorListFilterWireframe()
 
@@ -19,7 +17,7 @@ struct ValidatorListFilterViewFactory {
         let presenter = ValidatorListFilterPresenter(
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            assetInfo: assetInfo,
+            assetInfo: chainAsset.assetDisplayInfo,
             filter: filter,
             hasIdentity: hasIdentity,
             localizationManager: LocalizationManager.shared

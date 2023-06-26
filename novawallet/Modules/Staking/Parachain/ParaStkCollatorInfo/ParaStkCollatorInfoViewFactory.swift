@@ -6,8 +6,9 @@ struct ParaStkCollatorInfoViewFactory {
         for state: ParachainStakingSharedState,
         collatorInfo: CollatorSelectionInfo
     ) -> ParaStkCollatorInfoViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {

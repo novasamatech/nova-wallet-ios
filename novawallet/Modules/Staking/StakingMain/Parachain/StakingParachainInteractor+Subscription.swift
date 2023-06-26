@@ -15,9 +15,7 @@ extension StakingParachainInteractor {
     }
 
     func setupChainRemoteSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            return
-        }
+        let chainId = selectedChainAsset.chain.chainId
 
         chainSubscriptionId = stakingAssetSubscriptionService.attachToGlobalData(
             for: chainId,
@@ -27,9 +25,10 @@ extension StakingParachainInteractor {
     }
 
     func clearAccountRemoteSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+
         if
             let accountSubscriptionId = accountSubscriptionId,
-            let chainId = selectedChainAsset?.chain.chainId,
             let accountId = selectedAccount?.chainAccount.accountId {
             stakingAccountSubscriptionService.detachFromAccountData(
                 for: accountSubscriptionId,
@@ -44,9 +43,9 @@ extension StakingParachainInteractor {
     }
 
     func setupAccountRemoteSubscription() {
-        guard
-            let chainId = selectedChainAsset?.chain.chainId,
-            let accountId = selectedAccount?.chainAccount.accountId else {
+        let chainId = selectedChainAsset.chain.chainId
+
+        guard let accountId = selectedAccount?.chainAccount.accountId else {
             return
         }
 
@@ -59,12 +58,7 @@ extension StakingParachainInteractor {
     }
 
     func performPriceSubscription() {
-        guard let chainAsset = selectedChainAsset else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
-
-        guard let priceId = chainAsset.asset.priceId else {
+        guard let priceId = selectedChainAsset.asset.priceId else {
             presenter?.didReceivePrice(nil)
             return
         }
@@ -73,10 +67,7 @@ extension StakingParachainInteractor {
     }
 
     func performAssetBalanceSubscription() {
-        guard let chainAssetId = selectedChainAsset?.chainAssetId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainAssetId = selectedChainAsset.chainAssetId
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
             presenter?.didReceiveAssetBalance(nil)
@@ -91,10 +82,7 @@ extension StakingParachainInteractor {
     }
 
     func performDelegatorSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainId = selectedChainAsset.chain.chainId
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
             presenter?.didReceiveDelegator(nil)
@@ -108,36 +96,25 @@ extension StakingParachainInteractor {
     }
 
     func performBlockNumberSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainId = selectedChainAsset.chain.chainId
 
         blockNumberProvider = subscribeToBlockNumber(for: chainId)
     }
 
     func performRoundInfoSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainId = selectedChainAsset.chain.chainId
 
         roundInfoProvider = subscribeToRound(for: chainId)
     }
 
     func performTotalRewardSubscription() {
-        guard let chainAsset = selectedChainAsset else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
-
         if
             let address = selectedAccount?.chainAccount.toChecksumedAddress(),
-            let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
+            let rewardApi = selectedChainAsset.chain.externalApis?.staking()?.first {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
                 api: rewardApi,
-                assetPrecision: Int16(chainAsset.asset.precision)
+                assetPrecision: Int16(selectedChainAsset.asset.precision)
             )
         } else {
             presenter?.didReceiveTotalReward(nil)
@@ -145,25 +122,23 @@ extension StakingParachainInteractor {
     }
 
     func performYieldBoostTasksSubscription() {
-        guard let chainAsset = selectedChainAsset else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
-
         guard
-            yieldBoostSupport.checkSupport(for: chainAsset),
+            yieldBoostSupport.checkSupport(for: selectedChainAsset),
             let accountId = selectedAccount?.chainAccount.accountId else {
             presenter?.didReceiveYieldBoost(state: .unsupported)
             return
         }
 
-        yieldBoostTasksProvider = subscribeYieldBoostTasks(for: chainAsset.chainAssetId, accountId: accountId)
+        yieldBoostTasksProvider = subscribeYieldBoostTasks(
+            for: selectedChainAsset.chainAssetId,
+            accountId: accountId
+        )
     }
 }
 
 extension StakingParachainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        if let chainAsset = selectedChainAsset, chainAsset.asset.priceId == priceId {
+        if selectedChainAsset.asset.priceId == priceId {
             switch result {
             case let .success(priceData):
                 presenter?.didReceivePrice(priceData)
@@ -183,8 +158,8 @@ extension StakingParachainInteractor: WalletLocalStorageSubscriber,
         assetId: AssetModel.Id
     ) {
         guard
-            chainId == selectedChainAsset?.chain.chainId,
-            assetId == selectedChainAsset?.asset.assetId,
+            chainId == selectedChainAsset.chain.chainId,
+            assetId == selectedChainAsset.asset.assetId,
             accountId == selectedAccount?.chainAccount.accountId else {
             return
         }
@@ -201,7 +176,7 @@ extension StakingParachainInteractor: WalletLocalStorageSubscriber,
 extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
     ParastakingLocalStorageHandler {
     func handleParastakingRound(result: Result<ParachainStaking.RoundInfo?, Error>, for chainId: ChainModel.Id) {
-        guard selectedChainAsset?.chain.chainId == chainId else {
+        guard selectedChainAsset.chain.chainId == chainId else {
             return
         }
 
@@ -219,7 +194,7 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         accountId: AccountId
     ) {
         guard
-            chainId == selectedChainAsset?.chain.chainId,
+            chainId == selectedChainAsset.chain.chainId,
             selectedAccount?.chainAccount.accountId == accountId else {
             return
         }
@@ -238,7 +213,7 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         delegatorId: AccountId
     ) {
         guard
-            chainId == selectedChainAsset?.chain.chainId,
+            chainId == selectedChainAsset.chain.chainId,
             selectedAccount?.chainAccount.accountId == delegatorId else {
             return
         }
@@ -275,7 +250,7 @@ extension StakingParachainInteractor: ParaStkYieldBoostStorageSubscriber, ParaSt
         chainId: ChainModel.Id,
         accountId: AccountId
     ) {
-        guard selectedChainAsset?.chain.chainId == chainId, selectedAccount?.chainAccount.accountId == accountId else {
+        guard selectedChainAsset.chain.chainId == chainId, selectedAccount?.chainAccount.accountId == accountId else {
             return
         }
 
@@ -293,7 +268,7 @@ extension StakingParachainInteractor: GeneralLocalStorageSubscriber, GeneralLoca
         result: Result<BlockNumber?, Error>,
         chainId: ChainModel.Id
     ) {
-        guard selectedChainAsset?.chain.chainId == chainId else {
+        guard selectedChainAsset.chain.chainId == chainId else {
             return
         }
 
@@ -309,7 +284,7 @@ extension StakingParachainInteractor: GeneralLocalStorageSubscriber, GeneralLoca
 extension StakingParachainInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil,
-              let priceId = selectedChainAsset?.asset.priceId else {
+              let priceId = selectedChainAsset.asset.priceId else {
             return
         }
 

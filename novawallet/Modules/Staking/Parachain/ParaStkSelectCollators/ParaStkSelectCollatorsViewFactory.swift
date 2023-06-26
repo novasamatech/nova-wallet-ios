@@ -10,10 +10,11 @@ struct ParaStkSelectCollatorsViewFactory {
     ) -> ParaStkSelectCollatorsViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
-            let chainAsset = state.settings.value,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let chainAsset = state.stakingOption.chainAsset
 
         let wireframe = ParaStkSelectCollatorsWireframe(sharedState: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -49,8 +50,9 @@ struct ParaStkSelectCollatorsViewFactory {
     private static func createInteractor(
         for state: ParachainStakingSharedState
     ) -> ParaStkSelectCollatorsInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let collatorService = state.collatorService,
             let rewardEngineService = state.rewardCalculationService,
             let currencyManager = CurrencyManager.shared else {

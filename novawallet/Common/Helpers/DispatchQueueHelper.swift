@@ -21,3 +21,13 @@ func callbackClosureIfProvided<T>(
         closure(result)
     }
 }
+
+func dispatchInConcurrent(queue: DispatchQueue, locking mutex: NSLock, block: @escaping () -> Void) {
+    queue.async {
+        mutex.lock()
+
+        block()
+
+        mutex.unlock()
+    }
+}

@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
+final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> {
     let requests: [SubscriptionRequestProtocol]
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
@@ -95,7 +95,11 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         do {
             let updateClosure: (StorageSubscriptionUpdate) -> Void = { [weak self] update in
                 let updateData = StorageUpdateData(update: update.params.result)
-                self?.processUpdate(updateData.changes, blockHash: updateData.blockHash)
+                self?.processUpdate(
+                    updateData.changes,
+                    keys: keys,
+                    blockHash: updateData.blockHash
+                )
             }
 
             let failureClosure: (Error, Bool) -> Void = { [weak self] error, _ in
@@ -138,10 +142,23 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         }
     }
 
-    func processUpdate(_ changes: [StorageUpdateData.StorageUpdateChangeData], blockHash: Data?) {
+    private func findRequests(
+        for changes: [StorageUpdateData.StorageUpdateChangeData],
+        keys: [Data]
+    ) -> [SubscriptionRequestProtocol] {
+        let receivedKeys = Set(changes.map(\.key))
+        return zip(requests, keys).compactMap { receivedKeys.contains($0.1) ? $0.0 : nil }
+    }
+
+    func processUpdate(
+        _ changes: [StorageUpdateData.StorageUpdateChangeData],
+        keys: [Data],
+        blockHash: Data?
+    ) {
         saveIfNeeded(changes: changes)
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let requests = findRequests(for: changes, keys: keys)
         let decodingOperations: [BaseOperation<JSON>] = zip(changes, requests).map { change, request in
             if let data = change.value {
                 let decodingOperation = StorageJSONDecodingOperation(path: request.storagePath, data: data)
@@ -160,10 +177,17 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         }
 
         let mergeOperation = ClosureOperation<T> {
-            let values = try decodingOperations.map { try $0.extractNoCancellableResultData() }
+            let jsonList = try decodingOperations.map { try $0.extractNoCancellableResultData() }
             let blockHashJson = blockHash.map { JSON.stringValue($0.toHex()) } ?? JSON.null
             let context = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
-            return try T(jsonList: values + [blockHashJson], context: context.toRawContext())
+            let values = zip(jsonList, requests).map {
+                BatchStorageSubscriptionResultValue(localKey: $0.1.localKey, value: $0.0)
+            }
+            return try T(
+                values: values,
+                blockHashJson: blockHashJson,
+                context: context.toRawContext()
+            )
         }
 
         decodingOperations.forEach { decodingOperation in
