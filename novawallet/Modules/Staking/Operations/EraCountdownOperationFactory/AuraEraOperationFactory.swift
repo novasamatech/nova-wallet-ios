@@ -118,6 +118,7 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
                 sessionLength: sessionLength,
                 activeEraStartSessionIndex: eraStartSessionIndex,
                 currentSessionIndex: currentSessionIndex,
+                currentEpochIndex: EpochIndex(currentSessionIndex),
                 currentSlot: Slot(currentSlot),
                 genesisSlot: 0,
                 blockCreationTime: Moment(blockTime),
