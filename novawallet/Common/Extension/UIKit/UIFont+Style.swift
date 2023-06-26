@@ -53,6 +53,7 @@ extension UIFont {
     static var semiBoldBody: UIFont { R.font.publicSansSemiBold(size: 17)! }
     static var semiBoldFootnote: UIFont { R.font.publicSansSemiBold(size: 13)! }
     static var semiBoldCallout: UIFont { R.font.publicSansSemiBold(size: 16)! }
+    static var regularCallout: UIFont { R.font.publicSansRegular(size: 16)! }
     static var semiBoldCaps2: UIFont { R.font.publicSansSemiBold(size: 10)! }
     static var semiBoldCaps1: UIFont { R.font.publicSansSemiBold(size: 11)! }
     static var semiBoldSmall: UIFont { R.font.publicSansSemiBold(size: 10)! }
