@@ -216,7 +216,6 @@
 "staking.reward.payout.account" = "Аккаунт для выплат";
 "common.learn.more" = "Узнать больше";
 "staking.recommended.title" = "Валидаторы";
-"staking.more.options.dApps.title" = "Стейкинг с Nova DApp браузером";
 "staking.recommended.section.title" = "Рекомендованные валидаторы";
 "staking.recommended.hint1" = "Самые доходные";
 "staking.recommended.hint2" = "Не превышен лимит номинаторов";
@@ -1239,15 +1238,10 @@
 "governance.referendums.filter.header" = "Показывать:";
 "governance.referendums.search.field.placeholder" = "Поиск по заголовку или ID";
 "governance.referendums.search.empty" = "Не найдены референдумы\nс таким названием или ID";
-"governance.referendums.filter.empty" = "Нет референдумов с примененными\nфильтрами";
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
-"staking.nominator.status.waiting" = "Ожидание";
-"staking.estimated.earnings" = "Примерный доход";
-"multistaking.more.options" = "Еще возможности стейкинга";
-"multistaking.inactive.header" = "Стейкайте и зарабатывайте награды";
-"common.per.year" = "в год";
+"governance.referendums.filter.empty" = "Не найдены референдумы с указанными фильтрами";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Откройте приложение Polkadot Vault на смартфоне";
 "welcome.polkadot.vault.step1.highlighted" = "Откройте приложение Polkadot Vault";
@@ -1259,4 +1253,11 @@
 "staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
 "staking.controller.deprecated.details" = "Сеть мигрирует в сторону замены контроллеров на прокси. Nova Wallet будет поддерживать прокси в будущих обновлениях";
 "staking.controller.deprecated.action" = "Изменить контроллер на стэш";
+"staking.estimated.earnings" = "Примерный доход";
+"common.per.year.long" = "в год";
+"common.per.year" = "/ год";
+"common.waiting" = "Ожидание";
+"staking.more.options.dApps.title" = "Стейкинг через DApp браузер Nova";
+"multistaking.inactive.header" = "Стейкайте и получайте награды";
+"multistaking.more.options" = "Больше вариантов стейкинга";
 "staking.on.network" = "%@ стейкинг";
