@@ -11,6 +11,7 @@ typealias LeasingPeriod = UInt32
 typealias LeasingOffset = UInt32
 typealias Slot = UInt64
 typealias SessionIndex = UInt32
+typealias EpochIndex = UInt64
 typealias Moment = UInt32
 typealias EraIndex = UInt32
 typealias EraRange = (start: EraIndex, end: EraIndex)
