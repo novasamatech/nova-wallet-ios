@@ -217,6 +217,7 @@
 "staking.reward.payout.account" = "Аккаунт для выплат";
 "common.learn.more" = "Узнать больше";
 "staking.recommended.title" = "Валидаторы";
+"staking.more.options.dApps.title" = "Стейкинг с Nova DApp браузером";
 "staking.recommended.section.title" = "Рекомендованные валидаторы";
 "staking.recommended.hint1" = "Самые доходные";
 "staking.recommended.hint2" = "Не превышен лимит номинаторов";
@@ -1253,6 +1254,11 @@
 "asset.operation.send.title" = "Отправить";
 "asset.operation.receive.title" = "Получить";
 "asset.operation.buy.title" = "Купить";
+"staking.nominator.status.waiting" = "Ожидание";
+"staking.estimated.earnings" = "Примерный доход";
+"multistaking.more.options" = "Еще возможности стейкинга";
+"multistaking.inactive.header" = "Стейкайте и зарабатывайте награды";
+"common.per.year" = "в год";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Откройте приложение Polkadot Vault на смартфоне";
 "welcome.polkadot.vault.step1.highlighted" = "Откройте приложение Polkadot Vault";
@@ -1264,3 +1270,4 @@
 "staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
 "staking.controller.deprecated.details" = "Сеть мигрирует в сторону замены контроллеров на прокси. Nova Wallet будет поддерживать прокси в будущих обновлениях";
 "staking.controller.deprecated.action" = "Изменить контроллер на стэш";
+"staking.on.network" = "%@ стейкинг";

@@ -258,7 +258,7 @@ final class ReferendumDetailsPresenter {
         }
 
         let viewModels = dApps.map {
-            ReferendumDAppView.Model(
+            DAppView.Model(
                 icon: RemoteImageViewModel(url: $0.icon),
                 title: $0.title,
                 subtitle: $0.details

@@ -1,8 +1,12 @@
 import UIKit
 
+<<<<<<< HEAD:novawallet/Modules/AssetList/View/AssetListAccountCell.swift
 final class AssetListAccountCell: UICollectionViewCell {
     let walletConnect = WalletConnectionsView()
 
+=======
+final class WalletSwitchCollectionViewCell: UICollectionViewCell {
+>>>>>>> develop:novawallet/Common/View/WalletAccount/WalletSwitchCollectionViewCell.swift
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldTitle3
@@ -24,9 +28,11 @@ final class AssetListAccountCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListHeaderViewModel) {
-        titleLabel.text = viewModel.title
+    func bind(title: String) {
+        titleLabel.text = title
+    }
 
+<<<<<<< HEAD:novawallet/Modules/AssetList/View/AssetListAccountCell.swift
         walletSwitch.bind(viewModel: viewModel.walletSwitch)
 
         let walletConnectViewModel: WalletConnectionsView.Model
@@ -43,6 +49,10 @@ final class AssetListAccountCell: UICollectionViewCell {
 
         setNeedsLayout()
         layoutIfNeeded()
+=======
+    func bind(viewModel: WalletSwitchViewModel) {
+        walletSwitch.bind(viewModel: viewModel)
+>>>>>>> develop:novawallet/Common/View/WalletAccount/WalletSwitchCollectionViewCell.swift
     }
 
     private func setupLayout() {

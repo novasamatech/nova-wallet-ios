@@ -65,7 +65,7 @@ final class ReferendumDetailsViewLayout: UIView {
         timelineView.bindOrHide(viewModel: model)
     }
 
-    func setDApps(models: [ReferendumDAppView.Model]?, locale: Locale) -> [ReferendumDAppCellView] {
+    func setDApps(models: [DAppView.Model]?, locale: Locale) -> [ReferendumDAppCellView] {
         dAppsTableView.clear()
 
         if let models = models, !models.isEmpty {

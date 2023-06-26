@@ -131,14 +131,6 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             }
 
             fetchConstant(
-                for: .lockUpPeriod,
-                runtimeCodingService: runtimeService,
-                operationManager: operationManager
-            ) { [weak self] (result: Result<UInt32, Error>) in
-                self?.presenter.didReceiveBondingDuration(result: result)
-            }
-
-            fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
                 operationManager: operationManager
@@ -147,7 +139,6 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             }
         } else {
             let error = ChainRegistryError.runtimeMetadaUnavailable
-            presenter.didReceiveBondingDuration(result: .failure(error))
             presenter.didReceiveExistentialDeposit(result: .failure(error))
             presenter.didReceiveStakingDuration(result: .failure(error))
         }

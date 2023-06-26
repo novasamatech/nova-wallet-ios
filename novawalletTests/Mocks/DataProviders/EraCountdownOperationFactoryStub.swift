@@ -23,6 +23,7 @@ extension EraCountdown {
             sessionLength: 600,
             activeEraStartSessionIndex: 14538,
             currentSessionIndex: 14538,
+            currentEpochIndex: 14538,
             currentSlot: 271216483,
             genesisSlot: 262493679,
             blockCreationTime: 6000,

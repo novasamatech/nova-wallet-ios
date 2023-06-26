@@ -56,6 +56,14 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
                 storagePath: .genesisSlot
             )
 
+        let currentEpochWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<Slot>>]> =
+            storageRequestFactory.queryItems(
+                engine: connection,
+                keys: { [try keyFactory.key(from: .currentEpoch)] },
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: .currentEpoch
+            )
+
         let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<ActiveEraInfo>]> =
             storageRequestFactory.queryItems(
                 engine: connection,
@@ -87,6 +95,7 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
             + activeEraWrapper.allOperations
             + currentEraWrapper.allOperations
             + startSessionWrapper.allOperations
+            + currentEpochWrapper.allOperations
         dependencies.forEach { $0.addDependency(codingFactoryOperation) }
 
         let mergeOperation = ClosureOperation<EraCountdown> {
@@ -105,6 +114,8 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
                 let genesisSlot = try? genesisSlotWrapper.targetOperation
                 .extractNoCancellableResultData().first?.value?.value,
                 let eraStartSessionIndex = try? startSessionWrapper.targetOperation
+                .extractNoCancellableResultData().first?.value?.value,
+                let currenEpoch = try? currentEpochWrapper.targetOperation
                 .extractNoCancellableResultData().first?.value?.value
             else {
                 throw EraCountdownOperationFactoryError.noData
@@ -117,6 +128,7 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
                 sessionLength: sessionLength,
                 activeEraStartSessionIndex: eraStartSessionIndex,
                 currentSessionIndex: currentSessionIndex,
+                currentEpochIndex: currenEpoch,
                 currentSlot: currentSlot,
                 genesisSlot: genesisSlot,
                 blockCreationTime: babeBlockTime,

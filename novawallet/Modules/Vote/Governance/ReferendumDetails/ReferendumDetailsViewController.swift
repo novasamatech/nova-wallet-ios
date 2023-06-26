@@ -117,7 +117,7 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
         rootView.votingDetailsRow.bind(viewModel: votingDetails)
     }
 
-    func didReceive(dAppModels: [ReferendumDAppView.Model]?) {
+    func didReceive(dAppModels: [DAppView.Model]?) {
         let cells = rootView.setDApps(models: dAppModels, locale: localizationManager.selectedLocale)
         dAppCells = cells
 

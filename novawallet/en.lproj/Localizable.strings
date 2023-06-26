@@ -216,6 +216,7 @@
 "staking.payout.title" = "Payout";
 "staking.reward.payout.account" = "Payout account";
 "common.learn.more" = "Learn more";
+"staking.more.options.dApps.title" = "Staking via Nova DApp browser";
 "staking.recommended.title" = "Validators";
 "staking.recommended.section.title" = "Recommended validators";
 "staking.recommended.hint1" = "Most profitable";
@@ -1254,6 +1255,11 @@
 "asset.operation.send.title" = "Send";
 "asset.operation.receive.title" = "Receive";
 "asset.operation.buy.title" = "Buy";
+"staking.nominator.status.waiting" = "Waiting";
+"staking.estimated.earnings" = "Estimated earnings";
+"multistaking.more.options" = "More staking options";
+"multistaking.inactive.header" = "Stake and earn rewards";
+"common.per.year" = "per year";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Open Polkadot Vault application on your smartphone";
 "welcome.polkadot.vault.step1.highlighted" = "Open Polkadot Vault";
@@ -1265,3 +1271,4 @@
 "staking.controller.deprecated.title" = "Controller Accounts Are Being Deprecated";
 "staking.controller.deprecated.details" = "Network is migrating towards replacing Controllers to Proxies feature. Nova Wallet will support Proxies in future updates";
 "staking.controller.deprecated.action" = "Update Controller to Stash";
+"staking.on.network" = "%@ staking";

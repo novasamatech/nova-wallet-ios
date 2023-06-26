@@ -14,7 +14,7 @@ extension AssetModel {
             symbol: request.symbol,
             precision: UInt16(request.decimals),
             priceId: priceId,
-            staking: nil,
+            stakings: nil,
             type: AssetType.evmAsset.rawValue,
             typeExtras: JSON.stringValue(request.contractAddress),
             buyProviders: nil,

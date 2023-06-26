@@ -25,4 +25,8 @@ extension PriceData {
             currencyId: currencyId
         )
     }
+
+    var decimalRate: Decimal? {
+        Decimal(string: price)
+    }
 }
