@@ -11,6 +11,7 @@ final class StakingDashboardActiveDetailsView: UIView {
     private let internalStatusView: GenericTitleValueView<LoadableStakingStatusView, UIImageView> = .create { view in
         view.valueView.image = R.image.iconChevronRight()?.tinted(with: R.color.colorTextSecondary()!)
         view.titleView.backgroundView.apply(style: .chips)
+        view.spacing = 4
     }
 
     var statusView: LoadableStakingStatusView { internalStatusView.titleView }
