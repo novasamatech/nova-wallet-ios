@@ -100,7 +100,7 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                         return
                     }
 
-                    $0[.init(networkId: networkId, stakingType: stakingType)] = $1.sum.amount
+                    $0[.init(networkId: networkId, stakingType: stakingType)] = BigUInt(scientific: $1.sum.amount)
                 }
 
                 let stakings = result.stakingApies.nodes.map { node in
