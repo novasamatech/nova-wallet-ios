@@ -37,7 +37,6 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didReceiveNft(changes: [DataProviderChange<NftModel>])
     func didReceiveNft(error: Error)
     func didResetNftProvider()
-    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
     func didReceiveLocks(result: Result<[AssetLock], Error>)

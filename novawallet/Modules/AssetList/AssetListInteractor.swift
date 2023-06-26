@@ -111,20 +111,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
     ) {
         super.applyChanges(allChanges: allChanges, enabledChainChanges: enabledChainChanges)
 
-        updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: enabledChainChanges)
-    }
-
-    private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
-        for change in changes {
-            switch change {
-            case let .insert(chain), let .update(chain):
-                chainRegistry.subscribeChainState(self, chainId: chain.chainId)
-            case let .delete(identifier):
-                chainRegistry.unsubscribeChainState(self, chainId: identifier)
-            }
-        }
     }
 
     private func setupNftSubscription(from allChains: [ChainModel]) {
@@ -274,12 +262,6 @@ extension AssetListInteractor {
         }
 
         presenter?.didReceiveLocks(result: .success(Array(locks.values.flatMap { $0 })))
-    }
-}
-
-extension AssetListInteractor: ConnectionStateSubscription {
-    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
-        presenter?.didReceive(state: state, for: chainId)
     }
 }
 

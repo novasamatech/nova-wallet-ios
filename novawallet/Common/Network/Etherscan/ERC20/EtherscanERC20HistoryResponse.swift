@@ -62,15 +62,20 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
 
         let feeInPlank = gasUsed * gasPrice
 
+        let txHash = hash.toHex(includePrefix: true)
+        let source: TransactionHistoryItemSource = .evmAsset
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
         return .init(
-            source: .evmAsset,
+            identifier: remoteIdentifier,
+            source: source,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId,
             sender: senderAddress,
             receiver: receiverAddress,
             amountInPlank: String(value),
             status: .success,
-            txHash: hash.toHex(includePrefix: true),
+            txHash: txHash,
             timestamp: timeStamp,
             fee: String(feeInPlank),
             blockNumber: itemBlockNumber,

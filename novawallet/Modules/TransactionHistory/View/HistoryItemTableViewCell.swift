@@ -178,7 +178,7 @@ extension HistoryItemTableViewCell {
         }
 
         switch transactionModel.type {
-        case .incoming, .outgoing:
+        case .incoming, .outgoing, .extrinsic:
             subtitleLabel.lineBreakMode = .byTruncatingMiddle
 
             subtitleLabel.snp.updateConstraints { make in
@@ -186,7 +186,7 @@ extension HistoryItemTableViewCell {
                     .offset(-Constants.titleSpacingForTransfer)
             }
 
-        case .slash, .reward, .extrinsic:
+        case .slash, .reward:
             subtitleLabel.lineBreakMode = .byTruncatingTail
 
             subtitleLabel.snp.updateConstraints { make in

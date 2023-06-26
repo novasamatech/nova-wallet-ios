@@ -99,10 +99,17 @@ final class TransactionHistoryMergeManager {
         localItems: [TransactionHistoryItem]
     ) -> TransactionHistoryMergeResult {
         let existingIds = Set(remoteItems.map(\.localIdentifier))
+        let existingRemoteIds = Set(remoteItems.map(\.remoteIdentifier))
+
         let minRemoteItem = remoteItems.last
 
         let identifiersToRemove: [String] = localItems.compactMap { item in
             if existingIds.contains(item.identifier) {
+                return item.identifier
+            }
+
+            // if item is not local and not present remotely then remove it
+            if !item.isIdentifierMatchesLocal, !existingRemoteIds.contains(item.identifier) {
                 return item.identifier
             }
 

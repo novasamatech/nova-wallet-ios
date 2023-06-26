@@ -19,7 +19,6 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var name: String?
     private var hidesZeroBalances: Bool?
 
-    private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
     private(set) var walletConnectSessionsCount: Int = 0
 
@@ -321,14 +320,6 @@ final class AssetListPresenter: AssetListBasePresenter {
             filteredAssets = assets
         }
 
-        let connected: Bool
-
-        if let chainState = connectionStates[chain.chainId], case .connected = chainState {
-            connected = true
-        } else {
-            connected = false
-        }
-
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
             createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
@@ -337,7 +328,7 @@ final class AssetListPresenter: AssetListBasePresenter {
             for: chain,
             assets: assetInfoList,
             value: groupModel.chainValue,
-            connected: connected,
+            connected: true,
             locale: selectedLocale
         )
     }
@@ -574,12 +565,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
         updateAssetsView()
         updateNftView()
-    }
-
-    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
-        connectionStates[chainId] = state
-
-        scheduleViewUpdate()
     }
 
     func didChange(name: String) {

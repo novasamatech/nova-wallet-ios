@@ -87,8 +87,8 @@ extension AssetReceiveViewLayout {
             right: containerHorizontalOffset
         )
 
-        static let calculateQRsize: (CGRect) -> CGSize? = { bounds in
-            let width = qrViewSizeRatio * bounds.width - qrViewContentInsets * 2
+        static let calculateQRsize: (CGFloat) -> CGSize? = { boundsWidth in
+            let width = qrViewSizeRatio * boundsWidth - qrViewContentInsets * 2
             guard width >= qrCodeMinimumWidth else {
                 return nil
             }
