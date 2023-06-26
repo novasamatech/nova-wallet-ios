@@ -139,8 +139,7 @@ final class StakingDashboardActiveDetailsView: UIView {
                 preferredLanguages: locale.rLanguages
             )
 
-            estimatedEarningsView.valueBottom.sView.text = R.string.localizable.parachainStakingRewardsFormat(
-                "",
+            estimatedEarningsView.valueBottom.sView.text = " " + R.string.localizable.commonPerYear(
                 preferredLanguages: locale.rLanguages
             )
         } else {

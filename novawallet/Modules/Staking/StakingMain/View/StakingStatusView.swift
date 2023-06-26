@@ -64,7 +64,7 @@ extension StakingStatusView {
             glowingView.outerFillColor = R.color.colorTextSecondary()!.withAlphaComponent(0.4)
             glowingView.innerFillColor = R.color.colorTextSecondary()!
             detailsLabel.textColor = R.color.colorTextPrimary()!
-            detailsLabel.text = R.string.localizable.stakingNominatorStatusWaiting(
+            detailsLabel.text = R.string.localizable.commonWaiting(
                 preferredLanguages: locale.rLanguages
             ).uppercased()
         }
