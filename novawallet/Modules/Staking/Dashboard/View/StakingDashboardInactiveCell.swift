@@ -76,7 +76,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
     private func setupStaticLocalization(for locale: Locale, hasEstimatedRewards: Bool) {
         if hasEstimatedRewards {
-            valueView.detailsView.sView.text = R.string.localizable.commonPerYear(
+            valueView.detailsView.sView.text = R.string.localizable.commonPerYearLong(
                 preferredLanguages: locale.rLanguages
             )
         } else {
