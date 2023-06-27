@@ -1257,7 +1257,7 @@
 "common.per.year.long" = "per year";
 "common.per.year" = "/ year";
 "common.waiting" = "Waiting";
-"staking.more.options.dApps.title" = "Staking via Nova DApp browser";
+"staking.more.options.dApps.title" = "Staking via Nova Browser";
 "multistaking.inactive.header" = "Stake and earn rewards";
 "multistaking.more.options" = "More staking options";
 "staking.on.network" = "%@ staking";
