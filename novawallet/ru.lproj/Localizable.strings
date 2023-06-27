@@ -1268,7 +1268,7 @@
 "common.per.year.long" = "в год";
 "common.per.year" = "/ год";
 "common.waiting" = "Ожидание";
-"staking.more.options.dApps.title" = "Стейкинг через DApp браузер Nova";
+"staking.more.options.dApps.title" = "Стейкинг через браузер Nova";
 "multistaking.inactive.header" = "Стейкайте и получайте награды";
 "multistaking.more.options" = "Больше вариантов стейкинга";
 "staking.on.network" = "%@ стейкинг";
