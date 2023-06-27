@@ -11,6 +11,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
     let web3NamesService: Web3NameServiceProtocol?
+    let sequencialPhishingVerifier: PhishingAccountVerifing
 
     private var xcmTransfers: XcmTransfers?
     private var destinationChainAsset: ChainAsset?
@@ -21,6 +22,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         web3NamesService: Web3NameServiceProtocol?,
+        sequencialPhishingVerifier: PhishingAccountVerifing,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
@@ -28,11 +30,13 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
         self.web3NamesService = web3NamesService
+        self.sequencialPhishingVerifier = sequencialPhishingVerifier
         self.operationManager = operationManager
     }
 
     deinit {
         xcmTransfersSyncService.throttle()
+        sequencialPhishingVerifier.cancelAll()
     }
 
     private func setupXcmTransfersSyncService() {
@@ -143,6 +147,21 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
                 case let .failure(error):
                     self.presenter?.didReceive(error: error)
                 }
+            }
+        }
+    }
+
+    func verifyPhishing(address: AccountAddress) {
+        guard let accountId = try? address.toAccountId() else {
+            return
+        }
+
+        sequencialPhishingVerifier.verify(accountId: accountId) { [weak self] result in
+            switch result {
+            case let .success(isNotPhishing):
+                self?.presenter?.didReceiveIsNotPhishing(result: isNotPhishing, address: address)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
             }
         }
     }
