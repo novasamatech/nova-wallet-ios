@@ -180,7 +180,7 @@ final class MultistakingSyncService {
         let stakingOption = chainAssetOption.option
 
         switch chainAssetOption.type {
-        case .relaychain, .azero, .auraRelaychain:
+        case .relaychain, .azero, .auraRelaychain, .nominationPools:
             if let service = createRelaychainStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type

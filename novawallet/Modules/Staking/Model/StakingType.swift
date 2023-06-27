@@ -6,6 +6,7 @@ enum StakingType: String, Codable, Equatable, Hashable {
     case azero = "aleph-zero"
     case auraRelaychain = "aura-relaychain"
     case turing
+    case nominationPools = "nomination-pools"
     case unsupported
 
     init(rawType: String?) {

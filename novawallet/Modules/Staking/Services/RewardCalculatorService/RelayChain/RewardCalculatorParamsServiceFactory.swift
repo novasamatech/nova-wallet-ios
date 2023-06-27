@@ -27,7 +27,7 @@ final class RewardCalculatorParamsServiceFactory {
 extension RewardCalculatorParamsServiceFactory: RewardCalculatorParamsServiceFactoryProtocol {
     func createRewardCalculatorParamsService() -> RewardCalculatorParamsServiceProtocol {
         switch stakingType {
-        case .relaychain:
+        case .relaychain, .nominationPools:
             return InflationRewardCalculatorParamsService(
                 connection: connection,
                 runtimeService: runtimeService,

@@ -23,7 +23,7 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol? {
         switch stakingOption.type {
-        case .relaychain:
+        case .relaychain, .nominationPools:
             return createRelaychainPresenter(for: stakingOption, view: view, consensus: .babe)
         case .auraRelaychain:
             return createRelaychainPresenter(for: stakingOption, view: view, consensus: .aura)
