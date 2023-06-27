@@ -16,17 +16,23 @@ extension UILabel {
         model: AccentTextModel,
         with style: MultiColorTextStyle
     ) {
-        let attributedString = NSMutableAttributedString(
+        var attributedString = NSAttributedString(
             string: model.text,
             attributes: [.foregroundColor: style.textColor,
                          .font: style.font]
         )
 
+        let highlightingAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: style.accentTextColor
+        ]
+
         model.accents.forEach { accent in
-            if let range = model.text.range(of: accent) {
-                let nsRange = NSRange(range, in: model.text)
-                attributedString.addAttribute(.foregroundColor, value: style.accentTextColor, range: nsRange)
-            }
+            let decorator = HighlightingAttributedStringDecorator(
+                pattern: accent,
+                attributes: highlightingAttributes
+            )
+
+            attributedString = decorator.decorate(attributedString: attributedString)
         }
 
         attributedText = attributedString

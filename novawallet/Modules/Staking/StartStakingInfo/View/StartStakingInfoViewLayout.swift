@@ -1,15 +1,7 @@
 import UIKit
 import SoraUI
 
-final class StartStakingInfoViewLayout: UIView {
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = Constants.containerInsets
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.alignment = .fill
-        return view
-    }()
-
+final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     var style: MultiColorTextStyle = .defaultStyle
 
     var header: StackTableHeaderCell = .create {
@@ -42,8 +34,8 @@ final class StartStakingInfoViewLayout: UIView {
 
     let footer: RoundedView = .create { view in
         view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorContainerBackground()!
-        view.highlightedFillColor = R.color.colorContainerBackground()!
+        view.fillColor = R.color.colorBottomSheetBackground()!
+        view.highlightedFillColor = R.color.colorBottomSheetBackground()!
         view.strokeColor = R.color.colorContainerBorder()!
         view.highlightedStrokeColor = R.color.colorContainerBorder()!
         view.strokeWidth = 1
@@ -68,11 +60,10 @@ final class StartStakingInfoViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-        addSubview(containerView)
-        containerView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-        }
+    override func setupLayout() {
+        super.setupLayout()
+
+        stackView.layoutMargins = Constants.containerInsets
 
         let footerContentView = UIView.vStack(spacing: Constants.footerSpacing, [
             actionView,
@@ -92,7 +83,6 @@ final class StartStakingInfoViewLayout: UIView {
         footer.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
             $0.height.equalTo(Constants.footerHeight)
-            $0.top.equalTo(containerView.snp.bottom)
         }
     }
 
@@ -102,8 +92,8 @@ final class StartStakingInfoViewLayout: UIView {
         wikiUrl: StartStakingUrlModel,
         termsUrl: StartStakingUrlModel
     ) {
-        containerView.stackView.arrangedSubviews.forEach(containerView.stackView.removeArrangedSubview)
-        containerView.stackView.spacing = Constants.containerSpacing
+        stackView.arrangedSubviews.forEach(containerView.stackView.removeArrangedSubview)
+        stackView.spacing = Constants.containerSpacing
 
         set(title: title)
         set(paragraphs: paragraphs)
@@ -135,13 +125,13 @@ final class StartStakingInfoViewLayout: UIView {
 
     private func setWiki(urlModel model: StartStakingUrlModel) {
         wikiView.bind(url: model.url, urlText: model.urlName, in: model.text)
-        containerView.stackView.addArrangedSubview(wikiView)
-        containerView.stackView.setCustomSpacing(Constants.wikiAndTermsSpacing, after: wikiView)
+        addArrangedSubview(wikiView)
+        stackView.setCustomSpacing(Constants.wikiAndTermsSpacing, after: wikiView)
     }
 
     private func setTerms(urlModel model: StartStakingUrlModel) {
         termsView.bind(url: model.url, urlText: model.urlName, in: model.text)
-        containerView.stackView.addArrangedSubview(termsView)
+        addArrangedSubview(termsView)
     }
 }
 
@@ -154,7 +144,7 @@ extension StartStakingInfoViewLayout {
         static let containerInsets = UIEdgeInsets(
             top: 0,
             left: 16,
-            bottom: footerContentSpace,
+            bottom: footerHeight,
             right: 16
         )
         static let containerSpacing: CGFloat = 32
