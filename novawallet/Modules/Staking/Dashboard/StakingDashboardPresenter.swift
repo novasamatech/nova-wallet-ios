@@ -110,18 +110,28 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
         self.wallet = wallet
+        lastResult = StakingDashboardBuilderResult(
+            walletId: wallet.metaId,
+            model: .init(),
+            changeKind: .reload
+        )
 
         updateWalletView()
+        updateStakingsView()
     }
 
     func didReceive(result: StakingDashboardBuilderResult) {
+        guard wallet?.metaId == result.walletId else {
+            return
+        }
+
         lastResult = result
 
         updateStakingsView()
     }
 
     func didReceive(error: StakingDashboardInteractorError) {
-        logger.debug("Did receive error: \(error)")
+        logger.error("Did receive error: \(error)")
 
         switch error {
         case .balanceFetchFailed:

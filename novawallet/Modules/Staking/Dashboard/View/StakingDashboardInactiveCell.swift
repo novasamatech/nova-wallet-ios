@@ -19,6 +19,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
     var networkLabel: ShimmerLabel { titleView.detailsView.fView }
     var balanceLabel: UILabel { titleView.detailsView.sView }
+    var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
 
     var skeletonView: SkrullableView?
@@ -40,21 +41,23 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     }
 
     func bind(viewModel: StakingDashboardDisabledViewModel, locale: Locale) {
+        stopLoadingIfNeeded()
+
         var newLoadingState: LoadingState = .none
 
         if applyNetworkViewModel(from: viewModel, locale: locale) {
             newLoadingState.formUnion(.network)
         }
 
-        estimatedEarningsLabel.bind(viewModel: viewModel.estimatedEarnings)
+        estimatedEarningsLabel.bind(viewModel: viewModel.estimatedEarnings.map(with: { $0 ?? "" }))
 
         if viewModel.estimatedEarnings.isLoading {
             newLoadingState.formUnion(.earnings)
         }
 
-        setupStaticLocalization(for: locale)
-
-        stopLoadingIfNeeded()
+        let hasEstimatedRewards = viewModel.estimatedEarnings.isLoading ||
+            viewModel.estimatedEarnings.satisfies { $0 != nil }
+        setupStaticLocalization(for: locale, hasEstimatedRewards: hasEstimatedRewards)
 
         loadingState = newLoadingState
 
@@ -71,10 +74,14 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         startLoadingIfNeeded()
     }
 
-    func setupStaticLocalization(for locale: Locale) {
-        valueView.detailsView.sView.text = R.string.localizable.commonPerYear(
-            preferredLanguages: locale.rLanguages
-        )
+    private func setupStaticLocalization(for locale: Locale, hasEstimatedRewards: Bool) {
+        if hasEstimatedRewards {
+            valueView.detailsView.sView.text = R.string.localizable.commonPerYearLong(
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            valueView.detailsView.sView.text = ""
+        }
     }
 
     private func applyNetworkViewModel(

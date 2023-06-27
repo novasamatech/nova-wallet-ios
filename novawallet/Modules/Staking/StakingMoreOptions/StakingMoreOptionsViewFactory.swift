@@ -29,6 +29,7 @@ struct StakingMoreOptionsViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             wireframe: wireframe,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

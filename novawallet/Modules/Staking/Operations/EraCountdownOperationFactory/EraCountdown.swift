@@ -7,6 +7,7 @@ struct EraCountdown {
     let sessionLength: SessionIndex
     let activeEraStartSessionIndex: SessionIndex
     let currentSessionIndex: SessionIndex
+    let currentEpochIndex: EpochIndex
     let currentSlot: Slot
     let genesisSlot: Slot
     let blockCreationTime: Moment
@@ -28,8 +29,12 @@ struct EraCountdown {
         let currentSessionIndexInt = UInt64(currentSessionIndex)
         let eraLengthInSlots = UInt64(sessionLength * eraLength)
 
-        let sessionStartSlot = currentSessionIndexInt * numberOfSlotsPerSession + genesisSlot
-        let sessionProgress = currentSlot >= sessionStartSlot ? currentSlot - sessionStartSlot : 0
+        /*
+         * Substrate has an assumption that Babe epoch duration is the same as session length.
+         * But this doesn't mean that current epoch equals to current session.
+         */
+        let epochStartSlot = currentEpochIndex * numberOfSlotsPerSession + genesisSlot
+        let sessionProgress = currentSlot >= epochStartSlot ? currentSlot - epochStartSlot : 0
         let eraProgress = (currentSessionIndexInt - UInt64(activeEraStartSessionIndex)) *
             numberOfSlotsPerSession + sessionProgress
 

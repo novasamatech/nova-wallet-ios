@@ -5,7 +5,7 @@ import SoraFoundation
 final class StakingDashboardInteractor {
     weak var presenter: StakingDashboardInteractorOutputProtocol?
 
-    let syncService: MultistakingSyncServiceProtocol
+    let syncServiceFactory: MultistakingSyncServiceFactoryProtocol
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
     let chainsStore: ChainsStoreProtocol
@@ -15,6 +15,7 @@ final class StakingDashboardInteractor {
     let applicationHandler: ApplicationHandlerProtocol
     let stateObserver: Observable<StakingDashboardModel>
 
+    private var syncService: MultistakingSyncServiceProtocol?
     private var modelBuilder: StakingDashboardBuilderProtocol?
 
     private var balanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
@@ -26,7 +27,7 @@ final class StakingDashboardInteractor {
     private var stakableAssets: Set<ChainAsset> = []
 
     init(
-        syncService: MultistakingSyncServiceProtocol,
+        syncServiceFactory: MultistakingSyncServiceFactoryProtocol,
         walletSettings: SelectedWalletSettings,
         chainsStore: ChainsStoreProtocol,
         eventCenter: EventCenterProtocol,
@@ -37,7 +38,7 @@ final class StakingDashboardInteractor {
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
-        self.syncService = syncService
+        self.syncServiceFactory = syncServiceFactory
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
         self.chainsStore = chainsStore
@@ -59,9 +60,9 @@ final class StakingDashboardInteractor {
     }
 
     private func setupSyncStateSubscription() {
-        syncService.setup()
+        syncService?.setup()
 
-        syncService.subscribeSyncState(self, queue: .main) { [weak self] _, state in
+        syncService?.subscribeSyncState(self, queue: .main) { [weak self] _, state in
             self?.modelBuilder?.applySync(state: state)
         }
     }
@@ -157,6 +158,8 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
             self?.stateObserver.state = result.model
         }
 
+        syncService = syncServiceFactory.createService(for: SelectedWalletSettings.shared.value)
+
         provideWallet()
         setupChainsStore()
         setupDashboardItemsSubscription()
@@ -179,7 +182,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
     }
 
     func refresh() {
-        syncService.refreshOffchain()
+        syncService?.refreshOffchain()
     }
 }
 
@@ -248,7 +251,7 @@ extension StakingDashboardInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         provideWallet()
 
-        syncService.update(selectedMetaAccount: walletSettings.value)
+        syncService?.update(selectedMetaAccount: walletSettings.value)
         resetDashboardItemsSubscription()
         resetBalanceSubscription()
     }
@@ -266,10 +269,10 @@ extension StakingDashboardInteractor: SelectedCurrencyDepending {
 
 extension StakingDashboardInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
-        syncService.setup()
+        syncService?.setup()
     }
 
     func didReceiveDidEnterBackground(notification _: Notification) {
-        syncService.throttle()
+        syncService?.throttle()
     }
 }

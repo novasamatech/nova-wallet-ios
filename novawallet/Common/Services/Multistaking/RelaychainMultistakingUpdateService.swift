@@ -18,6 +18,8 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
     private var controllerSubscription: CallbackBatchStorageSubscription<Multistaking.RelaychainAccountsChange>?
 
+    private var state: Multistaking.RelaychainState?
+
     init(
         walletId: MetaAccountModel.Id,
         accountId: AccountId,
@@ -143,13 +145,20 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             BytesCodable(wrappedValue: stash)
         }
 
+        let validatorRequest = MapSubscriptionRequest(
+            storagePath: .validatorPrefs,
+            localKey: Multistaking.RelaychainStateChange.Key.validatorPrefs.rawValue
+        ) {
+            BytesCodable(wrappedValue: stash)
+        }
+
         let eraRequest = UnkeyedSubscriptionRequest(
             storagePath: .activeEra,
             localKey: Multistaking.RelaychainStateChange.Key.era.rawValue
         )
 
         stateSubscription = CallbackBatchStorageSubscription(
-            requests: [ledgerRequest, nominationRequest, eraRequest],
+            requests: [ledgerRequest, nominationRequest, validatorRequest, eraRequest],
             connection: connection,
             runtimeService: runtimeService,
             repository: nil,
@@ -169,9 +178,36 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     private func handleStateSubscription(result: Result<Multistaking.RelaychainStateChange, Error>) {
         switch result {
         case let .success(change):
-            saveState(change: change)
+            if let newState = updateState(from: change) {
+                saveState(newState)
+            }
         case let .failure(error):
             completeImmediate(error)
+        }
+    }
+
+    private func updateState(from change: Multistaking.RelaychainStateChange) -> Multistaking.RelaychainState? {
+        if let currentState = state {
+            let newState = currentState.applying(change: change)
+            state = newState
+            return newState
+        } else if
+            case let .defined(era) = change.era,
+            case let .defined(ledger) = change.ledger,
+            case let .defined(nomination) = change.nomination,
+            case let .defined(validatorPrefs) = change.validatorPrefs {
+            let state = Multistaking.RelaychainState(
+                era: era,
+                ledger: ledger,
+                nomination: nomination,
+                validatorPrefs: validatorPrefs
+            )
+
+            self.state = state
+
+            return state
+        } else {
+            return nil
         }
     }
 
@@ -206,7 +242,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         operationQueue.addOperation(saveOperation)
     }
 
-    private func saveState(change: Multistaking.RelaychainStateChange) {
+    private func saveState(_ state: Multistaking.RelaychainState) {
         let stakingOption = Multistaking.OptionWithWallet(
             walletId: walletId,
             option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)
@@ -214,7 +250,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
         let dashboardItem = Multistaking.DashboardItemRelaychainPart(
             stakingOption: stakingOption,
-            stateChange: change
+            state: state
         )
 
         let saveOperation = dashboardRepository.saveOperation({

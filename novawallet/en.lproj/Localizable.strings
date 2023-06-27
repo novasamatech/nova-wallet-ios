@@ -215,7 +215,6 @@
 "staking.payout.title" = "Payout";
 "staking.reward.payout.account" = "Payout account";
 "common.learn.more" = "Learn more";
-"staking.more.options.dApps.title" = "Staking via Nova DApp browser";
 "staking.recommended.title" = "Validators";
 "staking.recommended.section.title" = "Recommended validators";
 "staking.recommended.hint1" = "Most profitable";
@@ -629,7 +628,7 @@
 "staking.network.info.staking.period.title" = "Staking period";
 "crowdloan.learn_v2_2_0" = "%@'s crowdloan website";
 "common.learn.more_v2_2_0" = "Find out more about";
-"staking.reward.widget.title" = "Your rewards";
+"staking.reward.widget.title" = "Rewards";
 "staking.waiting.next.era.format" = "waiting for the next era (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Support & Feedback";
@@ -1239,15 +1238,10 @@
 "governance.referendums.filter.header" = "Show:";
 "governance.referendums.search.field.placeholder" = "Search by referendum title or ID";
 "governance.referendums.search.empty" = "No referenda with entered title or ID\nwere found";
-"governance.referendums.filter.empty" = "There are no referenda with filters\napplied";
 "governance.referendums.settings.title" = "Referenda";
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
-"staking.nominator.status.waiting" = "Waiting";
-"staking.estimated.earnings" = "Estimated earnings";
-"multistaking.more.options" = "More staking options";
-"multistaking.inactive.header" = "Stake and earn rewards";
-"common.per.year" = "per year";
+"governance.referendums.filter.empty" = "There are no referenda with filters applied";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Open Polkadot Vault application on your smartphone";
 "welcome.polkadot.vault.step1.highlighted" = "Open Polkadot Vault";
@@ -1259,4 +1253,11 @@
 "staking.controller.deprecated.title" = "Controller Accounts Are Being Deprecated";
 "staking.controller.deprecated.details" = "Network is migrating towards replacing Controllers to Proxies feature. Nova Wallet will support Proxies in future updates";
 "staking.controller.deprecated.action" = "Update Controller to Stash";
+"staking.estimated.earnings" = "Estimated rewards";
+"common.per.year.long" = "per year";
+"common.per.year" = "/ year";
+"common.waiting" = "Waiting";
+"staking.more.options.dApps.title" = "Staking via Nova Browser";
+"multistaking.inactive.header" = "Stake and earn rewards";
+"multistaking.more.options" = "More staking options";
 "staking.on.network" = "%@ staking";
