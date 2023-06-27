@@ -120,7 +120,7 @@ extension UILabel.Style {
         textColor: R.color.colorTextSecondary()!,
         font: .semiBoldTitle3
     )
-    
+
     static let boldTitle2Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .boldTitle2
