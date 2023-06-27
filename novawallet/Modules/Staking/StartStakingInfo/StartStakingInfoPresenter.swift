@@ -23,11 +23,11 @@ extension StartStakingInfoPresenter: StartStakingInfoPresenterProtocol {
         let title = startStakingViewModelFactory.earnupModel(locale: selectedLocale)
         let wikiUrl = startStakingViewModelFactory.wikiModel(
             locale: selectedLocale,
-            url: URL(string: "https://google.com")!
+            url: URL(string: "https://novawallet.io")!
         )
         let termsUrl = startStakingViewModelFactory.termsModel(
             locale: selectedLocale,
-            url: URL(string: "https://google.com")!
+            url: URL(string: "https://novawallet.io")!
         )
         let paragraphs = [
             startStakingViewModelFactory.stakeModel(locale: selectedLocale),

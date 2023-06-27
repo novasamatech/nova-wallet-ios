@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class StartStakingInfoViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -24,6 +25,7 @@ final class StartStakingInfoViewLayout: UIView {
         $0.isScrollEnabled = false
         $0.backgroundColor = .clear
         $0.isEditable = false
+        $0.textContainerInset = .zero
     }
 
     lazy var termsView: UITextView = .create {
@@ -35,13 +37,24 @@ final class StartStakingInfoViewLayout: UIView {
         $0.isScrollEnabled = false
         $0.backgroundColor = .clear
         $0.isEditable = false
+        $0.textContainerInset = .zero
     }
 
-    let footer: BlockBackgroundView = .create {
-        $0.cornerCut = [.topLeft, .topRight]
+    let footer: RoundedView = .create { view in
+        view.applyFilledBackgroundStyle()
+        view.fillColor = R.color.colorContainerBackground()!
+        view.highlightedFillColor = R.color.colorContainerBackground()!
+        view.strokeColor = R.color.colorContainerBorder()!
+        view.highlightedStrokeColor = R.color.colorContainerBorder()!
+        view.strokeWidth = 1
+        view.cornerRadius = 12
+        view.roundingCorners = [.topLeft, .topRight]
     }
 
-    let actionView = LoadableActionView()
+    lazy var actionView: LoadableActionView = .create {
+        $0.actionButton.applyEnabledStyle(colored: self.style.accentTextColor)
+    }
+
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
 
     override init(frame: CGRect) {
@@ -58,7 +71,7 @@ final class StartStakingInfoViewLayout: UIView {
     private func setupLayout() {
         addSubview(containerView)
         containerView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.leading.trailing.equalToSuperview()
         }
 
         let footerContentView = UIView.vStack(spacing: Constants.footerSpacing, [
@@ -66,6 +79,11 @@ final class StartStakingInfoViewLayout: UIView {
             balanceLabel
         ])
         footer.addSubview(footerContentView)
+
+        actionView.snp.makeConstraints {
+            $0.height.equalTo(Constants.actionViewHeight)
+        }
+
         footerContentView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(Constants.footerInsets)
         }
@@ -74,6 +92,7 @@ final class StartStakingInfoViewLayout: UIView {
         footer.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
             $0.height.equalTo(Constants.footerHeight)
+            $0.top.equalTo(containerView.snp.bottom)
         }
     }
 
@@ -100,6 +119,7 @@ final class StartStakingInfoViewLayout: UIView {
 
     private func set(title: AccentTextModel) {
         header.titleLabel.bind(model: title, with: style)
+        header.titleLabel.numberOfLines = 0
         containerView.stackView.addArrangedSubview(header)
     }
 
@@ -108,6 +128,7 @@ final class StartStakingInfoViewLayout: UIView {
             let view = ParagraphView(frame: .zero)
             view.style = style
             view.bind(viewModel: $0)
+            view.contentInsets = .zero
             containerView.stackView.addArrangedSubview(view)
         }
     }
@@ -133,10 +154,11 @@ extension StartStakingInfoViewLayout {
         static let containerInsets = UIEdgeInsets(
             top: 0,
             left: 16,
-            bottom: footerContentSpace + footerHeight,
+            bottom: footerContentSpace,
             right: 16
         )
         static let containerSpacing: CGFloat = 32
         static let wikiAndTermsSpacing: CGFloat = 16
+        static let actionViewHeight: CGFloat = UIConstants.actionHeight
     }
 }

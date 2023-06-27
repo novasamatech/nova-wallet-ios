@@ -1267,8 +1267,8 @@
 "staking.start.rewards" = "Rewards accrue %@ and added back to the stake";
 "staking.start.gov" = "%@ with your staked tokens";
 "staking.start.gov.action" = "Participate in governance";
-"staking.start.changes.action" = "Monitor your stake from time to time";
-"staking.start.changes" = "Rewards & staking status vary over time. %@";
+"staking.start.changes.action" = "Monitor your stake";
+"staking.start.changes" = "Rewards & staking status vary over time. %@ from time to time";
 "staking.start.wiki" = "Find out more information about\nEdgeware staking over at the %@";
 "staking.start.wiki.link" = "Nova Wiki";
 "staking.start.terms" = "See %@";

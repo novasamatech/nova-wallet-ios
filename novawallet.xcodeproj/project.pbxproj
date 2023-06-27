@@ -8309,6 +8309,7 @@
 				77F1893D2A4996FC00E8B933 /* ParagraphView.swift */,
 				77F1893F2A49972300E8B933 /* UILabel+bind.swift */,
 				77F189432A49974A00E8B933 /* UITextView+bind.swift */,
+				B9D4A8C06D94C748124E6AA5 /* StartStakingInfoViewLayout.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -16480,7 +16481,6 @@
 				0E4D3F275296975CA39280D5 /* StartStakingInfoPresenter.swift */,
 				A2BC4EFADD593325FF122765 /* StartStakingInfoInteractor.swift */,
 				6F5788D702D2B2203949329E /* StartStakingInfoViewController.swift */,
-				B9D4A8C06D94C748124E6AA5 /* StartStakingInfoViewLayout.swift */,
 				694E15BA7E0C59E46D0A6612 /* StartStakingInfoViewFactory.swift */,
 			);
 			path = StartStakingInfo;
