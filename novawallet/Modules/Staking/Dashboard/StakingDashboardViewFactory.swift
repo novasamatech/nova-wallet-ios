@@ -52,8 +52,7 @@ struct StakingDashboardViewFactory {
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let syncService = MultistakingServiceFactory.createService(
-            for: wallet,
+        let syncServiceFactory = MultistakingSyncServiceFactory(
             offchainUrl: ApplicationConfig.shared.multistakingURL,
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: chainRegistry
@@ -67,7 +66,7 @@ struct StakingDashboardViewFactory {
         )
 
         return .init(
-            syncService: syncService,
+            syncServiceFactory: syncServiceFactory,
             walletSettings: walletSettings,
             chainsStore: ChainsStore(chainRegistry: chainRegistry),
             eventCenter: EventCenter.shared,

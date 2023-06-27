@@ -10,7 +10,6 @@ enum SubqueryMultistaking {
     }
 
     struct Apy: Decodable {
-        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case networkId
             case stakingType
@@ -23,9 +22,12 @@ enum SubqueryMultistaking {
     }
 
     struct AccumulatedReward: Decodable {
-        let networkId: String
-        let stakingType: String
-        @StringCodable var amount: BigUInt
+        struct Sum: Decodable {
+            let amount: String
+        }
+
+        let keys: [String]
+        let sum: Sum
     }
 
     struct NetworkStaking: Hashable {
@@ -36,6 +38,6 @@ enum SubqueryMultistaking {
     struct StatsResponse: Decodable {
         let activeStakers: SubqueryNodes<ActiveStaker>
         let stakingApies: SubqueryNodes<Apy>
-        let accumulatedRewards: SubqueryNodes<AccumulatedReward>
+        let rewards: SubqueryAggregates<AccumulatedReward>
     }
 }

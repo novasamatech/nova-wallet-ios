@@ -38,14 +38,16 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
             option: .init(chainAssetId: chainAssetId, type: stakingType)
         )
 
-        let state = entity.state.flatMap { Multistaking.DashboardItem.State(rawValue: $0) }
         let stake = entity.stake.flatMap { BigUInt($0) }
         let totalRewards = entity.totalRewards.flatMap { BigUInt($0) }
         let maxApy = entity.maxApy as Decimal?
 
+        let onchainState = entity.onchainState.flatMap { Multistaking.DashboardItemOnchainState(rawValue: $0) }
+
         return .init(
             stakingOption: stakingOption,
-            state: state,
+            onchainState: onchainState,
+            hasAssignedStake: entity.hasAssignedStake,
             stake: stake,
             totalRewards: totalRewards,
             maxApy: maxApy

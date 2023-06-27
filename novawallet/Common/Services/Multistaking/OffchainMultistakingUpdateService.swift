@@ -15,7 +15,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     let operationQueue: OperationQueue
     let syncDelay: TimeInterval
 
-    private var pendingOperation: CancellableCall?
+    private var pendingCall: CancellableCall?
     private var resolvedAccounts: [Multistaking.Option: Multistaking.ResolvedAccount] = [:]
     private var chainAssets: Set<ChainAsset> = []
 
@@ -111,25 +111,35 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
 
         saveOperation.addDependency(wrapper.targetOperation)
 
-        saveOperation.completionBlock = { [weak self] in
-            self?.workingQueue.async {
-                do {
-                    self?.logger?.debug("Did save synced data...")
-                    _ = try saveOperation.extractNoCancellableResultData()
-
-                    self?.complete(nil)
-                } catch {
-                    self?.complete(error)
-                }
-            }
-        }
-
         let compoundWrapper = CompoundOperationWrapper(
             targetOperation: saveOperation,
             dependencies: wrapper.allOperations
         )
 
-        pendingOperation = compoundWrapper
+        saveOperation.completionBlock = { [weak self] in
+            guard let workingQueue = self?.workingQueue, let mutex = self?.mutex else {
+                return
+            }
+
+            dispatchInConcurrent(queue: workingQueue, locking: mutex) {
+                guard self?.pendingCall === compoundWrapper else {
+                    return
+                }
+
+                self?.pendingCall = nil
+
+                do {
+                    self?.logger?.debug("Did save synced data...")
+                    _ = try saveOperation.extractNoCancellableResultData()
+
+                    self?.completeImmediate(nil)
+                } catch {
+                    self?.completeImmediate(error)
+                }
+            }
+        }
+
+        pendingCall = compoundWrapper
 
         operationQueue.addOperations(compoundWrapper.allOperations, waitUntilFinished: false)
     }
@@ -137,10 +147,12 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     private func cancelOperation() {
         logger?.debug("Cancelling syncing...")
 
-        clear(cancellable: &pendingOperation)
+        clear(cancellable: &pendingCall)
     }
 
     private func subscribeAccounts(for wallet: MetaAccountModel) {
+        accountResolveProvider.removeObserver(self)
+
         let updateClosure: ([DataProviderChange<Multistaking.ResolvedAccount>]) -> Void
         updateClosure = { [weak self] changes in
             guard let self = self else {

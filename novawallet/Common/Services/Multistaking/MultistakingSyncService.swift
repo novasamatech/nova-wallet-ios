@@ -45,8 +45,12 @@ final class MultistakingSyncService {
         providerFactory: MultistakingProviderFactoryProtocol,
         repositoryFactory: MultistakingRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
-        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
-        workingQueue: DispatchQueue = .global(),
+        operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
+        workingQueue: DispatchQueue = DispatchQueue(
+            label: "com.nova.wallet.staking.sync",
+            qos: .userInitiated,
+            attributes: .concurrent
+        ),
         logger: LoggerProtocol = Logger.shared
     ) {
         self.wallet = wallet

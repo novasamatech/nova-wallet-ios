@@ -34,12 +34,12 @@ extension Multistaking {
 
     struct DashboardItemRelaychainPart {
         let stakingOption: OptionWithWallet
-        let stateChange: Multistaking.RelaychainStateChange
+        let state: Multistaking.RelaychainState
     }
 
     struct DashboardItemParachainPart {
         let stakingOption: OptionWithWallet
-        let stateChange: Multistaking.ParachainStateChange
+        let state: Multistaking.ParachainState
     }
 
     struct DashboardItemOffchainPart {
@@ -47,6 +47,38 @@ extension Multistaking {
         let maxApy: Decimal
         let hasAssignedStake: Bool
         let totalRewards: BigUInt?
+    }
+
+    enum DashboardItemOnchainState: String {
+        case bonded
+        case waiting
+        case active
+
+        static func from(relaychainState: Multistaking.RelaychainState) -> DashboardItemOnchainState? {
+            guard relaychainState.ledger != nil else {
+                return nil
+            }
+
+            if let nomination = relaychainState.nomination {
+                return nomination.submittedIn >= relaychainState.era.index ? .waiting : .active
+            } else if relaychainState.validatorPrefs != nil {
+                return .active
+            } else {
+                return .bonded
+            }
+        }
+
+        static func from(parachainState: Multistaking.ParachainState) -> DashboardItemOnchainState? {
+            guard parachainState.stake != nil else {
+                return nil
+            }
+
+            if parachainState.shouldHaveActiveCollator {
+                return .waiting
+            } else {
+                return .bonded
+            }
+        }
     }
 
     struct DashboardItem: Equatable {
@@ -57,10 +89,32 @@ extension Multistaking {
         }
 
         let stakingOption: OptionWithWallet
-        let state: State?
+        let onchainState: DashboardItemOnchainState?
+        let hasAssignedStake: Bool
         let stake: BigUInt?
         let totalRewards: BigUInt?
         let maxApy: Decimal?
+
+        var state: State? {
+            switch onchainState {
+            case .none:
+                return nil
+            case .bonded:
+                return .inactive
+            case .waiting:
+                if hasAssignedStake {
+                    return .active
+                } else {
+                    return .waiting
+                }
+            case .active:
+                if hasAssignedStake {
+                    return .active
+                } else {
+                    return .inactive
+                }
+            }
+        }
     }
 
     struct ResolvedAccount: Equatable {
