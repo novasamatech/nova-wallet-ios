@@ -51,6 +51,7 @@ protocol TransferSetupInteractorIntputProtocol: AnyObject {
     func setup(destinationChainAsset: ChainAsset)
     func destinationChainAssetDidChanged(_ chainAsset: ChainAsset)
     func search(web3Name: String)
+    func verifyPhishing(address: AccountAddress)
 }
 
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
@@ -58,6 +59,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
     func didReceive(recipients: [Web3TransferRecipient], for name: String)
+    func didReceiveIsNotPhishing(result: Bool, address: AccountAddress)
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
@@ -83,4 +85,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     func hideYourWallets(from view: TransferSetupViewProtocol?)
 
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool
+
+    func showPhishing(on view: TransferSetupViewProtocol?, address: AccountAddress, locale: Locale)
 }

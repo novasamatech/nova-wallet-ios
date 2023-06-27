@@ -68,4 +68,19 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
         view?.controller.navigationController?.isBeingDismissed ?? true
     }
+
+    func showPhishing(on view: TransferSetupViewProtocol?, address: AccountAddress, locale: Locale) {
+        let presentingController = view?.controller.presentingViewController
+
+        let controller = UIAlertController.phishingWarningAlert(
+            onConfirm: {},
+            onCancel: {
+                presentingController?.dismiss(animated: true)
+            },
+            locale: locale,
+            displayName: address
+        )
+
+        view?.controller.present(controller, animated: true)
+    }
 }
