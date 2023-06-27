@@ -6,6 +6,7 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
 
     let presenter: StartStakingInfoPresenterProtocol
     private var viewModel: LoadableViewModelState<StartStakingViewModel>?
+    private var balance = ""
 
     init(
         presenter: StartStakingInfoPresenterProtocol,
@@ -34,7 +35,7 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         rootView.updateBalanceButton(
-            text: "",
+            text: balance,
             locale: selectedLocale
         )
 
@@ -70,6 +71,7 @@ extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
     }
 
     func didReceive(balance: String) {
+        self.balance = balance
         rootView.updateBalanceButton(text: balance, locale: selectedLocale)
     }
 }
