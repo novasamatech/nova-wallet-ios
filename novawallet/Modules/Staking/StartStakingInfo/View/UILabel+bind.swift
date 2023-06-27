@@ -26,15 +26,14 @@ extension UILabel {
             .foregroundColor: style.accentTextColor
         ]
 
-        model.accents.forEach { accent in
-            let decorator = HighlightingAttributedStringDecorator(
-                pattern: accent,
+        let decorators = model.accents.map {
+            HighlightingAttributedStringDecorator(
+                pattern: $0,
                 attributes: highlightingAttributes
             )
-
-            attributedString = decorator.decorate(attributedString: attributedString)
         }
 
-        attributedText = attributedString
+        attributedText = CompoundAttributedStringDecorator(decorators: decorators)
+            .decorate(attributedString: attributedString)
     }
 }
