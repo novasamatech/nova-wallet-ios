@@ -1,8 +1,9 @@
 import Foundation
+import BigInt
 
 protocol StartStakingViewModelFactoryProtocol {
     func earnupModel(locale: Locale) -> AccentTextModel
-    func stakeModel(locale: Locale) -> ParagraphView.Model
+    func stakeModel(minStake: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> ParagraphView.Model
     func unstakeModel(locale: Locale) -> ParagraphView.Model
     func rewardModel(locale: Locale) -> ParagraphView.Model
     func govModel(locale: Locale) -> ParagraphView.Model
@@ -13,10 +14,16 @@ protocol StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model
     func wikiModel(locale: Locale, url: URL) -> StartStakingUrlModel
     func termsModel(locale: Locale, url: URL) -> StartStakingUrlModel
-    func balance(locale: Locale) -> String
+    func balance(amount: BigUInt?, priceData: PriceData?, chainAsset: ChainAsset, locale: Locale) -> String
 }
 
 struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+
+    init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
+        self.balanceViewModelFactory = balanceViewModelFactory
+    }
+
     func earnupModel(locale: Locale) -> AccentTextModel {
         let amount = "22.86%"
         let token = "DOT"
@@ -34,15 +41,27 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         return textWithAccents
     }
 
-    func stakeModel(locale: Locale) -> ParagraphView.Model {
-        let amount = "1 DOT"
+    func stakeModel(minStake: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> ParagraphView.Model {
         let time = "in 4 hours and 34 minutes"
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+        let textWithAccents: AccentTextModel
 
-        let text = R.string.localizable.stakingStartStake(amount, time, preferredLanguages: locale.rLanguages)
-        let textWithAccents = AccentTextModel(
-            text: text,
-            accents: [amount, time]
-        )
+        if let minStake = minStake,
+           let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: precision) {
+            let amount = balanceViewModelFactory.amountFromValue(amountDecimal).value(for: locale)
+            let text = R.string.localizable.stakingStartStake(amount, time, preferredLanguages: locale.rLanguages)
+            textWithAccents = AccentTextModel(
+                text: text,
+                accents: [amount, time]
+            )
+        } else {
+            let text = R.string.localizable.stakingStartStakeWithoutMinimumStake(time, preferredLanguages: locale.rLanguages)
+            textWithAccents = AccentTextModel(
+                text: text,
+                accents: [time]
+            )
+        }
+
         return .init(
             image: R.image.coin(),
             text: textWithAccents
@@ -144,12 +163,24 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func balance(locale: Locale) -> String {
-        let text = R.string.localizable.stakingStartBalanceWithFiat(
-            "100 DOT",
-            "$575",
-            preferredLanguages: locale.rLanguages
-        )
-        return text
+    func balance(amount: BigUInt?, priceData: PriceData?, chainAsset: ChainAsset, locale: Locale) -> String {
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+        guard let amountDecimal = Decimal.fromSubstrateAmount(amount ?? 0, precision: precision) else {
+            return ""
+        }
+        let balance = balanceViewModelFactory.balanceFromPrice(amountDecimal, priceData: priceData).value(for: locale)
+
+        if let price = balance.price, amount != nil {
+            return R.string.localizable.stakingStartBalanceWithFiat(
+                balance.amount,
+                price,
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            return R.string.localizable.stakingStartBalance(
+                balance.amount,
+                preferredLanguages: locale.rLanguages
+            )
+        }
     }
 }

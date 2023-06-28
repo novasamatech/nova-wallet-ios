@@ -1,12 +1,33 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 struct StartStakingInfoViewFactory {
-    static func createView() -> StartStakingInfoViewProtocol? {
-        let interactor = StartStakingInfoInteractor()
-        let wireframe = StartStakingInfoWireframe()
+    static func createView(stakingOption: Multistaking.ChainAssetOption) -> StartStakingInfoViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
 
-        let presenter = StartStakingInfoPresenter(interactor: interactor, wireframe: wireframe, startStakingViewModelFactory: StartStakingViewModelFactory())
+        guard let interactor = createInteractor(
+            stakingOption: stakingOption,
+            currencyManager: currencyManager
+        ) else {
+            return nil
+        }
+
+        let wireframe = StartStakingInfoWireframe()
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: stakingOption.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+        let startStakingViewModelFactory = StartStakingViewModelFactory(
+            balanceViewModelFactory: balanceViewModelFactory)
+
+        let presenter = StartStakingInfoPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            startStakingViewModelFactory: startStakingViewModelFactory
+        )
 
         let view = StartStakingInfoViewController(
             presenter: presenter,
@@ -17,5 +38,59 @@ struct StartStakingInfoViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        stakingOption: Multistaking.ChainAssetOption,
+        currencyManager: CurrencyManagerProtocol
+    ) -> StartStakingInfoInteractor? {
+        let selectedWalletSettings = SelectedWalletSettings.shared
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
+        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
+        let operationQueue = OperationQueue()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        switch stakingOption.type {
+        case .relaychain, .auraRelaychain, .azero, .nominationPools:
+            let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
+                chainRegistry: chainRegistry,
+                storageFacade: SubstrateDataStorageFacade.shared,
+                operationManager: OperationManager(operationQueue: operationQueue),
+                logger: Logger.shared
+            )
+            return StartStakingRelaychainInteractor(
+                chainAsset: stakingOption.chainAsset,
+                stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+                selectedWalletSettings: selectedWalletSettings,
+                walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+                priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+                currencyManager: currencyManager,
+                stateFactory: RelaychainStakingStateFactory(
+                    stakingOption: stakingOption,
+                    stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+                    operationQueue: operationQueue
+                ),
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            )
+        case .parachain, .turing:
+            return StartStakingParachainInteractor(
+                chainAsset: stakingOption.chainAsset,
+                selectedWalletSettings: selectedWalletSettings,
+                walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+                priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+                currencyManager: currencyManager,
+                stateFactory: ParachainStakingStateFactory(
+                    stakingOption: stakingOption,
+                    operationQueue: operationQueue
+                ),
+                chainRegistry: chainRegistry,
+                networkInfoFactory: ParaStkNetworkInfoOperationFactory(),
+                operationQueue: operationQueue,
+                eventCenter: EventCenter.shared
+            )
+        case .unsupported:
+            return nil
+        }
     }
 }

@@ -91,7 +91,7 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
             return
         }
 
-        wireframe.showStartStaking(from: view)
+        wireframe.showStartStaking(from: view, option: option)
     }
 
     func selectMoreOptions() {
