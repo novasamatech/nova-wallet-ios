@@ -101,11 +101,13 @@ final class ParaStkYieldBoostSetupPresenter {
     }
 
     func selectedRemoteBoostPeriod() -> UInt? {
-        guard let task = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator }) else {
+        guard
+            let task = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator }),
+            let frequency = task.frequency else {
             return nil
         }
 
-        return UInt(bitPattern: TimeInterval(task.frequency).daysFromSeconds)
+        return UInt(bitPattern: TimeInterval(frequency).daysFromSeconds)
     }
 
     func checkChanges() -> Bool {
