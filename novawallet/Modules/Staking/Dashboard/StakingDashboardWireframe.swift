@@ -35,4 +35,18 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
             animated: true
         )
     }
+
+    func showStartStaking(
+        from view: StakingDashboardViewProtocol?
+    ) {
+        guard let startStakingView = StartStakingInfoViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: startStakingView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }
