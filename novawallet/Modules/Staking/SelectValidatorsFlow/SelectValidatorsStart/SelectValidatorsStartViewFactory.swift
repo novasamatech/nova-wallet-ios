@@ -55,8 +55,9 @@ final class SelectValidatorsStartViewFactory {
     ) -> SelectValidatorsStartViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = stakingState.stakingOption.chainAsset
+
         guard
-            let chainAsset = stakingState.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let eraValidatorService = stakingState.eraValidatorService,

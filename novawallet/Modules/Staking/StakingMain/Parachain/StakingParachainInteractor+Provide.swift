@@ -2,11 +2,7 @@ import Foundation
 
 extension StakingParachainInteractor {
     func provideSelectedChainAsset() {
-        guard let chainAsset = selectedChainAsset else {
-            return
-        }
-
-        presenter?.didReceiveChainAsset(chainAsset)
+        presenter?.didReceiveChainAsset(selectedChainAsset)
     }
 
     func provideSelectedAccount() {
@@ -77,10 +73,7 @@ extension StakingParachainInteractor {
     ) {
         clear(cancellable: &networkInfoCancellable)
 
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainId = selectedChainAsset.chain.chainId
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
@@ -119,10 +112,7 @@ extension StakingParachainInteractor {
     func provideDurationInfo(for blockTimeService: BlockTimeEstimationServiceProtocol) {
         clear(cancellable: &durationCancellable)
 
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
+        let chainId = selectedChainAsset.chain.chainId
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {

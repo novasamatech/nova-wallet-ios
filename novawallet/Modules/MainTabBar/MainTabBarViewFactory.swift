@@ -114,7 +114,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        let viewController = StakingMainViewFactory.createView()?.controller ?? UIViewController()
+        let viewController = StakingDashboardViewFactory.createView()?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarStakingTitle(preferredLanguages: locale.rLanguages)

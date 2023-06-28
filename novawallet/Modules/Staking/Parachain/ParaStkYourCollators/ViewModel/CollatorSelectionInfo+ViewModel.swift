@@ -11,7 +11,7 @@ extension CollatorSelectionInfo {
             return .rewarded
         }
 
-        if !metadata.topCapacity.isFull || stake > metadata.lowestTopDelegationAmount {
+        if metadata.isStakeShouldBeActive(for: stake) {
             return .pending
         }
 

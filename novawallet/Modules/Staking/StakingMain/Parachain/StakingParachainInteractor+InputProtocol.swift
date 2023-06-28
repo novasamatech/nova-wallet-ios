@@ -10,8 +10,9 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
     func fetchDelegations(for collators: [AccountId]) {
         clear(cancellable: &delegationsCancellable)
 
+        let chain = selectedChainAsset.chain
+
         guard
-            let chain = selectedChainAsset?.chain,
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
             presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
             return
@@ -63,9 +64,9 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
     func fetchScheduledRequests() {
         clear(streamableProvider: &scheduledRequestsProvider)
 
-        guard
-            let chainId = selectedChainAsset?.chain.chainId,
-            let delegatorId = selectedAccount?.chainAccount.accountId else {
+        let chainId = selectedChainAsset.chain.chainId
+
+        guard let delegatorId = selectedAccount?.chainAccount.accountId else {
             return
         }
 
@@ -74,10 +75,6 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
 }
 
 extension StakingParachainInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        updateAfterSelectedAccountChange()
-    }
-
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
         guard
             let collatorService = sharedState.collatorService,

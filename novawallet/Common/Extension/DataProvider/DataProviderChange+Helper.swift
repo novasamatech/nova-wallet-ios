@@ -39,3 +39,9 @@ extension Array {
         }
     }
 }
+
+extension Set where Element: Identifiable {
+    func allInsertChanges() -> [DataProviderChange<Element>] {
+        map { DataProviderChange.insert(newItem: $0) }
+    }
+}

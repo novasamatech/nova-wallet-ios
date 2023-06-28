@@ -142,6 +142,10 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "Babe", itemName: "GenesisSlot")
     }
 
+    static var currentEpoch: StorageCodingPath {
+        StorageCodingPath(moduleName: "Babe", itemName: "EpochIndex")
+    }
+
     static var balanceLocks: StorageCodingPath {
         StorageCodingPath(moduleName: "Balances", itemName: "Locks")
     }

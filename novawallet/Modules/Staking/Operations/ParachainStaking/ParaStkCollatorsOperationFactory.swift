@@ -20,6 +20,12 @@ protocol ParaStkCollatorsOperationFactoryProtocol {
         runtimeProvider: RuntimeProviderProtocol,
         chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]>
+
+    func createMetadataWrapper(
+        for accountIdClosure: @escaping () throws -> [AccountId],
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[ParachainStaking.CandidateMetadata?]>
 }
 
 final class ParaStkCollatorsOperationFactory {
@@ -279,5 +285,31 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         let dependencies = baseOperations + metadataWrapper.allOperations + identityWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+
+    func createMetadataWrapper(
+        for accountIdClosure: @escaping () throws -> [AccountId],
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[ParachainStaking.CandidateMetadata?]> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let candidatesMetadataWrapper = createMetadataWrapper(
+            for: accountIdClosure,
+            connection: connection,
+            dependingOn: codingFactoryOperation
+        )
+
+        candidatesMetadataWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mapOperation = ClosureOperation<[ParachainStaking.CandidateMetadata?]> {
+            try candidatesMetadataWrapper.targetOperation.extractNoCancellableResultData().map(\.value)
+        }
+
+        mapOperation.addDependency(candidatesMetadataWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + candidatesMetadataWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 }

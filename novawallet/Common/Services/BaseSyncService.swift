@@ -3,18 +3,29 @@ import RobinHood
 import SubstrateSdk
 
 protocol SyncServiceProtocol {
-    func syncUp()
+    func getIsSyncing() -> Bool
+    func getIsActive() -> Bool
+
+    func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool)
     func stopSyncUp()
     func setup()
+}
+
+extension SyncServiceProtocol {
+    func syncUp() {
+        syncUp(afterDelay: 0, ignoreIfSyncing: true)
+    }
 }
 
 class BaseSyncService {
     let retryStrategy: ReconnectionStrategyProtocol
     let logger: LoggerProtocol?
 
-    private(set) var retryAttempt: Int = 0
-    private(set) var isSyncing: Bool = false
-    private(set) var isActive: Bool = false
+    var retryAttempt: Int = 0
+
+    var isSyncing: Bool = false
+    var isActive: Bool = false
+
     let mutex = NSLock()
 
     private lazy var scheduler: Scheduler = {
@@ -36,6 +47,10 @@ class BaseSyncService {
 
     func stopSyncUp() {
         fatalError("Method must be overriden by child class")
+    }
+
+    func markSyncingImmediate() {
+        isSyncing = true
     }
 
     func complete(_ error: Error?) {
@@ -108,9 +123,7 @@ extension BaseSyncService: ApplicationServiceProtocol {
 
         isActive = false
 
-        if retryAttempt > 0, !isSyncing {
-            scheduler.cancel()
-        }
+        scheduler.cancel()
 
         if isSyncing {
             stopSyncUp()
@@ -136,19 +149,60 @@ extension BaseSyncService: SchedulerDelegate {
 }
 
 extension BaseSyncService: SyncServiceProtocol {
-    func syncUp() {
+    func getIsSyncing() -> Bool {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        guard isActive, !isSyncing else {
+        return isSyncing
+    }
+
+    func getIsActive() -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return isActive
+    }
+
+    func syncUp(afterDelay: TimeInterval, ignoreIfSyncing: Bool) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
             return
         }
 
-        isSyncing = true
+        if ignoreIfSyncing, isSyncing {
+            return
+        }
 
-        performSyncUp()
+        if isSyncing {
+            stopSyncUp()
+
+            isSyncing = false
+        }
+
+        if afterDelay > 0 {
+            guard !scheduler.isScheduled else {
+                return
+            }
+
+            scheduler.notifyAfter(afterDelay)
+
+        } else {
+            scheduler.cancel()
+
+            isSyncing = true
+
+            performSyncUp()
+        }
     }
 }

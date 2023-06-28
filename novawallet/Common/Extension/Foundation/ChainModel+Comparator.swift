@@ -24,7 +24,7 @@ enum ChainModelCompator {
         }
     }
 
-    private static func chainPriority(for chainId: ChainModel.Id) -> UInt8 {
+    static func chainPriority(for chainId: ChainModel.Id) -> UInt8 {
         switch chainId {
         case KnowChainId.polkadot:
             return 0

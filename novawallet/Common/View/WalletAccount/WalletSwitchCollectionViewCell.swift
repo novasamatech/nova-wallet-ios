@@ -1,6 +1,6 @@
 import UIKit
 
-final class AssetListAccountCell: UICollectionViewCell {
+final class WalletSwitchCollectionViewCell: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldTitle3
@@ -21,10 +21,12 @@ final class AssetListAccountCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListHeaderViewModel) {
-        titleLabel.text = viewModel.title
+    func bind(title: String) {
+        titleLabel.text = title
+    }
 
-        walletSwitch.bind(viewModel: viewModel.walletSwitch)
+    func bind(viewModel: WalletSwitchViewModel) {
+        walletSwitch.bind(viewModel: viewModel)
     }
 
     private func setupLayout() {

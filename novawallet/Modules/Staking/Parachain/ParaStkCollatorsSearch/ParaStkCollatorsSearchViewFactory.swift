@@ -7,10 +7,11 @@ struct ParaStkCollatorsSearchViewFactory {
         collators: [CollatorSelectionInfo],
         delegate: ParaStkSelectCollatorsDelegate
     ) -> ParaStkCollatorsSearchViewProtocol? {
-        guard let chainAsset = state.settings.value,
-              let currencyManager = CurrencyManager.shared else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let chainAsset = state.stakingOption.chainAsset
 
         let interactor = ParaStkCollatorsSearchInteractor()
         let wireframe = ParaStkCollatorsSearchWireframe(sharedState: state)

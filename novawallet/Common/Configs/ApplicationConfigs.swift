@@ -21,6 +21,7 @@ protocol ApplicationConfigProtocol {
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
     var xcmTransfersURL: URL { get }
+    var multistakingURL: URL { get }
     var dAppsListURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
@@ -128,9 +129,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v11/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v12/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v11/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v12/chains_dev.json")!
         #endif
     }
 
@@ -149,6 +150,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v4/transfers.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v4/transfers_dev.json")!
+        #endif
+    }
+
+    var multistakingURL: URL {
+        #if F_RELEASE
+            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
+        #else
+            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #endif
     }
 

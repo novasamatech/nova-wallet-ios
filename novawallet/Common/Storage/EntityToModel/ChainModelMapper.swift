@@ -22,6 +22,21 @@ final class ChainModelMapper {
         try model.flatMap { try jsonEncoder.encode($0) }
     }
 
+    private func createStakings(from entity: CDAsset) throws -> [StakingType]? {
+        guard let staking = entity.staking else {
+            return nil
+        }
+
+        let rawStakings = staking.split(by: String.Separator.comma)
+
+        return rawStakings.map { StakingType(rawType: $0) }
+    }
+
+    private func updateStakings(on entity: CDAsset, newStakings: [StakingType]?) throws {
+        let rawStakings = newStakings?.map(\.rawValue).joined(with: String.Separator.comma)
+        entity.staking = rawStakings
+    }
+
     private func createAsset(from entity: CDAsset) throws -> AssetModel {
         let typeExtras: JSON?
 
@@ -41,6 +56,8 @@ final class ChainModelMapper {
 
         let source = AssetModel.Source(rawValue: entity.source!) ?? .remote
 
+        let stakings = try createStakings(from: entity)
+
         return AssetModel(
             assetId: UInt32(bitPattern: entity.assetId),
             icon: entity.icon,
@@ -48,7 +65,7 @@ final class ChainModelMapper {
             symbol: entity.symbol!,
             precision: UInt16(bitPattern: entity.precision),
             priceId: entity.priceId,
-            staking: entity.staking,
+            stakings: stakings,
             type: entity.type,
             typeExtras: typeExtras,
             buyProviders: buyProviders,
@@ -92,10 +109,11 @@ final class ChainModelMapper {
             assetEntity.icon = asset.icon
             assetEntity.symbol = asset.symbol
             assetEntity.priceId = asset.priceId
-            assetEntity.staking = asset.staking
             assetEntity.type = asset.type
             assetEntity.enabled = asset.enabled
             assetEntity.source = asset.source.rawValue
+
+            try updateStakings(on: assetEntity, newStakings: asset.stakings)
 
             if let json = asset.typeExtras {
                 assetEntity.typeExtras = try jsonEncoder.encode(json)

@@ -9,8 +9,9 @@ final class StakingPayoutConfirmationViewFactory {
         for state: StakingSharedState,
         payouts: [PayoutInfo]
     ) -> StakingPayoutConfirmationViewProtocol? {
-        guard let chainAsset = state.settings.value,
-              let currencyManager = CurrencyManager.shared else {
+        let chainAsset = state.stakingOption.chainAsset
+
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -64,8 +65,9 @@ final class StakingPayoutConfirmationViewFactory {
         keystore: KeystoreProtocol,
         payouts: [PayoutInfo]
     ) -> StakingPayoutConfirmationInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = metaAccount.fetchMetaChainAccount(

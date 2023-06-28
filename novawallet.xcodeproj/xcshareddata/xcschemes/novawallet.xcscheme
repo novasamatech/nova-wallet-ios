@@ -79,6 +79,9 @@
                <Test
                   Identifier = "NetworkManagementTests">
                </Test>
+               <Test
+                  Identifier = "StakingUnbondSetupTests">
+               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference

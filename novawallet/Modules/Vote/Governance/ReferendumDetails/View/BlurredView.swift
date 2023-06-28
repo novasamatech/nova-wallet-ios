@@ -41,10 +41,10 @@ class BlurredView<TContentView>: UIView where TContentView: UIView {
     }
 
     private func updateLayout() {
-        backgroundBlurView.snp.updateConstraints {
+        backgroundBlurView.snp.remakeConstraints {
             $0.edges.equalToSuperview().inset(contentInsets)
         }
-        view.snp.updateConstraints {
+        view.snp.remakeConstraints {
             $0.edges.equalToSuperview().inset(innerInsets)
         }
     }

@@ -90,5 +90,9 @@ extension ParachainStaking {
                 return minTechStake
             }
         }
+
+        func isStakeShouldBeActive(for stake: BigUInt) -> Bool {
+            !topCapacity.isFull || stake > lowestTopDelegationAmount
+        }
     }
 }

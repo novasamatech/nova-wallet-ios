@@ -49,6 +49,7 @@ enum ModalNetworksFactory {
         viewController = createNetworksController(for: title)
         viewController.delegate = delegate
         viewController.context = context
+        viewController.isScrollEnabled = true
 
         let networkViewModelFactory = NetworkViewModelFactory()
 
@@ -91,7 +92,9 @@ enum ModalNetworksFactory {
         let sectionsCount = 2
         let height = viewController.headerHeight + CGFloat(itemsCount) * viewController.cellHeight +
             CGFloat(sectionsCount) * viewController.sectionHeaderHeight + viewController.footerHeight
-        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: min(height, maxHeight))
 
         viewController.localizationManager = LocalizationManager.shared
 

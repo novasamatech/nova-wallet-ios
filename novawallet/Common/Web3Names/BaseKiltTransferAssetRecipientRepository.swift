@@ -1,8 +1,8 @@
 import Foundation
 import RobinHood
 
-class GenericKiltTransferAssetRecipientRepository<Response: Decodable>:
-    BaseFetchOperationFactory, Web3TransferRecipientRepositoryProtocol {
+class BaseKiltTransferAssetRecipientRepository<Response: Decodable>: BaseFetchOperationFactory,
+    Web3TransferRecipientRepositoryProtocol {
     let integrityVerifier: Web3NameIntegrityVerifierProtocol
     let timeout: TimeInterval?
     let mapper: (Response) -> Web3TransferRecipientResponse
