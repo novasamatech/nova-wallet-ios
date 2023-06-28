@@ -49,14 +49,17 @@ struct StartStakingInfoViewFactory {
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
         let operationQueue = OperationQueue()
         let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let storageFacade = SubstrateDataStorageFacade.shared
+        let operationManager = OperationManager(operationQueue: operationQueue)
+        let logger = Logger.shared
 
         switch stakingOption.type {
         case .relaychain, .auraRelaychain, .azero, .nominationPools:
             let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
                 chainRegistry: chainRegistry,
-                storageFacade: SubstrateDataStorageFacade.shared,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                logger: Logger.shared
+                storageFacade: storageFacade,
+                operationManager: operationManager,
+                logger: logger
             )
             return StartStakingRelaychainInteractor(
                 chainAsset: stakingOption.chainAsset,
@@ -74,14 +77,23 @@ struct StartStakingInfoViewFactory {
                 operationQueue: operationQueue
             )
         case .parachain, .turing:
+            let stakingLocalSubscriptionFactory = ParachainStakingLocalSubscriptionFactory(
+                chainRegistry: chainRegistry,
+                storageFacade: storageFacade,
+                operationManager: operationManager,
+                logger: logger
+            )
+
             return StartStakingParachainInteractor(
                 chainAsset: stakingOption.chainAsset,
+                stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
                 selectedWalletSettings: selectedWalletSettings,
                 walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
                 priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
                 currencyManager: currencyManager,
                 stateFactory: ParachainStakingStateFactory(
                     stakingOption: stakingOption,
+                    stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
                     operationQueue: operationQueue
                 ),
                 chainRegistry: chainRegistry,

@@ -8,8 +8,10 @@ final class StartStakingParachainInteractor: StartStakingInfoInteractor, AnyCanc
 
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
-
+    var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    private var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var networkInfoCancellable: CancellableCall?
+
     private var networkInfo: ParachainStaking.NetworkInfo? {
         didSet {
             if let networkInfo = networkInfo {
@@ -21,6 +23,7 @@ final class StartStakingParachainInteractor: StartStakingInfoInteractor, AnyCanc
 
     init(
         chainAsset: ChainAsset,
+        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -31,6 +34,7 @@ final class StartStakingParachainInteractor: StartStakingInfoInteractor, AnyCanc
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol
     ) {
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.stateFactory = stateFactory
         self.chainRegistry = chainRegistry
         self.networkInfoFactory = networkInfoFactory
@@ -87,6 +91,11 @@ final class StartStakingParachainInteractor: StartStakingInfoInteractor, AnyCanc
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    private func performRoundInfoSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+        roundInfoProvider = subscribeToRound(for: chainId)
+    }
+
     private func setupState() {
         do {
             sharedState = try stateFactory.createState()
@@ -101,6 +110,7 @@ final class StartStakingParachainInteractor: StartStakingInfoInteractor, AnyCanc
 
         setupState()
         provideNetworkInfo()
+        performRoundInfoSubscription()
         eventCenter.add(observer: self, dispatchIn: .main)
     }
 }
@@ -108,5 +118,21 @@ final class StartStakingParachainInteractor: StartStakingInfoInteractor, AnyCanc
 extension StartStakingParachainInteractor: EventVisitorProtocol {
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
         provideNetworkInfo()
+    }
+}
+
+extension StartStakingParachainInteractor: ParastakingLocalStorageSubscriber,
+    ParastakingLocalStorageHandler {
+    func handleParastakingRound(result: Result<ParachainStaking.RoundInfo?, Error>, for chainId: ChainModel.Id) {
+        guard selectedChainAsset.chain.chainId == chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(roundInfo):
+            break
+        case let .failure(error):
+            break
+        }
     }
 }

@@ -12,9 +12,10 @@ final class StartStakingInfoPresenter {
     private var price: PriceData?
     private var chainAsset: ChainAsset?
     private var minStake: LoadableViewModelState<BigUInt?> = .loading
+    private var eraTime: LoadableViewModelState<TimeInterval?> = .loading
 
     var allDataLoaded: Bool {
-        !minStake.isLoading
+        !minStake.isLoading && !eraTime.isLoading
     }
 
     init(
@@ -103,6 +104,11 @@ extension StartStakingInfoPresenter: StartStakingInfoInteractorOutputProtocol {
 
     func didReceiveMinStake(_ minStake: BigUInt?) {
         self.minStake = .loaded(value: minStake)
+        provideViewModel()
+    }
+
+    func didReceiveEraTime(_ time: TimeInterval?) {
+        eraTime = .loaded(value: time)
         provideViewModel()
     }
 }

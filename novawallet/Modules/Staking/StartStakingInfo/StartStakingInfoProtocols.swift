@@ -20,6 +20,7 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?)
     func didReceiveError(_ error: StartStakingInfoError)
     func didReceiveMinStake(_ minStake: BigUInt?)
+    func didReceiveEraTime(_ time: TimeInterval?)
 }
 
 protocol StartStakingInfoWireframeProtocol: AnyObject {}
@@ -30,4 +31,5 @@ enum StartStakingInfoError: Error {
     case networkStakingInfo(Error)
     case minStake(Error)
     case createState(Error)
+    case stakeTime(Error)
 }

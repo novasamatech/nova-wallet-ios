@@ -13,15 +13,18 @@ final class ParachainStakingStateFactory: ParachainStakingStateFactoryProtocol {
     private let eventCenter: EventCenterProtocol
     private let operationQueue: OperationQueue
     lazy var operationManager = OperationManager(operationQueue: operationQueue)
+    private let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
+        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         eventCenter: EventCenterProtocol = EventCenter.shared,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.stakingOption = stakingOption
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
@@ -31,13 +34,6 @@ final class ParachainStakingStateFactory: ParachainStakingStateFactoryProtocol {
     }
 
     func createState() throws -> ParachainStakingSharedState {
-        let stakingLocalSubscriptionFactory = ParachainStakingLocalSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: storageFacade,
-            operationManager: operationManager,
-            logger: logger
-        )
-
         let stakingServiceFactory = ParachainStakingServiceFactory(
             stakingProviderFactory: stakingLocalSubscriptionFactory,
             chainRegisty: chainRegistry,

@@ -1,6 +1,7 @@
 import RobinHood
 import BigInt
 import Foundation
+import SubstrateSdk
 
 final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCancellableCleaning {
     private var networkInfoCancellable: CancellableCall?
@@ -10,8 +11,9 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
 
-    var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
-    var bagListSizeProvider: AnyDataProvider<DecodedU32>?
+    private var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
+    private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
+    private var eraCompletionTimeCancellable: CancellableCall?
 
     init(
         chainAsset: ChainAsset,
@@ -113,6 +115,65 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         }
     }
 
+    private func provideEraCompletionTime() {
+        do {
+            clear(cancellable: &eraCompletionTimeCancellable)
+            guard let sharedState = sharedState else {
+                return
+            }
+
+            let chainId = selectedChainAsset.chain.chainId
+
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+                presenter?.didReceiveError(.stakeTime(ChainRegistryError.runtimeMetadaUnavailable))
+                return
+            }
+
+            guard let connection = chainRegistry.getConnection(for: chainId) else {
+                presenter?.didReceiveError(.stakeTime(ChainRegistryError.connectionUnavailable))
+                return
+            }
+
+            let storageRequestFactory = StorageRequestFactory(
+                remoteFactory: StorageKeyFactory(),
+                operationManager: OperationManager(operationQueue: operationQueue)
+            )
+
+            let eraCountdownOperationFactory = try sharedState.createEraCountdownOperationFactory(
+                for: selectedChainAsset.chain,
+                storageRequestFactory: storageRequestFactory
+            )
+
+            let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
+                for: connection,
+                runtimeService: runtimeService
+            )
+
+            operationWrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.eraCompletionTimeCancellable === operationWrapper else {
+                        return
+                    }
+
+                    self?.eraCompletionTimeCancellable = nil
+
+                    do {
+                        let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceiveEraTime(result.eraTimeInterval)
+                    } catch {
+                        self?.presenter?.didReceiveError(.stakeTime(error))
+                    }
+                }
+            }
+
+            eraCompletionTimeCancellable = operationWrapper
+
+            operationQueue.addOperations(operationWrapper.allOperations, waitUntilFinished: false)
+        } catch {
+            presenter?.didReceiveError(.stakeTime(error))
+        }
+    }
+
     override func setup() {
         super.setup()
 
@@ -120,6 +181,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         provideNetworkStakingInfo()
         performMinNominatorBondSubscription()
         performBagListSizeSubscription()
+        provideEraCompletionTime()
     }
 }
 
