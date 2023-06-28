@@ -411,3 +411,12 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         shadowsLayers[1].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
     }
 }
+
+extension AssetListTotalBalanceCell: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
+        backgroundBlurView.updateLayerAnimationIfActive()
+        actionsGladingView.updateLayerAnimationIfActive()
+        
+        skeletonView?.restartSkrulling()
+    }
+}

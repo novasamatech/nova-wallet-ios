@@ -52,3 +52,10 @@ class GladingBaseView: UIView {
         applyMotion()
     }
 }
+
+extension GladingBaseView: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
+        applyMask()
+        applyMotion()
+    }
+}

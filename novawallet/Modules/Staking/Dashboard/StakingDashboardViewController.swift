@@ -76,7 +76,7 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     }
 
     private func updateLoadingState(for cell: UICollectionViewCell) {
-        (cell as? LoadingUpdatibleView)?.updateLoadingAnimationIfActive()
+        (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
     }
 
     @objc private func actionRefresh() {

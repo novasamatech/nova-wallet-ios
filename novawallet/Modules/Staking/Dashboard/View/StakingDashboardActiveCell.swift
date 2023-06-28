@@ -131,8 +131,8 @@ final class StakingDashboardActiveCellView: UIView {
     }
 }
 
-extension StakingDashboardActiveCellView: LoadingUpdatibleView {
-    func updateLoadingAnimationIfActive() {
+extension StakingDashboardActiveCellView: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
         if loadingState != .none {
             updateLoadingState()
 
