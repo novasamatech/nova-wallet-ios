@@ -69,7 +69,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
             for: .valueChanged
         )
     }
-    
+
     private func updateLoadingState() {
         rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
     }

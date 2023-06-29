@@ -208,6 +208,11 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         setupMovingMotion(for: displayContentView)
     }
 
+    private func clearMotionEffect() {
+        clearMotionEffects(for: contentView)
+        clearMotionEffects(for: displayContentView)
+    }
+
     private func setupBackgroundMotion() {
         let identity = CATransform3DIdentity
         let minimum = CATransform3DRotate(identity, -Constants.cardMotionAngle, 0.0, 1.0, 0.0)
@@ -238,6 +243,12 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         effect.maximumRelativeValue = maximum
 
         view.addMotionEffect(effect)
+    }
+
+    private func clearMotionEffects(for view: UIView) {
+        view.motionEffects.forEach {
+            view.removeMotionEffect($0)
+        }
     }
 
     private func setupLayout() {
@@ -416,7 +427,10 @@ extension AssetListTotalBalanceCell: AnimationUpdatibleView {
     func updateLayerAnimationIfActive() {
         backgroundBlurView.updateLayerAnimationIfActive()
         actionsGladingView.updateLayerAnimationIfActive()
-        
+
         skeletonView?.restartSkrulling()
+
+        clearMotionEffect()
+        setupMotionEffect()
     }
 }
