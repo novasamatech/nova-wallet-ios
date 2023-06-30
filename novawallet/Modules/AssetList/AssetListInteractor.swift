@@ -21,6 +21,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
+    let assetListObservable: AssetListStateObservable
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
@@ -31,6 +32,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     init(
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
+        assetListObservable: AssetListStateObservable,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
         crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
@@ -42,6 +44,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
+        self.assetListObservable = assetListObservable
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.walletConnect = walletConnect
@@ -142,6 +145,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
     override func setup() {
         modelBuilder = .init { [weak self] result in
             self?.presenter?.didReceive(result: result)
+
+            let newState = AssetListState(model: result.model)
+            self?.assetListObservable.state = .init(value: newState)
         }
 
         providerWalletInfo()

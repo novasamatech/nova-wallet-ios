@@ -13,7 +13,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
     private var purchaseActions: [PurchaseAction] = []
 
     init(
-        initState: AssetListInitState,
+        initState: AssetListState,
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         selectedAccount: MetaAccountModel,
@@ -62,7 +62,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
-        guard let chainAsset = chainAsset(for: chainAssetId) else {
+        guard let chainAsset = state.chainAsset(for: chainAssetId) else {
             return
         }
         guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {

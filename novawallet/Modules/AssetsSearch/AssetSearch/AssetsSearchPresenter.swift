@@ -5,34 +5,37 @@ import SoraFoundation
 
 typealias ChainAssetsFilter = (ChainAsset) -> Bool
 
-class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtocol {
+class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
     var chainAssetsFilter: ChainAssetsFilter?
+
+    private(set) var groups: ListDifferenceCalculator<AssetListGroupModel>
+    private(set) var groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>] = [:]
 
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
     let viewModelFactory: AssetListAssetViewModelFactoryProtocol
 
+    private(set) var state: AssetListState
+
     private var query: String = ""
 
     init(
-        initState: AssetListInitState,
+        initState: AssetListState,
         delegate: AssetsSearchDelegate?,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        state = initState
+        groups = AssetListBuilder.createGroupsDiffCalculator(from: [])
         self.delegate = delegate
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        super.init()
-
         self.localizationManager = localizationManager
-
-        applyInitState(initState)
     }
 
     private func filterAndUpdateView() {
@@ -41,19 +44,24 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
     }
 
     private func applyFilter() {
-        let filteredAssets = filterAssets(for: query, filter: chainAssetsFilter, chains: allChains)
-        updateGroups(from: filteredAssets, allChains: allChains)
+        let filteredAssets = filterAssets(for: query, filter: chainAssetsFilter, chains: state.allChains)
+        updateGroups(from: filteredAssets, allChains: state.allChains)
     }
 
     private func updateGroups(from assets: [ChainAsset], allChains: [ChainModel.Id: ChainModel]) {
         let assetModels = assets.reduce(into: [ChainModel.Id: [AssetListAssetModel]]()) { result, chainAsset in
-            let assetModel = createAssetModel(for: chainAsset.chain, assetModel: chainAsset.asset)
+            let assetModel = AssetListBaseBuilder.createAssetModel(
+                for: chainAsset.chain,
+                assetModel: chainAsset.asset,
+                state: state
+            )
+
             let currentModels = result[chainAsset.chain.chainId] ?? []
             result[chainAsset.chain.chainId] = currentModels + [assetModel]
         }
 
         let groupAssetCalculators = assetModels.mapValues { models in
-            Self.createAssetsDiffCalculator(from: models)
+            AssetListBuilder.createAssetsDiffCalculator(from: models)
         }
 
         let chainModels: [AssetListGroupModel] = assetModels.compactMap { chainId, assetModels in
@@ -61,12 +69,13 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
                 return nil
             }
 
-            return createGroupModel(from: chain, assets: assetModels)
+            return AssetListBaseBuilder.createGroupModel(from: chain, assets: assetModels)
         }
 
-        let groupChainCalculator = Self.createGroupsDiffCalculator(from: chainModels)
+        let groupChainCalculator = AssetListBuilder.createGroupsDiffCalculator(from: chainModels)
 
-        storeGroups(groupChainCalculator, groupLists: groupAssetCalculators)
+        groups = groupChainCalculator
+        groupLists = groupAssetCalculators
     }
 
     private func filterAssets(
@@ -127,13 +136,13 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
     }
 
     private func provideAssetsViewModel() {
-        let maybePrices = try? priceResult?.get()
+        let maybePrices = try? state.priceResult?.get()
 
         let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
             createGroupViewModel(from: groupModel, maybePrices: maybePrices)
         }
 
-        if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
+        if viewModels.isEmpty, !state.balanceResults.isEmpty, state.balanceResults.count >= state.allChains.count {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))
@@ -161,34 +170,30 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
         )
     }
 
-    override func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
-        storeChainChanges(changes)
+    private func createAssetAccountInfo(
+        from asset: AssetListAssetModel,
+        chain: ChainModel,
+        maybePrices: [ChainAssetId: PriceData]?
+    ) -> AssetListAssetAccountInfo {
+        let assetModel = asset.assetModel
+        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
 
-        filterAndUpdateView()
-    }
+        let assetInfo = assetModel.displayInfo
 
-    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
-        super.didReceiveBalance(results: results)
+        let priceData: PriceData?
 
-        filterAndUpdateView()
-    }
+        if let prices = maybePrices {
+            priceData = prices[chainAssetId] ?? PriceData.zero()
+        } else {
+            priceData = nil
+        }
 
-    override func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
-        super.didReceivePrice(changes: changes)
-
-        filterAndUpdateView()
-    }
-
-    override func didReceivePrice(error: Error) {
-        super.didReceivePrice(error: error)
-
-        filterAndUpdateView()
-    }
-
-    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
-        super.didReceiveCrowdloans(result: result)
-
-        filterAndUpdateView()
+        return AssetListAssetAccountInfo(
+            assetId: asset.assetModel.assetId,
+            assetInfo: assetInfo,
+            balance: asset.totalAmount,
+            priceData: priceData
+        )
     }
 
     // MARK: - AssetsSearchPresenterProtocol
@@ -216,7 +221,13 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
     }
 }
 
-extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {}
+extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {
+    func didReceive(state: AssetListState) {
+        self.state = state
+
+        filterAndUpdateView()
+    }
+}
 
 extension AssetsSearchPresenter: Localizable {
     func applyLocalization() {

@@ -11,7 +11,7 @@ final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
     let selectedAccount: MetaAccountModel
 
     init(
-        initState: AssetListInitState,
+        initState: AssetListState,
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -47,7 +47,7 @@ final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
-        guard let chainAsset = chainAsset(for: chainAssetId) else {
+        guard let chainAsset = state.chainAsset(for: chainAssetId) else {
             return
         }
 

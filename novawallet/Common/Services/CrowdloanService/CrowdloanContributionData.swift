@@ -1,7 +1,7 @@
 import BigInt
 import RobinHood
 
-struct CrowdloanContributionData {
+struct CrowdloanContributionData: Equatable {
     let accountId: AccountId
     let chainId: ChainModel.Id
     let paraId: ParaId

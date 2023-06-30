@@ -3,7 +3,7 @@ import SoraFoundation
 
 enum AssetOperationViewFactory {
     static func createView(
-        for initState: AssetListInitState,
+        for stateObservable: AssetListStateObservable,
         operation: TokenOperation,
         transferCompletion: TransferCompletionClosure?
     ) -> AssetsSearchViewProtocol? {
@@ -11,15 +11,7 @@ enum AssetOperationViewFactory {
             return nil
         }
 
-        let interactor = AssetsSearchInteractor(
-            selectedWalletSettings: SelectedWalletSettings.shared,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currencyManager: currencyManager,
-            logger: Logger.shared
-        )
+        let interactor = AssetsSearchInteractor(stateObservable: stateObservable)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
@@ -31,7 +23,7 @@ enum AssetOperationViewFactory {
 
         guard let presenter = createPresenter(
             for: operation,
-            initState: initState,
+            initState: stateObservable.state.value,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             transferCompletion: transferCompletion
@@ -66,7 +58,7 @@ enum AssetOperationViewFactory {
 
     private static func createPresenter(
         for operation: TokenOperation,
-        initState: AssetListInitState,
+        initState: AssetListState,
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         transferCompletion: TransferCompletionClosure?

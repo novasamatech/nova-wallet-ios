@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 
 extension AssetListBaseBuilder {
-    func createGroupModel(
+    static func createGroupModel(
         from chain: ChainModel,
         assets: [AssetListAssetModel]
     ) -> AssetListGroupModel {
@@ -68,16 +68,17 @@ extension AssetListBaseBuilder {
         return ListDifferenceCalculator(initialItems: sortedAssets, sortBlock: sortingBlock)
     }
 
-    func createAssetModels(for chainModel: ChainModel) -> [AssetListAssetModel] {
-        chainModel.assets.map { createAssetModel(for: chainModel, assetModel: $0) }
+    static func createAssetModels(for chainModel: ChainModel, state: AssetListState) -> [AssetListAssetModel] {
+        chainModel.assets.map { createAssetModel(for: chainModel, assetModel: $0, state: state) }
     }
 
-    func createAssetModel(
+    static func createAssetModel(
         for chainModel: ChainModel,
-        assetModel: AssetModel
+        assetModel: AssetModel,
+        state: AssetListState
     ) -> AssetListAssetModel {
         let chainAssetId = ChainAssetId(chainId: chainModel.chainId, assetId: assetModel.assetId)
-        let balanceResult = balanceResults[chainAssetId]
+        let balanceResult = state.balanceResults[chainAssetId]
 
         let maybeBalance: Decimal? = {
             if let balance = try? balanceResult?.get() {
@@ -92,7 +93,7 @@ extension AssetListBaseBuilder {
 
         let crowdloanContributionsResult: Result<BigUInt, Error>? = {
             do {
-                let allContributions = try crowdloansResult?.get()
+                let allContributions = try state.crowdloansResult?.get()
 
                 let contribution = allContributions?[chainModel.chainId]?.reduce(BigUInt(0)) { accum, contribution in
                     accum + contribution.amount
@@ -116,7 +117,7 @@ extension AssetListBaseBuilder {
         }()
 
         let maybePrice: Decimal? = {
-            if let mapping = try? priceResult?.get(), let priceData = mapping[chainAssetId] {
+            if let mapping = try? state.priceResult?.get(), let priceData = mapping[chainAssetId] {
                 return Decimal(string: priceData.price)
             } else {
                 return nil

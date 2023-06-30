@@ -416,14 +416,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func presentSearch() {
-        let initState = AssetListInitState(
-            priceResult: model.priceResult,
-            balanceResults: model.balanceResults,
-            allChains: model.allChains,
-            crowdloansResult: model.crowdloansResult
-        )
-
-        wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
+        wireframe.showAssetsSearch(from: view, delegate: self)
     }
 
     func presentAssetsManage() {
@@ -451,46 +444,17 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func send() {
-        let initState = AssetListInitState(
-            priceResult: model.priceResult,
-            balanceResults: model.balanceResults,
-            allChains: model.allChains,
-            crowdloansResult: model.crowdloansResult
-        )
-
-        wireframe.showSendTokens(
-            from: view,
-            state: initState
-        ) { [weak self] chainAsset in
+        wireframe.showSendTokens(from: view) { [weak self] chainAsset in
             self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
     }
 
     func receive() {
-        let initState = AssetListInitState(
-            priceResult: model.priceResult,
-            balanceResults: model.balanceResults,
-            allChains: model.allChains,
-            crowdloansResult: model.crowdloansResult
-        )
-
-        wireframe.showRecieveTokens(
-            from: view,
-            state: initState
-        )
+        wireframe.showRecieveTokens(from: view)
     }
 
     func buy() {
-        let initState = AssetListInitState(
-            priceResult: model.priceResult,
-            balanceResults: model.balanceResults,
-            allChains: model.allChains,
-            crowdloansResult: model.crowdloansResult
-        )
-        wireframe.showBuyTokens(
-            from: view,
-            state: initState
-        )
+        wireframe.showBuyTokens(from: view)
     }
 
     func presentWalletConnect() {

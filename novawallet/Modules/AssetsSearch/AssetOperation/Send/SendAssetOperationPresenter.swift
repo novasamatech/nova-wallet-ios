@@ -9,7 +9,7 @@ final class SendAssetOperationPresenter: AssetsSearchPresenter {
     }
 
     init(
-        initState: AssetListInitState,
+        initState: AssetListState,
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -37,7 +37,7 @@ final class SendAssetOperationPresenter: AssetsSearchPresenter {
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
-        guard let chainAsset = chainAsset(for: chainAssetId) else {
+        guard let chainAsset = state.chainAsset(for: chainAssetId) else {
             return
         }
 
