@@ -1,15 +1,7 @@
 import UIKit
 
 final class AssetsSearchInteractor: AssetListBaseInteractor {
-    weak var presenter: AssetsSearchInteractorOutputProtocol? {
-        get {
-            basePresenter as? AssetsSearchInteractorOutputProtocol
-        }
-
-        set {
-            basePresenter = newValue
-        }
-    }
+    weak var presenter: AssetsSearchInteractorOutputProtocol?
 }
 
 extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {}

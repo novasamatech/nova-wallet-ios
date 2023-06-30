@@ -32,14 +32,17 @@ protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol 
     func retryFetchWalletConnectSessionsCount()
 }
 
-protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
-    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String)
-    func didReceiveNft(changes: [DataProviderChange<NftModel>])
-    func didReceiveNft(error: Error)
-    func didResetNftProvider()
+protocol AssetListInteractorOutputProtocol {
+    func didReceive(
+        walletId: MetaAccountModel.Id,
+        walletIdenticon: Data?,
+        walletType: MetaAccountModelType,
+        name: String
+    )
+
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
-    func didReceiveLocks(result: Result<[AssetLock], Error>)
+    func didReceive(result: AssetListBuilderResult)
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
 }
