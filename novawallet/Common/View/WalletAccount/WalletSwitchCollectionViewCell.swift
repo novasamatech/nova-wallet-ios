@@ -5,7 +5,6 @@ final class WalletSwitchCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .semiBoldTitle3
         label.textColor = R.color.colorTextPrimary()
-        label.textAlignment = .center
         return label
     }()
 
