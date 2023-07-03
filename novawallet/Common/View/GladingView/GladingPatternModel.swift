@@ -29,10 +29,10 @@ extension GladingPatternModel {
         )
     }
 
-    private static let gradientRotation: CGFloat = -CGFloat.pi / 4
+    private static let gradientRotation = -CGFloat.pi / 4
     private static let gradientSize = CGSize(width: 963, height: 246)
-    private static let slidingMin: CGFloat = -0.5
-    private static let slidingMax: CGFloat = 0.5
+    private static let slidingMin: CGFloat = 0.5
+    private static let slidingMax: CGFloat = -0.5
 
     static var bigPattern: GladingPatternModel {
         .init(

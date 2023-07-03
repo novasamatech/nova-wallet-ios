@@ -2,6 +2,7 @@ import UIKit
 
 class GladingBaseView: UIView {
     let gradientView = MultigradientView()
+    let gradientContentView = UIView()
 
     private var calculatedBounds: CGSize = .zero
 
@@ -31,7 +32,12 @@ class GladingBaseView: UIView {
     }
 
     func setupLayout() {
-        addSubview(gradientView)
+        addSubview(gradientContentView)
+        gradientContentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        gradientContentView.addSubview(gradientView)
         gradientView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
