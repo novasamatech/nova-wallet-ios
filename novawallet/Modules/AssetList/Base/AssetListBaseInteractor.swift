@@ -245,6 +245,15 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         }
     }
 
+    func handlePriceChanges(_ result: Result<[ChainAssetId: DataProviderChange<PriceData>], Error>) {
+        switch result {
+        case let .success(changes):
+            baseBuilder?.applyPriceChanges(changes)
+        case let .failure(error):
+            baseBuilder?.applyPrice(error: error)
+        }
+    }
+
     private func updatePriceProvider(
         for priceIdSet: Set<AssetModel.PriceId>,
         currency: Currency
@@ -273,11 +282,11 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
                 currency: currency
             )
 
-            self?.baseBuilder?.applyPriceChanges(mappedChanges)
+            self?.handlePriceChanges(.success(mappedChanges))
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.baseBuilder?.applyPrice(error: error)
+            self?.handlePriceChanges(.failure(error))
             return
         }
 

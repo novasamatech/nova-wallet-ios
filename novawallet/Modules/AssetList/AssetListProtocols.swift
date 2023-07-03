@@ -47,6 +47,7 @@ protocol AssetListInteractorOutputProtocol {
     func didReceive(result: AssetListBuilderResult)
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
+    func didCompleteRefreshing()
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,

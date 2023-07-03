@@ -184,6 +184,12 @@ final class AssetListInteractor: AssetListBaseInteractor {
         }
     }
 
+    override func handlePriceChanges(_ result: Result<[ChainAssetId: DataProviderChange<PriceData>], Error>) {
+        super.handlePriceChanges(result)
+
+        presenter?.didCompleteRefreshing()
+    }
+
     private func provideWalletConnectSessionsCount() {
         walletConnect.fetchSessions { [weak self] result in
             guard let selectedMetaAccount = self?.selectedWalletSettings.value else {
@@ -206,7 +212,7 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         if let provider = priceSubscription {
             provider.refresh()
         } else {
-            modelBuilder?.applyPriceChanges([:])
+            presenter?.didCompleteRefreshing()
         }
 
         nftSubscription?.refresh()

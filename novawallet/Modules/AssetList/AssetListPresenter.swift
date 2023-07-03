@@ -526,6 +526,10 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         walletConnectSessionsCount = sessionsCount
         updateHeaderView()
     }
+
+    func didCompleteRefreshing() {
+        view?.didCompleteRefreshing()
+    }
 }
 
 extension AssetListPresenter: Localizable {
