@@ -25,12 +25,6 @@ final class AssetListPresenter {
 
     private(set) var model: AssetListBuilderResult.Model = .init()
 
-    private var scheduler: SchedulerProtocol?
-
-    deinit {
-        cancelViewUpdate()
-    }
-
     init(
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
@@ -322,8 +316,6 @@ final class AssetListPresenter {
     }
 
     private func updateAssetsView() {
-        cancelViewUpdate()
-
         provideHeaderViewModel()
         provideAssetViewModels()
     }
@@ -334,20 +326,6 @@ final class AssetListPresenter {
 
     private func updateNftView() {
         provideNftViewModel()
-    }
-
-    private func scheduleViewUpdate() {
-        guard scheduler == nil else {
-            return
-        }
-
-        scheduler = Scheduler(with: self, callbackQueue: .main)
-        scheduler?.notifyAfter(Self.viewUpdatePeriod)
-    }
-
-    private func cancelViewUpdate() {
-        scheduler?.cancel()
-        scheduler = nil
     }
 
     private func presentAssetDetails(for chainAssetId: ChainAssetId) {
@@ -512,12 +490,6 @@ extension AssetListPresenter: Localizable {
             updateAssetsView()
             updateNftView()
         }
-    }
-}
-
-extension AssetListPresenter: SchedulerDelegate {
-    func didTrigger(scheduler _: SchedulerProtocol) {
-        updateAssetsView()
     }
 }
 
