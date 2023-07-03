@@ -23,7 +23,7 @@ class AssetListBaseBuilder {
     ) {
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
-        groups = Self.createGroupsDiffCalculator(from: [])
+        groups = AssetListModelHelpers.createGroupsDiffCalculator(from: [])
     }
 
     func rebuildModel() {
@@ -34,7 +34,7 @@ class AssetListBaseBuilder {
         allChains = [:]
         balanceResults = [:]
         balances = [:]
-        groups = Self.createGroupsDiffCalculator(from: [])
+        groups = AssetListModelHelpers.createGroupsDiffCalculator(from: [])
         groupLists = [:]
         crowdloansResult = nil
     }
@@ -49,7 +49,7 @@ class AssetListBaseBuilder {
 
         for chain in allChains.values {
             let models = chain.assets.map { asset in
-                Self.createAssetModel(for: chain, assetModel: asset, state: state)
+                AssetListModelHelpers.createAssetModel(for: chain, assetModel: asset, state: state)
             }
 
             let changes: [DataProviderChange<AssetListAssetModel>] = models.map { model in
@@ -58,7 +58,7 @@ class AssetListBaseBuilder {
 
             groupLists[chain.chainId]?.apply(changes: changes)
 
-            let groupModel = Self.createGroupModel(from: chain, assets: models)
+            let groupModel = AssetListModelHelpers.createGroupModel(from: chain, assets: models)
             groups.apply(changes: [.update(newItem: groupModel)])
         }
     }
@@ -88,18 +88,18 @@ class AssetListBaseBuilder {
         for change in changes {
             switch change {
             case let .insert(newItem):
-                let assets = Self.createAssetModels(for: newItem, state: state)
-                let assetsCalculator = Self.createAssetsDiffCalculator(from: assets)
+                let assets = AssetListModelHelpers.createAssetModels(for: newItem, state: state)
+                let assetsCalculator = AssetListModelHelpers.createAssetsDiffCalculator(from: assets)
                 groupLists[newItem.chainId] = assetsCalculator
 
-                let groupModel = Self.createGroupModel(from: newItem, assets: assets)
+                let groupModel = AssetListModelHelpers.createGroupModel(from: newItem, assets: assets)
                 groupChanges.append(.insert(newItem: groupModel))
             case let .update(newItem):
-                let assets = Self.createAssetModels(for: newItem, state: state)
+                let assets = AssetListModelHelpers.createAssetModels(for: newItem, state: state)
 
-                groupLists[newItem.chainId] = Self.createAssetsDiffCalculator(from: assets)
+                groupLists[newItem.chainId] = AssetListModelHelpers.createAssetsDiffCalculator(from: assets)
 
-                let groupModel = Self.createGroupModel(from: newItem, assets: assets)
+                let groupModel = AssetListModelHelpers.createGroupModel(from: newItem, assets: assets)
                 groupChanges.append(.update(newItem: groupModel))
 
             case let .delete(deletedIdentifier):
@@ -150,7 +150,7 @@ class AssetListBaseBuilder {
                 crowdloansResult: crowdloansResult
             )
 
-            let assetListModel = Self.createAssetModel(for: chainModel, assetModel: assetModel, state: state)
+            let assetListModel = AssetListModelHelpers.createAssetModel(for: chainModel, assetModel: assetModel, state: state)
             var chainChanges = assetsChanges[chainAssetId.chainId] ?? []
             chainChanges.append(.update(newItem: assetListModel))
             assetsChanges[chainAssetId.chainId] = chainChanges
@@ -167,7 +167,7 @@ class AssetListBaseBuilder {
             let chainModel = keyValue.value
 
             let allItems = groupLists[chainId]?.allItems ?? []
-            let groupModel = Self.createGroupModel(from: chainModel, assets: allItems)
+            let groupModel = AssetListModelHelpers.createGroupModel(from: chainModel, assets: allItems)
 
             return .update(newItem: groupModel)
         }

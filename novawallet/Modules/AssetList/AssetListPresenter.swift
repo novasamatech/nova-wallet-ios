@@ -299,7 +299,7 @@ final class AssetListPresenter {
         }
 
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
-            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            AssetListPresenterHelpers.createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
         return viewModelFactory.createGroupViewModel(
@@ -308,32 +308,6 @@ final class AssetListPresenter {
             value: groupModel.chainValue,
             connected: true,
             locale: selectedLocale
-        )
-    }
-
-    private func createAssetAccountInfo(
-        from asset: AssetListAssetModel,
-        chain: ChainModel,
-        maybePrices: [ChainAssetId: PriceData]?
-    ) -> AssetListAssetAccountInfo {
-        let assetModel = asset.assetModel
-        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
-
-        let assetInfo = assetModel.displayInfo
-
-        let priceData: PriceData?
-
-        if let prices = maybePrices {
-            priceData = prices[chainAssetId] ?? PriceData.zero()
-        } else {
-            priceData = nil
-        }
-
-        return AssetListAssetAccountInfo(
-            assetId: asset.assetModel.assetId,
-            assetInfo: assetInfo,
-            balance: asset.totalAmount,
-            priceData: priceData
         )
     }
 

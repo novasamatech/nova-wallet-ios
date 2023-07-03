@@ -11,10 +11,11 @@ protocol AssetsSearchPresenterProtocol: AnyObject {
 
 protocol AssetsSearchInteractorInputProtocol: AnyObject {
     func setup()
+    func search(query: String)
 }
 
 protocol AssetsSearchInteractorOutputProtocol: AnyObject {
-    func didReceive(state: AssetListState)
+    func didReceive(result: AssetSearchBuilderResult)
 }
 
 protocol AssetsSearchWireframeProtocol: AnyObject {

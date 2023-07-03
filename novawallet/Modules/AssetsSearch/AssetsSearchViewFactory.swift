@@ -10,7 +10,11 @@ struct AssetsSearchViewFactory {
             return nil
         }
 
-        let interactor = AssetsSearchInteractor(stateObservable: stateObservable)
+        let interactor = AssetsSearchInteractor(
+            stateObservable: stateObservable,
+            filter: nil,
+            logger: Logger.shared
+        )
 
         let wireframe = AssetsSearchWireframe()
 
@@ -23,7 +27,6 @@ struct AssetsSearchViewFactory {
         )
 
         let presenter = AssetsSearchPresenter(
-            initState: stateObservable.state.value,
             delegate: delegate,
             interactor: interactor,
             wireframe: wireframe,

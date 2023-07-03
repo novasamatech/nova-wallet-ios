@@ -15,7 +15,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
         resultClosure: @escaping (AssetListBuilderResult) -> Void
     ) {
         self.resultClosure = resultClosure
-        nftList = Self.createNftDiffCalculator()
+        nftList = AssetListModelHelpers.createNftDiffCalculator()
 
         super.init(workingQueue: workingQueue, callbackQueue: callbackQueue)
     }
@@ -67,7 +67,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
     override func resetStorages() {
         super.resetStorages()
 
-        nftList = Self.createNftDiffCalculator()
+        nftList = AssetListModelHelpers.createNftDiffCalculator()
         locksResult = nil
         currentModel = .init()
     }
@@ -84,7 +84,7 @@ extension AssetListBuilder {
 
     func applyNftReset() {
         workingQueue.async { [weak self] in
-            self?.nftList = Self.createNftDiffCalculator()
+            self?.nftList = AssetListModelHelpers.createNftDiffCalculator()
 
             self?.rebuildNftOnly()
         }

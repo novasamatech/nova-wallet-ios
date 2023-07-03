@@ -11,7 +11,6 @@ final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
     let selectedAccount: MetaAccountModel
 
     init(
-        initState: AssetListState,
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -20,14 +19,12 @@ final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
     ) {
         self.selectedAccount = selectedAccount
         super.init(
-            initState: initState,
             delegate: nil,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
-        chainAssetsFilter = nil
     }
 
     private func handle(receiveCheckResult: ReceiveAvailableCheckResult, chainAsset: ChainAsset) {
@@ -47,7 +44,7 @@ final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
-        guard let chainAsset = state.chainAsset(for: chainAssetId) else {
+        guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
 

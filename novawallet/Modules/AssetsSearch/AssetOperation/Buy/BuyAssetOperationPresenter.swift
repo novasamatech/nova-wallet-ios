@@ -13,7 +13,6 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
     private var purchaseActions: [PurchaseAction] = []
 
     init(
-        initState: AssetListState,
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         selectedAccount: MetaAccountModel,
@@ -25,24 +24,12 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
         self.purchaseProvider = purchaseProvider
 
         super.init(
-            initState: initState,
             delegate: nil,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
-
-        chainAssetsFilter = { chainAsset in
-            guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
-                return false
-            }
-            let purchaseActions = purchaseProvider.buildPurchaseActions(
-                for: chainAsset,
-                accountId: accountId
-            )
-            return !purchaseActions.isEmpty
-        }
     }
 
     private func showPurchase() {
@@ -62,7 +49,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
-        guard let chainAsset = state.chainAsset(for: chainAssetId) else {
+        guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
         guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
