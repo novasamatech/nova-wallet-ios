@@ -70,7 +70,9 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         locale: Locale
     ) -> AssetDetailsModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-        let assetIcon = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) }
+        let assetIcon: ImageViewModelProtocol = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) } ??
+            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+
         return AssetDetailsModel(
             tokenName: chainAsset.asset.symbol,
             assetIcon: assetIcon,
@@ -89,17 +91,22 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         precision _: UInt16,
         priceData: PriceData?,
         locale: Locale
-    ) -> AssetPriceViewModel? {
-        guard let priceData = priceData,
-              let price = Decimal(string: priceData.price) else {
-            return nil
+    ) -> AssetPriceViewModel {
+        let price: Decimal
+
+        if let priceData = priceData {
+            price = Decimal(string: priceData.price) ?? 0.0
+        } else {
+            price = 0.0
         }
 
-        let priceChangeValue = (priceData.dayChange ?? 0.0) / 100.0
-        let priceChangeString = priceChangePercentFormatter.value(for: locale).stringFromDecimal(priceChangeValue) ?? ""
+        let priceChangeValue = (priceData?.dayChange ?? 0.0) / 100.0
+        let priceChangeString = priceChangePercentFormatter
+            .value(for: locale)
+            .stringFromDecimal(priceChangeValue)?.removingWhitespaces() ?? ""
         let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
             ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
-        let priceString = priceFormatter(priceId: priceData.currencyId)
+        let priceString = priceFormatter(priceId: priceData?.currencyId)
             .value(for: locale)
             .stringFromDecimal(price) ?? ""
         return AssetPriceViewModel(amount: priceString, change: priceChange)

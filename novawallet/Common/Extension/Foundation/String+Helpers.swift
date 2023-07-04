@@ -36,4 +36,8 @@ extension String {
             return self
         }
     }
+
+    func removingWhitespaces() -> String {
+        components(separatedBy: .whitespaces).joined()
+    }
 }
