@@ -67,8 +67,13 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         ]
     )
 
-    let actionsBackgroundView: BlockBackgroundView = .create { view in
+    let actionsBackgroundView: OverlayBlurBackgroundView = .create { view in
         view.sideLength = 12
+        view.borderType = .none
+        view.overlayView.fillColor = R.color.colorBlockBackground()!
+        view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
+        view.overlayView.strokeWidth = 1
+        view.blurView?.alpha = 0.5
     }
 
     let actionsGladingView: GladingRectView = .create { view in
