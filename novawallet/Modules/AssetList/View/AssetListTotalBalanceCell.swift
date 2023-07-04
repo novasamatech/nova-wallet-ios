@@ -27,7 +27,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
     let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
         $0.contentInsets = Constants.locksContentInsets
-        $0.backgroundView.apply(style: .chips)
+        $0.backgroundView.apply(style: .chipsOnCard)
         $0.setupContentView = { contentView in
             contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
             contentView.detailsView.detailsLabel.font = .regularFootnote
