@@ -150,7 +150,11 @@ class AssetListBaseBuilder {
                 crowdloansResult: crowdloansResult
             )
 
-            let assetListModel = AssetListModelHelpers.createAssetModel(for: chainModel, assetModel: assetModel, state: state)
+            let assetListModel = AssetListModelHelpers.createAssetModel(
+                for: chainModel,
+                assetModel: assetModel,
+                state: state
+            )
             var chainChanges = assetsChanges[chainAssetId.chainId] ?? []
             chainChanges.append(.update(newItem: assetListModel))
             assetsChanges[chainAssetId.chainId] = chainChanges
@@ -236,7 +240,8 @@ extension AssetListBaseBuilder {
             if let self = self, self.priceResult == nil {
                 self.priceResult = .failure(error)
 
-                updateAssetModels()
+                self.updateAssetModels()
+                self.rebuildModel()
             }
         }
     }
