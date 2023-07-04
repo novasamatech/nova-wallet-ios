@@ -76,8 +76,23 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     private var skeletonView: SkrullableView?
-    private var shadowsLayers = [CALayer(), CALayer()]
-    private var cachedBounds: CGRect?
+    private var shadowView1: RoundedView = .create { view in
+        view.cornerRadius = 12
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.16
+        view.shadowOffset = CGSize(width: 6, height: 4)
+    }
+
+    private var shadowView2: RoundedView = .create { view in
+        view.cornerRadius = 12
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.25
+        view.shadowOffset = CGSize(width: 2, height: 4)
+    }
 
     var locale = Locale.current {
         didSet {
@@ -106,19 +121,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         if skeletonView != nil {
             setupSkeleton()
         }
-
-        guard cachedBounds != layer.bounds else {
-            return
-        }
-        setupShadow(
-            shadowFrame: layer.bounds.inset(by: .init(
-                top: 0,
-                left: UIConstants.horizontalInset,
-                bottom: 0,
-                right: UIConstants.horizontalInset
-            ))
-        )
-        cachedBounds = layer.bounds
     }
 
     func bind(viewModel: AssetListHeaderViewModel) {
@@ -252,6 +254,15 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     private func setupLayout() {
+        [shadowView1, shadowView2].forEach { view in
+            contentView.addSubview(view)
+
+            view.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+                make.top.bottom.equalToSuperview()
+            }
+        }
+
         contentView.addSubview(backgroundBlurView)
         backgroundBlurView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -299,9 +310,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         actionsView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-
-        // TODO: Add after motion fix
-        // shadowsLayers.reversed().forEach { layer.insertSublayer($0, at: 0) }
     }
 
     func startLoadingIfNeeded() {
@@ -401,25 +409,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         button.contentOpacityWhenHighlighted = 0.2
         button.changesContentOpacityWhenHighlighted = true
         return button
-    }
-
-    private func setupShadow(shadowFrame: CGRect) {
-        let shadowPath = UIBezierPath(roundedRect: shadowFrame, cornerRadius: 12)
-        let shadowColor = UIColor.black.cgColor
-        shadowsLayers[0].shadowPath = shadowPath.cgPath
-        shadowsLayers[0].shadowColor = shadowColor
-        shadowsLayers[0].shadowOpacity = 0.16
-        shadowsLayers[0].shadowRadius = 12
-        shadowsLayers[0].shadowOffset = CGSize(width: 0, height: 4)
-        shadowsLayers[0].bounds = shadowFrame
-        shadowsLayers[0].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
-        shadowsLayers[1].shadowPath = shadowPath.cgPath
-        shadowsLayers[1].shadowColor = shadowColor
-        shadowsLayers[1].shadowOpacity = 0.25
-        shadowsLayers[1].shadowRadius = 4
-        shadowsLayers[1].shadowOffset = CGSize(width: 0, height: 4)
-        shadowsLayers[1].bounds = shadowFrame
-        shadowsLayers[1].position = .init(x: shadowFrame.midX, y: shadowFrame.midY)
     }
 }
 
