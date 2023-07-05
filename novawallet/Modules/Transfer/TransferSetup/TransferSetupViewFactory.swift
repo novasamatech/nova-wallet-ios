@@ -92,15 +92,12 @@ struct TransferSetupViewFactory {
 
         let web3NameService = createWeb3NameService()
 
-        let sequencialPhishingVerifier = PhishingAccountVerifier.createSequentialVerifier()
-
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,
             web3NamesService: web3NameService,
-            sequencialPhishingVerifier: sequencialPhishingVerifier,
             operationManager: OperationManager()
         )
     }

@@ -36,6 +36,7 @@ struct AssetsSearchViewFactory {
 
         let view = AssetsSearchViewController(
             presenter: presenter,
+            keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(events: [.viewWillAppear]),
             createViewClosure: { AssetsSearchViewLayout() },
             localizationManager: LocalizationManager.shared
         )

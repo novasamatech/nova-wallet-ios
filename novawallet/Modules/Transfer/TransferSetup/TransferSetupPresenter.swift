@@ -172,8 +172,6 @@ final class TransferSetupPresenter {
             recipientAddress = .external(.init(name: name, recipient: .loaded(value: recipientViewModel)))
             childPresenter?.updateRecepient(partialAddress: account)
             view?.didReceiveRecipientInputState(focused: false, empty: nil)
-
-            interactor.verifyPhishing(address: account)
         } else {
             recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
             didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
@@ -238,8 +236,6 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
         recipientAddress = .address(address)
         childPresenter?.changeRecepient(address: address)
-
-        interactor.verifyPhishing(address: address)
     }
 
     func proceed() {
@@ -283,10 +279,6 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func complete(recipient: String) {
         guard !wireframe.checkDismissing(view: view) else {
             return
-        }
-
-        if case let .address(optAddress) = recipientAddress, let address = optAddress {
-            interactor.verifyPhishing(address: address)
         }
 
         guard let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) else {
@@ -367,14 +359,6 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
             provideWeb3NameRecipientViewModel(recipients.first, name: name)
         }
     }
-
-    func didReceiveIsNotPhishing(result: Bool, address: AccountAddress) {
-        guard !result, let view = view else {
-            return
-        }
-
-        wireframe.showPhishing(on: view, address: address, locale: view.selectedLocale)
-    }
 }
 
 extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
@@ -435,8 +419,6 @@ extension TransferSetupPresenter: AddressScanDelegate {
 
         recipientAddress = .address(address)
         childPresenter?.changeRecepient(address: address)
-
-        interactor.verifyPhishing(address: address)
     }
 }
 
@@ -447,8 +429,6 @@ extension TransferSetupPresenter: YourWalletsDelegate {
         childPresenter?.changeRecepient(address: address)
         view?.changeYourWalletsViewState(.inactive)
         recipientAddress = .address(address)
-
-        interactor.verifyPhishing(address: address)
     }
 
     func didCloseYourWalletSelection() {

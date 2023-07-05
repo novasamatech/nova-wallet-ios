@@ -14,13 +14,17 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
     private let createViewClosure: () -> BaseAssetsSearchViewLayout
     private let localizableTitle: LocalizableResource<String>?
 
+    let keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol
+
     init(
         presenter: AssetsSearchPresenterProtocol,
+        keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol,
         createViewClosure: @escaping () -> BaseAssetsSearchViewLayout,
         localizableTitle: LocalizableResource<String>? = nil,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.keyboardAppearanceStrategy = keyboardAppearanceStrategy
         self.createViewClosure = createViewClosure
         self.localizableTitle = localizableTitle
         super.init(nibName: nil, bundle: nil)
@@ -49,7 +53,19 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        rootView.searchBar.textField.becomeFirstResponder()
+        keyboardAppearanceStrategy.onViewWillAppear(for: rootView.searchBar.textField)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        keyboardAppearanceStrategy.onViewDidAppear(for: rootView.searchBar.textField)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        rootView.searchBar.textField.resignFirstResponder()
     }
 
     private func setupLocalization() {
