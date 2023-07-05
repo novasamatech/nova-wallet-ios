@@ -50,8 +50,6 @@
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C5364A02A4D6EB700990478 /* AssetListBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */; };
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
-		0C56B4F72A4AA5590030F9C9 /* PhishingAccountVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4F62A4AA5590030F9C9 /* PhishingAccountVerifier.swift */; };
-		0C56B4F92A4AA8B60030F9C9 /* SequencialAccountVerifier+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4F82A4AA8B60030F9C9 /* SequencialAccountVerifier+Init.swift */; };
 		0C56B4FB2A4B0C320030F9C9 /* AssetListBaseBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */; };
 		0C56B4FD2A4B0CA90030F9C9 /* AssetListBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
@@ -3687,8 +3685,6 @@
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
 		0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilder.swift; sourceTree = "<group>"; };
-		0C56B4F62A4AA5590030F9C9 /* PhishingAccountVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingAccountVerifier.swift; sourceTree = "<group>"; };
-		0C56B4F82A4AA8B60030F9C9 /* SequencialAccountVerifier+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SequencialAccountVerifier+Init.swift"; sourceTree = "<group>"; };
 		0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBaseBuilder.swift; sourceTree = "<group>"; };
 		0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilderResult.swift; sourceTree = "<group>"; };
 		0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetProtocols.swift; sourceTree = "<group>"; };
@@ -7745,8 +7741,6 @@
 				84F3B27927F4187300D64CF5 /* PhishingSitesSyncService.swift */,
 				8476D39A27F43E30004D9A7A /* PhishingSiteVerifier.swift */,
 				8476D39C27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift */,
-				0C56B4F62A4AA5590030F9C9 /* PhishingAccountVerifier.swift */,
-				0C56B4F82A4AA8B60030F9C9 /* SequencialAccountVerifier+Init.swift */,
 			);
 			path = GitHubPhishingService;
 			sourceTree = "<group>";
@@ -19020,7 +19014,6 @@
 				0C17BD9B2A43025E004AF9E7 /* Pagination.swift in Sources */,
 				88D02FE82942EB1A00E26390 /* AssetDetailsModel.swift in Sources */,
 				88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */,
-				0C56B4F92A4AA8B60030F9C9 /* SequencialAccountVerifier+Init.swift in Sources */,
 				845C407D2702812E00BFA50B /* StakingAccountUpdatingService.swift in Sources */,
 				8430D6C92801A2B500FFB6AE /* WebSocketProtocols.swift in Sources */,
 				8459A9CC2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift in Sources */,
@@ -19841,7 +19834,6 @@
 				8487583327F06AF300495306 /* QRScannerViewLayout.swift in Sources */,
 				84AF08DA2941BC7900D0572B /* TokenManageNetworkViewModel.swift in Sources */,
 				8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */,
-				0C56B4F72A4AA5590030F9C9 /* PhishingAccountVerifier.swift in Sources */,
 				84CFF1E326526FBC00DB7CF7 /* StakingBondMoreProtocols.swift in Sources */,
 				8448148128E46881007F64FF /* ConvictionVotingLocks.swift in Sources */,
 				5FE687B860FC10AB08518A6E /* WalletHistoryFilterPresenter.swift in Sources */,
