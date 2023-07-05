@@ -1262,6 +1262,7 @@
 "multistaking.more.options" = "Больше вариантов стейкинга";
 "staking.on.network" = "%@ стейкинг";
 "staking.start.stake" = "Stake anytime with as little as %@. Your stake will actively earn rewards %@";
+"staking.start.stake.reward.time" = "через %@";
 "staking.start.stake.without.minimum.stake" = "Stake anytime. Your stake will actively earn rewards %@";
 "staking.start.unstake" = "Unstake anytime, and redeem your funds %@. No rewards are earned while unstaking";
 "staking.start.rewards.manual.claim" = "Rewards accrue %@. You need to claim rewards manually";
@@ -1281,3 +1282,6 @@
 "staking.start.earn.up" = "Earn up to %@";
 "staking.start.balance.with.fiat" = "Available balance: %@(%@)";
 "staking.start.balance" = "Available balance: %@";
+"common.time.in" = "через";
+"common.and" = "и";
+"common.time.period.after" = "после";

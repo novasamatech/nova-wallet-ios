@@ -14,6 +14,13 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
     private var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     private var eraCompletionTimeCancellable: CancellableCall?
+    private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
+
+    private var networkInfo: NetworkStakingInfo? {
+        didSet {
+            minStakeCalculator.networkInfo = networkInfo
+        }
+    }
 
     init(
         chainAsset: ChainAsset,
@@ -74,7 +81,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
                     do {
                         let info = try wrapper.targetOperation.extractNoCancellableResultData()
                         self?.minStakeCalculator.networkInfo = info
-                        //  self?.presenter?.didReceive(networkStakingInfo: info)
+                        self?.presenter?.didReceive(unstakingPeriod: info.stakingDuration.unlocking)
                     } catch {
                         self?.presenter?.didReceiveError(.networkStakingInfo(error))
                     }
@@ -97,10 +104,22 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         bagListSizeProvider = subscribeBagsListSize(for: selectedChainAsset.chain.chainId)
     }
 
+    func performActiveEraSubscription() {
+        activeEraProvider = subscribeActiveEra(for: selectedChainAsset.chain.chainId)
+    }
+
     private var minStakeCalculator = MinStakeCalculator() {
         didSet {
             if let minStake = minStakeCalculator.calculate() {
                 presenter?.didReceiveMinStake(minStake)
+            }
+        }
+    }
+
+    private var eraTimeCalculator = EraTimeCalculator() {
+        didSet {
+            if let value = eraTimeCalculator.calculate() {
+                presenter?.didReceiveNextEraTime(value)
             }
         }
     }
@@ -159,6 +178,8 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
 
                     do {
                         let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
+                        self?.eraTimeCalculator.eraCountdownResult = result
+
                         self?.presenter?.didReceiveEraTime(result.eraTimeInterval)
                     } catch {
                         self?.presenter?.didReceiveError(.stakeTime(error))
@@ -182,6 +203,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         performMinNominatorBondSubscription()
         performBagListSizeSubscription()
         provideEraCompletionTime()
+        performActiveEraSubscription()
     }
 }
 
@@ -201,6 +223,15 @@ extension StartStakingRelaychainInteractor: StakingLocalStorageSubscriber, Staki
             minStakeCalculator.bagListSizeResult = result
         case let .failure(error):
             presenter?.didReceiveError(.minStake(error))
+        }
+    }
+
+    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(era):
+            eraTimeCalculator.activeEraResult = result
+        case let .failure(error):
+            break
         }
     }
 }

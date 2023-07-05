@@ -1,11 +1,21 @@
 import Foundation
 import BigInt
+import SoraFoundation
 
 protocol StartStakingViewModelFactoryProtocol {
-    func earnupModel(locale: Locale) -> AccentTextModel
-    func stakeModel(minStake: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> ParagraphView.Model
-    func unstakeModel(locale: Locale) -> ParagraphView.Model
-    func rewardModel(locale: Locale) -> ParagraphView.Model
+    func earnupModel(
+        earnings: Decimal?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> AccentTextModel
+    func stakeModel(
+        minStake: BigUInt?,
+        nextEra: TimeInterval,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> ParagraphView.Model
+    func unstakeModel(unstakePeriod: TimeInterval, locale: Locale) -> ParagraphView.Model
+    func rewardModel(eraDuration: TimeInterval, locale: Locale) -> ParagraphView.Model
     func govModel(locale: Locale) -> ParagraphView.Model
     func recommendationModel(locale: Locale) -> ParagraphView.Model
     func testNetworkModel(
@@ -19,15 +29,24 @@ protocol StartStakingViewModelFactoryProtocol {
 
 struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
 
-    init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
+    init(
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
+    ) {
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.estimatedEarningsFormatter = estimatedEarningsFormatter
     }
 
-    func earnupModel(locale: Locale) -> AccentTextModel {
-        let amount = "22.86%"
-        let token = "DOT"
-        let value = R.string.localizable.stakingStartEarnUp(amount, preferredLanguages: locale.rLanguages)
+    func earnupModel(
+        earnings: Decimal?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> AccentTextModel {
+        let amount = earnings.map { estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0) } ?? ""
+        let token = chainAsset.asset.displayInfo.symbol
+        let value = R.string.localizable.stakingStartEarnUp(amount ?? "", preferredLanguages: locale.rLanguages)
         let text = R.string.localizable.stakingStartEarnUpTitle(
             value,
             token,
@@ -41,8 +60,14 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         return textWithAccents
     }
 
-    func stakeModel(minStake: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> ParagraphView.Model {
-        let time = "in 4 hours and 34 minutes"
+    func stakeModel(
+        minStake: BigUInt?,
+        nextEra: TimeInterval,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> ParagraphView.Model {
+        let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
+        let time = nextEra.localizedDaysHours(for: locale, separator: separator) ?? ""
         let precision = chainAsset.assetDisplayInfo.assetPrecision
         let textWithAccents: AccentTextModel
 
@@ -55,7 +80,10 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 accents: [amount, time]
             )
         } else {
-            let text = R.string.localizable.stakingStartStakeWithoutMinimumStake(time, preferredLanguages: locale.rLanguages)
+            let text = R.string.localizable.stakingStartStakeWithoutMinimumStake(
+                time,
+                preferredLanguages: locale.rLanguages
+            )
             textWithAccents = AccentTextModel(
                 text: text,
                 accents: [time]
@@ -68,9 +96,16 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func unstakeModel(locale: Locale) -> ParagraphView.Model {
-        let unstakePeriod = "after 28 days"
-
+    func unstakeModel(
+        unstakePeriod: TimeInterval,
+        locale: Locale
+    ) -> ParagraphView.Model {
+        let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
+        let preposition = R.string.localizable.commonTimePeriodAfter(preferredLanguages: locale.rLanguages)
+        let unstakePeriod = preposition + " " + unstakePeriod.localizedDaysHours(
+            for: locale,
+            separator: separator
+        )
         let text = R.string.localizable.stakingStartUnstake(unstakePeriod, preferredLanguages: locale.rLanguages)
         let textWithAccents = AccentTextModel(
             text: text,
@@ -82,8 +117,10 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func rewardModel(locale: Locale) -> ParagraphView.Model {
-        let rewardIntervals = "every 6 hours"
+    func rewardModel(eraDuration: TimeInterval, locale: Locale) -> ParagraphView.Model {
+        let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
+        let rewardIntervals = eraDuration.localizedDaysHours(for: locale, separator: separator) ?? ""
+
         let text = R.string.localizable.stakingStartRewards(
             rewardIntervals,
             preferredLanguages: locale.rLanguages

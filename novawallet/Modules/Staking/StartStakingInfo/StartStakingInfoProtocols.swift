@@ -21,6 +21,8 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: StartStakingInfoError)
     func didReceiveMinStake(_ minStake: BigUInt?)
     func didReceiveEraTime(_ time: TimeInterval?)
+    func didReceive(unstakingPeriod: TimeInterval)
+    func didReceiveNextEraTime(_ time: TimeInterval)
 }
 
 protocol StartStakingInfoWireframeProtocol: AnyObject {}

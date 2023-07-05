@@ -22,3 +22,18 @@ struct MinStakeCalculator {
         )
     }
 }
+
+struct EraTimeCalculator {
+    var activeEraResult: Result<ActiveEraInfo?, Error>?
+    var eraCountdownResult: EraCountdown?
+
+    func calculate() -> TimeInterval? {
+        guard let activeEraResult = activeEraResult,
+              let activeEra = try? activeEraResult.get(),
+              let eraCountdownResult = eraCountdownResult else {
+            return nil
+        }
+
+        return eraCountdownResult.timeIntervalTillStart(targetEra: eraCountdownResult.activeEra + 1)
+    }
+}

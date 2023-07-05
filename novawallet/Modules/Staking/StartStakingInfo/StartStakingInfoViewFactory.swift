@@ -3,7 +3,10 @@ import SoraFoundation
 import RobinHood
 
 struct StartStakingInfoViewFactory {
-    static func createView(stakingOption: Multistaking.ChainAssetOption) -> StartStakingInfoViewProtocol? {
+    static func createView(
+        stakingOption: Multistaking.ChainAssetOption,
+        dashboardItem: Multistaking.DashboardItem
+    ) -> StartStakingInfoViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -21,10 +24,13 @@ struct StartStakingInfoViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
         let startStakingViewModelFactory = StartStakingViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory)
+            balanceViewModelFactory: balanceViewModelFactory,
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+        )
 
         let presenter = StartStakingInfoPresenter(
             interactor: interactor,
+            dashboardItem: dashboardItem,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory
         )

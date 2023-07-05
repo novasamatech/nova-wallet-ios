@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 extension TimeInterval {
-    func localizedDaysHours(for locale: Locale) -> String {
+    func localizedDaysHours(for locale: Locale, separator: String = " ") -> String {
         let days = daysFromSeconds
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
 
@@ -24,7 +24,7 @@ extension TimeInterval {
             components.append(hoursString)
         }
 
-        return components.joined(separator: " ")
+        return components.joined(separator: separator)
     }
 
     func localizedDaysHoursIncludingZero(for locale: Locale) -> String {

@@ -7,23 +7,28 @@ final class StartStakingInfoPresenter {
     let wireframe: StartStakingInfoWireframeProtocol
     let interactor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
+    let dashboardItem: Multistaking.DashboardItem
 
     private var assetBalance: AssetBalance?
     private var price: PriceData?
     private var chainAsset: ChainAsset?
     private var minStake: LoadableViewModelState<BigUInt?> = .loading
     private var eraTime: LoadableViewModelState<TimeInterval?> = .loading
+    private var unstakingPeriod: LoadableViewModelState<TimeInterval> = .loading
+    private var nominationEra: LoadableViewModelState<TimeInterval> = .loading
 
     var allDataLoaded: Bool {
-        !minStake.isLoading && !eraTime.isLoading
+        !minStake.isLoading && !eraTime.isLoading && !unstakingPeriod.isLoading && !nominationEra.isLoading
     }
 
     init(
         interactor: StartStakingInfoInteractorInputProtocol,
+        dashboardItem: Multistaking.DashboardItem,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
     ) {
         self.interactor = interactor
+        self.dashboardItem = dashboardItem
         self.wireframe = wireframe
         self.startStakingViewModelFactory = startStakingViewModelFactory
     }
@@ -35,11 +40,21 @@ extension StartStakingInfoPresenter: StartStakingInfoPresenterProtocol {
     }
 
     private func provideViewModel() {
-        guard allDataLoaded, let chainAsset = chainAsset else {
+        guard allDataLoaded,
+              let chainAsset = chainAsset,
+              let eraTime = eraTime.value,
+              let eraDuration = eraTime,
+              let unstakePeriod = unstakingPeriod.value,
+              let nominationEraValue = nominationEra.value else {
             return
         }
 
-        let title = startStakingViewModelFactory.earnupModel(locale: selectedLocale)
+        let maxApy = dashboardItem.maxApy
+        let title = startStakingViewModelFactory.earnupModel(
+            earnings: maxApy,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
         let wikiUrl = startStakingViewModelFactory.wikiModel(
             locale: selectedLocale,
             url: URL(string: "https://novawallet.io")!
@@ -48,14 +63,16 @@ extension StartStakingInfoPresenter: StartStakingInfoPresenterProtocol {
             locale: selectedLocale,
             url: URL(string: "https://novawallet.io")!
         )
+
         let paragraphs = [
             startStakingViewModelFactory.stakeModel(
                 minStake: minStake.value ?? nil,
+                nextEra: nominationEraValue,
                 chainAsset: chainAsset,
                 locale: selectedLocale
             ),
-            startStakingViewModelFactory.unstakeModel(locale: selectedLocale),
-            startStakingViewModelFactory.rewardModel(locale: selectedLocale),
+            startStakingViewModelFactory.unstakeModel(unstakePeriod: unstakePeriod, locale: selectedLocale),
+            startStakingViewModelFactory.rewardModel(eraDuration: eraDuration, locale: selectedLocale),
             startStakingViewModelFactory.govModel(locale: selectedLocale),
             startStakingViewModelFactory.recommendationModel(locale: selectedLocale)
         ]
@@ -109,6 +126,16 @@ extension StartStakingInfoPresenter: StartStakingInfoInteractorOutputProtocol {
 
     func didReceiveEraTime(_ time: TimeInterval?) {
         eraTime = .loaded(value: time)
+        provideViewModel()
+    }
+
+    func didReceive(unstakingPeriod: TimeInterval) {
+        self.unstakingPeriod = .loaded(value: unstakingPeriod)
+        provideViewModel()
+    }
+
+    func didReceiveNextEraTime(_ time: TimeInterval) {
+        nominationEra = .loaded(value: time)
         provideViewModel()
     }
 }
