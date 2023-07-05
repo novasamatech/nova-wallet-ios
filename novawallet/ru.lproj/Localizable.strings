@@ -182,7 +182,6 @@
 "network.status.connected" = "Подключено";
 "wallet.receive.description" = "Поделитесь этим QR-кодом с отправителем";
 "wallet.search.accounts" = "мои аккаунты";
-"wallet.receive.error.generateQRCode.message" = "Генерация QR кода завершилась с ошибкой. Хотите повторить?";
 "wallet.receive.share.message" = "Мой %@ адрес для получения %@:";
 "account.export.action" = "Экспортировать";
 "account.export.warning.message" = "Передача или копирование вашего секрета - операция с высоким риском, не отправляйте ее никому. Хотите продолжить процесс обмена / копирования?";
@@ -354,7 +353,7 @@
 "crowdloan.cap.reached.amount.message" = "Невозможно вложить введённую сумму, поскольку общая сумма сбора будет превышать максимальную сумму краудлоуна. Максимально допустимый вклад составляет %@ .";
 "crowdloan.cap.reached.raised.message" = "Невозможно внести вклад в выбранный краудлоун, поскольку его максимальная сумма сбора уже достигнута.";
 "crowdloan.cap.reached.title" = "Превышена максимальная сумма краудлоуна";
-"crowdloan.too.small.contribution.message" = "Минимально допустимая сумма ��клада составляет %@ .";
+"crowdloan.too.small.contribution.message" = "Минимально допустимая сумма вклада составляет %@ .";
 "crowdloan.too.small.contribution.title" = "Сумма вклада слишком мала";
 "crowdloan.learn" = "О краудлоуне %@";
 "common.time.left" = "Оставшееся время";
@@ -455,10 +454,6 @@
 "staking.validator.my.oversubscribed.message" = "Превышен лимит номинаторов для валидатора. В этой эре вы не получите награду от этого валидатора.";
 "staking.validator.other.oversubscribed.message" = "Превышен лимит номинаторов для валидатора. Только номинаторы с наибольшим стейком получат награду.";
 "wallet.history.title_v1.9.0" = "История";
-"wallet.history.amount.details" = "%@ в %@";
-"wallet.history.transfer.incoming.details" = "От: %@";
-"wallet.history.transfer.outgoing.details" = "К: %@";
-"wallet.history.transfer.contract.call.title" = "Вызов контракта";
 "staking.main.lockup.period.title_v1.9.0" = "Время вывода";
 "staking.estimate.earning.title_v1.9.0" = "Расчёт доходности %@";
 "staking.setup.restake.title" = "Увеличения стейка";
@@ -536,6 +531,8 @@
 "commmon.view.in.format" = "Открыть в %@";
 "import.json.unsupported.ethereum.crypto.message" = "Не поддерживается импорт аккаунта с Substrate секретом в сеть с Ethereum шифрованием";
 "import.json.unsupported.substrate.crypto.message" = "Не поддерживается импорт аккаунта с Ethereum секретом в сеть с Substrate шифрованием";
+"common.today" = "Сегодня";
+"common.yesterday" = "Вчера";
 "common.tx.details" = "Детали транзакции";
 "common.unknown" = "Неизвестно";
 "staking.month.period.title" = "Eжемесячно";
@@ -828,7 +825,7 @@
 "common.request.retry" = "Загрузка данных завершилась ошибкой. Хотите повторить?";
 "crowdloan.return.in.progress" = "Ожидает возвращения парачейном";
 "crowdloan.returns.in.format" = "Вернется через %@";
-"assets.search.empty" = "Токены с указанным именем\nне найдены";
+"assets.search.empty" = "Токены и сети с указанным именем\nне найдены";
 "assets.search.placeholder" = "Поиск по названию сети или токена";
 "common.tokens" = "Токены";
 "common.chain.address.title" = "%@ адрес";
@@ -1099,9 +1096,6 @@
 "tokens.manage.all.selected" = "Все сети";
 "common.more.format" = "%@ (и еще %@)";
 "common.token.decimals" = "Число десятичных знаков";
-"tokens.manage.search.empty" = "Для введенного имени токены\nне найдены";
-"common.today" = "Сегодня";
-"common.yesterday" = "Вчера";
 "tokens.manage.partial.selected" = "%@ (и ещё %@)";
 "add.token.invalid.contract.address.message" = "Введенный адрес не соответствует верному адресу ERC-20 контракта.";
 "add.token.completion.message" = "%@ токен добавлен";
@@ -1249,9 +1243,6 @@
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
-"asset.operation.send.title" = "Отправить";
-"asset.operation.receive.title" = "Получить";
-"asset.operation.buy.title" = "Купить";
 "governance.referendums.filter.empty" = "Не найдены референдумы с указанными фильтрами";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Откройте приложение Polkadot Vault на смартфоне";
@@ -1268,7 +1259,14 @@
 "common.per.year.long" = "в год";
 "common.per.year" = "/ год";
 "common.waiting" = "Ожидание";
-"staking.more.options.dApps.title" = "Стейкинг через браузер Nova";
 "multistaking.inactive.header" = "Стейкайте и получайте награды";
 "multistaking.more.options" = "Больше вариантов стейкинга";
 "staking.on.network" = "%@ стейкинг";
+"wallet.history.transfer.incoming.details" = "От: %@";
+"wallet.history.transfer.outgoing.details" = "Кому: %@";
+"wallet.history.amount.details" = "%@ в %@";
+"staking.more.options.dApps.title" = "Стейкинг через браузер Nova";
+"wallet.receive.error.generateQRCode.message" = "Генерация QR кода завершилась с ошибкой. Хотите повторить?";
+"asset.operation.send.title" = "Отправить";
+"asset.operation.receive.title" = "Получить";
+"asset.operation.buy.title" = "Купить";

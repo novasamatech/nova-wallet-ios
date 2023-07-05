@@ -181,7 +181,6 @@
 "network.status.connecting" = "Connecting…";
 "network.status.connected" = "Connected";
 "wallet.receive.description" = "Share this QR to sender";
-"wallet.receive.error.generateQRCode.message" = "QR code generation failed. Would you like to retry?";
 "wallet.search.accounts" = "my accounts";
 "wallet.receive.share.message" = "My %@ address to receive %@:";
 "account.export.action" = "Export";
@@ -455,10 +454,6 @@
 "staking.validator.my.oversubscribed.message" = "Oversubscribed. You will not receive rewards from the validator in this era.";
 "staking.validator.other.oversubscribed.message" = "Oversubscribed. Only the top staked nominators are paid rewards.";
 "wallet.history.title_v1.9.0" = "History";
-"wallet.history.amount.details" = "%@ at %@";
-"wallet.history.transfer.incoming.details" = "From: %@";
-"wallet.history.transfer.outgoing.details" = "To: %@";
-"wallet.history.transfer.contract.call.title" = "Contract call";
 "staking.main.lockup.period.title_v1.9.0" = "Unstaking period";
 "staking.estimate.earning.title_v1.9.0" = "Estimated %@ earnings";
 "staking.setup.restake.title" = "Restake";
@@ -536,6 +531,8 @@
 "commmon.view.in.format" = "View in %@";
 "import.json.unsupported.ethereum.crypto.message" = "Cannot import account with Substrate secret into the network with Ethereum encryption";
 "import.json.unsupported.substrate.crypto.message" = "Cannot import account with Ethereum secret into the network with Substrate encryption";
+"common.today" = "Today";
+"common.yesterday" = "Yesterday";
 "common.tx.details" = "Transaction details";
 "common.unknown" = "Unknown";
 "staking.month.period.title" = "Monthly";
@@ -828,7 +825,7 @@
 "common.request.retry" = "Data loading failed. Would you like to retry?";
 "crowdloan.return.in.progress" = "To be returned by parachain";
 "crowdloan.returns.in.format" = "Returns in %@";
-"assets.search.empty" = "No tokens with\nentered name were found";
+"assets.search.empty" = "No networks or tokens with\nentered name were found";
 "assets.search.placeholder" = "Search by network or token";
 "common.tokens" = "Tokens";
 "common.chain.address.title" = "%@ address";
@@ -1100,10 +1097,6 @@
 "common.more.format" = "%@ (+%@ more)";
 "common.token.decimals" = "Decimals";
 "tokens.manage.partial.selected" = "%@ (%@ more)";
-"tokens.manage.search.empty" = "No tokens with entered name were\nfound";
-"add.token.network.selection.title" = "Select network to add ERC-20 token";
-"common.today" = "Today";
-"common.yesterday" = "Yesterday";
 "add.token.invalid.contract.address.message" = "The entered contract address is not ERC-20 contract.";
 "add.token.completion.message" = "%@ token added";
 "add.token.contract.metadata.error.title" = "Metadata fetch failed";
@@ -1250,9 +1243,6 @@
 "governance.referendums.settings.title" = "Referenda";
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
-"asset.operation.send.title" = "Send";
-"asset.operation.receive.title" = "Receive";
-"asset.operation.buy.title" = "Buy";
 "governance.referendums.filter.empty" = "There are no referenda with filters applied";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Open Polkadot Vault application on your smartphone";
@@ -1269,7 +1259,14 @@
 "common.per.year.long" = "per year";
 "common.per.year" = "/ year";
 "common.waiting" = "Waiting";
-"staking.more.options.dApps.title" = "Staking via Nova Browser";
 "multistaking.inactive.header" = "Stake and earn rewards";
 "multistaking.more.options" = "More staking options";
 "staking.on.network" = "%@ staking";
+"wallet.history.transfer.incoming.details" = "From: %@";
+"wallet.history.transfer.outgoing.details" = "To: %@";
+"wallet.history.amount.details" = "%@ at %@";
+"staking.more.options.dApps.title" = "Staking via Nova Browser";
+"wallet.receive.error.generateQRCode.message" = "QR code generation failed. Would you like to retry?";
+"asset.operation.send.title" = "Send";
+"asset.operation.receive.title" = "Receive";
+"asset.operation.buy.title" = "Buy";
