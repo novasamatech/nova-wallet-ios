@@ -103,7 +103,7 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         let priceChangeValue = (priceData?.dayChange ?? 0.0) / 100.0
         let priceChangeString = priceChangePercentFormatter
             .value(for: locale)
-            .stringFromDecimal(priceChangeValue)?.removingWhitespaces() ?? ""
+            .stringFromDecimal(priceChangeValue) ?? ""
         let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
             ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
         let priceString = priceFormatter(priceId: priceData?.currencyId)
