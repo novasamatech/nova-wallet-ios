@@ -25,7 +25,7 @@ final class GladingCardView: UIView {
 
     private var smallPatternEffect: UIMotionEffect?
     private var middlePatternEffect: UIMotionEffect?
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -61,21 +61,21 @@ final class GladingCardView: UIView {
 
         updateMotionEffect()
     }
-    
+
     private func updateMotionEffect() {
         if let effect = smallPatternEffect {
             smallPatternView.removeMotionEffect(effect)
         }
-        
+
         if let effect = middlePatternEffect {
             middlePatternView.removeMotionEffect(effect)
         }
-        
+
         let smallTilt = UIInterpolatingMotionEffect(
             keyPath: "center.x",
             type: .tiltAlongHorizontalAxis
         )
-        
+
         smallTilt.minimumRelativeValue = -25
         smallTilt.maximumRelativeValue = 25
 
@@ -135,7 +135,7 @@ final class GladingCardView: UIView {
 extension GladingCardView: AnimationUpdatibleView {
     func updateLayerAnimationIfActive() {
         updateMotionEffect()
-        
+
         [bigPatternView, middlePatternView, smallPatternView, strokeGladingView, fillGladingView].forEach { view in
             view.updateLayerAnimationIfActive()
         }

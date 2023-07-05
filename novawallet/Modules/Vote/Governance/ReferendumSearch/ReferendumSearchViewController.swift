@@ -36,7 +36,7 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         rootView.searchView.becomeFirstResponder()
     }
 
