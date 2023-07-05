@@ -3,23 +3,13 @@ import SoraFoundation
 
 enum AssetOperationViewFactory {
     static func createView(
-        for initState: AssetListInitState,
+        for stateObservable: AssetListStateObservable,
         operation: TokenOperation,
         transferCompletion: TransferCompletionClosure?
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
-
-        let interactor = AssetsSearchInteractor(
-            selectedWalletSettings: SelectedWalletSettings.shared,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currencyManager: currencyManager,
-            logger: Logger.shared
-        )
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
@@ -31,8 +21,7 @@ enum AssetOperationViewFactory {
 
         guard let presenter = createPresenter(
             for: operation,
-            initState: initState,
-            interactor: interactor,
+            stateObservable: stateObservable,
             viewModelFactory: viewModelFactory,
             transferCompletion: transferCompletion
         ) else {
@@ -59,51 +48,138 @@ enum AssetOperationViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }
 
     private static func createPresenter(
         for operation: TokenOperation,
-        initState: AssetListInitState,
-        interactor: AssetsSearchInteractorInputProtocol,
+        stateObservable: AssetListStateObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         transferCompletion: TransferCompletionClosure?
     ) -> AssetsSearchPresenter? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
-            return nil
-        }
-        let localizationManager = LocalizationManager.shared
-
         switch operation {
         case .send:
-            return SendAssetOperationPresenter(
-                initState: initState,
-                interactor: interactor,
+            return createSendPresenter(
+                stateObservable: stateObservable,
                 viewModelFactory: viewModelFactory,
-                localizationManager: localizationManager,
-                wireframe: SendAssetOperationWireframe(transferCompletion: transferCompletion)
+                transferCompletion: transferCompletion
             )
         case .receive:
-            return ReceiveAssetOperationPresenter(
-                initState: initState,
-                interactor: interactor,
+            guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+                return nil
+            }
+
+            return createReceivePresenter(
+                stateObservable: stateObservable,
                 viewModelFactory: viewModelFactory,
-                localizationManager: localizationManager,
-                selectedAccount: selectedMetaAccount,
-                wireframe: ReceiveAssetOperationWireframe()
+                wallet: selectedMetaAccount
             )
         case .buy:
-            return BuyAssetOperationPresenter(
-                initState: initState,
-                interactor: interactor,
+            guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+                return nil
+            }
+
+            return createBuyPresenter(
+                stateObservable: stateObservable,
                 viewModelFactory: viewModelFactory,
-                selectedAccount: selectedMetaAccount,
-                purchaseProvider: PurchaseAggregator.defaultAggregator(),
-                wireframe: BuyAssetOperationWireframe(),
-                localizationManager: localizationManager
+                wallet: selectedMetaAccount
             )
         }
+    }
+
+    private static func createSendPresenter(
+        stateObservable: AssetListStateObservable,
+        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
+        transferCompletion: TransferCompletionClosure?
+    ) -> SendAssetOperationPresenter? {
+        let filter: ChainAssetsFilter = { chainAsset in
+            let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
+
+            guard let transfersEnabled = try? assetMapper.transfersEnabled() else {
+                return false
+            }
+
+            return transfersEnabled
+        }
+
+        let interactor = AssetsSearchInteractor(
+            stateObservable: stateObservable,
+            filter: filter,
+            logger: Logger.shared
+        )
+
+        let presenter = SendAssetOperationPresenter(
+            interactor: interactor,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            wireframe: SendAssetOperationWireframe(transferCompletion: transferCompletion)
+        )
+
+        interactor.presenter = presenter
+
+        return presenter
+    }
+
+    private static func createReceivePresenter(
+        stateObservable: AssetListStateObservable,
+        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
+        wallet: MetaAccountModel
+    ) -> ReceiveAssetOperationPresenter? {
+        let interactor = AssetsSearchInteractor(
+            stateObservable: stateObservable,
+            filter: nil,
+            logger: Logger.shared
+        )
+
+        let presenter = ReceiveAssetOperationPresenter(
+            interactor: interactor,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            selectedAccount: wallet,
+            wireframe: ReceiveAssetOperationWireframe()
+        )
+
+        interactor.presenter = presenter
+
+        return presenter
+    }
+
+    private static func createBuyPresenter(
+        stateObservable: AssetListStateObservable,
+        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
+        wallet: MetaAccountModel
+    ) -> BuyAssetOperationPresenter? {
+        let purchaseProvider = PurchaseAggregator.defaultAggregator()
+
+        let filter: ChainAssetsFilter = { chainAsset in
+            guard let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
+                return false
+            }
+            let purchaseActions = purchaseProvider.buildPurchaseActions(
+                for: chainAsset,
+                accountId: accountId
+            )
+            return !purchaseActions.isEmpty
+        }
+
+        let interactor = AssetsSearchInteractor(
+            stateObservable: stateObservable,
+            filter: filter,
+            logger: Logger.shared
+        )
+
+        let presenter = BuyAssetOperationPresenter(
+            interactor: interactor,
+            viewModelFactory: viewModelFactory,
+            selectedAccount: wallet,
+            purchaseProvider: purchaseProvider,
+            wireframe: BuyAssetOperationWireframe(),
+            localizationManager: LocalizationManager.shared
+        )
+
+        interactor.presenter = presenter
+
+        return presenter
     }
 }

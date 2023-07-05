@@ -5,13 +5,15 @@ import SoraKeystore
 import BigInt
 
 final class AssetListInteractor: AssetListBaseInteractor {
-    var presenter: AssetListInteractorOutputProtocol? {
+    var presenter: AssetListInteractorOutputProtocol?
+
+    var modelBuilder: AssetListBuilder? {
         get {
-            basePresenter as? AssetListInteractorOutputProtocol
+            baseBuilder as? AssetListBuilder
         }
 
         set {
-            basePresenter = newValue
+            baseBuilder = newValue
         }
     }
 
@@ -19,6 +21,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
+    let assetListObservable: AssetListStateObservable
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
@@ -29,6 +32,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     init(
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
+        assetListObservable: AssetListStateObservable,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
         crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
@@ -40,6 +44,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
+        self.assetListObservable = assetListObservable
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.walletConnect = walletConnect
@@ -87,10 +92,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
         }
 
         presenter?.didReceive(
+            walletId: selectedMetaAccount.identifier,
             walletIdenticon: selectedMetaAccount.walletIdenticonData(),
             walletType: selectedMetaAccount.type,
             name: selectedMetaAccount.name
         )
+
+        modelBuilder?.applyWallet(selectedMetaAccount)
     }
 
     private func provideHidesZeroBalances() {
@@ -126,7 +134,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         clearNftSubscription()
 
-        presenter?.didResetNftProvider()
+        modelBuilder?.applyNftReset()
 
         nftChainIds = newNftChainIds
 
@@ -135,10 +143,18 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     override func setup() {
+        modelBuilder = .init { [weak self] result in
+            self?.presenter?.didReceive(result: result)
+
+            let newState = AssetListState(model: result.model)
+            self?.assetListObservable.state = .init(value: newState)
+        }
+
+        providerWalletInfo()
+
         walletConnect.add(delegate: self)
 
         provideHidesZeroBalances()
-        providerWalletInfo()
         provideWalletConnectSessionsCount()
 
         subscribeChains()
@@ -164,8 +180,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
         case let .success(changes):
             handleAccountLocksChanges(changes, accountId: accountId)
         case let .failure(error):
-            presenter?.didReceiveLocks(result: .failure(error))
+            modelBuilder?.applyLocks(.failure(error))
         }
+    }
+
+    override func handlePriceChanges(_ result: Result<[ChainAssetId: DataProviderChange<PriceData>], Error>) {
+        super.handlePriceChanges(result)
+
+        presenter?.didCompleteRefreshing()
     }
 
     private func provideWalletConnectSessionsCount() {
@@ -190,7 +212,7 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         if let provider = priceSubscription {
             provider.refresh()
         } else {
-            presenter?.didReceivePrice(changes: [:])
+            presenter?.didCompleteRefreshing()
         }
 
         nftSubscription?.refresh()
@@ -219,9 +241,9 @@ extension AssetListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHa
 
         switch result {
         case let .success(changes):
-            presenter?.didReceiveNft(changes: changes)
+            modelBuilder?.applyNftChanges(changes)
         case let .failure(error):
-            presenter?.didReceiveNft(error: error)
+            logger?.error("Nft error: \(error)")
         }
     }
 }
@@ -261,7 +283,7 @@ extension AssetListInteractor {
             }
         }
 
-        presenter?.didReceiveLocks(result: .success(Array(locks.values.flatMap { $0 })))
+        modelBuilder?.applyLocks(.success(Array(locks.values.flatMap { $0 })))
     }
 }
 

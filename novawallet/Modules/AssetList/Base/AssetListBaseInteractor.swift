@@ -5,7 +5,7 @@ import SoraKeystore
 import BigInt
 
 class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    weak var basePresenter: AssetListBaseInteractorOutputProtocol?
+    var baseBuilder: AssetListBaseBuilder?
 
     let selectedWalletSettings: SelectedWalletSettings
     let chainRegistry: ChainRegistryProtocol
@@ -118,7 +118,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
             allEnabledChains: enabledChains
         )
 
-        basePresenter?.didReceiveChainModelChanges(assetDependentChanges)
+        baseBuilder?.applyChainModelChanges(assetDependentChanges)
         applyChanges(allChanges: changes, enabledChainChanges: assetDependentChanges)
     }
 
@@ -153,7 +153,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
             allEnabledChains: enabledChains
         )
 
-        basePresenter?.didReceiveChainModelChanges(assetDependentChanges)
+        baseBuilder?.applyChainModelChanges(assetDependentChanges)
 
         didResetWallet(allChanges: changes, enabledChainChanges: assetDependentChanges)
     }
@@ -245,6 +245,15 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         }
     }
 
+    func handlePriceChanges(_ result: Result<[ChainAssetId: DataProviderChange<PriceData>], Error>) {
+        switch result {
+        case let .success(changes):
+            baseBuilder?.applyPriceChanges(changes)
+        case let .failure(error):
+            baseBuilder?.applyPrice(error: error)
+        }
+    }
+
     private func updatePriceProvider(
         for priceIdSet: Set<AssetModel.PriceId>,
         currency: Currency
@@ -273,11 +282,11 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
                 currency: currency
             )
 
-            self?.basePresenter?.didReceivePrice(changes: mappedChanges)
+            self?.handlePriceChanges(.success(mappedChanges))
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.basePresenter?.didReceivePrice(error: error)
+            self?.handlePriceChanges(.failure(error))
             return
         }
 
@@ -371,7 +380,7 @@ extension AssetListBaseInteractor {
             accum[chainAssetId] = .failure(error)
         }
 
-        basePresenter?.didReceiveBalance(results: results)
+        baseBuilder?.applyBalances(results)
     }
 
     private func handleAccountBalanceChanges(
@@ -425,7 +434,7 @@ extension AssetListBaseInteractor {
             }
         }
 
-        basePresenter?.didReceiveBalance(results: results)
+        baseBuilder?.applyBalances(results)
     }
 }
 
@@ -449,7 +458,7 @@ extension AssetListBaseInteractor: CrowdloanContributionLocalSubscriptionHandler
 
         switch result {
         case let .failure(error):
-            basePresenter?.didReceiveCrowdloans(result: .failure(error))
+            baseBuilder?.applyCrowdloans(.failure(error))
         case let .success(changes):
             crowdloans = changes.reduce(
                 into: crowdloans
@@ -464,14 +473,14 @@ extension AssetListBaseInteractor: CrowdloanContributionLocalSubscriptionHandler
                 }
             }
 
-            basePresenter?.didReceiveCrowdloans(result: .success(crowdloans))
+            baseBuilder?.applyCrowdloans(.success(crowdloans))
         }
     }
 }
 
 extension AssetListBaseInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard basePresenter != nil else {
+        guard baseBuilder != nil else {
             return
         }
 

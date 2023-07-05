@@ -58,7 +58,7 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     }
 
     private func updateLoadingState(for cell: UICollectionViewCell) {
-        (cell as? LoadingUpdatibleView)?.updateLoadingAnimationIfActive()
+        (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
     }
 }
 

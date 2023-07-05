@@ -5,19 +5,17 @@ import SoraFoundation
 
 typealias ChainAssetsFilter = (ChainAsset) -> Bool
 
-class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtocol {
+class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
-    var chainAssetsFilter: ChainAssetsFilter?
 
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
     let viewModelFactory: AssetListAssetViewModelFactoryProtocol
 
-    private var query: String = ""
+    private(set) var result: AssetSearchBuilderResult?
 
     init(
-        initState: AssetListInitState,
         delegate: AssetsSearchDelegate?,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
@@ -28,112 +26,24 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        super.init()
-
         self.localizationManager = localizationManager
-
-        applyInitState(initState)
-    }
-
-    private func filterAndUpdateView() {
-        applyFilter()
-        provideAssetsViewModel()
-    }
-
-    private func applyFilter() {
-        let filteredAssets = filterAssets(for: query, filter: chainAssetsFilter, chains: allChains)
-        updateGroups(from: filteredAssets, allChains: allChains)
-    }
-
-    private func updateGroups(from assets: [ChainAsset], allChains: [ChainModel.Id: ChainModel]) {
-        let assetModels = assets.reduce(into: [ChainModel.Id: [AssetListAssetModel]]()) { result, chainAsset in
-            let assetModel = createAssetModel(for: chainAsset.chain, assetModel: chainAsset.asset)
-            let currentModels = result[chainAsset.chain.chainId] ?? []
-            result[chainAsset.chain.chainId] = currentModels + [assetModel]
-        }
-
-        let groupAssetCalculators = assetModels.mapValues { models in
-            Self.createAssetsDiffCalculator(from: models)
-        }
-
-        let chainModels: [AssetListGroupModel] = assetModels.compactMap { chainId, assetModels in
-            guard let chain = allChains[chainId] else {
-                return nil
-            }
-
-            return createGroupModel(from: chain, assets: assetModels)
-        }
-
-        let groupChainCalculator = Self.createGroupsDiffCalculator(from: chainModels)
-
-        storeGroups(groupChainCalculator, groupLists: groupAssetCalculators)
-    }
-
-    private func filterAssets(
-        for query: String,
-        filter: ChainAssetsFilter?,
-        chains: [ChainModel.Id: ChainModel]
-    ) -> [ChainAsset] {
-        var chainAssets = chains.values.flatMap { chain in
-            chain.assets.map { ChainAsset(chain: chain, asset: $0) }
-        }
-
-        if let filter = filter {
-            chainAssets = chainAssets.filter(filter)
-        }
-
-        guard !query.isEmpty else {
-            return chainAssets
-        }
-
-        let allAssetsMatching = chainAssets.compactMap { chainAsset in
-            SearchMatch<ChainAsset>.matchString(for: query, recordField: chainAsset.asset.symbol, record: chainAsset)
-        }
-
-        let allMatchedAssets = allAssetsMatching.map(\.item)
-
-        if allAssetsMatching.contains(where: { $0.isFull }) {
-            return allMatchedAssets
-        }
-
-        let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
-
-        var allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
-            let match = SearchMatch<ChainAsset>.matchInclusion(
-                for: query,
-                recordField: chain.name,
-                record: chain
-            )
-
-            guard match != nil else {
-                return
-            }
-
-            chain.assets.forEach { asset in
-                let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-
-                if !matchedChainAssetsIds.contains(chainAssetId) {
-                    let chainAsset = ChainAsset(chain: chain, asset: asset)
-                    result.append(chainAsset)
-                }
-            }
-        }
-
-        if let filter = filter {
-            allMatchedChains = allMatchedChains.filter(filter)
-        }
-
-        return allMatchedAssets + allMatchedChains
     }
 
     private func provideAssetsViewModel() {
-        let maybePrices = try? priceResult?.get()
-
-        let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
-            createGroupViewModel(from: groupModel, maybePrices: maybePrices)
+        guard let result = result else {
+            return
         }
 
-        if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
+        let maybePrices = try? result.state.priceResult?.get()
+
+        let viewModels: [AssetListGroupViewModel] = result.groups.allItems.compactMap { groupModel in
+            createGroupViewModel(from: groupModel, groupLists: result.groupLists, maybePrices: maybePrices)
+        }
+
+        if
+            viewModels.isEmpty,
+            !result.state.balanceResults.isEmpty,
+            result.state.balanceResults.count >= result.state.allChains.count {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))
@@ -142,6 +52,7 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
 
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
+        groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>],
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
@@ -149,7 +60,11 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
         let assets = groupLists[chain.chainId]?.allItems ?? []
 
         let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
-            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            AssetListPresenterHelpers.createAssetAccountInfo(
+                from: asset,
+                chain: chain,
+                maybePrices: maybePrices
+            )
         }
 
         return viewModelFactory.createGroupViewModel(
@@ -161,41 +76,9 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
         )
     }
 
-    override func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
-        storeChainChanges(changes)
-
-        filterAndUpdateView()
-    }
-
-    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
-        super.didReceiveBalance(results: results)
-
-        filterAndUpdateView()
-    }
-
-    override func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
-        super.didReceivePrice(changes: changes)
-
-        filterAndUpdateView()
-    }
-
-    override func didReceivePrice(error: Error) {
-        super.didReceivePrice(error: error)
-
-        filterAndUpdateView()
-    }
-
-    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
-        super.didReceiveCrowdloans(result: result)
-
-        filterAndUpdateView()
-    }
-
     // MARK: - AssetsSearchPresenterProtocol
 
     func setup() {
-        filterAndUpdateView()
-
         interactor.setup()
     }
 
@@ -206,9 +89,7 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
     }
 
     func updateSearch(query: String) {
-        self.query = query
-
-        filterAndUpdateView()
+        interactor.search(query: query)
     }
 
     func cancel() {
@@ -216,7 +97,13 @@ class AssetsSearchPresenter: AssetListBasePresenter, AssetsSearchPresenterProtoc
     }
 }
 
-extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {}
+extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {
+    func didReceive(result: AssetSearchBuilderResult) {
+        self.result = result
+
+        provideAssetsViewModel()
+    }
+}
 
 extension AssetsSearchPresenter: Localizable {
     func applyLocalization() {

@@ -2,8 +2,20 @@ import Foundation
 import RobinHood
 import BigInt
 
-extension AssetListBasePresenter {
-    func createGroupModel(
+enum AssetListModelHelpers {
+    static func createNftDiffCalculator() -> ListDifferenceCalculator<NftModel> {
+        let sortingBlock: (NftModel, NftModel) -> Bool = { model1, model2 in
+            guard let createdAt1 = model1.createdAt, let createdAt2 = model2.createdAt else {
+                return true
+            }
+
+            return createdAt1.compare(createdAt2) == .orderedDescending
+        }
+
+        return ListDifferenceCalculator(initialItems: [], sortBlock: sortingBlock)
+    }
+
+    static func createGroupModel(
         from chain: ChainModel,
         assets: [AssetListAssetModel]
     ) -> AssetListGroupModel {
@@ -68,16 +80,17 @@ extension AssetListBasePresenter {
         return ListDifferenceCalculator(initialItems: sortedAssets, sortBlock: sortingBlock)
     }
 
-    func createAssetModels(for chainModel: ChainModel) -> [AssetListAssetModel] {
-        chainModel.assets.map { createAssetModel(for: chainModel, assetModel: $0) }
+    static func createAssetModels(for chainModel: ChainModel, state: AssetListState) -> [AssetListAssetModel] {
+        chainModel.assets.map { createAssetModel(for: chainModel, assetModel: $0, state: state) }
     }
 
-    func createAssetModel(
+    static func createAssetModel(
         for chainModel: ChainModel,
-        assetModel: AssetModel
+        assetModel: AssetModel,
+        state: AssetListState
     ) -> AssetListAssetModel {
         let chainAssetId = ChainAssetId(chainId: chainModel.chainId, assetId: assetModel.assetId)
-        let balanceResult = balanceResults[chainAssetId]
+        let balanceResult = state.balanceResults[chainAssetId]
 
         let maybeBalance: Decimal? = {
             if let balance = try? balanceResult?.get() {
@@ -92,7 +105,7 @@ extension AssetListBasePresenter {
 
         let crowdloanContributionsResult: Result<BigUInt, Error>? = {
             do {
-                let allContributions = try crowdloansResult?.get()
+                let allContributions = try state.crowdloansResult?.get()
 
                 let contribution = allContributions?[chainModel.chainId]?.reduce(BigUInt(0)) { accum, contribution in
                     accum + contribution.amount
@@ -116,7 +129,7 @@ extension AssetListBasePresenter {
         }()
 
         let maybePrice: Decimal? = {
-            if let mapping = try? priceResult?.get(), let priceData = mapping[chainAssetId] {
+            if let mapping = try? state.priceResult?.get(), let priceData = mapping[chainAssetId] {
                 return Decimal(string: priceData.price)
             } else {
                 return nil

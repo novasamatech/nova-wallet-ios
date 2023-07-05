@@ -9,9 +9,14 @@ protocol AssetsSearchPresenterProtocol: AnyObject {
     func cancel()
 }
 
-protocol AssetsSearchInteractorInputProtocol: AssetListBaseInteractorInputProtocol {}
+protocol AssetsSearchInteractorInputProtocol: AnyObject {
+    func setup()
+    func search(query: String)
+}
 
-protocol AssetsSearchInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {}
+protocol AssetsSearchInteractorOutputProtocol: AnyObject {
+    func didReceive(result: AssetSearchBuilderResult)
+}
 
 protocol AssetsSearchWireframeProtocol: AnyObject {
     func close(view: AssetsSearchViewProtocol?)

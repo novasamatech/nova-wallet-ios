@@ -4,9 +4,14 @@ import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
+    let assetListObservable: AssetListStateObservable
 
-    init(dappMediator: DAppInteractionMediating) {
+    init(
+        dappMediator: DAppInteractionMediating,
+        assetListObservable: AssetListStateObservable
+    ) {
         self.dappMediator = dappMediator
+        self.assetListObservable = assetListObservable
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
@@ -63,12 +68,12 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showAssetsSearch(
-        from view: AssetListViewProtocol?,
-        initState: AssetListInitState,
-        delegate: AssetsSearchDelegate
-    ) {
-        guard let assetsSearchView = AssetsSearchViewFactory.createView(for: initState, delegate: delegate) else {
+    func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate) {
+        guard
+            let assetsSearchView = AssetsSearchViewFactory.createView(
+                for: assetListObservable,
+                delegate: delegate
+            ) else {
             return
         }
 
@@ -78,33 +83,25 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
     }
 
-    func showSendTokens(
-        from view: AssetListViewProtocol?,
-        state: AssetListInitState,
-        transferCompletion: @escaping TransferCompletionClosure
-    ) {
-        showAssetsSelection(for: .send, from: view, state: state, transferCompletion: transferCompletion)
+    func showSendTokens(from view: AssetListViewProtocol?, transferCompletion: @escaping TransferCompletionClosure) {
+        showAssetsSelection(for: .send, from: view, transferCompletion: transferCompletion)
     }
 
-    func showRecieveTokens(from view: AssetListViewProtocol?, state: AssetListInitState) {
-        showAssetsSelection(for: .receive, from: view, state: state, transferCompletion: nil)
+    func showRecieveTokens(from view: AssetListViewProtocol?) {
+        showAssetsSelection(for: .receive, from: view, transferCompletion: nil)
     }
 
-    func showBuyTokens(
-        from view: AssetListViewProtocol?,
-        state: AssetListInitState
-    ) {
-        showAssetsSelection(for: .buy, from: view, state: state, transferCompletion: nil)
+    func showBuyTokens(from view: AssetListViewProtocol?) {
+        showAssetsSelection(for: .buy, from: view, transferCompletion: nil)
     }
 
     private func showAssetsSelection(
         for operation: TokenOperation,
         from view: AssetListViewProtocol?,
-        state: AssetListInitState,
         transferCompletion: TransferCompletionClosure?
     ) {
         guard let assetsSearchView = AssetOperationViewFactory.createView(
-            for: state,
+            for: assetListObservable,
             operation: operation,
             transferCompletion: transferCompletion
         ) else {

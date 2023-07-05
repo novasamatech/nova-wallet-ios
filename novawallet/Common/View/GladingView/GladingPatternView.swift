@@ -17,6 +17,8 @@ final class GladingPatternView: GladingBaseView {
             make.size.equalTo(model.gradientSize)
         }
 
+        gradientView.transform = CGAffineTransformMakeRotation(model.gradientRotation)
+
         applyMask()
         applyMotion()
 
@@ -38,8 +40,8 @@ final class GladingPatternView: GladingBaseView {
     }
 
     override func applyMotion() {
-        gradientView.motionEffects.forEach { effect in
-            gradientView.removeMotionEffect(effect)
+        gradientContentView.motionEffects.forEach { effect in
+            gradientContentView.removeMotionEffect(effect)
         }
 
         guard let model = model else {
@@ -57,22 +59,10 @@ final class GladingPatternView: GladingBaseView {
         let minTranslation = CATransform3DMakeTranslation(minOffset, 0, 0)
         let maxTranslation = CATransform3DMakeTranslation(maxOffset, 0, 0)
 
-        xTilt.minimumRelativeValue = CATransform3DRotate(
-            maxTranslation,
-            model.gradientRotation,
-            0,
-            0,
-            1
-        )
+        xTilt.minimumRelativeValue = minTranslation
 
-        xTilt.maximumRelativeValue = CATransform3DRotate(
-            minTranslation,
-            model.gradientRotation,
-            0,
-            0,
-            1
-        )
+        xTilt.maximumRelativeValue = maxTranslation
 
-        gradientView.addMotionEffect(xTilt)
+        gradientContentView.addMotionEffect(xTilt)
     }
 }

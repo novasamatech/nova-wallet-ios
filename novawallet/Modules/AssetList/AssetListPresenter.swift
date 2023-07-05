@@ -4,7 +4,10 @@ import SubstrateSdk
 import SoraFoundation
 import BigInt
 
-final class AssetListPresenter: AssetListBasePresenter {
+final class AssetListPresenter {
+    typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
+    typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
+
     static let viewUpdatePeriod: TimeInterval = 1.0
 
     weak var view: AssetListViewProtocol?
@@ -12,21 +15,15 @@ final class AssetListPresenter: AssetListBasePresenter {
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
 
-    private(set) var nftList: ListDifferenceCalculator<NftModel>
-
+    private(set) var walletId: MetaAccountModel.Id?
     private var walletIdenticon: Data?
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
 
-    private(set) var locksResult: Result<[AssetLock], Error>?
     private(set) var walletConnectSessionsCount: Int = 0
 
-    private var scheduler: SchedulerProtocol?
-
-    deinit {
-        cancelViewUpdate()
-    }
+    private(set) var model: AssetListBuilderResult.Model = .init()
 
     init(
         interactor: AssetListInteractorInputProtocol,
@@ -37,10 +34,6 @@ final class AssetListPresenter: AssetListBasePresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        nftList = Self.createNftDiffCalculator()
-
-        super.init()
-
         self.localizationManager = localizationManager
     }
 
@@ -49,7 +42,7 @@ final class AssetListPresenter: AssetListBasePresenter {
             return
         }
 
-        guard case let .success(priceMapping) = priceResult, !balanceResults.isEmpty else {
+        guard case let .success(priceMapping) = model.priceResult, !model.balanceResults.isEmpty else {
             let viewModel = viewModelFactory.createHeaderViewModel(
                 from: name,
                 walletIdenticon: walletIdenticon,
@@ -72,8 +65,6 @@ final class AssetListPresenter: AssetListBasePresenter {
         )
     }
 
-    typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
-    typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
     private func createAssetAccountPrice(
         chainAssetId: ChainAssetId,
         priceData: PriceData
@@ -81,12 +72,12 @@ final class AssetListPresenter: AssetListBasePresenter {
         let chainId = chainAssetId.chainId
         let assetId = chainAssetId.assetId
 
-        guard let chain = allChains[chainId],
+        guard let chain = model.allChains[chainId],
               let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
             return nil
         }
 
-        guard case let .success(assetBalance) = balances[chainAssetId] else {
+        guard case let .success(assetBalance) = model.balances[chainAssetId] else {
             return .right(
                 AssetListAssetAccountPrice(
                     assetInfo: asset.displayInfo,
@@ -111,12 +102,12 @@ final class AssetListPresenter: AssetListBasePresenter {
         let chainId = chainAssetId.chainId
         let assetId = chainAssetId.assetId
 
-        guard let chain = allChains[chainId],
+        guard let chain = model.allChains[chainId],
               let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
             return nil
         }
 
-        guard case let .success(assetBalance) = balances[chainAssetId], assetBalance.locked > 0 else {
+        guard case let .success(assetBalance) = model.balances[chainAssetId], assetBalance.locked > 0 else {
             return nil
         }
 
@@ -208,13 +199,13 @@ final class AssetListPresenter: AssetListBasePresenter {
     }
 
     private func checkNonZeroLocks() -> Bool {
-        let locks = balances.map { (try? $0.value.get())?.locked ?? 0 }
+        let locks = model.balances.map { (try? $0.value.get())?.locked ?? 0 }
 
         if locks.contains(where: { $0 > 0 }) {
             return true
         }
 
-        let crowdloanContributions = (try? crowdloansResult?.get()) ?? [:]
+        let crowdloanContributions = (try? model.crowdloansResult?.get()) ?? [:]
 
         if crowdloanContributions.contains(where: { $0.value.contains(where: { $0.amount > 0 }) }) {
             return true
@@ -223,39 +214,21 @@ final class AssetListPresenter: AssetListBasePresenter {
         return false
     }
 
-    private func calculateNftBalance(for chainAsset: ChainAsset) -> BigUInt {
-        guard chainAsset.asset.isUtility else {
-            return 0
-        }
-
-        return nftList.allItems.compactMap { nft in
-            guard nft.chainId == chainAsset.chain.chainId, let price = nft.price else {
-                return nil
-            }
-
-            return BigUInt(price)
-        }.reduce(BigUInt(0)) { total, value in
-            total + value
-        }
-    }
-
     private func provideAssetViewModels() {
         guard let hidesZeroBalances = hidesZeroBalances else {
             return
         }
 
-        let maybePrices = try? priceResult?.get()
-        let maybeCrowdloans = try? crowdloansResult?.get()
-        let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
+        let maybePrices = try? model.priceResult?.get()
+        let viewModels: [AssetListGroupViewModel] = model.groups.compactMap { groupModel in
             createGroupViewModel(
                 from: groupModel,
                 maybePrices: maybePrices,
-                maybeCrowdloans: maybeCrowdloans,
                 hidesZeroBalances: hidesZeroBalances
             )
         }
 
-        if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
+        if viewModels.isEmpty, !model.balanceResults.isEmpty, model.balanceResults.count >= model.allChains.count {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))
@@ -263,12 +236,12 @@ final class AssetListPresenter: AssetListBasePresenter {
     }
 
     private func crowdloansModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
-        switch crowdloansResult {
+        switch model.crowdloansResult {
         case .failure, .none:
             return []
         case let .success(crowdloans):
             return crowdloans.compactMap { chainId, chainCrowdloans in
-                guard let chain = allChains[chainId] else {
+                guard let chain = model.allChains[chainId] else {
                     return nil
                 }
                 guard let asset = chain.utilityAsset() else {
@@ -295,12 +268,11 @@ final class AssetListPresenter: AssetListBasePresenter {
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
-        maybeCrowdloans _: [ChainModel.Id: [CrowdloanContributionData]]?,
         hidesZeroBalances: Bool
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
 
-        let assets = groupLists[chain.chainId]?.allItems ?? []
+        let assets = model.groupLists[chain.chainId] ?? []
 
         let filteredAssets: [AssetListAssetModel]
 
@@ -321,7 +293,7 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
 
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
-            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            AssetListPresenterHelpers.createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
         return viewModelFactory.createGroupViewModel(
@@ -334,20 +306,16 @@ final class AssetListPresenter: AssetListBasePresenter {
     }
 
     private func provideNftViewModel() {
-        let allNfts = nftList.allItems
-
-        guard !allNfts.isEmpty else {
+        guard !model.nfts.isEmpty else {
             view?.didReceiveNft(viewModel: nil)
             return
         }
 
-        let nftViewModel = viewModelFactory.createNftsViewModel(from: allNfts, locale: selectedLocale)
+        let nftViewModel = viewModelFactory.createNftsViewModel(from: model.nfts, locale: selectedLocale)
         view?.didReceiveNft(viewModel: nftViewModel)
     }
 
     private func updateAssetsView() {
-        cancelViewUpdate()
-
         provideHeaderViewModel()
         provideAssetViewModels()
     }
@@ -360,23 +328,9 @@ final class AssetListPresenter: AssetListBasePresenter {
         provideNftViewModel()
     }
 
-    private func scheduleViewUpdate() {
-        guard scheduler == nil else {
-            return
-        }
-
-        scheduler = Scheduler(with: self, callbackQueue: .main)
-        scheduler?.notifyAfter(Self.viewUpdatePeriod)
-    }
-
-    private func cancelViewUpdate() {
-        scheduler?.cancel()
-        scheduler = nil
-    }
-
     private func presentAssetDetails(for chainAssetId: ChainAssetId) {
         // get chain from interactor that includes also disabled assets
-        let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? allChains[chainAssetId.chainId]
+        let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? model.allChains[chainAssetId.chainId]
 
         guard
             let chain = optChain,
@@ -385,47 +339,6 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
 
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
-    }
-
-    override func resetStorages() {
-        super.resetStorages()
-        locksResult = nil
-    }
-
-    // MARK: Interactor Output overridings
-
-    override func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
-        view?.didCompleteRefreshing()
-
-        super.didReceivePrice(changes: changes)
-
-        updateAssetsView()
-    }
-
-    override func didReceivePrice(error: Error) {
-        view?.didCompleteRefreshing()
-
-        super.didReceivePrice(error: error)
-
-        updateAssetsView()
-    }
-
-    override func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
-        super.didReceiveChainModelChanges(changes)
-
-        updateAssetsView()
-    }
-
-    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
-        super.didReceiveBalance(results: results)
-
-        updateAssetsView()
-    }
-
-    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
-        super.didReceiveCrowdloans(result: result)
-
-        updateAssetsView()
     }
 }
 
@@ -455,14 +368,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func presentSearch() {
-        let initState = AssetListInitState(
-            priceResult: priceResult,
-            balanceResults: balanceResults,
-            allChains: allChains,
-            crowdloansResult: crowdloansResult
-        )
-
-        wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
+        wireframe.showAssetsSearch(from: view, delegate: self)
     }
 
     func presentAssetsManage() {
@@ -472,64 +378,35 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     func presentLocks() {
         guard
             checkNonZeroLocks(),
-            let priceResult = priceResult,
+            let priceResult = model.priceResult,
             let prices = try? priceResult.get(),
-            let locks = try? locksResult?.get(),
-            let crowdloans = try? crowdloansResult?.get() else {
+            let locks = try? model.locksResult?.get(),
+            let crowdloans = try? model.crowdloansResult?.get() else {
             return
         }
 
         wireframe.showBalanceBreakdown(
             from: view,
             prices: prices,
-            balances: balances.values.compactMap { try? $0.get() },
-            chains: allChains,
+            balances: model.balances.values.compactMap { try? $0.get() },
+            chains: model.allChains,
             locks: locks,
             crowdloans: crowdloans
         )
     }
 
     func send() {
-        let initState = AssetListInitState(
-            priceResult: priceResult,
-            balanceResults: balanceResults,
-            allChains: allChains,
-            crowdloansResult: crowdloansResult
-        )
-
-        wireframe.showSendTokens(
-            from: view,
-            state: initState
-        ) { [weak self] chainAsset in
+        wireframe.showSendTokens(from: view) { [weak self] chainAsset in
             self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
     }
 
     func receive() {
-        let initState = AssetListInitState(
-            priceResult: priceResult,
-            balanceResults: balanceResults,
-            allChains: allChains,
-            crowdloansResult: crowdloansResult
-        )
-
-        wireframe.showRecieveTokens(
-            from: view,
-            state: initState
-        )
+        wireframe.showRecieveTokens(from: view)
     }
 
     func buy() {
-        let initState = AssetListInitState(
-            priceResult: priceResult,
-            balanceResults: balanceResults,
-            allChains: allChains,
-            crowdloansResult: crowdloansResult
-        )
-        wireframe.showBuyTokens(
-            from: view,
-            state: initState
-        )
+        wireframe.showBuyTokens(from: view)
     }
 
     func presentWalletConnect() {
@@ -542,26 +419,33 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 }
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
-    func didReceiveNft(changes: [DataProviderChange<NftModel>]) {
-        nftList.apply(changes: changes)
+    func didReceive(result: AssetListBuilderResult) {
+        guard result.walletId != nil, result.walletId == walletId else {
+            return
+        }
 
-        updateNftView()
+        model = result.model
+
+        switch result.changeKind {
+        case .reload:
+            updateAssetsView()
+        case .nfts:
+            updateNftView()
+        }
     }
 
-    func didReceiveNft(error _: Error) {}
-
-    func didResetNftProvider() {
-        nftList = Self.createNftDiffCalculator()
-    }
-
-    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String) {
+    func didReceive(
+        walletId: MetaAccountModel.Id,
+        walletIdenticon: Data?,
+        walletType: MetaAccountModelType,
+        name: String
+    ) {
+        self.walletId = walletId
         self.walletIdenticon = walletIdenticon
         self.walletType = walletType
         self.name = name
 
-        resetStorages()
-
-        nftList = Self.createNftDiffCalculator()
+        model = .init()
 
         updateAssetsView()
         updateNftView()
@@ -579,12 +463,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         updateAssetsView()
     }
 
-    func didReceiveLocks(result: Result<[AssetLock], Error>) {
-        locksResult = result
-
-        updateHeaderView()
-    }
-
     func didReceiveWalletConnect(error: WalletConnectSessionsError) {
         switch error {
         case .connectionFailed:
@@ -600,6 +478,10 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         walletConnectSessionsCount = sessionsCount
         updateHeaderView()
     }
+
+    func didCompleteRefreshing() {
+        view?.didCompleteRefreshing()
+    }
 }
 
 extension AssetListPresenter: Localizable {
@@ -608,12 +490,6 @@ extension AssetListPresenter: Localizable {
             updateAssetsView()
             updateNftView()
         }
-    }
-}
-
-extension AssetListPresenter: SchedulerDelegate {
-    func didTrigger(scheduler _: SchedulerProtocol) {
-        updateAssetsView()
     }
 }
 

@@ -222,8 +222,8 @@ extension StakingDashboardInactiveCellView: SkeletonableView {
     }
 }
 
-extension StakingDashboardInactiveCellView: LoadingUpdatibleView {
-    func updateLoadingAnimationIfActive() {
+extension StakingDashboardInactiveCellView: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
         if loadingState != .none {
             updateLoadingState()
 

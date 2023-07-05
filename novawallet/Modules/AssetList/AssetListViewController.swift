@@ -37,6 +37,12 @@ final class AssetListViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        updateLoadingState()
+    }
+
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(AssetListAssetCell.self)
         rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
@@ -62,6 +68,14 @@ final class AssetListViewController: UIViewController, ViewHolder {
             action: #selector(actionRefresh),
             for: .valueChanged
         )
+    }
+
+    private func updateLoadingState() {
+        rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
+    }
+
+    private func updateLoadingState(for cell: UICollectionViewCell) {
+        (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
     }
 
     @objc private func actionSelectAccount() {

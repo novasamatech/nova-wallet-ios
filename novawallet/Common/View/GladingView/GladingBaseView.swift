@@ -2,6 +2,7 @@ import UIKit
 
 class GladingBaseView: UIView {
     let gradientView = MultigradientView()
+    let gradientContentView = UIView()
 
     private var calculatedBounds: CGSize = .zero
 
@@ -31,7 +32,12 @@ class GladingBaseView: UIView {
     }
 
     func setupLayout() {
-        addSubview(gradientView)
+        addSubview(gradientContentView)
+        gradientContentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        gradientContentView.addSubview(gradientView)
         gradientView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -48,6 +54,13 @@ class GladingBaseView: UIView {
     private func applyOnBoundsChange() {
         calculatedBounds = bounds.size
 
+        applyMask()
+        applyMotion()
+    }
+}
+
+extension GladingBaseView: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
         applyMask()
         applyMotion()
     }

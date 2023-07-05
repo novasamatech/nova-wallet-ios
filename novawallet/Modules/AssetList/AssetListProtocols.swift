@@ -26,22 +26,28 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentWalletConnect()
 }
 
-protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
+protocol AssetListInteractorInputProtocol {
+    func setup()
+    func getFullChain(for chainId: ChainModel.Id) -> ChainModel?
     func refresh()
     func connectWalletConnect(uri: String)
     func retryFetchWalletConnectSessionsCount()
 }
 
-protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
-    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String)
-    func didReceiveNft(changes: [DataProviderChange<NftModel>])
-    func didReceiveNft(error: Error)
-    func didResetNftProvider()
+protocol AssetListInteractorOutputProtocol {
+    func didReceive(
+        walletId: MetaAccountModel.Id,
+        walletIdenticon: Data?,
+        walletType: MetaAccountModelType,
+        name: String
+    )
+
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
-    func didReceiveLocks(result: Result<[AssetLock], Error>)
+    func didReceive(result: AssetListBuilderResult)
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
+    func didCompleteRefreshing()
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
@@ -50,11 +56,7 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     func showAssetsSettings(from view: AssetListViewProtocol?)
     func showTokensManage(from view: AssetListViewProtocol?)
 
-    func showAssetsSearch(
-        from view: AssetListViewProtocol?,
-        initState: AssetListInitState,
-        delegate: AssetsSearchDelegate
-    )
+    func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)
 
     func showNfts(from view: AssetListViewProtocol?)
 
@@ -69,21 +71,11 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 
     func showWalletConnect(from view: AssetListViewProtocol?)
 
-    func showRecieveTokens(
-        from view: AssetListViewProtocol?,
-        state: AssetListInitState
-    )
+    func showRecieveTokens(from view: AssetListViewProtocol?)
 
-    func showSendTokens(
-        from view: AssetListViewProtocol?,
-        state: AssetListInitState,
-        transferCompletion: @escaping TransferCompletionClosure
-    )
+    func showSendTokens(from view: AssetListViewProtocol?, transferCompletion: @escaping TransferCompletionClosure)
 
-    func showBuyTokens(
-        from view: AssetListViewProtocol?,
-        state: AssetListInitState
-    )
+    func showBuyTokens(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

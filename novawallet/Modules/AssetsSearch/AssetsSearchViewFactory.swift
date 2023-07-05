@@ -3,19 +3,16 @@ import SoraFoundation
 
 struct AssetsSearchViewFactory {
     static func createView(
-        for initState: AssetListInitState,
+        for stateObservable: AssetListStateObservable,
         delegate: AssetsSearchDelegate
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
         let interactor = AssetsSearchInteractor(
-            selectedWalletSettings: SelectedWalletSettings.shared,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currencyManager: currencyManager,
+            stateObservable: stateObservable,
+            filter: nil,
             logger: Logger.shared
         )
 
@@ -30,7 +27,6 @@ struct AssetsSearchViewFactory {
         )
 
         let presenter = AssetsSearchPresenter(
-            initState: initState,
             delegate: delegate,
             interactor: interactor,
             wireframe: wireframe,

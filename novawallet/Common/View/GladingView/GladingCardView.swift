@@ -114,3 +114,11 @@ final class GladingCardView: UIView {
         }
     }
 }
+
+extension GladingCardView: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
+        [bigPatternView, middlePatternView, smallPatternView, strokeGladingView, fillGladingView].forEach { view in
+            view.updateLayerAnimationIfActive()
+        }
+    }
+}
