@@ -13,6 +13,7 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
     private(set) var balanceProvider: StreamableProvider<AssetBalance>?
     private(set) var selectedAccount: MetaChainAccountResponse?
     private(set) var operationQueue: OperationQueue
+    private(set) var observableBalance: Observable<AssetBalance?> = .init(state: nil)
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -92,6 +93,10 @@ extension StartStakingInfoInteractor: WalletLocalStorageSubscriber,
 
         switch result {
         case let .success(balance):
+            observableBalance.state = balance ?? .createZero(
+                for: .init(chainId: chainId, assetId: assetId),
+                accountId: accountId
+            )
             presenter?.didReceiveAssetBalance(balance)
         case let .failure(error):
             presenter?.didReceiveError(.assetBalance(error))

@@ -1266,8 +1266,12 @@
 "staking.start.stake.without.minimum.stake" = "Stake anytime. Your stake will actively earn rewards %@";
 "staking.start.unstake" = "Unstake anytime, and redeem your funds %@. No rewards are earned while unstaking";
 "staking.start.rewards.manual.claim" = "Rewards accrue %@. You need to claim rewards manually";
-"staking.start.rewards" = "Rewards accrue %@ and added back to the stake";
-"staking.start.gov" = "%@ with your staked tokens";
+"staking.start.rewards.nomination.pool" = "Rewards accrue %@ and added back to the stake";
+"staking.start.rewards.direct.staking" = "Rewards accrue %@. Stake over %@ for automatic rewards payout, otherwise you need to claim rewards manually";
+"staking.start.gov.nomination.pool" = "%@ with your staked tokens";
+"staking.start.gov.direct.staking" = "Stake over %@ and %@ with your staked tokens";
+"staking.start.gov.nomination.pool.action" = "Participate in governance";
+"staking.start.gov.nomination.direct.staking.action" = "participate in governance";
 "staking.start.gov.action" = "Participate in governance";
 "staking.start.changes.action" = "Monitor your stake";
 "staking.start.changes" = "Rewards & staking status vary over time. %@ from time to time";

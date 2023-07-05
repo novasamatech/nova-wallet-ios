@@ -15,8 +15,13 @@ protocol StartStakingViewModelFactoryProtocol {
         locale: Locale
     ) -> ParagraphView.Model
     func unstakeModel(unstakePeriod: TimeInterval, locale: Locale) -> ParagraphView.Model
-    func rewardModel(eraDuration: TimeInterval, locale: Locale) -> ParagraphView.Model
-    func govModel(locale: Locale) -> ParagraphView.Model
+    func rewardModel(
+        stakingType: StartStakingType,
+        chainAsset: ChainAsset,
+        eraDuration: TimeInterval,
+        locale: Locale
+    ) -> ParagraphView.Model
+    func govModel(stakingType: StartStakingType, chainAsset: ChainAsset, locale: Locale) -> ParagraphView.Model
     func recommendationModel(locale: Locale) -> ParagraphView.Model
     func testNetworkModel(
         chain: ChainModel,
@@ -117,14 +122,35 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func rewardModel(eraDuration: TimeInterval, locale: Locale) -> ParagraphView.Model {
+    func rewardModel(
+        stakingType: StartStakingType,
+        chainAsset: ChainAsset,
+        eraDuration: TimeInterval,
+        locale: Locale
+    ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let rewardIntervals = eraDuration.localizedDaysHours(for: locale, separator: separator) ?? ""
+        let text: String
 
-        let text = R.string.localizable.stakingStartRewards(
-            rewardIntervals,
-            preferredLanguages: locale.rLanguages
-        )
+        switch stakingType {
+        case let .directStaking(plank):
+            let decimalAmount = Decimal.fromSubstrateAmount(
+                plank,
+                precision: Int16(chainAsset.asset.precision)
+            ) ?? 0.0
+            let formattedAmount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
+            text = R.string.localizable.stakingStartRewardsDirectStaking(
+                rewardIntervals,
+                formattedAmount,
+                preferredLanguages: locale.rLanguages
+            )
+        case .nominationPool:
+            text = R.string.localizable.stakingStartRewardsNominationPool(
+                rewardIntervals,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
         let textWithAccents = AccentTextModel(
             text: text,
             accents: [rewardIntervals]
@@ -135,9 +161,31 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func govModel(locale: Locale) -> ParagraphView.Model {
-        let action = R.string.localizable.stakingStartGovAction(preferredLanguages: locale.rLanguages)
-        let text = R.string.localizable.stakingStartGov(action, preferredLanguages: locale.rLanguages)
+    func govModel(
+        stakingType: StartStakingType,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> ParagraphView.Model {
+        let action: String
+        let text: String
+        switch stakingType {
+        case .nominationPool:
+            action = R.string.localizable.stakingStartGovNominationPoolAction(preferredLanguages: locale.rLanguages)
+            text = R.string.localizable.stakingStartGovNominationPool(action, preferredLanguages: locale.rLanguages)
+        case let .directStaking(plank):
+            let decimalAmount = Decimal.fromSubstrateAmount(
+                plank,
+                precision: Int16(chainAsset.asset.precision)
+            ) ?? 0.0
+            let formattedAmount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
+            action = R.string.localizable.stakingStartGovNominationDirectStakingAction(preferredLanguages: locale.rLanguages)
+            text = R.string.localizable.stakingStartGovDirectStaking(
+                formattedAmount,
+                action,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
         let textWithAccents = AccentTextModel(
             text: text,
             accents: [action]
@@ -173,7 +221,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
             accents: [description, value]
         )
         return .init(
-            image: R.image.speaker(),
+            image: R.image.system(),
             text: textWithAccents
         )
     }
@@ -220,4 +268,9 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
             )
         }
     }
+}
+
+enum StartStakingType {
+    case nominationPool
+    case directStaking(amount: BigUInt)
 }

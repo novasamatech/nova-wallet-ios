@@ -37,3 +37,21 @@ struct EraTimeCalculator {
         return eraCountdownResult.timeIntervalTillStart(targetEra: eraCountdownResult.activeEra + 1)
     }
 }
+
+struct StakingTypeCalculator {
+    var minStake: BigUInt?
+    var assetBalance: AssetBalance?
+
+    func calculate() -> StartStakingType? {
+        guard let minStake = minStake,
+              let assetBalance = assetBalance else {
+            return nil
+        }
+
+        if assetBalance.freeInPlank >= minStake {
+            return .directStaking(amount: minStake)
+        } else {
+            return .nominationPool
+        }
+    }
+}

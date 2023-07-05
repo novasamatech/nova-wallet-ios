@@ -111,6 +111,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
     private var minStakeCalculator = MinStakeCalculator() {
         didSet {
             if let minStake = minStakeCalculator.calculate() {
+                stakingTypeCalculator.minStake = minStake
                 presenter?.didReceiveMinStake(minStake)
             }
         }
@@ -120,6 +121,14 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         didSet {
             if let value = eraTimeCalculator.calculate() {
                 presenter?.didReceiveNextEraTime(value)
+            }
+        }
+    }
+
+    private var stakingTypeCalculator = StakingTypeCalculator() {
+        didSet {
+            if let value = stakingTypeCalculator.calculate() {
+                presenter?.didReceiveStakingType(value)
             }
         }
     }
@@ -196,14 +205,21 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
     }
 
     override func setup() {
-        super.setup()
+        observableBalance.addObserver(with: self) { [weak self] _, newValue in
+            self?.stakingTypeCalculator.assetBalance = newValue
+        }
 
+        super.setup()
         setupState()
         provideNetworkStakingInfo()
         performMinNominatorBondSubscription()
         performBagListSizeSubscription()
         provideEraCompletionTime()
         performActiveEraSubscription()
+    }
+
+    deinit {
+        observableBalance.removeObserver(by: self)
     }
 }
 

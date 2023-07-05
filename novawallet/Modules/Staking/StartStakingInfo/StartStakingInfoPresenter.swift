@@ -16,6 +16,7 @@ final class StartStakingInfoPresenter {
     private var eraTime: LoadableViewModelState<TimeInterval?> = .loading
     private var unstakingPeriod: LoadableViewModelState<TimeInterval> = .loading
     private var nominationEra: LoadableViewModelState<TimeInterval> = .loading
+    private var stakingType: StartStakingType?
 
     var allDataLoaded: Bool {
         !minStake.isLoading && !eraTime.isLoading && !unstakingPeriod.isLoading && !nominationEra.isLoading
@@ -41,6 +42,7 @@ extension StartStakingInfoPresenter: StartStakingInfoPresenterProtocol {
 
     private func provideViewModel() {
         guard allDataLoaded,
+              let stakingType = stakingType,
               let chainAsset = chainAsset,
               let eraTime = eraTime.value,
               let eraDuration = eraTime,
@@ -63,8 +65,19 @@ extension StartStakingInfoPresenter: StartStakingInfoPresenterProtocol {
             locale: selectedLocale,
             url: URL(string: "https://novawallet.io")!
         )
+        let testnetModel = chainAsset.chain.isTestnet ? startStakingViewModelFactory.testNetworkModel(
+            chain: chainAsset.chain,
+            locale: selectedLocale
+        ) : nil
+
+        let govModel = chainAsset.chain.hasGovernance ? startStakingViewModelFactory.govModel(
+            stakingType: stakingType,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        ) : nil
 
         let paragraphs = [
+            testnetModel,
             startStakingViewModelFactory.stakeModel(
                 minStake: minStake.value ?? nil,
                 nextEra: nominationEraValue,
@@ -72,17 +85,23 @@ extension StartStakingInfoPresenter: StartStakingInfoPresenterProtocol {
                 locale: selectedLocale
             ),
             startStakingViewModelFactory.unstakeModel(unstakePeriod: unstakePeriod, locale: selectedLocale),
-            startStakingViewModelFactory.rewardModel(eraDuration: eraDuration, locale: selectedLocale),
-            startStakingViewModelFactory.govModel(locale: selectedLocale),
+            startStakingViewModelFactory.rewardModel(
+                stakingType: stakingType,
+                chainAsset: chainAsset,
+                eraDuration: eraDuration,
+                locale: selectedLocale
+            ),
+            govModel,
             startStakingViewModelFactory.recommendationModel(locale: selectedLocale)
-        ]
-        let stubModel = StartStakingViewModel(
+        ].compactMap { $0 }
+
+        let model = StartStakingViewModel(
             title: title,
             paragraphs: paragraphs,
             wikiUrl: wikiUrl,
             termsUrl: termsUrl
         )
-        view?.didReceive(viewModel: .loaded(value: stubModel))
+        view?.didReceive(viewModel: .loaded(value: model))
     }
 
     private func provideBalanceModel() {
@@ -115,6 +134,11 @@ extension StartStakingInfoPresenter: StartStakingInfoInteractorOutputProtocol {
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
         self.assetBalance = assetBalance
         provideBalanceModel()
+    }
+
+    func didReceiveStakingType(_ stakingType: StartStakingType) {
+        self.stakingType = stakingType
+        provideViewModel()
     }
 
     func didReceiveError(_: StartStakingInfoError) {}

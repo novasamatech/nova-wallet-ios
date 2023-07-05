@@ -23,6 +23,7 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceiveEraTime(_ time: TimeInterval?)
     func didReceive(unstakingPeriod: TimeInterval)
     func didReceiveNextEraTime(_ time: TimeInterval)
+    func didReceiveStakingType(_ stakingType: StartStakingType)
 }
 
 protocol StartStakingInfoWireframeProtocol: AnyObject {}
