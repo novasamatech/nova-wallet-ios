@@ -37,8 +37,8 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         rootView.walletNameInputView.textField.becomeFirstResponder()
     }
 
