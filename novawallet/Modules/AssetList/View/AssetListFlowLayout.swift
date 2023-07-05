@@ -78,12 +78,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             case .settings:
                 return UIEdgeInsets(top: 12, left: 0, bottom: 16, right: 0)
             case .assetGroup:
-                return UIEdgeInsets(
-                    top: 2.0,
-                    left: 0,
-                    bottom: 16.0,
-                    right: 0
-                )
+                return UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
             }
         }
     }
