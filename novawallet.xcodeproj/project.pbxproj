@@ -47,6 +47,7 @@
 		0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
 		0C2AA829B5CB89B39E0FA95E /* CrowdloanContributionConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF01941105BCD02536538362 /* CrowdloanContributionConfirmProtocols.swift */; };
+		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C5364A02A4D6EB700990478 /* AssetListBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */; };
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
 		0C56B4F72A4AA5590030F9C9 /* PhishingAccountVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4F62A4AA5590030F9C9 /* PhishingAccountVerifier.swift */; };
@@ -3683,6 +3684,7 @@
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
+		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
 		0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilder.swift; sourceTree = "<group>"; };
 		0C56B4F62A4AA5590030F9C9 /* PhishingAccountVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingAccountVerifier.swift; sourceTree = "<group>"; };
@@ -9103,6 +9105,7 @@
 				84644A2A2567222A004EAA4B /* TriangularedBlurButton.swift */,
 				84644A2F256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift */,
 				84540171292F907B00213402 /* BlurBackgroundView.swift */,
+				0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */,
 			);
 			path = TriangularedView;
 			sourceTree = "<group>";
@@ -19050,6 +19053,7 @@
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
 				840302E4292CFCF90013F356 /* AssetSelectionBasePresenter.swift in Sources */,
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
+				0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */,
 				84E0C52029CA413C000B65C8 /* OperationContractCallViewModel.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
