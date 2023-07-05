@@ -9,7 +9,7 @@ final class AssetDetailsViewLayout: UIView {
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
-        $0.backgroundView.apply(style: .container)
+        $0.backgroundView.apply(style: .assetContainer)
         $0.contentInsets = .init(top: 3, left: 3, bottom: 3, right: 3)
         $0.imageView.tintColor = R.color.colorIconSecondary()
     }
@@ -117,12 +117,20 @@ final class AssetDetailsViewLayout: UIView {
 
         topBackgroundView.snp.makeConstraints {
             $0.leading.trailing.top.equalToSuperview()
-            $0.bottom.equalTo(priceStack.snp.bottom)
+            $0.bottom.equalTo(priceStack.snp.bottom).offset(Constants.priceBottomSpace)
         }
 
         let assetView = UIStackView(arrangedSubviews: [assetIconView, assetLabel])
         assetView.spacing = 8
         addSubview(assetView)
+
+        assetIconView.setContentHuggingPriority(.low, for: .horizontal)
+        assetLabel.setContentHuggingPriority(.low, for: .horizontal)
+
+        assetIconView.snp.makeConstraints {
+            $0.width.height.equalTo(Constants.assetImageViewSize)
+        }
+
         assetView.snp.makeConstraints {
             $0.leading.greaterThanOrEqualToSuperview()
             $0.centerX.equalToSuperview()
@@ -183,7 +191,7 @@ final class AssetDetailsViewLayout: UIView {
         assetDetailsModel.assetIcon?.cancel(on: assetIconView.imageView)
         assetIconView.imageView.image = nil
 
-        let iconSize = 22
+        let iconSize = Constants.assetIconSize
         assetDetailsModel.assetIcon?.loadImage(
             on: assetIconView.imageView,
             targetSize: CGSize(width: iconSize, height: iconSize),
@@ -226,5 +234,8 @@ extension AssetDetailsViewLayout {
         static let containerViewTopOffset: CGFloat = 12
         static let sectionSpace: CGFloat = 8
         static let bottomOffset: CGFloat = 46
+        static let assetImageViewSize: CGFloat = 28
+        static let assetIconSize: CGFloat = 21
+        static let priceBottomSpace: CGFloat = 8
     }
 }
