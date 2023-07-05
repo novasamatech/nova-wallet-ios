@@ -42,6 +42,7 @@ enum AssetOperationViewFactory {
 
         let view = AssetsSearchViewController(
             presenter: presenter,
+            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
             createViewClosure: { AssetsOperationViewLayout() },
             localizableTitle: title,
             localizationManager: LocalizationManager.shared
