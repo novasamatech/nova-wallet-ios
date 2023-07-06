@@ -1,9 +1,14 @@
 import UIKit
 
+struct GlareInterval {
+    let min: CGFloat
+    let max: CGFloat
+}
+
 struct GladingPatternModel {
     let gradient: GradientModel
-    let slidingMin: CGFloat
-    let slidingMax: CGFloat
+    let slidingX: GlareInterval
+    let slidingY: GlareInterval
     let gradientRotation: CGFloat
     let gradientSize: CGSize
     let pattern: UIImage
@@ -37,8 +42,8 @@ extension GladingPatternModel {
     static var bigPattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
-            slidingMin: Self.slidingMin,
-            slidingMax: Self.slidingMax,
+            slidingX: .init(min: Self.slidingMin, max: Self.slidingMax),
+            slidingY: .init(min: Self.slidingMin, max: Self.slidingMax),
             gradientRotation: Self.gradientRotation,
             gradientSize: Self.gradientSize,
             pattern: R.image.cardBigPattern()!
@@ -48,8 +53,8 @@ extension GladingPatternModel {
     static var middlePattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
-            slidingMin: Self.slidingMin,
-            slidingMax: Self.slidingMax,
+            slidingX: .init(min: Self.slidingMin, max: Self.slidingMax),
+            slidingY: .init(min: Self.slidingMin, max: Self.slidingMax),
             gradientRotation: Self.gradientRotation,
             gradientSize: Self.gradientSize,
             pattern: R.image.cardMiddlePattern()!.blurred(with: 2)!
@@ -59,11 +64,11 @@ extension GladingPatternModel {
     static var smallPattern: GladingPatternModel {
         .init(
             gradient: Self.gladingCard,
-            slidingMin: Self.slidingMin,
-            slidingMax: Self.slidingMax,
+            slidingX: .init(min: Self.slidingMin, max: Self.slidingMax),
+            slidingY: .init(min: Self.slidingMin, max: Self.slidingMax),
             gradientRotation: Self.gradientRotation,
             gradientSize: Self.gradientSize,
-            pattern: R.image.cardSmallPattern()!.blurred(with: 4)!
+            pattern: R.image.cardSmallPattern()!.blurred(with: 3)!
         )
     }
 }
