@@ -209,55 +209,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         )
     }
 
-    private func setupMotionEffect() {
-        setupBackgroundMotion()
-
-        setupMovingMotion(for: displayContentView)
-    }
-
-    private func clearMotionEffect() {
-        clearMotionEffects(for: contentView)
-        clearMotionEffects(for: displayContentView)
-    }
-
-    private func setupBackgroundMotion() {
-        let identity = CATransform3DIdentity
-        let minimum = CATransform3DRotate(identity, -Constants.cardMotionAngle, 0.0, 1.0, 0.0)
-        let maximum = CATransform3DRotate(identity, Constants.cardMotionAngle, 0.0, 1.0, 0.0)
-
-        contentView.layer.transform = identity
-        let effect = UIInterpolatingMotionEffect(
-            keyPath: "layer.transform",
-            type: .tiltAlongHorizontalAxis
-        )
-        effect.minimumRelativeValue = minimum
-        effect.maximumRelativeValue = maximum
-
-        contentView.addMotionEffect(effect)
-    }
-
-    private func setupMovingMotion(for view: UIView) {
-        let identity = CATransform3DIdentity
-        let minimum = CATransform3DTranslate(identity, Constants.elementMovingMotion, 0.0, 0.0)
-        let maximum = CATransform3DTranslate(identity, -Constants.elementMovingMotion, 0.0, 0.0)
-
-        view.layer.transform = identity
-        let effect = UIInterpolatingMotionEffect(
-            keyPath: "layer.transform",
-            type: .tiltAlongHorizontalAxis
-        )
-        effect.minimumRelativeValue = minimum
-        effect.maximumRelativeValue = maximum
-
-        view.addMotionEffect(effect)
-    }
-
-    private func clearMotionEffects(for view: UIView) {
-        view.motionEffects.forEach {
-            view.removeMotionEffect($0)
-        }
-    }
-
     private func setupLayout() {
         [shadowView1, shadowView2].forEach { view in
             contentView.addSubview(view)
@@ -423,8 +374,5 @@ extension AssetListTotalBalanceCell: AnimationUpdatibleView {
         actionsGladingView.updateLayerAnimationIfActive()
 
         skeletonView?.restartSkrulling()
-
-        clearMotionEffect()
-        setupMotionEffect()
     }
 }
