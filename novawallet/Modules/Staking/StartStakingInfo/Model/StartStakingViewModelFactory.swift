@@ -27,8 +27,8 @@ protocol StartStakingViewModelFactoryProtocol {
         chain: ChainModel,
         locale: Locale
     ) -> ParagraphView.Model
-    func wikiModel(locale: Locale, url: URL) -> StartStakingUrlModel
-    func termsModel(locale: Locale, url: URL) -> StartStakingUrlModel
+    func wikiModel(url: URL, chain: ChainModel, locale: Locale) -> StartStakingUrlModel
+    func termsModel(url: URL, locale: Locale) -> StartStakingUrlModel
     func balance(amount: BigUInt?, priceData: PriceData?, chainAsset: ChainAsset, locale: Locale) -> String
 }
 
@@ -72,7 +72,11 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
-        let time = nextEra.localizedDaysHours(for: locale, separator: separator) ?? ""
+        let timePreposition = R.string.localizable.commonTimeIn(preferredLanguages: locale.rLanguages)
+        let time = [
+            timePreposition,
+            nextEra.localizedDaysHours(for: locale, separator: separator)
+        ].joined(with: .space)
         let precision = chainAsset.assetDisplayInfo.assetPrecision
         let textWithAccents: AccentTextModel
 
@@ -107,10 +111,11 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodAfter(preferredLanguages: locale.rLanguages)
-        let unstakePeriod = preposition + " " + unstakePeriod.localizedDaysHours(
-            for: locale,
-            separator: separator
-        )
+        let time = unstakePeriod.localizedDaysHours(for: locale, separator: separator)
+        let unstakePeriod = [
+            preposition,
+            time
+        ].joined(with: .space)
         let text = R.string.localizable.stakingStartUnstake(unstakePeriod, preferredLanguages: locale.rLanguages)
         let textWithAccents = AccentTextModel(
             text: text,
@@ -129,7 +134,12 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
-        let rewardIntervals = eraDuration.localizedDaysHours(for: locale, separator: separator) ?? ""
+        let preposition = R.string.localizable.commonTimePeriodEvery(preferredLanguages: locale.rLanguages)
+        let time = eraDuration.localizedDaysHours(for: locale, separator: separator)
+        let rewardIntervals = [
+            preposition,
+            time
+        ].joined(with: .space)
         let text: String
 
         switch stakingType {
@@ -215,7 +225,12 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let description = R.string.localizable.stakingStartTestNetworkDescription(preferredLanguages: locale.rLanguages)
         let value = R.string.localizable.stakingStartTestNetworkTokenValue(preferredLanguages: locale.rLanguages)
-        let text = R.string.localizable.stakingStartTestNetwork(chain.name, description, value, preferredLanguages: locale.rLanguages)
+        let text = R.string.localizable.stakingStartTestNetwork(
+            chain.name,
+            description,
+            value,
+            preferredLanguages: locale.rLanguages
+        )
         let textWithAccents = AccentTextModel(
             text: text,
             accents: [description, value]
@@ -226,9 +241,13 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func wikiModel(locale: Locale, url: URL) -> StartStakingUrlModel {
+    func wikiModel(
+        url: URL,
+        chain: ChainModel,
+        locale: Locale
+    ) -> StartStakingUrlModel {
         let linkName = R.string.localizable.stakingStartWikiLink(preferredLanguages: locale.rLanguages)
-        let text = R.string.localizable.stakingStartWiki(linkName, preferredLanguages: locale.rLanguages)
+        let text = R.string.localizable.stakingStartWiki(chain.name, linkName, preferredLanguages: locale.rLanguages)
 
         return .init(
             text: text,
@@ -237,7 +256,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         )
     }
 
-    func termsModel(locale: Locale, url: URL) -> StartStakingUrlModel {
+    func termsModel(url: URL, locale: Locale) -> StartStakingUrlModel {
         let linkName = R.string.localizable.stakingStartTermsLink(preferredLanguages: locale.rLanguages)
         let text = R.string.localizable.stakingStartTerms(linkName, preferredLanguages: locale.rLanguages)
 
@@ -255,7 +274,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         }
         let balance = balanceViewModelFactory.balanceFromPrice(amountDecimal, priceData: priceData).value(for: locale)
 
-        if let price = balance.price, amount != nil {
+        if let price = balance.price, let amount = amount, amount > 0 {
             return R.string.localizable.stakingStartBalanceWithFiat(
                 balance.amount,
                 price,
@@ -268,9 +287,4 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
             )
         }
     }
-}
-
-enum StartStakingType {
-    case nominationPool
-    case directStaking(amount: BigUInt)
 }

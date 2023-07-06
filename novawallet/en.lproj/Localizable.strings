@@ -1261,7 +1261,7 @@
 "multistaking.inactive.header" = "Stake and earn rewards";
 "multistaking.more.options" = "More staking options";
 "staking.on.network" = "%@ staking";
-"staking.start.stake" = "Stake anytime with as little as %@. Your stake will actively earn rewards %@";
+"staking.start.stake" = "Stake anytime with as little as %@... Your stake will actively earn rewards %@";
 "staking.start.stake.without.minimum.stake" = "Stake anytime. Your stake will actively earn rewards %@";
 "staking.start.unstake" = "Unstake anytime, and redeem your funds %@. No rewards are earned while unstaking";
 "staking.start.rewards.manual.claim" = "Rewards accrue %@. You need to claim rewards manually";
@@ -1273,7 +1273,7 @@
 "staking.start.gov.nomination.direct.staking.action" = "participate in governance";
 "staking.start.changes.action" = "Monitor your stake";
 "staking.start.changes" = "Rewards & staking status vary over time. %@ from time to time";
-"staking.start.wiki" = "Find out more information about\nEdgeware staking over at the %@";
+"staking.start.wiki" = "Find out more information about\n%@ staking over at the %@";
 "staking.start.wiki.link" = "Nova Wiki";
 "staking.start.terms" = "See %@";
 "staking.start.terms.link" = "Terms of Use";
@@ -1287,3 +1287,4 @@
 "common.time.in" = "in";
 "common.and" = "and";
 "common.time.period.after" = "after";
+"common.time.period.every" = "every";

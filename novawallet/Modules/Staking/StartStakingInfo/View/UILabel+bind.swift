@@ -29,7 +29,8 @@ extension UILabel {
         let decorators = model.accents.map {
             HighlightingAttributedStringDecorator(
                 pattern: $0,
-                attributes: highlightingAttributes
+                attributes: highlightingAttributes,
+                includeSeparator: true
             )
         }
 

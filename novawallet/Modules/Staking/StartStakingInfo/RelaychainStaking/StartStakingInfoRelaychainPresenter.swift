@@ -46,12 +46,13 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             locale: selectedLocale
         )
         let wikiUrl = startStakingViewModelFactory.wikiModel(
-            locale: selectedLocale,
-            url: URL(string: "https://novawallet.io")!
+            url: URL(string: "https://novawallet.io")!,
+            chain: chainAsset.chain,
+            locale: selectedLocale
         )
         let termsUrl = startStakingViewModelFactory.termsModel(
-            locale: selectedLocale,
-            url: URL(string: "https://novawallet.io")!
+            url: URL(string: "https://novawallet.io")!,
+            locale: selectedLocale
         )
         let testnetModel = chainAsset.chain.isTestnet ? startStakingViewModelFactory.testNetworkModel(
             chain: chainAsset.chain,
