@@ -75,7 +75,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         let timePreposition = R.string.localizable.commonTimeIn(preferredLanguages: locale.rLanguages)
         let time = [
             timePreposition,
-            nextEra.localizedDaysHours(for: locale, separator: separator)
+            nextEra.localizedDaysHoursMinutes(for: locale, separator: separator)
         ].joined(with: .space)
         let precision = chainAsset.assetDisplayInfo.assetPrecision
         let textWithAccents: AccentTextModel
@@ -111,7 +111,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodAfter(preferredLanguages: locale.rLanguages)
-        let time = unstakePeriod.localizedDaysHours(for: locale, separator: separator)
+        let time = unstakePeriod.localizedDaysHoursMinutes(for: locale, separator: separator)
         let unstakePeriod = [
             preposition,
             time
@@ -135,7 +135,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodEvery(preferredLanguages: locale.rLanguages)
-        let time = eraDuration.localizedDaysHours(for: locale, separator: separator)
+        let time = eraDuration.localizedDaysHoursMinutes(for: locale, separator: separator)
         let rewardIntervals = [
             preposition,
             time
