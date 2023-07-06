@@ -112,7 +112,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
         setupLayout()
         setupLocalization()
-        setupMotionEffect()
     }
 
     @available(*, unavailable)

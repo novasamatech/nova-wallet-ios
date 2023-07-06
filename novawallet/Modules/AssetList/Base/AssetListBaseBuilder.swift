@@ -151,8 +151,8 @@ class AssetListBaseBuilder {
             case let .success(maybeAmount):
                 if let amount = maybeAmount {
                     balanceResults[chainAssetId] = .success(amount.total)
-                    amount.balance.map {
-                        balances[chainAssetId] = .success($0)
+                    if let balance = amount.balance {
+                        balances[chainAssetId] = .success(balance)
                     }
                 } else if balanceResults[chainAssetId] == nil {
                     balanceResults[chainAssetId] = .success(0)
@@ -233,7 +233,7 @@ class AssetListBaseBuilder {
 
 extension AssetListBaseBuilder: SchedulerDelegate {
     func didTrigger(scheduler _: SchedulerProtocol) {
-        rebuildModel()
+        rebuildModelImmediate()
     }
 }
 
