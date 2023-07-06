@@ -12,12 +12,13 @@ final class AssetListBuilder: AssetListBaseBuilder {
     init(
         workingQueue: DispatchQueue = .init(label: "com.nova.wallet.assets.builder", qos: .userInteractive),
         callbackQueue: DispatchQueue = .main,
+        rebuildPeriod: TimeInterval = 1.0,
         resultClosure: @escaping (AssetListBuilderResult) -> Void
     ) {
         self.resultClosure = resultClosure
         nftList = AssetListModelHelpers.createNftDiffCalculator()
 
-        super.init(workingQueue: workingQueue, callbackQueue: callbackQueue)
+        super.init(workingQueue: workingQueue, callbackQueue: callbackQueue, rebuildPeriod: rebuildPeriod)
     }
 
     override func rebuildModel() {
@@ -94,7 +95,7 @@ extension AssetListBuilder {
         workingQueue.async { [weak self] in
             self?.locksResult = result
 
-            self?.rebuildModel()
+            self?.scheduleRebuildModel()
         }
     }
 }

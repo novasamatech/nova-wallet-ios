@@ -5,6 +5,7 @@ import RobinHood
 class AssetListBaseBuilder {
     let workingQueue: DispatchQueue
     let callbackQueue: DispatchQueue
+    let rebuildPeriod: TimeInterval
 
     private(set) var wallet: MetaAccountModel?
 
@@ -17,17 +18,45 @@ class AssetListBaseBuilder {
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
     private(set) var crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
 
+    private(set) var scheduler: Scheduler?
+
+    deinit {
+        cancelRebuildModel()
+    }
+
     init(
         workingQueue: DispatchQueue,
-        callbackQueue: DispatchQueue
+        callbackQueue: DispatchQueue,
+        rebuildPeriod: TimeInterval
     ) {
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
+        self.rebuildPeriod = rebuildPeriod
         groups = AssetListModelHelpers.createGroupsDiffCalculator(from: [])
     }
 
     func rebuildModel() {
         fatalError("Must be overriden by subsclass")
+    }
+
+    func rebuildModelImmediate() {
+        cancelRebuildModel()
+
+        rebuildModel()
+    }
+
+    func cancelRebuildModel() {
+        scheduler?.cancel()
+        scheduler = nil
+    }
+
+    func scheduleRebuildModel() {
+        guard scheduler == nil else {
+            return
+        }
+
+        scheduler = Scheduler(with: self, callbackQueue: workingQueue)
+        scheduler?.notifyAfter(rebuildPeriod)
     }
 
     func resetStorages() {
@@ -202,12 +231,18 @@ class AssetListBaseBuilder {
     }
 }
 
+extension AssetListBaseBuilder: SchedulerDelegate {
+    func didTrigger(scheduler _: SchedulerProtocol) {
+        rebuildModel()
+    }
+}
+
 extension AssetListBaseBuilder {
     func applyChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
         workingQueue.async { [weak self] in
             self?.processChainChanges(changes)
 
-            self?.rebuildModel()
+            self?.scheduleRebuildModel()
         }
     }
 
@@ -215,7 +250,7 @@ extension AssetListBaseBuilder {
         workingQueue.async { [weak self] in
             self?.processBalances(results)
 
-            self?.rebuildModel()
+            self?.scheduleRebuildModel()
         }
     }
 
@@ -223,7 +258,7 @@ extension AssetListBaseBuilder {
         workingQueue.async { [weak self] in
             self?.processCrowdloans(result)
 
-            self?.rebuildModel()
+            self?.scheduleRebuildModel()
         }
     }
 
@@ -231,7 +266,7 @@ extension AssetListBaseBuilder {
         workingQueue.async { [weak self] in
             self?.processPriceChanges(priceChanges)
 
-            self?.rebuildModel()
+            self?.scheduleRebuildModel()
         }
     }
 
@@ -241,7 +276,7 @@ extension AssetListBaseBuilder {
                 self.priceResult = .failure(error)
 
                 self.updateAssetModels()
-                self.rebuildModel()
+                self.scheduleRebuildModel()
             }
         }
     }
@@ -252,7 +287,7 @@ extension AssetListBaseBuilder {
 
             self?.resetStorages()
 
-            self?.rebuildModel()
+            self?.rebuildModelImmediate()
         }
     }
 }
