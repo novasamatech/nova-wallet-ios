@@ -84,8 +84,8 @@ final class GladingCardView: UIView {
             type: .tiltAlongVerticalAxis
         )
 
-        smallYTilt.minimumRelativeValue = -10
-        smallYTilt.maximumRelativeValue = 10
+        smallYTilt.minimumRelativeValue = 10
+        smallYTilt.maximumRelativeValue = -10
 
         let smallTilt = UIMotionEffectGroup()
         smallTilt.motionEffects = [smallXTilt, smallYTilt]
@@ -106,8 +106,8 @@ final class GladingCardView: UIView {
             type: .tiltAlongVerticalAxis
         )
 
-        middleYTilt.minimumRelativeValue = -5
-        middleYTilt.maximumRelativeValue = 5
+        middleYTilt.minimumRelativeValue = 5
+        middleYTilt.maximumRelativeValue = -5
 
         let middleTilt = UIMotionEffectGroup()
         middleTilt.motionEffects = [middleXTilt, middleYTilt]

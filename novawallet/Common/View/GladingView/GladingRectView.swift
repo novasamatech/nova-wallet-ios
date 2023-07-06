@@ -17,6 +17,8 @@ class GladingRectView: GladingBaseView {
             make.size.equalTo(model.gradientSize)
         }
 
+        gradientView.transform = CGAffineTransformMakeRotation(model.rotation)
+
         applyMask()
         applyMotion()
 
@@ -72,8 +74,8 @@ class GladingRectView: GladingBaseView {
             type: .tiltAlongVerticalAxis
         )
 
-        let minYOffset = model.slidingY.min * bounds.width
-        let maxYOffset = model.slidingY.max * bounds.width
+        let minYOffset = model.slidingY.min * bounds.height
+        let maxYOffset = model.slidingY.max * bounds.height
 
         yTilt.minimumRelativeValue = minYOffset
         yTilt.maximumRelativeValue = maxYOffset
@@ -81,6 +83,6 @@ class GladingRectView: GladingBaseView {
         let tilt = UIMotionEffectGroup()
         tilt.motionEffects = [xTilt, yTilt]
 
-        gradientView.addMotionEffect(tilt)
+        gradientContentView.addMotionEffect(tilt)
     }
 }

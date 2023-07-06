@@ -11,6 +11,7 @@ struct GladingRectModel {
     let cornerRadius: CGFloat
     let slidingX: GlareInterval
     let slidingY: GlareInterval
+    let rotation: CGFloat
     let gradientSize: CGSize
 }
 
@@ -34,7 +35,7 @@ extension GladingRectModel {
             endPoint: .init(x: 1.0, y: 0.5),
             colors: [
                 UIColor(hex: "#70A1FF")!.withAlphaComponent(0.0),
-                UIColor(hex: "#70C3FF")!.withAlphaComponent(0.10),
+                UIColor(hex: "#70C3FF")!.withAlphaComponent(0.1),
                 UIColor(hex: "#70A1FF")!.withAlphaComponent(0.0)
             ],
             locations: [0.0, 0.5, 1.0]
@@ -59,9 +60,10 @@ extension GladingRectModel {
             gradient: Self.cardStrokeGradient,
             mode: .stroke(width: 2.0),
             cornerRadius: 12,
-            slidingX: .init(min: 0.5, max: -0.5),
-            slidingY: .init(min: 0.5, max: -0.5),
-            gradientSize: CGSize(width: 127, height: 205)
+            slidingX: .init(min: 0.3, max: -0.3),
+            slidingY: .init(min: 0.3, max: -0.3),
+            rotation: CGFloat.pi / 4.0,
+            gradientSize: CGSize(width: 127, height: 600)
         )
     }
 
@@ -70,9 +72,10 @@ extension GladingRectModel {
             gradient: Self.cardActionsGradient,
             mode: .stroke(width: 1.0),
             cornerRadius: 12,
-            slidingX: .init(min: 0.5, max: -0.5),
-            slidingY: .init(min: 0.5, max: -0.5),
-            gradientSize: CGSize(width: 127, height: 84)
+            slidingX: .init(min: 0.3, max: -0.3),
+            slidingY: .init(min: 0.3, max: -0.3),
+            rotation: CGFloat.pi / 4.0,
+            gradientSize: CGSize(width: 127, height: 300)
         )
     }
 
@@ -81,9 +84,10 @@ extension GladingRectModel {
             gradient: Self.cardFillGradient,
             mode: .fill,
             cornerRadius: 12,
-            slidingX: .init(min: 0.5, max: -0.5),
-            slidingY: .init(min: 0.5, max: -0.5),
-            gradientSize: CGSize(width: 217, height: 200)
+            slidingX: .init(min: 0.3, max: -0.3),
+            slidingY: .init(min: 0.1, max: -0.1),
+            rotation: CGFloat.pi / 4.0,
+            gradientSize: CGSize(width: 217, height: 800)
         )
     }
 }
