@@ -1,18 +1,14 @@
 import BigInt
 
 struct MinStakeCalculator {
-    var minNominatorBondResult: Result<BigUInt?, Error>?
-    var bagListSizeResult: Result<UInt32?, Error>?
+    var minNominatorBond: BigUInt?
+    var bagListSize: UInt32?
     var networkInfo: NetworkStakingInfo?
 
     func calculate() -> BigUInt? {
         guard let networkInfo = networkInfo,
-              let minNominatorBondResult = minNominatorBondResult,
-              let bagListSizeResult = bagListSizeResult else {
-            return nil
-        }
-        guard let minNominatorBond = try? minNominatorBondResult.get(),
-              let bagListSize = try? bagListSizeResult.get() else {
+              let minNominatorBond = minNominatorBond,
+              let bagListSize = bagListSize else {
             return nil
         }
 

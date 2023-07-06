@@ -3,21 +3,22 @@ import Foundation
 
 protocol RelaychainStakingStateFactoryProtocol {
     func createState() throws -> StakingSharedState
+    var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
 }
 
 final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol {
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+
     private let stakingOption: Multistaking.ChainAssetOption
     private let chainRegisty: ChainRegistryProtocol
     private let storageFacade: StorageFacadeProtocol
     private let operationQueue: OperationQueue
     private let eventCenter: EventCenterProtocol
     private let logger: LoggerProtocol
-    private let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
-    lazy var operationManager = OperationManager(operationQueue: operationQueue)
+    private let operationManager: OperationManagerProtocol
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         chainRegisty: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         eventCenter: EventCenterProtocol = EventCenter.shared,
@@ -28,7 +29,15 @@ final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol
         self.chainRegisty = chainRegisty
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
+        stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
+            chainRegistry: chainRegisty,
+            storageFacade: storageFacade,
+            operationManager: operationManager,
+            logger: logger
+        )
+        self.operationManager = operationManager
         self.logger = logger
         self.operationQueue = operationQueue
     }

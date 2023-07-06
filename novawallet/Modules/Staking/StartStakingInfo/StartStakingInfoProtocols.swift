@@ -14,25 +14,31 @@ protocol StartStakingInfoInteractorInputProtocol: AnyObject {
 }
 
 protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
-    func didReceiveChainAsset(_ chainAsset: ChainAsset)
-    func didReceiveAccount(_ account: MetaChainAccountResponse?)
-    func didReceivePrice(_ price: PriceData?)
-    func didReceiveAssetBalance(_ assetBalance: AssetBalance?)
-    func didReceiveError(_ error: StartStakingInfoError)
-    func didReceiveMinStake(_ minStake: BigUInt?)
-    func didReceiveEraTime(_ time: TimeInterval?)
-    func didReceive(unstakingPeriod: TimeInterval)
-    func didReceiveNextEraTime(_ time: TimeInterval)
-    func didReceiveStakingType(_ stakingType: StartStakingType)
+    func didReceive(chainAsset: ChainAsset)
+    func didReceive(account: MetaChainAccountResponse?)
+    func didReceive(price: PriceData?)
+    func didReceive(assetBalance: AssetBalance)
+    func didReceive(baseError: BaseStartStakingInfoError)
+}
+
+protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
+    func didReceive(minNominatorBond: BigUInt?)
+    func didReceive(bagListSize: UInt32?)
+    func didReceive(networkInfo: NetworkStakingInfo?)
+    func didReceive(eraCountdown: EraCountdown?)
+    func didReceive(error: RelaychainStartStakingInfoError)
 }
 
 protocol StartStakingInfoWireframeProtocol: AnyObject {}
 
-enum StartStakingInfoError: Error {
-    case assetBalance(Error)
+enum BaseStartStakingInfoError: Error {
+    case assetBalance(Error?)
     case price(Error)
+}
+
+enum RelaychainStartStakingInfoError: Error {
     case networkStakingInfo(Error)
-    case minStake(Error)
     case createState(Error)
-    case stakeTime(Error)
+    case eraCountdown(Error)
+    case bagListSize(Error)
 }

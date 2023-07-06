@@ -7,20 +7,43 @@ struct StartStakingInfoViewFactory {
         stakingOption: Multistaking.ChainAssetOption,
         dashboardItem: Multistaking.DashboardItem
     ) -> StartStakingInfoViewProtocol? {
+        switch stakingOption.type {
+        case .relaychain, .auraRelaychain, .azero, .nominationPools:
+            let factory = RelaychainStakingStateFactory(
+                stakingOption: stakingOption,
+                operationQueue: OperationQueue()
+            )
+            return createRelaychainView(
+                chainAsset: stakingOption.chainAsset,
+                factory: factory,
+                dashboardItem: dashboardItem
+            )
+        case .parachain, .turing:
+            // TODO:
+            return nil
+        case .unsupported:
+            return nil
+        }
+    }
+
+    private static func createRelaychainView(
+        chainAsset: ChainAsset,
+        factory: RelaychainStakingStateFactoryProtocol,
+        dashboardItem: Multistaking.DashboardItem
+    ) -> StartStakingInfoViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        guard let interactor = createInteractor(
-            stakingOption: stakingOption,
+        let interactor = createRelaychainInteractor(
+            factory: factory,
+            chainAsset: chainAsset,
             currencyManager: currencyManager
-        ) else {
-            return nil
-        }
+        )
 
         let wireframe = StartStakingInfoWireframe()
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: stakingOption.chainAsset.assetDisplayInfo,
+            targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
         let startStakingViewModelFactory = StartStakingViewModelFactory(
@@ -28,11 +51,12 @@ struct StartStakingInfoViewFactory {
             estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
         )
 
-        let presenter = StartStakingInfoPresenter(
+        let presenter = StartStakingInfoRelaychainPresenter(
             interactor: interactor,
             dashboardItem: dashboardItem,
             wireframe: wireframe,
-            startStakingViewModelFactory: startStakingViewModelFactory
+            startStakingViewModelFactory: startStakingViewModelFactory,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = StartStakingInfoViewController(
@@ -46,10 +70,11 @@ struct StartStakingInfoViewFactory {
         return view
     }
 
-    private static func createInteractor(
-        stakingOption: Multistaking.ChainAssetOption,
+    private static func createRelaychainInteractor(
+        factory: RelaychainStakingStateFactoryProtocol,
+        chainAsset: ChainAsset,
         currencyManager: CurrencyManagerProtocol
-    ) -> StartStakingInfoInteractor? {
+    ) -> StartStakingRelaychainInteractor {
         let selectedWalletSettings = SelectedWalletSettings.shared
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
@@ -59,56 +84,15 @@ struct StartStakingInfoViewFactory {
         let operationManager = OperationManager(operationQueue: operationQueue)
         let logger = Logger.shared
 
-        switch stakingOption.type {
-        case .relaychain, .auraRelaychain, .azero, .nominationPools:
-            let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
-                chainRegistry: chainRegistry,
-                storageFacade: storageFacade,
-                operationManager: operationManager,
-                logger: logger
-            )
-            return StartStakingRelaychainInteractor(
-                chainAsset: stakingOption.chainAsset,
-                stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-                selectedWalletSettings: selectedWalletSettings,
-                walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-                priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-                currencyManager: currencyManager,
-                stateFactory: RelaychainStakingStateFactory(
-                    stakingOption: stakingOption,
-                    stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-                    operationQueue: operationQueue
-                ),
-                chainRegistry: chainRegistry,
-                operationQueue: operationQueue
-            )
-        case .parachain, .turing:
-            let stakingLocalSubscriptionFactory = ParachainStakingLocalSubscriptionFactory(
-                chainRegistry: chainRegistry,
-                storageFacade: storageFacade,
-                operationManager: operationManager,
-                logger: logger
-            )
-
-            return StartStakingParachainInteractor(
-                chainAsset: stakingOption.chainAsset,
-                stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-                selectedWalletSettings: selectedWalletSettings,
-                walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-                priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-                currencyManager: currencyManager,
-                stateFactory: ParachainStakingStateFactory(
-                    stakingOption: stakingOption,
-                    stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-                    operationQueue: operationQueue
-                ),
-                chainRegistry: chainRegistry,
-                networkInfoFactory: ParaStkNetworkInfoOperationFactory(),
-                operationQueue: operationQueue,
-                eventCenter: EventCenter.shared
-            )
-        case .unsupported:
-            return nil
-        }
+        return StartStakingRelaychainInteractor(
+            chainAsset: chainAsset,
+            selectedWalletSettings: selectedWalletSettings,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            stateFactory: factory,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 }

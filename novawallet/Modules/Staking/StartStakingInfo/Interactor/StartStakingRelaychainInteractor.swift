@@ -16,15 +16,14 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
     private var eraCompletionTimeCancellable: CancellableCall?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
 
-    private var networkInfo: NetworkStakingInfo? {
+    weak var presenter: StartStakingInfoRelaychainInteractorOutputProtocol? {
         didSet {
-            minStakeCalculator.networkInfo = networkInfo
+            basePresenter = presenter
         }
     }
 
     init(
         chainAsset: ChainAsset,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -35,7 +34,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
     ) {
         self.stateFactory = stateFactory
         self.chainRegistry = chainRegistry
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        stakingLocalSubscriptionFactory = stateFactory.stakingLocalSubscriptionFactory
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -61,7 +60,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
             guard
                 let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
                 let eraValidatorService = sharedState.eraValidatorService else {
-                presenter?.didReceiveError(.networkStakingInfo(ChainRegistryError.runtimeMetadaUnavailable))
+                presenter?.didReceive(error: .networkStakingInfo(ChainRegistryError.runtimeMetadaUnavailable))
                 return
             }
 
@@ -80,10 +79,9 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
 
                     do {
                         let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                        self?.minStakeCalculator.networkInfo = info
-                        self?.presenter?.didReceive(unstakingPeriod: info.stakingDuration.unlocking)
+                        self?.presenter?.didReceive(networkInfo: info)
                     } catch {
-                        self?.presenter?.didReceiveError(.networkStakingInfo(error))
+                        self?.presenter?.didReceive(error: .networkStakingInfo(error))
                     }
                 }
             }
@@ -92,7 +90,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
 
             operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
         } catch {
-            presenter?.didReceiveError(.networkStakingInfo(error))
+            presenter?.didReceive(error: .networkStakingInfo(error))
         }
     }
 
@@ -108,38 +106,13 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         activeEraProvider = subscribeActiveEra(for: selectedChainAsset.chain.chainId)
     }
 
-    private var minStakeCalculator = MinStakeCalculator() {
-        didSet {
-            if let minStake = minStakeCalculator.calculate() {
-                stakingTypeCalculator.minStake = minStake
-                presenter?.didReceiveMinStake(minStake)
-            }
-        }
-    }
-
-    private var eraTimeCalculator = EraTimeCalculator() {
-        didSet {
-            if let value = eraTimeCalculator.calculate() {
-                presenter?.didReceiveNextEraTime(value)
-            }
-        }
-    }
-
-    private var stakingTypeCalculator = StakingTypeCalculator() {
-        didSet {
-            if let value = stakingTypeCalculator.calculate() {
-                presenter?.didReceiveStakingType(value)
-            }
-        }
-    }
-
     private func setupState() {
         do {
             let state = try stateFactory.createState()
             sharedState = state
             sharedState?.setupServices()
         } catch {
-            presenter?.didReceiveError(.createState(error))
+            presenter?.didReceive(error: .createState(error))
         }
     }
 
@@ -153,12 +126,12 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
             let chainId = selectedChainAsset.chain.chainId
 
             guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                presenter?.didReceiveError(.stakeTime(ChainRegistryError.runtimeMetadaUnavailable))
+                presenter?.didReceive(error: .eraCountdown(ChainRegistryError.runtimeMetadaUnavailable))
                 return
             }
 
             guard let connection = chainRegistry.getConnection(for: chainId) else {
-                presenter?.didReceiveError(.stakeTime(ChainRegistryError.connectionUnavailable))
+                presenter?.didReceive(error: .eraCountdown(ChainRegistryError.connectionUnavailable))
                 return
             }
 
@@ -187,11 +160,9 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
 
                     do {
                         let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
-                        self?.eraTimeCalculator.eraCountdownResult = result
-
-                        self?.presenter?.didReceiveEraTime(result.eraTimeInterval)
+                        self?.presenter?.didReceive(eraCountdown: result)
                     } catch {
-                        self?.presenter?.didReceiveError(.stakeTime(error))
+                        self?.presenter?.didReceive(error: .eraCountdown(error))
                     }
                 }
             }
@@ -200,16 +171,13 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
 
             operationQueue.addOperations(operationWrapper.allOperations, waitUntilFinished: false)
         } catch {
-            presenter?.didReceiveError(.stakeTime(error))
+            presenter?.didReceive(error: .eraCountdown(error))
         }
     }
 
     override func setup() {
-        observableBalance.addObserver(with: self) { [weak self] _, newValue in
-            self?.stakingTypeCalculator.assetBalance = newValue
-        }
-
         super.setup()
+
         setupState()
         provideNetworkStakingInfo()
         performMinNominatorBondSubscription()
@@ -217,37 +185,24 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         provideEraCompletionTime()
         performActiveEraSubscription()
     }
-
-    deinit {
-        observableBalance.removeObserver(by: self)
-    }
 }
 
 extension StartStakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         switch result {
-        case .success:
-            minStakeCalculator.minNominatorBondResult = result
+        case let .success(bond):
+            presenter?.didReceive(minNominatorBond: bond)
         case let .failure(error):
-            presenter?.didReceiveError(.minStake(error))
+            presenter?.didReceive(error: .bagListSize(error))
         }
     }
 
     func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         switch result {
-        case .success:
-            minStakeCalculator.bagListSizeResult = result
+        case let .success(size):
+            presenter?.didReceive(bagListSize: size)
         case let .failure(error):
-            presenter?.didReceiveError(.minStake(error))
-        }
-    }
-
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(era):
-            eraTimeCalculator.activeEraResult = result
-        case let .failure(error):
-            break
+            presenter?.didReceive(error: .bagListSize(error))
         }
     }
 }

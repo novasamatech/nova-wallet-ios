@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 
 class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
-    weak var presenter: StartStakingInfoInteractorOutputProtocol?
+    weak var basePresenter: StartStakingInfoInteractorOutputProtocol?
     let selectedChainAsset: ChainAsset
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -13,7 +13,6 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
     private(set) var balanceProvider: StreamableProvider<AssetBalance>?
     private(set) var selectedAccount: MetaChainAccountResponse?
     private(set) var operationQueue: OperationQueue
-    private(set) var observableBalance: Observable<AssetBalance?> = .init(state: nil)
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -33,7 +32,7 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
 
     private func performPriceSubscription() {
         guard let priceId = selectedChainAsset.asset.priceId else {
-            presenter?.didReceivePrice(nil)
+            basePresenter?.didReceive(price: nil)
             return
         }
 
@@ -44,7 +43,7 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
         let chainAssetId = selectedChainAsset.chainAssetId
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveAssetBalance(nil)
+            basePresenter?.didReceive(baseError: .assetBalance(nil))
             return
         }
 
@@ -64,7 +63,7 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
             for: selectedChainAsset.chain.accountRequest()
         )
 
-        presenter?.didReceiveAccount(selectedAccount)
+        basePresenter?.didReceive(account: selectedAccount)
     }
 
     func setup() {
@@ -72,7 +71,7 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
         performAssetBalanceSubscription()
         performPriceSubscription()
 
-        presenter?.didReceiveChainAsset(selectedChainAsset)
+        basePresenter?.didReceive(chainAsset: selectedChainAsset)
     }
 }
 
@@ -93,13 +92,13 @@ extension StartStakingInfoInteractor: WalletLocalStorageSubscriber,
 
         switch result {
         case let .success(balance):
-            observableBalance.state = balance ?? .createZero(
+            let balance = balance ?? .createZero(
                 for: .init(chainId: chainId, assetId: assetId),
                 accountId: accountId
             )
-            presenter?.didReceiveAssetBalance(balance)
+            basePresenter?.didReceive(assetBalance: balance)
         case let .failure(error):
-            presenter?.didReceiveError(.assetBalance(error))
+            basePresenter?.didReceive(baseError: .assetBalance(error))
         }
     }
 }
@@ -109,9 +108,9 @@ extension StartStakingInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSub
         if selectedChainAsset.asset.priceId == priceId {
             switch result {
             case let .success(priceData):
-                presenter?.didReceivePrice(priceData)
+                basePresenter?.didReceive(price: priceData)
             case let .failure(error):
-                presenter?.didReceiveError(.price(error))
+                basePresenter?.didReceive(baseError: .price(error))
             }
         }
     }
@@ -119,7 +118,7 @@ extension StartStakingInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSub
 
 extension StartStakingInfoInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard presenter != nil,
+        guard basePresenter != nil,
               let priceId = selectedChainAsset.asset.priceId else {
             return
         }
