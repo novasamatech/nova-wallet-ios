@@ -11,6 +11,11 @@ protocol PriceProviderFactoryProtocol {
         for priceIds: [AssetModel.PriceId],
         currency: Currency
     ) -> StreamableProvider<PriceData>
+
+    func getPriceHistoryProvider(
+        for priceId: AssetModel.PriceId,
+        currency: Currency
+    ) -> AnySingleValueProvider<PriceHistory>
 }
 
 class PriceProviderFactory {
@@ -149,5 +154,36 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         providers[cacheKey] = WeakWrapper(target: provider)
 
         return provider
+    }
+
+    func getPriceHistoryProvider(
+        for priceId: AssetModel.PriceId,
+        currency: Currency
+    ) -> AnySingleValueProvider<PriceHistory> {
+        clearIfNeeded()
+
+        let cacheId = "coingecko_price_history_\(priceId)_\(currency.id)"
+
+        if let provider = providers[cacheId]?.target as? SingleValueProvider<PriceHistory> {
+            return AnySingleValueProvider(provider)
+        }
+
+        let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> = storageFacade.createRepository()
+
+        let source = CoingeckoPriceHistoryProviderSource(
+            priceId: priceId,
+            currency: currency,
+            operationFactory: CoingeckoOperationFactory()
+        )
+
+        let singleValueProvider = SingleValueProvider(
+            targetIdentifier: cacheId,
+            source: AnySingleValueProviderSource(source),
+            repository: AnyDataProviderRepository(repository)
+        )
+
+        providers[cacheId] = WeakWrapper(target: singleValueProvider)
+
+        return AnySingleValueProvider(singleValueProvider)
     }
 }

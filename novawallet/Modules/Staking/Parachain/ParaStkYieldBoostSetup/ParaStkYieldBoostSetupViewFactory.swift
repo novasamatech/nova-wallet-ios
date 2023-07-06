@@ -8,10 +8,11 @@ struct ParaStkYieldBoostSetupViewFactory {
         with state: ParachainStakingSharedState,
         initData: ParaStkYieldBoostInitState
     ) -> ParaStkYieldBoostSetupViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(with: state, currencyManager: currencyManager),
-            let chainAsset = state.settings.value else {
+            let interactor = createInteractor(with: state, currencyManager: currencyManager) else {
             return nil
         }
 
@@ -64,8 +65,9 @@ struct ParaStkYieldBoostSetupViewFactory {
     ) -> ParaStkYieldBoostSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedAccount = SelectedWalletSettings.shared.value?.fetch(
                 for: chainAsset.chain.accountRequest()
             ),

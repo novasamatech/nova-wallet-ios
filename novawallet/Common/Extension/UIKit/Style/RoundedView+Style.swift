@@ -86,6 +86,13 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorChipsBackground()!
     )
 
+    static let chipsOnCard = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        fillColor: R.color.colorChipsOnCardBackground()!,
+        highlightedFillColor: R.color.colorChipsOnCardBackground()!
+    )
+
     static func roundedChips(radius: CGFloat) -> RoundedView.Style {
         var chipsStyle = RoundedView.Style.chips
         chipsStyle.rounding = .init(radius: radius, corners: .allCorners)

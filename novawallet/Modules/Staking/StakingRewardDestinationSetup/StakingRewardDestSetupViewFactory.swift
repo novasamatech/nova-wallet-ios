@@ -4,8 +4,9 @@ import RobinHood
 
 struct StakingRewardDestSetupViewFactory {
     static func createView(for state: StakingSharedState) -> StakingRewardDestSetupViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let interactor = createInteractor(state: state),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -57,8 +58,9 @@ struct StakingRewardDestSetupViewFactory {
     private static func createInteractor(
         state: StakingSharedState
     ) -> StakingRewardDestSetupInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
             let rewardCalculationService = state.rewardCalculationService,

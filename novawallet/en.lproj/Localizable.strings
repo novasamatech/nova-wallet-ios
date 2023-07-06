@@ -550,6 +550,8 @@
 "commmon.view.in.format" = "View in %@";
 "import.json.unsupported.ethereum.crypto.message" = "Cannot import account with Substrate secret into the network with Ethereum encryption";
 "import.json.unsupported.substrate.crypto.message" = "Cannot import account with Ethereum secret into the network with Substrate encryption";
+"common.today" = "Today";
+"common.yesterday" = "Yesterday";
 "common.tx.details" = "Transaction details";
 "common.unknown" = "Unknown";
 "staking.month.period.title" = "Monthly";
@@ -842,7 +844,7 @@
 "common.request.retry" = "Data loading failed. Would you like to retry?";
 "crowdloan.return.in.progress" = "To be returned by parachain";
 "crowdloan.returns.in.format" = "Returns in %@";
-"assets.search.empty" = "No tokens with\nentered name were found";
+"assets.search.empty" = "No networks or tokens with\nentered name were found";
 "assets.search.placeholder" = "Search by network or token";
 "common.tokens" = "Tokens";
 "common.chain.address.title" = "%@ address";
@@ -1260,6 +1262,7 @@
 "governance.referendums.settings.title" = "Referenda";
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
+"governance.referendums.filter.empty" = "There are no referenda with filters applied";
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Open Polkadot Vault application on your smartphone";
 "welcome.polkadot.vault.step1.highlighted" = "Open Polkadot Vault";
@@ -1271,3 +1274,18 @@
 "staking.controller.deprecated.title" = "Controller Accounts Are Being Deprecated";
 "staking.controller.deprecated.details" = "Network is migrating towards replacing Controllers to Proxies feature. Nova Wallet will support Proxies in future updates";
 "staking.controller.deprecated.action" = "Update Controller to Stash";
+"staking.estimated.earnings" = "Estimated rewards";
+"common.per.year.long" = "per year";
+"common.per.year" = "/ year";
+"common.waiting" = "Waiting";
+"multistaking.inactive.header" = "Stake and earn rewards";
+"multistaking.more.options" = "More staking options";
+"staking.on.network" = "%@ staking";
+"wallet.history.transfer.incoming.details" = "From: %@";
+"wallet.history.transfer.outgoing.details" = "To: %@";
+"wallet.history.amount.details" = "%@ at %@";
+"staking.more.options.dApps.title" = "Staking via Nova Browser";
+"wallet.receive.error.generateQRCode.message" = "QR code generation failed. Would you like to retry?";
+"asset.operation.send.title" = "Send";
+"asset.operation.receive.title" = "Receive";
+"asset.operation.buy.title" = "Buy";

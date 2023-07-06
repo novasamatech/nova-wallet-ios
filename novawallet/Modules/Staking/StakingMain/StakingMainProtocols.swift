@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
+
 import BigInt
 
 protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
@@ -14,9 +14,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
 
 protocol StakingMainPresenterProtocol: AnyObject {
     func setup()
-    func performAssetSelection()
     func performMainAction()
-    func performAccountAction()
     func performRewardInfoAction()
     func performChangeValidatorsAction()
     func performSetupValidatorsForBondedAction()
@@ -32,27 +30,15 @@ protocol StakingMainPresenterProtocol: AnyObject {
 protocol StakingMainInteractorInputProtocol: AnyObject {
     func setup()
     func saveNetworkInfoViewExpansion(isExpanded: Bool)
-    func save(chainAsset: ChainAsset)
     func save(filter: StakingRewardFiltersPeriod)
 }
 
 protocol StakingMainInteractorOutputProtocol: AnyObject {
-    func didReceiveAccountBalance(_ assetBalance: AssetBalance?)
-    func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)
-    func didReceiveStakingSettings(_ stakingSettings: StakingAssetSettings)
     func didReceiveExpansion(_ isExpanded: Bool)
-    func didReceiveError(_ error: Error)
     func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)
 }
 
-protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable,
-    WalletSwitchPresentable, NoAccountSupportPresentable {
-    func showChainAssetSelection(
-        from view: StakingMainViewProtocol?,
-        selectedChainAssetId: ChainAssetId?,
-        delegate: AssetSelectionDelegate
-    )
-
+protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable {
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
     func showPeriodSelection(
         from view: ControllerBackedProtocol?,
@@ -60,10 +46,6 @@ protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, Staki
         delegate: StakingRewardFiltersDelegate,
         completion: @escaping () -> Void
     )
-}
-
-protocol StakingMainViewFactoryProtocol: AnyObject {
-    static func createView() -> StakingMainViewProtocol?
 }
 
 protocol StakingMainChildPresenterProtocol: AnyObject {

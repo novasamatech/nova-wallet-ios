@@ -33,7 +33,6 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
     func didReceivePayee(result: Result<Staking.RewardDestinationArg?, Error>)
     func didReceiveMinBonded(result: Result<BigUInt?, Error>)
     func didReceiveNomination(result: Result<Nomination?, Error>)
-    func didReceiveBondingDuration(result: Result<UInt32, Error>)
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 
     func didSubmitUnbonding(result: Result<String, Error>)

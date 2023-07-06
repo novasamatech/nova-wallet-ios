@@ -10,7 +10,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         sharedState.stakingLocalSubscriptionFactory
     }
 
-    var stakingSettings: StakingAssetSettings { sharedState.settings }
+    var stakingOption: Multistaking.ChainAssetOption { sharedState.stakingOption }
 
     let selectedWalletSettings: SelectedWalletSettings
     let sharedState: StakingSharedState
@@ -109,11 +109,11 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     }
 
     func setupSelectedAccountAndChainAsset() {
-        guard
-            let wallet = selectedWalletSettings.value,
-            let chainAsset = stakingSettings.value else {
+        guard let wallet = selectedWalletSettings.value else {
             return
         }
+
+        let chainAsset = stakingOption.chainAsset
 
         selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest())
         selectedChainAsset = chainAsset

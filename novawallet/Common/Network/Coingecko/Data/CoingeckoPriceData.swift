@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 
 struct CoingeckoPriceData: Decodable, Equatable {
     typealias Currency = String

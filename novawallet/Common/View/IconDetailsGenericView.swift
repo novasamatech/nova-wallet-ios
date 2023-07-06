@@ -117,3 +117,20 @@ extension IconDetailsGenericView: Highlightable {
         }
     }
 }
+
+class LoadableGenericIconDetailsView<V: UIView>: IconDetailsGenericView<V> {
+    private var imageViewModel: ImageViewModelProtocol?
+
+    func bind(imageViewModel: ImageViewModelProtocol?) {
+        self.imageViewModel?.cancel(on: imageView)
+        imageView.image = nil
+
+        self.imageViewModel = imageViewModel
+
+        imageViewModel?.loadImage(
+            on: imageView,
+            targetSize: CGSize(width: iconWidth, height: iconWidth),
+            animated: true
+        )
+    }
+}

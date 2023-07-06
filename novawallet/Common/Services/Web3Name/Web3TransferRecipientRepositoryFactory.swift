@@ -35,7 +35,9 @@ final class Web3TransferRecipientRepositoryFactory: Web3TransferRecipientReposit
             cache[serviceName] = service
             return service
         default:
-            assertionFailure("Repository for service \(serviceName) is not resolved. Please use service from knownServices")
+            assertionFailure(
+                "Repository for service \(serviceName) is not resolved. Please use service from knownServices"
+            )
             let integrityVerifier = integrityVerifierFactory.createVerifier(for: serviceName)
             return KiltTransferAssetRecipient.Version1.Repository(integrityVerifier: integrityVerifier)
         }

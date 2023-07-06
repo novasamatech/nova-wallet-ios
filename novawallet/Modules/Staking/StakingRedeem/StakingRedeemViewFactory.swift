@@ -6,8 +6,9 @@ import SubstrateSdk
 
 final class StakingRedeemViewFactory {
     static func createView(for state: StakingSharedState) -> StakingRedeemViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let interactor = createInteractor(state: state),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -69,8 +70,9 @@ final class StakingRedeemViewFactory {
     ) -> StakingRedeemInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedAccount = SelectedWalletSettings.shared.value.fetch(
                 for: chainAsset.chain.accountRequest()
             ),

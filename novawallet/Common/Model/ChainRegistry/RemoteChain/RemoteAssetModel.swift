@@ -12,7 +12,7 @@ struct RemoteAssetModel: Equatable, Codable, Hashable {
     let symbol: String
     let precision: UInt16
     let priceId: PriceId?
-    let staking: String?
+    let staking: [String]?
     let type: String?
     let typeExtras: JSON?
     let buyProviders: JSON?

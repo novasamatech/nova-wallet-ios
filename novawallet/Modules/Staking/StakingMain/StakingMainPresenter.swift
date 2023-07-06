@@ -1,45 +1,44 @@
 import Foundation
-import CommonWallet
+
 import BigInt
 
 final class StakingMainPresenter {
     weak var view: StakingMainViewProtocol?
-    var wireframe: StakingMainWireframeProtocol!
-    var interactor: StakingMainInteractorInputProtocol!
+    let interactor: StakingMainInteractorInputProtocol
+    let wireframe: StakingMainWireframeProtocol
 
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
-    let accountManagementFilter: AccountManagementFilterProtocol
+    let stakingOption: Multistaking.ChainAssetOption
     let logger: LoggerProtocol?
+    let wallet: MetaAccountModel
+    let accountManagementFilter: AccountManagementFilterProtocol
 
     private var childPresenter: StakingMainChildPresenterProtocol?
-    private var wallet: MetaAccountModel?
-    private var chainAsset: ChainAsset?
-    private var accountBalance: AssetBalance?
     private var period: StakingRewardFiltersPeriod?
 
     init(
+        interactor: StakingMainInteractorInputProtocol,
+        wireframe: StakingMainWireframeProtocol,
+        wallet: MetaAccountModel,
+        stakingOption: Multistaking.ChainAssetOption,
+        accountManagementFilter: AccountManagementFilterProtocol,
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
-        accountManagementFilter: AccountManagementFilterProtocol,
         logger: LoggerProtocol?
     ) {
+        self.interactor = interactor
+        self.wireframe = wireframe
+        self.wallet = wallet
+        self.stakingOption = stakingOption
+        self.accountManagementFilter = accountManagementFilter
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
-        self.accountManagementFilter = accountManagementFilter
         self.logger = logger
     }
 
     private func provideMainViewModel() {
-        guard let chainAsset = chainAsset, let wallet = wallet else {
-            return
-        }
-
-        let viewModel = viewModelFactory.createMainViewModel(
-            from: wallet,
-            chainAsset: chainAsset,
-            balance: accountBalance?.transferable
-        )
+        let viewModel = viewModelFactory.createMainViewModel(chainAsset: stakingOption.chainAsset)
 
         view?.didReceive(viewModel: viewModel)
     }
@@ -54,21 +53,20 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
 
         provideMainViewModel()
 
+        if childPresenter == nil, let view = view {
+            childPresenter = childPresenterFactory.createPresenter(
+                for: stakingOption,
+                view: view
+            )
+
+            childPresenter?.setup()
+        }
+
         interactor.setup()
     }
 
-    func performAssetSelection() {
-        wireframe.showChainAssetSelection(
-            from: view,
-            selectedChainAssetId: chainAsset?.chainAssetId,
-            delegate: self
-        )
-    }
-
     func performMainAction() {
-        guard let chain = chainAsset?.chain, let wallet = wallet else {
-            return
-        }
+        let chain = stakingOption.chainAsset.chain
 
         if wallet.fetchMetaChainAccount(for: chain.accountRequest()) != nil {
             childPresenter?.performMainAction()
@@ -90,6 +88,10 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
                 message: message,
                 locale: locale
             ) { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
                 self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
             }
         } else {
@@ -104,10 +106,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
                 locale: locale
             )
         }
-    }
-
-    func performAccountAction() {
-        wireframe.showWalletSwitch(from: view)
     }
 
     func performRewardInfoAction() {
@@ -158,45 +156,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
 }
 
 extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
-    func didReceiveError(_ error: Error) {
-        let locale = view?.localizationManager?.selectedLocale
-
-        if !wireframe.present(error: error, from: view, locale: locale) {
-            logger?.error("Did receive error: \(error)")
-        }
-    }
-
-    func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel) {
-        wallet = metaAccount
-
-        provideMainViewModel()
-    }
-
-    func didReceiveStakingSettings(_ stakingSettings: StakingAssetSettings) {
-        let oldChainAsset = chainAsset
-        chainAsset = stakingSettings.value
-
-        provideMainViewModel()
-
-        if oldChainAsset != chainAsset, let view = view {
-            childPresenter = childPresenterFactory.createPresenter(
-                for: stakingSettings,
-                view: view
-            )
-
-            childPresenter?.setup()
-            if let period = period {
-                childPresenter?.selectPeriod(period)
-            }
-        }
-    }
-
-    func didReceiveAccountBalance(_ assetBalance: AssetBalance?) {
-        accountBalance = assetBalance
-
-        provideMainViewModel()
-    }
-
     func didReceiveExpansion(_ isExpanded: Bool) {
         view?.expandNetworkInfoView(isExpanded)
     }
@@ -204,12 +163,6 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     func didReceiveRewardFilter(_ period: StakingRewardFiltersPeriod) {
         self.period = period
         childPresenter?.selectPeriod(period)
-    }
-}
-
-extension StakingMainPresenter: AssetSelectionDelegate {
-    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
-        interactor.save(chainAsset: chainAsset)
     }
 }
 

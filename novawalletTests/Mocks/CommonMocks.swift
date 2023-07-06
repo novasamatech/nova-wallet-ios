@@ -1836,6 +1836,20 @@ import Foundation
     
 
     
+    
+    
+     var isScheduled: Bool {
+        get {
+            return cuckoo_manager.getter("isScheduled",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isScheduled)
+        }
+        
+    }
+    
 
     
 
@@ -1879,6 +1893,11 @@ import Foundation
 	    }
 	    
 	    
+	    var isScheduled: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockSchedulerProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isScheduled")
+	    }
+	    
+	    
 	    func notifyAfter<M1: Cuckoo.Matchable>(_ seconds: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TimeInterval)> where M1.MatchedType == TimeInterval {
 	        let matchers: [Cuckoo.ParameterMatcher<(TimeInterval)>] = [wrap(matchable: seconds) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSchedulerProtocol.self, method: "notifyAfter(_: TimeInterval)", parameterMatchers: matchers))
@@ -1903,6 +1922,11 @@ import Foundation
 	    }
 	
 	    
+	    
+	    var isScheduled: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isScheduled", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	    @discardableResult
@@ -1921,6 +1945,15 @@ import Foundation
 }
 
  class SchedulerProtocolStub: SchedulerProtocol {
+        
+    
+    
+     var isScheduled: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
     
 
     

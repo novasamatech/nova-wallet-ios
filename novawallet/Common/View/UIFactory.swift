@@ -18,7 +18,6 @@ struct UIConstants {
     static let skeletonBigRowSize = CGSize(width: 72.0, height: 12.0)
     static let skeletonSmallRowSize = CGSize(width: 57.0, height: 6.0)
     static let smallAddressIconSize = CGSize(width: 18.0, height: 18.0)
-    static let tableHeaderHeight: CGFloat = 40.0
     static let triangularedIconLargeRadius: CGFloat = 12.0
     static let triangularedIconSmallRadius: CGFloat = 9.0
     static let triangularedViewHeight: CGFloat = 52.0

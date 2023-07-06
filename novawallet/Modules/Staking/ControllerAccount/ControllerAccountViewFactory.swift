@@ -6,8 +6,9 @@ import RobinHood
 
 struct ControllerAccountViewFactory {
     static func createView(for state: StakingSharedState) -> ControllerAccountViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAddress = metaAccount.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
             let interactor = createInteractor(state: state) else {
@@ -44,9 +45,10 @@ struct ControllerAccountViewFactory {
     private static func createInteractor(
         state: StakingSharedState
     ) -> ControllerAccountInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
-            let chainAsset = state.settings.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }

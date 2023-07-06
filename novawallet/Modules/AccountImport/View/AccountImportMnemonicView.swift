@@ -1,7 +1,6 @@
 import UIKit
 import SoraUI
 import SoraFoundation
-import CommonWallet
 
 protocol AccountImportMnemonicViewDelegate: AnyObject {
     func accountImportMnemonicViewDidProceed(_ view: AccountImportMnemonicView)

@@ -4,6 +4,7 @@ extension String {
         case colon = ":"
         case hashtag = "#"
         case space = " "
+        case comma = ","
     }
 
     enum CompoundSeparator: String {
@@ -18,5 +19,9 @@ extension String {
 extension Array where Array.Element == String {
     func joined(with separator: String.CompoundSeparator) -> String {
         joined(separator: separator.rawValue)
+    }
+
+    func joined(with separator: String.Separator) -> String {
+        joined(separator: String(separator.rawValue))
     }
 }

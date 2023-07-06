@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 import SoraFoundation
 import BigInt
 import IrohaCrypto

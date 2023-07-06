@@ -12,7 +12,6 @@ final class ParitySignerWalletOperationFactory: ParitySignerWalletOperationFacto
     ) -> BaseOperation<MetaAccountModel> {
         ClosureOperation {
             let cryptoType = MultiassetCryptoType.sr25519.rawValue
-            let signingType = type
 
             return MetaAccountModel(
                 metaId: UUID().uuidString,

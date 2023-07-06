@@ -14,6 +14,28 @@ enum LoadableViewModelState<T> {
             return false
         }
     }
+
+    func map<V>(with closure: (T) -> V) -> LoadableViewModelState<V> {
+        switch self {
+        case .loading:
+            return .loading
+        case let .cached(value):
+            let newValue = closure(value)
+            return .cached(value: newValue)
+        case let .loaded(value):
+            let newValue = closure(value)
+            return .loaded(value: newValue)
+        }
+    }
+
+    func satisfies(_ closure: (T) -> Bool) -> Bool {
+        switch self {
+        case .loading:
+            return false
+        case let .cached(value), let .loaded(value):
+            return closure(value)
+        }
+    }
 }
 
 enum ValueDirection<T> {
@@ -22,10 +44,16 @@ enum ValueDirection<T> {
 }
 
 struct AssetListHeaderViewModel {
+    let walletConnectSessionsCount: String?
     let title: String
-    let amount: LoadableViewModelState<String>
+    let amount: LoadableViewModelState<AssetListTotalAmountViewModel>
     let locksAmount: String?
     let walletSwitch: WalletSwitchViewModel
+}
+
+struct AssetListTotalAmountViewModel {
+    let amount: String
+    let decimalSeparator: String?
 }
 
 struct AssetListNftsViewModel {

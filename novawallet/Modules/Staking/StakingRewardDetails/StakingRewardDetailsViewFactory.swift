@@ -8,10 +8,11 @@ final class StakingRewardDetailsViewFactory {
         for state: StakingSharedState,
         input: StakingRewardDetailsInput
     ) -> StakingRewardDetailsViewProtocol? {
-        guard let chainAsset = state.settings.value,
-              let currencyManager = CurrencyManager.shared else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let chainAsset = state.stakingOption.chainAsset
 
         let assetInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

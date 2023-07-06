@@ -1,7 +1,6 @@
 import UIKit
 import SoraFoundation
 import SoraKeystore
-import CommonWallet
 
 final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static let walletIndex: Int = 0
@@ -29,7 +28,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             inAppUpdatesService: inAppUpdatesService
         )
 
-        guard let walletController = createWalletController(for: localizationManager) else {
+        guard let walletController = createWalletController(
+            for: localizationManager,
+            dappMediator: serviceCoordinator.dappMediator
+        ) else {
             return nil
         }
 
@@ -75,9 +77,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func createWalletController(
-        for localizationManager: LocalizationManagerProtocol
+        for localizationManager: LocalizationManagerProtocol,
+        dappMediator: DAppInteractionMediating
     ) -> UIViewController? {
-        guard let viewController = AssetListViewFactory.createView()?.controller else {
+        guard let viewController = AssetListViewFactory.createView(with: dappMediator)?.controller else {
             return nil
         }
 
@@ -114,7 +117,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        let viewController = StakingMainViewFactory.createView()?.controller ?? UIViewController()
+        let viewController = StakingDashboardViewFactory.createView()?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarStakingTitle(preferredLanguages: locale.rLanguages)

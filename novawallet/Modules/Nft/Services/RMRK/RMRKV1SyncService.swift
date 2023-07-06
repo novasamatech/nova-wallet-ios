@@ -2,6 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
+@available(*, deprecated, message: "This service is no longer supported by RMRK team")
 final class RMRKV1SyncService: BaseNftSyncService {
     let ownerId: AccountId
     let chain: ChainModel

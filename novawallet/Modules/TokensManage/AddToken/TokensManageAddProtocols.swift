@@ -27,6 +27,7 @@ protocol TokensManageAddInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: TokensManageAddInteractorError)
 }
 
-protocol TokensManageAddWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, TokenAddErrorPresentable {
+protocol TokensManageAddWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable, TokenAddErrorPresentable {
     func complete(from view: TokensManageAddViewProtocol?, token: AssetModel, locale: Locale)
 }

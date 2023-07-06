@@ -111,6 +111,7 @@ class StakingRewardPayoutsTests: XCTestCase {
                     sessionLength: 1,
                     activeEraStartSessionIndex: 1,
                     currentSessionIndex: 1,
+                    currentEpochIndex: 1,
                     currentSlot: 2,
                     genesisSlot: 1,
                     blockCreationTime: 6000,

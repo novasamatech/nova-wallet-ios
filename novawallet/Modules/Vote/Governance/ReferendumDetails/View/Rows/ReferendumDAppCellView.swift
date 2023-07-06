@@ -1,3 +1,3 @@
 import UIKit
 
-final class ReferendumDAppCellView: RowView<ReferendumDAppView>, StackTableViewCellProtocol {}
+final class ReferendumDAppCellView: RowView<DAppView>, StackTableViewCellProtocol {}

@@ -14,7 +14,7 @@ final class ModuleNameResolver: ModuleNameResolverProtocol {
     func resolveModuleName(possibleNames _: [String]) -> CompoundOperationWrapper<String?> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let resolveModuleNameOperation = ClosureOperation<String?> { [weak self] in
+        let resolveModuleNameOperation = ClosureOperation<String?> {
             let metadata = try codingFactoryOperation.extractNoCancellableResultData().metadata
             return BagList.possibleModuleNames.first { metadata.getModuleIndex($0) != nil }
         }

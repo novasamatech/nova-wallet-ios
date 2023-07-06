@@ -1,6 +1,5 @@
 import UIKit
 import SoraFoundation
-import CommonWallet
 
 final class TransferSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = TransferSetupViewLayout

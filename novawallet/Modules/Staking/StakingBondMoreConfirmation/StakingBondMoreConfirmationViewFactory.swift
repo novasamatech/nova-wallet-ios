@@ -16,12 +16,14 @@ struct StakingBondMoreConfirmViewFactory {
         let wireframe = StakingBondMoreConfirmationWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
+        let chainAsset = state.stakingOption.chainAsset
+
         let presenter = createPresenter(
             from: interactor,
             wireframe: wireframe,
             amount: amount,
-            assetInfo: state.settings.value.assetDisplayInfo,
-            chain: state.settings.value.chain,
+            assetInfo: chainAsset.assetDisplayInfo,
+            chain: chainAsset.chain,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -69,8 +71,9 @@ struct StakingBondMoreConfirmViewFactory {
     private static func createInteractor(
         for state: StakingSharedState
     ) -> StakingBondMoreConfirmationInteractor? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let accountResponse = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {

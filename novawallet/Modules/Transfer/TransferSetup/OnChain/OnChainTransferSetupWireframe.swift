@@ -1,11 +1,14 @@
 import Foundation
-import CommonWallet
 
 final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
-    weak var commandFactory: WalletCommandFactoryProtocol?
+    let transferCompletion: TransferCompletionClosure?
+
+    init(transferCompletion: TransferCompletionClosure?) {
+        self.transferCompletion = transferCompletion
+    }
 
     func showConfirmation(
-        from _: TransferSetupChildViewProtocol?,
+        from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>,
         recepient: AccountAddress
@@ -13,13 +16,16 @@ final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol
         guard let confirmView = TransferConfirmOnChainViewFactory.createView(
             chainAsset: chainAsset,
             recepient: recepient,
-            amount: sendingAmount
+            amount: sendingAmount,
+            transferCompletion: transferCompletion
         ) else {
             return
         }
 
-        let command = commandFactory?.preparePresentationCommand(for: confirmView.controller)
-        command?.presentationStyle = .push(hidesBottomBar: true)
-        try? command?.execute()
+        guard let navigationController = view?.controller.navigationController else {
+            return
+        }
+        confirmView.controller.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(confirmView.controller, animated: true)
     }
 }

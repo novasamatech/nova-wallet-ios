@@ -5,7 +5,7 @@ final class StakingRewardActionControl: UITableViewHeaderFooterView {
     let titleLabel = UILabel(style: .footnoteSecondary)
     let control: ActionTitleControl = .create {
         let tintColor = R.color.colorButtonTextAccent()!
-        $0.titleLabel.apply(style: .footnoteAccent)
+        $0.titleLabel.apply(style: .footnoteAccentText)
         $0.imageView.image = R.image.iconLinkChevron()?.tinted(with: tintColor)
         $0.identityIconAngle = CGFloat.pi / 2
         $0.activationIconAngle = -CGFloat.pi / 2

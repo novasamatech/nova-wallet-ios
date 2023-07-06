@@ -16,7 +16,6 @@ final class StakingUnbondSetupPresenter {
     private var bonded: Decimal?
     private var balance: Decimal?
     private var inputAmount: Decimal?
-    private var bondingDuration: UInt32?
     private var minimalBalance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
@@ -74,23 +73,11 @@ final class StakingUnbondSetupPresenter {
     }
 
     private func provideBondingDuration() {
-        guard let erasPerDay = stakingDuration?.era.intervalsInDay else {
+        guard let stakingDuration = stakingDuration else {
             return
         }
 
-        let daysCount = bondingDuration.map { erasPerDay > 0 ? Int($0) / erasPerDay : 0 }
-        let bondingDuration: LocalizableResource<String> = LocalizableResource { locale in
-            guard let daysCount = daysCount else {
-                return ""
-            }
-
-            return R.string.localizable.commonDaysFormat(
-                format: daysCount,
-                preferredLanguages: locale.rLanguages
-            )
-        }
-
-        view?.didReceiveBonding(duration: bondingDuration)
+        view?.didReceiveBonding(duration: stakingDuration.localizableUnlockingString)
     }
 }
 
@@ -216,16 +203,6 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")
-        }
-    }
-
-    func didReceiveBondingDuration(result: Result<UInt32, Error>) {
-        switch result {
-        case let .success(bondingDuration):
-            self.bondingDuration = bondingDuration
-            provideBondingDuration()
-        case let .failure(error):
-            logger?.error("Boding duration fetching error: \(error)")
         }
     }
 

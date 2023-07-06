@@ -1,5 +1,5 @@
 import UIKit
-import CommonWallet
+
 import SnapKit
 
 final class NftDetailsViewLayout: UIView {

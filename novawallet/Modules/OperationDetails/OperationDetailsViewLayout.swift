@@ -1,5 +1,5 @@
 import UIKit
-import CommonWallet
+
 import SoraUI
 
 final class OperationDetailsViewLayout: UIView {
@@ -45,6 +45,8 @@ final class OperationDetailsViewLayout: UIView {
         label.textAlignment = .center
         return label
     }()
+
+    let priceLabel: UILabel = .init(style: .title3Secondary, textAlignment: .center, numberOfLines: 1)
 
     let statusView: IconDetailsView = {
         let view = IconDetailsView()
@@ -145,8 +147,13 @@ final class OperationDetailsViewLayout: UIView {
         amountLabel.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(2 * UIConstants.horizontalInset)
         }
+        containerView.stackView.setCustomSpacing(2.0, after: amountLabel)
 
-        containerView.stackView.setCustomSpacing(10.0, after: amountLabel)
+        containerView.stackView.addArrangedSubview(priceLabel)
+        priceLabel.snp.makeConstraints { make in
+            make.width.equalToSuperview().offset(2 * UIConstants.horizontalInset)
+        }
+        containerView.stackView.setCustomSpacing(12.0, after: priceLabel)
 
         containerView.stackView.addArrangedSubview(statusView)
         containerView.stackView.setCustomSpacing(24.0, after: statusView)

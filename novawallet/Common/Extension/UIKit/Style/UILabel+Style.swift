@@ -31,9 +31,9 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
-    static let footnoteAccent = UILabel.Style(
-        textColor: R.color.colorButtonTextAccent(),
-        font: .regularFootnote
+    static let semiboldSubhedlineSecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldSubheadline
     )
 
     static let semiboldBodyPrimary = UILabel.Style(
@@ -46,8 +46,28 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
+    static let semiboldFootnotePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnotePositive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldCalloutPositive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldCallout
+    )
+
     static let footnoteIconChip = UILabel.Style(
         textColor: R.color.colorIconChip(),
+        font: .regularFootnote
+    )
+
+    static let footnoteAccentText = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
         font: .regularFootnote
     )
 
@@ -59,6 +79,11 @@ extension UILabel.Style {
     static let caption2Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .caption2
+    )
+
+    static let semiboldCaps2Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldCaps2
     )
 
     static let regularSubhedlinePrimary = UILabel.Style(
@@ -91,8 +116,23 @@ extension UILabel.Style {
         font: .semiBoldTitle3
     )
 
+    static let title3Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary()!,
+        font: .semiBoldTitle3
+    )
+
+    static let boldTitle2Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle2
+    )
+
     static let sourceCodePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .regularFootnote
+    )
+
+    static let boldLargePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldLargeTitle
     )
 }

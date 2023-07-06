@@ -1,5 +1,4 @@
 import RobinHood
-import CommonWallet
 
 protocol DAppAuthSettingsViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel)

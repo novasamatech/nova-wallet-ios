@@ -5,19 +5,23 @@ import SoraKeystore
 import BigInt
 
 final class AssetListInteractor: AssetListBaseInteractor {
-    var presenter: AssetListInteractorOutputProtocol? {
+    var presenter: AssetListInteractorOutputProtocol?
+
+    var modelBuilder: AssetListBuilder? {
         get {
-            basePresenter as? AssetListInteractorOutputProtocol
+            baseBuilder as? AssetListBuilder
         }
 
         set {
-            basePresenter = newValue
+            baseBuilder = newValue
         }
     }
 
     let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
+    let walletConnect: WalletConnectDelegateInputProtocol
+    let assetListObservable: AssetListStateObservable
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
@@ -28,6 +32,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     init(
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
+        assetListObservable: AssetListStateObservable,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
         crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
@@ -35,11 +40,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
         currencyManager: CurrencyManagerProtocol,
+        walletConnect: WalletConnectDelegateInputProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
+        self.assetListObservable = assetListObservable
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
+        self.walletConnect = walletConnect
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -57,6 +65,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearLocksSubscription()
 
         providerWalletInfo()
+        provideWalletConnectSessionsCount()
 
         super.resetWallet()
     }
@@ -83,10 +92,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
         }
 
         presenter?.didReceive(
+            walletId: selectedMetaAccount.identifier,
             walletIdenticon: selectedMetaAccount.walletIdenticonData(),
             walletType: selectedMetaAccount.type,
             name: selectedMetaAccount.name
         )
+
+        modelBuilder?.applyWallet(selectedMetaAccount)
     }
 
     private func provideHidesZeroBalances() {
@@ -107,20 +119,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
     ) {
         super.applyChanges(allChanges: allChanges, enabledChainChanges: enabledChainChanges)
 
-        updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: enabledChainChanges)
-    }
-
-    private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
-        for change in changes {
-            switch change {
-            case let .insert(chain), let .update(chain):
-                chainRegistry.subscribeChainState(self, chainId: chain.chainId)
-            case let .delete(identifier):
-                chainRegistry.unsubscribeChainState(self, chainId: identifier)
-            }
-        }
     }
 
     private func setupNftSubscription(from allChains: [ChainModel]) {
@@ -134,7 +134,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         clearNftSubscription()
 
-        presenter?.didResetNftProvider()
+        modelBuilder?.applyNftReset()
 
         nftChainIds = newNftChainIds
 
@@ -143,8 +143,19 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     override func setup() {
-        provideHidesZeroBalances()
+        modelBuilder = .init { [weak self] result in
+            self?.presenter?.didReceive(result: result)
+
+            let newState = AssetListState(model: result.model)
+            self?.assetListObservable.state = .init(value: newState)
+        }
+
         providerWalletInfo()
+
+        walletConnect.add(delegate: self)
+
+        provideHidesZeroBalances()
+        provideWalletConnectSessionsCount()
 
         subscribeChains()
 
@@ -169,7 +180,29 @@ final class AssetListInteractor: AssetListBaseInteractor {
         case let .success(changes):
             handleAccountLocksChanges(changes, accountId: accountId)
         case let .failure(error):
-            presenter?.didReceiveLocks(result: .failure(error))
+            modelBuilder?.applyLocks(.failure(error))
+        }
+    }
+
+    override func handlePriceChanges(_ result: Result<[ChainAssetId: DataProviderChange<PriceData>], Error>) {
+        super.handlePriceChanges(result)
+
+        presenter?.didCompleteRefreshing()
+    }
+
+    private func provideWalletConnectSessionsCount() {
+        walletConnect.fetchSessions { [weak self] result in
+            guard let selectedMetaAccount = self?.selectedWalletSettings.value else {
+                return
+            }
+
+            switch result {
+            case let .success(connections):
+                let walletConnectSessions = connections.filter { $0.wallet == selectedMetaAccount }
+                self?.presenter?.didReceiveWalletConnect(sessionsCount: walletConnectSessions.count)
+            case let .failure(error):
+                self?.presenter?.didReceiveWalletConnect(error: .sessionsFetchFailed(error))
+            }
         }
     }
 }
@@ -179,10 +212,22 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         if let provider = priceSubscription {
             provider.refresh()
         } else {
-            presenter?.didReceivePrice(changes: [:])
+            presenter?.didCompleteRefreshing()
         }
 
         nftSubscription?.refresh()
+    }
+
+    func connectWalletConnect(uri: String) {
+        walletConnect.connect(uri: uri) { [weak self] error in
+            if let error = error {
+                self?.presenter?.didReceiveWalletConnect(error: .connectionFailed(error))
+            }
+        }
+    }
+
+    func retryFetchWalletConnectSessionsCount() {
+        provideWalletConnectSessionsCount()
     }
 }
 
@@ -196,9 +241,9 @@ extension AssetListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHa
 
         switch result {
         case let .success(changes):
-            presenter?.didReceiveNft(changes: changes)
+            modelBuilder?.applyNftChanges(changes)
         case let .failure(error):
-            presenter?.didReceiveNft(error: error)
+            logger?.error("Nft error: \(error)")
         }
     }
 }
@@ -238,13 +283,7 @@ extension AssetListInteractor {
             }
         }
 
-        presenter?.didReceiveLocks(result: .success(Array(locks.values.flatMap { $0 })))
-    }
-}
-
-extension AssetListInteractor: ConnectionStateSubscription {
-    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
-        presenter?.didReceive(state: state, for: chainId)
+        modelBuilder?.applyLocks(.success(Array(locks.values.flatMap { $0 })))
     }
 }
 
@@ -267,5 +306,15 @@ extension AssetListInteractor: EventVisitorProtocol {
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {
         provideHidesZeroBalances()
+    }
+}
+
+extension AssetListInteractor: WalletConnectDelegateOutputProtocol {
+    func walletConnectDidChangeSessions() {
+        provideWalletConnectSessionsCount()
+    }
+
+    func walletConnectDidChangeChains() {
+        provideWalletConnectSessionsCount()
     }
 }

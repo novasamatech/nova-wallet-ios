@@ -3,8 +3,9 @@ import SoraFoundation
 
 struct StakingRebagConfirmViewFactory {
     static func createView(with state: StakingSharedState) -> StakingRebagConfirmViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),

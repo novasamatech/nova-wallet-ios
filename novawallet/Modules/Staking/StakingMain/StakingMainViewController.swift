@@ -2,7 +2,6 @@ import UIKit
 import SubstrateSdk
 import SoraFoundation
 import SoraUI
-import CommonWallet
 
 final class StakingMainViewController: UIViewController, AdaptiveDesignable, ViewHolder {
     typealias RootViewType = StakingMainViewLayout
@@ -16,15 +15,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
     var scrollView: UIScrollView { rootView.containerView.scrollView }
     var stackView: UIStackView { rootView.containerView.stackView }
-
-    let assetSelectionContainerView = UIView()
-    let assetSelectionView: DetailsTriangularedView = {
-        let view = UIFactory.default.createChainAssetSelectionView()
-        view.borderWidth = 0.0
-        view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.actionView.tintColor = R.color.colorIconSecondary()
-        return view
-    }()
 
     private var networkInfoContainerView: UIView!
     private var networkInfoView: NetworkInfoView!
@@ -70,8 +60,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupHandlers()
-        setupAssetSelectionView()
         setupNetworkInfoView()
         setupAlertsView()
         setupScrollView()
@@ -115,15 +103,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         rewardView?.didUpdateSkeletonLayout()
     }
 
-    @objc func actionIcon() {
-        presenter.performAccountAction()
-    }
-
     // MARK: - Private functions
-
-    private func setupHandlers() {
-        rootView.walletSwitch.addTarget(self, action: #selector(actionIcon), for: .touchUpInside)
-    }
 
     @objc
     private func rewardPeriodAction() {
@@ -132,32 +112,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
-    }
-
-    private func setupAssetSelectionView() {
-        assetSelectionContainerView.translatesAutoresizingMaskIntoConstraints = false
-
-        let backgroundView = BlockBackgroundView()
-        assetSelectionContainerView.addSubview(backgroundView)
-        assetSelectionContainerView.addSubview(assetSelectionView)
-
-        applyConstraints(for: assetSelectionContainerView, innerView: assetSelectionView)
-
-        stackView.insertArranged(view: assetSelectionContainerView, after: rootView.headerView)
-
-        assetSelectionView.snp.makeConstraints { make in
-            make.height.equalTo(52.0)
-        }
-
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalTo(assetSelectionView)
-        }
-
-        assetSelectionView.addTarget(
-            self,
-            action: #selector(actionAssetSelection),
-            for: .touchUpInside
-        )
     }
 
     private func setupNetworkInfoView() {
@@ -176,7 +130,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: networkInfoContainerView, innerView: networkInfoView)
 
-        stackView.insertArranged(view: networkInfoContainerView, after: assetSelectionContainerView)
+        stackView.insertArrangedSubview(networkInfoContainerView, at: 0)
     }
 
     private func setupAlertsView() {
@@ -406,20 +360,11 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         setupStakingRewardViewIfNeeded()
         rewardView?.bind(viewModel: viewModel)
     }
-
-    @objc func actionAssetSelection() {
-        presenter.performAssetSelection()
-    }
 }
 
 extension StakingMainViewController: Localizable {
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
-        let languages = locale.rLanguages
-
-        rootView.headerLabel.text = R.string.localizable.tabbarStakingTitle(
-            preferredLanguages: languages
-        )
 
         networkInfoView.locale = locale
         stateView?.locale = locale
@@ -455,29 +400,9 @@ extension StakingMainViewController: StakingMainViewProtocol {
     }
 
     func didReceive(viewModel: StakingMainViewModel) {
-        assetIconViewModel?.cancel(on: assetSelectionView.iconView)
-
-        assetIconViewModel = viewModel.assetIcon
-        balanceViewModel = viewModel.balanceViewModel
-
-        let icon = viewModel.walletIdenticon.flatMap { try? iconGenerator?.generateFromAccountId($0) }
-        let walletSwitchViewModel = WalletSwitchViewModel(
-            type: viewModel.walletType,
-            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
-        )
-
-        rootView.walletSwitch.bind(viewModel: walletSwitchViewModel)
-
-        assetSelectionView.title = viewModel.assetName
-        assetSelectionView.subtitle = viewModel.balanceViewModel?.value(for: selectedLocale)
-
-        assetSelectionView.iconImage = nil
-
-        let iconSize = 2 * assetSelectionView.iconRadius
-        assetIconViewModel?.loadImage(
-            on: assetSelectionView.iconView,
-            targetSize: CGSize(width: iconSize, height: iconSize),
-            animated: true
+        title = R.string.localizable.stakingOnNetwork(
+            viewModel.chainName,
+            preferredLanguages: selectedLocale.rLanguages
         )
     }
 
@@ -566,8 +491,6 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
         presenter.networkInfoViewDidChangeExpansion(isExpanded: isExpanded)
     }
 }
-
-extension StakingMainViewController: HiddableBarWhenPushed {}
 
 extension StakingMainViewController: AlertsViewDelegate {
     func didSelectStakingAlert(_ alert: StakingAlert) {

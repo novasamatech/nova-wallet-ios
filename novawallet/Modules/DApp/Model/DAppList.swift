@@ -28,3 +28,7 @@ struct DAppCategory: Codable, Equatable {
     let identifier: String
     let name: String
 }
+
+enum KnownDAppCategory: String {
+    case staking
+}

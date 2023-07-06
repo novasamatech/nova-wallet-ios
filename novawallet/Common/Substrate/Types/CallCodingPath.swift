@@ -14,8 +14,12 @@ extension CallCodingPath {
         isBalancesTransfer || isAssetsTransfer || isTokensTransfer
     }
 
+    static var substrateTransfers: [CallCodingPath] {
+        [.transfer, .transferAllowDeath, .transferKeepAlive, .forceTransfer, .transferAll]
+    }
+
     var isBalancesTransfer: Bool {
-        [.transfer, .transferAllowDeath, .transferKeepAlive, .forceTransfer, .transferAll].contains(self)
+        Self.substrateTransfers.contains(self)
     }
 
     var isAssetsTransfer: Bool {
@@ -42,6 +46,10 @@ extension CallCodingPath {
             .tokensTransferAll,
             .currenciesTransferAll
         ].contains(self)
+    }
+
+    var isRewardOrSlashTransfer: Bool {
+        [.reward, .slash].contains(self)
     }
 
     static var transfer: CallCodingPath {
@@ -130,5 +138,41 @@ extension CallCodingPath {
 
     static var ethereumTransact: CallCodingPath {
         CallCodingPath(moduleName: "Ethereum", callName: "transact")
+    }
+}
+
+// MARK: Syntetic keys
+
+extension CallCodingPath {
+    static var slash: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "slash")
+    }
+
+    static var reward: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "reward")
+    }
+
+    var isRewardOrSlash: Bool {
+        [.slash, .reward].contains(self)
+    }
+}
+
+// MARK: Filter
+
+extension CallCodingPath {
+    func matches(filter: WalletHistoryFilter) -> Bool {
+        if !filter.contains(.transfers), isSubstrateOrEvmTransfer {
+            return false
+        }
+
+        if !filter.contains(.rewardsAndSlashes), isRewardOrSlash {
+            return false
+        }
+
+        if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isRewardOrSlash {
+            return false
+        }
+
+        return true
     }
 }

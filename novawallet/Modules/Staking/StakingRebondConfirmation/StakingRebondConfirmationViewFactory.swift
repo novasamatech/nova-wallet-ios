@@ -5,10 +5,13 @@ import RobinHood
 import SubstrateSdk
 
 struct StakingRebondConfirmationViewFactory {
-    static func createView(for variant: SelectedRebondVariant, state: StakingSharedState)
-        -> StakingRebondConfirmationViewProtocol? {
+    static func createView(
+        for variant: SelectedRebondVariant,
+        state: StakingSharedState
+    ) -> StakingRebondConfirmationViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let interactor = createInteractor(state: state),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -73,8 +76,9 @@ struct StakingRebondConfirmationViewFactory {
     ) -> StakingRebondConfirmationInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
-            let chainAsset = state.settings.value,
             let selectedAccount = SelectedWalletSettings.shared.value.fetch(
                 for: chainAsset.chain.accountRequest()
             ),

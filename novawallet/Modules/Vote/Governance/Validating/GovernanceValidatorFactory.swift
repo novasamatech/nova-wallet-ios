@@ -88,9 +88,9 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
 
             let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(for: assetInfo)
             let amountString: String
+            let freeInPlank = assetBalance?.freeInPlank ?? 0
 
             if
-                let freeInPlank = assetBalance?.freeInPlank,
                 let amountDecimal = Decimal.fromSubstrateAmount(freeInPlank, precision: assetInfo.assetPrecision) {
                 amountString = amountFormatter?.value(for: locale ?? Locale.current).stringFromDecimal(
                     amountDecimal

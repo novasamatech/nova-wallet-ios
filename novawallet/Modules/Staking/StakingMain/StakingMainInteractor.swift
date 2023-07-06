@@ -7,98 +7,42 @@ import SoraFoundation
 final class StakingMainInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingMainInteractorOutputProtocol?
 
-    let stakingSettings: StakingAssetSettings
-
     let selectedWalletSettings: SelectedWalletSettings
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-
     let commonSettings: SettingsManagerProtocol
-    let eventCenter: EventCenterProtocol
-    let logger: LoggerProtocol?
+    let stakingOption: Multistaking.ChainAssetOption
     let stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>
-    var balanceProvider: StreamableProvider<AssetBalance>?
+    let operationQueue: OperationQueue
+    let eventCenter: EventCenterProtocol
+    let logger: LoggerProtocol
+
+    var chainAsset: ChainAsset { stakingOption.chainAsset }
+
     private var stakingRewardFiltersPeriod: StakingRewardFiltersPeriod?
-    private let operationQueue: OperationQueue
+
     init(
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        stakingOption: Multistaking.ChainAssetOption,
         selectedWalletSettings: SelectedWalletSettings,
-        stakingSettings: StakingAssetSettings,
         commonSettings: SettingsManagerProtocol,
-        stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>,
         eventCenter: EventCenterProtocol,
+        stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.selectedWalletSettings = selectedWalletSettings
-        self.stakingSettings = stakingSettings
+        self.stakingOption = stakingOption
         self.commonSettings = commonSettings
-        self.stakingRewardsFilterRepository = stakingRewardsFilterRepository
         self.eventCenter = eventCenter
+        self.selectedWalletSettings = selectedWalletSettings
+        self.stakingRewardsFilterRepository = stakingRewardsFilterRepository
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
-    deinit {
-        clearAccountInfoSubscription()
-    }
-
-    func clearAccountInfoSubscription() {
-        clear(streamableProvider: &balanceProvider)
-    }
-
-    func performAccountInfoSubscription() {
-        guard
-            let selectedAccount = selectedWalletSettings.value,
-            let chainAsset = stakingSettings.value else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
-
-        guard let accountResponse = selectedAccount.fetch(
-            for: chainAsset.chain.accountRequest()
-        ) else {
-            presenter?.didReceiveAccountBalance(nil)
-            return
-        }
-
-        balanceProvider = subscribeToAssetBalanceProvider(
-            for: accountResponse.accountId,
-            chainId: chainAsset.chain.chainId,
-            assetId: chainAsset.asset.assetId
-        )
-    }
-
-    func provideSelectedAccount() {
-        guard let metaAccount = selectedWalletSettings.value else {
-            return
-        }
-
-        presenter?.didReceiveSelectedAccount(metaAccount)
-    }
-
-    func provideNewChain() {
-        presenter?.didReceiveStakingSettings(stakingSettings)
-    }
-
-    func updateAccountSubscription() {
-        clearAccountInfoSubscription()
-        performAccountInfoSubscription()
-    }
-
-    func continueSetup() {
-        eventCenter.add(observer: self, dispatchIn: .main)
-
-        presenter?.didReceiveExpansion(commonSettings.stakingNetworkExpansion)
-    }
-
     private func provideStakingRewardsFilter() {
-        guard let chainAsset = stakingSettings.value,
-              let settings = selectedWalletSettings.value,
-              let selectedAccount = settings.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
+        guard let wallet = selectedWalletSettings.value,
+              let selectedAccount = wallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return
         }
-        let stakingType = StakingType(rawType: chainAsset.asset.staking)
+        let stakingType = StakingType(rawType: stakingOption.type.rawValue)
         let filterId = StakingRewardsFilter.createIdentifier(
             chainAccountId: selectedAccount.chainAccount.accountId,
             chainAssetId: chainAsset.chainAssetId,
@@ -116,7 +60,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
                     self.stakingRewardFiltersPeriod = period
                     self.presenter?.didReceiveRewardFilter(period)
                 } catch {
-                    self.presenter?.didReceiveError(error)
+                    self?.logger.error("Fetch error: \(error)")
                 }
             }
         }
@@ -127,34 +71,11 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
 
 extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     func setup() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            self?.stakingSettings.setup(runningCompletionIn: .main) { result in
-                switch result {
-                case .success:
-                    self?.continueSetup()
-                    self?.provideNewChain()
-                    self?.provideSelectedAccount()
-                    self?.updateAccountSubscription()
-                    self?.provideStakingRewardsFilter()
-                case let .failure(error):
-                    self?.logger?.error("Staking settings setup error: \(error)")
-                    self?.presenter?.didReceiveError(error)
-                }
-            }
-        }
-    }
+        presenter?.didReceiveExpansion(commonSettings.stakingNetworkExpansion)
 
-    func save(chainAsset: ChainAsset) {
-        guard stakingSettings.value?.chainAssetId != chainAsset.chainAssetId else {
-            return
-        }
+        provideStakingRewardsFilter()
 
-        stakingSettings.save(value: chainAsset, runningCompletionIn: .main) { [weak self] _ in
-            self?.provideNewChain()
-            self?.provideSelectedAccount()
-            self?.updateAccountSubscription()
-            self?.provideStakingRewardsFilter()
-        }
+        eventCenter.add(observer: self, dispatchIn: .main)
     }
 
     func saveNetworkInfoViewExpansion(isExpanded: Bool) {
@@ -162,8 +83,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 
     func save(filter: StakingRewardFiltersPeriod) {
-        guard let chainAsset = stakingSettings.value,
-              let settings = selectedWalletSettings.value,
+        guard let settings = selectedWalletSettings.value,
               let selectedAccount = settings.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return
         }
@@ -171,7 +91,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         let entity = StakingRewardsFilter(
             chainAccountId: selectedAccount.chainAccount.accountId,
             chainAssetId: chainAsset.chainAssetId,
-            stakingType: StakingType(rawType: chainAsset.asset.staking),
+            stakingType: stakingOption.type,
             period: filter
         )
 
@@ -179,11 +99,11 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 
         saveOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                self?.stakingRewardFiltersPeriod = filter
-
-                if case .success = saveOperation.result {
-                    self?.stakingRewardFiltersPeriod = filter
+                do {
+                    self?.stakingRewardFiltersPeriod = try saveOperation.extractNoCancellableResultData()
                     self?.presenter?.didReceiveRewardFilter(filter)
+                } catch {
+                    self?.logger.error("Save error: \(error)")
                 }
             }
         }
@@ -194,24 +114,6 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 
 extension StakingMainInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        updateAccountSubscription()
-        provideSelectedAccount()
         provideStakingRewardsFilter()
-    }
-}
-
-extension StakingMainInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId _: AccountId,
-        chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
-    ) {
-        switch result {
-        case let .success(assetBalance):
-            presenter?.didReceiveAccountBalance(assetBalance)
-        case let .failure(error):
-            presenter?.didReceiveError(error)
-        }
     }
 }
