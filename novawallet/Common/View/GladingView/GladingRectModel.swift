@@ -60,8 +60,8 @@ extension GladingRectModel {
             gradient: Self.cardStrokeGradient,
             mode: .stroke(width: 2.0),
             cornerRadius: 12,
-            slidingX: .init(min: 0.3, max: -0.3),
-            slidingY: .init(min: 0.3, max: -0.3),
+            slidingX: .init(min: 0.5, max: -0.5),
+            slidingY: .init(min: 0.5, max: -0.5),
             rotation: CGFloat.pi / 4.0,
             gradientSize: CGSize(width: 127, height: 600)
         )
@@ -72,8 +72,8 @@ extension GladingRectModel {
             gradient: Self.cardActionsGradient,
             mode: .stroke(width: 1.0),
             cornerRadius: 12,
-            slidingX: .init(min: 0.3, max: -0.3),
-            slidingY: .init(min: 0.3, max: -0.3),
+            slidingX: .init(min: 0.5, max: -0.5),
+            slidingY: .init(min: 0.5, max: -0.5),
             rotation: CGFloat.pi / 4.0,
             gradientSize: CGSize(width: 127, height: 300)
         )
