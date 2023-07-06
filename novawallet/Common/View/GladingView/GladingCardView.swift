@@ -20,7 +20,7 @@ final class GladingCardView: UIView {
     }
 
     let fillGladingView: GladingRectView = .create { view in
-        view.bind(model: .cardGlading)
+        view.bind(model: .cardFillGlading)
     }
 
     private var smallPatternEffect: UIMotionEffect?
@@ -71,24 +71,46 @@ final class GladingCardView: UIView {
             middlePatternView.removeMotionEffect(effect)
         }
 
-        let smallTilt = UIInterpolatingMotionEffect(
+        let smallXTilt = UIInterpolatingMotionEffect(
             keyPath: "center.x",
             type: .tiltAlongHorizontalAxis
         )
 
-        smallTilt.minimumRelativeValue = -25
-        smallTilt.maximumRelativeValue = 25
+        smallXTilt.minimumRelativeValue = -25
+        smallXTilt.maximumRelativeValue = 25
+
+        let smallYTilt = UIInterpolatingMotionEffect(
+            keyPath: "center.y",
+            type: .tiltAlongVerticalAxis
+        )
+
+        smallYTilt.minimumRelativeValue = -10
+        smallYTilt.maximumRelativeValue = 10
+
+        let smallTilt = UIMotionEffectGroup()
+        smallTilt.motionEffects = [smallXTilt, smallYTilt]
 
         smallPatternEffect = smallTilt
         smallPatternView.addMotionEffect(smallTilt)
 
-        let middleTilt = UIInterpolatingMotionEffect(
+        let middleXTilt = UIInterpolatingMotionEffect(
             keyPath: "center.x",
             type: .tiltAlongHorizontalAxis
         )
 
-        middleTilt.minimumRelativeValue = -15
-        middleTilt.maximumRelativeValue = 15
+        middleXTilt.minimumRelativeValue = -15
+        middleXTilt.maximumRelativeValue = 15
+
+        let middleYTilt = UIInterpolatingMotionEffect(
+            keyPath: "center.y",
+            type: .tiltAlongVerticalAxis
+        )
+
+        middleYTilt.minimumRelativeValue = -5
+        middleYTilt.maximumRelativeValue = 5
+
+        let middleTilt = UIMotionEffectGroup()
+        middleTilt.motionEffects = [middleXTilt, middleYTilt]
 
         middlePatternEffect = middleTilt
         middlePatternView.addMotionEffect(middleTilt)

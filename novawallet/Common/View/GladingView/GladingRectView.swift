@@ -57,20 +57,30 @@ class GladingRectView: GladingBaseView {
         }
 
         let xTilt = UIInterpolatingMotionEffect(
-            keyPath: "layer.transform",
+            keyPath: "center.x",
             type: .tiltAlongHorizontalAxis
         )
 
-        let minOffset = model.slidingMin * bounds.width
-        let maxOffset = model.slidingMax * bounds.width
+        let minXOffset = model.slidingX.min * bounds.width
+        let maxXOffset = model.slidingX.max * bounds.width
 
-        let minTranslation = CATransform3DMakeTranslation(minOffset, 0, 0)
-        let maxTranslation = CATransform3DMakeTranslation(maxOffset, 0, 0)
+        xTilt.minimumRelativeValue = minXOffset
+        xTilt.maximumRelativeValue = maxXOffset
 
-        xTilt.minimumRelativeValue = minTranslation
+        let yTilt = UIInterpolatingMotionEffect(
+            keyPath: "center.y",
+            type: .tiltAlongVerticalAxis
+        )
 
-        xTilt.maximumRelativeValue = maxTranslation
+        let minYOffset = model.slidingY.min * bounds.width
+        let maxYOffset = model.slidingY.max * bounds.width
 
-        gradientView.addMotionEffect(xTilt)
+        yTilt.minimumRelativeValue = minYOffset
+        yTilt.maximumRelativeValue = maxYOffset
+
+        let tilt = UIMotionEffectGroup()
+        tilt.motionEffects = [xTilt, yTilt]
+
+        gradientView.addMotionEffect(tilt)
     }
 }
