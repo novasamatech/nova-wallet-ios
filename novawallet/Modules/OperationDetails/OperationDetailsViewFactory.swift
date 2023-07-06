@@ -1,13 +1,12 @@
 import Foundation
-import CommonWallet
+
 import SoraFoundation
 import RobinHood
 
 struct OperationDetailsViewFactory {
     static func createView(
-        for txData: AssetTransactionData,
-        chainAsset: ChainAsset,
-        commandFactory: WalletCommandFactoryProtocol?
+        for transaction: TransactionHistoryItem,
+        chainAsset: ChainAsset
     ) -> OperationDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -25,16 +24,17 @@ struct OperationDetailsViewFactory {
         )
 
         let interactor = OperationDetailsInteractor(
-            txData: txData,
+            transaction: transaction,
             chainAsset: chainAsset,
             wallet: SelectedWalletSettings.shared.value,
             walletRepository: AnyDataProviderRepository(walletRepository),
             transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            currencyManager: currencyManager,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared
         )
 
         let wireframe = OperationDetailsWireframe()
-        wireframe.commandFactory = commandFactory
 
         let localizationManager = LocalizationManager.shared
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

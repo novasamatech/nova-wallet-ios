@@ -3,14 +3,20 @@ import SoraFoundation
 import SoraKeystore
 
 struct AssetListViewFactory {
-    static func createView() -> AssetListViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+    static func createView(with dappMediator: DAppInteractionMediating) -> AssetListViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared,
+              let walletConnect = dappMediator.children.first(
+                  where: { $0 is WalletConnectDelegateInputProtocol }
+              ) as? WalletConnectDelegateInputProtocol else {
             return nil
         }
+
+        let assetListObservable = AssetListStateObservable(state: .init(value: .init()))
 
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            assetListObservable: assetListObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
@@ -18,19 +24,14 @@ struct AssetListViewFactory {
             eventCenter: EventCenter.shared,
             settingsManager: SettingsManager.shared,
             currencyManager: currencyManager,
+            walletConnect: walletConnect,
             logger: Logger.shared
         )
 
-        let walletUpdater = WalletDetailsUpdater(
-            eventCenter: EventCenter.shared,
-            crowdloansLocalSubscriptionFactory: interactor.crowdloansLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: interactor.walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: interactor.priceLocalSubscriptionFactory,
-            walletSettings: interactor.selectedWalletSettings,
-            currencyManager: currencyManager
+        let wireframe = AssetListWireframe(
+            dappMediator: dappMediator,
+            assetListObservable: assetListObservable
         )
-
-        let wireframe = AssetListWireframe(walletUpdater: walletUpdater)
 
         let nftDownloadService = NftFileDownloadService(
             cacheBasePath: ApplicationConfig.shared.fileCachePath,

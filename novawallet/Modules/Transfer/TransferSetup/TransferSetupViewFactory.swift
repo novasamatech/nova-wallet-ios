@@ -1,13 +1,13 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
+
 import RobinHood
 
 struct TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
-        commandFactory: WalletCommandFactoryProtocol?
+        transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -19,7 +19,7 @@ struct TransferSetupViewFactory {
 
         let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
 
-        let presenterFactory = createPresenterFactory(for: wallet, commandFactory: commandFactory)
+        let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
 
         let localizationManager = LocalizationManager.shared
 
@@ -27,7 +27,9 @@ struct TransferSetupViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-        let viewModelFactory = Web3NameViewModelFactory(displayAddressViewModelFactory: DisplayAddressViewModelFactory())
+        let viewModelFactory = Web3NameViewModelFactory(
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory()
+        )
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
@@ -60,15 +62,15 @@ struct TransferSetupViewFactory {
 
     private static func createPresenterFactory(
         for wallet: MetaAccountModel,
-        commandFactory: WalletCommandFactoryProtocol?
+        transferCompletion: TransferCompletionClosure?
     ) -> TransferSetupPresenterFactory {
         TransferSetupPresenterFactory(
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             storageFacade: SubstrateDataStorageFacade.shared,
-            commandFactory: commandFactory,
             eventCenter: EventCenter.shared,
-            logger: Logger.shared
+            logger: Logger.shared,
+            transferCompletion: transferCompletion
         )
     }
 
@@ -112,7 +114,9 @@ struct TransferSetupViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
 
-        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory())
+        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(
+            integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory()
+        )
 
         let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
         let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(

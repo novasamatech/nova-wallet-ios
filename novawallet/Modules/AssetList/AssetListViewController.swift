@@ -37,10 +37,16 @@ final class AssetListViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        updateLoadingState()
+    }
+
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(AssetListAssetCell.self)
         rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
-        rootView.collectionView.registerCellClass(WalletSwitchCollectionViewCell.self)
+        rootView.collectionView.registerCellClass(AssetListAccountCell.self)
         rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
         rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         rootView.collectionView.registerCellClass(AssetListNftsCell.self)
@@ -64,11 +70,23 @@ final class AssetListViewController: UIViewController, ViewHolder {
         )
     }
 
-    @objc func actionSelectAccount() {
+    private func updateLoadingState() {
+        rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
+    }
+
+    private func updateLoadingState(for cell: UICollectionViewCell) {
+        (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
+    }
+
+    @objc private func actionSelectAccount() {
         presenter.selectWallet()
     }
 
-    @objc func actionRefresh() {
+    @objc private func actionSelectWalletConnect() {
+        presenter.presentWalletConnect()
+    }
+
+    @objc private func actionRefresh() {
         let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
         if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
             nftCell.refresh()
@@ -77,16 +95,32 @@ final class AssetListViewController: UIViewController, ViewHolder {
         presenter.refresh()
     }
 
-    @objc func actionSettings() {
+    @objc private func actionSettings() {
         presenter.presentSettings()
     }
 
-    @objc func actionSearch() {
+    @objc private func actionSearch() {
         presenter.presentSearch()
     }
 
-    @objc func actionManage() {
+    @objc private func actionManage() {
         presenter.presentAssetsManage()
+    }
+
+    @objc private func actionLocks() {
+        presenter.presentLocks()
+    }
+
+    @objc private func actionSend() {
+        presenter.send()
+    }
+
+    @objc private func actionReceive() {
+        presenter.receive()
+    }
+
+    @objc private func actionBuy() {
+        presenter.buy()
     }
 }
 
@@ -124,7 +158,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .settings, .emptyState:
+        case .account, .settings, .emptyState, .totalBalance:
             break
         case .asset:
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
@@ -135,8 +169,6 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             }
         case .yourNfts:
             presenter.selectNfts()
-        case .totalBalance:
-            presenter.didTapTotalBalance()
         }
     }
 
@@ -182,15 +214,14 @@ extension AssetListViewController: UICollectionViewDataSource {
     private func provideAccountCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
-    ) -> WalletSwitchCollectionViewCell {
+    ) -> AssetListAccountCell {
         let accountCell = collectionView.dequeueReusableCellWithType(
-            WalletSwitchCollectionViewCell.self,
+            AssetListAccountCell.self,
             for: indexPath
         )!
 
         if let viewModel = headerViewModel {
-            accountCell.bind(title: viewModel.title)
-            accountCell.bind(viewModel: viewModel.walletSwitch)
+            accountCell.bind(viewModel: viewModel)
         }
 
         accountCell.walletSwitch.addTarget(
@@ -198,6 +229,11 @@ extension AssetListViewController: UICollectionViewDataSource {
             action: #selector(actionSelectAccount),
             for: .touchUpInside
         )
+
+        accountCell.walletConnect.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(actionSelectWalletConnect)
+        ))
 
         return accountCell
     }
@@ -212,7 +248,25 @@ extension AssetListViewController: UICollectionViewDataSource {
         )!
 
         totalBalanceCell.locale = selectedLocale
-
+        totalBalanceCell.locksView.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(actionLocks)
+        ))
+        totalBalanceCell.sendButton.addTarget(
+            self,
+            action: #selector(actionSend),
+            for: .touchUpInside
+        )
+        totalBalanceCell.receiveButton.addTarget(
+            self,
+            action: #selector(actionReceive),
+            for: .touchUpInside
+        )
+        totalBalanceCell.buyButton.addTarget(
+            self,
+            action: #selector(actionBuy),
+            for: .touchUpInside
+        )
         if let viewModel = headerViewModel {
             totalBalanceCell.bind(viewModel: viewModel)
         }

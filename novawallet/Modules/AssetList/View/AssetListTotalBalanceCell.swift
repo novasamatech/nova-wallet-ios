@@ -3,51 +3,101 @@ import SoraUI
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
-        static let bottomInset: CGFloat = 20.0
+        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
+        static let amountTitleSpacing: CGFloat = 15
+        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
+        static let elementMovingMotion: CGFloat = 5
+        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
     }
 
-    let backgroundBlurView: BlockBackgroundView = {
-        let view = BlockBackgroundView()
-        view.sideLength = 12.0
-        return view
-    }()
+    let backgroundBlurView = GladingCardView()
 
-    let titleView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.mode = .detailsIcon
+    let displayContentView: UIView = .create { view in
+        view.backgroundColor = .clear
+    }
 
-        view.detailsLabel.numberOfLines = 1
-        view.detailsLabel.textColor = R.color.colorTextSecondary()
-        view.detailsLabel.font = .regularSubheadline
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .semiboldSubhedlineSecondary)
+    }
 
-        view.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
-
-        view.iconWidth = 16.0
-        view.spacing = 4.0
-
-        return view
-    }()
-
-    let amountLabel: UILabel = {
-        let view = UILabel()
+    let amountLabel: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
         view.font = .boldLargeTitle
-        view.textAlignment = .center
-        return view
-    }()
+    }
 
-    let locksView: BorderedIconLabelView = .create {
-        let color = R.color.colorChipText()!
-        $0.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
-        $0.iconDetailsView.detailsLabel.font = .regularFootnote
-        $0.iconDetailsView.detailsLabel.textColor = color
-        $0.iconDetailsView.spacing = 4.0
-        $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
-        $0.backgroundView.apply(style: .chips)
+    let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
+        $0.contentInsets = Constants.locksContentInsets
+        $0.backgroundView.apply(style: .chipsOnCard)
+        $0.setupContentView = { contentView in
+            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
+            contentView.detailsView.detailsLabel.font = .regularFootnote
+            contentView.detailsView.detailsLabel.textColor = R.color.colorChipText()!
+            contentView.spacing = 4
+            contentView.detailsView.spacing = 4
+            contentView.detailsView.mode = .detailsIcon
+            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconChip()!)
+        }
+
         $0.isHidden = true
     }
 
+    lazy var sendButton = createActionButton(
+        title:
+        R.string.localizable.walletSendTitle(preferredLanguages: locale.rLanguages),
+        icon: R.image.iconSend()
+    )
+    lazy var receiveButton = createActionButton(
+        title:
+        R.string.localizable.walletAssetReceive(preferredLanguages: locale.rLanguages),
+        icon: R.image.iconReceive()
+    )
+    lazy var buyButton = createActionButton(
+        title: R.string.localizable.walletAssetBuy(
+            preferredLanguages: locale.rLanguages
+        ),
+        icon: R.image.iconBuy()
+    )
+
+    lazy var actionsView = UIView.hStack(
+        distribution: .fillEqually,
+        [
+            sendButton,
+            receiveButton,
+            buyButton
+        ]
+    )
+
+    let actionsBackgroundView: OverlayBlurBackgroundView = .create { view in
+        view.sideLength = 12
+        view.borderType = .none
+        view.overlayView.fillColor = R.color.colorBlockBackground()!
+        view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
+        view.overlayView.strokeWidth = 1
+        view.blurView?.alpha = 0.5
+    }
+
+    let actionsGladingView: GladingRectView = .create { view in
+        view.bind(model: .cardActionsStrokeGlading)
+    }
+
     private var skeletonView: SkrullableView?
+    private var shadowView1: RoundedView = .create { view in
+        view.cornerRadius = 12
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.16
+        view.shadowOffset = CGSize(width: 6, height: 4)
+    }
+
+    private var shadowView2: RoundedView = .create { view in
+        view.cornerRadius = 12
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.25
+        view.shadowOffset = CGSize(width: 2, height: 4)
+    }
 
     var locale = Locale.current {
         didSet {
@@ -62,6 +112,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
         setupLayout()
         setupLocalization()
+        setupMotionEffect()
     }
 
     @available(*, unavailable)
@@ -80,7 +131,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.text = value
+            amountLabel.attributedText = totalAmountString(from: value)
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -96,52 +147,173 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         }
     }
 
+    private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
+        let defaultAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: R.color.colorTextPrimary()!,
+            .font: UIFont.boldLargeTitle
+        ]
+
+        let amount = model.amount
+
+        if
+            let lastChar = model.amount.last?.asciiValue,
+            !NSCharacterSet.decimalDigits.contains(UnicodeScalar(lastChar)) {
+            return .init(string: amount, attributes: defaultAttributes)
+        } else {
+            guard let decimalSeparator = model.decimalSeparator,
+                  let range = amount.range(of: decimalSeparator) else {
+                return .init(string: amount, attributes: defaultAttributes)
+            }
+
+            let amountAttributedString = NSMutableAttributedString(string: amount)
+            let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
+
+            let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
+
+            amountAttributedString.setAttributes(
+                defaultAttributes,
+                range: intPartRange
+            )
+
+            amountAttributedString.setAttributes(
+                [.foregroundColor: R.color.colorTextSecondary()!,
+                 .font: UIFont.boldTitle2],
+                range: fractionPartRange
+            )
+
+            return amountAttributedString
+        }
+    }
+
     private func setupStateWithLocks(amount: String) {
         locksView.isHidden = false
-        titleView.hidesIcon = false
 
-        locksView.iconDetailsView.detailsLabel.text = amount
+        locksView.contentView.detailsView.detailsLabel.text = amount
     }
 
     private func setupStateWithoutLocks() {
-        locksView.iconDetailsView.detailsLabel.text = nil
+        locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
-        titleView.hidesIcon = true
     }
 
     private func setupLocalization() {
-        titleView.detailsLabel.text = R.string.localizable.walletTotalBalance(
+        titleLabel.text = R.string.localizable.walletTotalBalance(
+            preferredLanguages: locale.rLanguages
+        )
+        sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
+            preferredLanguages: locale.rLanguages)
+        receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
+            preferredLanguages: locale.rLanguages)
+        buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
             preferredLanguages: locale.rLanguages
         )
     }
 
+    private func setupMotionEffect() {
+        setupBackgroundMotion()
+
+        setupMovingMotion(for: displayContentView)
+    }
+
+    private func clearMotionEffect() {
+        clearMotionEffects(for: contentView)
+        clearMotionEffects(for: displayContentView)
+    }
+
+    private func setupBackgroundMotion() {
+        let identity = CATransform3DIdentity
+        let minimum = CATransform3DRotate(identity, -Constants.cardMotionAngle, 0.0, 1.0, 0.0)
+        let maximum = CATransform3DRotate(identity, Constants.cardMotionAngle, 0.0, 1.0, 0.0)
+
+        contentView.layer.transform = identity
+        let effect = UIInterpolatingMotionEffect(
+            keyPath: "layer.transform",
+            type: .tiltAlongHorizontalAxis
+        )
+        effect.minimumRelativeValue = minimum
+        effect.maximumRelativeValue = maximum
+
+        contentView.addMotionEffect(effect)
+    }
+
+    private func setupMovingMotion(for view: UIView) {
+        let identity = CATransform3DIdentity
+        let minimum = CATransform3DTranslate(identity, Constants.elementMovingMotion, 0.0, 0.0)
+        let maximum = CATransform3DTranslate(identity, -Constants.elementMovingMotion, 0.0, 0.0)
+
+        view.layer.transform = identity
+        let effect = UIInterpolatingMotionEffect(
+            keyPath: "layer.transform",
+            type: .tiltAlongHorizontalAxis
+        )
+        effect.minimumRelativeValue = minimum
+        effect.maximumRelativeValue = maximum
+
+        view.addMotionEffect(effect)
+    }
+
+    private func clearMotionEffects(for view: UIView) {
+        view.motionEffects.forEach {
+            view.removeMotionEffect($0)
+        }
+    }
+
     private func setupLayout() {
+        [shadowView1, shadowView2].forEach { view in
+            contentView.addSubview(view)
+
+            view.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+                make.top.bottom.equalToSuperview()
+            }
+        }
+
         contentView.addSubview(backgroundBlurView)
         backgroundBlurView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.bottom.equalToSuperview()
         }
 
-        contentView.addSubview(titleView)
-        titleView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(backgroundBlurView.snp.top).offset(20.0)
+        contentView.addSubview(displayContentView)
+        displayContentView.snp.makeConstraints { make in
+            make.leading.equalTo(backgroundBlurView).offset(Constants.insets.left)
+            make.trailing.equalTo(backgroundBlurView).offset(-Constants.insets.right)
+            make.top.equalTo(backgroundBlurView).offset(Constants.insets.top)
+            make.bottom.equalTo(backgroundBlurView).offset(-Constants.insets.bottom)
         }
 
-        let amountView = UIStackView(arrangedSubviews: [
-            amountLabel,
-            locksView
-        ])
-        amountView.spacing = 8.0
-        amountView.axis = .vertical
-        amountView.alignment = .center
+        displayContentView.addSubview(locksView)
+        locksView.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview()
+        }
 
-        contentView.addSubview(amountView)
-        amountView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualTo(titleView.snp.bottom).offset(3)
-            make.leading.equalTo(backgroundBlurView).offset(8.0)
-            make.trailing.equalTo(backgroundBlurView).offset(-8.0)
-            make.bottom.equalToSuperview().inset(Constants.bottomInset)
+        displayContentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalTo(locksView.snp.centerY)
+            make.trailing.lessThanOrEqualTo(locksView.snp.leading).offset(-8)
+        }
+
+        displayContentView.addSubview(amountLabel)
+        amountLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
+        }
+
+        displayContentView.addSubview(actionsBackgroundView)
+        actionsBackgroundView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.size.height.equalTo(80)
+        }
+
+        actionsBackgroundView.addSubview(actionsGladingView)
+        actionsGladingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        actionsBackgroundView.addSubview(actionsView)
+        actionsView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 
@@ -206,11 +378,11 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = spaceSize.height - Constants.bottomInset - amountLabel.font.lineHeight / 2.0 -
-            bigRowSize.height / 2.0
+        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing +
+            amountLabel.font.lineHeight / 2.0 - bigRowSize.height / 2.0
 
         let offset = CGPoint(
-            x: spaceSize.width / 2.0 - bigRowSize.width / 2.0,
+            x: UIConstants.horizontalInset + Constants.insets.left,
             y: offsetY
         )
 
@@ -223,5 +395,36 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
                 size: bigRowSize
             )
         ]
+    }
+
+    private func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
+        let button = RoundedButton()
+        button.roundedBackgroundView?.fillColor = .clear
+        button.roundedBackgroundView?.highlightedFillColor = .clear
+        button.roundedBackgroundView?.strokeColor = .clear
+        button.roundedBackgroundView?.highlightedStrokeColor = .clear
+        button.roundedBackgroundView?.shadowOpacity = 0
+        button.roundedBackgroundView?.cornerRadius = 0
+        button.imageWithTitleView?.title = title
+        button.imageWithTitleView?.iconImage = icon
+        button.imageWithTitleView?.layoutType = .verticalImageFirst
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
+        button.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
+        button.imageWithTitleView?.titleFont = .semiBoldCaption1
+        button.contentOpacityWhenHighlighted = 0.2
+        button.changesContentOpacityWhenHighlighted = true
+        return button
+    }
+}
+
+extension AssetListTotalBalanceCell: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
+        backgroundBlurView.updateLayerAnimationIfActive()
+        actionsGladingView.updateLayerAnimationIfActive()
+
+        skeletonView?.restartSkrulling()
+
+        clearMotionEffect()
+        setupMotionEffect()
     }
 }

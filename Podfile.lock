@@ -4,13 +4,6 @@ PODS:
   - CocoaLumberjack (3.7.2):
     - CocoaLumberjack/Core (= 3.7.2)
   - CocoaLumberjack/Core (3.7.2)
-  - CommonWallet/Core (1.16.0):
-    - RobinHood (~> 2.6.0)
-    - SoraFoundation/DateProcessing (~> 1.0.0)
-    - SoraFoundation/Localization (~> 1.0.0)
-    - SoraFoundation/NotificationHandlers (~> 1.0.0)
-    - SoraFoundation/NumberProcessing (~> 1.0.0)
-    - SoraUI (~> 1.11.0)
   - CryptoSwift (1.5.1)
   - Cuckoo (1.7.1):
     - Cuckoo/Swift (= 1.7.1)
@@ -116,6 +109,7 @@ PODS:
     - xxHash-Swift (~> 1.0.0)
   - SVGKit (2.1.0):
     - CocoaLumberjack (~> 3.0)
+  - SwiftAlgorithms (1.0.0)
   - SwiftFormat/CLI (0.47.13)
   - SwiftLint (0.43.1)
   - SwiftRLP (1.1):
@@ -152,7 +146,6 @@ PODS:
 
 DEPENDENCIES:
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
-  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, tag `1.16.0`)
   - Cuckoo
   - EthereumSignTypedDataUtil (from `https://github.com/ERussel/EthereumSignTypedDataUtil.git`, tag `0.1.3`)
   - FireMock
@@ -168,6 +161,7 @@ DEPENDENCIES:
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.8`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.13.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
+  - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
@@ -195,6 +189,7 @@ SPEC REPOS:
     - SoraFoundation
     - SoraKeystore
     - Sourcery
+    - SwiftAlgorithms
     - SwiftFormat
     - SwiftLint
     - SwiftyBeaver
@@ -206,9 +201,6 @@ EXTERNAL SOURCES:
   CDMarkdownKit:
     :git: https://github.com/nova-wallet/CDMarkdownKit.git
     :tag: 2.5.2
-  CommonWallet:
-    :git: https://github.com/ERussel/Capital-iOS.git
-    :tag: 1.16.0
   EthereumSignTypedDataUtil:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
@@ -237,9 +229,6 @@ CHECKOUT OPTIONS:
   CDMarkdownKit:
     :git: https://github.com/nova-wallet/CDMarkdownKit.git
     :tag: 2.5.2
-  CommonWallet:
-    :git: https://github.com/ERussel/Capital-iOS.git
-    :tag: 1.16.0
   EthereumSignTypedDataUtil:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
@@ -269,7 +258,6 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  CommonWallet: 59fdbf5511d6fcdc38496db4baf425dd0cf29274
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
   EthereumSignTypedDataUtil: ae4e33b21e51ee046a86a65b02843090b8bbd3f9
@@ -291,6 +279,7 @@ SPEC CHECKSUMS:
   Starscream: b676ee89781677a2d8d36029a78c970710e2d3eb
   SubstrateSdk: aad6725e00295219ee9722b1975175ef4db3f4a6
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
+  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
@@ -301,6 +290,6 @@ SPEC CHECKSUMS:
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 7401829850c56fe153f46655dbfad25e61b9927c
+PODFILE CHECKSUM: 906e2d4f035c15933155b52fe2d688ca6abe378d
 
 COCOAPODS: 1.12.1

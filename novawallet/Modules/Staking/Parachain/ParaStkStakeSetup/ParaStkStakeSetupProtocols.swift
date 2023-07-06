@@ -1,5 +1,5 @@
 import BigInt
-import CommonWallet
+
 import Foundation
 
 protocol ParaStkStakeSetupViewProtocol: ControllerBackedProtocol {

@@ -1,7 +1,6 @@
 import Foundation
 import RobinHood
 import BigInt
-import CommonWallet
 
 final class SubqueryTotalRewardSource {
     typealias Model = TotalRewardItem

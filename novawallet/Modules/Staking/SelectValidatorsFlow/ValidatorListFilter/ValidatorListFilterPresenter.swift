@@ -1,5 +1,4 @@
 import SoraFoundation
-import CommonWallet
 
 final class ValidatorListFilterPresenter {
     weak var view: ValidatorListFilterViewProtocol?

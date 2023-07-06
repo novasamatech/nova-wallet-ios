@@ -2,7 +2,7 @@ import XCTest
 import Cuckoo
 import RobinHood
 import SoraFoundation
-import CommonWallet
+
 import IrohaCrypto
 @testable import novawallet
 

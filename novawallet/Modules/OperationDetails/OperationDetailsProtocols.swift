@@ -1,4 +1,3 @@
-import CommonWallet
 protocol OperationDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: OperationDetailsViewModel)
 }

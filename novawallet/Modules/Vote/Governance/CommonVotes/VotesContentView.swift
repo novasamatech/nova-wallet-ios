@@ -1,7 +1,6 @@
 import UIKit
 
-final class VotesContentView:
-    GenericTitleValueView<IconDetailsGenericView<IconDetailsView>, MultiValueView> {
+final class VotesContentView: GenericTitleValueView<IconDetailsGenericView<IconDetailsView>, MultiValueView> {
     enum Constants {
         static let titleValueSpacing: CGFloat = 32.0
         static let addressNameSpacing: CGFloat = 12.0

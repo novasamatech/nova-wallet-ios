@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
+
 import BigInt
 
 protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {

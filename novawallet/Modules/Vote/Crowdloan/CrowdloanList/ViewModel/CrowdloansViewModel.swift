@@ -1,6 +1,5 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
 
 struct CrowdloansViewModel {
     let sections: [CrowdloansSection]

@@ -37,7 +37,8 @@ final class SubqueryHistoryOperationFactory {
                          { extrinsic: {contains: {call: "transfer"} } },
                          { extrinsic: {contains: {call: "transferKeepAlive"} } },
                          { extrinsic: {contains: {call: "forceTransfer"} } },
-                         { extrinsic: {contains: {call: "transferAll"} } }
+                         { extrinsic: {contains: {call: "transferAll"} } },
+                         { extrinsic: {contains: {call: "transfer_allow_death"} } }
                       ]
                     }
                 ]

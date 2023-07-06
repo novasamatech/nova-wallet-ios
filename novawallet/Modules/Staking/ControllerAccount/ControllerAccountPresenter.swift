@@ -300,8 +300,8 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
             self.isDeprecated = isDeprecated
 
             updateView()
-        case let .failure(failure):
-            logger?.error("Can't extract deprecated flag")
+        case let .failure(error):
+            logger?.error("Can't extract deprecated flag: \(error)")
         }
     }
 }

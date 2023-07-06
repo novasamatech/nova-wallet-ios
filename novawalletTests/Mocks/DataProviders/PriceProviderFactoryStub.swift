@@ -64,4 +64,13 @@ final class PriceProviderFactoryStub: PriceProviderFactoryProtocol {
         let provider = SingleValueProviderStub(item: priceList)
         return AnySingleValueProvider(provider)
     }
+
+    func getPriceHistoryProvider(
+        for priceId: AssetModel.PriceId,
+        currency: Currency
+    ) -> AnySingleValueProvider<PriceHistory> {
+        let priceHistory = PriceHistory(currencyId: currency.id, items: [])
+        let provider = SingleValueProviderStub(item: priceHistory)
+        return AnySingleValueProvider(provider)
+    }
 }

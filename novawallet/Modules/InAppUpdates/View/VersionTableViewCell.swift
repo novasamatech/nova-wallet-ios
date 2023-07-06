@@ -96,7 +96,9 @@ extension VersionTableViewCell {
         titleLabel.text = model.title
         bind(severity: model.severity, locale: locale)
         latestLabel.isHidden = !model.isLatest
-        latestLabel.titleLabel.text = R.string.localizable.inAppUpdatesLatest(preferredLanguages: locale.rLanguages).uppercased()
+        latestLabel.titleLabel.text = R.string.localizable.inAppUpdatesLatest(
+            preferredLanguages: locale.rLanguages
+        ).uppercased()
         dateLabel.text = model.date
         bind(markdown: model.markdownText)
     }
