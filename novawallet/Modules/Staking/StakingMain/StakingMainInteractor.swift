@@ -60,7 +60,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
                     self.stakingRewardFiltersPeriod = period
                     self.presenter?.didReceiveRewardFilter(period)
                 } catch {
-                    self?.logger.error("Fetch error: \(error)")
+                    self.logger.error("Fetch error: \(error)")
                 }
             }
         }
@@ -100,7 +100,8 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         saveOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    self?.stakingRewardFiltersPeriod = try saveOperation.extractNoCancellableResultData()
+                    _ = try saveOperation.extractNoCancellableResultData()
+                    self?.stakingRewardFiltersPeriod = filter
                     self?.presenter?.didReceiveRewardFilter(filter)
                 } catch {
                     self?.logger.error("Save error: \(error)")

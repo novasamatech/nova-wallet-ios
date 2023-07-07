@@ -37246,22 +37246,6 @@ import SoraFoundation
         
     }
     
-<<<<<<< HEAD
-    
-    
-     func save(chainAsset: ChainAsset)  {
-        
-    return cuckoo_manager.call("save(chainAsset: ChainAsset)",
-            parameters: (chainAsset),
-            escapingParameters: (chainAsset),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.save(chainAsset: chainAsset))
-        
-    }
-    
     
     
      func save(filter: StakingRewardFiltersPeriod)  {
@@ -37277,8 +37261,6 @@ import SoraFoundation
         
     }
     
-=======
->>>>>>> fix/improve-card-animation
 
 	 struct __StubbingProxy_StakingMainInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -37298,19 +37280,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorInputProtocol.self, method: "saveNetworkInfoViewExpansion(isExpanded: Bool)", parameterMatchers: matchers))
 	    }
 	    
-<<<<<<< HEAD
-	    func save<M1: Cuckoo.Matchable>(chainAsset: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainAsset)> where M1.MatchedType == ChainAsset {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainAsset)>] = [wrap(matchable: chainAsset) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorInputProtocol.self, method: "save(chainAsset: ChainAsset)", parameterMatchers: matchers))
-	    }
-	    
 	    func save<M1: Cuckoo.Matchable>(filter: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardFiltersPeriod)> where M1.MatchedType == StakingRewardFiltersPeriod {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardFiltersPeriod)>] = [wrap(matchable: filter) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorInputProtocol.self, method: "save(filter: StakingRewardFiltersPeriod)", parameterMatchers: matchers))
 	    }
 	    
-=======
->>>>>>> fix/improve-card-animation
 	}
 
 	 struct __VerificationProxy_StakingMainInteractorInputProtocol: Cuckoo.VerificationProxy {
@@ -37339,21 +37313,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("saveNetworkInfoViewExpansion(isExpanded: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
-<<<<<<< HEAD
-	    @discardableResult
-	    func save<M1: Cuckoo.Matchable>(chainAsset: M1) -> Cuckoo.__DoNotUse<(ChainAsset), Void> where M1.MatchedType == ChainAsset {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainAsset)>] = [wrap(matchable: chainAsset) { $0 }]
-	        return cuckoo_manager.verify("save(chainAsset: ChainAsset)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
 	    @discardableResult
 	    func save<M1: Cuckoo.Matchable>(filter: M1) -> Cuckoo.__DoNotUse<(StakingRewardFiltersPeriod), Void> where M1.MatchedType == StakingRewardFiltersPeriod {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardFiltersPeriod)>] = [wrap(matchable: filter) { $0 }]
 	        return cuckoo_manager.verify("save(filter: StakingRewardFiltersPeriod)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
-=======
->>>>>>> fix/improve-card-animation
 	}
 }
 
@@ -37375,21 +37340,12 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-<<<<<<< HEAD
-    
-    
-     func save(chainAsset: ChainAsset)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
     
     
      func save(filter: StakingRewardFiltersPeriod)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-=======
->>>>>>> fix/improve-card-animation
 }
 
 
@@ -37432,22 +37388,6 @@ import SoraFoundation
         
     }
     
-<<<<<<< HEAD
-    
-    
-     func didReceiveError(_ error: Error)  {
-        
-    return cuckoo_manager.call("didReceiveError(_: Error)",
-            parameters: (error),
-            escapingParameters: (error),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceiveError(error))
-        
-    }
-    
     
     
      func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)  {
@@ -37463,8 +37403,6 @@ import SoraFoundation
         
     }
     
-=======
->>>>>>> fix/improve-card-animation
 
 	 struct __StubbingProxy_StakingMainInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -37479,19 +37417,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveExpansion(_: Bool)", parameterMatchers: matchers))
 	    }
 	    
-<<<<<<< HEAD
-	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
-	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveError(_: Error)", parameterMatchers: matchers))
-	    }
-	    
 	    func didReceiveRewardFilter<M1: Cuckoo.Matchable>(_ filter: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardFiltersPeriod)> where M1.MatchedType == StakingRewardFiltersPeriod {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardFiltersPeriod)>] = [wrap(matchable: filter) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveRewardFilter(_: StakingRewardFiltersPeriod)", parameterMatchers: matchers))
 	    }
 	    
-=======
->>>>>>> fix/improve-card-animation
 	}
 
 	 struct __VerificationProxy_StakingMainInteractorOutputProtocol: Cuckoo.VerificationProxy {
@@ -37514,21 +37444,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("didReceiveExpansion(_: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
-<<<<<<< HEAD
-	    @discardableResult
-	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
-	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
-	        return cuckoo_manager.verify("didReceiveError(_: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
 	    @discardableResult
 	    func didReceiveRewardFilter<M1: Cuckoo.Matchable>(_ filter: M1) -> Cuckoo.__DoNotUse<(StakingRewardFiltersPeriod), Void> where M1.MatchedType == StakingRewardFiltersPeriod {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardFiltersPeriod)>] = [wrap(matchable: filter) { $0 }]
 	        return cuckoo_manager.verify("didReceiveRewardFilter(_: StakingRewardFiltersPeriod)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
-=======
->>>>>>> fix/improve-card-animation
 	}
 }
 
@@ -37544,21 +37465,12 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-<<<<<<< HEAD
-    
-    
-     func didReceiveError(_ error: Error)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
     
     
      func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-=======
->>>>>>> fix/improve-card-animation
 }
 
 
