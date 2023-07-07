@@ -11,6 +11,7 @@ final class GladingPatternView: GladingBaseView {
         gradientView.startPoint = model.gradient.startPoint
         gradientView.endPoint = model.gradient.endPoint
         gradientView.locations = model.gradient.locations
+        gradientView.alpha = model.opacity
 
         gradientView.snp.remakeConstraints { make in
             make.center.equalToSuperview()
