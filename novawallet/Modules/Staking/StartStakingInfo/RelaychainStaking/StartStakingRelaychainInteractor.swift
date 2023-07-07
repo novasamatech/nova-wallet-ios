@@ -3,9 +3,7 @@ import BigInt
 import Foundation
 import SubstrateSdk
 
-final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCancellableCleaning {
-    private var networkInfoCancellable: CancellableCall?
-    private var sharedState: StakingSharedState?
+final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning {
     let chainRegistry: ChainRegistryProtocol
     let stateFactory: RelaychainStakingStateFactoryProtocol
 
@@ -14,7 +12,8 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
     private var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     private var eraCompletionTimeCancellable: CancellableCall?
-    private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
+    private var networkInfoCancellable: CancellableCall?
+    private var sharedState: StakingSharedState?
 
     weak var presenter: StartStakingInfoRelaychainInteractorOutputProtocol? {
         didSet {
@@ -94,16 +93,14 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         }
     }
 
-    func performMinNominatorBondSubscription() {
+    private func performMinNominatorBondSubscription() {
+        clear(dataProvider: &minNominatorBondProvider)
         minNominatorBondProvider = subscribeToMinNominatorBond(for: selectedChainAsset.chain.chainId)
     }
 
-    func performBagListSizeSubscription() {
+    private func performBagListSizeSubscription() {
+        clear(dataProvider: &bagListSizeProvider)
         bagListSizeProvider = subscribeBagsListSize(for: selectedChainAsset.chain.chainId)
-    }
-
-    func performActiveEraSubscription() {
-        activeEraProvider = subscribeActiveEra(for: selectedChainAsset.chain.chainId)
     }
 
     private func setupState() {
@@ -183,7 +180,6 @@ final class StartStakingRelaychainInteractor: StartStakingInfoInteractor, AnyCan
         performMinNominatorBondSubscription()
         performBagListSizeSubscription()
         provideEraCompletionTime()
-        performActiveEraSubscription()
     }
 }
 
@@ -193,7 +189,7 @@ extension StartStakingRelaychainInteractor: StakingLocalStorageSubscriber, Staki
         case let .success(bond):
             presenter?.didReceive(minNominatorBond: bond)
         case let .failure(error):
-            presenter?.didReceive(error: .bagListSize(error))
+            presenter?.didReceive(error: .minNominatorBond(error))
         }
     }
 
@@ -204,5 +200,23 @@ extension StartStakingRelaychainInteractor: StakingLocalStorageSubscriber, Staki
         case let .failure(error):
             presenter?.didReceive(error: .bagListSize(error))
         }
+    }
+}
+
+extension StartStakingRelaychainInteractor: StartStakingInfoRelaychainInteractorInputProtocol {
+    func retryNetworkStakingInfo() {
+        provideNetworkStakingInfo()
+    }
+
+    func remakeMinNominatorBondSubscription() {
+        performMinNominatorBondSubscription()
+    }
+
+    func remakeBagListSizeSubscription() {
+        performBagListSizeSubscription()
+    }
+
+    func retryEraCompletionTime() {
+        provideEraCompletionTime()
     }
 }

@@ -11,6 +11,10 @@ struct StartStakingInfoViewFactory {
         case .relaychain, .auraRelaychain, .azero, .nominationPools:
             let factory = RelaychainStakingStateFactory(
                 stakingOption: stakingOption,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                storageFacade: SubstrateDataStorageFacade.shared,
+                eventCenter: EventCenter.shared,
+                logger: Logger.shared,
                 operationQueue: OperationQueue()
             )
             return createRelaychainView(

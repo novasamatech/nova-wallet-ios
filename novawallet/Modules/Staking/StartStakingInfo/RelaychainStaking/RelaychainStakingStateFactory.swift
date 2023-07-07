@@ -10,7 +10,7 @@ final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
 
     private let stakingOption: Multistaking.ChainAssetOption
-    private let chainRegisty: ChainRegistryProtocol
+    private let chainRegistry: ChainRegistryProtocol
     private let storageFacade: StorageFacadeProtocol
     private let operationQueue: OperationQueue
     private let eventCenter: EventCenterProtocol
@@ -19,20 +19,20 @@ final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
-        chainRegisty: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
-        storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
-        eventCenter: EventCenterProtocol = EventCenter.shared,
-        logger: LoggerProtocol = Logger.shared,
+        chainRegistry: ChainRegistryProtocol,
+        storageFacade: StorageFacadeProtocol,
+        eventCenter: EventCenterProtocol,
+        logger: LoggerProtocol,
         operationQueue: OperationQueue
     ) {
         self.stakingOption = stakingOption
-        self.chainRegisty = chainRegisty
+        self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
         let operationManager = OperationManager(operationQueue: operationQueue)
 
         stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
-            chainRegistry: chainRegisty,
+            chainRegistry: chainRegistry,
             storageFacade: storageFacade,
             operationManager: operationManager,
             logger: logger
@@ -56,7 +56,7 @@ final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol
 
         let chainAsset = stakingOption.chainAsset
         let stakingServiceFactory = StakingServiceFactory(
-            chainRegisty: chainRegisty,
+            chainRegisty: chainRegistry,
             storageFacade: storageFacade,
             eventCenter: eventCenter,
             operationQueue: operationQueue,

@@ -59,7 +59,14 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         provideBalanceModel()
     }
 
-    func didReceive(baseError _: BaseStartStakingInfoError) {}
+    func didReceive(baseError error: BaseStartStakingInfoError) {
+        switch error {
+        case .assetBalance, .price:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.baseInteractor.remakeSubscriptions()
+            }
+        }
+    }
 
     // MARK: - StartStakingInfoPresenterProtocol
 

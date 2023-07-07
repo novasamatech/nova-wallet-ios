@@ -11,6 +11,7 @@ protocol StartStakingInfoPresenterProtocol: AnyObject {
 
 protocol StartStakingInfoInteractorInputProtocol: AnyObject {
     func setup()
+    func remakeSubscriptions()
 }
 
 protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
@@ -21,6 +22,13 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceive(baseError: BaseStartStakingInfoError)
 }
 
+protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
+    func retryNetworkStakingInfo()
+    func remakeMinNominatorBondSubscription()
+    func remakeBagListSizeSubscription()
+    func retryEraCompletionTime()
+}
+
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
     func didReceive(minNominatorBond: BigUInt?)
     func didReceive(bagListSize: UInt32?)
@@ -29,7 +37,7 @@ protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInt
     func didReceive(error: RelaychainStartStakingInfoError)
 }
 
-protocol StartStakingInfoWireframeProtocol: AnyObject {}
+protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable {}
 
 enum BaseStartStakingInfoError: Error {
     case assetBalance(Error?)
@@ -41,4 +49,5 @@ enum RelaychainStartStakingInfoError: Error {
     case createState(Error)
     case eraCountdown(Error)
     case bagListSize(Error)
+    case minNominatorBond(Error)
 }

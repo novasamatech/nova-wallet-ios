@@ -3,15 +3,15 @@ import SoraFoundation
 import BigInt
 
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
-    let interactor: StartStakingInfoInteractorInputProtocol
+    let interactor: StartStakingInfoRelaychainInteractorInputProtocol
 
     private var minNominatorBond: LoadableViewModelState<BigUInt?> = .loading
     private var bagListSize: LoadableViewModelState<UInt32?> = .loading
     private var networkInfo: LoadableViewModelState<NetworkStakingInfo?> = .loading
     private var eraCountdown: LoadableViewModelState<EraCountdown?> = .loading
 
-    override init(
-        interactor: StartStakingInfoInteractorInputProtocol,
+    init(
+        interactor: StartStakingInfoRelaychainInteractorInputProtocol,
         dashboardItem: Multistaking.DashboardItem,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
@@ -38,7 +38,6 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
               let minStake = minStake() else {
             return
         }
-
         let maxApy = dashboardItem.maxApy
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
@@ -164,5 +163,28 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
         provideViewModel()
     }
 
-    func didReceive(error _: RelaychainStartStakingInfoError) {}
+    func didReceive(error: RelaychainStartStakingInfoError) {
+        switch error {
+        case .networkStakingInfo:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryNetworkStakingInfo()
+            }
+        case .createState:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        case .eraCountdown:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryEraCompletionTime()
+            }
+        case .bagListSize:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeBagListSizeSubscription()
+            }
+        case .minNominatorBond:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeMinNominatorBondSubscription()
+            }
+        }
+    }
 }

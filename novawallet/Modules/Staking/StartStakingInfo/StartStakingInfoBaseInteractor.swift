@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 import BigInt
 
-class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
+class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, AnyProviderAutoCleaning {
     weak var basePresenter: StartStakingInfoInteractorOutputProtocol?
     let selectedChainAsset: ChainAsset
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -31,6 +31,8 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
     }
 
     private func performPriceSubscription() {
+        clear(streamableProvider: &priceProvider)
+
         guard let priceId = selectedChainAsset.asset.priceId else {
             basePresenter?.didReceive(price: nil)
             return
@@ -40,6 +42,8 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
     }
 
     private func performAssetBalanceSubscription() {
+        clear(streamableProvider: &balanceProvider)
+
         let chainAssetId = selectedChainAsset.chainAssetId
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
@@ -73,9 +77,14 @@ class StartStakingInfoInteractor: StartStakingInfoInteractorInputProtocol {
 
         basePresenter?.didReceive(chainAsset: selectedChainAsset)
     }
+
+    func remakeSubscriptions() {
+        performAssetBalanceSubscription()
+        performPriceSubscription()
+    }
 }
 
-extension StartStakingInfoInteractor: WalletLocalStorageSubscriber,
+extension StartStakingInfoBaseInteractor: WalletLocalStorageSubscriber,
     WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
@@ -103,7 +112,7 @@ extension StartStakingInfoInteractor: WalletLocalStorageSubscriber,
     }
 }
 
-extension StartStakingInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension StartStakingInfoBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
         if selectedChainAsset.asset.priceId == priceId {
             switch result {
@@ -116,7 +125,7 @@ extension StartStakingInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSub
     }
 }
 
-extension StartStakingInfoInteractor: SelectedCurrencyDepending {
+extension StartStakingInfoBaseInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard basePresenter != nil,
               let priceId = selectedChainAsset.asset.priceId else {
