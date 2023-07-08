@@ -67,9 +67,9 @@ final class GladingCardView: UIView {
         smallPatternView.removeEffectIfNeeded(smallPatternEffect)
         middlePatternView.removeEffectIfNeeded(middlePatternEffect)
         bigPatternView.removeEffectIfNeeded(bigPatternEffect)
-        
+
         smallPatternEffect = smallPatternView.addMotion(minX: -25, maxX: 25, minY: -19, maxY: 19)
-        middlePatternEffect middlePatternView.addMotion(minX: -15, maxX: 15, minY: -8, maxY: 8)
+        middlePatternEffect = middlePatternView.addMotion(minX: -15, maxX: 15, minY: -8, maxY: 8)
         bigPatternEffect = bigPatternView.addMotion(minX: 7, maxX: -7, minY: 3, maxY: -3)
     }
 

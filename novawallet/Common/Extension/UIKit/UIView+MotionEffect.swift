@@ -6,34 +6,28 @@ extension UIView {
             removeMotionEffect(effect)
         }
     }
-    
-    func addMotion(
-        minX: CGFloat,
-        maxX: CGFloat,
-        minY: CGFloat,
-        maxY: CGFloat
-    ) -> UIMotionEffectGroup {
-        let xTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.x",
-            type: .tiltAlongHorizontalAxis
+
+    @discardableResult
+    func addMotion(minX: CGFloat, maxX: CGFloat, minY: CGFloat, maxY: CGFloat) -> UIMotionEffectGroup {
+        let xTilt = PartialInterpolatingMotionEffect.pareto(
+            for: "center.x",
+            type: .tiltAlongHorizontalAxis,
+            minValue: minX,
+            maxValue: maxX
         )
 
-        xTilt.minimumRelativeValue = minX
-        xTilt.maximumRelativeValue = maxX
-
-        let yTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.y",
-            type: .tiltAlongVerticalAxis
+        let yTilt = PartialInterpolatingMotionEffect.pareto(
+            for: "center.y",
+            type: .tiltAlongVerticalAxis,
+            minValue: minY,
+            maxValue: maxY
         )
-
-        yTilt.minimumRelativeValue = minY
-        yTilt.maximumRelativeValue = maxY
 
         let tilt = UIMotionEffectGroup()
         tilt.motionEffects = [xTilt, yTilt]
-        
+
         addMotionEffect(tilt)
-        
+
         return tilt
     }
 }

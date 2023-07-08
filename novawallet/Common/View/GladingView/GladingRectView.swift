@@ -50,39 +50,25 @@ class GladingRectView: GladingBaseView {
     }
 
     override func applyMotion() {
-        gradientView.motionEffects.forEach { effect in
-            gradientView.removeMotionEffect(effect)
+        gradientContentView.motionEffects.forEach { effect in
+            gradientContentView.removeMotionEffect(effect)
         }
 
         guard let model = model else {
             return
         }
 
-        let xTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.x",
-            type: .tiltAlongHorizontalAxis
-        )
-
         let minXOffset = model.slidingX.min * bounds.width
         let maxXOffset = model.slidingX.max * bounds.width
-
-        xTilt.minimumRelativeValue = minXOffset
-        xTilt.maximumRelativeValue = maxXOffset
-
-        let yTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.y",
-            type: .tiltAlongVerticalAxis
-        )
 
         let minYOffset = model.slidingY.min * bounds.height
         let maxYOffset = model.slidingY.max * bounds.height
 
-        yTilt.minimumRelativeValue = minYOffset
-        yTilt.maximumRelativeValue = maxYOffset
-
-        let tilt = UIMotionEffectGroup()
-        tilt.motionEffects = [xTilt, yTilt]
-
-        gradientContentView.addMotionEffect(tilt)
+        gradientContentView.addMotion(
+            minX: minXOffset,
+            maxX: maxXOffset,
+            minY: minYOffset,
+            maxY: maxYOffset
+        )
     }
 }
