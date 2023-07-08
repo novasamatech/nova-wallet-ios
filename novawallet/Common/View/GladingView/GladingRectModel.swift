@@ -62,7 +62,7 @@ extension GladingRectModel {
             cornerRadius: 12,
             slidingX: .init(min: 0.5, max: -0.5),
             slidingY: .init(min: 0.5, max: -0.5),
-            rotation: CGFloat.pi / 4.0,
+            rotation: CGFloat.pi / 8.0,
             gradientSize: CGSize(width: 127, height: 600)
         )
     }
@@ -74,7 +74,7 @@ extension GladingRectModel {
             cornerRadius: 12,
             slidingX: .init(min: 0.5, max: -0.5),
             slidingY: .init(min: 0.5, max: -0.5),
-            rotation: CGFloat.pi / 4.0,
+            rotation: CGFloat.pi / 8.0,
             gradientSize: CGSize(width: 127, height: 300)
         )
     }
@@ -86,7 +86,7 @@ extension GladingRectModel {
             cornerRadius: 12,
             slidingX: .init(min: 0.3, max: -0.3),
             slidingY: .init(min: 0.1, max: -0.1),
-            rotation: CGFloat.pi / 4.0,
+            rotation: CGFloat.pi / 8.0,
             gradientSize: CGSize(width: 217, height: 800)
         )
     }
