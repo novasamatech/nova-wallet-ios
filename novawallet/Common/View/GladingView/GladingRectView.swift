@@ -2,6 +2,7 @@ import UIKit
 
 class GladingRectView: GladingBaseView {
     private var model: GladingRectModel?
+    private var effect: UIMotionEffect?
 
     func bind(model: GladingRectModel) {
         self.model = model
@@ -50,25 +51,18 @@ class GladingRectView: GladingBaseView {
     }
 
     override func applyMotion() {
-        gradientContentView.motionEffects.forEach { effect in
-            gradientContentView.removeMotionEffect(effect)
-        }
+        gradientContentView.removeEffectIfNeeded(effect)
 
         guard let model = model else {
             return
         }
 
-        let minXOffset = model.slidingX.min * bounds.width
-        let maxXOffset = model.slidingX.max * bounds.width
+        let minX = model.slidingX.min * bounds.width
+        let maxX = model.slidingX.max * bounds.width
 
-        let minYOffset = model.slidingY.min * bounds.height
-        let maxYOffset = model.slidingY.max * bounds.height
+        let minY = model.slidingY.min * bounds.height
+        let maxY = model.slidingY.max * bounds.height
 
-        gradientContentView.addMotion(
-            minX: minXOffset,
-            maxX: maxXOffset,
-            minY: minYOffset,
-            maxY: maxYOffset
-        )
+        effect = gradientContentView.addMotion(minX: minX, maxX: maxX, minY: minY, maxY: maxY)
     }
 }

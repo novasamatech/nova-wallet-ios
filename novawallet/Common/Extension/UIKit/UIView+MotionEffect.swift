@@ -30,4 +30,13 @@ extension UIView {
 
         return tilt
     }
+
+    func addMotion(absX: CGFloat, absY: CGFloat, isInversed: Bool) -> UIMotionEffect {
+        let minX = isInversed ? absX : -absX
+        let maxX = isInversed ? -absX : absX
+        let minY = isInversed ? absY : -absY
+        let maxY = isInversed ? -absY : absY
+
+        return addMotion(minX: minX, maxX: maxX, minY: minY, maxY: maxY)
+    }
 }

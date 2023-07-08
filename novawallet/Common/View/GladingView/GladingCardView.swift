@@ -65,12 +65,13 @@ final class GladingCardView: UIView {
 
     private func updateMotionEffect() {
         smallPatternView.removeEffectIfNeeded(smallPatternEffect)
-        middlePatternView.removeEffectIfNeeded(middlePatternEffect)
-        bigPatternView.removeEffectIfNeeded(bigPatternEffect)
+        smallPatternEffect = smallPatternView.addMotion(absX: 25, absY: 19, isInversed: false)
 
-        smallPatternEffect = smallPatternView.addMotion(minX: -25, maxX: 25, minY: -19, maxY: 19)
-        middlePatternEffect = middlePatternView.addMotion(minX: -15, maxX: 15, minY: -8, maxY: 8)
-        bigPatternEffect = bigPatternView.addMotion(minX: 7, maxX: -7, minY: 3, maxY: -3)
+        middlePatternView.removeEffectIfNeeded(middlePatternEffect)
+        middlePatternEffect = middlePatternView.addMotion(absX: 15, absY: 8, isInversed: false)
+
+        bigPatternView.removeEffectIfNeeded(bigPatternEffect)
+        bigPatternEffect = bigPatternView.addMotion(absX: 7, absY: 3, isInversed: true)
     }
 
     private func setupLayout() {
