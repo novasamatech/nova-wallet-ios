@@ -50,12 +50,14 @@ class PartialInterpolatingMotionEffect: UIMotionEffect {
         // stop moving if we reached maximum allowed rotation
 
         if let maximumProgress = maximumProgress, progress >= maximumProgress {
+            Logger.shared.info("Maximum: \(maximumProgress)")
             return maximumValue
         }
 
         // stop moving if we reached minimum allowed rotation
 
         if let minimumProgress = minimumProgress, progress <= minimumProgress {
+            Logger.shared.info("Maximum: \(minimumProgress)")
             return minimumValue
         }
 
@@ -66,13 +68,17 @@ class PartialInterpolatingMotionEffect: UIMotionEffect {
         // apply separate interpolation function after min threshold rotation
 
         if progress < -thresholdProgress {
-            return interpolateValue(
+            let value = interpolateValue(
                 progress: progress,
                 minProgress: -1,
                 maxProgress: -thresholdProgress,
                 minValue: minimumValue,
                 maxValue: minThresholdValue
             )
+
+            Logger.shared.info("Before threshold: \(progress)")
+
+            return value
         }
 
         // apply separate interpolation function after max threshold rotation
@@ -80,25 +86,35 @@ class PartialInterpolatingMotionEffect: UIMotionEffect {
         let maxThresholdValue = min(maximumThresholdValue ?? maximumValue, maximumValue)
 
         if progress > thresholdProgress {
-            return interpolateValue(
+            let value = interpolateValue(
                 progress: progress,
                 minProgress: thresholdProgress,
                 maxProgress: 1,
                 minValue: maxThresholdValue,
                 maxValue: maximumValue
             )
+
+            Logger.shared.info("After threshold: \(progress)")
+
+            return value
         }
 
-        return interpolateValue(
+        let value = interpolateValue(
             progress: progress,
             minProgress: -thresholdProgress,
             maxProgress: thresholdProgress,
             minValue: minThresholdValue,
             maxValue: maxThresholdValue
         )
+
+        Logger.shared.info("Inside threshold: \(progress)")
+
+        return value
     }
 
     override func keyPathsAndRelativeValues(forViewerOffset viewerOffset: UIOffset) -> [String: Any]? {
+        Logger.shared.info("Motion offset: \(viewerOffset)")
+
         switch type {
         case .tiltAlongHorizontalAxis:
             if let result = keyPathsAndRelativeValues(forProgress: viewerOffset.horizontal) {
@@ -126,7 +142,7 @@ extension PartialInterpolatingMotionEffect {
         maxValue: CGFloat
     ) -> PartialInterpolatingMotionEffect {
         let thresholdAngle = CGFloat.pi / 10
-        let clampingAngle: CGFloat = 3 * CGFloat.pi / 10
+        let clampingAngle: CGFloat = 4 * CGFloat.pi / 10
 
         let effect = PartialInterpolatingMotionEffect(keyPath: keyPath, type: type)
         effect.minimumValue = minValue
