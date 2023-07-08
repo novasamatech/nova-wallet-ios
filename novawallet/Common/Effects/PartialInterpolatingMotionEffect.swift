@@ -125,10 +125,12 @@ extension PartialInterpolatingMotionEffect {
         minValue: CGFloat,
         maxValue: CGFloat
     ) -> PartialInterpolatingMotionEffect {
-        let thresholdAngle = CGFloat.pi / 8.0
-        let clampingAngle: CGFloat = 3 * CGFloat.pi / 8.0
+        let thresholdAngle = CGFloat.pi / 10
+        let clampingAngle: CGFloat = 3 * CGFloat.pi / 10
 
         let effect = PartialInterpolatingMotionEffect(keyPath: keyPath, type: type)
+        effect.minimumValue = minValue
+        effect.maximumValue = maxValue
 
         let maxAngle = CGFloat.pi / 2
 
@@ -139,7 +141,7 @@ extension PartialInterpolatingMotionEffect {
         let thresholdProgress = min(thresholdAngle, maxAngle) / maxAngle
         effect.absoluteThresholdProgress = thresholdProgress
 
-        let whenZeroValue = (minValue + maxValue) / 2.0
+        let whenZeroValue = (minValue + maxValue) / 2
 
         let thresholdPercent = 0.7
         let thresholdValue = (maxValue - whenZeroValue) * thresholdPercent
