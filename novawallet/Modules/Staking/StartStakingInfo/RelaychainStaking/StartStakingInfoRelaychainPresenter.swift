@@ -29,15 +29,17 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     }
 
     private func provideViewModel() {
-        guard let stakingType = startStakingType(),
-              let chainAsset = chainAsset,
-              let eraDuration = eraDuration(),
-              let networkInfo = networkInfo.value,
-              let unstakePeriod = networkInfo?.stakingDuration.unlocking,
-              let nominationEraValue = nextEraTime(),
-              let minStake = minStake() else {
+        guard
+            let enoughMoneyForDirectStaking = enoughMoneyForDirectStaking(),
+            let chainAsset = chainAsset,
+            let eraDuration = eraDuration(),
+            let networkInfo = networkInfo.value,
+            let unstakePeriod = networkInfo?.stakingDuration.unlocking,
+            let nominationEraValue = nextEraTime(),
+            let minStake = minStake() else {
             return
         }
+        let directStakingAmount = enoughMoneyForDirectStaking ? directStakingMinStake() : nil
         let maxApy = dashboardItem.maxApy
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
@@ -59,7 +61,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         ) : nil
 
         let govModel = chainAsset.chain.hasGovernance ? startStakingViewModelFactory.govModel(
-            stakingType: stakingType,
+            amount: directStakingAmount,
             chainAsset: chainAsset,
             locale: selectedLocale
         ) : nil
@@ -74,7 +76,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             ),
             startStakingViewModelFactory.unstakeModel(unstakePeriod: unstakePeriod, locale: selectedLocale),
             startStakingViewModelFactory.rewardModel(
-                stakingType: stakingType,
+                amount: directStakingAmount,
                 chainAsset: chainAsset,
                 eraDuration: eraDuration,
                 locale: selectedLocale
@@ -121,19 +123,20 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         return eraCountdownResult?.eraTimeInterval
     }
 
-    private func startStakingType() -> StartStakingType? {
+    private func enoughMoneyForDirectStaking() -> Bool? {
         guard let assetBalance = assetBalance else {
             return nil
         }
-        guard let minStake = minStake() else {
+        guard let minStake = directStakingMinStake() else {
             return nil
         }
 
-        if assetBalance.freeInPlank >= minStake {
-            return .directStaking(amount: minStake)
-        } else {
-            return .nominationPool
-        }
+        return assetBalance.freeInPlank >= minStake
+    }
+
+    private func directStakingMinStake() -> BigUInt? {
+        // TODO: add nomination pool min staking
+        minStake()
     }
 
     override func setup() {

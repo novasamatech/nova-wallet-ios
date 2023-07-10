@@ -27,7 +27,11 @@ extension TimeInterval {
         return components.joined(separator: " ")
     }
 
-    func localizedDaysHoursMinutes(for locale: Locale, separator: String = " ") -> String {
+    func localizedDaysHoursMinutes(
+        for locale: Locale,
+        preposition: String = "",
+        separator: String = " "
+    ) -> String {
         let days = daysFromSeconds
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
         let minutes = (self - TimeInterval(days).secondsFromDays - TimeInterval(hours).secondsFromHours).minutesFromSeconds
@@ -58,7 +62,10 @@ extension TimeInterval {
             components.append(minutesString)
         }
 
-        return components.joined(separator: separator)
+        return [
+            preposition,
+            components.joined(separator: separator)
+        ].joined(with: .space)
     }
 
     func localizedDaysHoursIncludingZero(for locale: Locale) -> String {

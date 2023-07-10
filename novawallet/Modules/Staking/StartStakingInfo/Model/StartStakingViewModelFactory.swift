@@ -16,12 +16,16 @@ protocol StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model
     func unstakeModel(unstakePeriod: TimeInterval, locale: Locale) -> ParagraphView.Model
     func rewardModel(
-        stakingType: StartStakingType,
+        amount: BigUInt?,
         chainAsset: ChainAsset,
         eraDuration: TimeInterval,
         locale: Locale
     ) -> ParagraphView.Model
-    func govModel(stakingType: StartStakingType, chainAsset: ChainAsset, locale: Locale) -> ParagraphView.Model
+    func govModel(
+        amount: BigUInt?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> ParagraphView.Model
     func recommendationModel(locale: Locale) -> ParagraphView.Model
     func testNetworkModel(
         chain: ChainModel,
@@ -73,10 +77,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let timePreposition = R.string.localizable.commonTimeIn(preferredLanguages: locale.rLanguages)
-        let time = [
-            timePreposition,
-            nextEra.localizedDaysHoursMinutes(for: locale, separator: separator)
-        ].joined(with: .space)
+        let time = nextEra.localizedDaysHoursMinutes(for: locale, preposition: timePreposition, separator: separator)
         let precision = chainAsset.assetDisplayInfo.assetPrecision
         let textWithAccents: AccentTextModel
 
@@ -111,15 +112,15 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodAfter(preferredLanguages: locale.rLanguages)
-        let time = unstakePeriod.localizedDaysHoursMinutes(for: locale, separator: separator)
-        let unstakePeriod = [
-            preposition,
-            time
-        ].joined(with: .space)
-        let text = R.string.localizable.stakingStartUnstake(unstakePeriod, preferredLanguages: locale.rLanguages)
+        let unstakePeriodString = unstakePeriod.localizedDaysHoursMinutes(
+            for: locale,
+            preposition: preposition,
+            separator: separator
+        )
+        let text = R.string.localizable.stakingStartUnstake(unstakePeriodString, preferredLanguages: locale.rLanguages)
         let textWithAccents = AccentTextModel(
             text: text,
-            accents: [unstakePeriod]
+            accents: [unstakePeriodString]
         )
         return .init(
             image: R.image.clock(),
@@ -128,24 +129,19 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     }
 
     func rewardModel(
-        stakingType: StartStakingType,
+        amount: BigUInt?,
         chainAsset: ChainAsset,
         eraDuration: TimeInterval,
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodEvery(preferredLanguages: locale.rLanguages)
-        let time = eraDuration.localizedDaysHoursMinutes(for: locale, separator: separator)
-        let rewardIntervals = [
-            preposition,
-            time
-        ].joined(with: .space)
+        let rewardIntervals = eraDuration.localizedDaysHoursMinutes(for: locale, preposition: preposition, separator: separator)
         let text: String
 
-        switch stakingType {
-        case let .directStaking(plank):
+        if let amount = amount {
             let decimalAmount = Decimal.fromSubstrateAmount(
-                plank,
+                amount,
                 precision: Int16(chainAsset.asset.precision)
             ) ?? 0.0
             let formattedAmount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
@@ -154,7 +150,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 formattedAmount,
                 preferredLanguages: locale.rLanguages
             )
-        case .nominationPool:
+        } else {
             text = R.string.localizable.stakingStartRewardsNominationPool(
                 rewardIntervals,
                 preferredLanguages: locale.rLanguages
@@ -172,19 +168,16 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     }
 
     func govModel(
-        stakingType: StartStakingType,
+        amount: BigUInt?,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> ParagraphView.Model {
         let action: String
         let text: String
-        switch stakingType {
-        case .nominationPool:
-            action = R.string.localizable.stakingStartGovNominationPoolAction(preferredLanguages: locale.rLanguages)
-            text = R.string.localizable.stakingStartGovNominationPool(action, preferredLanguages: locale.rLanguages)
-        case let .directStaking(plank):
+
+        if let amount = amount {
             let decimalAmount = Decimal.fromSubstrateAmount(
-                plank,
+                amount,
                 precision: Int16(chainAsset.asset.precision)
             ) ?? 0.0
             let formattedAmount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
@@ -194,6 +187,9 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 action,
                 preferredLanguages: locale.rLanguages
             )
+        } else {
+            action = R.string.localizable.stakingStartGovNominationPoolAction(preferredLanguages: locale.rLanguages)
+            text = R.string.localizable.stakingStartGovNominationPool(action, preferredLanguages: locale.rLanguages)
         }
 
         let textWithAccents = AccentTextModel(
