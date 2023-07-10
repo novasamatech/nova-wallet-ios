@@ -13,6 +13,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     private var eraCompletionTimeCancellable: CancellableCall?
     private var networkInfoCancellable: CancellableCall?
+    private var rewardCalculatorCancellable: CancellableCall?
     private var sharedState: StakingSharedState?
 
     weak var presenter: StartStakingInfoRelaychainInteractorOutputProtocol? {
@@ -172,10 +173,40 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         }
     }
 
+    private func provideRewardCalculator() {
+        clear(cancellable: &rewardCalculatorCancellable)
+
+        guard let sharedState = sharedState, let calculatorService = sharedState.rewardCalculationService else {
+            return
+        }
+
+        let operation = calculatorService.fetchCalculatorOperation()
+
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.rewardCalculatorCancellable === operation else {
+                    return
+                }
+                do {
+                    let engine = try operation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(calculator: engine)
+                } catch {
+                    self?.presenter?.didReceive(error: .calculator(error))
+                }
+            }
+        }
+
+        rewardCalculatorCancellable = operation
+
+        operationQueue.addOperation(operation)
+    }
+
     override func setup() {
         super.setup()
 
         setupState()
+
+        provideRewardCalculator()
         provideNetworkStakingInfo()
         performMinNominatorBondSubscription()
         performBagListSizeSubscription()
@@ -218,5 +249,9 @@ extension StartStakingRelaychainInteractor: StartStakingInfoRelaychainInteractor
 
     func retryEraCompletionTime() {
         provideEraCompletionTime()
+    }
+
+    func remakeCalculator() {
+        provideRewardCalculator()
     }
 }

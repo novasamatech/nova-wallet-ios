@@ -264,13 +264,13 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     }
 
     func balance(amount: BigUInt?, priceData: PriceData?, chainAsset: ChainAsset, locale: Locale) -> String {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-        guard let amountDecimal = Decimal.fromSubstrateAmount(amount ?? 0, precision: precision) else {
-            return ""
-        }
-        let balance = balanceViewModelFactory.balanceFromPrice(amountDecimal, priceData: priceData).value(for: locale)
+        let balance = balanceViewModelFactory.balanceWithPriceIfPossible(
+            amount: amount,
+            priceData: priceData,
+            chainAsset: chainAsset
+        ).value(for: locale)
 
-        if let price = balance.price, let amount = amount, amount > 0 {
+        if let price = balance.price {
             return R.string.localizable.stakingStartBalanceWithFiat(
                 balance.amount,
                 price,

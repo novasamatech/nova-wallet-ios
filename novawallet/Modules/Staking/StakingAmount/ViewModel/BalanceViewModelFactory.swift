@@ -34,6 +34,25 @@ extension BalanceViewModelFactoryProtocol {
     func amountFromValue(_ value: Decimal) -> LocalizableResource<String> {
         amountFromValue(value, roundingMode: .down)
     }
+
+    func balanceWithPriceIfPossible(
+        amount: BigUInt?,
+        priceData: PriceData?,
+        chainAsset: ChainAsset
+    ) -> LocalizableResource<BalanceViewModelProtocol> {
+        .init { locale in
+            let precision = chainAsset.assetDisplayInfo.assetPrecision
+            guard let amountDecimal = Decimal.fromSubstrateAmount(amount ?? 0, precision: precision) else {
+                return BalanceViewModel(amount: "", price: nil)
+            }
+            let balance = balanceFromPrice(amountDecimal, priceData: priceData).value(for: locale)
+            if balance.price != nil, let amount = amount, amount > 0 {
+                return balance
+            } else {
+                return BalanceViewModel(amount: balance.amount, price: nil)
+            }
+        }
+    }
 }
 
 final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {

@@ -26,6 +26,7 @@ protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInte
     func remakeMinNominatorBondSubscription()
     func remakeBagListSizeSubscription()
     func retryEraCompletionTime()
+    func remakeCalculator()
 }
 
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
@@ -34,6 +35,7 @@ protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInt
     func didReceive(networkInfo: NetworkStakingInfo?)
     func didReceive(eraCountdown: EraCountdown?)
     func didReceive(error: RelaychainStartStakingInfoError)
+    func didReceive(calculator: RewardCalculatorEngineProtocol)
 }
 
 protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable {}
@@ -49,4 +51,5 @@ enum RelaychainStartStakingInfoError: Error {
     case eraCountdown(Error)
     case bagListSize(Error)
     case minNominatorBond(Error)
+    case calculator(Error)
 }

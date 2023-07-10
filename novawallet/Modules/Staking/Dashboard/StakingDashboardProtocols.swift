@@ -40,7 +40,6 @@ protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, 
     )
     func showStartStaking(
         from view: StakingDashboardViewProtocol?,
-        option: Multistaking.ChainAssetOption,
-        dashboardItem: Multistaking.DashboardItem
+        option: Multistaking.ChainAssetOption
     )
 }

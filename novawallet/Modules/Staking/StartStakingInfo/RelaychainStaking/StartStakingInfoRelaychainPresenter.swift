@@ -10,10 +10,10 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     private var bagListSize: LoadableViewModelState<UInt32?> = .loading
     private var networkInfo: LoadableViewModelState<NetworkStakingInfo?> = .loading
     private var eraCountdown: LoadableViewModelState<EraCountdown?> = .loading
+    private var maxApy: Decimal?
 
     init(
         interactor: StartStakingInfoRelaychainInteractorInputProtocol,
-        dashboardItem: Multistaking.DashboardItem,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -24,7 +24,6 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
 
         super.init(
             interactor: interactor,
-            dashboardItem: dashboardItem,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
             localizationManager: localizationManager
@@ -39,11 +38,11 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             let networkInfo = networkInfo.value,
             let unstakePeriod = networkInfo?.stakingDuration.unlocking,
             let nominationEraValue = nextEraTime(),
-            let minStake = minStake() else {
+            let minStake = minStake(),
+            let maxApy = maxApy else {
             return
         }
         let directStakingAmount = enoughMoneyForDirectStaking ? directStakingMinStake() : nil
-        let maxApy = dashboardItem.maxApy
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
             chainAsset: chainAsset,
@@ -115,7 +114,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             return nil
         }
 
-        return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.activeEra + 1)
+        return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.currentEra + 1)
     }
 
     private func eraDuration() -> TimeInterval? {
@@ -140,11 +139,6 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     private func directStakingMinStake() -> BigUInt? {
         // TODO: add nomination pool min staking
         minStake()
-    }
-
-    override func setup() {
-        super.setup()
-        interactor.setup()
     }
 }
 
@@ -191,6 +185,14 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeMinNominatorBondSubscription()
             }
+        case .calculator:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeCalculator()
+            }
         }
+    }
+
+    func didReceive(calculator: RewardCalculatorEngineProtocol) {
+        maxApy = calculator.calculateMaxEarnings(amount: 1, isCompound: true, period: .year)
     }
 }

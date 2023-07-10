@@ -7,7 +7,6 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let wireframe: StartStakingInfoWireframeProtocol
     let baseInteractor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
-    let dashboardItem: Multistaking.DashboardItem
 
     private(set) var assetBalance: AssetBalance?
     private(set) var price: PriceData?
@@ -15,13 +14,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     init(
         interactor: StartStakingInfoInteractorInputProtocol,
-        dashboardItem: Multistaking.DashboardItem,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         baseInteractor = interactor
-        self.dashboardItem = dashboardItem
         self.wireframe = wireframe
         self.startStakingViewModelFactory = startStakingViewModelFactory
         self.localizationManager = localizationManager
