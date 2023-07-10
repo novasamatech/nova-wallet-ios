@@ -4,6 +4,7 @@ import BigInt
 
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoRelaychainInteractorInputProtocol
+    let applicationConfig: ApplicationConfigProtocol
 
     private var minNominatorBond: LoadableViewModelState<BigUInt?> = .loading
     private var bagListSize: LoadableViewModelState<UInt32?> = .loading
@@ -15,9 +16,11 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         dashboardItem: Multistaking.DashboardItem,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        applicationConfig: ApplicationConfigProtocol
     ) {
         self.interactor = interactor
+        self.applicationConfig = applicationConfig
 
         super.init(
             interactor: interactor,
@@ -47,12 +50,12 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             locale: selectedLocale
         )
         let wikiUrl = startStakingViewModelFactory.wikiModel(
-            url: URL(string: "https://novawallet.io")!,
+            url: applicationConfig.novaWikiURL,
             chain: chainAsset.chain,
             locale: selectedLocale
         )
         let termsUrl = startStakingViewModelFactory.termsModel(
-            url: URL(string: "https://novawallet.io")!,
+            url: applicationConfig.termsURL,
             locale: selectedLocale
         )
         let testnetModel = chainAsset.chain.isTestnet ? startStakingViewModelFactory.testNetworkModel(

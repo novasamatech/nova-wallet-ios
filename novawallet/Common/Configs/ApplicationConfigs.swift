@@ -38,6 +38,7 @@ protocol ApplicationConfigProtocol {
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
+    var novaWikiURL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -250,6 +251,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var slip44URL: URL {
         URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
+    }
+
+    // TODO: change to actual URL
+    var novaWikiURL: URL {
+        websiteURL
     }
 
     // swiftlint:enable line_length

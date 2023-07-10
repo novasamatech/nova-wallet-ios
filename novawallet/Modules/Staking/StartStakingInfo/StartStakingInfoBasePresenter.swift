@@ -47,8 +47,6 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         provideBalanceModel()
     }
 
-    func didReceive(account _: MetaChainAccountResponse?) {}
-
     func didReceive(price: PriceData?) {
         self.price = price
         provideBalanceModel()

@@ -60,7 +60,8 @@ struct StartStakingInfoViewFactory {
             dashboardItem: dashboardItem,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            applicationConfig: ApplicationConfig.shared
         )
 
         let view = StartStakingInfoViewController(
