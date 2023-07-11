@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import SoraFoundation
 import RobinHood
 
@@ -23,8 +24,19 @@ struct StartStakingInfoViewFactory {
                 operationQueue: operationQueue
             )
         case .parachain, .turing:
-            // TODO:
-            return nil
+            let factory = ParachainStakingStateFactory(
+                stakingOption: stakingOption,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                storageFacade: SubstrateDataStorageFacade.shared,
+                eventCenter: EventCenter.shared,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                logger: Logger.shared
+            )
+            return createParachainView(
+                chainAsset: stakingOption.chainAsset,
+                factory: factory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
         case .unsupported:
             return nil
         }
@@ -85,9 +97,6 @@ struct StartStakingInfoViewFactory {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let storageFacade = SubstrateDataStorageFacade.shared
-        let operationManager = OperationManager(operationQueue: operationQueue)
-        let logger = Logger.shared
 
         return StartStakingRelaychainInteractor(
             chainAsset: chainAsset,
@@ -98,6 +107,87 @@ struct StartStakingInfoViewFactory {
             stateFactory: factory,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
+        )
+    }
+
+    private static func createParachainView(
+        chainAsset: ChainAsset,
+        factory: ParachainStakingStateFactoryProtocol,
+        operationQueue: OperationQueue
+    ) -> StartStakingInfoViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let interactor = createParachainInteractor(
+            factory: factory,
+            chainAsset: chainAsset,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
+        )
+
+        let wireframe = StartStakingInfoWireframe()
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+        let startStakingViewModelFactory = StartStakingViewModelFactory(
+            balanceViewModelFactory: balanceViewModelFactory,
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+        )
+
+        let presenter = StartStakingInfoParachainPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            startStakingViewModelFactory: startStakingViewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            applicationConfig: ApplicationConfig.shared
+        )
+
+        let view = StartStakingInfoViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createParachainInteractor(
+        factory: ParachainStakingStateFactoryProtocol,
+        chainAsset: ChainAsset,
+        currencyManager: CurrencyManagerProtocol,
+        operationQueue: OperationQueue
+    ) -> StartStakingParachainInteractor {
+        let selectedWalletSettings = SelectedWalletSettings.shared
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
+        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let stakingDurationFactory = ParaStkDurationOperationFactory(
+            storageRequestFactory: storageRequestFactory,
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
+        )
+
+        return StartStakingParachainInteractor(
+            chainAsset: chainAsset,
+            selectedWalletSettings: selectedWalletSettings,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            stateFactory: factory,
+            chainRegistry: chainRegistry,
+            networkInfoFactory: ParaStkNetworkInfoOperationFactory(),
+            durationOperationFactory: stakingDurationFactory,
+            operationQueue: operationQueue,
+            eventCenter: EventCenter.shared
         )
     }
 }

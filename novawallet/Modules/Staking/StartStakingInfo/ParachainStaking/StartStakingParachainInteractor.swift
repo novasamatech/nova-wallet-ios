@@ -1,0 +1,251 @@
+import RobinHood
+import Foundation
+
+final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning {
+    let chainRegistry: ChainRegistryProtocol
+    let stateFactory: ParachainStakingStateFactoryProtocol
+    let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
+    let eventCenter: EventCenterProtocol
+    let durationOperationFactory: ParaStkDurationOperationFactoryProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+
+    private var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
+    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
+    private var networkInfoCancellable: CancellableCall?
+    private var rewardCalculatorCancellable: CancellableCall?
+    private var durationCancellable: CancellableCall?
+    private var sharedState: ParachainStakingSharedState?
+
+    weak var presenter: StartStakingInfoParachainInteractorOutputProtocol? {
+        didSet {
+            basePresenter = presenter
+        }
+    }
+
+    init(
+        chainAsset: ChainAsset,
+        selectedWalletSettings: SelectedWalletSettings,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
+        stateFactory: ParachainStakingStateFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
+        durationOperationFactory: ParaStkDurationOperationFactoryProtocol,
+        operationQueue: OperationQueue,
+        eventCenter: EventCenterProtocol
+    ) {
+        stakingLocalSubscriptionFactory = stateFactory.stakingLocalSubscriptionFactory
+        generalLocalSubscriptionFactory = stateFactory.generalLocalSubscriptionFactory
+        self.stateFactory = stateFactory
+        self.chainRegistry = chainRegistry
+        self.networkInfoFactory = networkInfoFactory
+        self.eventCenter = eventCenter
+        self.durationOperationFactory = durationOperationFactory
+
+        super.init(
+            selectedWalletSettings: selectedWalletSettings,
+            selectedChainAsset: chainAsset,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
+        )
+    }
+
+    private func provideNetworkInfo() {
+        clear(cancellable: &networkInfoCancellable)
+        let chainId = selectedChainAsset.chain.chainId
+
+        guard
+            let sharedState = sharedState,
+            let collatorService = sharedState.collatorService,
+            let rewardService = sharedState.rewardCalculationService,
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceive(error: .networkInfo(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        let wrapper = networkInfoFactory.networkStakingOperation(
+            for: collatorService,
+            rewardCalculatorService: rewardService,
+            runtimeService: runtimeService
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.networkInfoCancellable === wrapper else {
+                    return
+                }
+
+                do {
+                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(networkInfo: info)
+                } catch {
+                    self?.presenter?.didReceive(error: .networkInfo(error))
+                }
+
+                self?.networkInfoCancellable = nil
+            }
+        }
+
+        networkInfoCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func provideRewardCalculator() {
+        clear(cancellable: &rewardCalculatorCancellable)
+
+        guard let sharedState = sharedState, let calculatorService = sharedState.rewardCalculationService else {
+            return
+        }
+
+        let operation = calculatorService.fetchCalculatorOperation()
+
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.rewardCalculatorCancellable === operation else {
+                    return
+                }
+
+                self?.rewardCalculatorCancellable = nil
+
+                do {
+                    let engine = try operation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(calculator: engine)
+                } catch {
+                    self?.presenter?.didReceive(error: .calculator(error))
+                }
+            }
+        }
+
+        rewardCalculatorCancellable = operation
+
+        operationQueue.addOperation(operation)
+    }
+
+    private func provideStakingDurationInfo() {
+        clear(cancellable: &durationCancellable)
+
+        guard let sharedState = sharedState, let blockTimeService = sharedState.blockTimeService else {
+            return
+        }
+
+        let chainId = selectedChainAsset.chain.chainId
+
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceive(error: .stakingDuration(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            presenter?.didReceive(error: .stakingDuration(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        let wrapper = durationOperationFactory.createDurationOperation(
+            from: runtimeService,
+            connection: connection,
+            blockTimeEstimationService: blockTimeService
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.durationCancellable === wrapper else {
+                    return
+                }
+
+                self?.durationCancellable = nil
+
+                do {
+                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(stakingDuration: info)
+                } catch {
+                    self?.presenter?.didReceive(error: .stakingDuration(error))
+                }
+            }
+        }
+
+        durationCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    private func performRoundInfoSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+        roundInfoProvider = subscribeToRound(for: chainId)
+    }
+
+    private func performBlockNumberSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+        blockNumberProvider = subscribeToBlockNumber(for: chainId)
+    }
+
+    private func setupState() {
+        do {
+            let state = try stateFactory.createState()
+            sharedState = state
+            sharedState?.setupServices()
+        } catch {
+            presenter?.didReceive(error: .createState(error))
+        }
+    }
+
+    override func setup() {
+        super.setup()
+
+        setupState()
+        eventCenter.add(observer: self, dispatchIn: .main)
+
+        provideNetworkInfo()
+        provideRewardCalculator()
+        provideStakingDurationInfo()
+        performRoundInfoSubscription()
+        performBlockNumberSubscription()
+    }
+}
+
+extension StartStakingParachainInteractor: EventVisitorProtocol {
+    func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
+        provideNetworkInfo()
+    }
+}
+
+extension StartStakingParachainInteractor: ParastakingLocalStorageSubscriber,
+    ParastakingLocalStorageHandler {
+    func handleParastakingRound(result: Result<ParachainStaking.RoundInfo?, Error>, for chainId: ChainModel.Id) {
+        guard selectedChainAsset.chain.chainId == chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(roundInfo):
+            presenter?.didReceive(parastakingRound: roundInfo)
+        case let .failure(error):
+            presenter?.didReceive(error: .parastakingRound(error))
+        }
+    }
+}
+
+extension StartStakingParachainInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleBlockNumber(
+        result: Result<BlockNumber?, Error>,
+        chainId: ChainModel.Id
+    ) {
+        guard selectedChainAsset.chain.chainId == chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(blockNumber):
+            presenter?.didReceive(blockNumber: blockNumber)
+        case let .failure(error):
+            presenter?.didReceive(error: .blockNumber(error))
+        }
+    }
+}
+
+extension StartStakingParachainInteractor: StartStakingInfoParachainInteractorInputProtocol {}

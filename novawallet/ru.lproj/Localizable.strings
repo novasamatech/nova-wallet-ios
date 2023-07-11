@@ -1287,6 +1287,7 @@
 "staking.start.earn.up" = "Зарабатывайте до %@";
 "staking.start.balance.with.fiat" = "Доступный баланс: %@(%@)";
 "staking.start.balance" = "Доступный баланс: %@";
+"staking.start.no.account" = "Нет %@ аккаунта";
 "common.time.in" = "через";
 "common.and" = " и ";
 "common.time.period.after" = "после";

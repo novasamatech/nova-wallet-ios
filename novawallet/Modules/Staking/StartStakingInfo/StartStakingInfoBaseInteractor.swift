@@ -66,6 +66,8 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         selectedAccount = wallet.fetchMetaChainAccount(
             for: selectedChainAsset.chain.accountRequest()
         )
+        
+        basePresenter?.didReceive(account: selectedAccount?.chainAccount.accountId)
     }
 
     func setup() {

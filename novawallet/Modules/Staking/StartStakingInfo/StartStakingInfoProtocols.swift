@@ -19,6 +19,7 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
     func didReceive(baseError: BaseStartStakingInfoError)
+    func didReceive(account: AccountId?)
 }
 
 protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
@@ -38,6 +39,17 @@ protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInt
     func didReceive(calculator: RewardCalculatorEngineProtocol)
 }
 
+protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {}
+
+protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
+    func didReceive(networkInfo: ParachainStaking.NetworkInfo?)
+    func didReceive(error: ParachainStartStakingInfoError)
+    func didReceive(parastakingRound: ParachainStaking.RoundInfo?)
+    func didReceive(calculator: ParaStakingRewardCalculatorEngineProtocol)
+    func didReceive(blockNumber: BlockNumber?)
+    func didReceive(stakingDuration: ParachainStakingDuration)
+}
+
 protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable {}
 
 enum BaseStartStakingInfoError: Error {
@@ -52,4 +64,13 @@ enum RelaychainStartStakingInfoError: Error {
     case bagListSize(Error)
     case minNominatorBond(Error)
     case calculator(Error)
+}
+
+enum ParachainStartStakingInfoError: Error {
+    case networkInfo(Error)
+    case createState(Error)
+    case parastakingRound(Error)
+    case calculator(Error)
+    case blockNumber(Error)
+    case stakingDuration(Error)
 }

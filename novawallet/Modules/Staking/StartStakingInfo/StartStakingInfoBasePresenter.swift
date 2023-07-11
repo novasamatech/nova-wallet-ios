@@ -11,6 +11,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     private(set) var assetBalance: AssetBalance?
     private(set) var price: PriceData?
     private(set) var chainAsset: ChainAsset?
+    private(set) var accountId: AccountId?
 
     init(
         interactor: StartStakingInfoInteractorInputProtocol,
@@ -28,13 +29,21 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         guard let chainAsset = chainAsset else {
             return
         }
-        let viewModel = startStakingViewModelFactory.balance(
-            amount: assetBalance?.freeInPlank,
-            priceData: price,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        )
-        view?.didReceive(balance: viewModel)
+        guard let assetBalance = assetBalance else {
+            return
+        }
+        if accountId != nil {
+            let viewModel = startStakingViewModelFactory.balance(
+                amount: assetBalance.freeInPlank,
+                priceData: price,
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            )
+            view?.didReceive(balance: viewModel)
+        } else {
+            let viewModel = startStakingViewModelFactory.noAccount(chain: chainAsset.chain, locale: selectedLocale)
+            view?.didReceive(balance: viewModel)
+        }
     }
 
     // MARK: - StartStakingInfoInteractorOutputProtocol
@@ -51,6 +60,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func didReceive(assetBalance: AssetBalance) {
         self.assetBalance = assetBalance
+        provideBalanceModel()
+    }
+    
+    func didReceive(account: AccountId?) {
+        self.accountId = account
         provideBalanceModel()
     }
 
