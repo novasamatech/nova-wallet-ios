@@ -8,10 +8,9 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let baseInteractor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
 
-    private(set) var assetBalance: AssetBalance?
     private(set) var price: PriceData?
     private(set) var chainAsset: ChainAsset?
-    private(set) var accountId: AccountId?
+    private(set) var balanceState: BalanceState?
 
     init(
         interactor: StartStakingInfoInteractorInputProtocol,
@@ -29,20 +28,20 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         guard let chainAsset = chainAsset else {
             return
         }
-        guard let assetBalance = assetBalance else {
-            return
-        }
-        if accountId != nil {
+        switch balanceState {
+        case let .assetBalance(balance):
             let viewModel = startStakingViewModelFactory.balance(
-                amount: assetBalance.freeInPlank,
+                amount: balance.freeInPlank,
                 priceData: price,
                 chainAsset: chainAsset,
                 locale: selectedLocale
             )
             view?.didReceive(balance: viewModel)
-        } else {
+        case .noAccount:
             let viewModel = startStakingViewModelFactory.noAccount(chain: chainAsset.chain, locale: selectedLocale)
             view?.didReceive(balance: viewModel)
+        case .none:
+            break
         }
     }
 
@@ -59,13 +58,15 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func didReceive(assetBalance: AssetBalance) {
-        self.assetBalance = assetBalance
+        balanceState = .assetBalance(assetBalance)
         provideBalanceModel()
     }
-    
-    func didReceive(account: AccountId?) {
-        self.accountId = account
-        provideBalanceModel()
+
+    func didReceive(accountId: AccountId?) {
+        if accountId == nil {
+            balanceState = .noAccount
+            provideBalanceModel()
+        }
     }
 
     func didReceive(baseError error: BaseStartStakingInfoError) {

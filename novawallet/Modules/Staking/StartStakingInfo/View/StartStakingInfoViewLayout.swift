@@ -3,6 +3,7 @@ import SoraUI
 
 final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     var style: MultiColorTextStyle = .defaultStyle
+    var skeletonView: SkrullableView?
 
     var header: StackTableHeaderCell = .create {
         $0.titleLabel.textAlignment = .center
@@ -48,6 +49,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
+    var paragraphViews: [ParagraphView] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,6 +60,15 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView != nil {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
     }
 
     override func setupLayout() {
@@ -119,6 +130,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             view.style = style
             view.bind(viewModel: $0)
             view.contentInsets = .zero
+            paragraphViews.append(view)
             containerView.stackView.addArrangedSubview(view)
         }
     }
@@ -132,6 +144,118 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private func setTerms(urlModel model: StartStakingUrlModel) {
         termsView.bind(url: model.url, urlText: model.urlName, in: model.text)
         addArrangedSubview(termsView)
+    }
+}
+
+extension StartStakingInfoViewLayout: SkeletonableView {
+    var skeletonSuperview: UIView {
+        containerView
+    }
+
+    var hidingViews: [UIView] {
+        [
+            header,
+            wikiView,
+            termsView
+        ] + paragraphViews
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let offsetX: CGFloat = 18
+        let offsetY: CGFloat = 39
+        let spacing: CGFloat = 41
+        let iconSize = CGSize(width: 28, height: 28)
+        let titleSize = CGSize(width: 155, height: 10)
+        let subtitleSize = CGSize(width: 126, height: 10)
+
+        let headerFirstLineSize = CGSize(width: 145, height: 16)
+        let headerSecondLineSize = CGSize(width: 185, height: 16)
+        let headerThirdLineSize = CGSize(width: 109, height: 16)
+
+        let headerFirstLineOffset = CGPoint(
+            x: spaceSize.width / 2 - headerFirstLineSize.width / 2,
+            y: 71
+        )
+
+        let headerFirstLineSkeleton = SingleSkeleton.createRow(
+            on: containerView,
+            containerView: containerView,
+            spaceSize: spaceSize,
+            offset: headerFirstLineOffset,
+            size: headerFirstLineSize
+        )
+        let headerSecondLineOffset = CGPoint(
+            x: spaceSize.width / 2 - headerSecondLineSize.width / 2,
+            y: headerFirstLineOffset.y + headerFirstLineSize.height + 17
+        )
+        let headerSecondLineSkeleton = SingleSkeleton.createRow(
+            on: containerView,
+            containerView: containerView,
+            spaceSize: spaceSize,
+            offset: headerSecondLineOffset,
+            size: headerSecondLineSize
+        )
+
+        let headerThirdLineOffset = CGPoint(
+            x: spaceSize.width / 2 - headerThirdLineSize.width / 2,
+            y: headerSecondLineOffset.y + headerSecondLineSize.height + 17
+        )
+        let headerThirdLineSkeleton = SingleSkeleton.createRow(
+            on: containerView,
+            containerView: containerView,
+            spaceSize: spaceSize,
+            offset: headerThirdLineOffset,
+            size: headerThirdLineSize
+        )
+
+        let compoundSkeletons: [[Skeletonable]] = (0 ..< 5).map { index in
+            let iconOffset = CGPoint(
+                x: offsetX,
+                y: headerThirdLineOffset.y + offsetY + CGFloat(index) * (iconSize.height + spacing)
+            )
+
+            let iconSkeleton = SingleSkeleton.createRow(
+                on: containerView,
+                containerView: containerView,
+                spaceSize: spaceSize,
+                offset: iconOffset,
+                size: iconSize
+            )
+
+            let titleOffset = CGPoint(
+                x: iconOffset.x + iconSize.width + 18,
+                y: iconOffset.y + 8
+            )
+
+            let titleSkeleton = SingleSkeleton.createRow(
+                on: containerView,
+                containerView: containerView,
+                spaceSize: spaceSize,
+                offset: titleOffset,
+                size: titleSize
+            )
+
+            let subtitleOffset = CGPoint(
+                x: titleOffset.x,
+                y: titleOffset.y + titleSize.height + 15
+            )
+
+            let subtitleSkeleton = SingleSkeleton.createRow(
+                on: containerView,
+                containerView: containerView,
+                spaceSize: spaceSize,
+                offset: subtitleOffset,
+                size: subtitleSize
+            )
+
+            return [iconSkeleton, titleSkeleton, subtitleSkeleton]
+        }
+
+        return [
+            headerFirstLineSkeleton,
+            headerSecondLineSkeleton,
+            headerThirdLineSkeleton
+        ] + compoundSkeletons.flatMap { $0 }
     }
 }
 

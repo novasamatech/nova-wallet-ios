@@ -19,7 +19,7 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
     func didReceive(baseError: BaseStartStakingInfoError)
-    func didReceive(account: AccountId?)
+    func didReceive(accountId: AccountId?)
 }
 
 protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {

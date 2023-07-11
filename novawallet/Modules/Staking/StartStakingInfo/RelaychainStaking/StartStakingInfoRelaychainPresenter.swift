@@ -126,19 +126,29 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     }
 
     private func enoughMoneyForDirectStaking() -> Bool? {
-        guard let assetBalance = assetBalance else {
+        guard let balanceState = balanceState else {
             return nil
         }
         guard let minStake = directStakingMinStake() else {
             return nil
         }
 
-        return assetBalance.freeInPlank >= minStake
+        switch balanceState {
+        case let .assetBalance(assetBalance):
+            return assetBalance.freeInPlank >= minStake
+        case .noAccount:
+            return false
+        }
     }
 
     private func directStakingMinStake() -> BigUInt? {
         // TODO: add nomination pool min staking
         minStake()
+    }
+
+    override func setup() {
+        super.setup()
+        view?.didReceive(viewModel: .loading)
     }
 }
 

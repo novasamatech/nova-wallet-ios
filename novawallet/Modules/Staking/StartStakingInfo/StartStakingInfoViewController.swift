@@ -50,14 +50,25 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
             termsUrl: viewModel.termsUrl
         )
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if viewModel?.isLoading == true {
+            rootView.updateLoadingState()
+            rootView.skeletonView?.restartSkrulling()
+        }
+    }
 }
 
 extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
     func didReceive(viewModel: LoadableViewModelState<StartStakingViewModel>) {
         switch viewModel {
         case .loading:
+            rootView.startLoadingIfNeeded()
             rootView.actionView.startLoading()
         case let .cached(value), let .loaded(value):
+            rootView.stopLoadingIfNeeded()
             rootView.actionView.stopLoading()
             rootView.updateContent(
                 title: value.title,
