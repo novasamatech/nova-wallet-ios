@@ -1,12 +1,68 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 struct StartStakingInfoViewFactory {
-    static func createView() -> StartStakingInfoViewProtocol? {
-        let interactor = StartStakingInfoInteractor()
-        let wireframe = StartStakingInfoWireframe()
+    static func createView(
+        stakingOption: Multistaking.ChainAssetOption
+    ) -> StartStakingInfoViewProtocol? {
+        switch stakingOption.type {
+        case .relaychain, .auraRelaychain, .azero, .nominationPools:
+            let operationQueue = OperationManagerFacade.sharedDefaultQueue
+            let factory = RelaychainStakingStateFactory(
+                stakingOption: stakingOption,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                storageFacade: SubstrateDataStorageFacade.shared,
+                eventCenter: EventCenter.shared,
+                logger: Logger.shared,
+                operationQueue: operationQueue
+            )
+            return createRelaychainView(
+                chainAsset: stakingOption.chainAsset,
+                factory: factory,
+                operationQueue: operationQueue
+            )
+        case .parachain, .turing:
+            // TODO:
+            return nil
+        case .unsupported:
+            return nil
+        }
+    }
 
-        let presenter = StartStakingInfoPresenter(interactor: interactor, wireframe: wireframe, startStakingViewModelFactory: StartStakingViewModelFactory())
+    private static func createRelaychainView(
+        chainAsset: ChainAsset,
+        factory: RelaychainStakingStateFactoryProtocol,
+        operationQueue: OperationQueue
+    ) -> StartStakingInfoViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let interactor = createRelaychainInteractor(
+            factory: factory,
+            chainAsset: chainAsset,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
+        )
+
+        let wireframe = StartStakingInfoWireframe()
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+        let startStakingViewModelFactory = StartStakingViewModelFactory(
+            balanceViewModelFactory: balanceViewModelFactory,
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+        )
+
+        let presenter = StartStakingInfoRelaychainPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            startStakingViewModelFactory: startStakingViewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            applicationConfig: ApplicationConfig.shared
+        )
 
         let view = StartStakingInfoViewController(
             presenter: presenter,
@@ -17,5 +73,31 @@ struct StartStakingInfoViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createRelaychainInteractor(
+        factory: RelaychainStakingStateFactoryProtocol,
+        chainAsset: ChainAsset,
+        currencyManager: CurrencyManagerProtocol,
+        operationQueue: OperationQueue
+    ) -> StartStakingRelaychainInteractor {
+        let selectedWalletSettings = SelectedWalletSettings.shared
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
+        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let storageFacade = SubstrateDataStorageFacade.shared
+        let operationManager = OperationManager(operationQueue: operationQueue)
+        let logger = Logger.shared
+
+        return StartStakingRelaychainInteractor(
+            chainAsset: chainAsset,
+            selectedWalletSettings: selectedWalletSettings,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            stateFactory: factory,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 }
