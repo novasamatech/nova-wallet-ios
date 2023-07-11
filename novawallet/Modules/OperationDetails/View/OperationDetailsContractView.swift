@@ -51,7 +51,7 @@ final class OperationDetailsContractView: LocalizableView {
         senderView.bind(viewModel: viewModel.sender.cellViewModel)
 
         contractView.detailsLabel.lineBreakMode = viewModel.contract.lineBreakMode
-        contractView.bind(viewModel: viewModel.contract.cellViewModel)
+        contractView.bind(details: viewModel.contract.cellViewModel.details)
 
         transactionHashView.bind(details: viewModel.transactionHash)
 

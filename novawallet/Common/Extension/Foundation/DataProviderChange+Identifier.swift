@@ -10,3 +10,16 @@ extension DataProviderChange where T: Identifiable {
         }
     }
 }
+
+extension Array where Element: Identifiable {
+    func applying(changes: [DataProviderChange<Element>]) -> Self {
+        changes.reduce(into: self) { result, change in
+            switch change {
+            case let .insert(item), let .update(item):
+                result.addOrReplaceSingle(item)
+            case let .delete(deletedIdentifier):
+                result = result.filter { $0.identifier != deletedIdentifier }
+            }
+        }
+    }
+}

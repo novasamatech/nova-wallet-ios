@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -25,12 +25,12 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XiF-bI-eRb">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="46"/>
                     <subviews>
                         <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G6Z-u5-QrL">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="46"/>
                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="x14-yu-BL4">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="46"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </view>
                             <blurEffect style="dark"/>
@@ -45,7 +45,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MvI-fr-D7E">
-                    <rect key="frame" x="170.5" y="-44" width="34" height="44"/>
+                    <rect key="frame" x="170.5" y="-24" width="34" height="44"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YQT-cH-p8Y">
                             <rect key="frame" x="0.0" y="10" width="24" height="24"/>
@@ -72,7 +72,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5JS-T5-tOO">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
+                    <rect key="frame" x="0.0" y="20" width="375" height="26"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a7Y-Re-tLd">
                             <rect key="frame" x="147.5" y="0.0" width="80" height="18"/>
@@ -109,7 +109,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="toe-8Q-kTb">
-                    <rect key="frame" x="16" y="38" width="343" height="204"/>
+                    <rect key="frame" x="16" y="58" width="343" height="204"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1il-4U-1mN" customClass="BlockBackgroundView" customModule="novawallet" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="343" height="204"/>
@@ -393,7 +393,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5WV-bu-ZuX">
-                    <rect key="frame" x="16" y="254" width="343" height="80"/>
+                    <rect key="frame" x="16" y="274" width="343" height="80"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kJm-Iu-UQl" customClass="BlockBackgroundView" customModule="novawallet" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="343" height="80"/>
@@ -606,20 +606,6 @@
             <point key="canvasLocation" x="138.40000000000001" y="138.98050974512745"/>
         </view>
     </objects>
-    <designables>
-        <designable name="BH9-GQ-WWi">
-            <size key="intrinsicContentSize" width="40" height="63.5"/>
-        </designable>
-        <designable name="CZ1-mR-zue">
-            <size key="intrinsicContentSize" width="64" height="63.5"/>
-        </designable>
-        <designable name="Fv6-uX-qxI">
-            <size key="intrinsicContentSize" width="48" height="63.5"/>
-        </designable>
-        <designable name="WCS-ks-Idr">
-            <size key="intrinsicContentSize" width="16" height="16"/>
-        </designable>
-    </designables>
     <resources>
         <image name="iconBuy" width="24" height="24"/>
         <image name="iconInfoFilled" width="16" height="16"/>
@@ -647,7 +633,7 @@
             <color red="1" green="1" blue="1" alpha="0.47999998927116394" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

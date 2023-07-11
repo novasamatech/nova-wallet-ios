@@ -3,27 +3,45 @@ import UIKit
 import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
-    let walletUpdater: WalletDetailsUpdating
+    let dappMediator: DAppInteractionMediating
+    let assetListObservable: AssetListStateObservable
 
-    init(walletUpdater: WalletDetailsUpdating) {
-        self.walletUpdater = walletUpdater
+    init(
+        dappMediator: DAppInteractionMediating,
+        assetListObservable: AssetListStateObservable
+    ) {
+        self.dappMediator = dappMediator
+        self.assetListObservable = assetListObservable
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        guard let context = try? WalletContextFactory().createContext(for: chain, asset: asset) else {
+        guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
+            chain: chain,
+            asset: asset
+        ),
+            let navigationController = view?.controller.navigationController else {
             return
         }
+        navigationController.pushViewController(
+            assetDetailsView.controller,
+            animated: true
+        )
+    }
 
-        let assetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId).walletId
-
+    func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+        guard let history = TransactionHistoryViewFactory.createView(
+            chainAsset: .init(chain: chain, asset: asset)
+        ) else {
+            return
+        }
         guard let navigationController = view?.controller.navigationController else {
             return
         }
 
-        try? context.createAssetDetails(for: assetId, in: navigationController)
-
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
-        walletUpdater.setup(context: context, chainAsset: chainAsset)
+        navigationController.pushViewController(
+            history.controller,
+            animated: true
+        )
     }
 
     func showAssetsSettings(from view: AssetListViewProtocol?) {
@@ -50,12 +68,12 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showAssetsSearch(
-        from view: AssetListViewProtocol?,
-        initState: AssetListInitState,
-        delegate: AssetsSearchDelegate
-    ) {
-        guard let assetsSearchView = AssetsSearchViewFactory.createView(for: initState, delegate: delegate) else {
+    func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate) {
+        guard
+            let assetsSearchView = AssetsSearchViewFactory.createView(
+                for: assetListObservable,
+                delegate: delegate
+            ) else {
             return
         }
 
@@ -63,6 +81,38 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         assetsSearchView.controller.modalPresentationStyle = .fullScreen
 
         view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
+    }
+
+    func showSendTokens(from view: AssetListViewProtocol?, transferCompletion: @escaping TransferCompletionClosure) {
+        showAssetsSelection(for: .send, from: view, transferCompletion: transferCompletion)
+    }
+
+    func showRecieveTokens(from view: AssetListViewProtocol?) {
+        showAssetsSelection(for: .receive, from: view, transferCompletion: nil)
+    }
+
+    func showBuyTokens(from view: AssetListViewProtocol?) {
+        showAssetsSelection(for: .buy, from: view, transferCompletion: nil)
+    }
+
+    private func showAssetsSelection(
+        for operation: TokenOperation,
+        from view: AssetListViewProtocol?,
+        transferCompletion: TransferCompletionClosure?
+    ) {
+        guard let assetsSearchView = AssetOperationViewFactory.createView(
+            for: assetListObservable,
+            operation: operation,
+            transferCompletion: transferCompletion
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: assetsSearchView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showNfts(from view: AssetListViewProtocol?) {
@@ -98,5 +148,17 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         viewController.controller.modalPresentationStyle = .custom
 
         view?.controller.present(viewController.controller, animated: true)
+    }
+
+    func showWalletConnect(from view: AssetListViewProtocol?) {
+        guard
+            let walletConnectView = WalletConnectSessionsViewFactory.createViewForCurrentWallet(
+                with: dappMediator
+            ) else {
+            return
+        }
+
+        walletConnectView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 }

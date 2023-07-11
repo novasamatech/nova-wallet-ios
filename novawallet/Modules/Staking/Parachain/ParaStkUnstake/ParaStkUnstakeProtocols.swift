@@ -1,4 +1,3 @@
-import CommonWallet
 import BigInt
 
 protocol ParaStkUnstakeViewProtocol: ControllerBackedProtocol {

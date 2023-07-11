@@ -41,6 +41,25 @@ extension DateFormatter {
             return dateFormatter
         }
     }
+
+    static var txHistoryDate: DateFormatter {
+        let dateFormatterBuilder = CompoundDateFormatterBuilder()
+
+        let today = LocalizableResource { locale in
+            R.string.localizable.commonToday(preferredLanguages: locale.rLanguages)
+        }
+        let yesterday = LocalizableResource { locale in
+            R.string.localizable.commonYesterday(preferredLanguages: locale.rLanguages)
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd MMMM"
+
+        return dateFormatterBuilder
+            .withToday(title: today)
+            .withYesterday(title: yesterday)
+            .withThisYear(dateFormatter: dateFormatter.localizableResource())
+            .build(defaultFormat: "dd MMMM yyyy")
+    }
 }
 
 extension DateComponentsFormatter {

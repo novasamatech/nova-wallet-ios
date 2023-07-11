@@ -1,6 +1,5 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
 import SubstrateSdk
 
 protocol CrowdloanContributionViewModelFactoryProtocol {

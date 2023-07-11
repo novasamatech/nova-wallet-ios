@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 
 protocol TransferSetupPresenterFactoryProtocol {
     func createOnChainPresenter(
@@ -23,22 +22,21 @@ final class TransferSetupPresenterFactory: TransferSetupPresenterFactoryProtocol
     let storageFacade: StorageFacadeProtocol
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
-
-    weak var commandFactory: WalletCommandFactoryProtocol?
+    let transferCompletion: TransferCompletionClosure?
 
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
-        commandFactory: WalletCommandFactoryProtocol?,
         eventCenter: EventCenterProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        transferCompletion: TransferCompletionClosure?
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
-        self.commandFactory = commandFactory
         self.eventCenter = eventCenter
         self.logger = logger
+        self.transferCompletion = transferCompletion
     }
 }

@@ -15,9 +15,7 @@ extension TransferSetupPresenterFactory {
             return nil
         }
 
-        let wireframe = OnChainTransferSetupWireframe()
-        wireframe.commandFactory = commandFactory
-
+        let wireframe = OnChainTransferSetupWireframe(transferCompletion: transferCompletion)
         let localizationManager = LocalizationManager.shared
 
         let networkViewModelFactory = NetworkViewModelFactory()

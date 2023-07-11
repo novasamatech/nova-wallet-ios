@@ -1,5 +1,4 @@
 import UIKit
-import CommonWallet
 
 protocol PurchaseViewProtocol: ControllerBackedProtocol {}
 
@@ -22,6 +21,6 @@ protocol PurchaseWireframeProtocol: AnyObject {
 protocol PurchaseViewFactoryProtocol: AnyObject {
     static func createView(
         for action: PurchaseAction,
-        commandFactory: WalletCommandFactoryProtocol
+        delegate: PurchaseDelegate
     ) -> PurchaseViewProtocol?
 }

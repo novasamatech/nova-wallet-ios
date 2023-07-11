@@ -1,6 +1,5 @@
 import Foundation
 import RobinHood
-import CommonWallet
 import SoraFoundation
 
 final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {

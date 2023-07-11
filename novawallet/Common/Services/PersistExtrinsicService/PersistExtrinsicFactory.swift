@@ -31,7 +31,11 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
         let timestamp = Int64(Date().timeIntervalSince1970)
         let feeString = details.fee.map { String($0) }
 
+        let txHash = details.txHash.toHex(includePrefix: true)
+        let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
         let transferItem = TransactionHistoryItem(
+            identifier: identifier,
             source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
@@ -39,7 +43,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             receiver: details.receiver,
             amountInPlank: String(details.amount),
             status: .pending,
-            txHash: details.txHash.toHex(includePrefix: true),
+            txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
             blockNumber: nil,
@@ -61,7 +65,11 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
         let timestamp = Int64(Date().timeIntervalSince1970)
         let feeString = details.fee.map { String($0) }
 
+        let txHash = details.txHash.toHex(includePrefix: true)
+        let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
         let item = TransactionHistoryItem(
+            identifier: identifier,
             source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
@@ -69,7 +77,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             receiver: nil,
             amountInPlank: nil,
             status: .pending,
-            txHash: details.txHash.toHex(includePrefix: true),
+            txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
             blockNumber: nil,

@@ -2,8 +2,8 @@ import UIKit
 
 enum AssetListMeasurement {
     static let accountHeight: CGFloat = 56.0
-    static let totalBalanceHeight: CGFloat = 103.0
-    static let totalBalanceWithLocksHeight: CGFloat = 133.0
+    static let totalBalanceHeight: CGFloat = 200.0
+    static let totalBalanceWithLocksHeight: CGFloat = 200.0
     static let settingsHeight: CGFloat = 56.0
     static let nftsHeight = 56.0
     static let assetHeight: CGFloat = 56.0
@@ -72,18 +72,13 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         var insets: UIEdgeInsets {
             switch self {
             case .summary:
-                return UIEdgeInsets(top: 0, left: 0, bottom: 8.0, right: 0)
-            case .nfts:
                 return UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
+            case .nfts:
+                return UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
             case .settings:
                 return .zero
             case .assetGroup:
-                return UIEdgeInsets(
-                    top: 2.0,
-                    left: 0,
-                    bottom: 16.0,
-                    right: 0
-                )
+                return UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
             }
         }
     }

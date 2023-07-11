@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import IrohaCrypto
-import CommonWallet
+
 import BigInt
 
 protocol BalanceViewModelFactoryProtocol {

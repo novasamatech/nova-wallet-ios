@@ -67,7 +67,7 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
                         service.serviceTypes
                             .compactMap { type in
                                 if types.contains(type.wrappedValue) {
-                                    let urls = service.urls.compactMap { URL(string: $0.wrappedValue) } ?? []
+                                    let urls = service.urls.compactMap { URL(string: $0.wrappedValue) }
                                     return Web3NameSearchResponse.Service(
                                         id: service.serviceId,
                                         URLs: urls,

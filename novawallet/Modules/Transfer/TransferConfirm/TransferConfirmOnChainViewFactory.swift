@@ -7,7 +7,8 @@ struct TransferConfirmOnChainViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         recepient: AccountAddress,
-        amount: OnChainTransferAmount<Decimal>
+        amount: OnChainTransferAmount<Decimal>,
+        transferCompletion: TransferCompletionClosure?
     ) -> TransferConfirmOnChainViewProtocol? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -69,7 +70,8 @@ struct TransferConfirmOnChainViewFactory {
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            transferCompletion: transferCompletion
         )
 
         let view = TransferConfirmViewController(

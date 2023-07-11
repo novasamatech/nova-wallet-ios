@@ -1,6 +1,5 @@
 import UIKit
 import SoraFoundation
-import CommonWallet
 
 final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumVoteSetupViewLayout

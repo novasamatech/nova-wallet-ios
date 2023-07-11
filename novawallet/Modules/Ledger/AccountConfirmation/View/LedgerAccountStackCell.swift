@@ -1,6 +1,8 @@
 import UIKit
 
-final class LedgerAccountStackCell: RowView<GenericTitleValueView<IconDetailsGenericView<MultiValueView>, UIImageView>> {
+final class LedgerAccountStackCell: RowView<
+    GenericTitleValueView<IconDetailsGenericView<MultiValueView>, UIImageView>
+> {
     var addressLabel: UILabel { rowContentView.titleView.detailsView.valueTop }
     var amountLabel: UILabel { rowContentView.titleView.detailsView.valueBottom }
     var iconView: UIImageView { rowContentView.titleView.imageView }

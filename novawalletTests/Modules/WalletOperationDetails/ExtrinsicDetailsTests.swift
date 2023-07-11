@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import CommonWallet
+
 import SoraFoundation
 import Cuckoo
 
@@ -35,14 +35,25 @@ class OperationDetailsTests: XCTestCase {
             operationQueue: operationQueue,
             logger: nil
         )
+        
+        let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: nil,
+                currencyId: Currency.usd.id
+            )
+        )
 
         let interactor = OperationDetailsInteractor(
-            txData: txData,
+            transaction: txData,
             chainAsset: chainAsset,
             wallet: wallet,
             walletRepository: walletRepository,
             transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            currencyManager: CurrencyManagerStub(),
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(

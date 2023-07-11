@@ -2,9 +2,9 @@ import UIKit
 import SoraUI
 
 open class BlurBackgroundView: UIView {
-    private var blurView: UIVisualEffectView?
-    private var blurMaskView: TriangularedView?
-    private var borderView: BorderedContainerView?
+    private(set) var blurView: UIVisualEffectView?
+    private(set) var blurMaskView: TriangularedView?
+    private(set) var borderView: BorderedContainerView?
 
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,13 +20,13 @@ open class BlurBackgroundView: UIView {
 
     var sideLength: CGFloat = 10.0 {
         didSet {
-            blurMaskView?.sideLength = sideLength
+            applyCornerProperties()
         }
     }
 
     var cornerCut: UIRectCorner = .allCorners {
         didSet {
-            blurMaskView?.cornerCut = cornerCut
+            applyCornerProperties()
         }
     }
 
@@ -62,6 +62,12 @@ open class BlurBackgroundView: UIView {
         }
     }
 
+    var blurStyle: UIBlurEffect = .init(style: .dark) {
+        didSet {
+            blurView?.effect = blurStyle
+        }
+    }
+
     open func configure() {
         backgroundColor = .clear
 
@@ -86,8 +92,7 @@ open class BlurBackgroundView: UIView {
     }
 
     private func addBlurView() {
-        let blur = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blur)
+        let blurView = UIVisualEffectView(effect: blurStyle)
         insertSubview(blurView, at: 0)
 
         self.blurView = blurView
@@ -100,6 +105,11 @@ open class BlurBackgroundView: UIView {
         blurView.mask = blurMaskView
 
         self.blurMaskView = blurMaskView
+    }
+
+    func applyCornerProperties() {
+        blurMaskView?.sideLength = sideLength
+        blurMaskView?.cornerCut = cornerCut
     }
 
     override open func layoutSubviews() {

@@ -531,6 +531,8 @@
 "commmon.view.in.format" = "Открыть в %@";
 "import.json.unsupported.ethereum.crypto.message" = "Не поддерживается импорт аккаунта с Substrate секретом в сеть с Ethereum шифрованием";
 "import.json.unsupported.substrate.crypto.message" = "Не поддерживается импорт аккаунта с Ethereum секретом в сеть с Substrate шифрованием";
+"common.today" = "Сегодня";
+"common.yesterday" = "Вчера";
 "common.tx.details" = "Детали транзакции";
 "common.unknown" = "Неизвестно";
 "staking.month.period.title" = "Eжемесячно";
@@ -823,7 +825,7 @@
 "common.request.retry" = "Загрузка данных завершилась ошибкой. Хотите повторить?";
 "crowdloan.return.in.progress" = "Ожидает возвращения парачейном";
 "crowdloan.returns.in.format" = "Вернется через %@";
-"assets.search.empty" = "Токены с указанным именем\nне найдены";
+"assets.search.empty" = "Токены и сети с указанным именем\nне найдены";
 "assets.search.placeholder" = "Поиск по названию сети или токена";
 "common.tokens" = "Токены";
 "common.chain.address.title" = "%@ адрес";
@@ -1257,7 +1259,6 @@
 "common.per.year.long" = "в год";
 "common.per.year" = "/ год";
 "common.waiting" = "Ожидание";
-"staking.more.options.dApps.title" = "Стейкинг через браузер Nova";
 "multistaking.inactive.header" = "Стейкайте и получайте награды";
 "multistaking.more.options" = "Больше вариантов стейкинга";
 "staking.on.network" = "%@ стейкинг";
@@ -1290,3 +1291,11 @@
 "common.and" = " и ";
 "common.time.period.after" = "после";
 "common.time.period.every" = "каждые";
+"wallet.history.transfer.incoming.details" = "От: %@";
+"wallet.history.transfer.outgoing.details" = "Кому: %@";
+"wallet.history.amount.details" = "%@ в %@";
+"staking.more.options.dApps.title" = "Стейкинг через браузер Nova";
+"wallet.receive.error.generateQRCode.message" = "Генерация QR кода завершилась с ошибкой. Хотите повторить?";
+"asset.operation.send.title" = "Отправить";
+"asset.operation.receive.title" = "Получить";
+"asset.operation.buy.title" = "Купить";

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import SoraKeystore
-import CommonWallet
+
 import RobinHood
 import SoraFoundation
 import SubstrateSdk
