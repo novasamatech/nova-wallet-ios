@@ -2,6 +2,7 @@ import UIKit
 
 final class GladingPatternView: GladingBaseView {
     private var model: GladingPatternModel?
+    private var effect: UIMotionEffect?
 
     func bind(model: GladingPatternModel) {
         self.model = model
@@ -11,6 +12,7 @@ final class GladingPatternView: GladingBaseView {
         gradientView.startPoint = model.gradient.startPoint
         gradientView.endPoint = model.gradient.endPoint
         gradientView.locations = model.gradient.locations
+        gradientView.alpha = model.opacity
 
         gradientView.snp.remakeConstraints { make in
             make.center.equalToSuperview()
@@ -40,39 +42,18 @@ final class GladingPatternView: GladingBaseView {
     }
 
     override func applyMotion() {
-        gradientContentView.motionEffects.forEach { effect in
-            gradientContentView.removeMotionEffect(effect)
-        }
+        gradientContentView.removeEffectIfNeeded(effect)
 
         guard let model = model else {
             return
         }
 
-        let xTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.x",
-            type: .tiltAlongHorizontalAxis
-        )
+        let minX = model.slidingX.min * bounds.width
+        let maxX = model.slidingX.max * bounds.width
 
-        let minXOffset = model.slidingX.min * bounds.width
-        let maxXOffset = model.slidingX.max * bounds.width
+        let minY = model.slidingY.min * bounds.height
+        let maxY = model.slidingY.max * bounds.height
 
-        xTilt.minimumRelativeValue = minXOffset
-        xTilt.maximumRelativeValue = maxXOffset
-
-        let yTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.y",
-            type: .tiltAlongVerticalAxis
-        )
-
-        let minYOffset = model.slidingY.min * bounds.height
-        let maxYOffset = model.slidingY.max * bounds.height
-
-        yTilt.minimumRelativeValue = minYOffset
-        yTilt.maximumRelativeValue = maxYOffset
-
-        let tilt = UIMotionEffectGroup()
-        tilt.motionEffects = [xTilt, yTilt]
-
-        gradientContentView.addMotionEffect(tilt)
+        effect = gradientContentView.addMotion(minX: minX, maxX: maxX, minY: minY, maxY: maxY)
     }
 }

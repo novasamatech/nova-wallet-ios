@@ -25,6 +25,7 @@ final class GladingCardView: UIView {
 
     private var smallPatternEffect: UIMotionEffect?
     private var middlePatternEffect: UIMotionEffect?
+    private var bigPatternEffect: UIMotionEffect?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,57 +64,14 @@ final class GladingCardView: UIView {
     }
 
     private func updateMotionEffect() {
-        if let effect = smallPatternEffect {
-            smallPatternView.removeMotionEffect(effect)
-        }
+        smallPatternView.removeEffectIfNeeded(smallPatternEffect)
+        smallPatternEffect = smallPatternView.addMotion(absX: 25, absY: 19, isInversed: false)
 
-        if let effect = middlePatternEffect {
-            middlePatternView.removeMotionEffect(effect)
-        }
+        middlePatternView.removeEffectIfNeeded(middlePatternEffect)
+        middlePatternEffect = middlePatternView.addMotion(absX: 15, absY: 8, isInversed: false)
 
-        let smallXTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.x",
-            type: .tiltAlongHorizontalAxis
-        )
-
-        smallXTilt.minimumRelativeValue = -25
-        smallXTilt.maximumRelativeValue = 25
-
-        let smallYTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.y",
-            type: .tiltAlongVerticalAxis
-        )
-
-        smallYTilt.minimumRelativeValue = -10
-        smallYTilt.maximumRelativeValue = 10
-
-        let smallTilt = UIMotionEffectGroup()
-        smallTilt.motionEffects = [smallXTilt, smallYTilt]
-
-        smallPatternEffect = smallTilt
-        smallPatternView.addMotionEffect(smallTilt)
-
-        let middleXTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.x",
-            type: .tiltAlongHorizontalAxis
-        )
-
-        middleXTilt.minimumRelativeValue = -15
-        middleXTilt.maximumRelativeValue = 15
-
-        let middleYTilt = UIInterpolatingMotionEffect(
-            keyPath: "center.y",
-            type: .tiltAlongVerticalAxis
-        )
-
-        middleYTilt.minimumRelativeValue = -5
-        middleYTilt.maximumRelativeValue = 5
-
-        let middleTilt = UIMotionEffectGroup()
-        middleTilt.motionEffects = [middleXTilt, middleYTilt]
-
-        middlePatternEffect = middleTilt
-        middlePatternView.addMotionEffect(middleTilt)
+        bigPatternView.removeEffectIfNeeded(bigPatternEffect)
+        bigPatternEffect = bigPatternView.addMotion(absX: 7, absY: 3, isInversed: true)
     }
 
     private func setupLayout() {
@@ -123,14 +81,14 @@ final class GladingCardView: UIView {
 
         bigPatternView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.leading.equalToSuperview().offset(2)
+            make.leading.equalToSuperview()
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
 
         middlePatternView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.leading.equalToSuperview().offset(-6)
+            make.leading.equalToSuperview()
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
