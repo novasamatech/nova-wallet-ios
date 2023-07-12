@@ -1,5 +1,5 @@
 import UIKit
-import CommonWallet
+
 import BigInt
 import RobinHood
 
@@ -10,7 +10,7 @@ enum OperationDetailsInteractorError: Error {
 final class OperationDetailsInteractor: AccountFetching {
     weak var presenter: OperationDetailsInteractorOutputProtocol?
 
-    let txData: AssetTransactionData
+    let transaction: TransactionHistoryItem
     let chainAsset: ChainAsset
 
     var chain: ChainModel { chainAsset.chain }
@@ -19,23 +19,37 @@ final class OperationDetailsInteractor: AccountFetching {
     let transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let wallet: MetaAccountModel
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+
+    private var accountAddress: AccountAddress? {
+        wallet.fetch(for: chain.accountRequest())?.toAddress()
+    }
 
     private var transactionProvider: StreamableProvider<TransactionHistoryItem>?
+    private var priceProvider: AnySingleValueProvider<PriceHistory>?
+    private var feePriceProvider: AnySingleValueProvider<PriceHistory>?
+
+    private var priceCalculator: TokenPriceCalculatorProtocol?
+    private var feePriceCalculator: TokenPriceCalculatorProtocol?
 
     init(
-        txData: AssetTransactionData,
+        transaction: TransactionHistoryItem,
         chainAsset: ChainAsset,
         wallet: MetaAccountModel,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
         transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     ) {
-        self.txData = txData
+        self.transaction = transaction
         self.chainAsset = chainAsset
         self.wallet = wallet
         self.walletRepository = walletRepository
         self.transactionLocalSubscriptionFactory = transactionLocalSubscriptionFactory
         self.operationQueue = operationQueue
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     private func extractStatus(
@@ -44,12 +58,12 @@ final class OperationDetailsInteractor: AccountFetching {
         if let newStatus = newStatus {
             return newStatus
         } else {
-            switch txData.status {
-            case .commited:
+            switch transaction.status {
+            case .success:
                 return .completed
             case .pending:
                 return .pending
-            case .rejected:
+            case .failed:
                 return .failed
             }
         }
@@ -58,17 +72,18 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractSlashOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let context = HistoryRewardContext(context: txData.context ?? [:])
+        let context = try? transaction.call.map {
+            try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
+        }
 
-        let eventId = !context.eventId.isEmpty ? context.eventId : txData.transactionId
+        let eventId = getEventId(from: context) ?? transaction.txHash
 
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
+        let amount = transaction.amountInPlankIntOrZero
+        let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
+            PriceData.amount($0)
+        }
 
-        let amount: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        if let validatorId = try? context.validator?.toAccountId() {
+        if let validatorId = try? transaction.sender.toAccountId() {
             _ = fetchDisplayAddress(
                 for: [validatorId],
                 chain: chain,
@@ -80,8 +95,9 @@ final class OperationDetailsInteractor: AccountFetching {
                     let model = OperationSlashModel(
                         eventId: eventId,
                         amount: amount,
+                        priceData: priceData,
                         validator: addresses.first,
-                        era: context.era
+                        era: context?.era
                     )
 
                     completion(.slash(model))
@@ -93,8 +109,9 @@ final class OperationDetailsInteractor: AccountFetching {
             let model = OperationSlashModel(
                 eventId: eventId,
                 amount: amount,
+                priceData: priceData,
                 validator: nil,
-                era: context.era
+                era: context?.era
             )
 
             completion(.slash(model))
@@ -104,17 +121,18 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractRewardOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let context = HistoryRewardContext(context: txData.context ?? [:])
+        let context = try? transaction.call.map {
+            try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
+        }
 
-        let eventId = !context.eventId.isEmpty ? context.eventId : txData.transactionId
+        let eventId = getEventId(from: context) ?? transaction.txHash
 
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
+        let amount = transaction.amountInPlankIntOrZero
+        let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
+            PriceData.amount($0)
+        }
 
-        let amount: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        if let validatorId = try? context.validator?.toAccountId() {
+        if let validatorId = try? transaction.sender.toAccountId() {
             _ = fetchDisplayAddress(
                 for: [validatorId],
                 chain: chain,
@@ -126,8 +144,9 @@ final class OperationDetailsInteractor: AccountFetching {
                     let model = OperationRewardModel(
                         eventId: eventId,
                         amount: amount,
+                        priceData: priceData,
                         validator: addresses.first,
-                        era: context.era
+                        era: context?.era
                     )
 
                     completion(.reward(model))
@@ -139,43 +158,48 @@ final class OperationDetailsInteractor: AccountFetching {
             let model = OperationRewardModel(
                 eventId: eventId,
                 amount: amount,
+                priceData: priceData,
                 validator: nil,
-                era: context.era
+                era: context?.era
             )
 
             completion(.reward(model))
         }
     }
 
+    private func getEventId(from context: HistoryRewardContext?) -> String? {
+        guard let eventId = context?.eventId else {
+            return nil
+        }
+        return !eventId.isEmpty ? eventId : nil
+    }
+
     private func extractExtrinsicOperationData(
         newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee: BigUInt = newFee ?? txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        guard
-            let accountResponse = wallet.fetch(for: chain.accountRequest()),
-            let currentAccountAddress = try? accountResponse.accountId.toAddress(
-                using: chain.chainFormat
-            ) else {
+        guard let accountAddress = accountAddress else {
             completion(nil)
             return
         }
 
+        let fee = newFee ?? transaction.feeInPlankIntOrZero
+        let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
+            PriceData.amount($0)
+        }
+
         let currentDisplayAddress = DisplayAddress(
-            address: currentAccountAddress,
+            address: accountAddress,
             username: wallet.name
         )
 
         let model = OperationExtrinsicModel(
-            txHash: txData.transactionId,
-            call: txData.peerLastName ?? "",
-            module: txData.peerFirstName ?? "",
+            txHash: transaction.txHash,
+            call: transaction.callPath.callName,
+            module: transaction.callPath.moduleName,
             sender: currentDisplayAddress,
-            fee: fee
+            fee: fee,
+            feePriceData: feePriceData
         )
 
         completion(.extrinsic(model))
@@ -185,10 +209,10 @@ final class OperationDetailsInteractor: AccountFetching {
         newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee: BigUInt = newFee ?? txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
+        let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
+        let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
+            PriceData.amount($0)
+        }
 
         guard
             let accountResponse = wallet.fetch(for: chain.accountRequest()),
@@ -204,15 +228,16 @@ final class OperationDetailsInteractor: AccountFetching {
             username: wallet.name
         )
 
-        let contractAddress = try? Data(hex: txData.peerId).toAddress(using: chain.chainFormat)
+        let contractAddress = transaction.receiver.flatMap { try? Data(hex: $0).toAddress(using: chain.chainFormat) }
         let contractDisplayAddress = DisplayAddress(address: contractAddress ?? "", username: "")
 
         let model = OperationContractCallModel(
-            txHash: txData.transactionId,
+            txHash: transaction.txHash,
             fee: fee,
+            feePriceData: feePriceData,
             sender: currentDisplayAddress,
             contract: contractDisplayAddress,
-            functionSignature: !txData.details.isEmpty ? txData.details : nil
+            functionName: transaction.evmContractFunctionName
         )
 
         completion(.contract(model))
@@ -222,35 +247,37 @@ final class OperationDetailsInteractor: AccountFetching {
         newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        guard let peerId = try? Data(hexString: txData.peerId) else {
+        guard let accountAddress = accountAddress else {
+            completion(nil)
+            return
+        }
+        let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
+            ?? transaction.sender
+        let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
+        let peerId = accountId?.toHex() ?? peerAddress
+
+        guard let peerId = try? Data(hexString: peerId) else {
             completion(nil)
             return
         }
 
-        let isOutgoing = TransactionType(rawValue: txData.type) == .outgoing
-
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-
-        let amount: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        let fee = newFee ?? txData.fees.first?.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        guard
-            let accountResponse = wallet.fetch(for: chain.accountRequest()),
-            let displayAddress = try? accountResponse.accountId.toAddress(
-                using: chain.chainFormat
-            ) else {
-            completion(nil)
-            return
+        let isOutgoing = transaction.type(for: accountAddress) == .outgoing
+        let amount = transaction.amountInPlankIntOrZero
+        let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
+            PriceData.amount($0)
         }
 
-        let currentDisplayAddress = DisplayAddress(address: displayAddress, username: wallet.name)
+        let fee = newFee ?? transaction.feeInPlankIntOrZero
+        let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
+            PriceData.amount($0)
+        }
 
-        let txId = txData.transactionId
+        let currentDisplayAddress = DisplayAddress(
+            address: accountAddress,
+            username: wallet.name
+        )
+
+        let txId = transaction.txHash
 
         _ = fetchDisplayAddress(
             for: [peerId],
@@ -264,7 +291,9 @@ final class OperationDetailsInteractor: AccountFetching {
                     let model = OperationTransferModel(
                         txHash: txId,
                         amount: amount,
+                        amountPriceData: priceData,
                         fee: fee,
+                        feePriceData: feePriceData,
                         sender: isOutgoing ? currentDisplayAddress : otherDisplayAddress,
                         receiver: isOutgoing ? otherDisplayAddress : currentDisplayAddress,
                         outgoing: isOutgoing
@@ -285,7 +314,11 @@ final class OperationDetailsInteractor: AccountFetching {
         replacingIfExists newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        switch TransactionType(rawValue: txData.type) {
+        guard let accountAddress = accountAddress else {
+            completion(nil)
+            return
+        }
+        switch transaction.type(for: accountAddress) {
         case .incoming, .outgoing:
             extractTransferOperationData(newFee: newFee, completion)
         case .reward:
@@ -307,7 +340,7 @@ final class OperationDetailsInteractor: AccountFetching {
         for operationData: OperationDetailsModel.OperationData,
         overridingBy newStatus: OperationDetailsModel.Status?
     ) {
-        let time = Date(timeIntervalSince1970: TimeInterval(txData.timestamp))
+        let time = Date(timeIntervalSince1970: TimeInterval(transaction.timestamp))
         let status = extractStatus(overridingBy: newStatus)
 
         let details = OperationDetailsModel(
@@ -332,15 +365,34 @@ final class OperationDetailsInteractor: AccountFetching {
             }
         }
     }
+
+    private func setupPriceHistorySubscription() {
+        priceProvider = priceHistoryProvider(for: chainAsset.asset)
+
+        let utilityAsset = chainAsset.chain.utilityAsset()
+        feePriceProvider = utilityAsset?.priceId == chainAsset.asset.priceId ?
+            priceProvider : priceHistoryProvider(for: utilityAsset)
+    }
+
+    private func priceHistoryProvider(for asset: AssetModel?) -> AnySingleValueProvider<PriceHistory>? {
+        guard let asset = asset else {
+            return nil
+        }
+        guard let priceId = asset.priceId else {
+            return nil
+        }
+
+        return subscribeToPriceHistory(for: priceId, currency: selectedCurrency)
+    }
 }
 
 extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
         provideModel(overridingBy: nil, newFee: nil)
 
-        let source = TransactionHistoryItemSource(assetTypeString: chainAsset.asset.type)
-        let identifier = TransactionHistoryItem.createIdentifier(from: txData.transactionId, source: source)
-        transactionProvider = subscribeToTransaction(for: identifier, chainId: chain.chainId)
+        transactionProvider = subscribeToTransaction(for: transaction.identifier, chainId: chain.chainId)
+
+        setupPriceHistorySubscription()
     }
 }
 
@@ -362,6 +414,37 @@ extension OperationDetailsInteractor: TransactionLocalStorageSubscriber,
             }
         case let .failure(error):
             presenter?.didReceiveDetails(result: .failure(error))
+        }
+    }
+}
+
+extension OperationDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePriceHistory(
+        result: Result<PriceHistory?, Error>,
+        priceId: AssetModel.PriceId
+    ) {
+        switch result {
+        case let .success(history):
+            if let history = history {
+                if chainAsset.asset.priceId == priceId {
+                    priceCalculator = TokenPriceCalculator(history: history)
+                }
+                if chainAsset.chain.utilityAsset()?.priceId == priceId {
+                    feePriceCalculator = TokenPriceCalculator(history: history)
+                }
+                provideModel(overridingBy: nil, newFee: nil)
+            }
+
+        case let .failure(error):
+            presenter?.didReceiveDetails(result: .failure(error))
+        }
+    }
+}
+
+extension OperationDetailsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if presenter != nil {
+            setupPriceHistorySubscription()
         }
     }
 }

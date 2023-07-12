@@ -1,5 +1,4 @@
 import BigInt
-import CommonWallet
 
 protocol ParaStkYieldBoostSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?)

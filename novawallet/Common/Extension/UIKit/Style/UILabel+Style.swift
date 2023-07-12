@@ -31,6 +31,11 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let semiboldSubhedlineSecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldSubheadline
+    )
+
     static let semiboldBodyPrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .semiBoldBody
@@ -76,6 +81,11 @@ extension UILabel.Style {
         font: .caption2
     )
 
+    static let semiboldCaps2Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldCaps2
+    )
+
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline
@@ -103,6 +113,11 @@ extension UILabel.Style {
 
     static let title3Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldTitle3
+    )
+
+    static let title3Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary()!,
         font: .semiBoldTitle3
     )
 

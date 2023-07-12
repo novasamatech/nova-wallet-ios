@@ -1,7 +1,6 @@
 import UIKit
 import Kingfisher
 import SVGKit
-import CommonWallet
 
 final class RemoteImageViewModel: NSObject {
     let url: URL
@@ -53,51 +52,6 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
 
         let url: URL? = nil
         imageView.kf.setImage(with: url) // cancel any cache retrieval task
-    }
-}
-
-final class WalletRemoteImageViewModel: WalletImageViewModelProtocol {
-    let url: URL
-    let size: CGSize
-
-    private var task: DownloadTask?
-
-    init(url: URL, size: CGSize) {
-        self.url = url
-        self.size = size
-    }
-
-    var image: UIImage?
-
-    func loadImage(with completionBlock: @escaping (UIImage?, Error?) -> Void) {
-        let processor = SVGImageProcessor()
-            |> ResizingImageProcessor(referenceSize: size, mode: .aspectFit)
-
-        let options: KingfisherOptionsInfo = [
-            .processor(processor),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteImageSerializer.shared),
-            .cacheOriginalImage,
-            .diskCacheExpiration(.days(1))
-        ]
-
-        task = KingfisherManager.shared.retrieveImage(
-            with: url,
-            options: options,
-            progressBlock: nil,
-            downloadTaskUpdated: nil
-        ) { result in
-            switch result {
-            case let .success(imageResult):
-                completionBlock(imageResult.image, nil)
-            case let .failure(error):
-                completionBlock(nil, error)
-            }
-        }
-    }
-
-    func cancel() {
-        task?.cancel()
     }
 }
 

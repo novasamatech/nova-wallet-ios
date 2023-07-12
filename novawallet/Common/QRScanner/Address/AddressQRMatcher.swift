@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 import SubstrateSdk
 
 protocol AddressQRMatching {

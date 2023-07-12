@@ -1,5 +1,4 @@
 import BigInt
-import CommonWallet
 
 protocol NftDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(name: String?)

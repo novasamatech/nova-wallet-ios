@@ -26,3 +26,10 @@ extension WalletHistoryFilter {
 
     func toString() -> String { String(rawValue) }
 }
+
+extension WalletHistoryFilter {
+    static func hasSupport(for chainAsset: ChainAsset) -> Bool {
+        let isUtilityAsset = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId
+        return isUtilityAsset && !chainAsset.asset.isEvmNative
+    }
+}

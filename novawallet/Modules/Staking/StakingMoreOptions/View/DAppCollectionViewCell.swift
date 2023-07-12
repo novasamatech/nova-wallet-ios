@@ -49,8 +49,8 @@ final class DAppCollectionViewCell: UICollectionViewCell {
     }
 }
 
-extension DAppCollectionViewCell: LoadingUpdatibleView {
-    func updateLoadingAnimationIfActive() {
+extension DAppCollectionViewCell: AnimationUpdatibleView {
+    func updateLayerAnimationIfActive() {
         if viewModel?.isLoading == true {
             updateLoadingState()
             skeletonView?.restartSkrulling()

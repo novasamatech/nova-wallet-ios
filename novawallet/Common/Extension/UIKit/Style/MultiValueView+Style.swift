@@ -24,6 +24,17 @@ extension MultiValueView.Style {
         )
     )
 
+    static let bigRowContrasted = MultiValueView.Style(
+        topLabel: .init(
+            textColor: R.color.colorTextPrimary(),
+            font: .regularSubheadline
+        ),
+        bottomLabel: .init(
+            textColor: R.color.colorTextSecondary(),
+            font: .regularFootnote
+        )
+    )
+
     static let row = MultiValueView.Style(
         topLabel: .init(
             textColor: R.color.colorTextSecondary(),

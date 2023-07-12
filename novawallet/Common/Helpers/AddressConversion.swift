@@ -69,6 +69,10 @@ extension AccountAddress {
     func toEthereumAccountId() throws -> AccountId {
         try extractEthereumAccountId()
     }
+
+    func normalize(for chainFormat: ChainFormat) -> AccountAddress? {
+        try? toAccountId(using: chainFormat).toAddress(using: chainFormat)
+    }
 }
 
 extension ChainModel {

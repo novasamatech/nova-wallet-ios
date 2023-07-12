@@ -7,4 +7,5 @@ struct OperationExtrinsicModel {
     let module: String
     let sender: DisplayAddress
     let fee: BigUInt
+    let feePriceData: PriceData?
 }
