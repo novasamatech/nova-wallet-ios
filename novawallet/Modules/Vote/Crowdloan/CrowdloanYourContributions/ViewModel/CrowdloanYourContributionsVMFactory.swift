@@ -41,14 +41,14 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
                 return .init(index: index, interval: interval ?? 0)
             }
 
-        let crowdloansDict = input.crowdloans.reduce(into: [ParaId: CrowdloanFunds]()) { result, item in
-            result[item.paraId] = item.fundInfo
-        }
-
         let crowdloansCount = input.crowdloans.count
         let externalIntervals: [ReturnInIntervalsViewModel] = (externalContributions ?? []).enumerated()
             .compactMap { index, contribution in
-                guard let crowdloanInfo = crowdloansDict[contribution.paraId] else {
+                guard
+                    let crowdloanInfo = resolvedCrowdlonForExternal(
+                        contribution: contribution,
+                        input: input
+                    )?.fundInfo else {
                     return nil
                 }
 
@@ -171,6 +171,21 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         return .init(viewModel: viewModel, lastPeriod: model.fundInfo.lastPeriod)
     }
 
+    private func resolvedCrowdlonForExternal(
+        contribution: ExternalContribution,
+        input: CrowdloanYourContributionsViewInput
+    ) -> Crowdloan? {
+        let targetParaId: ParaId
+
+        if let displayInfo = input.displayInfo?[contribution.paraId] {
+            targetParaId = displayInfo.movedToParaId.flatMap { ParaId($0) } ?? contribution.paraId
+        } else {
+            targetParaId = contribution.paraId
+        }
+
+        return input.crowdloans.first { $0.paraId == targetParaId }
+    }
+
     private func crowdloanExternalContribution(
         externalContribution: ExternalContribution,
         input: CrowdloanYourContributionsViewInput,
@@ -179,14 +194,18 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         index: Int,
         locale: Locale
     ) -> LimitedCrowdloanContributionViewModel? {
-        let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
-        let contributedInParaId = externalContribution.paraId
-        let displayInfo = input.displayInfo?[contributedInParaId]
+        guard let crowdloan = resolvedCrowdlonForExternal(contribution: externalContribution, input: input) else {
+            return nil
+        }
 
-        guard
-            let titlePrefix = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: contributedInParaId)),
-            let crowdloan = input.crowdloans.first(where: { $0.paraId == contributedInParaId })
-        else { return nil }
+        let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
+        let displayInfo = input.displayInfo?[crowdloan.paraId]
+
+        let optTitlePrefix = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: crowdloan.paraId))
+
+        guard let titlePrefix = optTitlePrefix else {
+            return nil
+        }
 
         let contributedViewModel = createContributedViewModel(
             contributed: externalContribution.amount,
