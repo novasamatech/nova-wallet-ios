@@ -175,11 +175,13 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         contribution: ExternalContribution,
         input: CrowdloanYourContributionsViewInput
     ) -> Crowdloan? {
-        guard let displayInfo = input.displayInfo?[contribution.paraId] else {
-            return nil
-        }
+        let targetParaId: ParaId
 
-        let targetParaId = displayInfo.movedToParaId.flatMap { ParaId($0) } ?? contribution.paraId
+        if let displayInfo = input.displayInfo?[contribution.paraId] {
+            targetParaId = displayInfo.movedToParaId.flatMap { ParaId($0) } ?? contribution.paraId
+        } else {
+            targetParaId = contribution.paraId
+        }
 
         return input.crowdloans.first { $0.paraId == targetParaId }
     }
