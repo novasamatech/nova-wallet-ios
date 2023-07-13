@@ -43,7 +43,7 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
 
     func didReceive(error: ParachainStartStakingInfoError) {
         switch error {
-        case .networkInfo(let error):
+        case let .networkInfo(error):
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryNetworkStakingInfo()
             }
@@ -58,6 +58,10 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
         case .stakingDuration:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryStakingDuration()
+            }
+        case .rewardPaymentDelay:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryRewardPaymentDelay()
             }
         case .blockNumber, .parastakingRound:
             break
@@ -79,6 +83,10 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
     func didReceive(stakingDuration: ParachainStakingDuration) {
         state.stakingDuration = stakingDuration
     }
+
+    func didReceive(rewardPaymentDelay: UInt32) {
+        state.rewardPaymentDelay = rewardPaymentDelay
+    }
 }
 
 extension StartStakingInfoParachainPresenter {
@@ -88,6 +96,7 @@ extension StartStakingInfoParachainPresenter {
         var maxApy: Decimal?
         private(set) var blockNumber: BlockNumber?
         var stakingDuration: ParachainStakingDuration?
+        var rewardPaymentDelay: UInt32?
 
         var minStake: BigUInt? {
             guard let networkInfo = networkInfo else {
@@ -102,11 +111,13 @@ extension StartStakingInfoParachainPresenter {
         }
 
         var nextEraStartTime: TimeInterval? {
-            guard let roundCountdown = roundCountdown, let roundInfo = roundInfo else {
+            guard let roundCountdown = roundCountdown,
+                  let roundInfo = roundInfo,
+                  let rewardPaymentDelay = rewardPaymentDelay else {
                 return nil
             }
 
-            return roundCountdown.timeIntervalTillStart(targetEra: roundInfo.current + 1)
+            return roundCountdown.timeIntervalTillStart(targetEra: roundInfo.current + 1 + rewardPaymentDelay)
         }
 
         var roundCountdown: RoundCountdown? {

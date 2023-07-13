@@ -97,12 +97,59 @@ struct StartStakingInfoViewFactory {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
         let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let operationManager = OperationManager(operationQueue: operationQueue)
+        let logger = Logger.shared
+        let storageFacade = SubstrateDataStorageFacade.shared
+        let eventCenter = EventCenter.shared
+
+        let substrateRepositoryFactory = SubstrateRepositoryFactory(
+            storageFacade: storageFacade
+        )
+        let chainItemRepository = substrateRepositoryFactory.createChainStorageItemRepository()
+
+        let stakingRemoteSubscriptionService = StakingRemoteSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: chainItemRepository,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
+            logger: logger
+        )
+
+        let serviceFactory = StakingServiceFactory(
+            chainRegisty: chainRegistry,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        let substrateDataProviderFactory = SubstrateDataProviderFactory(
+            facade: storageFacade,
+            operationManager: operationManager
+        )
+
+        let childSubscriptionFactory = ChildSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: operationManager,
+            eventCenter: eventCenter,
+            logger: logger
+        )
+
+        let stakingAccountUpdatingService = StakingAccountUpdatingService(
+            chainRegistry: chainRegistry,
+            substrateRepositoryFactory: substrateRepositoryFactory,
+            substrateDataProviderFactory: substrateDataProviderFactory,
+            childSubscriptionFactory: childSubscriptionFactory,
+            operationQueue: operationQueue
+        )
 
         return StartStakingRelaychainInteractor(
             chainAsset: chainAsset,
             selectedWalletSettings: selectedWalletSettings,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingAssetSubscriptionService: stakingRemoteSubscriptionService,
+            stakingAccountUpdatingService: stakingAccountUpdatingService,
             currencyManager: currencyManager,
             stateFactory: factory,
             chainRegistry: chainRegistry,
@@ -165,15 +212,35 @@ struct StartStakingInfoViewFactory {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
         let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let operationManager = OperationManager(operationQueue: operationQueue)
+        let logger = Logger.shared
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: operationManager
         )
 
         let stakingDurationFactory = ParaStkDurationOperationFactory(
             storageRequestFactory: storageRequestFactory,
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
+        )
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        let stakingAccountService = ParachainStaking.AccountSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
+            logger: logger
+        )
+
+        let stakingAssetService = ParachainStaking.StakingRemoteSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
+            logger: logger
         )
 
         return StartStakingParachainInteractor(
@@ -181,6 +248,8 @@ struct StartStakingInfoViewFactory {
             selectedWalletSettings: selectedWalletSettings,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingAssetSubscriptionService: stakingAssetService,
+            stakingAccountSubscriptionService: stakingAccountService,
             currencyManager: currencyManager,
             stateFactory: factory,
             chainRegistry: chainRegistry,

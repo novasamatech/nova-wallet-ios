@@ -8,17 +8,20 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let selectedWalletSettings: SelectedWalletSettings
+    let stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol
 
     private(set) var priceProvider: StreamableProvider<PriceData>?
     private(set) var balanceProvider: StreamableProvider<AssetBalance>?
     private(set) var selectedAccount: MetaChainAccountResponse?
     private(set) var operationQueue: OperationQueue
+    private(set) var chainSubscriptionId: UUID?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
         selectedChainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -26,6 +29,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         self.selectedChainAsset = selectedChainAsset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.stakingAssetSubscriptionService = stakingAssetSubscriptionService
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -47,7 +51,6 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         let chainAssetId = selectedChainAsset.chainAssetId
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
-            basePresenter?.didReceive(baseError: .assetBalance(nil))
             return
         }
 
@@ -70,8 +73,33 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         basePresenter?.didReceive(accountId: selectedAccount?.chainAccount.accountId)
     }
 
+    private func clearChainRemoteSubscription(for chainId: ChainModel.Id) {
+        if let chainSubscriptionId = chainSubscriptionId {
+            stakingAssetSubscriptionService.detachFromGlobalData(
+                for: chainSubscriptionId,
+                chainId: chainId,
+                queue: nil,
+                closure: nil
+            )
+
+            self.chainSubscriptionId = nil
+        }
+    }
+
+    private func setupChainRemoteSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+
+        chainSubscriptionId = stakingAssetSubscriptionService.attachToGlobalData(
+            for: chainId,
+            queue: nil,
+            closure: nil
+        )
+    }
+
     func setup() {
         setupSelectedAccount()
+        setupChainRemoteSubscription()
+
         performAssetBalanceSubscription()
         performPriceSubscription()
 

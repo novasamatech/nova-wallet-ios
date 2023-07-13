@@ -1,21 +1,24 @@
 import RobinHood
 import Foundation
 
-final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning {
+final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning, RuntimeConstantFetching {
     let chainRegistry: ChainRegistryProtocol
     let stateFactory: ParachainStakingStateFactoryProtocol
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let durationOperationFactory: ParaStkDurationOperationFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
 
     private var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var networkInfoCancellable: CancellableCall?
     private var rewardCalculatorCancellable: CancellableCall?
     private var durationCancellable: CancellableCall?
+    private var rewardPaymentDelayCancellable: CancellableCall?
     private var sharedState: ParachainStakingSharedState?
+    private var accountSubscriptionId: UUID?
 
     weak var presenter: StartStakingInfoParachainInteractorOutputProtocol? {
         didSet {
@@ -28,6 +31,8 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         selectedWalletSettings: SelectedWalletSettings,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
+        stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         stateFactory: ParachainStakingStateFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
@@ -43,12 +48,14 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         self.networkInfoFactory = networkInfoFactory
         self.eventCenter = eventCenter
         self.durationOperationFactory = durationOperationFactory
+        self.stakingAccountSubscriptionService = stakingAccountSubscriptionService
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
             selectedChainAsset: chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingAssetSubscriptionService: stakingAssetSubscriptionService,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -174,6 +181,33 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    private func provideRewardPaymentDelay() {
+        clear(cancellable: &rewardPaymentDelayCancellable)
+
+        let chainId = selectedChainAsset.chain.chainId
+
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceive(error: .rewardPaymentDelay(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        rewardPaymentDelayCancellable = fetchConstant(
+            for: ParachainStaking.rewardPaymentDelay,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(value):
+                    self?.presenter?.didReceive(rewardPaymentDelay: value)
+                case let .failure(error):
+                    self?.presenter?.didReceive(error: .rewardPaymentDelay(ChainRegistryError.runtimeMetadaUnavailable))
+                }
+            }
+        }
+    }
+
     private func performRoundInfoSubscription() {
         let chainId = selectedChainAsset.chain.chainId
         roundInfoProvider = subscribeToRound(for: chainId)
@@ -182,6 +216,39 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     private func performBlockNumberSubscription() {
         let chainId = selectedChainAsset.chain.chainId
         blockNumberProvider = subscribeToBlockNumber(for: chainId)
+    }
+
+    private func clearAccountRemoteSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+
+        if
+            let accountSubscriptionId = accountSubscriptionId,
+            let accountId = selectedAccount?.chainAccount.accountId {
+            stakingAccountSubscriptionService.detachFromAccountData(
+                for: accountSubscriptionId,
+                chainId: chainId,
+                accountId: accountId,
+                queue: nil,
+                closure: nil
+            )
+
+            self.accountSubscriptionId = nil
+        }
+    }
+
+    private func setupAccountRemoteSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+
+        guard let accountId = selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        accountSubscriptionId = stakingAccountSubscriptionService.attachToAccountData(
+            for: chainId,
+            accountId: accountId,
+            queue: nil,
+            closure: nil
+        )
     }
 
     private func setupState() {
@@ -197,12 +264,14 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     override func setup() {
         super.setup()
 
+        setupAccountRemoteSubscription()
         setupState()
         eventCenter.add(observer: self, dispatchIn: .main)
 
         provideNetworkInfo()
         provideRewardCalculator()
         provideStakingDurationInfo()
+        provideRewardPaymentDelay()
         performRoundInfoSubscription()
         performBlockNumberSubscription()
     }
@@ -252,12 +321,16 @@ extension StartStakingParachainInteractor: StartStakingInfoParachainInteractorIn
     func retryNetworkStakingInfo() {
         provideNetworkInfo()
     }
-    
+
     func remakeCalculator() {
         provideRewardCalculator()
     }
-    
+
     func retryStakingDuration() {
         provideStakingDurationInfo()
+    }
+
+    func retryRewardPaymentDelay() {
+        provideRewardPaymentDelay()
     }
 }

@@ -78,6 +78,10 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeCalculator()
             }
+        case .accountRemoteSubscription:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeAccountRemoteSubscription()
+            }
         }
     }
 

@@ -28,6 +28,7 @@ protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInte
     func remakeBagListSizeSubscription()
     func retryEraCompletionTime()
     func remakeCalculator()
+    func remakeAccountRemoteSubscription()
 }
 
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
@@ -43,6 +44,7 @@ protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInter
     func retryNetworkStakingInfo()
     func remakeCalculator()
     func retryStakingDuration()
+    func retryRewardPaymentDelay()
 }
 
 protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
@@ -52,6 +54,7 @@ protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInte
     func didReceive(calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceive(blockNumber: BlockNumber?)
     func didReceive(stakingDuration: ParachainStakingDuration)
+    func didReceive(rewardPaymentDelay: UInt32)
 }
 
 protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable {}
@@ -68,6 +71,7 @@ enum RelaychainStartStakingInfoError: Error {
     case bagListSize(Error)
     case minNominatorBond(Error)
     case calculator(Error)
+    case accountRemoteSubscription(Error)
 }
 
 enum ParachainStartStakingInfoError: Error {
@@ -77,4 +81,5 @@ enum ParachainStartStakingInfoError: Error {
     case calculator(Error)
     case blockNumber(Error)
     case stakingDuration(Error)
+    case rewardPaymentDelay(Error)
 }

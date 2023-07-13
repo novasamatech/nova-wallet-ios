@@ -6,6 +6,7 @@ import SubstrateSdk
 final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning {
     let chainRegistry: ChainRegistryProtocol
     let stateFactory: RelaychainStakingStateFactoryProtocol
+    let stakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
 
@@ -27,6 +28,8 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         selectedWalletSettings: SelectedWalletSettings,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
+        stakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         stateFactory: RelaychainStakingStateFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
@@ -34,6 +37,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     ) {
         self.stateFactory = stateFactory
         self.chainRegistry = chainRegistry
+        self.stakingAccountUpdatingService = stakingAccountUpdatingService
         stakingLocalSubscriptionFactory = stateFactory.stakingLocalSubscriptionFactory
 
         super.init(
@@ -41,6 +45,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
             selectedChainAsset: chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingAssetSubscriptionService: stakingAssetSubscriptionService,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -201,9 +206,33 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         operationQueue.addOperation(operation)
     }
 
+    private func clearAccountRemoteSubscription() {
+        stakingAccountUpdatingService.clearSubscription()
+    }
+
+    private func performAccountRemoteSubscription() {
+        guard let accountId = selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        let chainId = selectedChainAsset.chain.chainId
+        let chainFormat = selectedChainAsset.chain.chainFormat
+
+        do {
+            try stakingAccountUpdatingService.setupSubscription(
+                for: accountId,
+                chainId: chainId,
+                chainFormat: chainFormat
+            )
+        } catch {
+            presenter?.didReceive(error: .accountRemoteSubscription(error))
+        }
+    }
+
     override func setup() {
         super.setup()
 
+        performAccountRemoteSubscription()
         setupState()
 
         provideRewardCalculator()
@@ -253,5 +282,9 @@ extension StartStakingRelaychainInteractor: StartStakingInfoRelaychainInteractor
 
     func remakeCalculator() {
         provideRewardCalculator()
+    }
+
+    func remakeAccountRemoteSubscription() {
+        performAccountRemoteSubscription()
     }
 }
