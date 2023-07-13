@@ -183,7 +183,7 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
     private func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
         return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 

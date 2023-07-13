@@ -10,7 +10,7 @@ abstract_target 'novawalletAll' do
   pod 'SoraKeystore', '~> 1.0.0'
   pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :tag => '1.11.1'
   pod 'RobinHood', '~> 2.6.0'
-  pod 'SoraFoundation', '~> 1.0.0'
+  pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift'
   pod 'SnapKit', '~> 5.0.0'
@@ -31,7 +31,7 @@ abstract_target 'novawalletAll' do
 
     pod 'Cuckoo'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '1.13.0'
-    pod 'SoraFoundation', '~> 1.0.0'
+    pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'SoraKeystore', '~> 1.0.0'

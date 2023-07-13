@@ -75,7 +75,7 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         }
 
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
-        return formatterFactory.createTokenFormatter(for: priceAssetInfo)
+        return formatterFactory.createAssetPriceFormatter(for: priceAssetInfo)
     }
 
     func amountFromValue(
