@@ -10,6 +10,7 @@ struct CrowdloanDisplayInfo: Codable, Equatable {
     let rewardRate: Decimal?
     let customFlow: String?
     let extras: [String: String]?
+    let movedToParaId: String?
 }
 
 typealias CrowdloanDisplayInfoList = [CrowdloanDisplayInfo]

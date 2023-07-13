@@ -90,7 +90,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     // swiftlint:enable force_cast
 
     var opensourceURL: URL {
-        URL(string: "https://github.com/nova-wallet")!
+        URL(string: "https://github.com/novasamatech")!
     }
 
     // swiftlint:disable force_cast
@@ -103,7 +103,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var logoURL: URL {
         // swiftlint:disable:next line_length
-        let logoString = "https://raw.githubusercontent.com/nova-wallet/branding/master/logos/Nova_Wallet_Horizontal_iOS_Ramp.png"
+        let logoString = "https://raw.githubusercontent.com/novasamatech/branding/master/logos/Nova_Wallet_Horizontal_iOS_Ramp.png"
         return URL(string: logoString)!
     }
 
@@ -129,27 +129,27 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v12/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v12/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v12/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v12/chains_dev.json")!
         #endif
     }
 
     var evmAssetsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v2/assets.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets.json")!
         #else
             URL(
-                string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v2/assets_dev.json"
+                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets_dev.json"
             )!
         #endif
     }
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v4/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v4/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v4/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v4/transfers_dev.json")!
         #endif
     }
 
@@ -163,17 +163,17 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var dAppsListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps_dev.json")!
         #endif
     }
 
     var governanceDAppsListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/v2/dapps.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/governance/v2/dapps.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/v2/dapps_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/governance/v2/dapps_dev.json")!
         #endif
     }
 
@@ -191,7 +191,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var commonTypesURL: URL {
-        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/types/default.json")!
+        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/types/default.json")!
     }
 
     var learnPayoutURL: URL {
@@ -234,22 +234,22 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     // swiftlint:disable line_length
     var inAppUpdatesEntrypointURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_release.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-wallet-ios-releases/master/updates/v1/entrypoint_release.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
         #endif
     }
 
     var inAppUpdatesChangelogsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/release")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-wallet-ios-releases/master/updates/changelogs/release")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-wallet-ios-releases/master/updates/changelogs/dev")!
         #endif
     }
 
     var slip44URL: URL {
-        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
+        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/slip44.json")!
     }
 
     // swiftlint:enable line_length

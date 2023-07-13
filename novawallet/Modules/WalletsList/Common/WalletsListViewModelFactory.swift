@@ -147,7 +147,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
     func formatPrice(amount: Decimal, locale: Locale) -> String {
         let currencyId = currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        let priceFormatter = assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
         return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 }

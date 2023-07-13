@@ -3254,7 +3254,6 @@
 		AEF507AF262423FD0098574D /* HmacSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF507AE262423FD0098574D /* HmacSigner.swift */; };
 		AEF507F226259DF00098574D /* ValidationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF507F126259DF00098574D /* ValidationViewModel.swift */; };
 		AEF507F72625A3280098574D /* ValidatorState+Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF507F62625A3280098574D /* ValidatorState+Status.swift */; };
-		AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF73FB425DBA24300407D41 /* PhishingCheckExecutor.swift */; };
 		AEF7404E25E6DC9400407D41 /* InflationCurveRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF7404D25E6DC9400407D41 /* InflationCurveRewardEngine.swift */; };
 		AEFA82BC4285117096BCBB16 /* StakingPayoutConfirmationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFDF844248CD43AAD13139F /* StakingPayoutConfirmationInteractor.swift */; };
 		AEFC6D6F2600D7CD000BD310 /* NetworkInfoViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFC6D6E2600D7CD000BD310 /* NetworkInfoViewModelFactory.swift */; };
@@ -6963,7 +6962,6 @@
 		AEF507AE262423FD0098574D /* HmacSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacSigner.swift; sourceTree = "<group>"; };
 		AEF507F126259DF00098574D /* ValidationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationViewModel.swift; sourceTree = "<group>"; };
 		AEF507F62625A3280098574D /* ValidatorState+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ValidatorState+Status.swift"; sourceTree = "<group>"; };
-		AEF73FB425DBA24300407D41 /* PhishingCheckExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingCheckExecutor.swift; sourceTree = "<group>"; };
 		AEF7404D25E6DC9400407D41 /* InflationCurveRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InflationCurveRewardEngine.swift; sourceTree = "<group>"; };
 		AEFC6D6E2600D7CD000BD310 /* NetworkInfoViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInfoViewModelFactory.swift; sourceTree = "<group>"; };
 		AEFED3DAA18BCEF0BFA15728 /* SelectValidatorsStartInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartInteractor.swift; sourceTree = "<group>"; };
@@ -7782,7 +7780,6 @@
 			children = (
 				2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */,
 				2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */,
-				AEF73FB425DBA24300407D41 /* PhishingCheckExecutor.swift */,
 				2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */,
 				2AD0A19425D3D3EC00312428 /* GitHubOperationFactory.swift */,
 				84F3B27327F4130800D64CF5 /* PhishingSites.swift */,
@@ -17879,7 +17876,6 @@
 				84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */,
 				8487010A2907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift in Sources */,
 				84CA407C2A037175004BB71E /* WalletConnectSessionListViewModel.swift in Sources */,
-				AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */,
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
 				887AFC8D28BCB314002A0422 /* SelectableIconSubtitleCollectionViewCell.swift in Sources */,

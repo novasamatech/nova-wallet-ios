@@ -102,7 +102,7 @@ class AssetListAssetViewModelFactory {
             let priceChangeString = percentFormatter.value(for: locale)
                 .stringFromDecimal(priceChangeValue) ?? ""
             let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
-            let priceFormatter = assetFormatterFactory.createTokenFormatter(for: priceAssetInfo).value(for: locale)
+            let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: priceAssetInfo).value(for: locale)
             let priceString = priceFormatter.stringFromDecimal(price) ?? ""
 
             let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
@@ -152,7 +152,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
     func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
         return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 
