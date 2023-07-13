@@ -15,6 +15,8 @@ protocol AssetBalanceFormatterFactoryProtocol {
         roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<TokenFormatter>
 
+    func createAssetPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
+
     func createInputTokenFormatter(
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter>
@@ -37,9 +39,14 @@ extension AssetBalanceFormatterFactoryProtocol {
 class AssetBalanceFormatterFactory {
     private func createTokenFormatterCommon(
         for info: AssetBalanceDisplayInfo,
-        roundingMode: NumberFormatter.RoundingMode
+        roundingMode: NumberFormatter.RoundingMode,
+        preferredPrecisionOffset: UInt8 = 0
     ) -> LocalizableResource<TokenFormatter> {
-        let formatter = createCompoundFormatter(for: info.displayPrecision, roundingMode: roundingMode)
+        let formatter = createCompoundFormatter(
+            for: info.displayPrecision,
+            roundingMode: roundingMode,
+            prefferedPrecisionOffset: preferredPrecisionOffset
+        )
 
         let tokenFormatter = TokenFormatter(
             decimalFormatter: formatter,
@@ -57,7 +64,8 @@ class AssetBalanceFormatterFactory {
     // swiftlint:disable function_body_length
     private func createCompoundFormatter(
         for preferredPrecision: UInt16,
-        roundingMode: NumberFormatter.RoundingMode = .down
+        roundingMode: NumberFormatter.RoundingMode = .down,
+        prefferedPrecisionOffset: UInt8 = 0
     ) -> LocalizableDecimalFormatting {
         let abbreviations: [BigNumberAbbreviation] = [
             BigNumberAbbreviation(
@@ -66,6 +74,7 @@ class AssetBalanceFormatterFactory {
                 suffix: "",
                 formatter: DynamicPrecisionFormatter(
                     preferredPrecision: UInt8(preferredPrecision),
+                    preferredPrecisionOffset: prefferedPrecisionOffset,
                     roundingMode: roundingMode
                 )
             ),
@@ -139,6 +148,10 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
         roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<TokenFormatter> {
         createTokenFormatterCommon(for: info, roundingMode: roundingMode)
+    }
+
+    func createAssetPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
+        createTokenFormatterCommon(for: info, roundingMode: .down, preferredPrecisionOffset: 2)
     }
 
     func createInputTokenFormatter(

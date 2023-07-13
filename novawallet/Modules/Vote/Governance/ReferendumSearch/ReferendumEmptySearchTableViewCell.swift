@@ -25,4 +25,8 @@ final class ReferendumEmptySearchTableViewCell: UITableViewCell {
     func bind(text: String) {
         view.bind(text: text)
     }
+
+    func bind(icon: UIImage?) {
+        view.iconView.image = icon
+    }
 }
