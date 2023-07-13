@@ -8,7 +8,7 @@ enum StakingMainViewFactory {
     static func createView(for stakingOption: Multistaking.ChainAssetOption) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
-        let interactor = StakingMainInteractor(commonSettings: settings)
+        let interactor = createInteractor(with: settings, stakingOption: stakingOption)
         let wireframe = StakingMainWireframe()
 
         let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy
@@ -36,5 +36,24 @@ enum StakingMainViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        with settings: SettingsManagerProtocol,
+        stakingOption: Multistaking.ChainAssetOption
+    ) -> StakingMainInteractor {
+        let mapper = AnyCoreDataMapper(StakingRewardsFilterMapper())
+        let facade = UserDataStorageFacade.shared
+        let stakingRewardsFilterRepository = AnyDataProviderRepository(facade.createRepository(mapper: mapper))
+
+        return .init(
+            stakingOption: stakingOption,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            commonSettings: settings,
+            eventCenter: EventCenter.shared,
+            stakingRewardsFilterRepository: stakingRewardsFilterRepository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
     }
 }

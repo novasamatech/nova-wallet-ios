@@ -15,6 +15,7 @@ final class StakingMainPresenter {
     let accountManagementFilter: AccountManagementFilterProtocol
 
     private var childPresenter: StakingMainChildPresenterProtocol?
+    private var period: StakingRewardFiltersPeriod?
 
     init(
         interactor: StakingMainInteractorInputProtocol,
@@ -142,10 +143,31 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     func performManageAction(_ action: StakingManageOption) {
         childPresenter?.performManageAction(action)
     }
+
+    func selectPeriod() {
+        wireframe.showPeriodSelection(
+            from: view,
+            initialState: period,
+            delegate: self
+        ) { [weak self] in
+            self?.view?.didEditRewardFilters()
+        }
+    }
 }
 
 extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     func didReceiveExpansion(_ isExpanded: Bool) {
         view?.expandNetworkInfoView(isExpanded)
+    }
+
+    func didReceiveRewardFilter(_ period: StakingRewardFiltersPeriod) {
+        self.period = period
+        childPresenter?.selectPeriod(period)
+    }
+}
+
+extension StakingMainPresenter: StakingRewardFiltersDelegate {
+    func stackingRewardFilter(didSelectFilter filter: StakingRewardFiltersPeriod) {
+        interactor.save(filter: filter)
     }
 }
