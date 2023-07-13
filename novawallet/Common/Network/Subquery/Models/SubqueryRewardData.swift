@@ -2,6 +2,11 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
+enum SubqueryRewardType: String {
+    case reward
+    case slash
+}
+
 struct SubqueryRewardItemData: Equatable, Codable {
     let eventId: String
     let timestamp: Int64

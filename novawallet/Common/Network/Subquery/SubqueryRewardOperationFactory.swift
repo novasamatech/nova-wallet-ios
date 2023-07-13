@@ -103,23 +103,22 @@ final class SubqueryRewardOperationFactory {
         address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        isAsc: Bool
+        type: SubqueryRewardType
     ) -> String {
         let filter = queryFilter(filters: [
             addressQueryFilter(address),
             timestampQueryFilter(startTimestamp: startTimestamp, endTimestamp: endTimestamp)
         ])
-        let order = isAsc ? "BLOCK_NUMBER_ASC" : "BLOCK_NUMBER_DESC"
+
         return """
         accountRewards(
                          \(filter)
-                         orderBy: \(order)
-                         first: 1
                      ) {
-                         nodes {
-                             accumulatedAmount
-                             amount
-                         }
+                        groupedAggregates(groupBy: [ADDRESS]) {
+                            sum {
+                                amount
+                            }
+                        }
                      }
         """
     }
@@ -132,8 +131,8 @@ final class SubqueryRewardOperationFactory {
         return "filter: { \(filters.joined(separator: ",")) }"
     }
 
-    func addressQueryFilter(_ address: AccountAddress) -> String {
-        "address: { equalTo: \"\(address)\" }"
+    func addressQueryFilter(_ address: AccountAddress) -> SubqueryFilter {        
+        SubqueryEqualToFilter(fieldName: "address", value: address)
     }
 
     func timestampQueryFilter(startTimestamp: Int64?, endTimestamp: Int64?) -> String {
