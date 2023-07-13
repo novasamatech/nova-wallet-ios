@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 extension ParachainStaking {
-    struct NetworkInfo {
+    struct NetworkInfo: Equatable {
         let totalStake: BigUInt
         let minStakeForRewards: BigUInt
         let minTechStake: BigUInt

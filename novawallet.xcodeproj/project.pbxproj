@@ -481,6 +481,7 @@
 		77A6F5CF2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */; };
 		77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */; };
 		77A6F5D52A31E046004AFD1A /* JsonCanonicalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */; };
+		77B542162A5EFD7E0038F2AD /* StartStakingStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B542152A5EFD7E0038F2AD /* StartStakingStateProtocol.swift */; };
 		77CB33CE2A38780700B6709A /* structures_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77CB33CD2A38780700B6709A /* structures_output.json */; };
 		77CB33D22A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */; };
 		77CB33D72A3998FD00B6709A /* Array+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D62A3998FC00B6709A /* Array+Sort.swift */; };
@@ -4143,6 +4144,7 @@
 		77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepositoryFactory.swift; sourceTree = "<group>"; };
 		77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizer.swift; sourceTree = "<group>"; };
 		77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizerTests.swift; sourceTree = "<group>"; };
+		77B542152A5EFD7E0038F2AD /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		77CB33CD2A38780700B6709A /* structures_output.json */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; path = structures_output.json; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 0; };
 		77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifierWithCanonicalizationData.swift; sourceTree = "<group>"; };
 		77CB33D62A3998FC00B6709A /* Array+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Sort.swift"; sourceTree = "<group>"; };
@@ -8516,6 +8518,7 @@
 				77F189462A49BD6700E8B933 /* StartStakingViewModel.swift */,
 				77F189482A4A299800E8B933 /* StartStakingViewModelFactory.swift */,
 				7762D6912A5DD64700C25BB3 /* BalanceState.swift */,
+				77B542152A5EFD7E0038F2AD /* StartStakingStateProtocol.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -20041,6 +20044,7 @@
 				C4A4D40A08DAB4A71C21C1A8 /* StakingRedeemInteractor.swift in Sources */,
 				88A6BD0128CA15710047E4C2 /* LocksViewInput.swift in Sources */,
 				B1CCC5B7BF30F6ACA309B112 /* StakingRedeemViewController.swift in Sources */,
+				77B542162A5EFD7E0038F2AD /* StartStakingStateProtocol.swift in Sources */,
 				C21129B2B8D8B33BCBD5843E /* StakingRedeemViewFactory.swift in Sources */,
 				85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */,
 				8846FFA629C850CE00796A7E /* AsciiDataString.swift in Sources */,

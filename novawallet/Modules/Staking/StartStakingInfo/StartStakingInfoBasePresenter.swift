@@ -7,20 +7,24 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let wireframe: StartStakingInfoWireframeProtocol
     let baseInteractor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
+    let applicationConfig: ApplicationConfigProtocol
 
     private(set) var price: PriceData?
     private(set) var chainAsset: ChainAsset?
     private(set) var balanceState: BalanceState?
+    private var state: StartStakingStateProtocol?
 
     init(
         interactor: StartStakingInfoInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        applicationConfig: ApplicationConfigProtocol
     ) {
         baseInteractor = interactor
         self.wireframe = wireframe
         self.startStakingViewModelFactory = startStakingViewModelFactory
+        self.applicationConfig = applicationConfig
         self.localizationManager = localizationManager
     }
 
@@ -42,6 +46,91 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             view?.didReceive(balance: viewModel)
         case .none:
             break
+        }
+    }
+
+    func provideViewModel(state: StartStakingStateProtocol) {
+        self.state = state
+
+        guard
+            let enoughMoneyForDirectStaking = enoughMoneyForDirectStaking(state: state),
+            let chainAsset = chainAsset,
+            let eraDuration = state.eraDuration,
+            let unstakingTime = state.unstakingTime,
+            let nextEraStartTime = state.nextEraStartTime,
+            let minStake = state.minStake,
+            let maxApy = state.maxApy else {
+            return
+        }
+
+        let directStakingAmount = enoughMoneyForDirectStaking ? state.directStakingMinStake : nil
+        let title = startStakingViewModelFactory.earnupModel(
+            earnings: maxApy,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
+        let wikiUrl = startStakingViewModelFactory.wikiModel(
+            url: applicationConfig.novaWikiURL,
+            chain: chainAsset.chain,
+            locale: selectedLocale
+        )
+        let termsUrl = startStakingViewModelFactory.termsModel(
+            url: applicationConfig.termsURL,
+            locale: selectedLocale
+        )
+        let testnetModel = chainAsset.chain.isTestnet ? startStakingViewModelFactory.testNetworkModel(
+            chain: chainAsset.chain,
+            locale: selectedLocale
+        ) : nil
+
+        let govModel = chainAsset.chain.hasGovernance ? startStakingViewModelFactory.govModel(
+            amount: directStakingAmount,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        ) : nil
+
+        let paragraphs = [
+            testnetModel,
+            startStakingViewModelFactory.stakeModel(
+                minStake: minStake,
+                nextEra: nextEraStartTime,
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            ),
+            startStakingViewModelFactory.unstakeModel(unstakePeriod: unstakingTime, locale: selectedLocale),
+            startStakingViewModelFactory.rewardModel(
+                amount: directStakingAmount,
+                chainAsset: chainAsset,
+                eraDuration: eraDuration,
+                locale: selectedLocale
+            ),
+            govModel,
+            startStakingViewModelFactory.recommendationModel(locale: selectedLocale)
+        ].compactMap { $0 }
+
+        let model = StartStakingViewModel(
+            title: title,
+            paragraphs: paragraphs,
+            wikiUrl: wikiUrl,
+            termsUrl: termsUrl
+        )
+
+        view?.didReceive(viewModel: .loaded(value: model))
+    }
+
+    private func enoughMoneyForDirectStaking(state: StartStakingStateProtocol) -> Bool? {
+        guard let balanceState = balanceState else {
+            return nil
+        }
+        guard let minStake = state.minStake else {
+            return nil
+        }
+
+        switch balanceState {
+        case let .assetBalance(assetBalance):
+            return assetBalance.freeInPlank >= minStake
+        case .noAccount:
+            return false
         }
     }
 
@@ -86,5 +175,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 }
 
 extension StartStakingInfoBasePresenter: Localizable {
-    func applyLocalization() {}
+    func applyLocalization() {
+        if view?.isSetup == true {
+            provideBalanceModel()
+            state.map(provideViewModel)
+        }
+    }
 }

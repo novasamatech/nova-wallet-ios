@@ -248,4 +248,16 @@ extension StartStakingParachainInteractor: GeneralLocalStorageSubscriber, Genera
     }
 }
 
-extension StartStakingParachainInteractor: StartStakingInfoParachainInteractorInputProtocol {}
+extension StartStakingParachainInteractor: StartStakingInfoParachainInteractorInputProtocol {
+    func retryNetworkStakingInfo() {
+        provideNetworkInfo()
+    }
+    
+    func remakeCalculator() {
+        provideRewardCalculator()
+    }
+    
+    func retryStakingDuration() {
+        provideStakingDurationInfo()
+    }
+}

@@ -39,7 +39,11 @@ protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInt
     func didReceive(calculator: RewardCalculatorEngineProtocol)
 }
 
-protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {}
+protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
+    func retryNetworkStakingInfo()
+    func remakeCalculator()
+    func retryStakingDuration()
+}
 
 protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
     func didReceive(networkInfo: ParachainStaking.NetworkInfo?)

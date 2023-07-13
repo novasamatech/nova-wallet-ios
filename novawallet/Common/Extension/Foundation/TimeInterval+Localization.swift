@@ -54,7 +54,7 @@ extension TimeInterval {
             components.append(hoursString)
         }
 
-        if minutes > 0 {
+        if minutes > 0, components.count < 2 {
             let minutesString = R.string.localizable.commonMinutesFormat(
                 format: minutes, preferredLanguages: locale.rLanguages
             )
