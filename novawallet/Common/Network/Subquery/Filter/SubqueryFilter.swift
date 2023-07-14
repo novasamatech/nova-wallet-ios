@@ -17,6 +17,24 @@ struct SubqueryEqualToFilter<T: SubqueryFilterValue>: SubqueryFilter {
     }
 }
 
+struct SubqueryGreaterThanOrEqualToFilter<T: SubqueryFilterValue>: SubqueryFilter {
+    let fieldName: String
+    let value: T
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): {greaterThanOrEqualTo: \(value.rawSubqueryFilter())}"
+    }
+}
+
+struct SubqueryLessThanOrEqualToFilter<T: SubqueryFilterValue>: SubqueryFilter {
+    let fieldName: String
+    let value: T
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): {lessThanOrEqualTo: \(value.rawSubqueryFilter())}"
+    }
+}
+
 extension String: SubqueryFilterValue {
     func rawSubqueryFilter() -> String {
         "\"\(self)\""
