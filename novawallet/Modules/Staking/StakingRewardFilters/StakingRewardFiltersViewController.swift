@@ -9,6 +9,8 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
     var viewModel: StakingRewardFiltersViewModel?
+
+    var initialViewModel: StakingRewardFiltersViewModel?
     let dateFormatter: LocalizableResource<DateFormatter>
     let calendar: Calendar
 
@@ -263,7 +265,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         self.viewModel = viewModel
         var snapshot = Snapshot()
 
-        setupSaveButton(isEnabled: map(viewModel: viewModel) != nil)
+        let canSave = map(viewModel: viewModel) != nil && viewModel != initialViewModel
+        setupSaveButton(isEnabled: canSave)
+
         let periodSection = Section.period
         snapshot.appendSections([periodSection])
         snapshot.appendItems(
@@ -329,6 +333,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
 extension StakingRewardFiltersViewController: StakingRewardFiltersViewProtocol {
     func didReceive(viewModel: StakingRewardFiltersPeriod) {
         let newViewModel = map(period: viewModel)
+
+        initialViewModel = newViewModel
+
         updateViewModel(viewModel: newViewModel)
     }
 }
