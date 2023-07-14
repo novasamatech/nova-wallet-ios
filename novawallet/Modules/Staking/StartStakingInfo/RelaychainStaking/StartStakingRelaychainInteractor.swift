@@ -51,6 +51,16 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         )
     }
 
+    deinit {
+        clear(cancellable: &networkInfoCancellable)
+        clear(dataProvider: &minNominatorBondProvider)
+        clear(dataProvider: &bagListSizeProvider)
+        clear(cancellable: &eraCompletionTimeCancellable)
+        clear(cancellable: &rewardCalculatorCancellable)
+        clearAccountRemoteSubscription()
+        sharedState?.throttleServices()
+    }
+
     private func provideNetworkStakingInfo() {
         do {
             clear(cancellable: &networkInfoCancellable)

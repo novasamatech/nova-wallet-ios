@@ -61,6 +61,15 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         )
     }
 
+    deinit {
+        clear(cancellable: &networkInfoCancellable)
+        clear(cancellable: &rewardCalculatorCancellable)
+        clear(cancellable: &durationCancellable)
+        clear(cancellable: &rewardPaymentDelayCancellable)
+        clearAccountRemoteSubscription()
+        sharedState?.throttleServices()
+    }
+
     private func provideNetworkInfo() {
         clear(cancellable: &networkInfoCancellable)
         let chainId = selectedChainAsset.chain.chainId

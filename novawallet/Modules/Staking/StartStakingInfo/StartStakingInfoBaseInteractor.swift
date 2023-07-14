@@ -34,6 +34,12 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         self.currencyManager = currencyManager
     }
 
+    deinit {
+        clear(streamableProvider: &priceProvider)
+        clear(streamableProvider: &balanceProvider)
+        clearChainRemoteSubscription()
+    }
+
     private func performPriceSubscription() {
         clear(streamableProvider: &priceProvider)
 
@@ -73,7 +79,9 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         basePresenter?.didReceive(wallet: wallet, chainAccountId: selectedAccount?.chainAccount.accountId)
     }
 
-    private func clearChainRemoteSubscription(for chainId: ChainModel.Id) {
+    private func clearChainRemoteSubscription() {
+        let chainId = selectedChainAsset.chain.chainId
+
         if let chainSubscriptionId = chainSubscriptionId {
             stakingAssetSubscriptionService.detachFromGlobalData(
                 for: chainSubscriptionId,
