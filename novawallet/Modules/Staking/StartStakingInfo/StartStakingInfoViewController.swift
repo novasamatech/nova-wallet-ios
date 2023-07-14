@@ -30,6 +30,7 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
         presenter.setup()
     }
 
@@ -51,6 +52,10 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
         )
     }
 
+    private func setupHandlers() {
+        rootView.actionView.actionButton.addTarget(self, action: #selector(startStakingAction), for: .touchUpInside)
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -58,6 +63,10 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
             rootView.updateLoadingState()
             rootView.skeletonView?.restartSkrulling()
         }
+    }
+
+    @objc private func startStakingAction() {
+        presenter.startStaking()
     }
 }
 

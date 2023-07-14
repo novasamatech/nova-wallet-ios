@@ -70,7 +70,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
             for: selectedChainAsset.chain.accountRequest()
         )
 
-        basePresenter?.didReceive(accountId: selectedAccount?.chainAccount.accountId)
+        basePresenter?.didReceive(wallet: wallet, chainAccountId: selectedAccount?.chainAccount.accountId)
     }
 
     private func clearChainRemoteSubscription(for chainId: ChainModel.Id) {

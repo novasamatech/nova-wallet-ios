@@ -103,16 +103,19 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         wikiUrl: StartStakingUrlModel,
         termsUrl: StartStakingUrlModel
     ) {
-        containerView.stackView.arrangedSubviews.forEach(containerView.stackView.removeArrangedSubview)
-        containerView.stackView.spacing = Constants.containerSpacing
+        let arrangedSubviews = stackView.arrangedSubviews
+
+        arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+
+        stackView.spacing = Constants.containerSpacing
 
         set(title: title)
         set(paragraphs: paragraphs)
         setWiki(urlModel: wikiUrl)
         setTerms(urlModel: termsUrl)
-
-        containerView.setNeedsLayout()
-        layoutIfNeeded()
     }
 
     func updateBalanceButton(text: String, locale: Locale) {

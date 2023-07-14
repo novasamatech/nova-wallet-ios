@@ -13,6 +13,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     private(set) var chainAsset: ChainAsset?
     private(set) var balanceState: BalanceState?
     private var state: StartStakingStateProtocol?
+    private var wallet: MetaAccountModel?
 
     init(
         interactor: StartStakingInfoInteractorInputProtocol,
@@ -151,8 +152,9 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         provideBalanceModel()
     }
 
-    func didReceive(accountId: AccountId?) {
-        if accountId == nil {
+    func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
+        self.wallet = wallet
+        if chainAccountId == nil {
             balanceState = .noAccount
             provideBalanceModel()
         }
@@ -171,6 +173,37 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func setup() {
         baseInteractor.setup()
+    }
+
+    func startStaking() {
+        guard let view = view,
+              let chain = chainAsset?.chain,
+              let wallet = wallet else {
+            return
+        }
+        switch balanceState {
+        case .noAccount:
+            let message = R.string.localizable.commonChainAccountMissingMessageFormat(
+                chain.name,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.wireframe.showWalletDetails(
+                    from: view,
+                    wallet: wallet
+                )
+            }
+        case .assetBalance:
+            wireframe.showSetupAmount(from: view)
+        case .none:
+            break
+        }
     }
 }
 
