@@ -9,7 +9,7 @@ struct StakingRewardFiltersViewFactory {
         let wireframe = StakingRewardFiltersWireframe()
 
         let presenter = StakingRewardFiltersPresenter(
-            initialState: initialState,
+            initialState: initialState ?? .allTime,
             delegate: delegate,
             wireframe: wireframe
         )

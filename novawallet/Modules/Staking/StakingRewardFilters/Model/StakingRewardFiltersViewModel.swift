@@ -1,6 +1,6 @@
 import SoraFoundation
 
-struct StakingRewardFiltersViewModel {
+struct StakingRewardFiltersViewModel: Equatable {
     var period: Period
     var customPeriod: CustomPeriod = .defaultValue
 
