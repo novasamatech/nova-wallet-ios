@@ -39,5 +39,6 @@ enum SubqueryMultistaking {
         let activeStakers: SubqueryNodes<ActiveStaker>
         let stakingApies: SubqueryNodes<Apy>
         let rewards: SubqueryAggregates<AccumulatedReward>
+        let slashes: SubqueryAggregates<AccumulatedReward>
     }
 }
