@@ -54,7 +54,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.state = state
 
         guard
-            let enoughMoneyForDirectStaking = enoughMoneyForDirectStaking(state: state),
+            let enoughTokensForDirectStaking = enoughTokensForDirectStaking(state: state),
             let chainAsset = chainAsset,
             let eraDuration = state.eraDuration,
             let unstakingTime = state.unstakingTime,
@@ -64,7 +64,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             return
         }
 
-        let directStakingAmount = enoughMoneyForDirectStaking ? state.directStakingMinStake : nil
+        let directStakingAmount = enoughTokensForDirectStaking ? state.directStakingMinStake : nil
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
             chainAsset: chainAsset,
@@ -119,7 +119,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         view?.didReceive(viewModel: .loaded(value: model))
     }
 
-    private func enoughMoneyForDirectStaking(state: StartStakingStateProtocol) -> Bool? {
+    private func enoughTokensForDirectStaking(state: StartStakingStateProtocol) -> Bool? {
         guard let balanceState = balanceState else {
             return nil
         }

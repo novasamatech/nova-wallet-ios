@@ -211,7 +211,7 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
                 case let .success(value):
                     self?.presenter?.didReceive(rewardPaymentDelay: value)
                 case let .failure(error):
-                    self?.presenter?.didReceive(error: .rewardPaymentDelay(ChainRegistryError.runtimeMetadaUnavailable))
+                    self?.presenter?.didReceive(error: .rewardPaymentDelay(error))
                 }
             }
         }

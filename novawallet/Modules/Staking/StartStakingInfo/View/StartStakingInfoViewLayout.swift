@@ -127,7 +127,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private func set(title: AccentTextModel) {
         header.titleLabel.bind(model: title, with: style)
         header.titleLabel.numberOfLines = 0
-        containerView.stackView.addArrangedSubview(header)
+        stackView.addArrangedSubview(header)
     }
 
     private func set(paragraphs: [ParagraphView.Model]) {
@@ -137,7 +137,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             view.bind(viewModel: $0)
             view.contentInsets = .zero
             paragraphViews.append(view)
-            containerView.stackView.addArrangedSubview(view)
+            stackView.addArrangedSubview(view)
         }
     }
 
@@ -155,7 +155,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
 extension StartStakingInfoViewLayout: SkeletonableView {
     var skeletonSuperview: UIView {
-        containerView
+        self
     }
 
     var hidingViews: [UIView] {
@@ -178,14 +178,16 @@ extension StartStakingInfoViewLayout: SkeletonableView {
         let headerSecondLineSize = CGSize(width: 185, height: 16)
         let headerThirdLineSize = CGSize(width: 109, height: 16)
 
+        let topOffsetY = safeAreaInsets.top + Constants.containerInsets.top + header.titleLabel.font.lineHeight - headerFirstLineSize.height / 2
+
         let headerFirstLineOffset = CGPoint(
             x: spaceSize.width / 2 - headerFirstLineSize.width / 2,
-            y: 71
+            y: topOffsetY
         )
 
         let headerFirstLineSkeleton = SingleSkeleton.createRow(
-            on: containerView,
-            containerView: containerView,
+            on: self,
+            containerView: self,
             spaceSize: spaceSize,
             offset: headerFirstLineOffset,
             size: headerFirstLineSize
@@ -195,8 +197,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             y: headerFirstLineOffset.y + headerFirstLineSize.height + 17
         )
         let headerSecondLineSkeleton = SingleSkeleton.createRow(
-            on: containerView,
-            containerView: containerView,
+            on: self,
+            containerView: self,
             spaceSize: spaceSize,
             offset: headerSecondLineOffset,
             size: headerSecondLineSize
@@ -207,8 +209,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             y: headerSecondLineOffset.y + headerSecondLineSize.height + 17
         )
         let headerThirdLineSkeleton = SingleSkeleton.createRow(
-            on: containerView,
-            containerView: containerView,
+            on: self,
+            containerView: self,
             spaceSize: spaceSize,
             offset: headerThirdLineOffset,
             size: headerThirdLineSize
@@ -221,8 +223,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             )
 
             let iconSkeleton = SingleSkeleton.createRow(
-                on: containerView,
-                containerView: containerView,
+                on: self,
+                containerView: self,
                 spaceSize: spaceSize,
                 offset: iconOffset,
                 size: iconSize
@@ -234,8 +236,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             )
 
             let titleSkeleton = SingleSkeleton.createRow(
-                on: containerView,
-                containerView: containerView,
+                on: self,
+                containerView: self,
                 spaceSize: spaceSize,
                 offset: titleOffset,
                 size: titleSize
@@ -247,8 +249,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             )
 
             let subtitleSkeleton = SingleSkeleton.createRow(
-                on: containerView,
-                containerView: containerView,
+                on: self,
+                containerView: self,
                 spaceSize: spaceSize,
                 offset: subtitleOffset,
                 size: subtitleSize
@@ -272,7 +274,7 @@ extension StartStakingInfoViewLayout {
         static let footerSpacing: CGFloat = 12
         static let footerInsets = UIEdgeInsets(top: 16, left: 16, bottom: 31, right: 16)
         static let containerInsets = UIEdgeInsets(
-            top: 0,
+            top: 12,
             left: 16,
             bottom: footerHeight,
             right: 16
