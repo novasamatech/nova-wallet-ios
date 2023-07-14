@@ -77,24 +77,24 @@ final class SubqueryRewardOperationFactory {
         startTimestamp: Int64?,
         endTimestamp: Int64?
     ) -> String {
-        let startQuery = accountRewardsQuery(
+        let rewardsQuery = accountRewardsQuery(
             address: address,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
-            isAsc: true
+            type: .reward
         )
 
-        let endQuery = accountRewardsQuery(
+        let slashQuery = accountRewardsQuery(
             address: address,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
-            isAsc: false
+            type: .slash
         )
 
         return """
         {
-            start: \(startQuery)
-            end: \(endQuery)
+            rewards: \(rewardsQuery)
+            slashes: \(slashQuery)
         }
         """
     }
@@ -105,14 +105,26 @@ final class SubqueryRewardOperationFactory {
         endTimestamp: Int64?,
         type: SubqueryRewardType
     ) -> String {
-        let filter = queryFilter(filters: [
-            addressQueryFilter(address),
-            timestampQueryFilter(startTimestamp: startTimestamp, endTimestamp: endTimestamp)
-        ])
+        var commonFilters: [SubqueryFilter] = [
+            SubqueryEqualToFilter(fieldName: "address", value: address),
+            SubqueryEqualToFilter(fieldName: "type", value: type)
+        ]
+
+        if let startTimestamp = startTimestamp {
+            let filter = SubqueryGreaterThanOrEqualToFilter(fieldName: "timestamp", value: String(startTimestamp))
+            commonFilters.append(filter)
+        }
+
+        if let endTimestamp = endTimestamp {
+            let filter = SubqueryLessThanOrEqualToFilter(fieldName: "timestamp", value: String(endTimestamp))
+            commonFilters.append(filter)
+        }
+
+        let queryFilter = SubqueryFilterBuilder.buildBlock(SubqueryCompoundFilter.and(commonFilters))
 
         return """
-        accountRewards(
-                         \(filter)
+            accountRewards(
+                         \(queryFilter)
                      ) {
                         groupedAggregates(groupBy: [ADDRESS]) {
                             sum {
@@ -121,33 +133,6 @@ final class SubqueryRewardOperationFactory {
                         }
                      }
         """
-    }
-
-    func queryFilter(filters: [String]) -> String {
-        guard !filters.isEmpty else {
-            return ""
-        }
-
-        return "filter: { \(filters.joined(separator: ",")) }"
-    }
-
-    func addressQueryFilter(_ address: AccountAddress) -> SubqueryFilter {        
-        SubqueryEqualToFilter(fieldName: "address", value: address)
-    }
-
-    func timestampQueryFilter(startTimestamp: Int64?, endTimestamp: Int64?) -> String {
-        let timestampFilter = [
-            startTimestamp.map {
-                "greaterThanOrEqualTo:\"\($0)\""
-            },
-            endTimestamp.map {
-                "lessThanOrEqualTo:\"\($0)\""
-            }
-        ]
-        .compactMap { $0 }
-        .joined(separator: ",")
-
-        return timestampFilter.isEmpty ? "" : "timestamp: { \(timestampFilter) }"
     }
 }
 
@@ -222,22 +207,19 @@ extension SubqueryRewardOperationFactory: SubqueryRewardOperationFactoryProtocol
         }
 
         let resultFactory = AnyNetworkResultFactory<BigUInt> { data in
-            let response = try JSONDecoder().decode(SubqueryResponse<JSON>.self, from: data)
+            let response = try JSONDecoder().decode(SubqueryResponse<SubqueryTotalRewardsData>.self, from: data)
 
             switch response {
             case let .errors(error):
                 throw error
             case let .data(response):
-                let startRewardAccumulatedAmountString = response.start?
-                    .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
-                let startRewardAmountString = response.start?
-                    .nodes?.arrayValue?.first?.amount?.stringValue
-                let endRewardAccumulatedAmountString = response.end?
-                    .nodes?.arrayValue?.first?.accumulatedAmount?.stringValue
-                let startRewardAccumulatedAmount = startRewardAccumulatedAmountString.map { BigUInt($0) ?? 0 } ?? 0
-                let startRewardAmount = startRewardAmountString.map { BigUInt($0) ?? 0 } ?? 0
-                let endRewardAccumulatedAmount = endRewardAccumulatedAmountString.map { BigUInt($0) ?? 0 } ?? 0
-                return endRewardAccumulatedAmount - startRewardAccumulatedAmount + startRewardAmount
+                let rewardsString = response.rewards.groupedAggregates.first?.sum.amount
+                let slashesString = response.slashes.groupedAggregates.first?.sum.amount
+
+                let rewardsAmount: BigUInt = rewardsString.flatMap { BigUInt(scientific: $0) } ?? 0
+                let slashesAmount: BigUInt = slashesString.flatMap { BigUInt(scientific: $0) } ?? 0
+
+                return rewardsAmount > slashesAmount ? rewardsAmount - slashesAmount : 0
             }
         }
 
