@@ -69,6 +69,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView.uiDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
+        #if F_DEV
+            if #available(iOS 16.4, *) {
+                rootView.webView.isInspectable = true
+            }
+        #endif
+
         configureObservers()
         configureHandlers()
     }
