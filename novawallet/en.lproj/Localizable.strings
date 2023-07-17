@@ -1304,6 +1304,7 @@
 "staking.start.earn.up" = "Earn up to %@";
 "staking.start.balance.with.fiat" = "Available balance: %@(%@)";
 "staking.start.balance" = "Available balance: %@";
+"staking.start.no.account" = "No %@ account";
 "common.time.in" = "in";
 "common.and" = " and ";
 "common.time.period.after" = "after";

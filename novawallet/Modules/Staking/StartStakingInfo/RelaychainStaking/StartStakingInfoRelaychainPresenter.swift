@@ -4,166 +4,59 @@ import BigInt
 
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoRelaychainInteractorInputProtocol
-    let applicationConfig: ApplicationConfigProtocol
 
-    private var minNominatorBond: LoadableViewModelState<BigUInt?> = .loading
-    private var bagListSize: LoadableViewModelState<UInt32?> = .loading
-    private var networkInfo: LoadableViewModelState<NetworkStakingInfo?> = .loading
-    private var eraCountdown: LoadableViewModelState<EraCountdown?> = .loading
-    private var maxApy: Decimal?
+    private var state: State = .init() {
+        didSet {
+            provideViewModel(state: state)
+        }
+    }
 
     init(
         interactor: StartStakingInfoRelaychainInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        applicationConfig: ApplicationConfigProtocol
+        applicationConfig: ApplicationConfigProtocol,
+        logger: LoggerProtocol?
     ) {
         self.interactor = interactor
-        self.applicationConfig = applicationConfig
 
         super.init(
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            applicationConfig: applicationConfig,
+            logger: logger
         )
     }
 
-    private func provideViewModel() {
-        guard
-            let enoughMoneyForDirectStaking = enoughMoneyForDirectStaking(),
-            let chainAsset = chainAsset,
-            let eraDuration = eraDuration(),
-            let networkInfo = networkInfo.value,
-            let unstakePeriod = networkInfo?.stakingDuration.unlocking,
-            let nominationEraValue = nextEraTime(),
-            let minStake = minStake(),
-            let maxApy = maxApy else {
-            return
-        }
-        let directStakingAmount = enoughMoneyForDirectStaking ? directStakingMinStake() : nil
-        let title = startStakingViewModelFactory.earnupModel(
-            earnings: maxApy,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        )
-        let wikiUrl = startStakingViewModelFactory.wikiModel(
-            url: applicationConfig.novaWikiURL,
-            chain: chainAsset.chain,
-            locale: selectedLocale
-        )
-        let termsUrl = startStakingViewModelFactory.termsModel(
-            url: applicationConfig.termsURL,
-            locale: selectedLocale
-        )
-        let testnetModel = chainAsset.chain.isTestnet ? startStakingViewModelFactory.testNetworkModel(
-            chain: chainAsset.chain,
-            locale: selectedLocale
-        ) : nil
-
-        let govModel = chainAsset.chain.hasGovernance ? startStakingViewModelFactory.govModel(
-            amount: directStakingAmount,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        ) : nil
-
-        let paragraphs = [
-            testnetModel,
-            startStakingViewModelFactory.stakeModel(
-                minStake: minStake,
-                nextEra: nominationEraValue,
-                chainAsset: chainAsset,
-                locale: selectedLocale
-            ),
-            startStakingViewModelFactory.unstakeModel(unstakePeriod: unstakePeriod, locale: selectedLocale),
-            startStakingViewModelFactory.rewardModel(
-                amount: directStakingAmount,
-                chainAsset: chainAsset,
-                eraDuration: eraDuration,
-                locale: selectedLocale
-            ),
-            govModel,
-            startStakingViewModelFactory.recommendationModel(locale: selectedLocale)
-        ].compactMap { $0 }
-
-        let model = StartStakingViewModel(
-            title: title,
-            paragraphs: paragraphs,
-            wikiUrl: wikiUrl,
-            termsUrl: termsUrl
-        )
-        view?.didReceive(viewModel: .loaded(value: model))
-    }
-
-    private func minStake() -> BigUInt? {
-        guard let networkInfo = networkInfo.value,
-              let minNominatorBond = minNominatorBond.value,
-              let bagListSize = bagListSize.value else {
-            return nil
-        }
-
-        return networkInfo?.calculateMinimumStake(
-            given: minNominatorBond,
-            votersCount: bagListSize
-        )
-    }
-
-    private func nextEraTime() -> TimeInterval? {
-        guard let eraCountdownResult = eraCountdown.value, let eraCountdown = eraCountdownResult else {
-            return nil
-        }
-
-        return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.currentEra + 1)
-    }
-
-    private func eraDuration() -> TimeInterval? {
-        guard let eraCountdownResult = eraCountdown.value else {
-            return nil
-        }
-
-        return eraCountdownResult?.eraTimeInterval
-    }
-
-    private func enoughMoneyForDirectStaking() -> Bool? {
-        guard let assetBalance = assetBalance else {
-            return nil
-        }
-        guard let minStake = directStakingMinStake() else {
-            return nil
-        }
-
-        return assetBalance.freeInPlank >= minStake
-    }
-
-    private func directStakingMinStake() -> BigUInt? {
-        // TODO: add nomination pool min staking
-        minStake()
+    override func setup() {
+        super.setup()
+        view?.didReceive(viewModel: .loading)
     }
 }
 
 extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInteractorOutputProtocol {
     func didReceive(minNominatorBond: BigUInt?) {
-        self.minNominatorBond = .loaded(value: minNominatorBond)
-        provideViewModel()
+        state.minNominatorBond = .loaded(value: minNominatorBond)
     }
 
     func didReceive(bagListSize: UInt32?) {
-        self.bagListSize = .loaded(value: bagListSize)
-        provideViewModel()
+        state.bagListSize = .loaded(value: bagListSize)
     }
 
     func didReceive(networkInfo: NetworkStakingInfo?) {
-        self.networkInfo = .loaded(value: networkInfo)
-        provideViewModel()
+        state.networkInfo = networkInfo
     }
 
     func didReceive(eraCountdown: EraCountdown?) {
-        self.eraCountdown = .loaded(value: eraCountdown)
-        provideViewModel()
+        state.eraCountdown = eraCountdown
     }
 
     func didReceive(error: RelaychainStartStakingInfoError) {
+        logger?.error("Did receive error: \(error)")
+
         switch error {
         case .networkStakingInfo:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -189,10 +82,66 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeCalculator()
             }
+        case .accountRemoteSubscription:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeAccountRemoteSubscription()
+            }
         }
     }
 
     func didReceive(calculator: RewardCalculatorEngineProtocol) {
-        maxApy = calculator.calculateMaxEarnings(amount: 1, isCompound: true, period: .year)
+        state.maxApy = calculator.calculateMaxEarnings(amount: 1, isCompound: true, period: .year)
+    }
+}
+
+extension StartStakingInfoRelaychainPresenter {
+    struct State: StartStakingStateProtocol {
+        var minNominatorBond: LoadableViewModelState<BigUInt?> = .loading
+        var bagListSize: LoadableViewModelState<UInt32?> = .loading
+        var networkInfo: NetworkStakingInfo?
+        var eraCountdown: EraCountdown?
+        var maxApy: Decimal?
+
+        var minStake: BigUInt? {
+            guard let networkInfo = networkInfo,
+                  let minNominatorBond = minNominatorBond.value,
+                  let bagListSize = bagListSize.value else {
+                return nil
+            }
+
+            return networkInfo.calculateMinimumStake(
+                given: minNominatorBond,
+                votersCount: bagListSize
+            )
+        }
+
+        var nextEraStartTime: TimeInterval? {
+            guard let eraCountdown = eraCountdown else {
+                return nil
+            }
+
+            return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.currentEra + 2)
+        }
+
+        var eraDuration: TimeInterval? {
+            guard let eraCountdown = eraCountdown else {
+                return nil
+            }
+
+            return eraCountdown.eraTimeInterval
+        }
+
+        var directStakingMinStake: BigUInt? {
+            // TODO: add nomination pool min staking
+            minStake
+        }
+
+        var unstakingTime: TimeInterval? {
+            guard let networkInfo = networkInfo else {
+                return nil
+            }
+
+            return networkInfo.stakingDuration.unlocking
+        }
     }
 }

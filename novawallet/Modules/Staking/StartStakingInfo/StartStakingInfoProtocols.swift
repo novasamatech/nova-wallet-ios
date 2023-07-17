@@ -7,6 +7,7 @@ protocol StartStakingInfoViewProtocol: AnyObject, ControllerBackedProtocol {
 
 protocol StartStakingInfoPresenterProtocol: AnyObject {
     func setup()
+    func startStaking()
 }
 
 protocol StartStakingInfoInteractorInputProtocol: AnyObject {
@@ -19,6 +20,7 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
     func didReceive(baseError: BaseStartStakingInfoError)
+    func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?)
 }
 
 protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
@@ -27,6 +29,7 @@ protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInte
     func remakeBagListSizeSubscription()
     func retryEraCompletionTime()
     func remakeCalculator()
+    func remakeAccountRemoteSubscription()
 }
 
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
@@ -38,7 +41,27 @@ protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInt
     func didReceive(calculator: RewardCalculatorEngineProtocol)
 }
 
-protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable {}
+protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
+    func retryNetworkStakingInfo()
+    func remakeCalculator()
+    func retryStakingDuration()
+    func retryRewardPaymentDelay()
+}
+
+protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
+    func didReceive(networkInfo: ParachainStaking.NetworkInfo?)
+    func didReceive(error: ParachainStartStakingInfoError)
+    func didReceive(parastakingRound: ParachainStaking.RoundInfo?)
+    func didReceive(calculator: ParaStakingRewardCalculatorEngineProtocol)
+    func didReceive(blockNumber: BlockNumber?)
+    func didReceive(stakingDuration: ParachainStakingDuration)
+    func didReceive(rewardPaymentDelay: UInt32)
+}
+
+protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable, NoAccountSupportPresentable {
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
+    func showSetupAmount(from view: ControllerBackedProtocol?)
+}
 
 enum BaseStartStakingInfoError: Error {
     case assetBalance(Error?)
@@ -52,4 +75,15 @@ enum RelaychainStartStakingInfoError: Error {
     case bagListSize(Error)
     case minNominatorBond(Error)
     case calculator(Error)
+    case accountRemoteSubscription(Error)
+}
+
+enum ParachainStartStakingInfoError: Error {
+    case networkInfo(Error)
+    case createState(Error)
+    case parastakingRound(Error)
+    case calculator(Error)
+    case blockNumber(Error)
+    case stakingDuration(Error)
+    case rewardPaymentDelay(Error)
 }

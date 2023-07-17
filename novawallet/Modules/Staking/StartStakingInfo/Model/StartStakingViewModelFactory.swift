@@ -34,6 +34,7 @@ protocol StartStakingViewModelFactoryProtocol {
     func wikiModel(url: URL, chain: ChainModel, locale: Locale) -> StartStakingUrlModel
     func termsModel(url: URL, locale: Locale) -> StartStakingUrlModel
     func balance(amount: BigUInt?, priceData: PriceData?, chainAsset: ChainAsset, locale: Locale) -> String
+    func noAccount(chain: ChainModel, locale: Locale) -> String
 }
 
 struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
@@ -282,5 +283,9 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 preferredLanguages: locale.rLanguages
             )
         }
+    }
+
+    func noAccount(chain: ChainModel, locale: Locale) -> String {
+        R.string.localizable.stakingStartNoAccount(chain.name, preferredLanguages: locale.rLanguages)
     }
 }

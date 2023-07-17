@@ -30,6 +30,7 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
         presenter.setup()
     }
 
@@ -50,14 +51,33 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
             termsUrl: viewModel.termsUrl
         )
     }
+
+    private func setupHandlers() {
+        rootView.actionView.actionButton.addTarget(self, action: #selector(startStakingAction), for: .touchUpInside)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if viewModel?.isLoading == true {
+            rootView.updateLoadingState()
+            rootView.skeletonView?.restartSkrulling()
+        }
+    }
+
+    @objc private func startStakingAction() {
+        presenter.startStaking()
+    }
 }
 
 extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
     func didReceive(viewModel: LoadableViewModelState<StartStakingViewModel>) {
         switch viewModel {
         case .loading:
+            rootView.startLoadingIfNeeded()
             rootView.actionView.startLoading()
         case let .cached(value), let .loaded(value):
+            rootView.stopLoadingIfNeeded()
             rootView.actionView.stopLoading()
             rootView.updateContent(
                 title: value.title,

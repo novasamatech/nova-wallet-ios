@@ -26,4 +26,11 @@ extension ParachainStaking {
             constantName: "DelegationBondLessDelay"
         )
     }
+
+    static var rewardPaymentDelay: ConstantCodingPath {
+        ConstantCodingPath(
+            moduleName: "ParachainStaking",
+            constantName: "RewardPaymentDelay"
+        )
+    }
 }
