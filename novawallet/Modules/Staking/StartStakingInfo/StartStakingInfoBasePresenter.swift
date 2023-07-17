@@ -8,6 +8,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let baseInteractor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
+    let logger: LoggerProtocol?
 
     private(set) var price: PriceData?
     private(set) var chainAsset: ChainAsset?
@@ -20,12 +21,14 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        applicationConfig: ApplicationConfigProtocol
+        applicationConfig: ApplicationConfigProtocol,
+        logger: LoggerProtocol?
     ) {
         baseInteractor = interactor
         self.wireframe = wireframe
         self.startStakingViewModelFactory = startStakingViewModelFactory
         self.applicationConfig = applicationConfig
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
@@ -161,6 +164,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func didReceive(baseError error: BaseStartStakingInfoError) {
+        logger?.error("Did receive error: \(error)")
+
         switch error {
         case .assetBalance, .price:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

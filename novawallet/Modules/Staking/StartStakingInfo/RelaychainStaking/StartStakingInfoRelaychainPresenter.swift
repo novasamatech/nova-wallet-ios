@@ -16,7 +16,8 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        applicationConfig: ApplicationConfigProtocol
+        applicationConfig: ApplicationConfigProtocol,
+        logger: LoggerProtocol?
     ) {
         self.interactor = interactor
 
@@ -25,7 +26,8 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
             localizationManager: localizationManager,
-            applicationConfig: applicationConfig
+            applicationConfig: applicationConfig,
+            logger: logger
         )
     }
 
@@ -53,6 +55,8 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
     }
 
     func didReceive(error: RelaychainStartStakingInfoError) {
+        logger?.error("Did receive error: \(error)")
+
         switch error {
         case .networkStakingInfo:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -116,7 +120,7 @@ extension StartStakingInfoRelaychainPresenter {
                 return nil
             }
 
-            return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.currentEra + 1)
+            return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.currentEra + 2)
         }
 
         var eraDuration: TimeInterval? {

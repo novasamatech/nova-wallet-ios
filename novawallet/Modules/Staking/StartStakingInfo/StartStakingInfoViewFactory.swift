@@ -73,7 +73,8 @@ struct StartStakingInfoViewFactory {
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
             localizationManager: LocalizationManager.shared,
-            applicationConfig: ApplicationConfig.shared
+            applicationConfig: ApplicationConfig.shared,
+            logger: Logger.shared
         )
 
         let view = StartStakingInfoViewController(
@@ -188,7 +189,8 @@ struct StartStakingInfoViewFactory {
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
             localizationManager: LocalizationManager.shared,
-            applicationConfig: ApplicationConfig.shared
+            applicationConfig: ApplicationConfig.shared,
+            logger: Logger.shared
         )
 
         let view = StartStakingInfoViewController(
