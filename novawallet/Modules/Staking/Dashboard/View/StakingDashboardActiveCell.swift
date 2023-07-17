@@ -9,15 +9,21 @@ final class StakingDashboardActiveCellView: UIView {
         static let topOffset = 16
     }
 
-    let networkView = LoadableAssetListChainView()
-
-    let stakingTypeView: BorderedIconLabelView = .create { view in
-        view.iconDetailsView.apply(style: .chips)
-        view.iconDetailsView.detailsLabel.numberOfLines = 1
-        view.iconDetailsView.iconWidth = 10
-        view.iconDetailsView.spacing = 4
-        view.contentInsets = UIEdgeInsets(top: 5, left: 6, bottom: 5, right: 6)
+    let networkContainerView: GenericPairValueView<
+        LoadableAssetListChainView, BorderedIconLabelView
+    > = .create { view in
+        view.makeHorizontal()
+        view.spacing = 4
+        view.sView.iconDetailsView.apply(style: .chips)
+        view.sView.iconDetailsView.detailsLabel.numberOfLines = 1
+        view.sView.iconDetailsView.iconWidth = 10
+        view.sView.iconDetailsView.spacing = 4
+        view.sView.contentInsets = UIEdgeInsets(top: 5, left: 6, bottom: 5, right: 6)
     }
+
+    var networkView: LoadableAssetListChainView { networkContainerView.fView }
+
+    var stakingTypeView: BorderedIconLabelView { networkContainerView.sView }
 
     let detailsView: BlurredView<StakingDashboardActiveDetailsView> = .create { view in
         view.contentInsets = .zero
@@ -130,25 +136,17 @@ final class StakingDashboardActiveCellView: UIView {
             make.width.equalTo(130)
         }
 
-        addSubview(networkView)
+        addSubview(networkContainerView)
 
-        networkView.snp.makeConstraints { make in
+        networkContainerView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.top.equalToSuperview().inset(Constants.topOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
 
-        addSubview(stakingTypeView)
-
-        stakingTypeView.snp.makeConstraints { make in
-            make.centerY.equalTo(networkView)
-            make.leading.equalTo(networkView.snp.trailing).offset(4)
-            make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-4)
-        }
-
         addSubview(rewardsView)
         rewardsView.snp.makeConstraints { make in
-            make.top.equalTo(networkView.snp.bottom).offset(24)
+            make.top.equalTo(networkContainerView.snp.bottom).offset(24)
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
@@ -179,7 +177,7 @@ extension StakingDashboardActiveCellView: SkeletonableView {
     var hidingViews: [UIView] {
         if loadingState == .all {
             return [
-                networkView,
+                networkContainerView,
                 rewardsView
             ]
         }
@@ -187,7 +185,7 @@ extension StakingDashboardActiveCellView: SkeletonableView {
         var hidingViews: [UIView] = []
 
         if loadingState.contains(.network) {
-            hidingViews.append(networkView)
+            hidingViews.append(networkContainerView)
         }
 
         if loadingState.contains(.rewards) {
