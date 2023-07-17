@@ -235,6 +235,10 @@ extension NSPredicate {
         let separator = "."
         let hostComponents = host.components(separatedBy: separator)
 
+        guard hostComponents.count > 1 else {
+            return NSPredicate(format: "%K == %@", #keyPath(CDPhishingSite.identifier), host)
+        }
+
         let predicates: [NSPredicate] = (2 ... hostComponents.count).map { count in
             let possibleHost = hostComponents.suffix(count).joined(separator: separator)
             return NSPredicate(format: "%K == %@", #keyPath(CDPhishingSite.identifier), possibleHost)
