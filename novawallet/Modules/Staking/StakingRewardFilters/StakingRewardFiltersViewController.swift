@@ -456,12 +456,17 @@ extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
         guard let viewModel = viewModel, let calendarIdentifier = CalendarIdentifier(rawValue: id) else {
             return
         }
-        let date = calendar.startOfDay(for: selectedDate)
+
         let updatedPeriod: StakingRewardFiltersViewModel.CustomPeriod
         switch calendarIdentifier {
         case .startDate:
+            let date = calendar.startOfDay(for: selectedDate)
             updatedPeriod = Lens.startDayValue.set(date, viewModel.customPeriod)
         case .endDate:
+            guard let interval = calendar.dateInterval(of: .day, for: selectedDate) else {
+                return
+            }
+            let date = interval.end.addingTimeInterval(-1)
             let endDate = Lens.endDayValue.get(viewModel.customPeriod).map {
                 Lens.endDayDate.set(date, $0)
             }
