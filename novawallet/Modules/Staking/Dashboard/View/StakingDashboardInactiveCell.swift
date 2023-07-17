@@ -10,14 +10,20 @@ final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashb
 }
 
 final class StakingDashboardInactiveCellView: GenericTitleValueView<
-    LoadableGenericIconDetailsView<GenericPairValueView<ShimmerLabel, UILabel>>,
+    LoadableGenericIconDetailsView<
+        GenericPairValueView<
+            GenericPairValueView<ShimmerLabel, BorderedIconLabelView>, UILabel
+        >
+    >,
     IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
 > {
     private enum Constants {
         static let iconSize = CGSize(width: 36, height: 36)
     }
 
-    var networkLabel: ShimmerLabel { titleView.detailsView.fView }
+    var networkLabel: ShimmerLabel { titleView.detailsView.fView.fView }
+    var stakingTypeView: BorderedIconLabelView { titleView.detailsView.fView.sView }
+
     var balanceLabel: UILabel { titleView.detailsView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
@@ -47,6 +53,14 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         if applyNetworkViewModel(from: viewModel, locale: locale) {
             newLoadingState.formUnion(.network)
+        }
+
+        if let stakingTypeViewModel = viewModel.stakingType {
+            stakingTypeView.isHidden = false
+
+            stakingTypeView.bind(viewModel: stakingTypeViewModel)
+        } else {
+            stakingTypeView.isHidden = true
         }
 
         estimatedEarningsLabel.bind(viewModel: viewModel.estimatedEarnings.map(with: { $0 ?? "" }))
@@ -115,7 +129,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
         }
 
-        titleView.detailsView.fView.text = viewModel.name
+        networkLabel.text = viewModel.name
         titleView.detailsView.sView.text = balanceString
     }
 
@@ -126,8 +140,17 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         titleView.detailsView.makeVertical()
         titleView.detailsView.spacing = 0
 
+        titleView.detailsView.fView.makeHorizontal()
+        titleView.detailsView.fView.spacing = 4
+
         networkLabel.applyShimmer(style: .regularSubheadlinePrimary)
         networkLabel.textAlignment = .left
+
+        stakingTypeView.iconDetailsView.apply(style: .chips)
+        stakingTypeView.iconDetailsView.detailsLabel.numberOfLines = 1
+        stakingTypeView.iconDetailsView.spacing = 4
+        stakingTypeView.iconDetailsView.iconWidth = 10
+        stakingTypeView.contentInsets = UIEdgeInsets(top: 3, left: 6, bottom: 3, right: 6)
 
         balanceLabel.apply(style: .caption1Secondary)
         balanceLabel.textAlignment = .left

@@ -11,6 +11,14 @@ final class StakingDashboardActiveCellView: UIView {
 
     let networkView = LoadableAssetListChainView()
 
+    let stakingTypeView: BorderedIconLabelView = .create { view in
+        view.iconDetailsView.apply(style: .chips)
+        view.iconDetailsView.detailsLabel.numberOfLines = 1
+        view.iconDetailsView.iconWidth = 10
+        view.iconDetailsView.spacing = 4
+        view.contentInsets = UIEdgeInsets(top: 5, left: 6, bottom: 5, right: 6)
+    }
+
     let detailsView: BlurredView<StakingDashboardActiveDetailsView> = .create { view in
         view.contentInsets = .zero
         view.innerInsets = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
@@ -64,6 +72,14 @@ final class StakingDashboardActiveCellView: UIView {
             networkView.startLoadingIfNeeded()
         case let .loaded(value):
             networkView.bind(viewModel: value)
+        }
+
+        if let stakingTypeViewModel = viewModel.stakingType {
+            stakingTypeView.isHidden = false
+
+            stakingTypeView.bind(viewModel: stakingTypeViewModel)
+        } else {
+            stakingTypeView.isHidden = true
         }
 
         rewardsView.valueBottom.bind(viewModel: viewModel.totalRewards)
@@ -122,12 +138,22 @@ final class StakingDashboardActiveCellView: UIView {
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
 
+        addSubview(stakingTypeView)
+
+        stakingTypeView.snp.makeConstraints { make in
+            make.centerY.equalTo(networkView)
+            make.leading.equalTo(networkView.snp.trailing).offset(4)
+            make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-4)
+        }
+
         addSubview(rewardsView)
         rewardsView.snp.makeConstraints { make in
             make.top.equalTo(networkView.snp.bottom).offset(24)
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
+
+        networkView.setContentCompressionResistancePriority(.low, for: .horizontal)
     }
 }
 

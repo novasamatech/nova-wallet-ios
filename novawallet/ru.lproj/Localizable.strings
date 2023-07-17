@@ -1318,3 +1318,5 @@
 "asset.operation.send.title" = "Отправить";
 "asset.operation.receive.title" = "Получить";
 "asset.operation.buy.title" = "Купить";
+"staking.direct" = "Прямой";
+"staking.pool" = "Пул";
