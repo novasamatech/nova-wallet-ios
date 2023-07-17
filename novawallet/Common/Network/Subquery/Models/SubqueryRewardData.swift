@@ -2,6 +2,13 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
+enum SubqueryRewardType: String, SubqueryFilterValue {
+    case reward
+    case slash
+
+    func rawSubqueryFilter() -> String { rawValue }
+}
+
 struct SubqueryRewardItemData: Equatable, Codable {
     let eventId: String
     let timestamp: Int64
@@ -34,4 +41,17 @@ extension SubqueryRewardItemData {
         self.amount = amount
         self.isReward = isReward
     }
+}
+
+struct SubqueryTotalRewardsData: Decodable {
+    struct AccumulatedSum: Decodable {
+        struct Sum: Decodable {
+            let amount: String
+        }
+
+        let sum: Sum
+    }
+
+    let rewards: SubqueryAggregates<AccumulatedSum>
+    let slashes: SubqueryAggregates<AccumulatedSum>
 }

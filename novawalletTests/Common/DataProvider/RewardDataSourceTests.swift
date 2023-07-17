@@ -105,6 +105,8 @@ class RewardDataSourceTests: NetworkBaseTests {
 
         let source = SubqueryTotalRewardSource(
             address: address,
+            startTimestamp: nil,
+            endTimestamp: nil,
             assetPrecision: assetPrecision,
             operationFactory: operationFactory
         )

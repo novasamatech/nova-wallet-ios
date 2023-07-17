@@ -108,11 +108,15 @@ extension StakingParachainInteractor {
     }
 
     func performTotalRewardSubscription() {
+        clear(singleValueProvider: &totalRewardProvider)
+
         if
             let address = selectedAccount?.chainAccount.toChecksumedAddress(),
             let rewardApi = selectedChainAsset.chain.externalApis?.staking()?.first {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
+                startTimestamp: totalRewardInterval?.startTimestamp,
+                endTimestamp: totalRewardInterval?.endTimestamp,
                 api: rewardApi,
                 assetPrecision: Int16(selectedChainAsset.asset.precision)
             )

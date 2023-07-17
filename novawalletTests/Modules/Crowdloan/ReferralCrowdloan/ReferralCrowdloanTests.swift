@@ -15,7 +15,8 @@ class ReferralCrowdloanTests: XCTestCase {
         icon: "http://google.com/icon.svg",
         rewardRate: 12.0,
         customFlow: "Karura",
-        extras: nil
+        extras: nil,
+        movedToParaId: nil
     )
 
     func testReferralInputSuccess() throws {
