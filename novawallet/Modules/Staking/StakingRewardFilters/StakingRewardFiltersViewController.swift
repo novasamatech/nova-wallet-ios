@@ -90,6 +90,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     let cell: TitleSubtitleSwitchTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.titleLabel.apply(style: .footnoteSecondary)
                     cell?.horizontalInset = 16
+                    cell?.switchView.removeTarget(nil, action: nil, for: .allEvents)
                     cell?.switchView.addTarget(self, action: #selector(self.toggleEndDay), for: .valueChanged)
                     cell?.bind(title: title, isOn: enabled)
                     return cell
@@ -123,6 +124,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     ) -> StakingRewardActionControl {
         let view: StakingRewardActionControl = tableView.dequeueReusableHeaderFooterView()
         view.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        view.control.removeTarget(nil, action: nil, for: .allEvents)
         view.bind(
             title: title,
             value: value,
