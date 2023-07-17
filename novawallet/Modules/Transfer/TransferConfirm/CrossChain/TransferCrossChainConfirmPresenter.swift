@@ -323,12 +323,8 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
     func didCompleteSubmition() {
         view?.didStopLoading()
-        let chain = originChainAsset.chain
-        let utilityAsset = originChainAsset.chain.utilityAsset()
-        wireframe.complete(on: view, locale: selectedLocale) { [chain, utilityAsset, transferCompletion] in
-            utilityAsset.map {
-                transferCompletion?(.init(chain: chain, asset: $0))
-            }
+        wireframe.complete(on: view, locale: selectedLocale) { [originChainAsset, transferCompletion] in
+            transferCompletion?(originChainAsset)
         }
     }
 }

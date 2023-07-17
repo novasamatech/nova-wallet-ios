@@ -62,8 +62,9 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         distribution: .fillEqually,
         [
             sendButton,
-            receiveButton,
-            buyButton
+            receiveButton
+            // TODO: return buy to support buy feature
+            // buyButton
         ]
     )
 

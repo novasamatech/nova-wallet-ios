@@ -88,7 +88,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath,
         emptyModel: ReferendumsEmptyModel
     ) -> UITableViewCell {
-        let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
+        let cell: ReferendumEmptySearchTableViewCell = tableView.dequeueReusableCell(for: indexPath)
         let text: String
         let image: UIImage?
 
@@ -98,11 +98,13 @@ extension ReferendumsViewManager: UITableViewDataSource {
             image = R.image.iconEmptyHistory()
         case .filteredListEmpty:
             text = R.string.localizable.governanceReferendumsFilterEmpty(preferredLanguages: locale.rLanguages)
-            image = R.image.iconEmptySearch()
+            image = R.image.iconEmptySearch()?
+                .withRenderingMode(.alwaysTemplate)
+                .tinted(with: R.color.colorIconSecondary()!)
         }
 
-        cell.view.bind(image: image, text: text)
-        cell.applyStyle()
+        cell.bind(text: text)
+        cell.bind(icon: image)
 
         return cell
     }
@@ -294,7 +296,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.registerClassForCell(ReferendumTableViewCell.self)
         tableView.registerClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.registerClassForCell(ReferendumsDelegationsTableViewCell.self)
-        tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        tableView.registerClassForCell(ReferendumEmptySearchTableViewCell.self)
         tableView.registerClassForCell(ReferendumsSettingsCell.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
@@ -306,7 +308,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.unregisterClassForCell(ReferendumTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsDelegationsTableViewCell.self)
-        tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        tableView.unregisterClassForCell(ReferendumEmptySearchTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsSettingsCell.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()

@@ -114,7 +114,7 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
 
     func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
         let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
-        return assetBalanceFormatterFactory.createTokenFormatter(for: assetBalanceDisplayInfo)
+        return assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetBalanceDisplayInfo)
     }
 
     func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {

@@ -3,7 +3,7 @@ import RobinHood
 
 final class GovernanceDelegateMetadataFactory: BaseFetchOperationFactory {
     // swiftlint:disable:next line_length
-    static let baseUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/opengov-delegate-registry/master/registry/")!
+    static let baseUrl = URL(string: "https://raw.githubusercontent.com/novasamatech/opengov-delegate-registry/master/registry/")!
 
     let timeout: TimeInterval
 

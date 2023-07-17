@@ -15,7 +15,7 @@ extension WalletConnectMetadata {
             name: "Nova wallet",
             description: "Next-gen wallet for Polkadot and Kusama ecosystem",
             website: "https://novawallet.io",
-            icon: "https://raw.githubusercontent.com/nova-wallet/branding/master/logos/Nova_Wallet_Star_Color.png"
+            icon: "https://raw.githubusercontent.com/novasamatech/branding/master/logos/Nova_Wallet_Star_Color.png"
         )
     }
 }

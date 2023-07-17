@@ -9,6 +9,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveStakingState(viewModel: StakingViewState)
     func expandNetworkInfoView(_ isExpanded: Bool)
     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)
+    func didEditRewardFilters()
 }
 
 protocol StakingMainPresenterProtocol: AnyObject {
@@ -23,19 +24,28 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performRebag()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
+    func selectPeriod()
 }
 
 protocol StakingMainInteractorInputProtocol: AnyObject {
     func setup()
     func saveNetworkInfoViewExpansion(isExpanded: Bool)
+    func save(filter: StakingRewardFiltersPeriod)
 }
 
 protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveExpansion(_ isExpanded: Bool)
+    func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)
 }
 
 protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable {
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
+    func showPeriodSelection(
+        from view: ControllerBackedProtocol?,
+        initialState: StakingRewardFiltersPeriod?,
+        delegate: StakingRewardFiltersDelegate,
+        completion: @escaping () -> Void
+    )
 }
 
 protocol StakingMainChildPresenterProtocol: AnyObject {
@@ -49,4 +59,5 @@ protocol StakingMainChildPresenterProtocol: AnyObject {
     func performRebondAction()
     func performRebag()
     func performManageAction(_ action: StakingManageOption)
+    func selectPeriod(_ period: StakingRewardFiltersPeriod)
 }

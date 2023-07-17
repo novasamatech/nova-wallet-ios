@@ -36,6 +36,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     private var eraCompletionTimeCancellable: CancellableCall?
     private var rewardCalculatorCancellable: CancellableCall?
 
+    var stashItem: StashItem?
     var priceProvider: StreamableProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
     var stashControllerProvider: StreamableProvider<StashItem>?
@@ -52,6 +53,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
     var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
+    var totalRewardInterval: (startTimestamp: Int64?, endTimestamp: Int64?)?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,

@@ -50,6 +50,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var yieldBoostTasksProvider: AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?
 
     var selectedAccount: MetaChainAccountResponse?
+    var totalRewardInterval: (startTimestamp: Int64?, endTimestamp: Int64?)?
     var selectedChainAsset: ChainAsset { sharedState.stakingOption.chainAsset }
 
     init(
