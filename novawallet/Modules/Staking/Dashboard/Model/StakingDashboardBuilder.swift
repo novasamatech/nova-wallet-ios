@@ -73,7 +73,7 @@ final class StakingDashboardBuilder {
         // separate active stakings
 
         let activeStakings = dashboardItems.filter { $0.hasStaking }
-        let activeAssets = Set(activeStakings.map(\.stakingOption.chainAsset.chainAssetId))
+        let activeStakingOptions = Set(activeStakings.map(\.stakingOption.option))
 
         let allInactiveStakings = dashboardItems.filter { !$0.hasStaking }
 
@@ -86,20 +86,20 @@ final class StakingDashboardBuilder {
          * Otherwise staking goes to the More Options
          */
 
-        var inactiveStakings: [ChainAssetId: StakingDashboardItemModel] = [:]
+        var inactiveStakings: [Multistaking.Option: StakingDashboardItemModel] = [:]
         var moreOptions: [StakingDashboardItemModel] = []
 
         allInactiveStakings.forEach { dashboardItem in
-            let chainAsset = dashboardItem.stakingOption.chainAsset
-            let chainAssetId = chainAsset.chainAssetId
+            let stakingOption = dashboardItem.stakingOption.option
+            let chain = dashboardItem.stakingOption.chainAsset.chain
 
             if
-                activeAssets.contains(chainAssetId) ||
-                inactiveStakings[chainAssetId] != nil ||
-                chainAsset.chain.isTestnet {
+                activeStakingOptions.contains(stakingOption) ||
+                inactiveStakings[stakingOption] != nil ||
+                chain.isTestnet {
                 moreOptions.append(dashboardItem)
             } else {
-                inactiveStakings[chainAssetId] = dashboardItem
+                inactiveStakings[stakingOption] = dashboardItem
             }
         }
 
