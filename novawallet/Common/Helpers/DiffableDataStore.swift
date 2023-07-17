@@ -28,15 +28,15 @@ final class DiffableDataStore<Section, Row> where Section: Identifiable & Equata
         return section
     }
 
-    func snapshot(oldSnapshot: Snapshot, removingSections: [SectionId]) -> Snapshot {
-        var snapshot = oldSnapshot
+    func removing(sections removingSections: [SectionId], from snapshot: Snapshot) -> Snapshot {
+        var snapshot = snapshot
         snapshot.deleteSections(removingSections)
         removingSections.forEach { sections.removeValue(forKey: $0) }
         return snapshot
     }
 
-    func snapshot(oldSnapshot: Snapshot?, updatingSection: Section, updatingRows: [Row]) -> Snapshot {
-        var snapshot = oldSnapshot ?? Snapshot()
+    func updating(section updatingSection: Section, rows updatingRows: [Row], in snapshot: Snapshot?) -> Snapshot {
+        var snapshot = snapshot ?? Snapshot()
         if let section = sections[updatingSection.identifier] {
             let snapshotUpdates = updatingRows.reduce(into: (
                 inserted: [RowId](),
@@ -54,7 +54,7 @@ final class DiffableDataStore<Section, Row> where Section: Identifiable & Equata
                 $0.model[$1.identifier] = $1
             }
 
-            let removedItems = oldSnapshot?
+            let removedItems = snapshot
                 .itemIdentifiers(inSection: section.identifier)
                 .filter { snapshotUpdates.model[$0] == nil } ?? []
 

@@ -11857,9 +11857,9 @@
 		8490145424A9403C008F705E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				778210852A6588D100256E78 /* DiffableDataStore.swift */,
 				849B036E2A15EE07009624D9 /* TransactionHistory */,
 				0C154A0D2A45995500932C3F /* CompoundComparator.swift */,
+				778210852A6588D100256E78 /* DiffableDataStore.swift */,
 				7796C6FE2A177D7300D56094 /* GenericLens.swift */,
 				8490145524A9404E008F705E /* AttributedStringDecorator.swift */,
 				843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */,

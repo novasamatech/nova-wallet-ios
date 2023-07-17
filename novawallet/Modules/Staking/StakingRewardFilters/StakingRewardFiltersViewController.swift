@@ -288,20 +288,20 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             )
         }
 
-        var snapshot = dataStore.snapshot(
-            oldSnapshot: dataSource?.snapshot(),
-            updatingSection: Section.period,
-            updatingRows: periodRows
+        var snapshot = dataStore.updating(
+            section: Section.period,
+            rows: periodRows,
+            in: dataSource?.snapshot()
         )
 
         guard viewModel.period == .custom else {
-            snapshot = dataStore.snapshot(
-                oldSnapshot: snapshot,
-                removingSections: [
+            snapshot = dataStore.removing(
+                sections: [
                     Section.startDateIdentifier,
                     Section.endAlwaysTodayIdentifier,
                     Section.endDateIdentifier
-                ]
+                ],
+                from: snapshot
             )
             dataSource?.apply(snapshot, animatingDifferences: false)
             return
@@ -322,27 +322,27 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             )
         ]
 
-        snapshot = dataStore.snapshot(
-            oldSnapshot: snapshot,
-            updatingSection: startDaySection,
-            updatingRows: !customPeriod.startDay.collapsed ? calendarRow : []
+        snapshot = dataStore.updating(
+            section: startDaySection,
+            rows: !customPeriod.startDay.collapsed ? calendarRow : [],
+            in: snapshot
         )
 
         let title = R.string.localizable.stakingRewardFiltersPeriodEndDateOpen(
             preferredLanguages: selectedLocale.rLanguages)
         switch customPeriod.endDay.value {
         case .alwaysToday, .none:
-            snapshot = dataStore.snapshot(
-                oldSnapshot: snapshot,
-                updatingSection: .endAlwaysToday,
-                updatingRows: [.dateAlwaysToday(title, true)]
+            snapshot = dataStore.updating(
+                section: .endAlwaysToday,
+                rows: [.dateAlwaysToday(title, true)],
+                in: snapshot
             )
-            snapshot = dataStore.snapshot(oldSnapshot: snapshot, removingSections: [Section.endDateIdentifier])
+            snapshot = dataStore.removing(sections: [Section.endDateIdentifier], from: snapshot)
         case let .exact(day):
-            snapshot = dataStore.snapshot(
-                oldSnapshot: snapshot,
-                updatingSection: .endAlwaysToday,
-                updatingRows: [.dateAlwaysToday(title, false)]
+            snapshot = dataStore.updating(
+                section: .endAlwaysToday,
+                rows: [.dateAlwaysToday(title, false)],
+                in: snapshot
             )
             let dateValue = dateStringValue(endDate ?? nil)
             let collapsed = customPeriod.endDay.collapsed
@@ -360,10 +360,10 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                 ]
             }
 
-            snapshot = dataStore.snapshot(
-                oldSnapshot: snapshot,
-                updatingSection: Section.end(date: dateValue, active: !collapsed),
-                updatingRows: items
+            snapshot = dataStore.updating(
+                section: Section.end(date: dateValue, active: !collapsed),
+                rows: items,
+                in: snapshot
             )
         }
 
