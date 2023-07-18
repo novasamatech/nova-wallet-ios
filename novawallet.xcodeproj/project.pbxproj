@@ -448,6 +448,7 @@
 		777BD86629F9C426004969A2 /* ReferendumsFiltersDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86529F9C426004969A2 /* ReferendumsFiltersDelegate.swift */; };
 		777BD86829FA3376004969A2 /* ReferendumsSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */; };
 		777BD86A29FA3D5E004969A2 /* ReferendumsFilter+match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86929FA3D5E004969A2 /* ReferendumsFilter+match.swift */; };
+		778210862A6588D100256E78 /* DiffableDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778210852A6588D100256E78 /* DiffableDataStore.swift */; };
 		778D979B2A24D1D8002BA681 /* BaseAssetsSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778D979A2A24D1D8002BA681 /* BaseAssetsSearchViewLayout.swift */; };
 		778D979D2A24D21B002BA681 /* AssetsOperationViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778D979C2A24D21B002BA681 /* AssetsOperationViewLayout.swift */; };
 		778D979F2A24D248002BA681 /* SearchViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778D979E2A24D248002BA681 /* SearchViewProtocol.swift */; };
@@ -4095,6 +4096,7 @@
 		777BD86529F9C426004969A2 /* ReferendumsFiltersDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFiltersDelegate.swift; sourceTree = "<group>"; };
 		777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsSettingsCell.swift; sourceTree = "<group>"; };
 		777BD86929FA3D5E004969A2 /* ReferendumsFilter+match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsFilter+match.swift"; sourceTree = "<group>"; };
+		778210852A6588D100256E78 /* DiffableDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiffableDataStore.swift; sourceTree = "<group>"; };
 		778D979A2A24D1D8002BA681 /* BaseAssetsSearchViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAssetsSearchViewLayout.swift; sourceTree = "<group>"; };
 		778D979C2A24D21B002BA681 /* AssetsOperationViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsOperationViewLayout.swift; sourceTree = "<group>"; };
 		778D979E2A24D248002BA681 /* SearchViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewProtocol.swift; sourceTree = "<group>"; };
@@ -11857,6 +11859,7 @@
 			children = (
 				849B036E2A15EE07009624D9 /* TransactionHistory */,
 				0C154A0D2A45995500932C3F /* CompoundComparator.swift */,
+				778210852A6588D100256E78 /* DiffableDataStore.swift */,
 				7796C6FE2A177D7300D56094 /* GenericLens.swift */,
 				8490145524A9404E008F705E /* AttributedStringDecorator.swift */,
 				843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */,
@@ -19363,6 +19366,7 @@
 				8428228A289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift in Sources */,
 				84EE2FAF2891215200A98816 /* WalletManageTableViewCell.swift in Sources */,
 				8858917C29A707F600320896 /* ReferendumVotersViewFactory.swift in Sources */,
+				778210862A6588D100256E78 /* DiffableDataStore.swift in Sources */,
 				849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */,
 				8804AD8D295B7735001C4E09 /* DAppGlobalSettingsMapper.swift in Sources */,
 				94B0F0C84AF74B3CD7223C3A /* AccountConfirmPresenter.swift in Sources */,
