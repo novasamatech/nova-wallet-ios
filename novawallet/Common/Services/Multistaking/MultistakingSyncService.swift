@@ -184,7 +184,7 @@ final class MultistakingSyncService {
         let stakingOption = chainAssetOption.option
 
         switch chainAssetOption.type {
-        case .relaychain, .azero, .auraRelaychain, .nominationPools:
+        case .relaychain, .azero, .auraRelaychain:
             if let service = createRelaychainStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
@@ -199,6 +199,19 @@ final class MultistakingSyncService {
             }
         case .parachain, .turing:
             if let service = createParachainStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            ) {
+                onchainUpdaters[stakingOption] = service
+
+                addSyncHandler(for: service, stakingOption: stakingOption)
+
+                if isActive {
+                    service.setup()
+                }
+            }
+        case .nominationPools:
+            if let service = createPoolsStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
             ) {
@@ -233,6 +246,32 @@ final class MultistakingSyncService {
         }
 
         return RelaychainMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: repositoryFactory.createRelaychainRepository(),
+            accountRepository: repositoryFactory.createResolvedAccountRepository(),
+            connection: connection,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger
+        )
+    }
+
+    private func createPoolsStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        guard
+            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        return PoolsMultistakingUpdateService(
             walletId: wallet.metaId,
             accountId: account.accountId,
             chainAsset: chainAsset,
