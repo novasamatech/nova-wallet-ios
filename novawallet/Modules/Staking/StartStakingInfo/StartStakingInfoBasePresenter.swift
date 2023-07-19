@@ -55,15 +55,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func provideViewModel(state: StartStakingStateProtocol) {
         self.state = state
-        guard let chainAsset = chainAsset else {
-            return
-        }
-        let isSupportedNominationPools = chainAsset.asset.supportedStakings?.contains(.nominationPools) == true
-        let showDirectStakingAmount = isSupportedNominationPools ?
-            enoughTokensForDirectStaking(state: state) : false
 
         guard
-            let showDirectStakingAmount = showDirectStakingAmount,
+            let chainAsset = chainAsset,
+            let showDirectStakingAmount = showDirectStakingAmount(state: state),
             let eraDuration = state.eraDuration,
             let unstakingTime = state.unstakingTime,
             let nextEraStartTime = state.nextEraStartTime,
@@ -73,6 +68,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
 
         let directStakingAmount = showDirectStakingAmount ? state.directStakingMinStake : nil
+
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
             chainAsset: chainAsset,
@@ -126,6 +122,27 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         )
 
         view?.didReceive(viewModel: .loaded(value: model))
+    }
+
+    private func showDirectStakingAmount(state: StartStakingStateProtocol) -> Bool? {
+        guard let chainAsset = chainAsset else {
+            return nil
+        }
+
+        guard chainAsset.asset.supportedStakings?.contains(.nominationPools) == true else {
+            return false
+        }
+
+        guard let minStake = state.minStake,
+              let directStakingMinStake = state.directStakingMinStake else {
+            return nil
+        }
+
+        guard minStake != directStakingMinStake else {
+            return false
+        }
+
+        return enoughTokensForDirectStaking(state: state)
     }
 
     private func enoughTokensForDirectStaking(state: StartStakingStateProtocol) -> Bool? {

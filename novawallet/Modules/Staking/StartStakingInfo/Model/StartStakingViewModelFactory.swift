@@ -139,9 +139,11 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodEvery(preferredLanguages: locale.rLanguages)
-        let rewardIntervals = eraDuration.localizedDaysHoursMinutes(for: locale,
-                                                                    preposition: preposition,
-                                                                    separator: separator)
+        let rewardIntervals = eraDuration.localizedDaysHoursMinutes(
+            for: locale,
+            preposition: preposition,
+            separator: separator
+        )
         let text: String
 
         if let amount = amount {
