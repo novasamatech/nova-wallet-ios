@@ -15,6 +15,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
     let operationQueue: OperationQueue
 
     private var poolMemberSubscription: CallbackStorageSubscription<NominationPools.PoolMember>?
+    private var stateSubscription: CallbackBatchStorageSubscription<Multistaking.NominationPoolStateChange>?
 
     init(
         walletId: MetaAccountModel.Id,
@@ -54,7 +55,17 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
     }
 
     private func clearSubscriptions() {
+        clearPoolMemberSubscription()
+        clearStateSubscription()
+    }
+    
+    private func clearPoolMemberSubscription() {
         poolMemberSubscription = nil
+    }
+    
+    private func clearStateSubscription() {
+        stateSubscription?.unsubscribe()
+        stateSubscription = nil
     }
 
     private func subscribePoolResolution(for accountId: AccountId) {
@@ -87,12 +98,23 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
             markSyncingImmediate()
 
             if let poolMember = optPoolMember {
+                let currentPoolSubscription = poolMemberSubscription
+                
                 fetchCompoundConstant(
                     for: NominationPools.palletId,
                     runtimeCodingService: runtimeService,
                     operationManager: OperationManager(operationQueue: operationQueue)
                 ) { [weak self] (result: Result<BytesCodable, Error>) in
                     self?.mutex.lock()
+                    
+                    defer {
+                        self?.mutex.unlock()
+                    }
+                    
+                    guard self?.poolMemberSubscription === currentPoolSubscription else {
+                        self?.logger?.warning("Tried to query pallet id but subscription changed")
+                        return
+                    }
 
                     do {
                         switch result {
@@ -104,17 +126,17 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                             )
                             
                             self?.saveAccountChanges(for: poolAccountId, walletAccountId: accountId)
-                            self?.subscribeState(for: poolAccountId)
+                            self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
                         case let .failure(error):
-                            self?.logger?.error("Can't find pallet id for nomination pools")
+                            self?.logger?.error("Can't extract pallet id for nomination pools")
                             self?.completeImmediate(error)
                         }
                     } catch {
                         self?.logger?.error("Can't derive pool account id")
-                        self?.complete(error)
+                        self?.completeImmediate(error)
                     }
 
-                    self?.mutex.unlock()
+                    
                 }
             } else {
                 saveAccountChanges(for: nil, walletAccountId: accountId)
@@ -166,7 +188,38 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
         operationQueue.addOperation(saveOperation)
     }
     
-    private func subscribeState(for poolAccountId: AccountId) {
+    private func subscribeState(for poolAccountId: AccountId, poolId: NominationPools.PoolId) {
+        let ledgerRequest = MapSubscriptionRequest(
+            storagePath: .stakingLedger,
+            localKey: Multistaking.NominationPoolStateChange.Key.ledger.rawValue,
+            keyParamClosure: {
+                BytesCodable(wrappedValue: poolAccountId)
+            }
+        )
+        
+        let bondedPoolRequest = MapSubscriptionRequest(
+            storagePath: NominationPools.bondedPool,
+            localKey: Multistaking.NominationPoolStateChange.Key.bonded.rawValue,
+            keyParamClosure: {
+                StringScaleMapper(value: poolId)
+            }
+        )
+        
+        stateSubscription = CallbackBatchStorageSubscription(
+            requests: [ledgerRequest, bondedPoolRequest],
+            connection: connection,
+            runtimeService: runtimeService,
+            repository: nil,
+            operationQueue: operationQueue,
+            callbackQueue: workingQueue
+        ) { [weak self] result in
+            self?.mutex.lock()
+            
+            self?.mutex.unlock()
+        }
+    }
+    
+    private func saveState(_ state: Multistaking.NominationPoolStateChange) {
         
     }
 }
