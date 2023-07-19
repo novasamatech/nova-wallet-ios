@@ -121,6 +121,7 @@ extension Multistaking {
         let stakingOption: Option
         let walletAccountId: AccountId
         let resolvedAccountId: AccountId
+        let rewardsAccountId: AccountId?
     }
 }
 

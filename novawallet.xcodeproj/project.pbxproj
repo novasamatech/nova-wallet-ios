@@ -3706,6 +3706,7 @@
 		0B5072E250B7277F605855B3 /* AccountManagementProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountManagementProtocols.swift; sourceTree = "<group>"; };
 		0B556386CEEB76C95ED59897 /* ControllerAccountViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewController.swift; sourceTree = "<group>"; };
 		0B62C2CBCFF1865A1CA0F1B4 /* LedgerNetworkSelectionProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionProtocols.swift; sourceTree = "<group>"; };
+		0C04290B2A67A42A00C3583A /* SubstrateDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel17.xcdatamodel; sourceTree = "<group>"; };
 		0C154A0D2A45995500932C3F /* CompoundComparator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundComparator.swift; sourceTree = "<group>"; };
 		0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModelObserverContainer.swift; sourceTree = "<group>"; };
 		0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyPresentable.swift; sourceTree = "<group>"; };
@@ -22024,6 +22025,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C04290B2A67A42A00C3583A /* SubstrateDataModel17.xcdatamodel */,
 				8473B4742A206E0A003DE213 /* SubstrateDataModel16.xcdatamodel */,
 				849853502A17449700993977 /* SubstrateDataModel15.xcdatamodel */,
 				848DCD0A29D71C5200E8A300 /* SubstrateDataModel14.xcdatamodel */,
@@ -22041,7 +22043,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 8473B4742A206E0A003DE213 /* SubstrateDataModel16.xcdatamodel */;
+			currentVersion = 0C04290B2A67A42A00C3583A /* SubstrateDataModel17.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -214,13 +214,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     private func saveStashChange(_ stashAccountId: AccountId) {
         let stakingOption = Multistaking.Option(
             chainAssetId: chainAsset.chainAssetId,
-            type: .relaychain
+            type: stakingType
         )
 
         let resolvedAccount = Multistaking.ResolvedAccount(
             stakingOption: stakingOption,
             walletAccountId: accountId,
-            resolvedAccountId: stashAccountId
+            resolvedAccountId: stashAccountId,
+            rewardsAccountId: stashAccountId
         )
 
         let saveOperation = accountRepository.saveOperation({
