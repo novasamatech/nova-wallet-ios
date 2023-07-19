@@ -55,10 +55,15 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func provideViewModel(state: StartStakingStateProtocol) {
         self.state = state
+        guard let chainAsset = chainAsset else {
+            return
+        }
+        let isSupportedNominationPools = chainAsset.asset.supportedStakings?.contains(.nominationPools) == true
+        let showDirectStakingAmount = isSupportedNominationPools ?
+            enoughTokensForDirectStaking(state: state) : false
 
         guard
-            let enoughTokensForDirectStaking = enoughTokensForDirectStaking(state: state),
-            let chainAsset = chainAsset,
+            let showDirectStakingAmount = showDirectStakingAmount,
             let eraDuration = state.eraDuration,
             let unstakingTime = state.unstakingTime,
             let nextEraStartTime = state.nextEraStartTime,
@@ -67,7 +72,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             return
         }
 
-        let directStakingAmount = enoughTokensForDirectStaking ? state.directStakingMinStake : nil
+        let directStakingAmount = showDirectStakingAmount ? state.directStakingMinStake : nil
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
             chainAsset: chainAsset,
