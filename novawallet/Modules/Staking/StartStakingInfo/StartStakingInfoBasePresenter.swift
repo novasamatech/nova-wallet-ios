@@ -12,7 +12,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     private(set) var price: PriceData?
     private(set) var chainAsset: ChainAsset?
-    private(set) var balanceState: BalanceState?
+    private(set) var balanceModel: BalanceModel?
     private var state: StartStakingStateProtocol?
     private var wallet: MetaAccountModel?
 
@@ -36,7 +36,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         guard let chainAsset = chainAsset else {
             return
         }
-        switch balanceState {
+        switch balanceModel {
         case let .assetBalance(balance):
             let viewModel = startStakingViewModelFactory.balance(
                 amount: balance.freeInPlank,
@@ -146,7 +146,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     private func enoughTokensForDirectStaking(state: StartStakingStateProtocol) -> Bool? {
-        guard let balanceState = balanceState else {
+        guard let balanceState = balanceModel else {
             return nil
         }
         guard let minStake = state.minStake else {
@@ -174,14 +174,14 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func didReceive(assetBalance: AssetBalance) {
-        balanceState = .assetBalance(assetBalance)
+        balanceModel = .assetBalance(assetBalance)
         provideBalanceModel()
     }
 
     func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
         self.wallet = wallet
         if chainAccountId == nil {
-            balanceState = .noAccount
+            balanceModel = .noAccount
             provideBalanceModel()
         }
     }
@@ -209,7 +209,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
               let wallet = wallet else {
             return
         }
-        switch balanceState {
+        switch balanceModel {
         case .noAccount:
             let message = R.string.localizable.commonChainAccountMissingMessageFormat(
                 chain.name,

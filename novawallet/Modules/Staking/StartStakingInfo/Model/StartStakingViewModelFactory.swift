@@ -19,7 +19,7 @@ protocol StartStakingViewModelFactoryProtocol {
         amount: BigUInt?,
         chainAsset: ChainAsset,
         eraDuration: TimeInterval,
-        destination: RewardsDestination,
+        destination: RewardDestinationModel,
         locale: Locale
     ) -> ParagraphView.Model
     func govModel(
@@ -134,7 +134,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         amount: BigUInt?,
         chainAsset: ChainAsset,
         eraDuration: TimeInterval,
-        destination: RewardsDestination,
+        destination: RewardDestinationModel,
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
