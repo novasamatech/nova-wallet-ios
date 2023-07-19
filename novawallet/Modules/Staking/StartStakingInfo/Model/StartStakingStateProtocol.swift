@@ -7,4 +7,5 @@ protocol StartStakingStateProtocol {
     var nextEraStartTime: TimeInterval? { get }
     var maxApy: Decimal? { get }
     var directStakingMinStake: BigUInt? { get }
+    var rewardsDestination: RewardsDestination { get }
 }

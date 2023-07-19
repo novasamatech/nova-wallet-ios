@@ -101,6 +101,7 @@ extension StartStakingInfoRelaychainPresenter {
         var networkInfo: NetworkStakingInfo?
         var eraCountdown: EraCountdown?
         var maxApy: Decimal?
+        var rewardsDestination: RewardsDestination { .stake }
 
         var minStake: BigUInt? {
             guard let networkInfo = networkInfo,

@@ -111,6 +111,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
                 amount: directStakingAmount,
                 chainAsset: chainAsset,
                 eraDuration: eraDuration,
+                destination: state.rewardsDestination,
                 locale: selectedLocale
             ),
             govModel,

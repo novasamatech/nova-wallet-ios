@@ -101,6 +101,7 @@ extension StartStakingInfoParachainPresenter {
         private(set) var blockNumber: BlockNumber?
         var stakingDuration: ParachainStakingDuration?
         var rewardPaymentDelay: UInt32?
+        var rewardsDestination: RewardsDestination { .balance }
 
         var minStake: BigUInt? {
             guard let networkInfo = networkInfo else {
