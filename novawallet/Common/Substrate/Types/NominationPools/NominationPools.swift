@@ -45,21 +45,4 @@ enum NominationPools {
         case bonded
         case reward
     }
-
-    static func derivedAccount(for poolId: PoolId, accountType: AccountType, palletId: Data) throws -> AccountId {
-        guard let prefix = "modl".data(using: .utf8) else {
-            throw CommonError.dataCorruption
-        }
-
-        let scaleEncoder = ScaleEncoder()
-        scaleEncoder.appendRaw(data: prefix)
-        scaleEncoder.appendRaw(data: palletId)
-        try accountType.rawValue.encode(scaleEncoder: scaleEncoder)
-        try poolId.encode(scaleEncoder: scaleEncoder)
-        try scaleEncoder.appendRaw(data: Data(repeating: 0, count: SubstrateConstants.accountIdLength))
-
-        let result = scaleEncoder.encode()
-
-        return result.prefix(SubstrateConstants.accountIdLength)
-    }
 }

@@ -1,9 +1,12 @@
 import Foundation
+import BigInt
 
 extension Multistaking {
     struct NominationPoolStateChange: BatchStorageSubscriptionResult {
         enum Key: String {
+            case era
             case ledger
+            case nomination
             case bonded
         }
 
@@ -21,10 +24,71 @@ extension Multistaking {
                 context: context
             )
 
+            nomination = try UncertainStorage(
+                values: values,
+                localKey: Key.nomination.rawValue,
+                context: context
+            )
+
+            era = try UncertainStorage(
+                values: values,
+                localKey: Key.era.rawValue,
+                context: context
+            )
+
             bondedPool = try UncertainStorage(
                 values: values,
                 localKey: Key.bonded.rawValue,
                 context: context
+            )
+        }
+    }
+    
+    struct NominationPoolState {
+        let poolMember: NominationPools.PoolMember
+        let era: ActiveEraInfo?
+        let ledger: StakingLedger?
+        let nomination: Nomination?
+        let bondedPool: NominationPools.BondedPool?
+        
+        var poolId: PoolId {
+            poolMember.poolId
+        }
+        
+        var poolMemberStake: BigUInt? {
+            guard let bondedPool = bondedPool, let ledger = ledger else {
+                return nil
+            }
+            
+            return NominationPools.pointsToBalance(
+                for: poolMember.points,
+                totalPoints: bondedPool.points,
+                poolBalance: ledger.active
+            )
+        }
+
+        func applying(change: NominationPoolStateChange) -> NominationPoolState {
+            let newEra: ActiveEraInfo = change.era.valueWhenDefined(else: era)
+            let newLedger = change.ledger.valueWhenDefined(else: ledger)
+            let newNomination = change.nomination.valueWhenDefined(else: nomination)
+            let newBondedPool = change.bondedPool.valueWhenDefined(else: bondedPool)
+
+            return .init(
+                poolMember: poolMember,
+                era: newEra,
+                ledger: newLedger,
+                nomination: newNomination,
+                bondedPool: newBondedPool
+            )
+        }
+        
+        func applying(newPoolMember: NominationPools.PoolMember) -> NominationPoolState {
+            .init(
+                poolMember: newPoolMember,
+                era: era,
+                ledger: ledger,
+                nomination: nomination,
+                bondedPool: bondedPool
             )
         }
     }

@@ -15,7 +15,10 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
     let operationQueue: OperationQueue
 
     private var poolMemberSubscription: CallbackStorageSubscription<NominationPools.PoolMember>?
+    
     private var stateSubscription: CallbackBatchStorageSubscription<Multistaking.NominationPoolStateChange>?
+    
+    private var state: Multistaking.NominationPoolState?
 
     init(
         walletId: MetaAccountModel.Id,
@@ -51,6 +54,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
     }
 
     override func stopSyncUp() {
+        state = nil
         clearSubscriptions()
     }
 
@@ -98,6 +102,21 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
             markSyncingImmediate()
 
             if let poolMember = optPoolMember {
+                if let state = state, poolMember.poolId == state.poolId {
+                    let newState = state.applying(newPoolMember: poolMember)
+                    self.state = newState
+                    saveState(newState)
+                    return
+                }
+                
+                state = Multistaking.NominationPoolState(
+                    poolMember: poolMember,
+                    era: nil,
+                    ledger: nil,
+                    nomination: nil,
+                    bondedPool: nil
+                )
+                
                 let currentPoolSubscription = poolMemberSubscription
                 
                 fetchCompoundConstant(
@@ -140,6 +159,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                 }
             } else {
                 saveAccountChanges(for: nil, walletAccountId: accountId)
+                completeImmediate(nil)
             }
         case let .failure(error):
             completeImmediate(error)
@@ -189,9 +209,22 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
     }
     
     private func subscribeState(for poolAccountId: AccountId, poolId: NominationPools.PoolId) {
+        let eraRequest = UnkeyedSubscriptionRequest(
+            storagePath: .activeEra,
+            localKey: Multistaking.NominationPoolStateChange.Key.era.rawValue
+        )
+        
         let ledgerRequest = MapSubscriptionRequest(
             storagePath: .stakingLedger,
             localKey: Multistaking.NominationPoolStateChange.Key.ledger.rawValue,
+            keyParamClosure: {
+                BytesCodable(wrappedValue: poolAccountId)
+            }
+        )
+        
+        let nominationRequest = MapSubscriptionRequest(
+            storagePath: .nominators,
+            localKey: Multistaking.NominationPoolStateChange.Key.nomination,
             keyParamClosure: {
                 BytesCodable(wrappedValue: poolAccountId)
             }
@@ -206,7 +239,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
         )
         
         stateSubscription = CallbackBatchStorageSubscription(
-            requests: [ledgerRequest, bondedPoolRequest],
+            requests: [ledgerRequest, nominationRequest, eraRequest, bondedPoolRequest],
             connection: connection,
             runtimeService: runtimeService,
             repository: nil,
@@ -215,11 +248,59 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
         ) { [weak self] result in
             self?.mutex.lock()
             
+            self?.handleStateSubscription(result: result)
+            
             self?.mutex.unlock()
+        }
+        
+        stateSubscription?.subscribe()
+    }
+    
+    private func handleStateSubscription(result: Result<Multistaking.NominationPoolStateChange, Error>) {
+        switch result {
+        case let .success(stateChange):
+            guard let state = state else {
+                completeImmediate(CommonError.dataCorruption)
+                logger?.error("Expected state but not found")
+                return
+            }
+            
+            let newState = state.applying(change: stateChange)
+            
+            saveState(newState)
+        case let .failure(error):
+            completeImmediate(error)
         }
     }
     
     private func saveState(_ state: Multistaking.NominationPoolStateChange) {
-        
+        let stakingOption = Multistaking.OptionWithWallet(
+            walletId: walletId,
+            option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)
+        )
+
+        let dashboardItem = Multistaking.DashboardItemNominationPoolPart(
+            stakingOption: stakingOption,
+            state: state
+        )
+
+        let saveOperation = dashboardRepository.saveOperation({
+            [dashboardItem]
+        }, {
+            []
+        })
+
+        saveOperation.completionBlock = { [weak self] in
+            self?.workingQueue.async {
+                do {
+                    _ = try saveOperation.extractNoCancellableResultData()
+                    self?.complete(nil)
+                } catch {
+                    self?.complete(error)
+                }
+            }
+        }
+
+        operationQueue.addOperation(saveOperation)
     }
 }
