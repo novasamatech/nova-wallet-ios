@@ -461,7 +461,13 @@ extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
         switch calendarIdentifier {
         case .startDate:
             let date = calendar.startOfDay(for: selectedDate)
-            updatedPeriod = Lens.startDayValue.set(date, viewModel.customPeriod)
+            updatedPeriod = .init(
+                startDay: .init(
+                    value: date,
+                    collapsed: true
+                ),
+                endDay: viewModel.customPeriod.endDay
+            )
         case .endDate:
             guard let interval = calendar.dateInterval(of: .day, for: selectedDate) else {
                 return
@@ -471,7 +477,10 @@ extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
                 Lens.endDayDate.set(date, $0)
             }
 
-            updatedPeriod = Lens.endDayValue.set(endDate, viewModel.customPeriod)
+            updatedPeriod = .init(
+                startDay: viewModel.customPeriod.startDay,
+                endDay: .init(value: endDate, collapsed: true)
+            )
         }
 
         updateViewModel(viewModel: .init(

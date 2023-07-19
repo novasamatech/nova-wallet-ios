@@ -102,24 +102,25 @@ extension StakingRewardFiltersPeriod {
 extension StakingRewardFiltersPeriod {
     var interval: (startTimestamp: Int64?, endTimestamp: Int64?) {
         let calendar = Calendar.current
-        let startDate = calendar.startOfDay(for: Date())
+        let endToday = calendar.dateInterval(of: .day, for: Date())?.end ?? Date()
+
         switch self {
         case .allTime:
             return (startTimestamp: nil, endTimestamp: nil)
         case .lastWeek:
-            let sevenDaysAgo = calendar.date(byAdding: .weekOfMonth, value: -1, to: startDate)?.timeIntervalSince1970
+            let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: endToday)?.timeIntervalSince1970
             return (startTimestamp: sevenDaysAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastMonth:
-            let monthAgo = calendar.date(byAdding: .month, value: -1, to: startDate)?.timeIntervalSince1970
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: endToday)?.timeIntervalSince1970
             return (startTimestamp: monthAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastThreeMonths:
-            let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: startDate)?.timeIntervalSince1970
+            let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: endToday)?.timeIntervalSince1970
             return (startTimestamp: threeMonthsAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastSixMonths:
-            let sixMonthsAgo = calendar.date(byAdding: .month, value: -6, to: startDate)?.timeIntervalSince1970
+            let sixMonthsAgo = calendar.date(byAdding: .month, value: -6, to: endToday)?.timeIntervalSince1970
             return (startTimestamp: sixMonthsAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastYear:
-            let twelveMonthsAgo = calendar.date(byAdding: .year, value: -1, to: startDate)?.timeIntervalSince1970
+            let twelveMonthsAgo = calendar.date(byAdding: .year, value: -1, to: endToday)?.timeIntervalSince1970
             return (startTimestamp: twelveMonthsAgo.map { Int64($0) }, endTimestamp: nil)
         case let .custom(customPeriod):
             switch customPeriod {
