@@ -19,9 +19,9 @@ enum NominationPools {
         case unsuppored
 
         init(from decoder: Decoder) throws {
-            let singleContainer = try decoder.singleValueContainer()
+            var container = try decoder.unkeyedContainer()
 
-            let rawValue = try singleContainer.decode(String.self)
+            let rawValue = try container.decode(String.self)
 
             switch rawValue {
             case "Open":
@@ -38,7 +38,7 @@ enum NominationPools {
 
     struct BondedPool: Decodable {
         @StringCodable var points: BigUInt
-        let poolState: PoolState
+        let state: PoolState
     }
 
     enum AccountType: UInt8 {

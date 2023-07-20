@@ -86,6 +86,10 @@ extension Multistaking {
         }
 
         static func from(nominationPoolState: Multistaking.NominationPoolState) -> DashboardItemOnchainState? {
+            guard nominationPoolState.bondedPool?.state == .open else {
+                return nil
+            }
+
             guard nominationPoolState.ledger != nil else {
                 return nil
             }

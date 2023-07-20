@@ -10,6 +10,6 @@ extension NominationPools {
     }
 
     static var bondedPool: StorageCodingPath {
-        .init(moduleName: "NominationPools", itemName: "BondedPool")
+        .init(moduleName: "NominationPools", itemName: "BondedPools")
     }
 }
