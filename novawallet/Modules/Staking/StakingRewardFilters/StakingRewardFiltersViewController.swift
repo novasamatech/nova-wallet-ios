@@ -189,8 +189,10 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         updateViewModel(viewModel: viewModel)
     }
 
-    private func correctedDefaultDate(endDay: StakingRewardFiltersViewModel.EndDay,
-                                      expandedCalendar: Bool) -> StakingRewardFiltersViewModel.EndDayValue? {
+    private func correctedDefaultDate(
+        endDay: StakingRewardFiltersViewModel.EndDay,
+        expandedCalendar: Bool
+    ) -> StakingRewardFiltersViewModel.EndDayValue? {
         if expandedCalendar,
            let endDay = endDay.value,
            Lens.endDayDate.get(endDay) == nil,
