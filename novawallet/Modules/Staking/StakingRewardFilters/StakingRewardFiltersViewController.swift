@@ -205,7 +205,8 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             return
         }
 
-        let date = viewModel.customPeriod.endDay.collapsed ? nil : calendar.startOfDay(for: Date())
+        let date = viewModel.customPeriod.endDay.collapsed ? nil : calendar.dateInterval(of: .day, for: Date())?.end.addingTimeInterval(-1)
+
         let endDayValue: StakingRewardFiltersViewModel.EndDayValue = sender.isOn ?
             .alwaysToday : .exact(date)
         let updatedCustomPeriod = Lens.endDayValue.set(endDayValue, viewModel.customPeriod)
