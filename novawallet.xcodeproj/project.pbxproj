@@ -483,6 +483,7 @@
 		77CB33CE2A38780700B6709A /* structures_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77CB33CD2A38780700B6709A /* structures_output.json */; };
 		77CB33D22A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */; };
 		77CB33D72A3998FD00B6709A /* Array+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D62A3998FC00B6709A /* Array+Sort.swift */; };
+		77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */; };
 		77E255672A16145500B644C3 /* StakingRewardsFilterMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */; };
 		77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255682A16148000B644C3 /* StakingRewardsFilter.swift */; };
 		77EA2A232A333C1500B0670B /* french_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A182A333C1500B0670B /* french_output.json */; };
@@ -4131,6 +4132,7 @@
 		77CB33CD2A38780700B6709A /* structures_output.json */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; path = structures_output.json; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 0; };
 		77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifierWithCanonicalizationData.swift; sourceTree = "<group>"; };
 		77CB33D62A3998FC00B6709A /* Array+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Sort.swift"; sourceTree = "<group>"; };
+		77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Helpers.swift"; sourceTree = "<group>"; };
 		77E255652A16059A00B644C3 /* MultiassetUserDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilterMapper.swift; sourceTree = "<group>"; };
 		77E255682A16148000B644C3 /* StakingRewardsFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilter.swift; sourceTree = "<group>"; };
@@ -11954,6 +11956,7 @@
 				0C1BE19D2A46EDB40010933C /* String+ScientificInt.swift */,
 				0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */,
 				0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */,
+				77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -19001,6 +19004,7 @@
 				84EBC54324F656D100459D15 /* SortDescriptor+Storage.swift in Sources */,
 				845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */,
 				840874DE29782DD400ACFA55 /* GovernanceDelegateMetadataFactory.swift in Sources */,
+				77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */,
 				846A835A28B8C5EC00D92892 /* TransactionExpiredPresentable.swift in Sources */,
 				842EBB352890A79500B952D8 /* WalletSelectionViewFactory.swift in Sources */,
 				844C3E602A0635DE00C4305F /* QRScanViewDisplayParams.swift in Sources */,

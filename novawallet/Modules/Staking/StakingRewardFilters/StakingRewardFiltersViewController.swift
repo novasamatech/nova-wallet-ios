@@ -189,11 +189,13 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         updateViewModel(viewModel: viewModel)
     }
 
-    private func correctedDefaultDate(endDay: StakingRewardFiltersViewModel.EndDay, expandedCalendar: Bool) -> StakingRewardFiltersViewModel.EndDayValue? {
+    private func correctedDefaultDate(endDay: StakingRewardFiltersViewModel.EndDay,
+                                      expandedCalendar: Bool) -> StakingRewardFiltersViewModel.EndDayValue? {
         if expandedCalendar,
            let endDay = endDay.value,
-           Lens.endDayDate.get(endDay) == nil {
-            return Lens.endDayDate.set(calendar.startOfDay(for: Date()), endDay)
+           Lens.endDayDate.get(endDay) == nil,
+           let date = calendar.endOfDay(for: Date()) {
+            return Lens.endDayDate.set(date, endDay)
         }
 
         return endDay.value
@@ -205,7 +207,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             return
         }
 
-        let date = viewModel.customPeriod.endDay.collapsed ? nil : calendar.dateInterval(of: .day, for: Date())?.end.addingTimeInterval(-1)
+        let date = viewModel.customPeriod.endDay.collapsed ? nil : calendar.endOfDay(for: Date())
 
         let endDayValue: StakingRewardFiltersViewModel.EndDayValue = sender.isOn ?
             .alwaysToday : .exact(date)
@@ -495,10 +497,9 @@ extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
                 endDay: viewModel.customPeriod.endDay
             )
         case .endDate:
-            guard let interval = calendar.dateInterval(of: .day, for: selectedDate) else {
+            guard let date = calendar.endOfDay(for: selectedDate) else {
                 return
             }
-            let date = interval.end.addingTimeInterval(-1)
             let endDate = Lens.endDayValue.get(viewModel.customPeriod).map {
                 Lens.endDayDate.set(date, $0)
             }
