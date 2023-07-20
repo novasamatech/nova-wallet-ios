@@ -19,12 +19,12 @@ extension NominationPools {
 
         return result.prefix(SubstrateConstants.accountIdLength)
     }
-    
+
     static func pointsToBalance(for targetPoints: BigUInt, totalPoints: BigUInt, poolBalance: BigUInt) -> BigUInt {
         guard poolBalance != 0, totalPoints != 0, targetPoints != 0 else {
             return 0
         }
-        
+
         return (poolBalance * targetPoints) / totalPoints
     }
 }

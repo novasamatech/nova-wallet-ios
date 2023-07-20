@@ -276,7 +276,7 @@ final class MultistakingSyncService {
             accountId: account.accountId,
             chainAsset: chainAsset,
             stakingType: stakingType,
-            dashboardRepository: repositoryFactory.createRelaychainRepository(),
+            dashboardRepository: repositoryFactory.createNominationPoolsRepository(),
             accountRepository: repositoryFactory.createResolvedAccountRepository(),
             connection: connection,
             runtimeService: runtimeService,

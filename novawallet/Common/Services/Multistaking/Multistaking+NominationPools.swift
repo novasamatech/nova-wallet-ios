@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import BigInt
 
 extension Multistaking {
@@ -12,6 +13,8 @@ extension Multistaking {
 
         let ledger: UncertainStorage<StakingLedger?>
         let bondedPool: UncertainStorage<NominationPools.BondedPool?>
+        let era: UncertainStorage<ActiveEraInfo>
+        let nomination: UncertainStorage<Nomination?>
 
         init(
             values: [BatchStorageSubscriptionResultValue],
@@ -43,23 +46,23 @@ extension Multistaking {
             )
         }
     }
-    
+
     struct NominationPoolState {
         let poolMember: NominationPools.PoolMember
         let era: ActiveEraInfo?
         let ledger: StakingLedger?
         let nomination: Nomination?
         let bondedPool: NominationPools.BondedPool?
-        
-        var poolId: PoolId {
+
+        var poolId: NominationPools.PoolId {
             poolMember.poolId
         }
-        
+
         var poolMemberStake: BigUInt? {
             guard let bondedPool = bondedPool, let ledger = ledger else {
                 return nil
             }
-            
+
             return NominationPools.pointsToBalance(
                 for: poolMember.points,
                 totalPoints: bondedPool.points,
@@ -68,7 +71,14 @@ extension Multistaking {
         }
 
         func applying(change: NominationPoolStateChange) -> NominationPoolState {
-            let newEra: ActiveEraInfo = change.era.valueWhenDefined(else: era)
+            let newEra: ActiveEraInfo?
+
+            if case let .defined(activeEra) = change.era {
+                newEra = activeEra
+            } else {
+                newEra = era
+            }
+
             let newLedger = change.ledger.valueWhenDefined(else: ledger)
             let newNomination = change.nomination.valueWhenDefined(else: nomination)
             let newBondedPool = change.bondedPool.valueWhenDefined(else: bondedPool)
@@ -81,7 +91,7 @@ extension Multistaking {
                 bondedPool: newBondedPool
             )
         }
-        
+
         func applying(newPoolMember: NominationPools.PoolMember) -> NominationPoolState {
             .init(
                 poolMember: newPoolMember,
