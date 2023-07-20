@@ -2,6 +2,8 @@ import RobinHood
 import Foundation
 
 protocol ParachainStakingStateFactoryProtocol {
+    var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol { get }
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     func createState() throws -> ParachainStakingSharedState
 }
 
@@ -12,19 +14,33 @@ final class ParachainStakingStateFactory: ParachainStakingStateFactoryProtocol {
     private let stakingOption: Multistaking.ChainAssetOption
     private let eventCenter: EventCenterProtocol
     private let operationQueue: OperationQueue
-    lazy var operationManager = OperationManager(operationQueue: operationQueue)
-    private let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    private let operationManager: OperationManagerProtocol
+    let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
-        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
-        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
-        storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
-        eventCenter: EventCenterProtocol = EventCenter.shared,
+        chainRegistry: ChainRegistryProtocol,
+        storageFacade: StorageFacadeProtocol,
+        eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol = Logger.shared
+        logger: LoggerProtocol
     ) {
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        let operationManager = OperationManager(operationQueue: operationQueue)
+        stakingLocalSubscriptionFactory = ParachainStakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: operationManager,
+            logger: logger
+        )
+        generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: operationManager,
+            logger: logger
+        )
+
+        self.operationManager = operationManager
         self.stakingOption = stakingOption
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
@@ -40,13 +56,6 @@ final class ParachainStakingStateFactory: ParachainStakingStateFactoryProtocol {
             storageFacade: storageFacade,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
-            logger: logger
-        )
-
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: storageFacade,
-            operationManager: operationManager,
             logger: logger
         )
 

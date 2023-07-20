@@ -15,6 +15,7 @@ final class ParagraphView: RowView<IconDetailsView> {
         rowContentView.stackView.alignment = .top
         rowContentView.iconWidth = 32
         rowContentView.spacing = 16
+        isUserInteractionEnabled = false
     }
 }
 
