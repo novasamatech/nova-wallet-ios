@@ -16,4 +16,42 @@ enum StakingType: String, Codable, Equatable, Hashable {
             self = .unsupported
         }
     }
+
+    func isMorePreferred(than stakingType: StakingType) -> Bool {
+        StakingClass(stakingType: self).preferringRating < StakingClass(stakingType: stakingType).preferringRating
+    }
+}
+
+enum StakingClass {
+    case relaychain
+    case parachain
+    case nominationPools
+    case unsupported
+
+    // lesser better
+    var preferringRating: UInt8 {
+        switch self {
+        case .relaychain:
+            return 0
+        case .parachain:
+            return 1
+        case .nominationPools:
+            return 2
+        case .unsupported:
+            return 3
+        }
+    }
+
+    init(stakingType: StakingType) {
+        switch stakingType {
+        case .relaychain, .azero, .auraRelaychain:
+            self = .relaychain
+        case .parachain, .turing:
+            self = .parachain
+        case .nominationPools:
+            self = .nominationPools
+        case .unsupported:
+            self = .unsupported
+        }
+    }
 }
