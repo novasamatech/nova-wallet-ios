@@ -146,33 +146,57 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         return view
     }
 
-    private func collapseOrExpandCalendar(
-        lens: GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Bool>,
-        forceCollapse: Bool? = nil
-    ) {
-        guard let viewModel = self.viewModel else {
-            return
-        }
-
-        let newValue = forceCollapse ?? !lens.get(viewModel.customPeriod)
-        let updatedCustomPeriod = lens.set(newValue, viewModel.customPeriod)
-
-        updateViewModel(viewModel: .init(
-            period: viewModel.period,
-            customPeriod: updatedCustomPeriod
-        ))
-    }
-
     @objc
     private func startDayAction() {
-        collapseOrExpandCalendar(lens: Lens.endDayCollapsed, forceCollapse: true)
-        collapseOrExpandCalendar(lens: Lens.startDayCollapsed)
+        guard var viewModel = self.viewModel else {
+            return
+        }
+        let collapsedStartDayCalendar = viewModel.customPeriod.startDay.collapsed
+        let needDefaultDate = collapsedStartDayCalendar && viewModel.customPeriod.startDay.value == nil
+
+        viewModel.customPeriod = .init(
+            startDay: .init(
+                value: needDefaultDate ? calendar.startOfDay(for: Date()) : viewModel.customPeriod.startDay.value,
+                collapsed: !viewModel.customPeriod.startDay.collapsed
+            ),
+            endDay: .init(
+                value: viewModel.customPeriod.endDay.value,
+                collapsed: true
+            )
+        )
+        updateViewModel(viewModel: viewModel)
     }
 
     @objc
     private func endDayAction() {
-        collapseOrExpandCalendar(lens: Lens.startDayCollapsed, forceCollapse: true)
-        collapseOrExpandCalendar(lens: Lens.endDayCollapsed)
+        guard var viewModel = self.viewModel else {
+            return
+        }
+        var newValue = correctedDefaultDate(
+            endDay: viewModel.customPeriod.endDay,
+            expandedCalendar: viewModel.customPeriod.endDay.collapsed
+        )
+        viewModel.customPeriod = .init(
+            startDay: .init(
+                value: viewModel.customPeriod.startDay.value,
+                collapsed: true
+            ),
+            endDay: .init(
+                value: newValue,
+                collapsed: !viewModel.customPeriod.endDay.collapsed
+            )
+        )
+        updateViewModel(viewModel: viewModel)
+    }
+
+    private func correctedDefaultDate(endDay: StakingRewardFiltersViewModel.EndDay, expandedCalendar: Bool) -> StakingRewardFiltersViewModel.EndDayValue? {
+        if expandedCalendar,
+           let endDay = endDay.value,
+           Lens.endDayDate.get(endDay) == nil {
+            return Lens.endDayDate.set(calendar.startOfDay(for: Date()), endDay)
+        }
+
+        return endDay.value
     }
 
     @objc
@@ -181,8 +205,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             return
         }
 
+        let date = viewModel.customPeriod.endDay.collapsed ? nil : calendar.startOfDay(for: Date())
         let endDayValue: StakingRewardFiltersViewModel.EndDayValue = sender.isOn ?
-            .alwaysToday : .exact(nil)
+            .alwaysToday : .exact(date)
         let updatedCustomPeriod = Lens.endDayValue.set(endDayValue, viewModel.customPeriod)
 
         updateViewModel(viewModel: .init(
@@ -318,7 +343,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                 .startDate,
                 date: startDate,
                 minDate: nil,
-                maxDate: calendar.startOfDay(for: endDate ?? Date()).addingTimeInterval(-1)
+                maxDate: calendar.startOfDay(for: endDate ?? Date())
             )
         ]
 
@@ -349,7 +374,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             var items: [Row] = []
 
             if !collapsed {
-                let minDate = startDate.map { calendar.startOfDay(for: $0) }?.addingTimeInterval(.secondsInDay) ?? calendar.startOfDay(for: Date())
+                let minDate = startDate.map { calendar.startOfDay(for: $0) } ?? calendar.startOfDay(for: Date())
                 items = [
                     .calendar(
                         .endDate,
