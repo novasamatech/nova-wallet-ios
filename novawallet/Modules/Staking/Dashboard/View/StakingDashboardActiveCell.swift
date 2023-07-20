@@ -19,6 +19,7 @@ final class StakingDashboardActiveCellView: UIView {
         view.sView.iconDetailsView.iconWidth = 10
         view.sView.iconDetailsView.spacing = 4
         view.sView.contentInsets = UIEdgeInsets(top: 5, left: 6, bottom: 5, right: 6)
+        view.stackView.alignment = .center
     }
 
     var networkView: LoadableAssetListChainView { networkContainerView.fView }

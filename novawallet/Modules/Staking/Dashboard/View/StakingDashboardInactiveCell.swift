@@ -138,7 +138,8 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         titleView.spacing = 12
 
         titleView.detailsView.makeVertical()
-        titleView.detailsView.spacing = 0
+        titleView.detailsView.spacing = 3
+        titleView.detailsView.stackView.alignment = .leading
 
         titleView.detailsView.fView.makeHorizontal()
         titleView.detailsView.fView.spacing = 4
@@ -150,7 +151,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         stakingTypeView.iconDetailsView.detailsLabel.numberOfLines = 1
         stakingTypeView.iconDetailsView.spacing = 4
         stakingTypeView.iconDetailsView.iconWidth = 10
+        stakingTypeView.backgroundView.cornerRadius = 5
         stakingTypeView.contentInsets = UIEdgeInsets(top: 3, left: 6, bottom: 3, right: 6)
+
+        stakingTypeView.snp.makeConstraints { make in
+            make.height.equalTo(16)
+        }
 
         balanceLabel.apply(style: .caption1Secondary)
         balanceLabel.textAlignment = .left
