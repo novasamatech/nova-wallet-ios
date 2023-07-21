@@ -35,6 +35,11 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         super.setup()
         view?.didReceive(viewModel: .loading)
     }
+
+    override func didReceive(chainAsset: ChainAsset) {
+        super.didReceive(chainAsset: chainAsset)
+        state.chainAsset = chainAsset
+    }
 }
 
 extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInteractorOutputProtocol {
@@ -101,9 +106,13 @@ extension StartStakingInfoRelaychainPresenter {
         var networkInfo: NetworkStakingInfo?
         var eraCountdown: EraCountdown?
         var maxApy: Decimal?
-        var rewardsDestination: RewardDestinationModel { .stake }
+        var rewardsDestination: DefaultStakingRewardDestination { .stake }
+        var chainAsset: ChainAsset?
 
-        var minStake: BigUInt? {
+        // TODO:
+        var nominationPoolMinimumStake: BigUInt?
+
+        var directStakingMinimumStake: BigUInt? {
             guard let networkInfo = networkInfo,
                   let minNominatorBond = minNominatorBond.value,
                   let bagListSize = bagListSize.value else {
@@ -114,6 +123,24 @@ extension StartStakingInfoRelaychainPresenter {
                 given: minNominatorBond,
                 votersCount: bagListSize
             )
+        }
+
+        var minStake: BigUInt? {
+            guard let chainAsset = chainAsset else {
+                return nil
+            }
+
+            if chainAsset.asset.supportedStakings?.contains(.nominationPools) == true {
+                if let nominationPoolMinimumStake = nominationPoolMinimumStake,
+                   let directStakingMinimumStake = directStakingMinimumStake {
+                    return min(nominationPoolMinimumStake, directStakingMinimumStake)
+                } else {
+                    // TODO: return nil
+                    return directStakingMinimumStake
+                }
+            } else {
+                return directStakingMinimumStake
+            }
         }
 
         var nextEraStartTime: TimeInterval? {
@@ -132,9 +159,24 @@ extension StartStakingInfoRelaychainPresenter {
             return eraCountdown.eraTimeInterval
         }
 
-        var directStakingMinStake: BigUInt? {
-            // TODO: add nomination pool min staking
-            minStake
+        var rewardsAutoPayoutThresholdAmount: BigUInt? {
+            guard let chainAsset = chainAsset else {
+                return nil
+            }
+            guard chainAsset.asset.supportedStakings?.contains(.nominationPools) == true else {
+                return nil
+            }
+
+            guard let directStakingMinimumStake = directStakingMinimumStake,
+                  let minStake = minStake else {
+                return nil
+            }
+
+            return directStakingMinimumStake == minStake ? nil : directStakingMinimumStake
+        }
+
+        var govThresholdAmount: BigUInt? {
+            rewardsAutoPayoutThresholdAmount
         }
 
         var unstakingTime: TimeInterval? {

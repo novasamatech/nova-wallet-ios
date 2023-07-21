@@ -6,6 +6,7 @@ protocol StartStakingStateProtocol {
     var unstakingTime: TimeInterval? { get }
     var nextEraStartTime: TimeInterval? { get }
     var maxApy: Decimal? { get }
-    var directStakingMinStake: BigUInt? { get }
-    var rewardsDestination: RewardDestinationModel { get }
+    var rewardsAutoPayoutThresholdAmount: BigUInt? { get }
+    var govThresholdAmount: BigUInt? { get }
+    var rewardsDestination: DefaultStakingRewardDestination { get }
 }

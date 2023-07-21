@@ -101,7 +101,7 @@ extension StartStakingInfoParachainPresenter {
         private(set) var blockNumber: BlockNumber?
         var stakingDuration: ParachainStakingDuration?
         var rewardPaymentDelay: UInt32?
-        var rewardsDestination: RewardDestinationModel { .balance }
+        var rewardsDestination: DefaultStakingRewardDestination { .balance }
 
         var minStake: BigUInt? {
             guard let networkInfo = networkInfo else {
@@ -111,9 +111,9 @@ extension StartStakingInfoParachainPresenter {
             return max(networkInfo.minStakeForRewards, networkInfo.minTechStake)
         }
 
-        var directStakingMinStake: BigUInt? {
-            minStake
-        }
+        var govThresholdAmount: BigUInt? { nil }
+
+        var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
 
         var nextEraStartTime: TimeInterval? {
             guard let roundCountdown = roundCountdown,
