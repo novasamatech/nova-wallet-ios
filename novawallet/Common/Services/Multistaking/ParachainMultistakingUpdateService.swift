@@ -59,24 +59,36 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
     }
 
     private func subscribeDelegatorState(for accountId: AccountId) {
-        let request = MapSubscriptionRequest(
-            storagePath: ParachainStaking.delegatorStatePath,
-            localKey: ""
-        ) { BytesCodable(wrappedValue: accountId) }
+        do {
+            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+                ParachainStaking.delegatorStatePath,
+                accountId: accountId,
+                chainId: chainAsset.chain.chainId
+            )
+            
+            let request = MapSubscriptionRequest(
+                storagePath: ParachainStaking.delegatorStatePath,
+                localKey: localKey
+            ) { BytesCodable(wrappedValue: accountId) }
 
-        subscription = CallbackStorageSubscription<ParachainStaking.Delegator>(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
+            subscription = CallbackStorageSubscription<ParachainStaking.Delegator>(
+                request: request,
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: nil,
+                operationQueue: operationQueue,
+                callbackQueue: workingQueue
+            ) { [weak self] result in
+                self?.mutex.lock()
 
-            self?.handleDelegatorState(result: result)
+                self?.handleDelegatorState(result: result)
 
-            self?.mutex.unlock()
+                self?.mutex.unlock()
+            }
+        } catch {
+            logger?.error("Subscription error: \(error)")
+            
+            completeImmediate(error)
         }
     }
 

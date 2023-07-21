@@ -36,10 +36,10 @@ enum UncertainStorage<T> {
 extension UncertainStorage where T: Decodable {
     init(
         values: [BatchStorageSubscriptionResultValue],
-        localKey: String,
+        mappingKey: String,
         context: [CodingUserInfoKey: Any]?
     ) throws {
-        if let wrappedValue = values.first(where: { $0.localKey == localKey }) {
+        if let wrappedValue = values.first(where: { $0.mappingKey == mappingKey }) {
             let value = try wrappedValue.value.map(to: T.self, with: context)
             self = .defined(value)
         } else {

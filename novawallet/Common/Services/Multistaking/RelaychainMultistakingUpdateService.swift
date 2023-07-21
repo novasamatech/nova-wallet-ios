@@ -73,19 +73,25 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     }
 
     private func subscribeControllerResolution(for accountId: AccountId) {
-        let controllerRequest = MapSubscriptionRequest(
-            storagePath: .controller,
-            localKey: Multistaking.RelaychainAccountsChange.Key.controller.rawValue
-        ) {
-            BytesCodable(wrappedValue: accountId)
-        }
+        let controllerRequest = BatchStorageSubscriptionRequest(
+            innerRequest: MapSubscriptionRequest(
+                storagePath: .controller,
+                localKey: Multistaking.RelaychainAccountsChange.Key.controller.rawValue
+            ) {
+                BytesCodable(wrappedValue: accountId)
+            },
+            mappingKey: nil
+        )
 
-        let ledgerRequest = MapSubscriptionRequest(
-            storagePath: .stakingLedger,
-            localKey: Multistaking.RelaychainAccountsChange.Key.stash.rawValue
-        ) {
-            BytesCodable(wrappedValue: accountId)
-        }
+        let ledgerRequest = BatchStorageSubscriptionRequest(
+            innerRequest: MapSubscriptionRequest(
+                storagePath: .stakingLedger,
+                localKey: Multistaking.RelaychainAccountsChange.Key.stash.rawValue
+            ) {
+                BytesCodable(wrappedValue: accountId)
+            },
+            mappingKey: nil
+        )
 
         controllerSubscription = CallbackBatchStorageSubscription(
             requests: [controllerRequest, ledgerRequest],
@@ -128,51 +134,89 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         }
     }
 
+    // swiftlint:disable:next function_body_length
     private func subscribeState(for controller: AccountId, stash: AccountId) {
-        clearStateSubscription()
+        do {
+            clearStateSubscription()
 
-        let ledgerRequest = MapSubscriptionRequest(
-            storagePath: .stakingLedger,
-            localKey: Multistaking.RelaychainStateChange.Key.ledger.rawValue
-        ) {
-            BytesCodable(wrappedValue: controller)
+            let localKeyFactory = LocalStorageKeyFactory()
+
+            let ledgerLocalKey = try localKeyFactory.createFromStoragePath(
+                .stakingLedger,
+                accountId: controller,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let ledgerRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: .stakingLedger,
+                    localKey: ledgerLocalKey
+                ) {
+                    BytesCodable(wrappedValue: controller)
+                },
+                mappingKey: Multistaking.RelaychainStateChange.Key.ledger.rawValue
+            )
+
+            let nominationLocalKey = try localKeyFactory.createFromStoragePath(
+                .nominators,
+                accountId: stash,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let nominationRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: .nominators,
+                    localKey: nominationLocalKey
+                ) {
+                    BytesCodable(wrappedValue: stash)
+                },
+                mappingKey: Multistaking.RelaychainStateChange.Key.nomination.rawValue
+            )
+
+            let validatorLocalKey = try localKeyFactory.createFromStoragePath(
+                .validatorPrefs,
+                accountId: stash,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let validatorRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: .validatorPrefs,
+                    localKey: validatorLocalKey
+                ) {
+                    BytesCodable(wrappedValue: stash)
+                },
+                mappingKey: Multistaking.RelaychainStateChange.Key.validatorPrefs.rawValue
+            )
+
+            let eraRequest = BatchStorageSubscriptionRequest(
+                innerRequest: UnkeyedSubscriptionRequest(
+                    storagePath: .activeEra,
+                    localKey: ""
+                ),
+                mappingKey: Multistaking.RelaychainStateChange.Key.era.rawValue
+            )
+
+            stateSubscription = CallbackBatchStorageSubscription(
+                requests: [ledgerRequest, nominationRequest, validatorRequest, eraRequest],
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: nil,
+                operationQueue: operationQueue,
+                callbackQueue: workingQueue
+            ) { [weak self] result in
+                self?.mutex.lock()
+
+                self?.handleStateSubscription(result: result)
+
+                self?.mutex.unlock()
+            }
+
+            stateSubscription?.subscribe()
+        } catch {
+            logger?.error("Local key failed: \(error)")
+            completeImmediate(error)
         }
-
-        let nominationRequest = MapSubscriptionRequest(
-            storagePath: .nominators,
-            localKey: Multistaking.RelaychainStateChange.Key.nomination.rawValue
-        ) {
-            BytesCodable(wrappedValue: stash)
-        }
-
-        let validatorRequest = MapSubscriptionRequest(
-            storagePath: .validatorPrefs,
-            localKey: Multistaking.RelaychainStateChange.Key.validatorPrefs.rawValue
-        ) {
-            BytesCodable(wrappedValue: stash)
-        }
-
-        let eraRequest = UnkeyedSubscriptionRequest(
-            storagePath: .activeEra,
-            localKey: Multistaking.RelaychainStateChange.Key.era.rawValue
-        )
-
-        stateSubscription = CallbackBatchStorageSubscription(
-            requests: [ledgerRequest, nominationRequest, validatorRequest, eraRequest],
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleStateSubscription(result: result)
-
-            self?.mutex.unlock()
-        }
-
-        stateSubscription?.subscribe()
     }
 
     private func handleStateSubscription(result: Result<Multistaking.RelaychainStateChange, Error>) {

@@ -73,7 +73,7 @@ extension Gov2SubscriptionFactory {
                 }
 
                 let subscription = CallbackBatchStorageSubscription<BatchSubscriptionHandler>(
-                    requests: requests,
+                    requests: requests.map { BatchStorageSubscriptionRequest(innerRequest: $0, mappingKey: nil) },
                     connection: connection,
                     runtimeService: runtimeProvider,
                     repository: nil,
