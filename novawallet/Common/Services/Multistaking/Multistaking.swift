@@ -17,8 +17,21 @@ enum Multistaking {
         }
     }
 
+    struct OffchainFilters: Hashable {
+        let stateFilters: [OffchainFilter]
+        let rewardFilters: [OffchainFilter]
+
+        func adding(newStateFilters: [OffchainFilter], newRewardFilters: [OffchainFilter]) -> OffchainFilters {
+            .init(
+                stateFilters: stateFilters + newStateFilters,
+                rewardFilters: rewardFilters + newRewardFilters
+            )
+        }
+    }
+
     struct OffchainRequest {
-        let filters: Set<OffchainFilter>
+        let stateFilters: Set<OffchainFilter>
+        let rewardFilters: Set<OffchainFilter>
     }
 
     enum OffchainStakingState: Hashable {

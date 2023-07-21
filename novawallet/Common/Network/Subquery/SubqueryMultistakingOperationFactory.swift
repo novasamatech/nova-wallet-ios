@@ -3,8 +3,8 @@ import RobinHood
 import BigInt
 
 final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
-    private func buildAccountFilter(for request: Multistaking.OffchainRequest) throws -> SubqueryFilter {
-        let filterItems: [SubqueryFilter] = try request.filters.map { nextFilter in
+    private func buildAccountFilter(for offchainFilters: Set<Multistaking.OffchainFilter>) throws -> SubqueryFilter {
+        let filterItems: [SubqueryFilter] = try offchainFilters.map { nextFilter in
             let chain = nextFilter.chainAsset.chain
             let address: AccountAddress
 
@@ -40,21 +40,15 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
         return SubqueryCompoundFilter.or(filterItems)
     }
 
-    private func buildQuery(for request: Multistaking.OffchainRequest) throws -> String {
-        let accountFilter = try buildAccountFilter(for: request)
-
-        let accountQueryFilter = SubqueryFilterBuilder.buildBlock(accountFilter)
-
-        let rewardFilter = SubqueryEqualToFilter(fieldName: "type", value: SubqueryRewardType.reward)
-        let rewardsQueryFilter = SubqueryFilterBuilder.buildBlock(SubqueryCompoundFilter.and([accountFilter, rewardFilter]))
-
-        let slashFilter = SubqueryEqualToFilter(fieldName: "type", value: SubqueryRewardType.slash)
-        let slashesQueryFilter = SubqueryFilterBuilder.buildBlock(SubqueryCompoundFilter.and([accountFilter, slashFilter]))
-
-        return """
+    private func buildQuery(
+        activeStakerQueryFilter: String,
+        rewardsQueryFilter: String,
+        slashesQueryFilter: String
+    ) -> String {
+        """
            {
             activeStakers(
-               \(accountQueryFilter)
+               \(activeStakerQueryFilter)
             ) {
                 nodes {
                     networkId
@@ -96,6 +90,29 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
             }
            }
         """
+    }
+
+    private func buildQuery(for request: Multistaking.OffchainRequest) throws -> String {
+        let activeStakersAccountFilter = try buildAccountFilter(for: request.stateFilters)
+        let rewardsAccountFilter = try buildAccountFilter(for: request.rewardFilters)
+
+        let activeStakerQueryFilter = SubqueryFilterBuilder.buildBlock(activeStakersAccountFilter)
+
+        let rewardFilter = SubqueryEqualToFilter(fieldName: "type", value: SubqueryRewardType.reward)
+        let rewardsQueryFilter = SubqueryFilterBuilder.buildBlock(
+            SubqueryCompoundFilter.and([rewardsAccountFilter, rewardFilter])
+        )
+
+        let slashFilter = SubqueryEqualToFilter(fieldName: "type", value: SubqueryRewardType.slash)
+        let slashesQueryFilter = SubqueryFilterBuilder.buildBlock(
+            SubqueryCompoundFilter.and([rewardsAccountFilter, slashFilter])
+        )
+
+        return buildQuery(
+            activeStakerQueryFilter: activeStakerQueryFilter,
+            rewardsQueryFilter: rewardsQueryFilter,
+            slashesQueryFilter: slashesQueryFilter
+        )
     }
 }
 

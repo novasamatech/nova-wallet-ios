@@ -12,6 +12,15 @@ final class MultistakingSyncTests: XCTestCase {
 
         Logger.shared.info("Result: \(result)")
     }
+    
+    func testAllStakableChainsForPoolSync() throws {
+        let result = try performAllStakableOptionsSync(
+            for: "1SohJrC8gHwHeJT1nkSonEbMd6yrkJgw8PwGsXUrKw3YrEK",
+            ethereumAddress: "0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00"
+        )
+
+        Logger.shared.info("Result: \(result)")
+    }
 
     private func performAllStakableOptionsSync(
         for substrateAddress: AccountAddress,

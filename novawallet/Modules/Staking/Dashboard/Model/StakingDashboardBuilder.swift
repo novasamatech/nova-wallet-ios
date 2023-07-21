@@ -73,9 +73,13 @@ final class StakingDashboardBuilder {
         // separate active stakings
 
         let activeStakings = dashboardItems.filter { $0.hasStaking }
-        let activeAssets = Set(activeStakings.map(\.stakingOption.chainAsset.chainAssetId))
+        let activeStakingAssets = Set(activeStakings.map(\.stakingOption.chainAsset.chainAssetId))
 
-        let allInactiveStakings = dashboardItems.filter { !$0.hasStaking }
+        let allInactiveStakings = dashboardItems
+            .filter { !$0.hasStaking }
+            .sorted { item1, item2 in
+                item1.stakingOption.type.isMorePreferred(than: item2.stakingOption.type)
+            }
 
         /**
          * We allow staking to be in inactive set if:
@@ -86,20 +90,22 @@ final class StakingDashboardBuilder {
          * Otherwise staking goes to the More Options
          */
 
-        var inactiveStakings: [ChainAssetId: StakingDashboardItemModel] = [:]
+        var inactiveStakingAssets: Set<ChainAssetId> = Set()
+        var inactiveStakings: [Multistaking.Option: StakingDashboardItemModel] = [:]
         var moreOptions: [StakingDashboardItemModel] = []
 
         allInactiveStakings.forEach { dashboardItem in
-            let chainAsset = dashboardItem.stakingOption.chainAsset
-            let chainAssetId = chainAsset.chainAssetId
+            let stakingOption = dashboardItem.stakingOption.option
+            let chain = dashboardItem.stakingOption.chainAsset.chain
 
             if
-                activeAssets.contains(chainAssetId) ||
-                inactiveStakings[chainAssetId] != nil ||
-                chainAsset.chain.isTestnet {
+                activeStakingAssets.contains(stakingOption.chainAssetId) ||
+                inactiveStakingAssets.contains(stakingOption.chainAssetId) ||
+                chain.isTestnet {
                 moreOptions.append(dashboardItem)
             } else {
-                inactiveStakings[chainAssetId] = dashboardItem
+                inactiveStakings[stakingOption] = dashboardItem
+                inactiveStakingAssets.insert(stakingOption.chainAssetId)
             }
         }
 
