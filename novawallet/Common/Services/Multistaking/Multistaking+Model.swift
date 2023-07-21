@@ -42,6 +42,11 @@ extension Multistaking {
         let state: Multistaking.ParachainState
     }
 
+    struct DashboardItemNominationPoolPart {
+        let stakingOption: OptionWithWallet
+        let state: Multistaking.NominationPoolState
+    }
+
     struct DashboardItemOffchainPart {
         let stakingOption: OptionWithWallet
         let maxApy: Decimal
@@ -75,6 +80,22 @@ extension Multistaking {
 
             if parachainState.shouldHaveActiveCollator {
                 return .waiting
+            } else {
+                return .bonded
+            }
+        }
+
+        static func from(nominationPoolState: Multistaking.NominationPoolState) -> DashboardItemOnchainState? {
+            guard nominationPoolState.bondedPool?.state == .open else {
+                return nil
+            }
+
+            guard nominationPoolState.ledger != nil else {
+                return nil
+            }
+
+            if let nomination = nominationPoolState.nomination, let stateEra = nominationPoolState.era {
+                return nomination.submittedIn >= stateEra.index ? .waiting : .active
             } else {
                 return .bonded
             }
@@ -121,6 +142,7 @@ extension Multistaking {
         let stakingOption: Option
         let walletAccountId: AccountId
         let resolvedAccountId: AccountId
+        let rewardsAccountId: AccountId?
     }
 }
 

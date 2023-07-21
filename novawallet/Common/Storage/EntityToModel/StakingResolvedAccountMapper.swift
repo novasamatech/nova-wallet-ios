@@ -4,6 +4,10 @@ import RobinHood
 
 extension Multistaking.ResolvedAccount: Identifiable {
     var identifier: String {
+        Self.createIdentifier(from: walletAccountId, stakingOption: stakingOption)
+    }
+
+    static func createIdentifier(from walletAccountId: AccountId, stakingOption: Multistaking.Option) -> String {
         walletAccountId.toHex() + "-" + stakingOption.stringValue
     }
 }
@@ -27,6 +31,7 @@ extension StakingResolvedAccountMapper: CoreDataMapperProtocol {
         entity.stakingType = model.stakingOption.type.rawValue
         entity.walletAccountId = model.walletAccountId.toHex()
         entity.resolvedAccountId = model.resolvedAccountId.toHex()
+        entity.rewardsAccountId = model.rewardsAccountId?.toHex()
     }
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
@@ -43,11 +48,13 @@ extension StakingResolvedAccountMapper: CoreDataMapperProtocol {
 
         let walletAccountId = try Data(hexString: entity.walletAccountId!)
         let resolvedAccountId = try Data(hexString: entity.resolvedAccountId!)
+        let rewardsAccountId = try entity.rewardsAccountId.map { try Data(hexString: $0) }
 
         return .init(
             stakingOption: stakingOption,
             walletAccountId: walletAccountId,
-            resolvedAccountId: resolvedAccountId
+            resolvedAccountId: resolvedAccountId,
+            rewardsAccountId: rewardsAccountId
         )
     }
 }

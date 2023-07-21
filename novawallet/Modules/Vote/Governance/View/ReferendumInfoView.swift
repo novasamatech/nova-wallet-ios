@@ -177,6 +177,11 @@ extension IconDetailsView.Style {
         tintColor: R.color.colorTextWarning()!,
         font: .caption1
     )
+
+    static let chips = IconDetailsView.Style(
+        tintColor: R.color.colorIconChip()!,
+        font: .semiBoldCaps2
+    )
 }
 
 private extension UILabel.Style {

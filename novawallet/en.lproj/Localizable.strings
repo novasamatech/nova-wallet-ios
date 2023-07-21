@@ -1319,3 +1319,5 @@
 "asset.operation.send.title" = "Send";
 "asset.operation.receive.title" = "Receive";
 "asset.operation.buy.title" = "Buy";
+"staking.direct" = "Direct";
+"staking.pool" = "Pool";

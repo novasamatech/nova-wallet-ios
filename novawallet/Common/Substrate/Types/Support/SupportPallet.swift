@@ -55,4 +55,16 @@ enum SupportPallet {
             }
         }
     }
+
+    struct KeyValue<K: Decodable, V: Decodable>: Decodable {
+        let key: K
+        let value: V
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            key = try container.decode(K.self)
+            value = try container.decode(V.self)
+        }
+    }
 }
