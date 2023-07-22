@@ -11,6 +11,8 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>
     let accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>
+    let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
+    let stashItemRepository: AnyDataProviderRepository<StashItem>
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -27,6 +29,8 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemRelaychainPart>,
         accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>,
+        cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
+        stashItemRepository: AnyDataProviderRepository<StashItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -39,6 +43,8 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.accountRepository = accountRepository
+        self.cacheRepository = cacheRepository
+        self.stashItemRepository = stashItemRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.workingQueue = workingQueue
@@ -76,21 +82,21 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         let controllerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
                 storagePath: .controller,
-                localKey: Multistaking.RelaychainAccountsChange.Key.controller.rawValue
+                localKey: ""
             ) {
                 BytesCodable(wrappedValue: accountId)
             },
-            mappingKey: nil
+            mappingKey: Multistaking.RelaychainAccountsChange.Key.controller.rawValue
         )
 
         let ledgerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
                 storagePath: .stakingLedger,
-                localKey: Multistaking.RelaychainAccountsChange.Key.stash.rawValue
+                localKey: ""
             ) {
                 BytesCodable(wrappedValue: accountId)
             },
-            mappingKey: nil
+            mappingKey: Multistaking.RelaychainAccountsChange.Key.stash.rawValue
         )
 
         controllerSubscription = CallbackBatchStorageSubscription(
@@ -122,7 +128,13 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 case let .defined(controller) = accounts.controller {
                 markSyncingImmediate()
 
-                saveStashChange(stash ?? accountId)
+                saveResolvedAccounts(stash ?? accountId)
+
+                if stash != nil || controller != nil {
+                    saveStashItem(stash: stash ?? accountId, controller: controller ?? accountId, chain: chainAsset.chain)
+                } else {
+                    saveStashItem(stash: nil, controller: nil, chain: chainAsset.chain)
+                }
 
                 subscribeState(
                     for: controller ?? accountId,
@@ -201,7 +213,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 requests: [ledgerRequest, nominationRequest, validatorRequest, eraRequest],
                 connection: connection,
                 runtimeService: runtimeService,
-                repository: nil,
+                repository: cacheRepository,
                 operationQueue: operationQueue,
                 callbackQueue: workingQueue
             ) { [weak self] result in
@@ -255,7 +267,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         }
     }
 
-    private func saveStashChange(_ stashAccountId: AccountId) {
+    private func saveResolvedAccounts(_ stashAccountId: AccountId) {
         let stakingOption = Multistaking.Option(
             chainAssetId: chainAsset.chainAssetId,
             type: stakingType
@@ -311,6 +323,34 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                     self?.complete(nil)
                 } catch {
                     self?.complete(error)
+                }
+            }
+        }
+
+        operationQueue.addOperation(saveOperation)
+    }
+
+    private func saveStashItem(stash: AccountId?, controller: AccountId?, chain: ChainModel) {
+        let saveOperation = stashItemRepository.replaceOperation {
+            if let stash = stash, let controller = controller {
+                let stashItem = StashItem(
+                    stash: try stash.toAddress(using: chain.chainFormat),
+                    controller: try controller.toAddress(using: chain.chainFormat),
+                    chainId: chain.chainId
+                )
+
+                return [stashItem]
+            } else {
+                return []
+            }
+        }
+
+        saveOperation.completionBlock = { [weak self] in
+            self?.workingQueue.async {
+                do {
+                    _ = try saveOperation.extractNoCancellableResultData()
+                } catch {
+                    self?.logger?.error("Can't save stash item")
                 }
             }
         }

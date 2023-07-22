@@ -10,6 +10,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemParachainPart>
+    let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let operationFactory: ParaStkCollatorsOperationFactoryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
@@ -23,6 +24,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
         chainAsset: ChainAsset,
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemParachainPart>,
+        cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationFactory: ParaStkCollatorsOperationFactoryProtocol,
@@ -35,6 +37,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
         self.chainAsset = chainAsset
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
+        self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.operationFactory = operationFactory
@@ -65,7 +68,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
                 accountId: accountId,
                 chainId: chainAsset.chain.chainId
             )
-            
+
             let request = MapSubscriptionRequest(
                 storagePath: ParachainStaking.delegatorStatePath,
                 localKey: localKey
@@ -75,7 +78,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
                 request: request,
                 connection: connection,
                 runtimeService: runtimeService,
-                repository: nil,
+                repository: cacheRepository,
                 operationQueue: operationQueue,
                 callbackQueue: workingQueue
             ) { [weak self] result in
@@ -87,7 +90,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
             }
         } catch {
             logger?.error("Subscription error: \(error)")
-            
+
             completeImmediate(error)
         }
     }

@@ -18,15 +18,16 @@ extension NSPredicate {
         NSPredicate(format: "%K BEGINSWITH %@", #keyPath(CDChainStorageItem.identifier), prefix)
     }
 
-    static func filterByStash(_ address: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDStashItem.stash), address)
-    }
+    static func filterByStashOrController(_ address: String, chainId: ChainModel.Id) -> NSPredicate {
+        let stashFilter = NSPredicate(format: "%K == %@", #keyPath(CDStashItem.stash), address)
+        let controllerFiter = NSPredicate(format: "%K == %@", #keyPath(CDStashItem.controller), address)
+        let chainIdFilter = NSPredicate(format: "%K == %@", #keyPath(CDStashItem.chainId), chainId)
 
-    static func filterByStashOrController(_ address: String) -> NSPredicate {
-        let stash = filterByStash(address)
-        let controller = NSPredicate(format: "%K == %@", #keyPath(CDStashItem.controller), address)
+        let stashOrControllerFilter = NSCompoundPredicate(
+            orPredicateWithSubpredicates: [stashFilter, controllerFiter]
+        )
 
-        return NSCompoundPredicate(orPredicateWithSubpredicates: [stash, controller])
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [stashOrControllerFilter, chainIdFilter])
     }
 
     static func filterMetaAccountByAccountId(_ accountId: AccountId) -> NSPredicate {

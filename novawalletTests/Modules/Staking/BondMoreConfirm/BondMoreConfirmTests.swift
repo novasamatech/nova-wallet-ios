@@ -69,7 +69,7 @@ class BondMoreConfirmTests: XCTestCase {
         let metaAccount = AccountGenerator.generateMetaAccount()
         let accountResponse = metaAccount.fetch(for: chain.accountRequest())!
         let selectedAddress = accountResponse.toAddress()!
-        let stashItem = StashItem(stash: selectedAddress, controller: selectedAddress)
+        let stashItem = StashItem(stash: selectedAddress, controller: selectedAddress, chainId: chain.chainId)
 
         let userDataStorage = UserDataStorageTestFacade()
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorage)

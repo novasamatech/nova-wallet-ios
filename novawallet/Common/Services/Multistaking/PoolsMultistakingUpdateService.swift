@@ -11,6 +11,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemNominationPoolPart>
     let accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>
+    let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -20,6 +21,8 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
 
     private var state: Multistaking.NominationPoolState?
 
+    private lazy var localStorageKeyFactory = LocalStorageKeyFactory()
+
     init(
         walletId: MetaAccountModel.Id,
         accountId: AccountId,
@@ -27,6 +30,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemNominationPoolPart>,
         accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>,
+        cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -39,6 +43,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.accountRepository = accountRepository
+        self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.workingQueue = workingQueue
@@ -73,26 +78,34 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
     }
 
     private func subscribePoolResolution(for accountId: AccountId) {
-        let request = MapSubscriptionRequest(
-            storagePath: NominationPools.poolMembersPath,
-            localKey: ""
-        ) {
-            BytesCodable(wrappedValue: accountId)
-        }
+        do {
+            let localKey = try localStorageKeyFactory.createFromStoragePath(
+                NominationPools.poolMembersPath,
+                accountId: accountId,
+                chainId: chainAsset.chain.chainId
+            )
 
-        poolMemberSubscription = CallbackStorageSubscription(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
+            let request = MapSubscriptionRequest(storagePath: NominationPools.poolMembersPath, localKey: localKey) {
+                BytesCodable(wrappedValue: accountId)
+            }
 
-            self?.handlePoolMember(result: result, accountId: accountId)
+            poolMemberSubscription = CallbackStorageSubscription(
+                request: request,
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: cacheRepository,
+                operationQueue: operationQueue,
+                callbackQueue: workingQueue
+            ) { [weak self] result in
+                self?.mutex.lock()
 
-            self?.mutex.unlock()
+                self?.handlePoolMember(result: result, accountId: accountId)
+
+                self?.mutex.unlock()
+            }
+        } catch {
+            logger?.error("Pool resolution failed: \(error)")
+            completeImmediate(error)
         }
     }
 
@@ -225,8 +238,6 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
         do {
             clearStateSubscription()
 
-            let localKeyFactory = LocalStorageKeyFactory()
-
             let eraRequest = BatchStorageSubscriptionRequest(
                 innerRequest: UnkeyedSubscriptionRequest(
                     storagePath: .activeEra,
@@ -235,7 +246,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
                 mappingKey: Multistaking.NominationPoolStateChange.Key.era.rawValue
             )
 
-            let ledgerLocalKey = try localKeyFactory.createFromStoragePath(
+            let ledgerLocalKey = try localStorageKeyFactory.createFromStoragePath(
                 .stakingLedger,
                 accountId: poolAccountId,
                 chainId: chainAsset.chain.chainId
@@ -252,7 +263,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
                 mappingKey: Multistaking.NominationPoolStateChange.Key.ledger.rawValue
             )
 
-            let nominationLocalKey = try localKeyFactory.createFromStoragePath(
+            let nominationLocalKey = try localStorageKeyFactory.createFromStoragePath(
                 .nominators,
                 accountId: poolAccountId,
                 chainId: chainAsset.chain.chainId
@@ -269,7 +280,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
                 mappingKey: Multistaking.NominationPoolStateChange.Key.nomination.rawValue
             )
 
-            let bondedLocalKey = try localKeyFactory.createFromStoragePath(
+            let bondedLocalKey = try localStorageKeyFactory.createFromStoragePath(
                 NominationPools.bondedPool,
                 encodableElement: poolId,
                 chainId: chainAsset.chain.chainId
@@ -290,7 +301,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
                 requests: [ledgerRequest, nominationRequest, eraRequest, bondedPoolRequest],
                 connection: connection,
                 runtimeService: runtimeService,
-                repository: nil,
+                repository: cacheRepository,
                 operationQueue: operationQueue,
                 callbackQueue: workingQueue
             ) { [weak self] result in

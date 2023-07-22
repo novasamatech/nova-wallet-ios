@@ -49,9 +49,10 @@ final class MultistakingSyncTests: XCTestCase {
             type: .watchOnly
         )
 
-        let repositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
+        let multistakingRepositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
+        let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
         let providerFactory = MultistakingProviderFactory(
-            repositoryFactory: repositoryFactory,
+            repositoryFactory: multistakingRepositoryFactory,
             operationQueue: operationQueue
         )
 
@@ -59,7 +60,8 @@ final class MultistakingSyncTests: XCTestCase {
             wallet: wallet,
             chainRegistry: chainRegistry,
             providerFactory: providerFactory,
-            repositoryFactory: repositoryFactory,
+            multistakingRepositoryFactory: multistakingRepositoryFactory,
+            substrateRepositoryFactory: substrateRepositoryFactory,
             offchainOperationFactory: SubqueryMultistakingOperationFactory(url: ApplicationConfig.shared.multistakingURL)
         )
 
@@ -90,7 +92,7 @@ final class MultistakingSyncTests: XCTestCase {
 
         // then
 
-        let dashboardRepository = repositoryFactory.createDashboardRepository(for: wallet.metaId)
+        let dashboardRepository = multistakingRepositoryFactory.createDashboardRepository(for: wallet.metaId)
 
         let fetchOperation = dashboardRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
