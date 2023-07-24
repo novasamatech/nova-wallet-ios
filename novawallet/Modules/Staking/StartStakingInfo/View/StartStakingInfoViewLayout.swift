@@ -33,15 +33,11 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         $0.textContainerInset = .zero
     }
 
-    let footer: RoundedView = .create { view in
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorBottomSheetBackground()!
-        view.highlightedFillColor = R.color.colorBottomSheetBackground()!
-        view.strokeColor = R.color.colorContainerBorder()!
-        view.highlightedStrokeColor = R.color.colorContainerBorder()!
-        view.strokeWidth = 1
-        view.cornerRadius = 12
-        view.roundingCorners = [.topLeft, .topRight]
+    let footer: BlurBackgroundView = .create {
+        $0.sideLength = 12
+        $0.cornerCut = [.topLeft, .topRight]
+        $0.borderWidth = Constants.footerBorderWidth
+        $0.borderColor = R.color.colorContainerBorder()!
     }
 
     lazy var actionView: LoadableActionView = .create {
@@ -92,8 +88,9 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
         addSubview(footer)
         footer.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
-            $0.height.equalTo(Constants.footerHeight)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth)
+            $0.bottom.equalToSuperview().offset(Constants.footerBorderWidth)
         }
     }
 
@@ -282,5 +279,6 @@ extension StartStakingInfoViewLayout {
         static let containerSpacing: CGFloat = 32
         static let wikiAndTermsSpacing: CGFloat = 16
         static let actionViewHeight: CGFloat = UIConstants.actionHeight
+        static let footerBorderWidth: CGFloat = 1
     }
 }

@@ -12,7 +12,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     private(set) var price: PriceData?
     private(set) var chainAsset: ChainAsset?
-    private(set) var balanceState: BalanceState?
+    private(set) var accountExistense: AccountExistense?
     private var state: StartStakingStateProtocol?
     private var wallet: MetaAccountModel?
 
@@ -36,7 +36,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         guard let chainAsset = chainAsset else {
             return
         }
-        switch balanceState {
+        switch accountExistense {
         case let .assetBalance(balance):
             let viewModel = startStakingViewModelFactory.balance(
                 amount: balance.freeInPlank,
@@ -57,7 +57,6 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.state = state
 
         guard
-            let enoughTokensForDirectStaking = enoughTokensForDirectStaking(state: state),
             let chainAsset = chainAsset,
             let eraDuration = state.eraDuration,
             let unstakingTime = state.unstakingTime,
@@ -67,7 +66,6 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             return
         }
 
-        let directStakingAmount = enoughTokensForDirectStaking ? state.directStakingMinStake : nil
         let title = startStakingViewModelFactory.earnupModel(
             earnings: maxApy,
             chainAsset: chainAsset,
@@ -88,7 +86,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         ) : nil
 
         let govModel = chainAsset.chain.hasGovernance ? startStakingViewModelFactory.govModel(
-            amount: directStakingAmount,
+            amount: state.govThresholdAmount,
             chainAsset: chainAsset,
             locale: selectedLocale
         ) : nil
@@ -103,9 +101,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             ),
             startStakingViewModelFactory.unstakeModel(unstakePeriod: unstakingTime, locale: selectedLocale),
             startStakingViewModelFactory.rewardModel(
-                amount: directStakingAmount,
+                amount: state.rewardsAutoPayoutThresholdAmount,
                 chainAsset: chainAsset,
                 eraDuration: eraDuration,
+                destination: state.rewardsDestination,
                 locale: selectedLocale
             ),
             govModel,
@@ -122,22 +121,6 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         view?.didReceive(viewModel: .loaded(value: model))
     }
 
-    private func enoughTokensForDirectStaking(state: StartStakingStateProtocol) -> Bool? {
-        guard let balanceState = balanceState else {
-            return nil
-        }
-        guard let minStake = state.minStake else {
-            return nil
-        }
-
-        switch balanceState {
-        case let .assetBalance(assetBalance):
-            return assetBalance.freeInPlank >= minStake
-        case .noAccount:
-            return false
-        }
-    }
-
     // MARK: - StartStakingInfoInteractorOutputProtocol
 
     func didReceive(chainAsset: ChainAsset) {
@@ -151,14 +134,14 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func didReceive(assetBalance: AssetBalance) {
-        balanceState = .assetBalance(assetBalance)
+        accountExistense = .assetBalance(assetBalance)
         provideBalanceModel()
     }
 
     func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
         self.wallet = wallet
         if chainAccountId == nil {
-            balanceState = .noAccount
+            accountExistense = .noAccount
             provideBalanceModel()
         }
     }
@@ -186,7 +169,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
               let wallet = wallet else {
             return
         }
-        switch balanceState {
+        switch accountExistense {
         case .noAccount:
             let message = R.string.localizable.commonChainAccountMissingMessageFormat(
                 chain.name,

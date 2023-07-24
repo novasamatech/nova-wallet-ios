@@ -19,6 +19,7 @@ protocol StartStakingViewModelFactoryProtocol {
         amount: BigUInt?,
         chainAsset: ChainAsset,
         eraDuration: TimeInterval,
+        destination: DefaultStakingRewardDestination,
         locale: Locale
     ) -> ParagraphView.Model
     func govModel(
@@ -133,11 +134,16 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         amount: BigUInt?,
         chainAsset: ChainAsset,
         eraDuration: TimeInterval,
+        destination: DefaultStakingRewardDestination,
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodEvery(preferredLanguages: locale.rLanguages)
-        let rewardIntervals = eraDuration.localizedDaysHoursMinutes(for: locale, preposition: preposition, separator: separator)
+        let rewardIntervals = eraDuration.localizedDaysHoursMinutes(
+            for: locale,
+            preposition: preposition,
+            separator: separator
+        )
         let text: String
 
         if let amount = amount {
@@ -152,8 +158,19 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 preferredLanguages: locale.rLanguages
             )
         } else {
-            text = R.string.localizable.stakingStartRewardsNominationPool(
+            let destinationString: String
+            switch destination {
+            case .balance:
+                destinationString = R.string.localizable.stakingStartRewardsDestinationBalance(
+                    preferredLanguages: locale.rLanguages)
+            case .stake:
+                destinationString = R.string.localizable.stakingStartRewardsDestinationStake(
+                    preferredLanguages: locale.rLanguages)
+            }
+
+            text = R.string.localizable.stakingStartRewardsCommon(
                 rewardIntervals,
+                destinationString,
                 preferredLanguages: locale.rLanguages
             )
         }
