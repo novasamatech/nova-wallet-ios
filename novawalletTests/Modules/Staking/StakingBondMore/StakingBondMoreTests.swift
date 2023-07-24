@@ -52,7 +52,7 @@ class StakingBondMoreTests: XCTestCase {
         }
 
         // balance & fee is received
-        let stashItem = StashItem(stash: WestendStub.address, controller: WestendStub.address)
+        let stashItem = StashItem(stash: WestendStub.address, controller: WestendStub.address, chainId: chain.chainId)
         let stashAccountId = try stashItem.stash.toAccountId()
         let assetBalance = AssetBalance(
             chainAssetId: chain.utilityChainAssetId()!,

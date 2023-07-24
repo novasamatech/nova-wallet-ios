@@ -104,7 +104,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
 extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmationInteractorInputProtocol {
     func setup() {
         if let address = selectedAccount.toAddress() {
-            stashItemProvider = subscribeStashItemProvider(for: address)
+            stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
             presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }

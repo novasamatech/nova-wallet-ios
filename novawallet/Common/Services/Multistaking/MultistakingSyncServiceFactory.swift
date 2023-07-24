@@ -22,9 +22,11 @@ final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtoc
     func createService(for wallet: MetaAccountModel) -> MultistakingSyncServiceProtocol {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let repositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
+        let multistakingRepositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
+        let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
+
         let providerFactory = MultistakingProviderFactory(
-            repositoryFactory: repositoryFactory,
+            repositoryFactory: multistakingRepositoryFactory,
             operationQueue: operationQueue
         )
 
@@ -34,7 +36,8 @@ final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtoc
             wallet: wallet,
             chainRegistry: chainRegistry,
             providerFactory: providerFactory,
-            repositoryFactory: repositoryFactory,
+            multistakingRepositoryFactory: multistakingRepositoryFactory,
+            substrateRepositoryFactory: substrateRepositoryFactory,
             offchainOperationFactory: offchainOperationFactory
         )
     }

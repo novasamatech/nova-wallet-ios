@@ -3,7 +3,7 @@ import SubstrateSdk
 import RobinHood
 
 final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> {
-    let requests: [SubscriptionRequestProtocol]
+    let requests: [BatchStorageSubscriptionRequest]
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let operationQueue: OperationQueue
@@ -20,7 +20,7 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
     private var mutex = NSLock()
 
     init(
-        requests: [SubscriptionRequestProtocol],
+        requests: [BatchStorageSubscriptionRequest],
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         repository: AnyDataProviderRepository<ChainStorageItem>?,
@@ -46,7 +46,7 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
         let keyEncondingWrappers = requests.map { request in
-            request.createKeyEncodingWrapper(
+            request.innerRequest.createKeyEncodingWrapper(
                 using: StorageKeyFactory(),
                 codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() }
             )
@@ -145,7 +145,7 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
     private func findRequests(
         for changes: [StorageUpdateData.StorageUpdateChangeData],
         keys: [Data]
-    ) -> [SubscriptionRequestProtocol] {
+    ) -> [BatchStorageSubscriptionRequest] {
         let receivedKeys = Set(changes.map(\.key))
         return zip(requests, keys).compactMap { receivedKeys.contains($0.1) ? $0.0 : nil }
     }
@@ -155,13 +155,13 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
         keys: [Data],
         blockHash: Data?
     ) {
-        saveIfNeeded(changes: changes)
+        let requests = findRequests(for: changes, keys: keys)
+        saveIfNeeded(changes: changes, requests: requests)
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-        let requests = findRequests(for: changes, keys: keys)
         let decodingOperations: [BaseOperation<JSON>] = zip(changes, requests).map { change, request in
             if let data = change.value {
-                let decodingOperation = StorageJSONDecodingOperation(path: request.storagePath, data: data)
+                let decodingOperation = StorageJSONDecodingOperation(path: request.innerRequest.storagePath, data: data)
                 decodingOperation.configurationBlock = {
                     do {
                         decodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -181,7 +181,7 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
             let blockHashJson = blockHash.map { JSON.stringValue($0.toHex()) } ?? JSON.null
             let context = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
             let values = zip(jsonList, requests).map {
-                BatchStorageSubscriptionResultValue(localKey: $0.1.localKey, value: $0.0)
+                BatchStorageSubscriptionResultValue(mappingKey: $0.1.mappingKey, value: $0.0)
             }
             return try T(
                 values: values,
@@ -215,26 +215,28 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
-    private func saveIfNeeded(changes: [StorageUpdateData.StorageUpdateChangeData]) {
+    private func saveIfNeeded(
+        changes: [StorageUpdateData.StorageUpdateChangeData],
+        requests: [BatchStorageSubscriptionRequest]
+    ) {
         guard let repository = repository else {
             return
         }
 
-        let localKeys = requests.map(\.localKey)
-        let pairs = zip(changes, localKeys)
+        let pairs = zip(changes, requests).filter { !$0.1.innerRequest.localKey.isEmpty }
 
         let operation = repository.saveOperation({
-            pairs.compactMap { change, localKey in
+            pairs.compactMap { change, request in
                 guard let data = change.value else {
                     return nil
                 }
 
-                return ChainStorageItem(identifier: localKey, data: data)
+                return ChainStorageItem(identifier: request.innerRequest.localKey, data: data)
             }
         }, {
-            pairs.compactMap { change, localKey in
+            pairs.compactMap { change, request in
                 if change.value == nil {
-                    return localKey
+                    return request.innerRequest.localKey
                 } else {
                     return nil
                 }

@@ -73,7 +73,7 @@ class ControllerAccountTests: XCTestCase {
         let controllerAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
         let stashAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
 
-        let stashItem = StashItem(stash: stashAddress, controller: controllerAddress)
+        let stashItem = StashItem(stash: stashAddress, controller: controllerAddress, chainId: chain.chainId)
         presenter.didReceiveStashItem(result: .success(stashItem))
 
         let controllerId = try controllerAddress.toAccountId()
