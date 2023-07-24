@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-protocol StakingRemoteSubscriptionServiceProtocol {
+protocol NominationPoolsRemoteSubscriptionServiceProtocol {
     func attachToGlobalData(
         for chainId: ChainModel.Id,
         queue: DispatchQueue?,
@@ -16,37 +16,16 @@ protocol StakingRemoteSubscriptionServiceProtocol {
     )
 }
 
-final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
-    StakingRemoteSubscriptionServiceProtocol {
+final class NominationPoolsRemoteSubscriptionService: RemoteSubscriptionService {
     private static var globalDataStoragePaths: [StorageCodingPath] {
         [
-            .activeEra,
-            .currentEra,
-            .totalIssuance,
-            .minNominatorBond,
-            .maxNominatorsCount,
-            .counterForNominators
+            NominationPools.lastPoolIdPath,
+            NominationPools.minJoinBondPath
         ]
     }
+}
 
-    private static func createBagsListRequests(
-        for localKeyFactory: LocalStorageKeyFactoryProtocol,
-        chainId: ChainModel.Id
-    ) throws -> [UnkeyedSubscriptionRequest] {
-        // we may have different modules in different chain but only on subscription will be established
-        let bagListSizeRequests = try BagList.possibleModuleNames.map { moduleName in
-            let storagePath = BagList.bagListSizePath(for: moduleName)
-            let localKey = try localKeyFactory.createFromStoragePath(
-                BagList.defaultBagListSizePath,
-                chainId: chainId
-            )
-
-            return UnkeyedSubscriptionRequest(storagePath: storagePath, localKey: localKey)
-        }
-
-        return bagListSizeRequests
-    }
-
+extension NominationPoolsRemoteSubscriptionService: NominationPoolsRemoteSubscriptionService {
     func attachToGlobalData(
         for chainId: ChainModel.Id,
         queue: DispatchQueue?,
@@ -63,16 +42,11 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
                 )
             }
 
-            let bagListRequests = try Self.createBagsListRequests(for: localKeyFactory, chainId: chainId)
+            let cacheKey = try localKeyFactory.createCacheKey(from: globalPaths, chainId: chainId)
 
-            let bagListPaths = bagListRequests.map(\.storagePath)
-            let cacheKey = try localKeyFactory.createCacheKey(from: globalPaths + bagListPaths, chainId: chainId)
-
-            let globalRequests = zip(globalPaths, globalLocalKeys).map {
+            let requests = zip(globalPaths, globalLocalKeys).map {
                 UnkeyedSubscriptionRequest(storagePath: $0.0, localKey: $0.1)
             }
-
-            let requests = globalRequests + bagListRequests
 
             return attachToSubscription(
                 with: requests,
@@ -94,11 +68,8 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let bagListRequests = try Self.createBagsListRequests(for: LocalStorageKeyFactory(), chainId: chainId)
-            let bagListPaths = bagListRequests.map(\.storagePath)
-
             let cacheKey = try LocalStorageKeyFactory().createCacheKey(
-                from: Self.globalDataStoragePaths + bagListPaths,
+                from: Self.globalDataStoragePaths,
                 chainId: chainId
             )
 

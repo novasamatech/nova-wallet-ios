@@ -145,7 +145,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let constantOperation = StorageConstantOperation<BytesCodable>(path: NominationPools.palletId)
+        let constantOperation = StorageConstantOperation<BytesCodable>(path: NominationPools.palletIdPath)
         constantOperation.configurationBlock = {
             do {
                 constantOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -281,14 +281,14 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
             )
 
             let bondedLocalKey = try localStorageKeyFactory.createFromStoragePath(
-                NominationPools.bondedPool,
+                NominationPools.bondedPoolPath,
                 encodableElement: poolId,
                 chainId: chainAsset.chain.chainId
             )
 
             let bondedPoolRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: NominationPools.bondedPool,
+                    storagePath: NominationPools.bondedPoolPath,
                     localKey: bondedLocalKey,
                     keyParamClosure: {
                         StringScaleMapper(value: poolId)

@@ -115,3 +115,19 @@ final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {
         return Data(fullKey.suffix(fullKey.count - chainIdData.count))
     }
 }
+
+extension LocalStorageKeyFactoryProtocol {
+    func createCacheKey(from paths: [StorageCodingPath], chainId: ChainModel.Id) throws -> String {
+        let storageKeyFactory = StorageKeyFactory()
+        let cacheKeyData = try paths.reduce(Data()) { result, storagePath in
+            let storageKeyData = try storageKeyFactory.createStorageKey(
+                moduleName: storagePath.moduleName,
+                storageName: storagePath.itemName
+            )
+
+            return result + storageKeyData
+        }
+
+        return try createKey(from: cacheKeyData, chainId: chainId)
+    }
+}
