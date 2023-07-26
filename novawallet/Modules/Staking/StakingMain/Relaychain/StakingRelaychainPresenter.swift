@@ -330,7 +330,23 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performRebag() {
-        wireframe.showRebagConfirm(from: view)
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+
+        let stashItem: StashItem? = stateMachine.viewState { (state: BaseStashNextState) in
+            state.stashItem
+        }
+
+        let stashAccount = stashItem.flatMap { accountForAddress($0.stash) }
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
+                stash: stashAccount?.chainAccount,
+                for: stashItem?.stash ?? "",
+                locale: locale
+            )
+        ]).runValidation { [weak self] in
+            self?.wireframe.showRebagConfirm(from: self?.view)
+        }
     }
 
     // swiftlint:disable:next cyclomatic_complexity
