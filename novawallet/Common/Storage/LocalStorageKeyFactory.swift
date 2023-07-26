@@ -130,4 +130,24 @@ extension LocalStorageKeyFactoryProtocol {
 
         return try createKey(from: cacheKeyData, chainId: chainId)
     }
+
+    func createRestorableCacheKey<E: ScaleEncodable>(
+        from paths: [StorageCodingPath],
+        encodableElement: E,
+        chainId: ChainModel.Id
+    ) throws -> String {
+        let storageKeyFactory = StorageKeyFactory()
+        let cacheKeyData = try paths.reduce(Data()) { result, storagePath in
+            let storageKeyData = try storageKeyFactory.createStorageKey(
+                moduleName: storagePath.moduleName,
+                storageName: storagePath.itemName
+            )
+
+            return result + storageKeyData
+        }
+
+        let encodedElement = try encodableElement.scaleEncoded()
+
+        return try createRestorableKey(from: cacheKeyData + encodedElement, chainId: chainId)
+    }
 }

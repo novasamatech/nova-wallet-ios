@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class PoolsMultistakingUpdateService: ObservableSyncService {
+final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConstantFetching {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
@@ -143,52 +143,43 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
     private func resolvePalletIdAndSubscribeState(for poolMember: NominationPools.PoolMember, accountId: AccountId) {
         let currentPoolSubscription = poolMemberSubscription
 
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        fetchCompoundConstant(
+            for: NominationPools.palletIdPath,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            fallbackValue: nil,
+            callbackQueue: workingQueue
+        ) { [weak self] (result: Result<BytesCodable, Error>) in
+            self?.mutex.lock()
 
-        let constantOperation = StorageConstantOperation<BytesCodable>(path: NominationPools.palletIdPath)
-        constantOperation.configurationBlock = {
-            do {
-                constantOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                constantOperation.result = .failure(error)
+            defer {
+                self?.mutex.unlock()
             }
-        }
 
-        constantOperation.addDependency(codingFactoryOperation)
+            guard self?.poolMemberSubscription === currentPoolSubscription else {
+                self?.logger?.warning("Tried to query pallet id but subscription changed")
+                return
+            }
 
-        constantOperation.completionBlock = { [weak self] in
-            self?.workingQueue.async {
-                self?.mutex.lock()
-
-                defer {
-                    self?.mutex.unlock()
-                }
-
-                guard self?.poolMemberSubscription === currentPoolSubscription else {
-                    self?.logger?.warning("Tried to query pallet id but subscription changed")
-                    return
-                }
-
-                do {
-                    let palletId = try constantOperation.extractNoCancellableResultData()
-
-                    let poolAccountId = try NominationPools.derivedAccount(
+            switch result {
+            case let .success(palletId):
+                if
+                    let poolAccountId = try? NominationPools.derivedAccount(
                         for: poolMember.poolId,
                         accountType: .bonded,
                         palletId: palletId.wrappedValue
-                    )
-
+                    ) {
                     self?.saveAccountChanges(for: poolAccountId, walletAccountId: accountId)
                     self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
-
-                } catch {
-                    self?.logger?.error("Can't derive pool account id \(error)")
-                    self?.completeImmediate(error)
+                } else {
+                    self?.logger?.error("Can't derive pool account id")
+                    self?.completeImmediate(CommonError.dataCorruption)
                 }
+            case let .failure(error):
+                self?.logger?.error("Can't get pallet id \(error)")
+                self?.completeImmediate(error)
             }
         }
-
-        operationQueue.addOperations([codingFactoryOperation, constantOperation], waitUntilFinished: false)
     }
 
     private func saveAccountChanges(for poolAccountId: AccountId?, walletAccountId: AccountId) {

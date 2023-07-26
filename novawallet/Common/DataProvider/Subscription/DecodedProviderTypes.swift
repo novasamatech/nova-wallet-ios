@@ -18,4 +18,4 @@ typealias DecodedPoolMember = ChainStorageDecodedItem<NominationPools.PoolMember
 typealias DecodedBondedPool = ChainStorageDecodedItem<NominationPools.BondedPool>
 typealias DecodedRewardPool = ChainStorageDecodedItem<NominationPools.RewardPool>
 typealias DecodedSubPools = ChainStorageDecodedItem<NominationPools.SubPools>
-typealias DecodedPoolId = ChainStorageDecodedItem<NominationPools.PoolId>
+typealias DecodedPoolId = ChainStorageDecodedItem<StringScaleMapper<NominationPools.PoolId>>

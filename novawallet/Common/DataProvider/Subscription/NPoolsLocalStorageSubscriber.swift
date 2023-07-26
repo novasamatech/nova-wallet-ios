@@ -8,7 +8,8 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
 
     func subscribePoolMember(
         for accountId: AccountId,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedPoolMember>?
 
     func subscribeBondedPool(
@@ -24,12 +25,12 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
     func subscribeRewardPool(
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
-    ) -> AnyDataProvider<NominationPools.RewardPool>?
+    ) -> AnyDataProvider<DecodedRewardPool>?
 
     func subscribeSubPools(
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
-    ) -> AnyDataProvider<NominationPools.SubPools>?
+    ) -> AnyDataProvider<DecodedSubPools>?
 
     func subscribeMinJoinBond(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>?
 
@@ -42,6 +43,14 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
     func subscribePoolMember(
         for accountId: AccountId,
         chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedPoolMember>? {
+        subscribePoolMember(for: accountId, chainId: chainId, callbackQueue: .main)
+    }
+
+    func subscribePoolMember(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedPoolMember>? {
         guard
             let provider = try? npoolsLocalSubscriptionFactory.getPoolMemberProvider(
@@ -59,14 +68,19 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                     accountId: accountId,
                     chainId: chainId
                 )
-            }, failureClosure: { [weak self] error in
+            },
+            failureClosure: { [weak self] error in
                 self?.npoolsLocalSubscriptionHandler.handlePoolMember(
                     result: .failure(error),
                     accountId: accountId,
                     chainId: chainId
                 )
-            }
+            },
+            callbackQueue: callbackQueue,
+            options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
         )
+
+        return provider
     }
 
     func subscribeBondedPool(
@@ -97,6 +111,8 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 )
             }
         )
+
+        return provider
     }
 
     func subscribePoolMetadata(
@@ -115,7 +131,7 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
             for: provider,
             updateClosure: { [weak self] value in
                 self?.npoolsLocalSubscriptionHandler.handlePoolMetadata(
-                    result: .success(value),
+                    result: .success(value?.wrappedValue),
                     poolId: poolId,
                     chainId: chainId
                 )
@@ -127,12 +143,14 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 )
             }
         )
+
+        return provider
     }
 
     func subscribeRewardPool(
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
-    ) -> AnyDataProvider<NominationPools.RewardPool>? {
+    ) -> AnyDataProvider<DecodedRewardPool>? {
         guard
             let provider = try? npoolsLocalSubscriptionFactory.getRewardPoolProvider(
                 for: poolId,
@@ -157,12 +175,14 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 )
             }
         )
+
+        return provider
     }
 
     func subscribeSubPools(
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
-    ) -> AnyDataProvider<NominationPools.SubPools>? {
+    ) -> AnyDataProvider<DecodedSubPools>? {
         guard
             let provider = try? npoolsLocalSubscriptionFactory.getSubPoolsProvider(
                 for: poolId,
@@ -187,6 +207,8 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 )
             }
         )
+
+        return provider
     }
 
     func subscribeMinJoinBond(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>? {
@@ -198,7 +220,7 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
             for: provider,
             updateClosure: { [weak self] value in
                 self?.npoolsLocalSubscriptionHandler.handleMinJoinBond(
-                    result: .success(value),
+                    result: .success(value?.value),
                     chainId: chainId
                 )
             },
@@ -209,10 +231,12 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 )
             }
         )
+
+        return provider
     }
 
     func subscribeLastPoolId(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
-        guard let provider = try npoolsLocalSubscriptionFactory.getLastPoolIdProvider(for: chainId) else {
+        guard let provider = try? npoolsLocalSubscriptionFactory.getLastPoolIdProvider(for: chainId) else {
             return nil
         }
 
@@ -220,7 +244,7 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
             for: provider,
             updateClosure: { [weak self] value in
                 self?.npoolsLocalSubscriptionHandler.handleLastPoolId(
-                    result: .success(value),
+                    result: .success(value?.value),
                     chainId: chainId
                 )
             }, failureClosure: { [weak self] error in
@@ -230,5 +254,7 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 )
             }
         )
+
+        return provider
     }
 }

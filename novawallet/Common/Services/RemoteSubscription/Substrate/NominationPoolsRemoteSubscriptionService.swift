@@ -25,7 +25,7 @@ final class NominationPoolsRemoteSubscriptionService: RemoteSubscriptionService 
     }
 }
 
-extension NominationPoolsRemoteSubscriptionService: NominationPoolsRemoteSubscriptionService {
+extension NominationPoolsRemoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol {
     func attachToGlobalData(
         for chainId: ChainModel.Id,
         queue: DispatchQueue?,
