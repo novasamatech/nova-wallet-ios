@@ -60,13 +60,10 @@ final class AssetDetailsInteractor {
             operations.insert(.send)
         }
 
-        // TODO: Return purchase actions to support buy feature
-        /* let actions: [PurchaseAction] = purchaseProvider.buildPurchaseActions(
-             for: chainAsset,
-             accountId: accountId
-         ) */
-
-        let actions: [PurchaseAction] = []
+        let actions: [PurchaseAction] = purchaseProvider.buildPurchaseActions(
+            for: chainAsset,
+            accountId: accountId
+        )
 
         if !actions.isEmpty {
             operations.insert(.buy)
