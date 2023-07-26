@@ -114,7 +114,7 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         switch consensus {
         case .babe:
             return nil
-        case .aura:
+        case .auraGeneral, .auraAzero:
             guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
                 throw ChainRegistryError.runtimeMetadaUnavailable
             }

@@ -6,18 +6,18 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
     let storageRequestFactory: StorageRequestFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
-    let defaultSessionPeriod: SessionIndex
+    let sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
 
     init(
         storageRequestFactory: StorageRequestFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
-        defaultSessionPeriod: SessionIndex = 50
+        sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
     ) {
         self.storageRequestFactory = storageRequestFactory
         self.blockTimeService = blockTimeService
         self.blockTimeOperationFactory = blockTimeOperationFactory
-        self.defaultSessionPeriod = defaultSessionPeriod
+        self.sessionPeriodOperationFactory = sessionPeriodOperationFactory
     }
 
     // swiftlint:disable function_body_length
@@ -33,10 +33,8 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
             codingFactoryOperation: codingFactoryOperation
         )
 
-        let sessionLengthWrapper: CompoundOperationWrapper<SessionIndex> = createFetchConstantWrapper(
-            for: .electionsSessionPeriod,
-            codingFactoryOperation: codingFactoryOperation,
-            fallbackValue: defaultSessionPeriod
+        let sessionLengthOperation: BaseOperation<SessionIndex> = sessionPeriodOperationFactory.createOperation(
+            dependingOn: codingFactoryOperation
         )
 
         let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
@@ -82,8 +80,10 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
             engine: connection
         )
 
-        let dependencies = eraLengthWrapper.allOperations
-            + sessionLengthWrapper.allOperations
+        let singleOperations: [Operation] = [sessionLengthOperation]
+
+        let dependencies = singleOperations
+            + eraLengthWrapper.allOperations
             + blockTimeWrapper.allOperations
             + sessionIndexWrapper.allOperations
             + blockNumberWrapper.allOperations
@@ -99,7 +99,7 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
                 let currentEra = try? currentEraWrapper.targetOperation.extractNoCancellableResultData()
                 .first?.value?.value,
                 let eraLength = try? eraLengthWrapper.targetOperation.extractNoCancellableResultData(),
-                let sessionLength = try? sessionLengthWrapper.targetOperation.extractNoCancellableResultData(),
+                let sessionLength = try? sessionLengthOperation.extractNoCancellableResultData(),
                 let blockTime = try? blockTimeWrapper.targetOperation.extractNoCancellableResultData(),
                 let currentSessionIndex = try? sessionIndexWrapper.targetOperation
                 .extractNoCancellableResultData().first?.value?.value,
