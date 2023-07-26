@@ -56,7 +56,7 @@ enum SupportPallet {
         }
     }
 
-    struct KeyValue<K: Decodable, V: Decodable>: Decodable {
+    struct KeyValue<K: Decodable & Equatable, V: Decodable & Equatable>: Decodable, Equatable {
         let key: K
         let value: V
 
