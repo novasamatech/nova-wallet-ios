@@ -1,1 +1,1 @@
-{"data":{"accumulatedRewards":{"nodes":[{"amount":"5000000000000"}]}}}
+{"data":{"rewards":{"groupedAggregates":[{"sum": {"amount":"5000000000000"}}]}, "slashes":{"groupedAggregates":[{"sum": {"amount":"0"}}]}}}

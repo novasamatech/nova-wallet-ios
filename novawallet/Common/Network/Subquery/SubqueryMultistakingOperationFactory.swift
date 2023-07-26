@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 
 final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
-    private func buildAccountFilter(for request: Multistaking.OffchainRequest) throws -> String {
+    private func buildAccountFilter(for request: Multistaking.OffchainRequest) throws -> SubqueryFilter {
         let filterItems: [SubqueryFilter] = try request.filters.map { nextFilter in
             let chain = nextFilter.chainAsset.chain
             let address: AccountAddress
@@ -37,18 +37,24 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
             return SubqueryCompoundFilter.and([networkFilter, addressFilter, typeFilter])
         }
 
-        let resultFilter = SubqueryCompoundFilter.or(filterItems)
-
-        return SubqueryFilterBuilder.buildBlock(resultFilter)
+        return SubqueryCompoundFilter.or(filterItems)
     }
 
     private func buildQuery(for request: Multistaking.OffchainRequest) throws -> String {
         let accountFilter = try buildAccountFilter(for: request)
 
+        let accountQueryFilter = SubqueryFilterBuilder.buildBlock(accountFilter)
+
+        let rewardFilter = SubqueryEqualToFilter(fieldName: "type", value: SubqueryRewardType.reward)
+        let rewardsQueryFilter = SubqueryFilterBuilder.buildBlock(SubqueryCompoundFilter.and([accountFilter, rewardFilter]))
+
+        let slashFilter = SubqueryEqualToFilter(fieldName: "type", value: SubqueryRewardType.slash)
+        let slashesQueryFilter = SubqueryFilterBuilder.buildBlock(SubqueryCompoundFilter.and([accountFilter, slashFilter]))
+
         return """
            {
             activeStakers(
-               \(accountFilter)
+               \(accountQueryFilter)
             ) {
                 nodes {
                     networkId
@@ -65,8 +71,20 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
                 }
             }
 
-            rewards(
-                \(accountFilter)
+            rewards: rewards(
+                \(rewardsQueryFilter)
+            ) {
+                groupedAggregates(groupBy: [NETWORK_ID,  STAKING_TYPE]) {
+                    sum {
+                        amount
+                    }
+
+                    keys
+                }
+            }
+
+            slashes: rewards(
+                \(slashesQueryFilter)
             ) {
                 groupedAggregates(groupBy: [NETWORK_ID,  STAKING_TYPE]) {
                     sum {
@@ -93,15 +111,8 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                     $0[.init(networkId: $1.networkId, stakingType: $1.stakingType)] = $1.address
                 }
 
-                let rewards: [SubqueryMultistaking.NetworkStaking: BigUInt]
-
-                rewards = result.rewards.groupedAggregates.reduce(into: [:]) {
-                    guard let networkId = $1.keys.first, let stakingType = $1.keys.last else {
-                        return
-                    }
-
-                    $0[.init(networkId: networkId, stakingType: stakingType)] = BigUInt(scientific: $1.sum.amount)
-                }
+                let rewards = result.rewards.groupByNetworkStaking()
+                let slashes = result.slashes.groupByNetworkStaking()
 
                 let stakings = result.stakingApies.nodes.map { node in
                     let state: Multistaking.OffchainStakingState
@@ -117,12 +128,22 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                         state = .inactive
                     }
 
+                    let totalRewards: BigUInt?
+
+                    if let reward = rewards[networkStaking] {
+                        let slash = slashes[networkStaking] ?? 0
+
+                        totalRewards = reward > slash ? reward - slash : 0
+                    } else {
+                        totalRewards = nil
+                    }
+
                     return Multistaking.OffchainStaking(
                         chainId: node.networkId.withoutHexPrefix(),
                         stakingType: StakingType(rawType: node.stakingType),
                         maxApy: node.maxApy,
                         state: state,
-                        totalRewards: rewards[networkStaking]
+                        totalRewards: totalRewards
                     )
                 }
 
@@ -132,6 +153,18 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
             return CompoundOperationWrapper(targetOperation: operation)
         } catch {
             return .createWithError(error)
+        }
+    }
+}
+
+extension SubqueryAggregates where T == SubqueryMultistaking.AccumulatedReward {
+    func groupByNetworkStaking() -> [SubqueryMultistaking.NetworkStaking: BigUInt] {
+        groupedAggregates.reduce(into: [:]) {
+            guard let networkId = $1.keys.first, let stakingType = $1.keys.last else {
+                return
+            }
+
+            $0[.init(networkId: networkId, stakingType: stakingType)] = BigUInt(scientific: $1.sum.amount)
         }
     }
 }

@@ -41,24 +41,24 @@ PODS:
   - scrypt.c (0.1.1)
   - secp256k1.c (0.1.2)
   - SnapKit (5.0.1)
-  - SoraFoundation (1.0.0):
-    - SoraFoundation/DateProcessing (= 1.0.0)
-    - SoraFoundation/Localization (= 1.0.0)
-    - SoraFoundation/NotificationHandlers (= 1.0.0)
-    - SoraFoundation/NumberProcessing (= 1.0.0)
-    - SoraFoundation/QueryProcessing (= 1.0.0)
-    - SoraFoundation/Timer (= 1.0.0)
-    - SoraFoundation/ViewModel (= 1.0.0)
-  - SoraFoundation/DateProcessing (1.0.0):
+  - SoraFoundation (1.1.0):
+    - SoraFoundation/DateProcessing (= 1.1.0)
+    - SoraFoundation/Localization (= 1.1.0)
+    - SoraFoundation/NotificationHandlers (= 1.1.0)
+    - SoraFoundation/NumberProcessing (= 1.1.0)
+    - SoraFoundation/QueryProcessing (= 1.1.0)
+    - SoraFoundation/Timer (= 1.1.0)
+    - SoraFoundation/ViewModel (= 1.1.0)
+  - SoraFoundation/DateProcessing (1.1.0):
     - SoraFoundation/Localization
-  - SoraFoundation/Localization (1.0.0):
+  - SoraFoundation/Localization (1.1.0):
     - SoraKeystore (~> 1.0.0)
-  - SoraFoundation/NotificationHandlers (1.0.0)
-  - SoraFoundation/NumberProcessing (1.0.0)
-  - SoraFoundation/QueryProcessing (1.0.0)
-  - SoraFoundation/Timer (1.0.0):
+  - SoraFoundation/NotificationHandlers (1.1.0)
+  - SoraFoundation/NumberProcessing (1.1.0)
+  - SoraFoundation/QueryProcessing (1.1.0)
+  - SoraFoundation/Timer (1.1.0):
     - SoraFoundation/NotificationHandlers
-  - SoraFoundation/ViewModel (1.0.0)
+  - SoraFoundation/ViewModel (1.1.0)
   - SoraKeystore (1.0.0)
   - SoraUI (1.11.1):
     - SoraUI/AdaptiveDesign (= 1.11.1)
@@ -154,7 +154,7 @@ DEPENDENCIES:
   - ReachabilitySwift
   - RobinHood (~> 2.6.0)
   - SnapKit (~> 5.0.0)
-  - SoraFoundation (~> 1.0.0)
+  - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.11.1`)
   - Sourcery (~> 1.4)
@@ -186,7 +186,6 @@ SPEC REPOS:
     - scrypt.c
     - secp256k1.c
     - SnapKit
-    - SoraFoundation
     - SoraKeystore
     - Sourcery
     - SwiftAlgorithms
@@ -204,6 +203,9 @@ EXTERNAL SOURCES:
   EthereumSignTypedDataUtil:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
+  SoraFoundation:
+    :git: https://github.com/ERussel/Foundation-iOS.git
+    :tag: 1.1.0
   SoraUI:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.11.1
@@ -232,6 +234,9 @@ CHECKOUT OPTIONS:
   EthereumSignTypedDataUtil:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
+  SoraFoundation:
+    :git: https://github.com/ERussel/Foundation-iOS.git
+    :tag: 1.1.0
   SoraUI:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.11.1
@@ -272,7 +277,7 @@ SPEC CHECKSUMS:
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
   secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
-  SoraFoundation: 988d90ee3159311b02e42aeba0cf7e85d8bc724c
+  SoraFoundation: 5b9d3c82d602150d2c2e65481c5eca5f5987c12c
   SoraKeystore: 92cff6e2a12f212dd64ed089970ff7c365247b1c
   SoraUI: e5ceb2cffe40145e589aa464e2e0a8d054011e0b
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
@@ -290,6 +295,6 @@ SPEC CHECKSUMS:
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 906e2d4f035c15933155b52fe2d688ca6abe378d
+PODFILE CHECKSUM: b9535fb877c890660e9ff1754c3d7881113d1030
 
 COCOAPODS: 1.12.1

@@ -362,6 +362,11 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
             break
         }
     }
+
+    func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
+        stateMachine.state.process(totalRewardFilter: filter)
+        interactor.update(totalRewardFilter: filter)
+    }
 }
 
 extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol {

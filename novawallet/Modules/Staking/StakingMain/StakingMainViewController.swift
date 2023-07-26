@@ -105,6 +105,11 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
     // MARK: - Private functions
 
+    @objc
+    private func rewardPeriodAction() {
+        presenter.selectPeriod()
+    }
+
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
     }
@@ -150,6 +155,11 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         let rewardView = StakingRewardView(frame: defaultFrame)
         rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
+        rewardView.filterView.control.addTarget(
+            self,
+            action: #selector(rewardPeriodAction),
+            for: .touchUpInside
+        )
         containerView.addSubview(rewardView)
 
         applyConstraints(for: containerView, innerView: rewardView)
@@ -465,6 +475,10 @@ extension StakingMainViewController: StakingMainViewProtocol {
         if let stateView = stateView as? StakingStateView {
             stateView.statics = viewModel
         }
+    }
+
+    func didEditRewardFilters() {
+        rewardView?.filterView.control.deactivate(animated: true)
     }
 }
 
