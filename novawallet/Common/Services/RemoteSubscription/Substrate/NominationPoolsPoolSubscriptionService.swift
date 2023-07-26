@@ -5,7 +5,6 @@ protocol NominationPoolsPoolSubscriptionServiceProtocol {
     func attachToPoolData(
         for chainId: ChainModel.Id,
         poolId: NominationPools.PoolId,
-        palletId: Data,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID?
@@ -21,33 +20,20 @@ protocol NominationPoolsPoolSubscriptionServiceProtocol {
 
 final class NominationPoolsPoolSubscriptionService: RemoteSubscriptionService {
     private static let poolIdStoragePaths: [StorageCodingPath] = [
-        NominationPools.bondedPoolPath,
         NominationPools.metadataPath,
         NominationPools.rewardPoolsPath,
         NominationPools.subPoolsPath
     ]
-
-    private static let poolAccountStoragePaths: [StorageCodingPath] = [
-        .stakingLedger,
-        .nominators
-    ]
 }
 
-extension NominationPoolsPoolSubscriptionService {
+extension NominationPoolsPoolSubscriptionService: NominationPoolsPoolSubscriptionServiceProtocol {
     func attachToPoolData(
         for chainId: ChainModel.Id,
         poolId: NominationPools.PoolId,
-        palletId: Data,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
         do {
-            let poolAccountId = try NominationPools.derivedAccount(
-                for: poolId,
-                accountType: .bonded,
-                palletId: palletId
-            )
-
             let localKeyFactory = LocalStorageKeyFactory()
 
             let poolIdRequests: [SubscriptionRequestProtocol] = try Self.poolIdStoragePaths
@@ -63,22 +49,7 @@ extension NominationPoolsPoolSubscriptionService {
                     }
                 }
 
-            let poolAccountRequests: [SubscriptionRequestProtocol] = try Self.poolAccountStoragePaths
-                .map { path in
-                    let localKey = try localKeyFactory.createFromStoragePath(
-                        path,
-                        accountId: poolAccountId,
-                        chainId: chainId
-                    )
-
-                    return MapSubscriptionRequest(
-                        storagePath: path,
-                        localKey: localKey,
-                        keyParamClosure: { BytesCodable(wrappedValue: poolAccountId) }
-                    )
-                }
-
-            let allPaths = Self.poolIdStoragePaths + Self.poolAccountStoragePaths
+            let allPaths = Self.poolIdStoragePaths
 
             let cacheKey = try localKeyFactory.createRestorableCacheKey(
                 from: allPaths,
@@ -86,7 +57,7 @@ extension NominationPoolsPoolSubscriptionService {
                 chainId: chainId
             )
 
-            let allRequests = poolIdRequests + poolAccountRequests
+            let allRequests = poolIdRequests
 
             return attachToSubscription(
                 with: allRequests,
@@ -110,7 +81,7 @@ extension NominationPoolsPoolSubscriptionService {
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let allPaths = Self.poolIdStoragePaths + Self.poolAccountStoragePaths
+            let allPaths = Self.poolIdStoragePaths
 
             let cacheKey = try LocalStorageKeyFactory().createRestorableCacheKey(
                 from: allPaths,

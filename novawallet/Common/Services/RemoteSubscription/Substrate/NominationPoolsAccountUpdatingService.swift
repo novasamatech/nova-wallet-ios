@@ -85,42 +85,10 @@ final class NominationPoolsAccountUpdatingService: BaseSyncService, NPoolsLocalS
         }
     }
 
-    private func fetchPalletIdAndSubscribe(for poolId: NominationPools.PoolId) {
-        let currentPoolProvider = poolMemberProvider
-
-        fetchCompoundConstant(
-            for: NominationPools.palletIdPath,
-            runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            fallbackValue: nil,
-            callbackQueue: .global(qos: .userInitiated)
-        ) { [weak self] (result: Result<BytesCodable, Error>) in
-            self?.mutex.lock()
-
-            defer {
-                self?.mutex.unlock()
-            }
-
-            guard self?.poolMemberProvider === currentPoolProvider else {
-                self?.logger?.warning("Tried to subscribe but cancelled")
-                return
-            }
-
-            switch result {
-            case let .success(palletId):
-                self?.subscribeRemote(for: poolId, palletId: palletId.wrappedValue)
-            case let .failure(error):
-                self?.logger?.error("Can't fetch pallet id")
-                self?.completeImmediate(error)
-            }
-        }
-    }
-
-    private func subscribeRemote(for poolId: NominationPools.PoolId, palletId: Data) {
+    private func subscribeRemote(for poolId: NominationPools.PoolId) {
         remoteSubscriptionId = remoteSubscriptionService.attachToPoolData(
             for: chainAsset.chain.chainId,
             poolId: poolId,
-            palletId: palletId,
             queue: .global(qos: .userInitiated)
         ) { [weak self] result in
             self?.mutex.lock()
@@ -131,6 +99,7 @@ final class NominationPoolsAccountUpdatingService: BaseSyncService, NPoolsLocalS
 
             switch result {
             case .success:
+                self?.logger?.debug("Subscribe for remote pool: \(poolId)")
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.logger?.error("Couldn't subscribe remote: \(error)")
@@ -162,6 +131,8 @@ extension NominationPoolsAccountUpdatingService: NPoolsLocalSubscriptionHandler 
 
             if let poolMember = optPoolMember {
                 logger?.debug("Did receive pool member: \(poolMember)")
+
+                subscribeRemote(for: poolMember.poolId)
             } else {
                 logger?.warning("No pool staking found")
             }
