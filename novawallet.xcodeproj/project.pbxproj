@@ -58,6 +58,9 @@
 		0C2F868E2A725E4F00593C01 /* AccountExistense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F868C2A725E4F00593C01 /* AccountExistense.swift */; };
 		0C2F868F2A725E4F00593C01 /* DefaultStakingRewardDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F868D2A725E4F00593C01 /* DefaultStakingRewardDestination.swift */; };
 		0C2F86932A72648D00593C01 /* ActiveNominationPoolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */; };
+		0C2F86962A72807E00593C01 /* NominationPoolsRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86952A72807E00593C01 /* NominationPoolsRewardEngine.swift */; };
+		0C2F86982A728EE900593C01 /* NPoolsRewardEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86972A728EE900593C01 /* NPoolsRewardEngineFactory.swift */; };
+		0C2F869A2A72948100593C01 /* NominationPoolsApyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86992A72948100593C01 /* NominationPoolsApyTests.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
@@ -3751,6 +3754,9 @@
 		0C2F868C2A725E4F00593C01 /* AccountExistense.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountExistense.swift; sourceTree = "<group>"; };
 		0C2F868D2A725E4F00593C01 /* DefaultStakingRewardDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultStakingRewardDestination.swift; sourceTree = "<group>"; };
 		0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveNominationPoolsTests.swift; sourceTree = "<group>"; };
+		0C2F86952A72807E00593C01 /* NominationPoolsRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRewardEngine.swift; sourceTree = "<group>"; };
+		0C2F86972A728EE900593C01 /* NPoolsRewardEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsRewardEngineFactory.swift; sourceTree = "<group>"; };
+		0C2F86992A72948100593C01 /* NominationPoolsApyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsApyTests.swift; sourceTree = "<group>"; };
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
@@ -4175,7 +4181,6 @@
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
-		7762D6912A5DD64700C25BB3 /* AccountExistense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExistense.swift; sourceTree = "<group>"; };
 		777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilterViewModel.swift; sourceTree = "<group>"; };
 		777BD86129F97322004969A2 /* ReferendumsFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilter.swift; sourceTree = "<group>"; };
 		777BD86329F979DA004969A2 /* SelectableFilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableFilterCell.swift; sourceTree = "<group>"; };
@@ -4213,7 +4218,6 @@
 		77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepositoryFactory.swift; sourceTree = "<group>"; };
 		77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizer.swift; sourceTree = "<group>"; };
 		77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizerTests.swift; sourceTree = "<group>"; };
-		77B542152A5EFD7E0038F2AD /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		77CB33CD2A38780700B6709A /* structures_output.json */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; path = structures_output.json; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 0; };
 		77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifierWithCanonicalizationData.swift; sourceTree = "<group>"; };
 		77CB33D62A3998FC00B6709A /* Array+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Sort.swift"; sourceTree = "<group>"; };
@@ -7611,21 +7615,21 @@
 			path = NominationPools;
 			sourceTree = "<group>";
 		};
+		0C2F86942A72804D00593C01 /* NominationPools */ = {
+			isa = PBXGroup;
+			children = (
+				0C2F86952A72807E00593C01 /* NominationPoolsRewardEngine.swift */,
+				0C2F86972A728EE900593C01 /* NPoolsRewardEngineFactory.swift */,
+			);
+			path = NominationPools;
+			sourceTree = "<group>";
+		};
 		0C463FCE2A592ACD003E71C9 /* Effects */ = {
 			isa = PBXGroup;
 			children = (
 				0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */,
 			);
 			path = Effects;
-			sourceTree = "<group>";
-		};
-		0C6F0C9A2A6971DE007170C6 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				7762D6912A5DD64700C25BB3 /* AccountExistense.swift */,
-				77B542152A5EFD7E0038F2AD /* StartStakingStateProtocol.swift */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
@@ -9713,6 +9717,7 @@
 				844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */,
 				0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */,
 				0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */,
+				0C2F86992A72948100593C01 /* NominationPoolsApyTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -11597,7 +11602,6 @@
 				849013A924A80984008F705E /* Products */,
 				2698CD398B0412EB85D620AB /* Pods */,
 				6F5BD6E623DF3F7DFEDC3EFA /* Frameworks */,
-				0C6F0C9A2A6971DE007170C6 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -16456,6 +16460,7 @@
 		AEF7404C25E6DC6600407D41 /* RewardCalculatorService */ = {
 			isa = PBXGroup;
 			children = (
+				0C2F86942A72804D00593C01 /* NominationPools */,
 				84FEADF028783EC9001DFC26 /* RelayChain */,
 				84FEADEF28783EB1001DFC26 /* Parachain */,
 			);
@@ -17851,6 +17856,7 @@
 				849ABE8A262833C000011A2A /* PayoutRewardsServiceTests.swift in Sources */,
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,
 				840874E02978882700ACFA55 /* Gov2DelegationTests.swift in Sources */,
+				0C2F869A2A72948100593C01 /* NominationPoolsApyTests.swift in Sources */,
 				8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */,
 				8455F19A2A1DEEAF003F072D /* SubqueryMultistakingTests.swift in Sources */,
 				AEE4E37225ECF83F00D6DF31 /* StakingInfoTests.swift in Sources */,
@@ -21047,6 +21053,7 @@
 				B804BDDC5F3960AA59CE3E5B /* AssetDetailsPresenter.swift in Sources */,
 				DCD804D03231F9923FE1624C /* AssetDetailsInteractor.swift in Sources */,
 				5F107F52BCEF8BA940800F88 /* AssetDetailsViewController.swift in Sources */,
+				0C2F86962A72807E00593C01 /* NominationPoolsRewardEngine.swift in Sources */,
 				84ABB3332A16150400B5E95A /* AccountShareFactory.swift in Sources */,
 				5B652F1E0040F68F835A2F1D /* AssetDetailsViewLayout.swift in Sources */,
 				E0710E487509797C12110D83 /* AssetDetailsViewFactory.swift in Sources */,
@@ -21246,6 +21253,7 @@
 				19055A725FD9C18753B74A52 /* StakingRewardFiltersViewLayout.swift in Sources */,
 				3983EDE80B9296F3A252BA03 /* StakingRewardFiltersViewFactory.swift in Sources */,
 				CF2F3A0F0999D6D054CD33D2 /* ReferendumSearchProtocols.swift in Sources */,
+				0C2F86982A728EE900593C01 /* NPoolsRewardEngineFactory.swift in Sources */,
 				C5B07E59C0B00CAD1D0D2DFD /* ReferendumSearchWireframe.swift in Sources */,
 				AB27EE4EE30A06D8E7B8EDB4 /* ReferendumSearchPresenter.swift in Sources */,
 				2F2ACE609F7423EDD0F06F30 /* ReferendumSearchViewController.swift in Sources */,
