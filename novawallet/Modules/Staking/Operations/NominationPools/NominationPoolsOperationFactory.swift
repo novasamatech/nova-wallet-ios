@@ -1,0 +1,214 @@
+import Foundation
+import SubstrateSdk
+import RobinHood
+
+protocol NominationPoolsOperationFactoryProtocol {
+    func createActivePoolsInfoWrapper(
+        for eraValidationService: EraValidatorServiceProtocol,
+        lastPoolId: NominationPools.PoolId,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<NominationPools.ActivePools>
+
+    func createBondedPoolsWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: NominationPools.BondedPool]>
+
+    func createMetadataWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: Data]>
+
+    func createBondedAccountsWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: AccountId]>
+}
+
+final class NominationPoolsOperationFactory {
+    let requestFactory: StorageRequestFactoryProtocol
+
+    init(operationQueue: OperationQueue) {
+        requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+    }
+
+    private func createPoolWrapper<T: Decodable>(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
+        storagePath: StorageCodingPath
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: T]> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let wrapper: CompoundOperationWrapper<[StorageResponse<T>]> = requestFactory.queryItems(
+            engine: connection,
+            keyParams: {
+                try poolIds().sorted().map { StringScaleMapper(value: $0) }
+            },
+            factory: {
+                try codingFactoryOperation.extractNoCancellableResultData()
+            },
+            storagePath: storagePath
+        )
+
+        wrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mapOperation = ClosureOperation<[NominationPools.PoolId: T]> {
+            let metadataList = try wrapper.targetOperation.extractNoCancellableResultData()
+            let poolList = try poolIds().sorted()
+
+            return zip(poolList, metadataList).reduce(into: [NominationPools.PoolId: T]()) { accum, value in
+                accum[value.0] = value.1.value
+            }
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + wrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+}
+
+extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtocol {
+    func createActivePoolsInfoWrapper(
+        for eraValidationService: EraValidatorServiceProtocol,
+        lastPoolId: NominationPools.PoolId,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<NominationPools.ActivePools> {
+        let validatorsOperation = eraValidationService.fetchInfoOperation()
+
+        let allPoolIds = Set(0 ... lastPoolId)
+
+        let poolAccountsWrapper = createBondedAccountsWrapper(
+            for: { allPoolIds },
+            runtimeService: runtimeService
+        )
+
+        let validatorsResolveOperation = ClosureOperation<[NominationPools.PoolId: Set<AccountId>]> {
+            let poolAccounts = try poolAccountsWrapper.targetOperation.extractNoCancellableResultData()
+            let activeValidators = try validatorsOperation.extractNoCancellableResultData()
+
+            let indexedValidators = activeValidators.validators.reduce(
+                into: [AccountId: Set<AccountId>]()
+            ) { accum, validator in
+                for nominator in validator.exposure.others {
+                    let currentValidators = accum[nominator.who] ?? Set()
+                    accum[nominator.who] = currentValidators.union([validator.accountId])
+                }
+            }
+
+            return poolAccounts.compactMapValues { indexedValidators[$0] }
+        }
+
+        validatorsResolveOperation.addDependency(poolAccountsWrapper.targetOperation)
+        validatorsResolveOperation.addDependency(validatorsOperation)
+
+        let mapOperation = ClosureOperation<NominationPools.ActivePools> {
+            let activeValidators = try validatorsOperation.extractNoCancellableResultData()
+
+            let resolvedValidators = try validatorsResolveOperation.extractNoCancellableResultData()
+            let poolAccounts = try poolAccountsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let activePools: [NominationPools.ActivePool] = allPoolIds.compactMap { poolId in
+                guard
+                    let validatorAccountIds = resolvedValidators[poolId],
+                    let bondedAccountId = poolAccounts[poolId] else {
+                    return nil
+                }
+
+                return .init(
+                    poolId: poolId,
+                    bondedAccountId: bondedAccountId,
+                    validators: validatorAccountIds
+                )
+            }
+
+            return .init(era: activeValidators.activeEra, pools: activePools)
+        }
+
+        let dependencies = [validatorsOperation] + poolAccountsWrapper.allOperations + [validatorsResolveOperation]
+
+        dependencies.forEach { mapOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
+    func createBondedPoolsWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: NominationPools.BondedPool]> {
+        createPoolWrapper(
+            for: poolIds,
+            connection: connection,
+            runtimeService: runtimeService,
+            storagePath: NominationPools.bondedPoolPath
+        )
+    }
+
+    func createMetadataWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: Data]> {
+        let wrapper: CompoundOperationWrapper<[NominationPools.PoolId: BytesCodable]> = createPoolWrapper(
+            for: poolIds,
+            connection: connection,
+            runtimeService: runtimeService,
+            storagePath: NominationPools.metadataPath
+        )
+
+        let mapOperation = ClosureOperation<[NominationPools.PoolId: Data]> {
+            let result = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            return result.mapValues { $0.wrappedValue }
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+    }
+
+    func createBondedAccountsWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: AccountId]> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let constantOperation = StorageConstantOperation<BytesCodable>(path: NominationPools.palletIdPath)
+        constantOperation.configurationBlock = {
+            do {
+                constantOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                constantOperation.result = .failure(error)
+            }
+        }
+
+        constantOperation.addDependency(codingFactoryOperation)
+
+        let mergeOperation = ClosureOperation<[NominationPools.PoolId: AccountId]> {
+            let palletId = try constantOperation.extractNoCancellableResultData().wrappedValue
+
+            return try poolIds().reduce(into: [NominationPools.PoolId: AccountId]()) { accum, poolId in
+                accum[poolId] = try NominationPools.derivedAccount(
+                    for: poolId,
+                    accountType: .bonded,
+                    palletId: palletId
+                )
+            }
+        }
+
+        mergeOperation.addDependency(constantOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mergeOperation,
+            dependencies: [codingFactoryOperation, constantOperation]
+        )
+    }
+}
