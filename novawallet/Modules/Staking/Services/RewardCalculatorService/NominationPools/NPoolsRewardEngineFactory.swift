@@ -50,16 +50,20 @@ extension NPoolsRewardEngineFactory: NPoolsRewardEngineFactoryProtocol {
 
             let bondingDetails = try bondingDetailsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return NominationPoolsRewardEngine(
+            let engine = NominationPoolsRewardEngine(
                 innerRewardCalculator: validatorRewardCalculator,
                 activePools: activePools,
                 bondingDetails: bondingDetails
             )
+
+            engine.setup()
+
+            return engine
         }
 
         let dependencies = [activePoolsOperation, rewardEngineOperation] + bondingDetailsWrapper.allOperations
 
-        dependencies.map { mergeOperation.addDependency($0) }
+        dependencies.forEach { mergeOperation.addDependency($0) }
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
