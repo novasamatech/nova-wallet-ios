@@ -57,6 +57,7 @@
 		0C2F868B2A725C3C00593C01 /* EraNominationPoolsChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F868A2A725C3C00593C01 /* EraNominationPoolsChanged.swift */; };
 		0C2F868E2A725E4F00593C01 /* AccountExistense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F868C2A725E4F00593C01 /* AccountExistense.swift */; };
 		0C2F868F2A725E4F00593C01 /* DefaultStakingRewardDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F868D2A725E4F00593C01 /* DefaultStakingRewardDestination.swift */; };
+		0C2F86932A72648D00593C01 /* ActiveNominationPoolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
@@ -3749,6 +3750,7 @@
 		0C2F868A2A725C3C00593C01 /* EraNominationPoolsChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraNominationPoolsChanged.swift; sourceTree = "<group>"; };
 		0C2F868C2A725E4F00593C01 /* AccountExistense.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountExistense.swift; sourceTree = "<group>"; };
 		0C2F868D2A725E4F00593C01 /* DefaultStakingRewardDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultStakingRewardDestination.swift; sourceTree = "<group>"; };
+		0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveNominationPoolsTests.swift; sourceTree = "<group>"; };
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
@@ -9710,6 +9712,7 @@
 				8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */,
 				844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */,
 				0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */,
+				0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -17839,6 +17842,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				844133BB2860528500845987 /* XcmTransfersFeeTests.swift in Sources */,
+				0C2F86932A72648D00593C01 /* ActiveNominationPoolsTests.swift in Sources */,
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
 				84BB3CE9267C9ADE00676FFE /* CrowdloanTests.swift in Sources */,
 				8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */,

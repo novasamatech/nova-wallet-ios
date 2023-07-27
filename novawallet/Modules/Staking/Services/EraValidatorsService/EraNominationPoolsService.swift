@@ -14,7 +14,6 @@ final class EraNominationPoolsService: BaseSyncService {
     let chainAsset: ChainAsset
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
-    let workingQueue: DispatchQueue
     let eventCenter: EventCenterProtocol
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let operationFactory: NominationPoolsOperationFactoryProtocol
@@ -31,7 +30,6 @@ final class EraNominationPoolsService: BaseSyncService {
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = DispatchQueue(label: "com.novawallet.activepools", qos: .userInitiated),
         eventCenter: EventCenterProtocol = EventCenter.shared,
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -41,7 +39,6 @@ final class EraNominationPoolsService: BaseSyncService {
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
         self.eventCenter = eventCenter
 
         super.init(logger: logger)
@@ -50,7 +47,10 @@ final class EraNominationPoolsService: BaseSyncService {
     override func performSyncUp() {
         updateActiveValidatorSubscription()
 
-        lastPoolIdProvider = subscribeLastPoolId(for: chainAsset.chain.chainId)
+        lastPoolIdProvider = subscribeLastPoolId(
+            for: chainAsset.chain.chainId,
+            callbackQueue: DispatchQueue.global(qos: .userInitiated)
+        )
 
         if lastPoolIdProvider == nil {
             logger?.error("Can't subscribe last pool id")
@@ -79,7 +79,7 @@ final class EraNominationPoolsService: BaseSyncService {
 
     private func updateActiveValidatorSubscription() {
         eventCenter.remove(observer: self)
-        eventCenter.add(observer: self, dispatchIn: workingQueue)
+        eventCenter.add(observer: self, dispatchIn: DispatchQueue.global(qos: .userInitiated))
     }
 
     private func updateActivePools() {
@@ -97,12 +97,14 @@ final class EraNominationPoolsService: BaseSyncService {
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
-            self?.workingQueue.async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 self?.mutex.lock()
 
                 defer {
                     self?.mutex.unlock()
                 }
+
+                self?.logger?.debug("Did receive active pools response")
 
                 guard self?.activePoolCancellable === wrapper else {
                     return
@@ -112,6 +114,8 @@ final class EraNominationPoolsService: BaseSyncService {
 
                 do {
                     let activePools = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                    self?.logger?.debug("Active pools for era \(activePools.era): \(activePools.pools.count)")
                     self?.handle(newActivePools: activePools)
                     self?.complete(nil)
                     self?.notifyAll()
@@ -212,6 +216,7 @@ extension EraNominationPoolsService: NPoolsLocalStorageSubscriber, NPoolsLocalSu
             lastPoolId = optLastPoolId
 
             if let lastPoolId = optLastPoolId {
+                logger?.debug("Last pool id: \(lastPoolId)")
                 updateActivePools()
             } else {
                 logger?.warning("No pools registered yet")
