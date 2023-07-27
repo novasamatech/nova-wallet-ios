@@ -1321,3 +1321,4 @@
 "asset.operation.buy.title" = "Buy";
 "staking.direct" = "Direct";
 "staking.pool" = "Pool";
+"staking.setup.amount.title" = "Stake %@";

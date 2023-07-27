@@ -9,8 +9,8 @@ final class StartStakingInfoWireframe: StartStakingInfoWireframeProtocol {
         view?.controller.navigationController?.pushViewController(accountManagementView.controller, animated: true)
     }
 
-    func showSetupAmount(from view: ControllerBackedProtocol?) {
-        guard let setupAmountView = StakingSetupAmountViewFactory.createView() else {
+    func showSetupAmount(from view: ControllerBackedProtocol?, chainAsset: ChainAsset) {
+        guard let setupAmountView = StakingSetupAmountViewFactory.createView(chainAsset: chainAsset) else {
             return
         }
 

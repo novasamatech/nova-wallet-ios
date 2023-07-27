@@ -3,7 +3,8 @@ import UIKit
 extension TitleHorizontalMultiValueView {
     struct RewardModel {
         let title: String
-        let subtitle: AccentTextModel
+        let subtitle: String
+        let value: String
     }
 
     func bind(viewModel: LoadableViewModelState<RewardModel>) {
@@ -12,15 +13,15 @@ extension TitleHorizontalMultiValueView {
             // TODO:
             break
         case let .cached(value), let .loaded(value):
-            detailsTitleLabel.text = value.title
-            detailsValueLabel.bind(
-                model: value.subtitle,
-                with: .init(
-                    textColor: detailsTitleLabel.textColor,
-                    accentTextColor: R.color.colorTextPositive()!,
-                    font: .caption1
-                )
-            )
+            titleView.text = value.title
+            detailsTitleLabel.text = value.subtitle
+            detailsValueLabel.text = value.value
         }
+    }
+
+    func bind(balance: RewardModel) {
+        titleView.text = balance.title
+        detailsTitleLabel.text = balance.subtitle
+        detailsValueLabel.text = balance.value
     }
 }

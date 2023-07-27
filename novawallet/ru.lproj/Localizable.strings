@@ -1324,3 +1324,4 @@
 "asset.operation.buy.title" = "Купить";
 "staking.direct" = "Прямой";
 "staking.pool" = "Пул";
+"staking.setup.amount.title" = "Стейк %@";

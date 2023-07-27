@@ -60,7 +60,7 @@ protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInte
 
 protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable, NoAccountSupportPresentable {
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
-    func showSetupAmount(from view: ControllerBackedProtocol?)
+    func showSetupAmount(from view: ControllerBackedProtocol?, chainAsset: ChainAsset)
 }
 
 enum BaseStartStakingInfoError: Error {
