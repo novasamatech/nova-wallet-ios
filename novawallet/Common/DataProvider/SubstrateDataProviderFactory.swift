@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 
 protocol SubstrateDataProviderFactoryProtocol {
-    func createStashItemProvider(for address: String) -> StreamableProvider<StashItem>
+    func createStashItemProvider(for address: String, chainId: ChainModel.Id) -> StreamableProvider<StashItem>
     func createStorageProvider(for key: String) -> StreamableProvider<ChainStorageItem>
 }
 
@@ -21,22 +21,16 @@ final class SubstrateDataProviderFactory: SubstrateDataProviderFactoryProtocol {
         self.logger = logger
     }
 
-    func createStashItemProvider(for address: String) -> StreamableProvider<StashItem> {
-        let mapper: CodableCoreDataMapper<StashItem, CDStashItem> =
-            CodableCoreDataMapper(entityIdentifierFieldName: #keyPath(CDStashItem.stash))
+    func createStashItemProvider(for address: String, chainId: ChainModel.Id) -> StreamableProvider<StashItem> {
+        let mapper = StashItemMapper()
 
-        let filter = NSPredicate.filterByStashOrController(address)
-        let repository: CoreDataRepository<StashItem, CDStashItem> = facade
-            .createRepository(
-                filter: filter,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(mapper)
-            )
+        let repository = SubstrateRepositoryFactory(storageFacade: facade)
+            .createStashItemRepository(for: address, chainId: chainId)
 
         let observable = CoreDataContextObservable(
             service: facade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
-            predicate: { $0.stash == address || $0.controller == address }
+            predicate: { ($0.stash == address || $0.controller == address) && $0.chainId == chainId }
         )
 
         observable.start { [weak self] error in
@@ -47,7 +41,7 @@ final class SubstrateDataProviderFactory: SubstrateDataProviderFactoryProtocol {
 
         return StreamableProvider<StashItem>(
             source: AnyStreamableSource(EmptyStreamableSource()),
-            repository: AnyDataProviderRepository(repository),
+            repository: repository,
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: operationManager
         )

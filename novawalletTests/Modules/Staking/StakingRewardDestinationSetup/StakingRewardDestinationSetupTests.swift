@@ -127,7 +127,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         let calculatorService = RewardCalculatorServiceStub(engine: WestendStub.rewardCalculator)
 
         let address = selectedAccount.toAddress()!
-        let stashItem = StashItem(stash: address, controller: address)
+        let stashItem = StashItem(stash: address, controller: address, chainId: chain.chainId)
         let ledgerInfo = StakingLedger(
             stash: selectedAccount.accountId,
             total: BigUInt(2e+12),

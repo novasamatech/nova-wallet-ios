@@ -105,12 +105,12 @@ extension StakingRelaychainInteractor {
     }
 
     func performStashControllerSubscription() {
-        guard let address = selectedAccount?.toAddress() else {
+        guard let address = selectedAccount?.toAddress(), let chain = selectedChainAsset?.chain else {
             handle(stashItem: nil)
             return
         }
 
-        stashControllerProvider = subscribeStashItemProvider(for: address)
+        stashControllerProvider = subscribeStashItemProvider(for: address, chainId: chain.chainId)
     }
 
     func subscribeToControllerAccount(address: AccountAddress, chain: ChainModel) {

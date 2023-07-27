@@ -1,8 +1,13 @@
 import Foundation
 import SubstrateSdk
 
+struct BatchStorageSubscriptionRequest {
+    let innerRequest: SubscriptionRequestProtocol
+    let mappingKey: String?
+}
+
 struct BatchStorageSubscriptionResultValue {
-    let localKey: String
+    let mappingKey: String?
     let value: JSON
 }
 

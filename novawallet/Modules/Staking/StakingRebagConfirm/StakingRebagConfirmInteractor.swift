@@ -131,7 +131,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             return
         }
 
-        stashItemProvider = subscribeStashItemProvider(for: address)
+        stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
     }
 
     private func subscribeBagListNode(stashItem: StashItem?) {

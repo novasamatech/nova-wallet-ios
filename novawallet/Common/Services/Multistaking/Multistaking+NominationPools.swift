@@ -23,25 +23,25 @@ extension Multistaking {
         ) throws {
             ledger = try UncertainStorage(
                 values: values,
-                localKey: Key.ledger.rawValue,
+                mappingKey: Key.ledger.rawValue,
                 context: context
             )
 
             nomination = try UncertainStorage(
                 values: values,
-                localKey: Key.nomination.rawValue,
+                mappingKey: Key.nomination.rawValue,
                 context: context
             )
 
             era = try UncertainStorage(
                 values: values,
-                localKey: Key.era.rawValue,
+                mappingKey: Key.era.rawValue,
                 context: context
             )
 
             bondedPool = try UncertainStorage(
                 values: values,
-                localKey: Key.bonded.rawValue,
+                mappingKey: Key.bonded.rawValue,
                 context: context
             )
         }

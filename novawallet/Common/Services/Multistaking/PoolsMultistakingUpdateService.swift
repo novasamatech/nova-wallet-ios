@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class PoolsMultistakingUpdateService: ObservableSyncService {
+final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConstantFetching {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
@@ -11,6 +11,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemNominationPoolPart>
     let accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>
+    let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -20,6 +21,8 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
 
     private var state: Multistaking.NominationPoolState?
 
+    private lazy var localStorageKeyFactory = LocalStorageKeyFactory()
+
     init(
         walletId: MetaAccountModel.Id,
         accountId: AccountId,
@@ -27,6 +30,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemNominationPoolPart>,
         accountRepository: AnyDataProviderRepository<Multistaking.ResolvedAccount>,
+        cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -39,6 +43,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.accountRepository = accountRepository
+        self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.workingQueue = workingQueue
@@ -73,26 +78,34 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
     }
 
     private func subscribePoolResolution(for accountId: AccountId) {
-        let request = MapSubscriptionRequest(
-            storagePath: NominationPools.poolMembersPath,
-            localKey: ""
-        ) {
-            BytesCodable(wrappedValue: accountId)
-        }
+        do {
+            let localKey = try localStorageKeyFactory.createFromStoragePath(
+                NominationPools.poolMembersPath,
+                accountId: accountId,
+                chainId: chainAsset.chain.chainId
+            )
 
-        poolMemberSubscription = CallbackStorageSubscription(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
+            let request = MapSubscriptionRequest(storagePath: NominationPools.poolMembersPath, localKey: localKey) {
+                BytesCodable(wrappedValue: accountId)
+            }
 
-            self?.handlePoolMember(result: result, accountId: accountId)
+            poolMemberSubscription = CallbackStorageSubscription(
+                request: request,
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: cacheRepository,
+                operationQueue: operationQueue,
+                callbackQueue: workingQueue
+            ) { [weak self] result in
+                self?.mutex.lock()
 
-            self?.mutex.unlock()
+                self?.handlePoolMember(result: result, accountId: accountId)
+
+                self?.mutex.unlock()
+            }
+        } catch {
+            logger?.error("Pool resolution failed: \(error)")
+            completeImmediate(error)
         }
     }
 
@@ -130,52 +143,43 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
     private func resolvePalletIdAndSubscribeState(for poolMember: NominationPools.PoolMember, accountId: AccountId) {
         let currentPoolSubscription = poolMemberSubscription
 
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        fetchCompoundConstant(
+            for: NominationPools.palletIdPath,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            fallbackValue: nil,
+            callbackQueue: workingQueue
+        ) { [weak self] (result: Result<BytesCodable, Error>) in
+            self?.mutex.lock()
 
-        let constantOperation = StorageConstantOperation<BytesCodable>(path: NominationPools.palletId)
-        constantOperation.configurationBlock = {
-            do {
-                constantOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                constantOperation.result = .failure(error)
+            defer {
+                self?.mutex.unlock()
             }
-        }
 
-        constantOperation.addDependency(codingFactoryOperation)
+            guard self?.poolMemberSubscription === currentPoolSubscription else {
+                self?.logger?.warning("Tried to query pallet id but subscription changed")
+                return
+            }
 
-        constantOperation.completionBlock = { [weak self] in
-            self?.workingQueue.async {
-                self?.mutex.lock()
-
-                defer {
-                    self?.mutex.unlock()
-                }
-
-                guard self?.poolMemberSubscription === currentPoolSubscription else {
-                    self?.logger?.warning("Tried to query pallet id but subscription changed")
-                    return
-                }
-
-                do {
-                    let palletId = try constantOperation.extractNoCancellableResultData()
-
-                    let poolAccountId = try NominationPools.derivedAccount(
+            switch result {
+            case let .success(palletId):
+                if
+                    let poolAccountId = try? NominationPools.derivedAccount(
                         for: poolMember.poolId,
                         accountType: .bonded,
                         palletId: palletId.wrappedValue
-                    )
-
+                    ) {
                     self?.saveAccountChanges(for: poolAccountId, walletAccountId: accountId)
                     self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
-
-                } catch {
-                    self?.logger?.error("Can't derive pool account id \(error)")
-                    self?.completeImmediate(error)
+                } else {
+                    self?.logger?.error("Can't derive pool account id")
+                    self?.completeImmediate(CommonError.dataCorruption)
                 }
+            case let .failure(error):
+                self?.logger?.error("Can't get pallet id \(error)")
+                self?.completeImmediate(error)
             }
         }
-
-        operationQueue.addOperations([codingFactoryOperation, constantOperation], waitUntilFinished: false)
     }
 
     private func saveAccountChanges(for poolAccountId: AccountId?, walletAccountId: AccountId) {
@@ -220,52 +224,90 @@ final class PoolsMultistakingUpdateService: ObservableSyncService {
         operationQueue.addOperation(saveOperation)
     }
 
+    // swiftlint:disable:next function_body_length
     private func subscribeState(for poolAccountId: AccountId, poolId: NominationPools.PoolId) {
-        let eraRequest = UnkeyedSubscriptionRequest(
-            storagePath: .activeEra,
-            localKey: Multistaking.NominationPoolStateChange.Key.era.rawValue
-        )
+        do {
+            clearStateSubscription()
 
-        let ledgerRequest = MapSubscriptionRequest(
-            storagePath: .stakingLedger,
-            localKey: Multistaking.NominationPoolStateChange.Key.ledger.rawValue,
-            keyParamClosure: {
-                BytesCodable(wrappedValue: poolAccountId)
+            let eraRequest = BatchStorageSubscriptionRequest(
+                innerRequest: UnkeyedSubscriptionRequest(
+                    storagePath: .activeEra,
+                    localKey: ""
+                ),
+                mappingKey: Multistaking.NominationPoolStateChange.Key.era.rawValue
+            )
+
+            let ledgerLocalKey = try localStorageKeyFactory.createFromStoragePath(
+                .stakingLedger,
+                accountId: poolAccountId,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let ledgerRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: .stakingLedger,
+                    localKey: ledgerLocalKey,
+                    keyParamClosure: {
+                        BytesCodable(wrappedValue: poolAccountId)
+                    }
+                ),
+                mappingKey: Multistaking.NominationPoolStateChange.Key.ledger.rawValue
+            )
+
+            let nominationLocalKey = try localStorageKeyFactory.createFromStoragePath(
+                .nominators,
+                accountId: poolAccountId,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let nominationRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: .nominators,
+                    localKey: nominationLocalKey,
+                    keyParamClosure: {
+                        BytesCodable(wrappedValue: poolAccountId)
+                    }
+                ),
+                mappingKey: Multistaking.NominationPoolStateChange.Key.nomination.rawValue
+            )
+
+            let bondedLocalKey = try localStorageKeyFactory.createFromStoragePath(
+                NominationPools.bondedPoolPath,
+                encodableElement: poolId,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let bondedPoolRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: NominationPools.bondedPoolPath,
+                    localKey: bondedLocalKey,
+                    keyParamClosure: {
+                        StringScaleMapper(value: poolId)
+                    }
+                ),
+                mappingKey: Multistaking.NominationPoolStateChange.Key.bonded.rawValue
+            )
+
+            stateSubscription = CallbackBatchStorageSubscription(
+                requests: [ledgerRequest, nominationRequest, eraRequest, bondedPoolRequest],
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: cacheRepository,
+                operationQueue: operationQueue,
+                callbackQueue: workingQueue
+            ) { [weak self] result in
+                self?.mutex.lock()
+
+                self?.handleStateSubscription(result: result)
+
+                self?.mutex.unlock()
             }
-        )
 
-        let nominationRequest = MapSubscriptionRequest(
-            storagePath: .nominators,
-            localKey: Multistaking.NominationPoolStateChange.Key.nomination.rawValue,
-            keyParamClosure: {
-                BytesCodable(wrappedValue: poolAccountId)
-            }
-        )
-
-        let bondedPoolRequest = MapSubscriptionRequest(
-            storagePath: NominationPools.bondedPool,
-            localKey: Multistaking.NominationPoolStateChange.Key.bonded.rawValue,
-            keyParamClosure: {
-                StringScaleMapper(value: poolId)
-            }
-        )
-
-        stateSubscription = CallbackBatchStorageSubscription(
-            requests: [ledgerRequest, nominationRequest, eraRequest, bondedPoolRequest],
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleStateSubscription(result: result)
-
-            self?.mutex.unlock()
+            stateSubscription?.subscribe()
+        } catch {
+            logger?.error("Subscription failed: \(error)")
+            completeImmediate(error)
         }
-
-        stateSubscription?.subscribe()
     }
 
     private func handleStateSubscription(result: Result<Multistaking.NominationPoolStateChange, Error>) {

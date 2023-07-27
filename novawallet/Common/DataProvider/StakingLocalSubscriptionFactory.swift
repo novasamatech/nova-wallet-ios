@@ -53,7 +53,8 @@ protocol StakingLocalSubscriptionFactoryProtocol {
     ) throws -> AnySingleValueProvider<TotalRewardItem>
 
     func getStashItemProvider(
-        for address: AccountAddress
+        for address: AccountAddress,
+        chainId: ChainModel.Id
     ) -> StreamableProvider<StashItem>
 
     func getBagListNodeProvider(
@@ -332,11 +333,12 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     }
 
     func getStashItemProvider(
-        for address: AccountAddress
+        for address: AccountAddress,
+        chainId: ChainModel.Id
     ) -> StreamableProvider<StashItem> {
         clearIfNeeded()
 
-        let identifier = "stashItem" + address
+        let identifier = "stashItem" + address + chainId
 
         if let provider = getProvider(for: identifier) as? StreamableProvider<StashItem> {
             return provider
@@ -346,7 +348,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             facade: storageFacade,
             operationManager: operationManager,
             logger: logger
-        ).createStashItemProvider(for: address)
+        ).createStashItemProvider(for: address, chainId: chainId)
 
         saveProvider(provider, for: identifier)
 

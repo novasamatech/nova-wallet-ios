@@ -5,14 +5,14 @@ import BigInt
 enum NominationPools {
     typealias PoolId = UInt32
 
-    struct PoolMember: Decodable {
+    struct PoolMember: Decodable, Equatable {
         @StringCodable var poolId: PoolId
         @StringCodable var points: BigUInt
         @StringCodable var lastRecordedRewardCounter: BigUInt
         let unbondingEras: [SupportPallet.KeyValue<StringScaleMapper<EraIndex>, StringScaleMapper<BigUInt>>]
     }
 
-    enum PoolState: Decodable {
+    enum PoolState: Decodable, Equatable {
         case open
         case blocked
         case destroying
@@ -36,9 +36,23 @@ enum NominationPools {
         }
     }
 
-    struct BondedPool: Decodable {
+    struct BondedPool: Decodable, Equatable {
         @StringCodable var points: BigUInt
         let state: PoolState
+    }
+
+    struct RewardPool: Decodable, Equatable {
+        @StringCodable var lastRecordedRewardCounter: BigUInt
+    }
+
+    struct UnbondPool: Decodable, Equatable {
+        @StringCodable var points: BigUInt
+        @StringCodable var balance: BigUInt
+    }
+
+    struct SubPools: Decodable, Equatable {
+        let noEra: UnbondPool
+        let withEra: [SupportPallet.KeyValue<StringScaleMapper<EraIndex>, UnbondPool>]
     }
 
     enum AccountType: UInt8 {

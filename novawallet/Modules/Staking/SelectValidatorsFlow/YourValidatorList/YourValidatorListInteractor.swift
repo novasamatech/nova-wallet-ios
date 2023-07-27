@@ -79,7 +79,7 @@ final class YourValidatorListInteractor: AccountFetching {
         self.activeEra = activeEra
 
         if activeEra != nil, let address = selectedAccount.toAddress() {
-            stashControllerProvider = subscribeStashItemProvider(for: address)
+            stashControllerProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
             presenter.didReceiveController(result: .success(nil))
             presenter.didReceiveValidators(result: .success(nil))
