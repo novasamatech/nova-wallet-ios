@@ -67,7 +67,9 @@ extension NominationPoolsRewardEngine: NominationPoolsRewardEngineProtocol {
             throw CommonError.dataCorruption
         }
 
-        return maxReturn
+        let commission = bondedPool.commission?.current.flatMap { Decimal.fromSubstratePerbill(value: $0.percent) } ?? 0
+
+        return maxReturn * (1 - commission)
     }
 
     func calculateMaxReturn(isCompound: Bool, period: CalculationPeriod) throws -> Decimal {

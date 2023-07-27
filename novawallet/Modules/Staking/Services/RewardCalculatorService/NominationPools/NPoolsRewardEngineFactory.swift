@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 
 protocol NPoolsRewardEngineFactoryProtocol {
-    func createEngineOperation(
+    func createEngineWrapper(
         for eraPoolsService: EraNominationPoolsServiceProtocol,
         validatorRewardService: RewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
@@ -20,7 +20,7 @@ final class NPoolsRewardEngineFactory {
 }
 
 extension NPoolsRewardEngineFactory: NPoolsRewardEngineFactoryProtocol {
-    func createEngineOperation(
+    func createEngineWrapper(
         for eraPoolsService: EraNominationPoolsServiceProtocol,
         validatorRewardService: RewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
