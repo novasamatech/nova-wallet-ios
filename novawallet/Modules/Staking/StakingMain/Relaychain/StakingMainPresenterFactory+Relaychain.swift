@@ -7,15 +7,14 @@ import SoraKeystore
 extension StakingMainPresenterFactory {
     func createRelaychainPresenter(
         for stakingOption: Multistaking.ChainAssetOption,
-        view: StakingMainViewProtocol,
-        consensus: ConsensusType
+        view: StakingMainViewProtocol
     ) -> StakingRelaychainPresenter? {
-        let sharedState = createRelaychainSharedState(for: stakingOption, consensus: consensus)
-
         // MARK: - Interactor
 
-        guard let interactor = createRelaychainInteractor(state: sharedState),
-              let currencyManager = CurrencyManager.shared else {
+        guard
+            let sharedState = try? sharedStateFactory.createRelaychain(for: stakingOption),
+            let interactor = createRelaychainInteractor(state: sharedState),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -56,13 +55,13 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
-    // swiftlint:disable:next function_body_length
     func createRelaychainInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRelaychainInteractor? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
 
@@ -72,86 +71,18 @@ extension StakingMainPresenterFactory {
             logger: logger
         )
 
-        let substrateRepositoryFactory = SubstrateRepositoryFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
-
-        let chainItemRepository = substrateRepositoryFactory.createChainStorageItemRepository()
-
-        let stakingRemoteSubscriptionService = StakingRemoteSubscriptionService(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            repository: chainItemRepository,
-            syncOperationManager: operationManager,
-            repositoryOperationManager: operationManager,
-            logger: logger
-        )
-
-        let serviceFactory = StakingServiceFactory(
-            chainRegisty: ChainRegistryFacade.sharedRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
-            eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: logger
-        )
-
-        let substrateDataProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager
-        )
-
-        let childSubscriptionFactory = ChildSubscriptionFactory(
-            storageFacade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager,
-            eventCenter: EventCenter.shared,
-            logger: logger
-        )
-
-        let stakingAccountUpdatingService = StakingAccountUpdatingService(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            substrateRepositoryFactory: substrateRepositoryFactory,
-            substrateDataProviderFactory: substrateDataProviderFactory,
-            childSubscriptionFactory: childSubscriptionFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
         return StakingRelaychainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             sharedState: state,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            stakingRemoteSubscriptionService: stakingRemoteSubscriptionService,
-            stakingAccountUpdatingService: stakingAccountUpdatingService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            stakingServiceFactory: serviceFactory,
             accountProviderFactory: accountProviderFactory,
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
             applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             logger: logger
-        )
-    }
-
-    private func createRelaychainSharedState(
-        for stakingOption: Multistaking.ChainAssetOption,
-        consensus: ConsensusType
-    ) -> StakingSharedState {
-        let storageFacade = SubstrateDataStorageFacade.shared
-
-        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            storageFacade: storageFacade,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
-        )
-
-        return StakingSharedState(
-            consensus: consensus,
-            stakingOption: stakingOption,
-            eraValidatorService: nil,
-            rewardCalculationService: nil,
-            blockTimeService: nil,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
         )
     }
 }

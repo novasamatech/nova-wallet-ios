@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct SelectedValidatorListViewFactory {
     static func createInitiatedBondingView(
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
@@ -20,7 +20,7 @@ struct SelectedValidatorListViewFactory {
     }
 
     static func createChangeTargetsView(
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
@@ -37,7 +37,7 @@ struct SelectedValidatorListViewFactory {
     }
 
     static func createChangeYourValidatorsView(
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
@@ -54,7 +54,7 @@ struct SelectedValidatorListViewFactory {
     }
 
     static func createView(
-        stakingState _: StakingSharedState,
+        stakingState _: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,

@@ -5,7 +5,7 @@ import SoraKeystore
 import SubstrateSdk
 
 struct YourValidatorListViewFactory {
-    static func createView(for state: StakingSharedState) -> YourValidatorListViewProtocol? {
+    static func createView(for state: RelaychainStakingSharedStateProtocol) -> YourValidatorListViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -48,16 +48,17 @@ struct YourValidatorListViewFactory {
         return view
     }
 
-    private static func createInteractor(state: StakingSharedState) -> YourValidatorListInteractor? {
+    private static func createInteractor(state: RelaychainStakingSharedStateProtocol) -> YourValidatorListInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-            let eraValidatorService = state.eraValidatorService,
-            let rewardCalculationService = state.rewardCalculationService else {
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
+
+        let eraValidatorService = state.eraValidatorService
+        let rewardCalculationService = state.rewardCalculatorService
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationManager = OperationManagerFacade.sharedManager
@@ -91,7 +92,7 @@ struct YourValidatorListViewFactory {
         return YourValidatorListInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             eraValidatorService: eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,

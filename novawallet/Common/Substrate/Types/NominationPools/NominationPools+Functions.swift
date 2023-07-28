@@ -13,7 +13,7 @@ extension NominationPools {
         scaleEncoder.appendRaw(data: palletId)
         try accountType.rawValue.encode(scaleEncoder: scaleEncoder)
         try poolId.encode(scaleEncoder: scaleEncoder)
-        try scaleEncoder.appendRaw(data: Data(repeating: 0, count: SubstrateConstants.accountIdLength))
+        scaleEncoder.appendRaw(data: Data(repeating: 0, count: SubstrateConstants.accountIdLength))
 
         let result = scaleEncoder.encode()
 

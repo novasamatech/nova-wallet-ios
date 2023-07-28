@@ -312,7 +312,8 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             let endDaySection = Section.end(date: dateValue, active: !collapsed)
             snapshot.appendSections([endDaySection])
             if !collapsed {
-                let minDate = startDate.map { calendar.startOfDay(for: $0) }?.addingTimeInterval(.secondsInDay) ?? calendar.startOfDay(for: Date())
+                let minDate = startDate.map { calendar.startOfDay(for: $0) }?
+                    .addingTimeInterval(.secondsInDay) ?? calendar.startOfDay(for: Date())
                 snapshot.appendItems([.calendar(
                     .endDate,
                     date: day,

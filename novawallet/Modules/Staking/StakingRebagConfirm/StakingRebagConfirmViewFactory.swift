@@ -2,18 +2,20 @@ import Foundation
 import SoraFoundation
 
 struct StakingRebagConfirmViewFactory {
-    static func createView(with state: StakingSharedState) -> StakingRebagConfirmViewProtocol? {
+    static func createView(with state: RelaychainStakingSharedStateProtocol) -> StakingRebagConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
-            let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
-            let networkInfoFactory = try? state.createNetworkInfoOperationFactory(for: chainAsset.chain),
-            let eraValidatorService = state.eraValidatorService
-        else {
+            let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(
+                for: chainAsset.chain.accountRequest()
+            ) else {
             return nil
         }
+
+        let eraValidatorService = state.eraValidatorService
+        let networkInfoFactory = state.createNetworkInfoOperationFactory()
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -40,7 +42,7 @@ struct StakingRebagConfirmViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             networkInfoFactory: networkInfoFactory,
             eraValidatorService: eraValidatorService,
             runtimeService: runtimeRegistry,

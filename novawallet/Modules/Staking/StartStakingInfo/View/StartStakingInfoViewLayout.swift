@@ -175,7 +175,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
         let headerSecondLineSize = CGSize(width: 185, height: 16)
         let headerThirdLineSize = CGSize(width: 109, height: 16)
 
-        let topOffsetY = safeAreaInsets.top + Constants.containerInsets.top + header.titleLabel.font.lineHeight - headerFirstLineSize.height / 2
+        let topOffsetY = safeAreaInsets.top + Constants.containerInsets.top +
+            header.titleLabel.font.lineHeight - headerFirstLineSize.height / 2
 
         let headerFirstLineOffset = CGPoint(
             x: spaceSize.width / 2 - headerFirstLineSize.width / 2,

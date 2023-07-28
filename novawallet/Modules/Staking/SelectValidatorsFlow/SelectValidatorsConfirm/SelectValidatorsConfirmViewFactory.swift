@@ -7,7 +7,7 @@ import SubstrateSdk
 final class SelectValidatorsConfirmViewFactory {
     static func createInitiatedBondingView(
         for state: PreparedNomination<InitiatedBonding>,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
         let keystore = Keychain()
 
@@ -43,7 +43,7 @@ final class SelectValidatorsConfirmViewFactory {
 
     static func createChangeTargetsView(
         for state: PreparedNomination<ExistingBonding>,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
         let wireframe = SelectValidatorsConfirmWireframe()
         return createExistingBondingView(for: state, wireframe: wireframe, stakingState: stakingState)
@@ -51,7 +51,7 @@ final class SelectValidatorsConfirmViewFactory {
 
     static func createChangeYourValidatorsView(
         for state: PreparedNomination<ExistingBonding>,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
         let wireframe = YourValidatorList.SelectValidatorsConfirmWireframe()
         return createExistingBondingView(for: state, wireframe: wireframe, stakingState: stakingState)
@@ -60,7 +60,7 @@ final class SelectValidatorsConfirmViewFactory {
     private static func createExistingBondingView(
         for state: PreparedNomination<ExistingBonding>,
         wireframe: SelectValidatorsConfirmWireframeProtocol,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
         let keystore = Keychain()
 
@@ -89,7 +89,7 @@ final class SelectValidatorsConfirmViewFactory {
     private static func createView(
         for interactor: SelectValidatorsConfirmInteractorBase,
         wireframe: SelectValidatorsConfirmWireframeProtocol,
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         title: LocalizableResource<String>,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
@@ -136,7 +136,7 @@ final class SelectValidatorsConfirmViewFactory {
     private static func createInitiatedBondingInteractor(
         _ nomination: PreparedNomination<InitiatedBonding>,
         selectedMetaAccount: MetaChainAccountResponse,
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         keystore: KeystoreProtocol
     ) -> SelectValidatorsConfirmInteractorBase? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -149,12 +149,11 @@ final class SelectValidatorsConfirmViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress(),
-            let currencyManager = CurrencyManager.shared,
-            let stakingDurationFactory = try? stakingState.createStakingDurationOperationFactory(
-                for: chainAsset.chain
-            ) else {
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let stakingDurationFactory = stakingState.stakingDurationOperationFactory
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
@@ -170,7 +169,7 @@ final class SelectValidatorsConfirmViewFactory {
         return InitiatedBondingConfirmInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: stakingState.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: stakingState.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
@@ -185,7 +184,7 @@ final class SelectValidatorsConfirmViewFactory {
 
     private static func createChangeTargetsInteractor(
         _ nomination: PreparedNomination<ExistingBonding>,
-        state: StakingSharedState,
+        state: RelaychainStakingSharedStateProtocol,
         keystore: KeystoreProtocol
     ) -> SelectValidatorsConfirmInteractorBase? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -197,12 +196,11 @@ final class SelectValidatorsConfirmViewFactory {
         guard
             let currencyManager = CurrencyManager.shared,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
-                for: chainAsset.chain
-            ) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let stakingDurationFactory = state.stakingDurationOperationFactory
 
         let extrinsicSender = nomination.bonding.controllerAccount
 
@@ -221,7 +219,7 @@ final class SelectValidatorsConfirmViewFactory {
 
         return ChangeTargetsConfirmInteractor(
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,

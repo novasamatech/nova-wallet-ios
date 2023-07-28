@@ -4,7 +4,7 @@ import SoraKeystore
 
 enum CustomValidatorListViewFactory {
     private static func createView(
-        for stakingState: StakingSharedState,
+        for stakingState: RelaychainStakingSharedStateProtocol,
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
@@ -58,7 +58,7 @@ enum CustomValidatorListViewFactory {
 
 extension CustomValidatorListViewFactory {
     static func createInitiatedBondingView(
-        for stakingState: StakingSharedState,
+        for stakingState: RelaychainStakingSharedStateProtocol,
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
@@ -75,7 +75,7 @@ extension CustomValidatorListViewFactory {
     }
 
     static func createChangeTargetsView(
-        for stakingState: StakingSharedState,
+        for stakingState: RelaychainStakingSharedStateProtocol,
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
@@ -92,7 +92,7 @@ extension CustomValidatorListViewFactory {
     }
 
     static func createChangeYourValidatorsView(
-        for stakingState: StakingSharedState,
+        for stakingState: RelaychainStakingSharedStateProtocol,
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,

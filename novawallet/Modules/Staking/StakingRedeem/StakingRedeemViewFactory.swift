@@ -5,7 +5,7 @@ import RobinHood
 import SubstrateSdk
 
 final class StakingRedeemViewFactory {
-    static func createView(for state: StakingSharedState) -> StakingRedeemViewProtocol? {
+    static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingRedeemViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -66,7 +66,7 @@ final class StakingRedeemViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRedeemInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -107,7 +107,7 @@ final class StakingRedeemViewFactory {
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: SigningWrapperFactory(),
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             slashesOperationFactory: SlashesOperationFactory(storageRequestFactory: storageRequestFactory),

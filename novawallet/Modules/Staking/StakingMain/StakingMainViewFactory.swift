@@ -14,13 +14,27 @@ enum StakingMainViewFactory {
         let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy
             .addApplicationHandler()
 
+        let sharedStateFactory = StakingSharedStateFactory(
+            storageFacade: SubstrateDataStorageFacade.shared,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            eventCenter: EventCenter.shared,
+            syncOperationQueue: OperationManagerFacade.sharedDefaultQueue,
+            repositoryOperationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        let childPresenterFactory = StakingMainPresenterFactory(
+            applicationHandler: applicationHandler,
+            sharedStateFactory: sharedStateFactory
+        )
+
         let presenter = StakingMainPresenter(
             interactor: interactor,
             wireframe: wireframe,
             wallet: SelectedWalletSettings.shared.value,
             stakingOption: stakingOption,
             accountManagementFilter: AccountManagementFilter(),
-            childPresenterFactory: StakingMainPresenterFactory(applicationHandler: applicationHandler),
+            childPresenterFactory: childPresenterFactory,
             viewModelFactory: StakingMainViewModelFactory(),
             logger: Logger.shared
         )

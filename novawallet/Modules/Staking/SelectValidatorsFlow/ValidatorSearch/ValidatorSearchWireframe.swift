@@ -1,7 +1,7 @@
 final class ValidatorSearchWireframe: ValidatorSearchWireframeProtocol {
-    let state: StakingSharedState
+    let state: RelaychainStakingSharedStateProtocol
 
-    init(state: StakingSharedState) {
+    init(state: RelaychainStakingSharedStateProtocol) {
         self.state = state
     }
 

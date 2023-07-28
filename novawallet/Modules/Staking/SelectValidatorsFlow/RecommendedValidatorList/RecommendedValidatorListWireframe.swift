@@ -1,9 +1,9 @@
 import Foundation
 
 class RecommendedValidatorListWireframe: RecommendedValidatorListWireframeProtocol {
-    let stakingState: StakingSharedState
+    let stakingState: RelaychainStakingSharedStateProtocol
 
-    init(stakingState: StakingSharedState) {
+    init(stakingState: RelaychainStakingSharedStateProtocol) {
         self.stakingState = stakingState
     }
 

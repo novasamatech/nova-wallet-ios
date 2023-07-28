@@ -9,20 +9,7 @@ struct StartStakingInfoViewFactory {
     ) -> StartStakingInfoViewProtocol? {
         switch stakingOption.type {
         case .relaychain, .auraRelaychain, .azero, .nominationPools:
-            let operationQueue = OperationManagerFacade.sharedDefaultQueue
-            let factory = RelaychainStakingStateFactory(
-                stakingOption: stakingOption,
-                chainRegistry: ChainRegistryFacade.sharedRegistry,
-                storageFacade: SubstrateDataStorageFacade.shared,
-                eventCenter: EventCenter.shared,
-                logger: Logger.shared,
-                operationQueue: operationQueue
-            )
-            return createRelaychainView(
-                chainAsset: stakingOption.chainAsset,
-                factory: factory,
-                operationQueue: operationQueue
-            )
+            return createRelaychainView(stakingOption: stakingOption)
         case .parachain, .turing:
             let factory = ParachainStakingStateFactory(
                 stakingOption: stakingOption,
@@ -43,17 +30,29 @@ struct StartStakingInfoViewFactory {
     }
 
     private static func createRelaychainView(
-        chainAsset: ChainAsset,
-        factory: RelaychainStakingStateFactoryProtocol,
-        operationQueue: OperationQueue
+        stakingOption: Multistaking.ChainAssetOption
     ) -> StartStakingInfoViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let stateFactory = StakingSharedStateFactory(
+            storageFacade: SubstrateDataStorageFacade.shared,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            eventCenter: EventCenter.shared,
+            syncOperationQueue: operationQueue,
+            repositoryOperationQueue: operationQueue,
+            logger: Logger.shared
+        )
+
+        guard
+            let state = try? stateFactory.createRelaychain(for: stakingOption),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
+        let chainAsset = stakingOption.chainAsset
+
         let interactor = createRelaychainInteractor(
-            factory: factory,
-            chainAsset: chainAsset,
+            state: state,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -89,71 +88,20 @@ struct StartStakingInfoViewFactory {
     }
 
     private static func createRelaychainInteractor(
-        factory: RelaychainStakingStateFactoryProtocol,
-        chainAsset: ChainAsset,
+        state: RelaychainStakingSharedStateProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) -> StartStakingRelaychainInteractor {
         let selectedWalletSettings = SelectedWalletSettings.shared
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationManager = OperationManager(operationQueue: operationQueue)
-        let logger = Logger.shared
-        let storageFacade = SubstrateDataStorageFacade.shared
-        let eventCenter = EventCenter.shared
-
-        let substrateRepositoryFactory = SubstrateRepositoryFactory(
-            storageFacade: storageFacade
-        )
-        let chainItemRepository = substrateRepositoryFactory.createChainStorageItemRepository()
-
-        let stakingRemoteSubscriptionService = StakingRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: chainItemRepository,
-            syncOperationManager: operationManager,
-            repositoryOperationManager: operationManager,
-            logger: logger
-        )
-
-        let serviceFactory = StakingServiceFactory(
-            chainRegisty: chainRegistry,
-            storageFacade: storageFacade,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-
-        let substrateDataProviderFactory = SubstrateDataProviderFactory(
-            facade: storageFacade,
-            operationManager: operationManager
-        )
-
-        let childSubscriptionFactory = ChildSubscriptionFactory(
-            storageFacade: storageFacade,
-            operationManager: operationManager,
-            eventCenter: eventCenter,
-            logger: logger
-        )
-
-        let stakingAccountUpdatingService = StakingAccountUpdatingService(
-            chainRegistry: chainRegistry,
-            substrateRepositoryFactory: substrateRepositoryFactory,
-            substrateDataProviderFactory: substrateDataProviderFactory,
-            childSubscriptionFactory: childSubscriptionFactory,
-            operationQueue: operationQueue
-        )
 
         return StartStakingRelaychainInteractor(
-            chainAsset: chainAsset,
             selectedWalletSettings: selectedWalletSettings,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingAssetSubscriptionService: stakingRemoteSubscriptionService,
-            stakingAccountUpdatingService: stakingAccountUpdatingService,
             currencyManager: currencyManager,
-            stateFactory: factory,
-            chainRegistry: chainRegistry,
+            state: state,
             operationQueue: operationQueue
         )
     }

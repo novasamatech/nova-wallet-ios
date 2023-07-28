@@ -50,7 +50,7 @@ final class ValidatorInfoViewFactory {
 extension ValidatorInfoViewFactory {
     static func createView(
         with validatorInfo: ValidatorInfoProtocol,
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> ValidatorInfoViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
@@ -72,7 +72,7 @@ extension ValidatorInfoViewFactory {
 
     static func createView(
         with accountAddress: AccountAddress,
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> ValidatorInfoViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -81,10 +81,11 @@ extension ValidatorInfoViewFactory {
         guard
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let eraValidatorService = state.eraValidatorService,
-            let rewardCalculationService = state.rewardCalculationService,
             let currencyManager = CurrencyManager.shared
         else { return nil }
+
+        let eraValidatorService = state.eraValidatorService
+        let rewardCalculationService = state.rewardCalculatorService
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),

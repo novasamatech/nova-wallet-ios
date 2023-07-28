@@ -6,7 +6,7 @@ import RobinHood
 
 struct ControllerAccountConfirmationViewFactory {
     static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         controllerAccountItem: MetaChainAccountResponse
     ) -> ControllerAccountConfirmationViewProtocol? {
         guard
@@ -53,7 +53,7 @@ struct ControllerAccountConfirmationViewFactory {
     }
 
     private static func createInteractor(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         controllerAccountItem: ChainAccountResponse
     ) -> ControllerAccountConfirmationInteractor? {
         let chainAsset = state.stakingOption.chainAsset
@@ -97,7 +97,7 @@ struct ControllerAccountConfirmationViewFactory {
             selectedAccount: selectedAccount,
             controllerAccountItem: controllerAccountItem,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             runtimeService: runtimeService,

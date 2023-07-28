@@ -1,7 +1,8 @@
 import RobinHood
 import Foundation
 
-final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning, RuntimeConstantFetching {
+final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning,
+    RuntimeConstantFetching {
     let chainRegistry: ChainRegistryProtocol
     let stateFactory: ParachainStakingStateFactoryProtocol
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol

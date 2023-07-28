@@ -3,7 +3,7 @@ import Foundation
 final class ChangeTargetsRecommendationWireframe: RecommendedValidatorListWireframe {
     let state: ExistingBonding
 
-    init(state: ExistingBonding, stakingState: StakingSharedState) {
+    init(state: ExistingBonding, stakingState: RelaychainStakingSharedStateProtocol) {
         self.state = state
 
         super.init(stakingState: stakingState)

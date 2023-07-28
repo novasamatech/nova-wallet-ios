@@ -4,7 +4,7 @@ import SoraKeystore
 import RobinHood
 
 struct StakingUnbondSetupViewFactory {
-    static func createView(for state: StakingSharedState) -> StakingUnbondSetupViewProtocol? {
+    static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingUnbondSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -46,19 +46,18 @@ struct StakingUnbondSetupViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingUnbondSetupInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-            let currencyManager = CurrencyManager.shared,
-            let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
-                for: chainAsset.chain
-            ) else {
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let stakingDurationFactory = state.stakingDurationOperationFactory
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationManager = OperationManagerFacade.sharedManager
@@ -81,7 +80,7 @@ struct StakingUnbondSetupViewFactory {
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             chainRegistry: chainRegistry,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingDurationOperationFactory: stakingDurationFactory,

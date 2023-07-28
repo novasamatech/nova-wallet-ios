@@ -2,9 +2,9 @@ import Foundation
 import SoraFoundation
 
 final class ControllerAccountWireframe: ControllerAccountWireframeProtocol {
-    let state: StakingSharedState
+    let state: RelaychainStakingSharedStateProtocol
 
-    init(state: StakingSharedState) {
+    init(state: RelaychainStakingSharedStateProtocol) {
         self.state = state
     }
 

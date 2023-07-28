@@ -29,7 +29,6 @@ protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInte
     func remakeBagListSizeSubscription()
     func retryEraCompletionTime()
     func remakeCalculator()
-    func remakeAccountRemoteSubscription()
 }
 
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
@@ -75,7 +74,6 @@ enum RelaychainStartStakingInfoError: Error {
     case bagListSize(Error)
     case minNominatorBond(Error)
     case calculator(Error)
-    case accountRemoteSubscription(Error)
 }
 
 enum ParachainStartStakingInfoError: Error {

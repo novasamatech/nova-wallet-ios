@@ -7,7 +7,7 @@ import SubstrateSdk
 final class StakingAmountViewFactory {
     static func createView(
         with amount: Decimal?,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> StakingAmountViewProtocol? {
         let chainAsset = stakingState.stakingOption.chainAsset
 
@@ -66,18 +66,13 @@ final class StakingAmountViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingAmountInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-            let rewardCalculationService = state.rewardCalculationService,
-            let validatorService = state.eraValidatorService,
-            let networkInfoOperationFactory = try? state.createNetworkInfoOperationFactory(
-                for: chainAsset.chain
-            ),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -89,6 +84,10 @@ final class StakingAmountViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let rewardCalculationService = state.rewardCalculatorService
+        let validatorService = state.eraValidatorService
+        let networkInfoOperationFactory = state.createNetworkInfoOperationFactory()
 
         let operationManager = OperationManagerFacade.sharedManager
 
@@ -108,7 +107,7 @@ final class StakingAmountViewFactory {
         let interactor = StakingAmountInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             repository: accountRepository,

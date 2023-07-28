@@ -6,7 +6,7 @@ import IrohaCrypto
 
 final class StakingRewardPayoutsViewFactory {
     static func createViewForNominator(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         stashAddress: AccountAddress
     ) -> StakingRewardPayoutsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -30,7 +30,7 @@ final class StakingRewardPayoutsViewFactory {
     }
 
     static func createViewForValidator(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         stashAddress: AccountAddress
     ) -> StakingRewardPayoutsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -48,7 +48,7 @@ final class StakingRewardPayoutsViewFactory {
     }
 
     private static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         stashAddress: AccountAddress,
         validatorsResolutionFactory: PayoutValidatorsFactoryProtocol,
         payoutInfoFactory: PayoutInfoFactoryProtocol
@@ -90,7 +90,7 @@ final class StakingRewardPayoutsViewFactory {
 
     private static func createView(
         for payoutService: PayoutRewardsServiceProtocol,
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRewardPayoutsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
@@ -100,17 +100,7 @@ final class StakingRewardPayoutsViewFactory {
 
         let operationManager = OperationManagerFacade.sharedManager
 
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
-
-        guard let eraCountdownOperationFactory = try? state.createEraCountdownOperationFactory(
-            for: chainAsset.chain,
-            storageRequestFactory: storageRequestFactory
-        ) else {
-            return nil
-        }
+        let eraCountdownOperationFactory = state.createEraCountdownOperationFactory()
 
         let assetInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -136,7 +126,7 @@ final class StakingRewardPayoutsViewFactory {
         let interactor = StakingRewardPayoutsInteractor(
             chainAsset: chainAsset,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             payoutService: payoutService,
             eraCountdownOperationFactory: eraCountdownOperationFactory,

@@ -1,7 +1,7 @@
 class SelectedValidatorListWireframe: SelectedValidatorListWireframeProtocol {
-    let stakingState: StakingSharedState
+    let stakingState: RelaychainStakingSharedStateProtocol
 
-    init(stakingState: StakingSharedState) {
+    init(stakingState: RelaychainStakingSharedStateProtocol) {
         self.stakingState = stakingState
     }
 

@@ -7,19 +7,16 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     weak var presenter: StakingRelaychainInteractorOutputProtocol?
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
-        sharedState.stakingLocalSubscriptionFactory
+        sharedState.localSubscriptionFactory
     }
 
     var stakingOption: Multistaking.ChainAssetOption { sharedState.stakingOption }
 
     let selectedWalletSettings: SelectedWalletSettings
-    let sharedState: StakingSharedState
+    let sharedState: RelaychainStakingSharedStateProtocol
     let chainRegistry: ChainRegistryProtocol
-    let stakingRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
-    let stakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let stakingServiceFactory: StakingServiceFactoryProtocol
     let accountProviderFactory: AccountProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationManager: OperationManagerProtocol
@@ -57,13 +54,10 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
-        sharedState: StakingSharedState,
+        sharedState: RelaychainStakingSharedStateProtocol,
         chainRegistry: ChainRegistryProtocol,
-        stakingRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        stakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        stakingServiceFactory: StakingServiceFactoryProtocol,
         accountProviderFactory: AccountProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationManager: OperationManagerProtocol,
@@ -74,11 +68,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         self.selectedWalletSettings = selectedWalletSettings
         self.sharedState = sharedState
         self.chainRegistry = chainRegistry
-        self.stakingRemoteSubscriptionService = stakingRemoteSubscriptionService
-        self.stakingAccountUpdatingService = stakingAccountUpdatingService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.stakingServiceFactory = stakingServiceFactory
         self.accountProviderFactory = accountProviderFactory
         self.eventCenter = eventCenter
         self.operationManager = operationManager
@@ -88,16 +79,9 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     }
 
     deinit {
-        if let selectedChainAsset = selectedChainAsset {
-            clearChainRemoteSubscription(for: selectedChainAsset.chain.chainId)
-        }
+        sharedState.throttle()
 
-        clearAccountRemoteSubscription()
         clearCancellable()
-
-        sharedState.eraValidatorService?.throttle()
-        sharedState.rewardCalculationService?.throttle()
-        sharedState.blockTimeService?.throttle()
     }
 
     func clearCancellable() {
@@ -117,54 +101,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
         selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest())
         selectedChainAsset = chainAsset
-    }
-
-    func clearChainRemoteSubscription(for chainId: ChainModel.Id) {
-        if let chainSubscriptionId = chainSubscriptionId {
-            stakingRemoteSubscriptionService.detachFromGlobalData(
-                for: chainSubscriptionId,
-                chainId: chainId,
-                queue: nil,
-                closure: nil
-            )
-
-            self.chainSubscriptionId = nil
-        }
-    }
-
-    func setupChainRemoteSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            return
-        }
-
-        chainSubscriptionId = stakingRemoteSubscriptionService.attachToGlobalData(
-            for: chainId,
-            queue: nil,
-            closure: nil
-        )
-    }
-
-    func clearAccountRemoteSubscription() {
-        stakingAccountUpdatingService.clearSubscription()
-    }
-
-    func setupAccountRemoteSubscription() {
-        guard
-            let chainId = selectedChainAsset?.chain.chainId,
-            let accountId = selectedAccount?.accountId,
-            let chainFormat = selectedChainAsset?.chain.chainFormat else {
-            return
-        }
-
-        do {
-            try stakingAccountUpdatingService.setupSubscription(
-                for: accountId,
-                chainId: chainId,
-                chainFormat: chainFormat
-            )
-        } catch {
-            logger?.error("Could setup staking account subscription")
-        }
     }
 
     func provideSelectedAccount() {
@@ -254,111 +190,94 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     }
 
     func provideNetworkStakingInfo() {
-        do {
-            clear(cancellable: &networkInfoCancellable)
+        clear(cancellable: &networkInfoCancellable)
 
-            guard let chain = selectedChainAsset?.chain else {
-                return
-            }
+        guard let chain = selectedChainAsset?.chain else {
+            return
+        }
 
-            let networkInfoFactory = try sharedState.createNetworkInfoOperationFactory(for: chain)
+        let networkInfoFactory = sharedState.createNetworkInfoOperationFactory()
+        let eraValidatorService = sharedState.eraValidatorService
 
-            let chainId = chain.chainId
+        let chainId = chain.chainId
 
-            guard
-                let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-                let eraValidatorService = sharedState.eraValidatorService else {
-                presenter?.didReceive(networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable)
-                return
-            }
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceive(networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable)
+            return
+        }
 
-            let wrapper = networkInfoFactory.networkStakingOperation(
-                for: eraValidatorService,
-                runtimeService: runtimeService
-            )
+        let wrapper = networkInfoFactory.networkStakingOperation(
+            for: eraValidatorService,
+            runtimeService: runtimeService
+        )
 
-            wrapper.targetOperation.completionBlock = { [weak self] in
-                DispatchQueue.main.async {
-                    guard self?.networkInfoCancellable === wrapper else {
-                        return
-                    }
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.networkInfoCancellable === wrapper else {
+                    return
+                }
 
-                    self?.networkInfoCancellable = nil
+                self?.networkInfoCancellable = nil
 
-                    do {
-                        let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                        self?.presenter?.didReceive(networkStakingInfo: info)
-                    } catch {
-                        self?.presenter?.didReceive(networkStakingInfoError: error)
-                    }
+                do {
+                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(networkStakingInfo: info)
+                } catch {
+                    self?.presenter?.didReceive(networkStakingInfoError: error)
                 }
             }
-
-            networkInfoCancellable = wrapper
-
-            operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
-        } catch {
-            presenter?.didReceive(networkStakingInfoError: error)
         }
+
+        networkInfoCancellable = wrapper
+
+        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
     func fetchEraCompletionTime() {
-        do {
-            clear(cancellable: &eraCompletionTimeCancellable)
+        clear(cancellable: &eraCompletionTimeCancellable)
 
-            guard let chain = selectedChainAsset?.chain else {
-                return
-            }
+        guard let chain = selectedChainAsset?.chain else {
+            return
+        }
 
-            let chainId = chain.chainId
+        let chainId = chain.chainId
 
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
-                return
-            }
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
 
-            guard let connection = chainRegistry.getConnection(for: chainId) else {
-                presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
-                return
-            }
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
+            return
+        }
 
-            let storageRequestFactory = StorageRequestFactory(
-                remoteFactory: StorageKeyFactory(),
-                operationManager: operationManager
-            )
+        let eraCountdownOperationFactory = sharedState.createEraCountdownOperationFactory()
 
-            let eraCountdownOperationFactory = try sharedState.createEraCountdownOperationFactory(
-                for: chain,
-                storageRequestFactory: storageRequestFactory
-            )
+        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
+            for: connection,
+            runtimeService: runtimeService
+        )
 
-            let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
-                for: connection,
-                runtimeService: runtimeService
-            )
+        operationWrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.eraCompletionTimeCancellable === operationWrapper else {
+                    return
+                }
 
-            operationWrapper.targetOperation.completionBlock = { [weak self] in
-                DispatchQueue.main.async {
-                    guard self?.eraCompletionTimeCancellable === operationWrapper else {
-                        return
-                    }
+                self?.eraCompletionTimeCancellable = nil
 
-                    self?.eraCompletionTimeCancellable = nil
-
-                    do {
-                        let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
-                        self?.presenter?.didReceive(eraCountdownResult: .success(result))
-                    } catch {
-                        self?.presenter?.didReceive(eraCountdownResult: .failure(error))
-                    }
+                do {
+                    let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(eraCountdownResult: .success(result))
+                } catch {
+                    self?.presenter?.didReceive(eraCountdownResult: .failure(error))
                 }
             }
-
-            eraCompletionTimeCancellable = operationWrapper
-
-            operationManager.enqueue(operations: operationWrapper.allOperations, in: .transient)
-        } catch {
-            presenter?.didReceive(eraCountdownResult: .failure(error))
         }
+
+        eraCompletionTimeCancellable = operationWrapper
+
+        operationManager.enqueue(operations: operationWrapper.allOperations, in: .transient)
     }
 }
