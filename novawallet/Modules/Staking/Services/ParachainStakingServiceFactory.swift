@@ -63,6 +63,7 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
         )
     }
 
+    // swiftlint:disable:next function_body_length
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
         stakingType: StakingType,

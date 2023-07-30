@@ -6,6 +6,10 @@ protocol StakingSharedStateFactoryProtocol {
     func createRelaychain(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> RelaychainStakingSharedStateProtocol
+
+    func createParachain(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> ParachainStakingSharedStateProtocol
 }
 
 enum StakingSharedStateFactoryError: Error {
@@ -145,6 +149,76 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             blockTimeService: blockTimeService,
             stakingDurationOperationFactory: durationFactory,
             operationQueue: syncOperationQueue,
+            logger: logger
+        )
+    }
+
+    func createParachain(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> ParachainStakingSharedStateProtocol {
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        let stakingAccountService = ParachainStaking.AccountSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+            repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let stakingAssetService = ParachainStaking.StakingRemoteSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+            repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let localSubscriptionFactory = ParachainStakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let serviceFactory = ParachainStakingServiceFactory(
+            stakingProviderFactory: localSubscriptionFactory,
+            chainRegisty: chainRegistry,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+
+        let chainId = stakingOption.chainAsset.chain.chainId
+
+        let collatorService = try serviceFactory.createSelectedCollatorsService(for: chainId)
+        let blockTimeService = try serviceFactory.createBlockTimeService(for: chainId)
+        let rewardService = try serviceFactory.createRewardCalculatorService(
+            for: chainId,
+            stakingType: stakingOption.type,
+            assetPrecision: stakingOption.chainAsset.asset.decimalPrecision,
+            collatorService: collatorService
+        )
+
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        return ParachainStakingSharedState(
+            stakingOption: stakingOption,
+            chainRegistry: chainRegistry,
+            globalRemoteSubscriptionService: stakingAssetService,
+            accountRemoteSubscriptionService: stakingAccountService,
+            collatorService: collatorService,
+            rewardCalculationService: rewardService,
+            blockTimeService: blockTimeService,
+            stakingLocalSubscriptionFactory: localSubscriptionFactory,
+            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             logger: logger
         )
     }

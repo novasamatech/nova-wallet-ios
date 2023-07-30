@@ -473,8 +473,6 @@
 		7728E5912A1324A2007901E0 /* ReferendumsSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E5902A1324A2007901E0 /* ReferendumsSearchManager.swift */; };
 		7728E5932A13290D007901E0 /* GenericLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E5922A13290D007901E0 /* GenericLens.swift */; };
 		7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */; };
-		7738FB602A4C5C6400797439 /* ParachainStakingStateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB5F2A4C5C6400797439 /* ParachainStakingStateFactory.swift */; };
-		7738FB622A4C5C8E00797439 /* ParachainStakingSharedState+Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB612A4C5C8E00797439 /* ParachainStakingSharedState+Services.swift */; };
 		7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */; };
 		774A481129F8BFB70094635B /* OperationAuthPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A481029F8BFB70094635B /* OperationAuthPresentable.swift */; };
 		7756927D2A20B88200220756 /* TokenOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7756927C2A20B88200220756 /* TokenOperation.swift */; };
@@ -4171,8 +4169,6 @@
 		7728E5902A1324A2007901E0 /* ReferendumsSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsSearchManager.swift; sourceTree = "<group>"; };
 		7728E5922A13290D007901E0 /* GenericLens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLens.swift; sourceTree = "<group>"; };
 		7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedActionControlView.swift; sourceTree = "<group>"; };
-		7738FB5F2A4C5C6400797439 /* ParachainStakingStateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingStateFactory.swift; sourceTree = "<group>"; };
-		7738FB612A4C5C8E00797439 /* ParachainStakingSharedState+Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParachainStakingSharedState+Services.swift"; sourceTree = "<group>"; };
 		7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingRelaychainInteractor.swift; sourceTree = "<group>"; };
 		774A481029F8BFB70094635B /* OperationAuthPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationAuthPresentable.swift; sourceTree = "<group>"; };
 		7756927C2A20B88200220756 /* TokenOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperation.swift; sourceTree = "<group>"; };
@@ -7633,6 +7629,7 @@
 			children = (
 				0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */,
 				0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */,
+				841E5544282D793900C8438F /* ParachainStakingSharedState.swift */,
 			);
 			path = StakingSharedState;
 			sourceTree = "<group>";
@@ -8437,8 +8434,6 @@
 		7738FB5B2A4C5C2000797439 /* ParachainStaking */ = {
 			isa = PBXGroup;
 			children = (
-				7738FB5F2A4C5C6400797439 /* ParachainStakingStateFactory.swift */,
-				7738FB612A4C5C8E00797439 /* ParachainStakingSharedState+Services.swift */,
 				775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */,
 				775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */,
 			);
@@ -12936,7 +12931,6 @@
 		84A3B8A42836E05600DE2669 /* ParachainStaking */ = {
 			isa = PBXGroup;
 			children = (
-				841E5544282D793900C8438F /* ParachainStakingSharedState.swift */,
 				841E555C282E72F500C8438F /* ParachainStakingNetworkInfo.swift */,
 				84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */,
 				846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */,
@@ -18599,7 +18593,6 @@
 				88E1E898289C024400C123A8 /* UIView+Create.swift in Sources */,
 				84FF268028494D33003EC78D /* ParaStkStakeConfirmPresenter+StartStaking.swift in Sources */,
 				882A5CEF28AFCE6000D0D798 /* FormattedReturnInIntervalsViewModel.swift in Sources */,
-				7738FB622A4C5C8E00797439 /* ParachainStakingSharedState+Services.swift in Sources */,
 				844CB57426FA01DD00396E13 /* SubstrateRepositoryFactory.swift in Sources */,
 				849013DF24A927E2008F705E /* SettingsExtension.swift in Sources */,
 				888797B829F269130078633F /* BiometrySettings.swift in Sources */,
@@ -19060,7 +19053,6 @@
 				848F8B222863BD1000204BC4 /* TransferSetupInputState.swift in Sources */,
 				84113B6C255B2835009BD21A /* AccountCreateError.swift in Sources */,
 				849014C024AA87E4008F705E /* ScreenAuthorizationPresenter.swift in Sources */,
-				7738FB602A4C5C6400797439 /* ParachainStakingStateFactory.swift in Sources */,
 				84A1742928ED625D0096F943 /* Gov2OperationFactory.swift in Sources */,
 				8849C5ED29806F4500DE35CC /* VersionTableViewCell.swift in Sources */,
 				84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift in Sources */,

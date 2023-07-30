@@ -12,9 +12,12 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
     var stakingOption: Multistaking.ChainAssetOption { sharedState.stakingOption }
 
+    var chainRegistry: ChainRegistryProtocol {
+        sharedState.chainRegistry
+    }
+
     let selectedWalletSettings: SelectedWalletSettings
     let sharedState: RelaychainStakingSharedStateProtocol
-    let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let accountProviderFactory: AccountProviderFactoryProtocol
@@ -26,7 +29,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var selectedAccount: ChainAccountResponse?
     var selectedChainAsset: ChainAsset?
 
-    private var chainSubscriptionId: UUID?
     private var maxNominatorsPerValidatorCancellable: CancellableCall?
     private var eraStakersInfoCancellable: CancellableCall?
     private var networkInfoCancellable: CancellableCall?
@@ -55,7 +57,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     init(
         selectedWalletSettings: SelectedWalletSettings,
         sharedState: RelaychainStakingSharedStateProtocol,
-        chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         accountProviderFactory: AccountProviderFactoryProtocol,
@@ -67,7 +68,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.sharedState = sharedState
-        self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.accountProviderFactory = accountProviderFactory

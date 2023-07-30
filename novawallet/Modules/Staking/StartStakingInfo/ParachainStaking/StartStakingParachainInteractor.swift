@@ -3,14 +3,20 @@ import Foundation
 
 final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning,
     RuntimeConstantFetching {
-    let chainRegistry: ChainRegistryProtocol
-    let stateFactory: ParachainStakingStateFactoryProtocol
+    var chainRegistry: ChainRegistryProtocol { state.chainRegistry }
+
+    let state: ParachainStakingSharedStateProtocol
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let durationOperationFactory: ParaStkDurationOperationFactoryProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
+
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+        state.generalLocalSubscriptionFactory
+    }
+
+    var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol {
+        state.stakingLocalSubscriptionFactory
+    }
 
     private var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
@@ -18,8 +24,6 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     private var rewardCalculatorCancellable: CancellableCall?
     private var durationCancellable: CancellableCall?
     private var rewardPaymentDelayCancellable: CancellableCall?
-    private var sharedState: ParachainStakingSharedState?
-    private var accountSubscriptionId: UUID?
 
     weak var presenter: StartStakingInfoParachainInteractorOutputProtocol? {
         didSet {
@@ -28,35 +32,26 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     }
 
     init(
-        chainAsset: ChainAsset,
+        state: ParachainStakingSharedStateProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
-        stateFactory: ParachainStakingStateFactoryProtocol,
-        chainRegistry: ChainRegistryProtocol,
         networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
         durationOperationFactory: ParaStkDurationOperationFactoryProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol
     ) {
-        stakingLocalSubscriptionFactory = stateFactory.stakingLocalSubscriptionFactory
-        generalLocalSubscriptionFactory = stateFactory.generalLocalSubscriptionFactory
-        self.stateFactory = stateFactory
-        self.chainRegistry = chainRegistry
+        self.state = state
         self.networkInfoFactory = networkInfoFactory
         self.eventCenter = eventCenter
         self.durationOperationFactory = durationOperationFactory
-        self.stakingAccountSubscriptionService = stakingAccountSubscriptionService
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
-            selectedChainAsset: chainAsset,
+            selectedChainAsset: state.stakingOption.chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingAssetSubscriptionService: stakingAssetSubscriptionService,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -67,22 +62,21 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         clear(cancellable: &rewardCalculatorCancellable)
         clear(cancellable: &durationCancellable)
         clear(cancellable: &rewardPaymentDelayCancellable)
-        clearAccountRemoteSubscription()
-        sharedState?.throttleServices()
+
+        state.throttle()
     }
 
     private func provideNetworkInfo() {
         clear(cancellable: &networkInfoCancellable)
         let chainId = selectedChainAsset.chain.chainId
 
-        guard
-            let sharedState = sharedState,
-            let collatorService = sharedState.collatorService,
-            let rewardService = sharedState.rewardCalculationService,
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
             presenter?.didReceive(error: .networkInfo(ChainRegistryError.runtimeMetadaUnavailable))
             return
         }
+
+        let collatorService = state.collatorService
+        let rewardService = state.rewardCalculationService
 
         let wrapper = networkInfoFactory.networkStakingOperation(
             for: collatorService,
@@ -115,9 +109,7 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     func provideRewardCalculator() {
         clear(cancellable: &rewardCalculatorCancellable)
 
-        guard let sharedState = sharedState, let calculatorService = sharedState.rewardCalculationService else {
-            return
-        }
+        let calculatorService = state.rewardCalculationService
 
         let operation = calculatorService.fetchCalculatorOperation()
 
@@ -146,9 +138,7 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     private func provideStakingDurationInfo() {
         clear(cancellable: &durationCancellable)
 
-        guard let sharedState = sharedState, let blockTimeService = sharedState.blockTimeService else {
-            return
-        }
+        let blockTimeService = state.blockTimeService
 
         let chainId = selectedChainAsset.chain.chainId
 
@@ -228,54 +218,10 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         blockNumberProvider = subscribeToBlockNumber(for: chainId)
     }
 
-    private func clearAccountRemoteSubscription() {
-        let chainId = selectedChainAsset.chain.chainId
-
-        if
-            let accountSubscriptionId = accountSubscriptionId,
-            let accountId = selectedAccount?.chainAccount.accountId {
-            stakingAccountSubscriptionService.detachFromAccountData(
-                for: accountSubscriptionId,
-                chainId: chainId,
-                accountId: accountId,
-                queue: nil,
-                closure: nil
-            )
-
-            self.accountSubscriptionId = nil
-        }
-    }
-
-    private func setupAccountRemoteSubscription() {
-        let chainId = selectedChainAsset.chain.chainId
-
-        guard let accountId = selectedAccount?.chainAccount.accountId else {
-            return
-        }
-
-        accountSubscriptionId = stakingAccountSubscriptionService.attachToAccountData(
-            for: chainId,
-            accountId: accountId,
-            queue: nil,
-            closure: nil
-        )
-    }
-
-    private func setupState() {
-        do {
-            let state = try stateFactory.createState()
-            sharedState = state
-            sharedState?.setupServices()
-        } catch {
-            presenter?.didReceive(error: .createState(error))
-        }
-    }
-
     override func setup() {
         super.setup()
 
-        setupAccountRemoteSubscription()
-        setupState()
+        state.setup(for: selectedAccount?.chainAccount.accountId)
         eventCenter.add(observer: self, dispatchIn: .main)
 
         provideNetworkInfo()

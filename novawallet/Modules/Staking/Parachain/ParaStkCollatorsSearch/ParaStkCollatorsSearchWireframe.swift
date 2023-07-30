@@ -1,9 +1,9 @@
 import Foundation
 
 final class ParaStkCollatorsSearchWireframe: ParaStkCollatorsSearchWireframeProtocol {
-    let sharedState: ParachainStakingSharedState
+    let sharedState: ParachainStakingSharedStateProtocol
 
-    init(sharedState: ParachainStakingSharedState) {
+    init(sharedState: ParachainStakingSharedStateProtocol) {
         self.sharedState = sharedState
     }
 

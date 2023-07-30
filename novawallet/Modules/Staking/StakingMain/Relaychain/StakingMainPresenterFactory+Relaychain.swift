@@ -74,7 +74,6 @@ extension StakingMainPresenterFactory {
         return StakingRelaychainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             sharedState: state,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             accountProviderFactory: accountProviderFactory,

@@ -2,9 +2,9 @@ import Foundation
 import SoraFoundation
 
 final class StakingParachainWireframe {
-    let state: ParachainStakingSharedState
+    let state: ParachainStakingSharedStateProtocol
 
-    init(state: ParachainStakingSharedState) {
+    init(state: ParachainStakingSharedStateProtocol) {
         self.state = state
     }
 }

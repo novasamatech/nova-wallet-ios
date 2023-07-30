@@ -3,7 +3,7 @@ import SoraFoundation
 import SubstrateSdk
 
 struct ParaStkYourCollatorsViewFactory {
-    static func createView(for state: ParachainStakingSharedState) -> ParaStkYourCollatorsViewProtocol? {
+    static func createView(for state: ParachainStakingSharedStateProtocol) -> ParaStkYourCollatorsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -60,17 +60,18 @@ struct ParaStkYourCollatorsViewFactory {
     private static func createInteractor(
         for chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
-        state: ParachainStakingSharedState
+        state: ParachainStakingSharedStateProtocol
     ) -> ParaStkYourCollatorsInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let collatorService = state.collatorService,
-            let rewardService = state.rewardCalculationService else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let collatorService = state.collatorService
+        let rewardService = state.rewardCalculationService
 
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),

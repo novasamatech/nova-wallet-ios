@@ -5,7 +5,7 @@ import RobinHood
 
 struct ParaStkSelectCollatorsViewFactory {
     static func createView(
-        with state: ParachainStakingSharedState,
+        with state: ParachainStakingSharedStateProtocol,
         delegate: ParaStkSelectCollatorsDelegate
     ) -> ParaStkSelectCollatorsViewProtocol? {
         guard
@@ -48,16 +48,12 @@ struct ParaStkSelectCollatorsViewFactory {
     }
 
     private static func createInteractor(
-        for state: ParachainStakingSharedState
+        for state: ParachainStakingSharedStateProtocol
     ) -> ParaStkSelectCollatorsInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
-        guard
-            let collatorService = state.collatorService,
-            let rewardEngineService = state.rewardCalculationService,
-            let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
+        let collatorService = state.collatorService
+        let rewardEngineService = state.rewardCalculationService
 
         let chain = chainAsset.chain
 
@@ -65,7 +61,8 @@ struct ParaStkSelectCollatorsViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 

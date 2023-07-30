@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraKeystore
 
 struct ParaStkRedeemViewFactory {
-    static func createView(for state: ParachainStakingSharedState) -> ParaStkRedeemViewProtocol? {
+    static func createView(for state: ParachainStakingSharedStateProtocol) -> ParaStkRedeemViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -54,7 +54,7 @@ struct ParaStkRedeemViewFactory {
     }
 
     private static func createInteractor(
-        from state: ParachainStakingSharedState
+        from state: ParachainStakingSharedStateProtocol
     ) -> ParaStkRedeemInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = ChainRegistryFacade.sharedRegistry

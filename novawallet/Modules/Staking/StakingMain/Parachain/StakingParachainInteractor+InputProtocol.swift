@@ -3,8 +3,32 @@ import SoraFoundation
 
 extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
     func setup() {
-        createInitialServices()
-        continueSetup()
+        setupSelectedAccount()
+        setupSharedState()
+
+        provideSelectedChainAsset()
+        provideSelectedAccount()
+
+        performBlockNumberSubscription()
+        performRoundInfoSubscription()
+        performPriceSubscription()
+        performAssetBalanceSubscription()
+        performDelegatorSubscription()
+        performTotalRewardSubscription()
+        performYieldBoostTasksSubscription()
+
+        let collatorService = sharedState.collatorService
+        let rewardCalculationService = sharedState.rewardCalculationService
+        let blockTimeService = sharedState.blockTimeService
+
+        provideRewardCalculator(from: rewardCalculationService)
+        provideSelectedCollatorsInfo(from: collatorService)
+        provideNetworkInfo(for: collatorService, rewardService: rewardCalculationService)
+        provideDurationInfo(for: blockTimeService)
+
+        eventCenter.add(observer: self, dispatchIn: .main)
+
+        applicationHandler.delegate = self
     }
 
     func fetchDelegations(for collators: [AccountId]) {
@@ -23,12 +47,8 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
             return
         }
 
-        guard
-            let collatorService = sharedState.collatorService,
-            let rewardService = sharedState.rewardCalculationService else {
-            presenter?.didReceiveError(CommonError.dataCorruption)
-            return
-        }
+        let collatorService = sharedState.collatorService
+        let rewardService = sharedState.rewardCalculationService
 
         let wrapper = collatorsOperationFactory.selectedCollatorsInfoOperation(
             for: collators,
@@ -81,11 +101,8 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
 
 extension StakingParachainInteractor: EventVisitorProtocol {
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
-        guard
-            let collatorService = sharedState.collatorService,
-            let rewardCalculationService = sharedState.rewardCalculationService else {
-            return
-        }
+        let collatorService = sharedState.collatorService
+        let rewardCalculationService = sharedState.rewardCalculationService
 
         provideSelectedCollatorsInfo(from: collatorService)
         provideRewardCalculator(from: rewardCalculationService)
@@ -93,11 +110,7 @@ extension StakingParachainInteractor: EventVisitorProtocol {
     }
 
     func processBlockTimeChanged(event _: BlockTimeChanged) {
-        guard let blockTimeService = sharedState.blockTimeService else {
-            return
-        }
-
-        provideDurationInfo(for: blockTimeService)
+        provideDurationInfo(for: sharedState.blockTimeService)
     }
 }
 

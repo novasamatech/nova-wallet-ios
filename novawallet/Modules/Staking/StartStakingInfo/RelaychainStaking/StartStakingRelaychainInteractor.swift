@@ -39,7 +39,6 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
             selectedChainAsset: state.stakingOption.chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingAssetSubscriptionService: state.globalRemoteSubscriptionService,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
