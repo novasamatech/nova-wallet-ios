@@ -1,22 +1,38 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 struct StakingSetupAmountViewFactory {
     static func createView(chainAsset: ChainAsset) -> StakingSetupAmountViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard let currencyManager = CurrencyManager.shared,
+              let metaAccount = SelectedWalletSettings.shared.value,
+              let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+              let mataChainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
+              let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+              let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             return nil
         }
-        let selectedWalletSettings = SelectedWalletSettings.shared
+
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
         let operationQueue = OperationQueue()
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeService,
+            engine: connection,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
+
         let interactor = StakingSetupAmountInteractor(
-            selectedWalletSettings: selectedWalletSettings,
+            selectedAccount: selectedAccount,
             selectedChainAsset: chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
+            runtimeProvider: runtimeService,
+            extrinsicService: extrinsicService,
             operationQueue: operationQueue
         )
         let wireframe = StakingSetupAmountWireframe()
@@ -38,6 +54,8 @@ struct StakingSetupAmountViewFactory {
             viewModelFactory: viewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            chainAsset: chainAsset,
+            selectedAccount: selectedAccount,
             localizationManager: LocalizationManager.shared
         )
 

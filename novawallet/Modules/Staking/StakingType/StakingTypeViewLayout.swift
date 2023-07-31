@@ -7,6 +7,9 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
 
     let directStakingBannerView: StakingTypeBannerView = .create {
         $0.imageView.image = R.image.iconDirectStakingType()
+        $0.imageSize = .init(width: 128, height: 118)
+        $0.imageOffsets = (top: -36, right: 28)
+        $0.imageView.transform = .init(rotationAngle: 2.75762)
     }
 
     override func setupLayout() {
@@ -21,10 +24,19 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
     func fill() {
         poolStakingBannerView.titleLabel.text = "Pool staking"
         poolStakingBannerView.radioSelectorView.selected = true
+        poolStakingBannerView.backgroundView.isHighlighted = true
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacing = 8
+        paragraphStyle.firstLineHeadIndent = 36
+
+        let detailsAttributes: [NSAttributedString.Key: Any] = [
+            .paragraphStyle: paragraphStyle
+        ]
         poolStakingBannerView.detailsLabel.attributedText = NSAttributedString(string: """
-        \n\rMinimum stake: 1 DOT
-        \n\rRewards: Claim manually
-        """)
+        Minimum stake: 1 DOT
+        Rewards: Claim manually
+        """, attributes: detailsAttributes)
 
         poolStakingBannerView.setAction(viewModel: .init(
             imageViewModel: nil,
@@ -35,10 +47,10 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
 
         directStakingBannerView.titleLabel.text = "Direct staking"
         directStakingBannerView.detailsLabel.attributedText = NSAttributedString(string: """
-        \n\rMinimum stake: 405 DOT
-        \n\rRewards: Paid automatically
-        \n\rReuse tokens in Governance
-        \n\rAdvanced staking management
-        """)
+        Minimum stake: 405 DOT
+        Rewards: Paid automatically
+        Reuse tokens in Governance
+        Advanced staking management
+        """, attributes: detailsAttributes)
     }
 }

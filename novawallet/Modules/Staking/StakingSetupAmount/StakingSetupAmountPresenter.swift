@@ -2,27 +2,6 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-struct ButtonState {
-    let title: LocalizableResource<String>
-    let enabled: Bool
-
-    static let startState = ButtonState(
-        title: LocalizableResource {
-            R.string.localizable.transferSetupEnterAmount(preferredLanguages: $0.rLanguages)
-        },
-        enabled: false
-    )
-
-    static func continueState(enabled: Bool) -> ButtonState {
-        .init(
-            title: LocalizableResource {
-                R.string.localizable.commonContinue(preferredLanguages: $0.rLanguages)
-            },
-            enabled: enabled
-        )
-    }
-}
-
 final class StakingSetupAmountPresenter {
     weak var view: StakingSetupAmountViewProtocol?
     let wireframe: StakingSetupAmountWireframeProtocol
@@ -30,8 +9,9 @@ final class StakingSetupAmountPresenter {
     let viewModelFactory: StakingAmountViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let chainAsset: ChainAsset
+    let selectedAccount: ChainAccountResponse
 
-    private var chainAsset: ChainAsset?
     private var assetBalance: AssetBalance?
     private var buttonState: ButtonState = .startState
     private var inputResult: AmountInputResult? {
@@ -46,7 +26,7 @@ final class StakingSetupAmountPresenter {
     private var stakingType: LoadableViewModelState<StakingTypeChoiceViewModel>?
 
     private var priceData: PriceData?
-    private var fee: BigUInt?
+    private var fee: LoadableViewModelState<BigUInt?> = .loading
 
     init(
         interactor: StakingSetupAmountInteractorInputProtocol,
@@ -54,6 +34,8 @@ final class StakingSetupAmountPresenter {
         viewModelFactory: StakingAmountViewModelFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        chainAsset: ChainAsset,
+        selectedAccount: ChainAccountResponse,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -61,12 +43,14 @@ final class StakingSetupAmountPresenter {
         self.viewModelFactory = viewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
+
         self.localizationManager = localizationManager
     }
 
     private func provideBalanceModel() {
-        guard let chainAsset = chainAsset,
-              let assetBalance = assetBalance else {
+        guard let assetBalance = assetBalance else {
             return
         }
 
@@ -80,10 +64,6 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideTitle() {
-        guard let chainAsset = chainAsset else {
-            return
-        }
-
         let title = R.string.localizable.stakingSetupAmountTitle(
             chainAsset.assetDisplayInfo.symbol,
             preferredLanguages: selectedLocale.rLanguages
@@ -99,20 +79,17 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideChainAssetViewModel() {
-        guard let asset = chainAsset?.chain.utilityAsset(), let chain = chainAsset?.chain else {
+        guard let asset = chainAsset.chain.utilityAsset() else {
             return
         }
 
+        let chain = chainAsset.chain
         let chainAsset = ChainAsset(chain: chain, asset: asset)
         let viewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
         view?.didReceiveInputChainAsset(viewModel: viewModel)
     }
 
     private func provideAmountPriceViewModel() {
-        guard let chainAsset = chainAsset else {
-            return
-        }
-
         if chainAsset.chain.utilityAsset()?.priceId != nil {
             let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
             let priceData = priceData ?? PriceData.zero()
@@ -158,16 +135,15 @@ final class StakingSetupAmountPresenter {
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = assetBalance?.freeInPlank ?? 0
-        let feeValue = fee ?? 0
-
+        let feeValue = fee.value ?? 0
         guard
-            let precision = chainAsset?.chain.utilityAsset()?.displayInfo.assetPrecision,
+            let precision = chainAsset.chain.utilityAsset()?.displayInfo.assetPrecision,
             let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
-            let fee = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
+            let feeDecimal = Decimal.fromSubstrateAmount(feeValue ?? 0, precision: precision) else {
             return 0
         }
 
-        return balance - fee
+        return balance - feeDecimal
     }
 
     private func updateAfterAmountChanged() {
@@ -177,7 +153,7 @@ final class StakingSetupAmountPresenter {
     }
 
     private func refreshFee() {
-        // interactor.estimateFee()
+        estimateFee()
     }
 
     private func provideStakingTypeModel() {
@@ -186,12 +162,31 @@ final class StakingSetupAmountPresenter {
         }
         view?.didReceive(stakingType: stakingType)
     }
+
+    private func estimateFee() {
+        guard let amount = StakingConstants.maxAmount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
+              let address = selectedAccount.toAddress() else {
+            return
+        }
+
+        fee = .loading
+        let rewardDestination = RewardDestination.payout(account: selectedAccount)
+        interactor.estimateFee(for: address, amount: amount, rewardDestination: rewardDestination)
+    }
+
+    private func provideFee() {}
 }
 
 extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     func setup() {
         interactor.setup()
+
+        provideBalanceModel()
+        provideTitle()
+        provideChainAssetViewModel()
+        provideAmountPriceViewModel()
         provideButtonState()
+        estimateFee()
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -226,14 +221,6 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 }
 
 extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtocol {
-    func didReceive(chainAsset: ChainAsset) {
-        self.chainAsset = chainAsset
-        provideBalanceModel()
-        provideTitle()
-        provideChainAssetViewModel()
-        provideAmountPriceViewModel()
-    }
-
     func didReceive(price: PriceData?) {
         priceData = price
     }
@@ -241,6 +228,11 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
     func didReceive(assetBalance: AssetBalance) {
         self.assetBalance = assetBalance
         provideBalanceModel()
+    }
+
+    func didReceive(paymentInfo: RuntimeDispatchInfo) {
+        fee = .loaded(value: BigUInt(paymentInfo.fee))
+        provideFee()
     }
 
     func didReceive(error _: StakingSetupAmountError) {}

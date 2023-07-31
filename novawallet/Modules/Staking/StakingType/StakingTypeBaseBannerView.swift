@@ -4,6 +4,7 @@ class StakingTypeBaseBannerView: UIView {
     let backgroundView: RoundedView = .create {
         $0.applyFilledBackgroundStyle()
         $0.fillColor = R.color.colorSecondaryScreenBackground()!
+        $0.highlightedFillColor = R.color.colorSecondaryScreenBackground()!
         $0.strokeWidth = 1
         $0.strokeColor = R.color.colorStakingTypeCardBorder()!
         $0.highlightedStrokeColor = R.color.colorActiveBorder()!
@@ -56,17 +57,17 @@ class StakingTypeBaseBannerView: UIView {
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        addSubview(backgroundImageView)
-        backgroundImageView.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(backgroundImageOffsets.right)
-            $0.top.equalToSuperview().offset(backgroundImageOffsets.top)
-            $0.size.equalTo(backgroundImageSize)
-        }
         addSubview(imageView)
         imageView.snp.makeConstraints {
             $0.trailing.equalToSuperview().offset(imageOffsets.right)
             $0.top.equalToSuperview().offset(imageOffsets.top)
             $0.size.equalTo(imageSize)
+        }
+        addSubview(backgroundImageView)
+        backgroundImageView.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(backgroundImageOffsets.right)
+            $0.top.equalToSuperview().offset(backgroundImageOffsets.top)
+            $0.size.equalTo(backgroundImageSize)
         }
     }
 
@@ -90,8 +91,8 @@ class StakingTypeBaseBannerView: UIView {
 extension StakingTypeBaseBannerView {
     private enum Constants {
         static let imageOffsets: (top: CGFloat, right: CGFloat) = (top: -18, right: 26)
-        static let backgroundImageOffsets: (top: CGFloat, right: CGFloat) = (top: -66, right: 34)
-        static let imageSize: CGSize = .init(width: 171, height: 171)
-        static let backgroundImageSize: CGSize = .init(width: 125, height: 111)
+        static let backgroundImageOffsets: (top: CGFloat, right: CGFloat) = (top: 0, right: 0)
+        static let backgroundImageSize: CGSize = .init(width: 240, height: 184)
+        static let imageSize: CGSize = .init(width: 125, height: 111)
     }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 protocol StakingSetupAmountViewProtocol: ControllerBackedProtocol {
     func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.RewardModel>?)
@@ -22,13 +23,18 @@ protocol StakingSetupAmountPresenterProtocol: AnyObject {
 protocol StakingSetupAmountInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
+    func estimateFee(
+        for address: String,
+        amount: BigUInt,
+        rewardDestination: RewardDestination<ChainAccountResponse>
+    )
 }
 
 protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
-    func didReceive(chainAsset: ChainAsset)
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
     func didReceive(error: StakingSetupAmountError)
+    func didReceive(paymentInfo: RuntimeDispatchInfo)
 }
 
 protocol StakingSetupAmountWireframeProtocol: AnyObject {
@@ -38,4 +44,6 @@ protocol StakingSetupAmountWireframeProtocol: AnyObject {
 enum StakingSetupAmountError: Error {
     case assetBalance(Error)
     case price(Error)
+    case fetchCoderFactory(Error)
+    case fee(Error)
 }

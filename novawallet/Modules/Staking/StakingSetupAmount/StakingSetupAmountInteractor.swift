@@ -1,5 +1,6 @@
 import UIKit
 import RobinHood
+import BigInt
 
 final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingSetupAmountInteractorOutputProtocol?
@@ -7,26 +8,33 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
     let selectedChainAsset: ChainAsset
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let selectedWalletSettings: SelectedWalletSettings
+    let runtimeProvider: RuntimeCodingServiceProtocol
+    let extrinsicService: ExtrinsicServiceProtocol
 
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
     private(set) var priceProvider: StreamableProvider<PriceData>?
     private(set) var balanceProvider: StreamableProvider<AssetBalance>?
-    private(set) var selectedAccount: MetaChainAccountResponse?
+    private(set) var selectedAccount: ChainAccountResponse
     private(set) var operationQueue: OperationQueue
 
     init(
-        selectedWalletSettings: SelectedWalletSettings,
+        selectedAccount: ChainAccountResponse,
         selectedChainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
         operationQueue: OperationQueue
     ) {
-        self.selectedWalletSettings = selectedWalletSettings
+        self.selectedAccount = selectedAccount
         self.selectedChainAsset = selectedChainAsset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.runtimeProvider = runtimeProvider
+        self.extrinsicService = extrinsicService
         self.operationQueue = operationQueue
+
         self.currencyManager = currencyManager
     }
 
@@ -51,40 +59,85 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
 
         let chainAssetId = selectedChainAsset.chainAssetId
 
-        guard let accountId = selectedAccount?.chainAccount.accountId else {
-            return
-        }
-
         balanceProvider = subscribeToAssetBalanceProvider(
-            for: accountId,
+            for: selectedAccount.accountId,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId
         )
     }
 
-    private func setupSelectedAccount() {
-        guard let wallet = selectedWalletSettings.value else {
+    private func estimateFee(
+        for address: String,
+        amount: BigUInt,
+        rewardDestination: RewardDestination<ChainAccountResponse>,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) {
+        guard let accountAddress = rewardDestination.accountAddress else {
             return
         }
 
-        selectedAccount = wallet.fetchMetaChainAccount(
-            for: selectedChainAsset.chain.accountRequest()
-        )
+        let closure: ExtrinsicBuilderClosure = { builder in
+            let controller = try address.toAccountId()
+            let payee = try Staking.RewardDestinationArg(rewardDestination: accountAddress)
+
+            let bondClosure = try Staking.Bond.appendCall(
+                for: .accoundId(controller),
+                value: amount,
+                payee: payee,
+                codingFactory: coderFactory
+            )
+
+            let callFactory = SubstrateCallFactory()
+
+            let targets = Array(
+                repeating: SelectedValidatorInfo(address: address),
+                count: SubstrateConstants.maxNominations
+            )
+            let nominateCall = try callFactory.nominate(targets: targets)
+
+            return try bondClosure(builder).adding(call: nominateCall)
+        }
+
+        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
+            switch result {
+            case let .success(info):
+                self?.presenter?.didReceive(paymentInfo: info)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .fee(error))
+            }
+        }
     }
 }
 
 extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtocol {
     func setup() {
-        setupSelectedAccount()
         performAssetBalanceSubscription()
         performPriceSubscription()
-
-        presenter?.didReceive(chainAsset: selectedChainAsset)
     }
 
     func remakeSubscriptions() {
         performAssetBalanceSubscription()
         performPriceSubscription()
+    }
+
+    func estimateFee(
+        for address: String,
+        amount: BigUInt,
+        rewardDestination: RewardDestination<ChainAccountResponse>
+    ) {
+        runtimeProvider.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] coderFactory in
+                self?.estimateFee(
+                    for: address,
+                    amount: amount,
+                    rewardDestination: rewardDestination,
+                    coderFactory: coderFactory
+                )
+            }, errorClosure: { [weak self] error in
+                self?.presenter?.didReceive(error: .fetchCoderFactory(error))
+            }
+        )
     }
 }
 
@@ -99,7 +152,7 @@ extension StakingSetupAmountInteractor: WalletLocalStorageSubscriber,
         guard
             chainId == selectedChainAsset.chain.chainId,
             assetId == selectedChainAsset.asset.assetId,
-            accountId == selectedAccount?.chainAccount.accountId else {
+            accountId == selectedAccount.accountId else {
             return
         }
 

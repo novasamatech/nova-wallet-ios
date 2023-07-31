@@ -8,10 +8,9 @@ final class StakingTypeBannerView: StakingTypeBaseBannerView {
 
     let stackView: UIStackView = .create {
         $0.axis = .vertical
-        $0.alignment = .leading
-        $0.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 0)
+        $0.layoutMargins = UIEdgeInsets(top: 16, left: 12, bottom: 16, right: 12)
         $0.isLayoutMarginsRelativeArrangement = true
-        $0.spacing = 8
+        $0.spacing = 16
     }
 
     var contentInsets: UIEdgeInsets {
@@ -41,17 +40,24 @@ final class StakingTypeBannerView: StakingTypeBaseBannerView {
             $0.edges.equalToSuperview()
         }
 
-        let hStack = UIView.hStack([
-            radioSelectorView,
-            titleLabel
+        let descriptionStack = UIView.vStack(alignment: .fill, distribution: .fill, spacing: 16, [
+            UIView.hStack(spacing: 12, [
+                radioSelectorView,
+                titleLabel
+            ]),
+            detailsLabel
         ])
+
+//        titleLabel.setContentHuggingPriority(.low, for: .horizontal)
+//        detailsLabel.setContentHuggingPriority(.low, for: .horizontal)
 
         radioSelectorView.snp.makeConstraints {
             $0.width.height.equalTo(24)
         }
 
-        stackView.addArrangedSubview(hStack)
-        stackView.addArrangedSubview(detailsLabel)
+        descriptionStack.layoutMargins = .init(top: 0, left: 4, bottom: 0, right: 4)
+        descriptionStack.isLayoutMarginsRelativeArrangement = true
+        stackView.addArrangedSubview(descriptionStack)
         clipsToBounds = true
     }
 
@@ -59,7 +65,10 @@ final class StakingTypeBannerView: StakingTypeBaseBannerView {
         if let viewModel = viewModel {
             if accountView == nil {
                 let view = StakingTypeAccountView(frame: .zero)
-                stackView.addSubview(view)
+                stackView.addArrangedSubview(view)
+                view.snp.makeConstraints {
+                    $0.height.equalTo(48)
+                }
                 accountView = view
             }
             accountView?.bind(viewModel: viewModel)
