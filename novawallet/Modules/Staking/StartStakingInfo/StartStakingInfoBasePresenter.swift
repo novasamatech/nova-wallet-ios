@@ -188,11 +188,13 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
                 )
             }
         case .assetBalance:
-            wireframe.showSetupAmount(from: view, chainAsset: chainAsset)
+            showSetupAmount()
         case .none:
             break
         }
     }
+
+    func showSetupAmount() {}
 }
 
 extension StartStakingInfoBasePresenter: Localizable {

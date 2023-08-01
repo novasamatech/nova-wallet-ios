@@ -72,11 +72,11 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
 }
 
 extension StakingSetupAmountViewController: StakingSetupAmountViewProtocol {
-    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.RewardModel>?) {
+    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?) {
         rootView.setEstimatedRewards(viewModel: estimatedRewards)
     }
 
-    func didReceive(balance: TitleHorizontalMultiValueView.RewardModel) {
+    func didReceive(balance: TitleHorizontalMultiValueView.Model) {
         rootView.amountView.bind(balance: balance)
     }
 
@@ -100,7 +100,7 @@ extension StakingSetupAmountViewController: StakingSetupAmountViewProtocol {
         rootView.amountInputView.bind(priceViewModel: viewModel)
     }
 
-    func didReceive(stakingType: LoadableViewModelState<StakingTypeChoiceViewModel>) {
+    func didReceive(stakingType: LoadableViewModelState<StakingTypeViewModel>?) {
         rootView.setStakingType(viewModel: stakingType)
 
         rootView.stakingTypeView?.addTarget(

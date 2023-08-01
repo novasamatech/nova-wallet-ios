@@ -1,13 +1,13 @@
 import UIKit
 
 extension TitleHorizontalMultiValueView {
-    struct RewardModel {
+    struct Model {
         let title: String
         let subtitle: String
         let value: String
     }
 
-    func bind(viewModel: LoadableViewModelState<RewardModel>) {
+    func bind(viewModel: LoadableViewModelState<Model>) {
         switch viewModel {
         case .loading:
             // TODO:
@@ -19,7 +19,7 @@ extension TitleHorizontalMultiValueView {
         }
     }
 
-    func bind(balance: RewardModel) {
+    func bind(balance: Model) {
         titleView.text = balance.title
         detailsTitleLabel.text = balance.subtitle
         detailsValueLabel.text = balance.value

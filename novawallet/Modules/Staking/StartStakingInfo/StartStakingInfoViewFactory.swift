@@ -58,7 +58,7 @@ struct StartStakingInfoViewFactory {
             operationQueue: operationQueue
         )
 
-        let wireframe = StartStakingInfoWireframe()
+        let wireframe = StartStakingInfoRelaychainWireframe()
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)

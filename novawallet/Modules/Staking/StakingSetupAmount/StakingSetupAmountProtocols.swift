@@ -2,14 +2,14 @@ import Foundation
 import BigInt
 
 protocol StakingSetupAmountViewProtocol: ControllerBackedProtocol {
-    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.RewardModel>?)
-    func didReceive(balance: TitleHorizontalMultiValueView.RewardModel)
+    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?)
+    func didReceive(balance: TitleHorizontalMultiValueView.Model)
     func didReceive(title: String)
     func didReceiveButtonState(title: String, enabled: Bool)
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(viewModel: String?)
-    func didReceive(stakingType: LoadableViewModelState<StakingTypeChoiceViewModel>)
+    func didReceive(stakingType: LoadableViewModelState<StakingTypeViewModel>?)
 }
 
 protocol StakingSetupAmountPresenterProtocol: AnyObject {
@@ -28,6 +28,7 @@ protocol StakingSetupAmountInteractorInputProtocol: AnyObject {
         amount: BigUInt,
         rewardDestination: RewardDestination<ChainAccountResponse>
     )
+    func stakingTypeRecomendation(for amount: Decimal)
 }
 
 protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
@@ -35,6 +36,8 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance)
     func didReceive(error: StakingSetupAmountError)
     func didReceive(paymentInfo: RuntimeDispatchInfo)
+    func didReceive(minimalBalance: BigUInt)
+    func didReceive(stakingType: SelectedStakingType)
 }
 
 protocol StakingSetupAmountWireframeProtocol: AnyObject {
@@ -46,4 +49,11 @@ enum StakingSetupAmountError: Error {
     case price(Error)
     case fetchCoderFactory(Error)
     case fee(Error)
+    case existensialDeposit(Error)
+    case minNominatorBond(Error)
+    case counterForNominators(Error)
+    case maxNominatorsCount(Error)
+    case bagListSize(Error)
+    case networkInfo(Error)
+    case calculator(Error)
 }

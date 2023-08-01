@@ -7,9 +7,11 @@ protocol StakingAmountViewModelFactoryProtocol {
         earnings: Decimal?,
         chainAsset: ChainAsset,
         locale: Locale
-    ) -> TitleHorizontalMultiValueView.RewardModel
+    ) -> TitleHorizontalMultiValueView.Model
 
-    func balance(amount: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> TitleHorizontalMultiValueView.RewardModel
+    func balance(amount: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> TitleHorizontalMultiValueView.Model
+
+    func stakingTypeViewModel(stakingType: SelectedStakingType) -> StakingTypeViewModel
 }
 
 struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
@@ -28,7 +30,7 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
         earnings: Decimal?,
         chainAsset _: ChainAsset,
         locale: Locale
-    ) -> TitleHorizontalMultiValueView.RewardModel {
+    ) -> TitleHorizontalMultiValueView.Model {
         let amount = earnings.map { estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0) } ?? ""
         return .init(
             title: "Estimated rewards",
@@ -37,7 +39,11 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
         )
     }
 
-    func balance(amount: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> TitleHorizontalMultiValueView.RewardModel {
+    func balance(
+        amount: BigUInt?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> TitleHorizontalMultiValueView.Model {
         let balance = balanceViewModelFactory.balanceWithPriceIfPossible(
             amount: amount,
             priceData: nil,
@@ -51,5 +57,16 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
             subtitle: available,
             value: balance.amount
         )
+    }
+
+    func stakingTypeViewModel(stakingType: SelectedStakingType) -> StakingTypeViewModel {
+        switch stakingType {
+        case let .direct:
+            return StakingTypeViewModel(
+                title: "Direct staking",
+                subtitle: "Recommended",
+                isRecommended: true
+            )
+        }
     }
 }

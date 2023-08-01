@@ -62,8 +62,8 @@ final class StakingTypeAccountView: RowView<GenericTitleValueView<IconDetailsGen
         iconImageView.isHidden = viewModel.imageViewModel == nil
     }
 
-    func bind(stakingTypeChoiceViewModel: LoadableViewModelState<StakingTypeChoiceViewModel>) {
-        switch stakingTypeChoiceViewModel {
+    func bind(stakingTypeViewModel: LoadableViewModelState<StakingTypeViewModel>) {
+        switch stakingTypeViewModel {
         case let .cached(value), let .loaded(value):
             bind(viewModel: .init(imageViewModel: nil, title: value.title, subtitle: value.subtitle, isRecommended: value.isRecommended))
         case .loading:
@@ -71,11 +71,4 @@ final class StakingTypeAccountView: RowView<GenericTitleValueView<IconDetailsGen
             break
         }
     }
-}
-
-struct StakingTypeAccountViewModel {
-    let imageViewModel: ImageViewModelProtocol?
-    let title: String
-    let subtitle: String
-    let isRecommended: Bool
 }

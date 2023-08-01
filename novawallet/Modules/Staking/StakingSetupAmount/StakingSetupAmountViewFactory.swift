@@ -3,7 +3,7 @@ import SoraFoundation
 import RobinHood
 
 struct StakingSetupAmountViewFactory {
-    static func createView(chainAsset: ChainAsset) -> StakingSetupAmountViewProtocol? {
+    static func createView(chainAsset: ChainAsset, state: StakingSharedState) -> StakingSetupAmountViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard let currencyManager = CurrencyManager.shared,
@@ -11,7 +11,12 @@ struct StakingSetupAmountViewFactory {
               let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
               let mataChainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
               let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-              let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+              let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+              let rewardCalculationService = state.rewardCalculationService,
+              let networkInfoOperationFactory = try? state.createNetworkInfoOperationFactory(
+                  for: chainAsset.chain
+              ),
+              let validatorService = state.eraValidatorService else {
             return nil
         }
 
@@ -30,9 +35,13 @@ struct StakingSetupAmountViewFactory {
             selectedChainAsset: chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             currencyManager: currencyManager,
             runtimeProvider: runtimeService,
             extrinsicService: extrinsicService,
+            rewardService: rewardCalculationService,
+            networkInfoOperationFactory: networkInfoOperationFactory,
+            eraValidatorService: validatorService,
             operationQueue: operationQueue
         )
         let wireframe = StakingSetupAmountWireframe()
@@ -56,6 +65,7 @@ struct StakingSetupAmountViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            logger: Logger.shared,
             localizationManager: LocalizationManager.shared
         )
 

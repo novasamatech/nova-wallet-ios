@@ -50,7 +50,7 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
         }
     }
 
-    func setEstimatedRewards(viewModel: LoadableViewModelState<TitleHorizontalMultiValueView.RewardModel>?) {
+    func setEstimatedRewards(viewModel: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?) {
         if let viewModel = viewModel {
             if estimatedRewardsView == nil {
                 let view = TitleHorizontalMultiValueView()
@@ -68,14 +68,14 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
         }
     }
 
-    func setStakingType(viewModel: LoadableViewModelState<StakingTypeChoiceViewModel>?) {
+    func setStakingType(viewModel: LoadableViewModelState<StakingTypeViewModel>?) {
         if let viewModel = viewModel {
             if stakingTypeView == nil {
                 let view = StakingTypeAccountView(frame: .zero)
                 addArrangedSubview(view, spacingAfter: 16)
                 stakingTypeView = view
             }
-            stakingTypeView?.bind(stakingTypeChoiceViewModel: viewModel)
+            stakingTypeView?.bind(stakingTypeViewModel: viewModel)
         } else {
             stakingTypeView?.removeFromSuperview()
             stakingTypeView = nil
@@ -96,10 +96,4 @@ extension StakingSetupAmountViewLayout {
         static let amountInputHeight: CGFloat = 64
         static let estimatedRewardsHeight: CGFloat = 44
     }
-}
-
-struct StakingTypeChoiceViewModel {
-    let title: String
-    let subtitle: String
-    let isRecommended: Bool
 }

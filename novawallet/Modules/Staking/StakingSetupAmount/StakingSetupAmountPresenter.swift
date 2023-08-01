@@ -11,6 +11,7 @@ final class StakingSetupAmountPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let chainAsset: ChainAsset
     let selectedAccount: ChainAccountResponse
+    let logger: LoggerProtocol?
 
     private var assetBalance: AssetBalance?
     private var buttonState: ButtonState = .startState
@@ -23,10 +24,10 @@ final class StakingSetupAmountPresenter {
         }
     }
 
-    private var stakingType: LoadableViewModelState<StakingTypeChoiceViewModel>?
-
+    private var stakingType: LoadableViewModelState<SelectedStakingType>?
     private var priceData: PriceData?
     private var fee: LoadableViewModelState<BigUInt?> = .loading
+    private var minimalBalance: BigUInt?
 
     init(
         interactor: StakingSetupAmountInteractorInputProtocol,
@@ -36,6 +37,7 @@ final class StakingSetupAmountPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         chainAsset: ChainAsset,
         selectedAccount: ChainAccountResponse,
+        logger: LoggerProtocol?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -45,7 +47,7 @@ final class StakingSetupAmountPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
-
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
@@ -105,25 +107,11 @@ final class StakingSetupAmountPresenter {
         }
     }
 
-    private func provideAmountInputViewModelIfRate() {
-        guard case .rate = inputResult else {
-            return
-        }
-
-        provideAmountInputViewModel()
-    }
-
     private func provideAmountInputViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
 
-        inputAmount.map {
-            if $0 > 0 {
-                stakingType = .loaded(value: StakingTypeChoiceViewModel(
-                    title: "Pool staking",
-                    subtitle: "Recommended",
-                    isRecommended: true
-                ))
-            }
+        if let inputAmount = inputAmount {
+            interactor.stakingTypeRecomendation(for: inputAmount)
         }
 
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
@@ -149,7 +137,6 @@ final class StakingSetupAmountPresenter {
     private func updateAfterAmountChanged() {
         refreshFee()
         provideAmountPriceViewModel()
-        provideStakingTypeModel()
     }
 
     private func refreshFee() {
@@ -157,10 +144,26 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideStakingTypeModel() {
-        guard let stakingType = stakingType else {
-            return
+        switch stakingType {
+        case let .cached(value), let .loaded(value):
+            let viewModel = viewModelFactory.stakingTypeViewModel(stakingType: value)
+            view?.didReceive(stakingType: .loaded(value: viewModel))
+
+            if let apy = value.apy {
+                let earnupViewModel = viewModelFactory.earnupModel(
+                    earnings: apy,
+                    chainAsset: chainAsset,
+                    locale: selectedLocale
+                )
+                view?.didReceive(estimatedRewards: .loaded(value: earnupViewModel))
+            }
+        case .loading:
+            view?.didReceive(stakingType: .loading)
+            view?.didReceive(estimatedRewards: .loading)
+        case .none:
+            view?.didReceive(stakingType: nil)
+            view?.didReceive(estimatedRewards: nil)
         }
-        view?.didReceive(stakingType: stakingType)
     }
 
     private func estimateFee() {
@@ -173,16 +176,14 @@ final class StakingSetupAmountPresenter {
         let rewardDestination = RewardDestination.payout(account: selectedAccount)
         interactor.estimateFee(for: address, amount: amount, rewardDestination: rewardDestination)
     }
-
-    private func provideFee() {}
 }
 
 extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     func setup() {
         interactor.setup()
 
-        provideBalanceModel()
         provideTitle()
+        provideBalanceModel()
         provideChainAssetViewModel()
         provideAmountPriceViewModel()
         provideButtonState()
@@ -191,15 +192,8 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
-
-        newValue.map {
-            if $0 > 0 {
-                stakingType = .loaded(value: StakingTypeChoiceViewModel(
-                    title: "Pool staking",
-                    subtitle: "Recommended",
-                    isRecommended: true
-                ))
-            }
+        if let value = newValue {
+            interactor.stakingTypeRecomendation(for: value)
         }
 
         updateAfterAmountChanged()
@@ -209,7 +203,6 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         inputResult = .rate(Decimal(Double(percentage)))
 
         provideAmountInputViewModel()
-
         updateAfterAmountChanged()
     }
 
@@ -223,6 +216,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtocol {
     func didReceive(price: PriceData?) {
         priceData = price
+        provideAmountPriceViewModel()
     }
 
     func didReceive(assetBalance: AssetBalance) {
@@ -232,10 +226,21 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
 
     func didReceive(paymentInfo: RuntimeDispatchInfo) {
         fee = .loaded(value: BigUInt(paymentInfo.fee))
-        provideFee()
+        provideAmountInputViewModel()
     }
 
-    func didReceive(error _: StakingSetupAmountError) {}
+    func didReceive(minimalBalance: BigUInt) {
+        self.minimalBalance = minimalBalance
+    }
+
+    func didReceive(stakingType: SelectedStakingType) {
+        self.stakingType = .loaded(value: stakingType)
+        provideStakingTypeModel()
+    }
+
+    func didReceive(error: StakingSetupAmountError) {
+        logger?.error(error.localizedDescription)
+    }
 }
 
 extension StakingSetupAmountPresenter: Localizable {
@@ -248,5 +253,6 @@ extension StakingSetupAmountPresenter: Localizable {
         provideTitle()
         provideAmountInputViewModel()
         provideAmountPriceViewModel()
+        provideStakingTypeModel()
     }
 }

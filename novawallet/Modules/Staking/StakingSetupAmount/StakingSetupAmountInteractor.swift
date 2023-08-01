@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 import BigInt
 
-final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
+final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: StakingSetupAmountInteractorOutputProtocol?
 
     let selectedChainAsset: ChainAsset
@@ -10,6 +10,10 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
+    let rewardService: RewardCalculatorServiceProtocol
+    let networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
+    let eraValidatorService: EraValidatorServiceProtocol
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
 
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
     private(set) var priceProvider: StreamableProvider<PriceData>?
@@ -17,14 +21,26 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
     private(set) var selectedAccount: ChainAccountResponse
     private(set) var operationQueue: OperationQueue
 
+    private var rewardCalculatorOperation: CancellableCall?
+    private var networkInfoCall: CancellableCall?
+    private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
+    private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
+    private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
+    private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
+    private var directStakingInfo: DirectStakingInfo = .init()
+
     init(
         selectedAccount: ChainAccountResponse,
         selectedChainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        rewardService: RewardCalculatorServiceProtocol,
+        networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
+        eraValidatorService: EraValidatorServiceProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -34,13 +50,22 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
         self.runtimeProvider = runtimeProvider
         self.extrinsicService = extrinsicService
         self.operationQueue = operationQueue
-
+        self.rewardService = rewardService
+        self.networkInfoOperationFactory = networkInfoOperationFactory
+        self.eraValidatorService = eraValidatorService
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.currencyManager = currencyManager
     }
 
     deinit {
         clear(streamableProvider: &priceProvider)
         clear(streamableProvider: &balanceProvider)
+        clear(cancellable: &networkInfoCall)
+        clear(cancellable: &rewardCalculatorOperation)
+        clear(dataProvider: &minBondProvider)
+        clear(dataProvider: &counterForNominatorsProvider)
+        clear(dataProvider: &maxNominatorsCountProvider)
+        clear(dataProvider: &bagListSizeProvider)
     }
 
     private func performPriceSubscription() {
@@ -64,6 +89,58 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId
         )
+    }
+
+    private func provideNetworkInfo() {
+        clear(cancellable: &networkInfoCall)
+
+        let wrapper = networkInfoOperationFactory.networkStakingOperation(
+            for: eraValidatorService,
+            runtimeService: runtimeProvider
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.networkInfoCall === wrapper else {
+                    return
+                }
+                self?.networkInfoCall = nil
+                do {
+                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.directStakingInfo.networkInfo = info
+                } catch {
+                    self?.presenter?.didReceive(error: .networkInfo(error))
+                }
+            }
+        }
+
+        networkInfoCall = wrapper
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    private func provideRewardCalculator() {
+        clear(cancellable: &rewardCalculatorOperation)
+
+        let operation = rewardService.fetchCalculatorOperation()
+
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.rewardCalculatorOperation === operation else {
+                    return
+                }
+
+                self?.rewardCalculatorOperation = nil
+                do {
+                    let engine = try operation.extractNoCancellableResultData()
+                    self?.directStakingInfo.calculator = engine
+                } catch {
+                    self?.presenter?.didReceive(error: .calculator(error))
+                }
+            }
+        }
+
+        rewardCalculatorOperation = operation
+        operationQueue.addOperation(operation)
     }
 
     private func estimateFee(
@@ -107,17 +184,64 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning {
             }
         }
     }
+
+    private func performMinBondSubscription() {
+        clear(dataProvider: &minBondProvider)
+        minBondProvider = subscribeToMinNominatorBond(for: selectedChainAsset.chain.chainId)
+    }
+
+    private func performCounterForNominatorsSubscription() {
+        clear(dataProvider: &counterForNominatorsProvider)
+        counterForNominatorsProvider = subscribeToCounterForNominators(for: selectedChainAsset.chain.chainId)
+    }
+
+    private func performMaxNominatorsCountSubscription() {
+        clear(dataProvider: &maxNominatorsCountProvider)
+        maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: selectedChainAsset.chain.chainId)
+    }
+
+    private func performBagsListSizeSubscription() {
+        clear(dataProvider: &bagListSizeProvider)
+        bagListSizeProvider = subscribeBagsListSize(for: selectedChainAsset.chain.chainId)
+    }
+
+    private func provideExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeProvider,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(amount):
+                self?.presenter?.didReceive(minimalBalance: amount)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .existensialDeposit(error))
+            }
+        }
+    }
 }
 
-extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtocol {
+extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtocol, RuntimeConstantFetching {
     func setup() {
         performAssetBalanceSubscription()
         performPriceSubscription()
+        performMinBondSubscription()
+        performCounterForNominatorsSubscription()
+        performMaxNominatorsCountSubscription()
+        performBagsListSizeSubscription()
+
+        provideRewardCalculator()
+        provideNetworkInfo()
+        provideExistentialDeposit()
     }
 
     func remakeSubscriptions() {
         performAssetBalanceSubscription()
         performPriceSubscription()
+        performMinBondSubscription()
+        performCounterForNominatorsSubscription()
+        performMaxNominatorsCountSubscription()
+        performBagsListSizeSubscription()
     }
 
     func estimateFee(
@@ -138,6 +262,14 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
                 self?.presenter?.didReceive(error: .fetchCoderFactory(error))
             }
         )
+    }
+
+    func stakingTypeRecomendation(for amount: Decimal) {
+        guard amount > 0 else {
+            return
+        }
+        // TODO:
+        presenter?.didReceive(stakingType: .direct(directStakingInfo))
     }
 }
 
@@ -178,6 +310,44 @@ extension StakingSetupAmountInteractor: PriceLocalStorageSubscriber, PriceLocalS
             case let .failure(error):
                 presenter?.didReceive(error: .price(error))
             }
+        }
+    }
+}
+
+extension StakingSetupAmountInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(value):
+            directStakingInfo.minNominatorBond = value
+        case let .failure(error):
+            presenter?.didReceive(error: .minNominatorBond(error))
+        }
+    }
+
+    func handleCounterForNominators(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(value):
+            directStakingInfo.counterForNominators = value
+        case let .failure(error):
+            presenter?.didReceive(error: .counterForNominators(error))
+        }
+    }
+
+    func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(value):
+            directStakingInfo.maxNominatorsCount = value
+        case let .failure(error):
+            presenter?.didReceive(error: .maxNominatorsCount(error))
+        }
+    }
+
+    func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(value):
+            directStakingInfo.bagListSize = value
+        case let .failure(error):
+            presenter?.didReceive(error: .bagListSize(error))
         }
     }
 }

@@ -480,6 +480,10 @@
 		775F19512A5811FA009915B6 /* StartStakingParachainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */; };
 		775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */; };
 		77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799ADC2A74219A00B7E564 /* ButtonState.swift */; };
+		77799ADF2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799ADE2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift */; };
+		77799AE12A79003D00B7E564 /* DirectStakingInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799AE02A79003D00B7E564 /* DirectStakingInfo.swift */; };
+		77799AE52A792AE700B7E564 /* StakingTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799AE42A792AE700B7E564 /* StakingTypeViewModel.swift */; };
+		77799AE72A792B6F00B7E564 /* StakingTypeAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799AE62A792B6F00B7E564 /* StakingTypeAccountViewModel.swift */; };
 		777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */; };
 		777BD86229F97322004969A2 /* ReferendumsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86129F97322004969A2 /* ReferendumsFilter.swift */; };
 		777BD86429F979DA004969A2 /* SelectableFilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD86329F979DA004969A2 /* SelectableFilterCell.swift */; };
@@ -4192,6 +4196,10 @@
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
 		7762D6912A5DD64700C25BB3 /* AccountExistense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExistense.swift; sourceTree = "<group>"; };
 		77799ADC2A74219A00B7E564 /* ButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonState.swift; sourceTree = "<group>"; };
+		77799ADE2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainWireframe.swift; sourceTree = "<group>"; };
+		77799AE02A79003D00B7E564 /* DirectStakingInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingInfo.swift; sourceTree = "<group>"; };
+		77799AE42A792AE700B7E564 /* StakingTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTypeViewModel.swift; sourceTree = "<group>"; };
+		77799AE62A792B6F00B7E564 /* StakingTypeAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTypeAccountViewModel.swift; sourceTree = "<group>"; };
 		777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilterViewModel.swift; sourceTree = "<group>"; };
 		777BD86129F97322004969A2 /* ReferendumsFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilter.swift; sourceTree = "<group>"; };
 		777BD86329F979DA004969A2 /* SelectableFilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableFilterCell.swift; sourceTree = "<group>"; };
@@ -8445,6 +8453,7 @@
 		7066B343B912F72345D541F2 /* StakingSetupAmount */ = {
 			isa = PBXGroup;
 			children = (
+				77799AE32A792ACB00B7E564 /* Model */,
 				B73F89021BEE1F4576128305 /* StakingSetupAmountProtocols.swift */,
 				A71030ADF84393172807E434 /* StakingSetupAmountWireframe.swift */,
 				6F80E6C0C3AC88D7CDB8204F /* StakingSetupAmountPresenter.swift */,
@@ -8455,7 +8464,6 @@
 				77864F4B2A6AC5A100FA7BA7 /* TitleHorizontalMultiValueView+bind.swift */,
 				77EFFC8C2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift */,
 				77EFFC902A7276F1009E28F8 /* StakingTypeAccountView.swift */,
-				77799ADC2A74219A00B7E564 /* ButtonState.swift */,
 			);
 			path = StakingSetupAmount;
 			sourceTree = "<group>";
@@ -8509,6 +8517,7 @@
 				7738FB632A4C5CAD00797439 /* StakingSharedState+Services.swift */,
 				775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */,
 				7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */,
+				77799ADE2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift */,
 			);
 			path = RelaychainStaking;
 			sourceTree = "<group>";
@@ -8524,6 +8533,17 @@
 				77A6F5C82A2F1EFC004AFD1A /* AssetOperationViewFactory.swift */,
 			);
 			path = AssetOperation;
+			sourceTree = "<group>";
+		};
+		77799AE32A792ACB00B7E564 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				77799AE02A79003D00B7E564 /* DirectStakingInfo.swift */,
+				77799ADC2A74219A00B7E564 /* ButtonState.swift */,
+				77799AE42A792AE700B7E564 /* StakingTypeViewModel.swift */,
+				77799AE62A792B6F00B7E564 /* StakingTypeAccountViewModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		777BD85E29F972FF004969A2 /* Model */ = {
@@ -18614,6 +18634,7 @@
 				8401620B25E144D50087A5F3 /* AmountInputAccessoryView.swift in Sources */,
 				88F19DE028D8D0F600F6E459 /* LoadableViewModelState+Addition.swift in Sources */,
 				844C3E652A07627E00C4305F /* DAppWalletAuthViewModel.swift in Sources */,
+				77799AE52A792AE700B7E564 /* StakingTypeViewModel.swift in Sources */,
 				84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */,
 				847A258E29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift in Sources */,
 				84EDF67329C66015002173E6 /* EvmNativeTransactionHistoryUpdater.swift in Sources */,
@@ -18833,6 +18854,7 @@
 				84F4A9182550331D000CF0A3 /* SecretSource.swift in Sources */,
 				84FD3DB12540C09800A234E3 /* TransactionHistoryMergeManager.swift in Sources */,
 				88C7165A28C8D3450015D1E9 /* LocksHeaderView.swift in Sources */,
+				77799AE72A792B6F00B7E564 /* StakingTypeAccountViewModel.swift in Sources */,
 				840B3D6E289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift in Sources */,
 				F48EB5462722BB7000AE15ED /* AcalaBonusService.swift in Sources */,
 				842E9E982A2A28A700759972 /* StakingDashboardProviderFactory.swift in Sources */,
@@ -20092,6 +20114,7 @@
 				84282296289BC31300163031 /* AddAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				84FB9E1E285C58FF00B42FC0 /* Xcm.swift in Sources */,
 				84FB9E1A285C57D900B42FC0 /* XcmVersionedMultilocation.swift in Sources */,
+				77799ADF2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift in Sources */,
 				849ABE6826278A4100011A2A /* NominateMapper.swift in Sources */,
 				2C3124A5EBC1AD57C01EEA17 /* SelectValidatorsStartInteractor.swift in Sources */,
 				84D184F62A04F5C10060C1BD /* StackStatusCell+WalletConnect.swift in Sources */,
@@ -20175,6 +20198,7 @@
 				20B2942A4241F6713A1C70D9 /* StakingRewardDetailsViewFactory.swift in Sources */,
 				84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */,
 				848CCB442832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift in Sources */,
+				77799AE12A79003D00B7E564 /* DirectStakingInfo.swift in Sources */,
 				8483B15828F98C9F0048B295 /* ReferendumVotersViewModel.swift in Sources */,
 				84BB3CEE267CD6B500676FFE /* CrowdloanContributionDict.swift in Sources */,
 				8473F4B4282BD5A1007CC55A /* StakingRelaychainInteractor.swift in Sources */,
@@ -21804,11 +21828,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = RD2HBGJZLF;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
+				DEVELOPMENT_TEAM = 2857FNT253;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -21820,10 +21842,9 @@
 				);
 				MARKETING_VERSION = 6.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Ruslan't M2 Dev";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan't M2 Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
