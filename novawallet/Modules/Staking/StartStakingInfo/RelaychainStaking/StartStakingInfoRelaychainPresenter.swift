@@ -41,29 +41,29 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
 }
 
 extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInteractorOutputProtocol {
-    func didReceive(minNominatorBond: BigUInt?) {
-        state.minNominatorBond = .loaded(value: minNominatorBond)
+    func didReceive(eraCountdown: EraCountdown?) {
+        state.eraCountdown = eraCountdown
     }
 
-    func didReceive(bagListSize: UInt32?) {
-        state.bagListSize = .loaded(value: bagListSize)
-    }
-
-    func didReceive(networkInfo: NetworkStakingInfo?) {
+    func didReceive(networkInfo: NetworkStakingInfo) {
         state.networkInfo = networkInfo
     }
 
-    func didReceive(eraCountdown: EraCountdown?) {
-        state.eraCountdown = eraCountdown
+    func didReceive(directStakingMinStake: BigUInt) {
+        state.directStakingMinimumStake = directStakingMinStake
+    }
+
+    func didReceive(nominationPoolMinStake: BigUInt?) {
+        state.nominationPoolMinimumStake = nominationPoolMinStake
     }
 
     func didReceive(error: RelaychainStartStakingInfoError) {
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .networkStakingInfo:
+        case .directStakingMinStake:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryNetworkStakingInfo()
+                self?.interactor.retryDirectStakingMinStake()
             }
         case .createState:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -73,13 +73,9 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryEraCompletionTime()
             }
-        case .bagListSize:
+        case .nominationPoolsMinStake:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeBagListSizeSubscription()
-            }
-        case .minNominatorBond:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeMinNominatorBondSubscription()
+                self?.interactor.retryNominationPoolsMinStake()
             }
         case .calculator:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -95,43 +91,17 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
 
 extension StartStakingInfoRelaychainPresenter {
     struct State: StartStakingStateProtocol {
-        var minNominatorBond: LoadableViewModelState<BigUInt?> = .loading
-        var bagListSize: LoadableViewModelState<UInt32?> = .loading
         var networkInfo: NetworkStakingInfo?
         var eraCountdown: EraCountdown?
         var maxApy: Decimal?
         var rewardsDestination: DefaultStakingRewardDestination { .stake }
-        var chainAsset: ChainAsset?
-
-        // TODO:
         var nominationPoolMinimumStake: BigUInt?
-
-        var directStakingMinimumStake: BigUInt? {
-            guard let networkInfo = networkInfo,
-                  let minNominatorBond = minNominatorBond.value,
-                  let bagListSize = bagListSize.value else {
-                return nil
-            }
-
-            return networkInfo.calculateMinimumStake(
-                given: minNominatorBond,
-                votersCount: bagListSize
-            )
-        }
+        var directStakingMinimumStake: BigUInt?
 
         var minStake: BigUInt? {
-            guard let chainAsset = chainAsset else {
-                return nil
-            }
-
-            if chainAsset.asset.supportedStakings?.contains(.nominationPools) == true {
-                if let nominationPoolMinimumStake = nominationPoolMinimumStake,
-                   let directStakingMinimumStake = directStakingMinimumStake {
-                    return min(nominationPoolMinimumStake, directStakingMinimumStake)
-                } else {
-                    // TODO: return nil
-                    return directStakingMinimumStake
-                }
+            if let nominationPoolMinimumStake = nominationPoolMinimumStake,
+               let directStakingMinimumStake = directStakingMinimumStake {
+                return min(nominationPoolMinimumStake, directStakingMinimumStake)
             } else {
                 return directStakingMinimumStake
             }
@@ -154,19 +124,14 @@ extension StartStakingInfoRelaychainPresenter {
         }
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? {
-            guard let chainAsset = chainAsset else {
-                return nil
-            }
-            guard chainAsset.asset.supportedStakings?.contains(.nominationPools) == true else {
-                return nil
-            }
-
-            guard let directStakingMinimumStake = directStakingMinimumStake,
-                  let minStake = minStake else {
+            guard
+                nominationPoolMinimumStake != nil,
+                let directStakingMinimumStake = directStakingMinimumStake,
+                let minStake = minStake else {
                 return nil
             }
 
-            return directStakingMinimumStake == minStake ? nil : directStakingMinimumStake
+            return directStakingMinimumStake <= minStake ? nil : directStakingMinimumStake
         }
 
         var govThresholdAmount: BigUInt? {

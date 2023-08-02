@@ -13,11 +13,17 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         state.relaychainLocalSubscriptionFactory
     }
 
+    var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
+        state.npLocalSubscriptionFactory!
+    }
+
     private var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
+    private var minJoinBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var eraCompletionTimeCancellable: CancellableCall?
     private var networkInfoCancellable: CancellableCall?
     private var rewardCalculatorCancellable: CancellableCall?
+    private var directStakingMinStakeBuilder: DirectStakingMinStakeBuilder?
 
     weak var presenter: StartStakingInfoRelaychainInteractorOutputProtocol? {
         didSet {
@@ -55,8 +61,6 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         state.throttle()
 
         clear(cancellable: &networkInfoCancellable)
-        clear(dataProvider: &minNominatorBondProvider)
-        clear(dataProvider: &bagListSizeProvider)
         clear(cancellable: &eraCompletionTimeCancellable)
         clear(cancellable: &rewardCalculatorCancellable)
     }
@@ -69,7 +73,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .networkStakingInfo(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(error: .directStakingMinStake(ChainRegistryError.runtimeMetadaUnavailable))
             return
         }
 
@@ -90,9 +94,10 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
 
                 do {
                     let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.directStakingMinStakeBuilder?.apply(param1: info)
                     self?.presenter?.didReceive(networkInfo: info)
                 } catch {
-                    self?.presenter?.didReceive(error: .networkStakingInfo(error))
+                    self?.presenter?.didReceive(error: .directStakingMinStake(error))
                 }
             }
         }
@@ -105,6 +110,16 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     private func performMinNominatorBondSubscription() {
         clear(dataProvider: &minNominatorBondProvider)
         minNominatorBondProvider = subscribeToMinNominatorBond(for: selectedChainAsset.chain.chainId)
+    }
+
+    private func performMinJoinBondSubscription() {
+        clear(dataProvider: &minJoinBondProvider)
+
+        if state.supportsPoolStaking() {
+            minJoinBondProvider = subscribeMinJoinBond(for: selectedChainAsset.chain.chainId)
+        } else {
+            presenter?.didReceive(nominationPoolMinStake: nil)
+        }
     }
 
     private func performBagListSizeSubscription() {
@@ -194,10 +209,15 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
 
         setupState()
 
+        directStakingMinStakeBuilder = DirectStakingMinStakeBuilder { [weak self] minStake in
+            self?.presenter?.didReceive(directStakingMinStake: minStake)
+        }
+
         provideRewardCalculator()
         provideNetworkStakingInfo()
         performMinNominatorBondSubscription()
         performBagListSizeSubscription()
+        performMinJoinBondSubscription()
         provideEraCompletionTime()
     }
 }
@@ -206,32 +226,37 @@ extension StartStakingRelaychainInteractor: StakingLocalStorageSubscriber, Staki
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(bond):
-            presenter?.didReceive(minNominatorBond: bond)
+            directStakingMinStakeBuilder?.apply(param3: bond)
         case let .failure(error):
-            presenter?.didReceive(error: .minNominatorBond(error))
+            presenter?.didReceive(error: .directStakingMinStake(error))
         }
     }
 
     func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(size):
-            presenter?.didReceive(bagListSize: size)
+            directStakingMinStakeBuilder?.apply(param2: size)
         case let .failure(error):
-            presenter?.didReceive(error: .bagListSize(error))
+            presenter?.didReceive(error: .directStakingMinStake(error))
+        }
+    }
+}
+
+extension StartStakingRelaychainInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubscriptionHandler {
+    func handleMinJoinBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(minJoinBond):
+            presenter?.didReceive(nominationPoolMinStake: minJoinBond)
+        case let .failure(error):
+            presenter?.didReceive(error: .nominationPoolsMinStake(error))
         }
     }
 }
 
 extension StartStakingRelaychainInteractor: StartStakingInfoRelaychainInteractorInputProtocol {
-    func retryNetworkStakingInfo() {
+    func retryDirectStakingMinStake() {
         provideNetworkStakingInfo()
-    }
-
-    func remakeMinNominatorBondSubscription() {
         performMinNominatorBondSubscription()
-    }
-
-    func remakeBagListSizeSubscription() {
         performBagListSizeSubscription()
     }
 
@@ -241,5 +266,9 @@ extension StartStakingRelaychainInteractor: StartStakingInfoRelaychainInteractor
 
     func remakeCalculator() {
         provideRewardCalculator()
+    }
+
+    func retryNominationPoolsMinStake() {
+        performMinJoinBondSubscription()
     }
 }

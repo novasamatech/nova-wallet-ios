@@ -23,17 +23,16 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
 }
 
 protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
-    func retryNetworkStakingInfo()
-    func remakeMinNominatorBondSubscription()
-    func remakeBagListSizeSubscription()
+    func retryDirectStakingMinStake()
     func retryEraCompletionTime()
+    func retryNominationPoolsMinStake()
     func remakeCalculator()
 }
 
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
-    func didReceive(minNominatorBond: BigUInt?)
-    func didReceive(bagListSize: UInt32?)
-    func didReceive(networkInfo: NetworkStakingInfo?)
+    func didReceive(networkInfo: NetworkStakingInfo)
+    func didReceive(directStakingMinStake: BigUInt)
+    func didReceive(nominationPoolMinStake: BigUInt?)
     func didReceive(eraCountdown: EraCountdown?)
     func didReceive(error: RelaychainStartStakingInfoError)
     func didReceive(calculator: RewardCalculatorEngineProtocol)
@@ -67,11 +66,10 @@ enum BaseStartStakingInfoError: Error {
 }
 
 enum RelaychainStartStakingInfoError: Error {
-    case networkStakingInfo(Error)
     case createState(Error)
     case eraCountdown(Error)
-    case bagListSize(Error)
-    case minNominatorBond(Error)
+    case directStakingMinStake(Error)
+    case nominationPoolsMinStake(Error)
     case calculator(Error)
 }
 
