@@ -34,7 +34,7 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
 
     func subscribeMinJoinBond(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>?
 
-    func subscribeLastPoolId(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>?
+    func subscribeLastPoolId(for chainId: ChainModel.Id, callbackQueue: DispatchQueue) -> AnyDataProvider<DecodedPoolId>?
 }
 
 extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandler {
@@ -235,7 +235,11 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
         return provider
     }
 
-    func subscribeLastPoolId(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
+    func subscribeLastPoolId(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedPoolId>? {
+        subscribeLastPoolId(for: chainId, callbackQueue: .main)
+    }
+
+    func subscribeLastPoolId(for chainId: ChainModel.Id, callbackQueue: DispatchQueue) -> AnyDataProvider<DecodedPoolId>? {
         guard let provider = try? npoolsLocalSubscriptionFactory.getLastPoolIdProvider(for: chainId) else {
             return nil
         }
@@ -252,7 +256,9 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                     result: .failure(error),
                     chainId: chainId
                 )
-            }
+            },
+            callbackQueue: callbackQueue,
+            options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
         )
 
         return provider

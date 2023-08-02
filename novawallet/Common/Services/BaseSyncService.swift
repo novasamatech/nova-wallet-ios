@@ -49,6 +49,8 @@ class BaseSyncService {
         fatalError("Method must be overriden by child class")
     }
 
+    func deactivate() {}
+
     func markSyncingImmediate() {
         isSyncing = true
     }
@@ -131,6 +133,8 @@ extension BaseSyncService: ApplicationServiceProtocol {
 
         isSyncing = false
         retryAttempt = 0
+
+        deactivate()
     }
 }
 

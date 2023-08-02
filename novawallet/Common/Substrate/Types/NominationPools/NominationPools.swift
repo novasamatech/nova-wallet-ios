@@ -36,8 +36,26 @@ enum NominationPools {
         }
     }
 
+    struct AccountCommission: Decodable, Equatable {
+        let percent: BigUInt
+        let accountId: AccountId
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            percent = try container.decode(StringScaleMapper<BigUInt>.self).value
+            accountId = try container.decode(BytesCodable.self).wrappedValue
+        }
+    }
+
+    struct Commission: Decodable, Equatable {
+        let current: AccountCommission?
+    }
+
     struct BondedPool: Decodable, Equatable {
         @StringCodable var points: BigUInt
+        @StringCodable var memberCounter: UInt32
+        let commission: Commission?
         let state: PoolState
     }
 
