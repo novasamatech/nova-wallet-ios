@@ -57,7 +57,7 @@ struct StakingUnbondSetupViewFactory {
             return nil
         }
 
-        let stakingDurationFactory = state.stakingDurationOperationFactory
+        let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationManager = OperationManagerFacade.sharedManager

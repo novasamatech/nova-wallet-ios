@@ -5,65 +5,60 @@ import SubstrateSdk
 protocol RelaychainStakingSharedStateProtocol: AnyObject {
     var consensus: ConsensusType { get }
     var stakingOption: Multistaking.ChainAssetOption { get }
-    var chainRegistry: ChainRegistryProtocol { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
     var localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var rewardCalculatorService: RewardCalculatorServiceProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
-    var stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol { get }
 
     func setup(for accountId: AccountId?) throws
     func throttle()
 
-    func createNetworkInfoOperationFactory() -> NetworkStakingInfoOperationFactoryProtocol
-    func createEraCountdownOperationFactory() -> EraCountdownOperationFactoryProtocol
+    func createNetworkInfoOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> NetworkStakingInfoOperationFactoryProtocol
+
+    func createEraCountdownOperationFactory(for operationQueue: OperationQueue) -> EraCountdownOperationFactoryProtocol
+    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol
 }
 
 final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let consensus: ConsensusType
     let stakingOption: Multistaking.ChainAssetOption
-    let chainRegistry: ChainRegistryProtocol
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol
     let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardCalculatorService: RewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
-    let stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol
-    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var globalSubscriptionId: UUID?
+
+    private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
 
     var chain: ChainModel { stakingOption.chainAsset.chain }
 
     init(
         consensus: ConsensusType,
         stakingOption: Multistaking.ChainAssetOption,
-        chainRegistry: ChainRegistryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         rewardCalculatorService: RewardCalculatorServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
-        stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.consensus = consensus
         self.stakingOption = stakingOption
-        self.chainRegistry = chainRegistry
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.accountRemoteSubscriptionService = accountRemoteSubscriptionService
         self.localSubscriptionFactory = localSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.rewardCalculatorService = rewardCalculatorService
         self.blockTimeService = blockTimeService
-        self.stakingDurationOperationFactory = stakingDurationOperationFactory
-        self.operationQueue = operationQueue
         self.logger = logger
     }
 
@@ -120,40 +115,37 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         accountRemoteSubscriptionService.clearSubscription()
     }
 
-    func createNetworkInfoOperationFactory() -> NetworkStakingInfoOperationFactoryProtocol {
-        let votersInfoOperationFactory = VotersInfoOperationFactory(
-            operationManager: OperationManager(operationQueue: operationQueue)
+    func createNetworkInfoOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> NetworkStakingInfoOperationFactoryProtocol {
+        let durationFactory = consensusDependingFactory.createStakingDurationOperationFactory(
+            for: consensus,
+            chain: stakingOption.chainAsset.chain,
+            blockTimeService: blockTimeService
         )
 
-        return NetworkStakingInfoOperationFactory(
-            durationFactory: stakingDurationOperationFactory,
-            votersOperationFactory: votersInfoOperationFactory
+        return consensusDependingFactory.createNetworkInfoOperationFactory(
+            for: durationFactory,
+            operationQueue: operationQueue
         )
     }
 
-    func createEraCountdownOperationFactory() -> EraCountdownOperationFactoryProtocol {
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
+    func createEraCountdownOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> EraCountdownOperationFactoryProtocol {
+        consensusDependingFactory.createEraCountdownOperationFactory(
+            for: consensus,
+            chain: stakingOption.chainAsset.chain,
+            blockTimeService: blockTimeService,
+            operationQueue: operationQueue
         )
+    }
 
-        switch consensus {
-        case .babe:
-            return BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
-        case .auraGeneral:
-            return AuraEraOperationFactory(
-                storageRequestFactory: storageRequestFactory,
-                blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain),
-                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
-            )
-        case .auraAzero:
-            return AuraEraOperationFactory(
-                storageRequestFactory: storageRequestFactory,
-                blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain),
-                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
-            )
-        }
+    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol {
+        consensusDependingFactory.createStakingDurationOperationFactory(
+            for: consensus,
+            chain: stakingOption.chainAsset.chain,
+            blockTimeService: blockTimeService
+        )
     }
 }

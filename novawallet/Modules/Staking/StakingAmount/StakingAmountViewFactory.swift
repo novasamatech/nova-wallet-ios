@@ -87,7 +87,10 @@ final class StakingAmountViewFactory {
 
         let rewardCalculationService = state.rewardCalculatorService
         let validatorService = state.eraValidatorService
-        let networkInfoOperationFactory = state.createNetworkInfoOperationFactory()
+
+        let networkInfoOperationFactory = state.createNetworkInfoOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let operationManager = OperationManagerFacade.sharedManager
 

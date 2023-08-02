@@ -15,7 +15,9 @@ struct StakingRebagConfirmViewFactory {
         }
 
         let eraValidatorService = state.eraValidatorService
-        let networkInfoFactory = state.createNetworkInfoOperationFactory()
+        let networkInfoFactory = state.createNetworkInfoOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 

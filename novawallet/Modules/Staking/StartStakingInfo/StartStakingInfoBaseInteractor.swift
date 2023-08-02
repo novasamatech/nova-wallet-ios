@@ -79,8 +79,6 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
 
         performAssetBalanceSubscription()
         performPriceSubscription()
-
-        basePresenter?.didReceive(chainAsset: selectedChainAsset)
     }
 
     func remakeSubscriptions() {

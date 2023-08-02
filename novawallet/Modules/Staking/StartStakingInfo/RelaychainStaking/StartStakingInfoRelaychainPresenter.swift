@@ -4,8 +4,6 @@ import BigInt
 
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoRelaychainInteractorInputProtocol
-    let relaychainWireframe: StartStakingInfoRelaychainWireframeProtocol
-    private var stakingState: StakingSharedState?
 
     private var state: State = .init() {
         didSet {
@@ -14,17 +12,18 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     }
 
     init(
+        chainAsset: ChainAsset,
         interactor: StartStakingInfoRelaychainInteractorInputProtocol,
-        wireframe: StartStakingInfoRelaychainWireframeProtocol,
+        wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
-        relaychainWireframe = wireframe
 
         super.init(
+            chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
@@ -36,19 +35,8 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
 
     override func setup() {
         super.setup()
+
         view?.didReceive(viewModel: .loading)
-    }
-
-    override func didReceive(chainAsset: ChainAsset) {
-        super.didReceive(chainAsset: chainAsset)
-        state.chainAsset = chainAsset
-    }
-
-    override func showSetupAmount() {
-        guard let chainAsset = state.chainAsset, let stakingState = stakingState else {
-            return
-        }
-        relaychainWireframe.showSetupAmount(from: view, chainAsset: chainAsset, state: stakingState)
     }
 }
 
@@ -70,7 +58,7 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
     }
 
     func didReceive(error: RelaychainStartStakingInfoError) {
-        logger?.error("Did receive error: \(error)")
+        logger.error("Did receive error: \(error)")
 
         switch error {
         case .networkStakingInfo:
@@ -102,10 +90,6 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
 
     func didReceive(calculator: RewardCalculatorEngineProtocol) {
         state.maxApy = calculator.calculateMaxEarnings(amount: 1, isCompound: true, period: .year)
-    }
-
-    func didReceive(stakingSharedState: StakingSharedState) {
-        stakingState = stakingSharedState
     }
 }
 

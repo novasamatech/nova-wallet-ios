@@ -153,7 +153,7 @@ final class SelectValidatorsConfirmViewFactory {
             return nil
         }
 
-        let stakingDurationFactory = stakingState.stakingDurationOperationFactory
+        let stakingDurationFactory = stakingState.createStakingDurationOperationFactory()
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
@@ -200,7 +200,7 @@ final class SelectValidatorsConfirmViewFactory {
             return nil
         }
 
-        let stakingDurationFactory = state.stakingDurationOperationFactory
+        let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
         let extrinsicSender = nomination.bonding.controllerAccount
 

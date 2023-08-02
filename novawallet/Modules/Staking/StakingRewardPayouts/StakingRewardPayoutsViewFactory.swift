@@ -100,7 +100,9 @@ final class StakingRewardPayoutsViewFactory {
 
         let operationManager = OperationManagerFacade.sharedManager
 
-        let eraCountdownOperationFactory = state.createEraCountdownOperationFactory()
+        let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let assetInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

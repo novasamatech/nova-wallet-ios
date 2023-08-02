@@ -4,21 +4,32 @@ import SoraFoundation
 import RobinHood
 
 struct StartStakingInfoViewFactory {
-    static func createView(
-        stakingOption: Multistaking.ChainAssetOption
-    ) -> StartStakingInfoViewProtocol? {
-        switch stakingOption.type {
-        case .relaychain, .auraRelaychain, .azero, .nominationPools:
-            return createRelaychainView(stakingOption: stakingOption)
+    static func createView(chainAsset: ChainAsset) -> StartStakingInfoViewProtocol? {
+        let optStakingType = chainAsset.asset.stakings?.sorted { type1, type2 in
+            type1.isMorePreferred(than: type2)
+        }.first
+
+        guard let stakingType = optStakingType else {
+            return nil
+        }
+
+        switch stakingType {
+        case .relaychain:
+            return createRelaychainView(chainAsset: chainAsset, consensus: .babe)
+        case .auraRelaychain:
+            return createRelaychainView(chainAsset: chainAsset, consensus: .auraGeneral)
+        case .azero:
+            return createRelaychainView(chainAsset: chainAsset, consensus: .auraAzero)
         case .parachain, .turing:
-            return createParachainView(for: stakingOption)
-        case .unsupported:
+            return createParachainView(for: .init(chainAsset: chainAsset, type: stakingType))
+        case .unsupported, .nominationPools:
             return nil
         }
     }
 
     private static func createRelaychainView(
-        stakingOption: Multistaking.ChainAssetOption
+        chainAsset: ChainAsset,
+        consensus: ConsensusType
     ) -> StartStakingInfoViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -32,12 +43,10 @@ struct StartStakingInfoViewFactory {
         )
 
         guard
-            let state = try? stateFactory.createRelaychain(for: stakingOption),
+            let state = try? stateFactory.createStartRelaychainStaking(for: chainAsset, consensus: consensus),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
-
-        let chainAsset = stakingOption.chainAsset
 
         let interactor = createRelaychainInteractor(
             state: state,
@@ -45,7 +54,7 @@ struct StartStakingInfoViewFactory {
             operationQueue: operationQueue
         )
 
-        let wireframe = StartStakingInfoRelaychainWireframe()
+        let wireframe = StartStakingInfoRelaychainWireframe(state: state)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -56,6 +65,7 @@ struct StartStakingInfoViewFactory {
         )
 
         let presenter = StartStakingInfoRelaychainPresenter(
+            chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
@@ -76,7 +86,7 @@ struct StartStakingInfoViewFactory {
     }
 
     private static func createRelaychainInteractor(
-        state: RelaychainStakingSharedStateProtocol,
+        state: RelaychainStartStakingStateProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) -> StartStakingRelaychainInteractor {
@@ -84,12 +94,18 @@ struct StartStakingInfoViewFactory {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
 
+        let networkOperationFactory = state.createNetworkInfoOperationFactory(for: operationQueue)
+        let eraCountdownFactory = state.createEraCountdownOperationFactory(for: operationQueue)
+
         return StartStakingRelaychainInteractor(
+            state: state,
             selectedWalletSettings: selectedWalletSettings,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
-            state: state,
+            networkInfoOperationFactory: networkOperationFactory,
+            eraCoundownOperationFactory: eraCountdownFactory,
             operationQueue: operationQueue
         )
     }
@@ -127,6 +143,7 @@ struct StartStakingInfoViewFactory {
         )
 
         let presenter = StartStakingInfoParachainPresenter(
+            chainAsset: stakingOption.chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,

@@ -87,7 +87,7 @@ struct StakingUnbondConfirmViewFactory {
             return nil
         }
 
-        let stakingDurationFactory = state.stakingDurationOperationFactory
+        let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,

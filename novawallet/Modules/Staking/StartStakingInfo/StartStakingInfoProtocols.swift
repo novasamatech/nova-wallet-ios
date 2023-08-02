@@ -16,7 +16,6 @@ protocol StartStakingInfoInteractorInputProtocol: AnyObject {
 }
 
 protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
-    func didReceive(chainAsset: ChainAsset)
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
     func didReceive(baseError: BaseStartStakingInfoError)
@@ -38,7 +37,6 @@ protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInt
     func didReceive(eraCountdown: EraCountdown?)
     func didReceive(error: RelaychainStartStakingInfoError)
     func didReceive(calculator: RewardCalculatorEngineProtocol)
-    func didReceive(stakingSharedState: StakingSharedState)
 }
 
 protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
@@ -60,14 +58,7 @@ protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInte
 
 protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable, NoAccountSupportPresentable {
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
-}
-
-protocol StartStakingInfoRelaychainWireframeProtocol: StartStakingInfoWireframeProtocol {
-    func showSetupAmount(
-        from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset,
-        state: StakingSharedState
-    )
+    func showSetupAmount(from view: ControllerBackedProtocol?)
 }
 
 enum BaseStartStakingInfoError: Error {

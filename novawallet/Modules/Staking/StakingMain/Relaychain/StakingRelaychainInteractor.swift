@@ -12,9 +12,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
     var stakingOption: Multistaking.ChainAssetOption { sharedState.stakingOption }
 
-    var chainRegistry: ChainRegistryProtocol {
-        sharedState.chainRegistry
-    }
+    let chainRegistry: ChainRegistryProtocol
 
     let selectedWalletSettings: SelectedWalletSettings
     let sharedState: RelaychainStakingSharedStateProtocol
@@ -24,6 +22,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     let eventCenter: EventCenterProtocol
     let operationManager: OperationManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
+    let networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
+    let eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol
     let logger: LoggerProtocol?
 
     var selectedAccount: ChainAccountResponse?
@@ -57,9 +57,12 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     init(
         selectedWalletSettings: SelectedWalletSettings,
         sharedState: RelaychainStakingSharedStateProtocol,
+        chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         accountProviderFactory: AccountProviderFactoryProtocol,
+        networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
+        eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationManager: OperationManagerProtocol,
         applicationHandler: ApplicationHandlerProtocol,
@@ -67,9 +70,12 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         logger: LoggerProtocol? = nil
     ) {
         self.selectedWalletSettings = selectedWalletSettings
+        self.chainRegistry = chainRegistry
         self.sharedState = sharedState
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.networkInfoOperationFactory = networkInfoOperationFactory
+        self.eraCountdownOperationFactory = eraCountdownOperationFactory
         self.accountProviderFactory = accountProviderFactory
         self.eventCenter = eventCenter
         self.operationManager = operationManager
@@ -196,7 +202,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
             return
         }
 
-        let networkInfoFactory = sharedState.createNetworkInfoOperationFactory()
         let eraValidatorService = sharedState.eraValidatorService
 
         let chainId = chain.chainId
@@ -206,7 +211,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
             return
         }
 
-        let wrapper = networkInfoFactory.networkStakingOperation(
+        let wrapper = networkInfoOperationFactory.networkStakingOperation(
             for: eraValidatorService,
             runtimeService: runtimeService
         )
@@ -251,8 +256,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
             presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
             return
         }
-
-        let eraCountdownOperationFactory = sharedState.createEraCountdownOperationFactory()
 
         let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
             for: connection,

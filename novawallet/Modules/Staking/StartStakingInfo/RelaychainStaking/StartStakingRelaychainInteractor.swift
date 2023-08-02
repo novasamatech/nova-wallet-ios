@@ -4,12 +4,13 @@ import Foundation
 import SubstrateSdk
 
 final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, AnyCancellableCleaning {
-    let state: RelaychainStakingSharedStateProtocol
-
-    var chainRegistry: ChainRegistryProtocol { state.chainRegistry }
+    let state: RelaychainStartStakingStateProtocol
+    let chainRegistry: ChainRegistryProtocol
+    let networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
+    let eraCoundownOperationFactory: EraCountdownOperationFactoryProtocol
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
-        state.localSubscriptionFactory
+        state.relaychainLocalSubscriptionFactory
     }
 
     private var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
@@ -25,18 +26,24 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     }
 
     init(
+        state: RelaychainStartStakingStateProtocol,
         selectedWalletSettings: SelectedWalletSettings,
+        chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        state: RelaychainStakingSharedStateProtocol,
+        networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
+        eraCoundownOperationFactory: EraCountdownOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.state = state
+        self.chainRegistry = chainRegistry
+        self.networkInfoOperationFactory = networkInfoOperationFactory
+        self.eraCoundownOperationFactory = eraCoundownOperationFactory
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
-            selectedChainAsset: state.stakingOption.chainAsset,
+            selectedChainAsset: state.chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
@@ -58,7 +65,6 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         clear(cancellable: &networkInfoCancellable)
 
         let chain = selectedChainAsset.chain
-        let networkInfoFactory = state.createNetworkInfoOperationFactory()
         let chainId = chain.chainId
 
         guard
@@ -69,7 +75,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
 
         let eraValidatorService = state.eraValidatorService
 
-        let wrapper = networkInfoFactory.networkStakingOperation(
+        let wrapper = networkInfoOperationFactory.networkStakingOperation(
             for: eraValidatorService,
             runtimeService: runtimeService
         )
@@ -130,9 +136,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
             return
         }
 
-        let eraCountdownOperationFactory = state.createEraCountdownOperationFactory()
-
-        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
+        let operationWrapper = eraCoundownOperationFactory.fetchCountdownOperationWrapper(
             for: connection,
             runtimeService: runtimeService
         )
@@ -162,7 +166,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     private func provideRewardCalculator() {
         clear(cancellable: &rewardCalculatorCancellable)
 
-        let calculatorService = state.rewardCalculatorService
+        let calculatorService = state.relaychainRewardCalculatorService
 
         let operation = calculatorService.fetchCalculatorOperation()
 

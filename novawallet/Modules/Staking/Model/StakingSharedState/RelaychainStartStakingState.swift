@@ -2,18 +2,17 @@ import Foundation
 
 protocol RelaychainStartStakingStateProtocol: AnyObject {
     var stakingType: StakingType? { get }
+    var consensus: ConsensusType { get }
     var chainAsset: ChainAsset { get }
 
     var relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
-    var durationOperationFactory: StakingDurationOperationFactoryProtocol { get }
-
     var relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
     var relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var relaychainRewardCalculatorService: RewardCalculatorServiceProtocol { get }
 
-    var npRemoteSubstriptionService: StakingRemoteSubscriptionServiceProtocol? { get }
+    var npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol? { get }
     var npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol? { get }
     var npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol? { get }
     var activePoolsService: EraNominationPoolsServiceProtocol? { get }
@@ -21,26 +20,32 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     func setup(for accountId: AccountId?) throws
     func throttle()
     func supportsPoolStaking() -> Bool
+
+    func createNetworkInfoOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> NetworkStakingInfoOperationFactoryProtocol
+
+    func createEraCountdownOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> EraCountdownOperationFactoryProtocol
+
+    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol
 }
 
 final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     let stakingType: StakingType?
+    let consensus: ConsensusType
     let chainAsset: ChainAsset
 
     let relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let durationOperationFactory: StakingDurationOperationFactoryProtocol
-
     let relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol
+    let blockTimeService: BlockTimeEstimationServiceProtocol
     let relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let relaychainRewardCalculatorService: RewardCalculatorServiceProtocol
-
-    let chainRegistry: ChainRegistryProtocol
-    let substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol
     let logger: LoggerProtocol
 
-    let npRemoteSubstriptionService: StakingRemoteSubscriptionServiceProtocol?
+    let npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?
     let npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?
     let npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol?
     let activePoolsService: EraNominationPoolsServiceProtocol?
@@ -49,30 +54,29 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     private var npGlobalSubscriptionId: UUID?
     private var npAccountService: NominationPoolsAccountUpdatingService?
 
+    private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+
     init(
         stakingType: StakingType?,
+        consensus: ConsensusType,
         chainAsset: ChainAsset,
-        chainRegistry: ChainRegistryProtocol,
         relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        durationOperationFactory: StakingDurationOperationFactoryProtocol,
         relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol,
+        blockTimeService: BlockTimeEstimationServiceProtocol,
         relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         relaychainRewardCalculatorService: RewardCalculatorServiceProtocol,
-        npRemoteSubstriptionService: StakingRemoteSubscriptionServiceProtocol?,
+        npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?,
         npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?,
         npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol?,
         activePoolsService: EraNominationPoolsServiceProtocol?,
-        substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.stakingType = stakingType
         self.chainAsset = chainAsset
-        self.chainRegistry = chainRegistry
+        self.consensus = consensus
         self.relaychainGlobalSubscriptionService = relaychainGlobalSubscriptionService
         self.blockTimeService = blockTimeService
-        self.durationOperationFactory = durationOperationFactory
         self.relaychainAccountSubscriptionService = relaychainAccountSubscriptionService
         self.relaychainLocalSubscriptionFactory = relaychainLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
@@ -81,7 +85,6 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         self.npAccountSubscriptionServiceFactory = npAccountSubscriptionServiceFactory
         self.npLocalSubscriptionFactory = npLocalSubscriptionFactory
         self.activePoolsService = activePoolsService
-        self.substrateRepositoryFactory = substrateRepositoryFactory
         self.logger = logger
     }
 
@@ -185,5 +188,39 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
     func supportsPoolStaking() -> Bool {
         npRemoteSubstriptionService != nil
+    }
+
+    func createNetworkInfoOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> NetworkStakingInfoOperationFactoryProtocol {
+        let durationFactory = consensusDependingFactory.createStakingDurationOperationFactory(
+            for: consensus,
+            chain: chainAsset.chain,
+            blockTimeService: blockTimeService
+        )
+
+        return consensusDependingFactory.createNetworkInfoOperationFactory(
+            for: durationFactory,
+            operationQueue: operationQueue
+        )
+    }
+
+    func createEraCountdownOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> EraCountdownOperationFactoryProtocol {
+        consensusDependingFactory.createEraCountdownOperationFactory(
+            for: consensus,
+            chain: chainAsset.chain,
+            blockTimeService: blockTimeService,
+            operationQueue: operationQueue
+        )
+    }
+
+    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol {
+        consensusDependingFactory.createStakingDurationOperationFactory(
+            for: consensus,
+            chain: chainAsset.chain,
+            blockTimeService: blockTimeService
+        )
     }
 }

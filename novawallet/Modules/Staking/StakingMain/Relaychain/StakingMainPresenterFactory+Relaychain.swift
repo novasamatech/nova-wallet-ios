@@ -71,12 +71,25 @@ extension StakingMainPresenterFactory {
             logger: logger
         )
 
+        let consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+
+        let networkInfoFactory = state.createNetworkInfoOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let eraCountdownFactory = state.createEraCountdownOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
+
         return StakingRelaychainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             sharedState: state,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             accountProviderFactory: accountProviderFactory,
+            networkInfoOperationFactory: networkInfoFactory,
+            eraCountdownOperationFactory: eraCountdownFactory,
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
             applicationHandler: applicationHandler,
