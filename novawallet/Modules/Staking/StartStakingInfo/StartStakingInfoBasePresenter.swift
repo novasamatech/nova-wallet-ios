@@ -165,20 +165,20 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func startStaking() {
         guard let view = view,
-              let chain = chainAsset?.chain,
+              let chainAsset = chainAsset,
               let wallet = wallet else {
             return
         }
         switch accountExistense {
         case .noAccount:
             let message = R.string.localizable.commonChainAccountMissingMessageFormat(
-                chain.name,
+                chainAsset.chain.name,
                 preferredLanguages: selectedLocale.rLanguages
             )
 
             wireframe.presentAddAccount(
                 from: view,
-                chainName: chain.name,
+                chainName: chainAsset.chain.name,
                 message: message,
                 locale: selectedLocale
             ) { [weak self] in
@@ -188,11 +188,13 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
                 )
             }
         case .assetBalance:
-            wireframe.showSetupAmount(from: view)
+            showSetupAmount()
         case .none:
             break
         }
     }
+
+    func showSetupAmount() {}
 }
 
 extension StartStakingInfoBasePresenter: Localizable {

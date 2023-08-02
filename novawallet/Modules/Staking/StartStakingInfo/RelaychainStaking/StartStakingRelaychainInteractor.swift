@@ -124,6 +124,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
             let state = try stateFactory.createState()
             sharedState = state
             sharedState?.setupServices()
+            presenter?.didReceive(stakingSharedState: state)
         } catch {
             presenter?.didReceive(error: .createState(error))
         }
