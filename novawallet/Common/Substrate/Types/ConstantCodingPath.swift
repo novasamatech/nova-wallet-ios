@@ -65,4 +65,8 @@ extension ConstantCodingPath {
     static var electionsSessionPeriod: ConstantCodingPath {
         ConstantCodingPath(moduleName: "Elections", constantName: "SessionPeriod")
     }
+
+    static var azeroSessionPeriod: ConstantCodingPath {
+        ConstantCodingPath(moduleName: "CommitteeManagement", constantName: "SessionPeriod")
+    }
 }

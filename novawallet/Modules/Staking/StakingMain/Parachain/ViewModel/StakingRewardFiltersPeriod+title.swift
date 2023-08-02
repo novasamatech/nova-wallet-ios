@@ -33,11 +33,11 @@ extension StakingRewardFiltersPeriod {
         let endDate: Date
         switch customPeriod {
         case let .interval(start, end):
-            startDate = start
-            endDate = end
+            startDate = calendar.startOfDay(for: start)
+            endDate = calendar.startOfDay(for: end)
         case let .openEndDate(start):
-            startDate = start
-            endDate = Date()
+            startDate = calendar.startOfDay(for: start)
+            endDate = calendar.startOfDay(for: Date())
         }
 
         guard let days = calendar.dateComponents([.day], from: startDate, to: endDate).day else {
@@ -45,7 +45,7 @@ extension StakingRewardFiltersPeriod {
         }
 
         return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
-            "\(days)",
+            "\(days + 1)",
             preferredLanguages: locale.rLanguages
         )
     }

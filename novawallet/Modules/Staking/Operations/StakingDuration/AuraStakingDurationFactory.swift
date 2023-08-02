@@ -4,16 +4,16 @@ import RobinHood
 final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol {
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
-    let defaultSessionPeriod: SessionIndex
+    let sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
 
     init(
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
-        defaultSessionPeriod: SessionIndex = 50
+        sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
     ) {
         self.blockTimeService = blockTimeService
         self.blockTimeOperationFactory = blockTimeOperationFactory
-        self.defaultSessionPeriod = defaultSessionPeriod
+        self.sessionPeriodOperationFactory = sessionPeriodOperationFactory
     }
 
     func createDurationOperation(
@@ -31,11 +31,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
             dependingOn: runtimeFactoryOperation
         )
 
-        let sessionLengthOperation: BaseOperation<SessionIndex> = PrimitiveConstantOperation.operation(
-            for: .electionsSessionPeriod,
-            dependingOn: runtimeFactoryOperation,
-            fallbackValue: defaultSessionPeriod
-        )
+        let sessionLengthOperation = sessionPeriodOperationFactory.createOperation(dependingOn: runtimeFactoryOperation)
 
         let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
             from: runtimeService,

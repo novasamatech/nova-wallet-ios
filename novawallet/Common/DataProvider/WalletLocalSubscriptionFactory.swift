@@ -63,7 +63,7 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 accountId.toHex() == entity.chainAccountId && chainId == entity.chainId &&
-                    assetId == entity.assetId
+                    assetId == UInt32(bitPattern: entity.assetId)
             }
         )
 

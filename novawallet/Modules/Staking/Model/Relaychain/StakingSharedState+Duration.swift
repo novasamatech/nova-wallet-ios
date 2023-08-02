@@ -9,7 +9,7 @@ extension StakingSharedState {
         switch consensus {
         case .babe:
             return BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
-        case .aura:
+        case .auraGeneral:
             guard let blockTimeService = blockTimeService else {
                 throw StakingSharedStateError.missingBlockTimeService
             }
@@ -17,7 +17,19 @@ extension StakingSharedState {
             return AuraEraOperationFactory(
                 storageRequestFactory: storageRequestFactory,
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain)
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+            )
+        case .auraAzero:
+            guard let blockTimeService = blockTimeService else {
+                throw StakingSharedStateError.missingBlockTimeService
+            }
+
+            return AuraEraOperationFactory(
+                storageRequestFactory: storageRequestFactory,
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
             )
         }
     }
@@ -28,14 +40,25 @@ extension StakingSharedState {
         switch consensus {
         case .babe:
             return BabeStakingDurationFactory()
-        case .aura:
+        case .auraGeneral:
             guard let blockTimeService = blockTimeService else {
                 throw StakingSharedStateError.missingBlockTimeService
             }
 
             return AuraStakingDurationFactory(
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain)
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+            )
+        case .auraAzero:
+            guard let blockTimeService = blockTimeService else {
+                throw StakingSharedStateError.missingBlockTimeService
+            }
+
+            return AuraStakingDurationFactory(
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
             )
         }
     }

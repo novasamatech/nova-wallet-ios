@@ -2,5 +2,6 @@ import Foundation
 
 enum ConsensusType {
     case babe
-    case aura
+    case auraGeneral
+    case auraAzero
 }
