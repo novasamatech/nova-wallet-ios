@@ -48,8 +48,10 @@ final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol
         switch stakingOption.type {
         case .relaychain, .nominationPools:
             consensus = .babe
-        case .auraRelaychain, .azero:
-            consensus = .aura
+        case .auraRelaychain:
+            consensus = .auraGeneral
+        case .azero:
+            consensus = .auraAzero
         case .parachain, .turing, .unsupported:
             throw RelaychainStakingStateFactoryError.noSupportedOptions
         }
@@ -100,13 +102,25 @@ final class RelaychainStakingStateFactory: RelaychainStakingStateFactoryProtocol
         switch consensus {
         case .babe:
             return BabeStakingDurationFactory()
-        case .aura:
+        case .auraGeneral:
             guard let blockTimeService = blockTimeService else {
                 throw StakingSharedStateError.missingBlockTimeService
             }
+
             return AuraStakingDurationFactory(
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain)
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+            )
+        case .auraAzero:
+            guard let blockTimeService = blockTimeService else {
+                throw StakingSharedStateError.missingBlockTimeService
+            }
+
+            return AuraStakingDurationFactory(
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
             )
         }
     }
