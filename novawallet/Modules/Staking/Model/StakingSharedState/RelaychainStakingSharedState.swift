@@ -10,7 +10,6 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
     var localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var rewardCalculatorService: RewardCalculatorServiceProtocol { get }
-    var blockTimeService: BlockTimeEstimationServiceProtocol { get }
 
     func setup(for accountId: AccountId?) throws
     func throttle()
@@ -25,13 +24,13 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
 
 final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let consensus: ConsensusType
+    let timeModel: StakingTimeModel
     let stakingOption: Multistaking.ChainAssetOption
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol
     let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardCalculatorService: RewardCalculatorServiceProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
     let logger: LoggerProtocol
 
     private var globalSubscriptionId: UUID?
@@ -48,7 +47,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         rewardCalculatorService: RewardCalculatorServiceProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
+        timeModel: StakingTimeModel,
         logger: LoggerProtocol
     ) {
         self.consensus = consensus
@@ -58,7 +57,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.localSubscriptionFactory = localSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.rewardCalculatorService = rewardCalculatorService
-        self.blockTimeService = blockTimeService
+        self.timeModel = timeModel
         self.logger = logger
     }
 
@@ -77,7 +76,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
 
         eraValidatorService.setup()
         rewardCalculatorService.setup()
-        blockTimeService.setup()
+        timeModel.blockTimeService?.setup()
 
         if let accountId = accountId {
             try accountRemoteSubscriptionService.setupSubscription(
@@ -110,7 +109,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
 
         eraValidatorService.throttle()
         rewardCalculatorService.throttle()
-        blockTimeService.throttle()
+        timeModel.blockTimeService?.throttle()
 
         accountRemoteSubscriptionService.clearSubscription()
     }
@@ -119,9 +118,8 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         for operationQueue: OperationQueue
     ) -> NetworkStakingInfoOperationFactoryProtocol {
         let durationFactory = consensusDependingFactory.createStakingDurationOperationFactory(
-            for: consensus,
-            chain: stakingOption.chainAsset.chain,
-            blockTimeService: blockTimeService
+            for: stakingOption.chainAsset.chain,
+            timeModel: timeModel
         )
 
         return consensusDependingFactory.createNetworkInfoOperationFactory(
@@ -134,18 +132,16 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         for operationQueue: OperationQueue
     ) -> EraCountdownOperationFactoryProtocol {
         consensusDependingFactory.createEraCountdownOperationFactory(
-            for: consensus,
-            chain: stakingOption.chainAsset.chain,
-            blockTimeService: blockTimeService,
+            for: stakingOption.chainAsset.chain,
+            timeModel: timeModel,
             operationQueue: operationQueue
         )
     }
 
     func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol {
         consensusDependingFactory.createStakingDurationOperationFactory(
-            for: consensus,
-            chain: stakingOption.chainAsset.chain,
-            blockTimeService: blockTimeService
+            for: stakingOption.chainAsset.chain,
+            timeModel: timeModel
         )
     }
 }

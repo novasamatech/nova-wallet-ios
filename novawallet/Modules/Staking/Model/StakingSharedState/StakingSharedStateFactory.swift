@@ -19,7 +19,6 @@ protocol StakingSharedStateFactoryProtocol {
 
 enum StakingSharedStateFactoryError: Error {
     case unsupported
-    case noBlockTimeService
 }
 
 final class StakingSharedStateFactory {
@@ -28,7 +27,7 @@ final class StakingSharedStateFactory {
         let accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol
         let eraValidatorService: EraValidatorServiceProtocol
         let rewardCalculatorService: RewardCalculatorServiceProtocol
-        let blockTimeService: BlockTimeEstimationServiceProtocol
+        let timeModel: StakingTimeModel
         let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     }
 
@@ -109,17 +108,11 @@ final class StakingSharedStateFactory {
         let chainId = chainAsset.chain.chainId
         let eraValidatorService = try stakingServiceFactory.createEraValidatorService(for: chainId)
 
-        guard let blockTimeService = try stakingServiceFactory.createBlockTimeService(
-            for: chainId,
-            consensus: consensus
-        ) else {
-            throw StakingSharedStateFactoryError.noBlockTimeService
-        }
+        let timeModel = try stakingServiceFactory.createTimeModel(for: chainId, consensus: consensus)
 
         let durationFactory = RelaychainConsensusStateDependingFactory().createStakingDurationOperationFactory(
-            for: consensus,
-            chain: chainAsset.chain,
-            blockTimeService: blockTimeService
+            for: chainAsset.chain,
+            timeModel: timeModel
         )
 
         let localSubscriptionFactory = StakingLocalSubscriptionFactory(
@@ -142,7 +135,7 @@ final class StakingSharedStateFactory {
             accountRemoteSubscriptionService: accountRemoteSubscriptionService,
             eraValidatorService: eraValidatorService,
             rewardCalculatorService: rewardCalculatorService,
-            blockTimeService: blockTimeService,
+            timeModel: timeModel,
             localSubscriptionFactory: localSubscriptionFactory
         )
     }
@@ -230,7 +223,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             localSubscriptionFactory: services.localSubscriptionFactory,
             eraValidatorService: services.eraValidatorService,
             rewardCalculatorService: services.rewardCalculatorService,
-            blockTimeService: services.blockTimeService,
+            timeModel: services.timeModel,
             logger: logger
         )
     }
@@ -329,7 +322,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             chainAsset: chainAsset,
             relaychainGlobalSubscriptionService: relaychainServices.globalRemoteSubscriptionService,
             relaychainAccountSubscriptionService: relaychainServices.accountRemoteSubscriptionService,
-            blockTimeService: relaychainServices.blockTimeService,
+            timeModel: relaychainServices.timeModel,
             relaychainLocalSubscriptionFactory: relaychainServices.localSubscriptionFactory,
             eraValidatorService: relaychainServices.eraValidatorService,
             relaychainRewardCalculatorService: relaychainServices.rewardCalculatorService,

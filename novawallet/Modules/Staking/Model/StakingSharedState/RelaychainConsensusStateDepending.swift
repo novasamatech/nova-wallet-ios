@@ -9,16 +9,14 @@ protocol RelaychainConsensusStateDepending {
     ) -> NetworkStakingInfoOperationFactoryProtocol
 
     func createEraCountdownOperationFactory(
-        for consensus: ConsensusType,
-        chain: ChainModel,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
+        for chain: ChainModel,
+        timeModel: StakingTimeModel,
         operationQueue: OperationQueue
     ) -> EraCountdownOperationFactoryProtocol
 
     func createStakingDurationOperationFactory(
-        for consensus: ConsensusType,
-        chain: ChainModel,
-        blockTimeService: BlockTimeEstimationServiceProtocol
+        for chain: ChainModel,
+        timeModel: StakingTimeModel
     ) -> StakingDurationOperationFactoryProtocol
 }
 
@@ -38,9 +36,8 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
     }
 
     func createEraCountdownOperationFactory(
-        for consensus: ConsensusType,
-        chain: ChainModel,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
+        for chain: ChainModel,
+        timeModel: StakingTimeModel,
         operationQueue: OperationQueue
     ) -> EraCountdownOperationFactoryProtocol {
         let storageRequestFactory = StorageRequestFactory(
@@ -48,17 +45,17 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        switch consensus {
+        switch timeModel {
         case .babe:
             return BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
-        case .auraGeneral:
+        case let .auraGeneral(blockTimeService):
             return AuraEraOperationFactory(
                 storageRequestFactory: storageRequestFactory,
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
                 sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
             )
-        case .auraAzero:
+        case let .azero(blockTimeService):
             return AuraEraOperationFactory(
                 storageRequestFactory: storageRequestFactory,
                 blockTimeService: blockTimeService,
@@ -69,20 +66,19 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
     }
 
     func createStakingDurationOperationFactory(
-        for consensus: ConsensusType,
-        chain: ChainModel,
-        blockTimeService: BlockTimeEstimationServiceProtocol
+        for chain: ChainModel,
+        timeModel: StakingTimeModel
     ) -> StakingDurationOperationFactoryProtocol {
-        switch consensus {
+        switch timeModel {
         case .babe:
             return BabeStakingDurationFactory()
-        case .auraGeneral:
+        case let .auraGeneral(blockTimeService):
             return AuraStakingDurationFactory(
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
                 sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
             )
-        case .auraAzero:
+        case let .azero(blockTimeService):
             return AuraStakingDurationFactory(
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),

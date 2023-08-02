@@ -6,7 +6,7 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     var chainAsset: ChainAsset { get }
 
     var relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
-    var blockTimeService: BlockTimeEstimationServiceProtocol { get }
+    var timeModel: StakingTimeModel { get }
     var relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
     var relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
@@ -39,7 +39,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
     let relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
+    let timeModel: StakingTimeModel
     let relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let relaychainRewardCalculatorService: RewardCalculatorServiceProtocol
@@ -62,7 +62,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         chainAsset: ChainAsset,
         relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
+        timeModel: StakingTimeModel,
         relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         relaychainRewardCalculatorService: RewardCalculatorServiceProtocol,
@@ -76,7 +76,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         self.chainAsset = chainAsset
         self.consensus = consensus
         self.relaychainGlobalSubscriptionService = relaychainGlobalSubscriptionService
-        self.blockTimeService = blockTimeService
+        self.timeModel = timeModel
         self.relaychainAccountSubscriptionService = relaychainAccountSubscriptionService
         self.relaychainLocalSubscriptionFactory = relaychainLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
@@ -105,7 +105,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
         eraValidatorService.setup()
         relaychainRewardCalculatorService.setup()
-        blockTimeService.setup()
+        timeModel.blockTimeService?.setup()
 
         npGlobalSubscriptionId = npRemoteSubstriptionService?.attachToGlobalData(
             for: chainId,
@@ -176,7 +176,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
         eraValidatorService.throttle()
         relaychainRewardCalculatorService.throttle()
-        blockTimeService.throttle()
+        timeModel.blockTimeService?.throttle()
 
         relaychainAccountSubscriptionService.clearSubscription()
 
@@ -194,9 +194,8 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         for operationQueue: OperationQueue
     ) -> NetworkStakingInfoOperationFactoryProtocol {
         let durationFactory = consensusDependingFactory.createStakingDurationOperationFactory(
-            for: consensus,
-            chain: chainAsset.chain,
-            blockTimeService: blockTimeService
+            for: chainAsset.chain,
+            timeModel: timeModel
         )
 
         return consensusDependingFactory.createNetworkInfoOperationFactory(
@@ -209,18 +208,16 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         for operationQueue: OperationQueue
     ) -> EraCountdownOperationFactoryProtocol {
         consensusDependingFactory.createEraCountdownOperationFactory(
-            for: consensus,
-            chain: chainAsset.chain,
-            blockTimeService: blockTimeService,
+            for: chainAsset.chain,
+            timeModel: timeModel,
             operationQueue: operationQueue
         )
     }
 
     func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol {
         consensusDependingFactory.createStakingDurationOperationFactory(
-            for: consensus,
-            chain: chainAsset.chain,
-            blockTimeService: blockTimeService
+            for: chainAsset.chain,
+            timeModel: timeModel
         )
     }
 }
