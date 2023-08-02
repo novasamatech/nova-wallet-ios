@@ -143,3 +143,60 @@ extension NominationPoolsAccountUpdatingService: NPoolsLocalSubscriptionHandler 
         }
     }
 }
+
+protocol NominationPoolsAccountUpdatingFactoryProtocol {
+    func create(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) throws -> NominationPoolsAccountUpdatingService
+}
+
+final class NominationPoolsAccountUpdatingFactory: NominationPoolsAccountUpdatingFactoryProtocol {
+    let chainRegistry: ChainRegistryProtocol
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let remoteSubscriptionService: NominationPoolsPoolSubscriptionServiceProtocol
+    let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
+
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        remoteSubscriptionService: NominationPoolsPoolSubscriptionServiceProtocol,
+        npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) {
+        self.chainRegistry = chainRegistry
+        self.repositoryFactory = repositoryFactory
+        self.remoteSubscriptionService = remoteSubscriptionService
+        self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
+        self.operationQueue = operationQueue
+        self.logger = logger
+    }
+
+    func create(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) throws -> NominationPoolsAccountUpdatingService {
+        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
+        return .init(
+            accountId: accountId,
+            chainAsset: chainAsset,
+            connection: connection,
+            runtimeService: runtimeService,
+            cacheRepository: repositoryFactory.createChainStorageItemRepository(),
+            npoolsLocalSubscriptionFactory: npoolsLocalSubscriptionFactory,
+            remoteSubscriptionService: remoteSubscriptionService,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+}
