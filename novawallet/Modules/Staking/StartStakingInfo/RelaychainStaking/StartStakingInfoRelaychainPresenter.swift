@@ -4,6 +4,8 @@ import BigInt
 
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoRelaychainInteractorInputProtocol
+    let relaychainWireframe: StartStakingInfoRelaychainWireframeProtocol
+    private var stakingState: StakingSharedState?
 
     private var state: State = .init() {
         didSet {
@@ -13,13 +15,14 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
 
     init(
         interactor: StartStakingInfoRelaychainInteractorInputProtocol,
-        wireframe: StartStakingInfoWireframeProtocol,
+        wireframe: StartStakingInfoRelaychainWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol?
     ) {
         self.interactor = interactor
+        relaychainWireframe = wireframe
 
         super.init(
             interactor: interactor,
@@ -39,6 +42,13 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     override func didReceive(chainAsset: ChainAsset) {
         super.didReceive(chainAsset: chainAsset)
         state.chainAsset = chainAsset
+    }
+
+    override func showSetupAmount() {
+        guard let chainAsset = state.chainAsset, let stakingState = stakingState else {
+            return
+        }
+        relaychainWireframe.showSetupAmount(from: view, chainAsset: chainAsset, state: stakingState)
     }
 }
 
@@ -92,6 +102,10 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
 
     func didReceive(calculator: RewardCalculatorEngineProtocol) {
         state.maxApy = calculator.calculateMaxEarnings(amount: 1, isCompound: true, period: .year)
+    }
+
+    func didReceive(stakingSharedState: StakingSharedState) {
+        stakingState = stakingSharedState
     }
 }
 

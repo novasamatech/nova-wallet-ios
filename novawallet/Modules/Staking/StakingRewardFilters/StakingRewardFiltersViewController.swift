@@ -1,14 +1,20 @@
 import UIKit
 import SoraFoundation
+import RobinHood
 
 final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingRewardFiltersViewLayout
+    typealias SectionId = String
+    typealias RowId = String
 
     let presenter: StakingRewardFiltersPresenterProtocol
-    typealias DataSource = UITableViewDiffableDataSource<Section, Row>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
+    typealias DataSource = UITableViewDiffableDataSource<SectionId, RowId>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<SectionId, RowId>
     private var dataSource: DataSource?
-    var viewModel: StakingRewardFiltersViewModel?
+    private var dataStore = DiffableDataStore<Section, Row>()
+    private var viewModel: StakingRewardFiltersViewModel?
+
+    var initialViewModel: StakingRewardFiltersViewModel?
     let dateFormatter: LocalizableResource<DateFormatter>
     let calendar: Calendar
 
@@ -77,9 +83,18 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     private func createDataSource() -> DataSource {
         let dataSource = DataSource(
             tableView: rootView.tableView,
-            cellProvider: { tableView, indexPath, model ->
+            cellProvider: { [weak self] tableView, indexPath, model ->
                 UITableViewCell? in
-                switch model {
+                guard let self = self,
+                      let row = self.dataStore.row(
+                          rowId: model,
+                          indexPath: indexPath,
+                          snapshot: self.dataSource?.snapshot()
+                      ) else {
+                    return UITableViewCell()
+                }
+
+                switch row {
                 case let .selectable(title, selected):
                     let cell: SelectableFilterCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.bind(viewModel: .init(underlyingViewModel: title, selectable: selected))
@@ -88,6 +103,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
                     let cell: TitleSubtitleSwitchTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
                     cell?.titleLabel.apply(style: .footnoteSecondary)
                     cell?.horizontalInset = 16
+                    cell?.switchView.removeTarget(nil, action: nil, for: .allEvents)
                     cell?.switchView.addTarget(self, action: #selector(self.toggleEndDay), for: .valueChanged)
                     cell?.bind(title: title, isOn: enabled)
                     return cell
@@ -121,6 +137,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
     ) -> StakingRewardActionControl {
         let view: StakingRewardActionControl = tableView.dequeueReusableHeaderFooterView()
         view.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        view.control.removeTarget(nil, action: nil, for: .allEvents)
         view.bind(
             title: title,
             value: value,
@@ -129,33 +146,61 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         return view
     }
 
-    private func collapseOrExpandCalendar(
-        lens: GenericLens<StakingRewardFiltersViewModel.CustomPeriod, Bool>,
-        forceCollapse: Bool? = nil
-    ) {
-        guard let viewModel = self.viewModel else {
-            return
-        }
-
-        let newValue = forceCollapse ?? !lens.get(viewModel.customPeriod)
-        let updatedCustomPeriod = lens.set(newValue, viewModel.customPeriod)
-
-        updateViewModel(viewModel: .init(
-            period: viewModel.period,
-            customPeriod: updatedCustomPeriod
-        ))
-    }
-
     @objc
     private func startDayAction() {
-        collapseOrExpandCalendar(lens: Lens.endDayCollapsed, forceCollapse: true)
-        collapseOrExpandCalendar(lens: Lens.startDayCollapsed)
+        guard var viewModel = self.viewModel else {
+            return
+        }
+        let collapsedStartDayCalendar = viewModel.customPeriod.startDay.collapsed
+        let needDefaultDate = collapsedStartDayCalendar && viewModel.customPeriod.startDay.value == nil
+
+        viewModel.customPeriod = .init(
+            startDay: .init(
+                value: needDefaultDate ? calendar.startOfDay(for: Date()) : viewModel.customPeriod.startDay.value,
+                collapsed: !viewModel.customPeriod.startDay.collapsed
+            ),
+            endDay: .init(
+                value: viewModel.customPeriod.endDay.value,
+                collapsed: true
+            )
+        )
+        updateViewModel(viewModel: viewModel)
     }
 
     @objc
     private func endDayAction() {
-        collapseOrExpandCalendar(lens: Lens.startDayCollapsed, forceCollapse: true)
-        collapseOrExpandCalendar(lens: Lens.endDayCollapsed)
+        guard var viewModel = self.viewModel else {
+            return
+        }
+        var newValue = correctedDefaultDate(
+            endDay: viewModel.customPeriod.endDay,
+            expandedCalendar: viewModel.customPeriod.endDay.collapsed
+        )
+        viewModel.customPeriod = .init(
+            startDay: .init(
+                value: viewModel.customPeriod.startDay.value,
+                collapsed: true
+            ),
+            endDay: .init(
+                value: newValue,
+                collapsed: !viewModel.customPeriod.endDay.collapsed
+            )
+        )
+        updateViewModel(viewModel: viewModel)
+    }
+
+    private func correctedDefaultDate(
+        endDay: StakingRewardFiltersViewModel.EndDay,
+        expandedCalendar: Bool
+    ) -> StakingRewardFiltersViewModel.EndDayValue? {
+        if expandedCalendar,
+           let endDay = endDay.value,
+           Lens.endDayDate.get(endDay) == nil,
+           let date = calendar.endOfDay(for: Date()) {
+            return Lens.endDayDate.set(date, endDay)
+        }
+
+        return endDay.value
     }
 
     @objc
@@ -164,8 +209,10 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             return
         }
 
+        let date = viewModel.customPeriod.endDay.collapsed ? nil : calendar.endOfDay(for: Date())
+
         let endDayValue: StakingRewardFiltersViewModel.EndDayValue = sender.isOn ?
-            .alwaysToday : .exact(nil)
+            .alwaysToday : .exact(date)
         let updatedCustomPeriod = Lens.endDayValue.set(endDayValue, viewModel.customPeriod)
 
         updateViewModel(viewModel: .init(
@@ -261,22 +308,31 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func updateViewModel(viewModel: StakingRewardFiltersViewModel) {
         self.viewModel = viewModel
-        var snapshot = Snapshot()
+        let canSave = map(viewModel: viewModel) != nil && viewModel != initialViewModel
+        setupSaveButton(isEnabled: canSave)
 
-        setupSaveButton(isEnabled: map(viewModel: viewModel) != nil)
-        let periodSection = Section.period
-        snapshot.appendSections([periodSection])
-        snapshot.appendItems(
-            StakingRewardFiltersViewModel.Period.allCases.map {
-                Row.selectable(
-                    title: $0.name.value(for: selectedLocale),
-                    selected: $0.rawValue == viewModel.period.rawValue
-                )
-            },
-            toSection: periodSection
+        let periodRows = StakingRewardFiltersViewModel.Period.allCases.map {
+            Row.selectable(
+                title: $0.name.value(for: selectedLocale),
+                selected: $0.rawValue == viewModel.period.rawValue
+            )
+        }
+
+        var snapshot = dataStore.updating(
+            section: Section.period,
+            rows: periodRows,
+            in: dataSource?.snapshot()
         )
 
         guard viewModel.period == .custom else {
+            snapshot = dataStore.removing(
+                sections: [
+                    Section.startDateIdentifier,
+                    Section.endAlwaysTodayIdentifier,
+                    Section.endDateIdentifier
+                ],
+                from: snapshot
+            )
             dataSource?.apply(snapshot, animatingDifferences: false)
             return
         }
@@ -286,41 +342,59 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         let startDaySection = Section.start(date: selectDateValue, active: !customPeriod.startDay.collapsed)
         let endDate = Lens.endDayValue.get(viewModel.customPeriod).map(Lens.endDayDate.get) ?? nil
         let startDate = customPeriod.startDay.value
-        snapshot.appendSections([startDaySection])
-        if !customPeriod.startDay.collapsed {
-            snapshot.appendItems(
-                [.calendar(
-                    .startDate,
-                    date: startDate,
-                    minDate: nil,
-                    maxDate: calendar.startOfDay(for: endDate ?? Date()).addingTimeInterval(-1)
-                )],
-                toSection: startDaySection
-            )
-        }
 
-        snapshot.appendSections([.endAlwaysToday])
+        let calendarRow: [Row] = [
+            .calendar(
+                .startDate,
+                date: startDate,
+                minDate: nil,
+                maxDate: calendar.startOfDay(for: endDate ?? Date())
+            )
+        ]
+
+        snapshot = dataStore.updating(
+            section: startDaySection,
+            rows: !customPeriod.startDay.collapsed ? calendarRow : [],
+            in: snapshot
+        )
+
         let title = R.string.localizable.stakingRewardFiltersPeriodEndDateOpen(
             preferredLanguages: selectedLocale.rLanguages)
         switch customPeriod.endDay.value {
         case .alwaysToday, .none:
-            snapshot.appendItems([.dateAlwaysToday(title, true)])
+            snapshot = dataStore.updating(
+                section: .endAlwaysToday,
+                rows: [.dateAlwaysToday(title, true)],
+                in: snapshot
+            )
+            snapshot = dataStore.removing(sections: [Section.endDateIdentifier], from: snapshot)
         case let .exact(day):
-            snapshot.appendItems([.dateAlwaysToday(title, false)])
+            snapshot = dataStore.updating(
+                section: .endAlwaysToday,
+                rows: [.dateAlwaysToday(title, false)],
+                in: snapshot
+            )
             let dateValue = dateStringValue(endDate ?? nil)
             let collapsed = customPeriod.endDay.collapsed
-            let endDaySection = Section.end(date: dateValue, active: !collapsed)
-            snapshot.appendSections([endDaySection])
+            var items: [Row] = []
+
             if !collapsed {
-                let minDate = startDate.map { calendar.startOfDay(for: $0) }?
-                    .addingTimeInterval(.secondsInDay) ?? calendar.startOfDay(for: Date())
-                snapshot.appendItems([.calendar(
-                    .endDate,
-                    date: day,
-                    minDate: minDate,
-                    maxDate: nil
-                )], toSection: endDaySection)
+                let minDate = startDate.map { calendar.startOfDay(for: $0) } ?? calendar.startOfDay(for: Date())
+                items = [
+                    .calendar(
+                        .endDate,
+                        date: day,
+                        minDate: minDate,
+                        maxDate: nil
+                    )
+                ]
             }
+
+            snapshot = dataStore.updating(
+                section: Section.end(date: dateValue, active: !collapsed),
+                rows: items,
+                in: snapshot
+            )
         }
 
         dataSource?.apply(snapshot, animatingDifferences: false)
@@ -330,13 +404,21 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
 extension StakingRewardFiltersViewController: StakingRewardFiltersViewProtocol {
     func didReceive(viewModel: StakingRewardFiltersPeriod) {
         let newViewModel = map(period: viewModel)
+
+        initialViewModel = newViewModel
+
         updateViewModel(viewModel: newViewModel)
     }
 }
 
 extension StakingRewardFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionModel = dataSource?.snapshot().sectionIdentifiers[section]
+        guard let sectionModel = dataStore.section(
+            sectionNumber: section,
+            snapshot: dataSource?.snapshot()
+        ) else {
+            return nil
+        }
         switch sectionModel {
         case .period:
             return createTitleHeaderView(for: tableView)
@@ -354,13 +436,16 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
             let view = createActionHeaderView(for: tableView, title: title, value: date, activated: activated)
             view.control.addTarget(self, action: #selector(endDayAction), for: .touchUpInside)
             return view
-        default:
-            return nil
         }
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let sectionModel = dataSource?.snapshot().sectionIdentifiers[section]
+        guard let sectionModel = dataStore.section(
+            sectionNumber: section,
+            snapshot: dataSource?.snapshot()
+        ) else {
+            return 0
+        }
         switch sectionModel {
         case .period:
             return 52
@@ -372,14 +457,17 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let sectionModel = dataSource?.snapshot().sectionIdentifiers[indexPath.section]
+        guard let sectionModel = dataStore.section(
+            sectionNumber: indexPath.section,
+            snapshot: dataSource?.snapshot()
+        ) else {
+            return 0
+        }
         switch sectionModel {
         case .period, .endAlwaysToday:
             return 44
         case .start, .end:
             return 356
-        default:
-            return 0
         }
     }
 
@@ -398,17 +486,30 @@ extension StakingRewardFiltersViewController: StakingRewardDateCellDelegate {
         guard let viewModel = viewModel, let calendarIdentifier = CalendarIdentifier(rawValue: id) else {
             return
         }
-        let date = calendar.startOfDay(for: selectedDate)
+
         let updatedPeriod: StakingRewardFiltersViewModel.CustomPeriod
         switch calendarIdentifier {
         case .startDate:
-            updatedPeriod = Lens.startDayValue.set(date, viewModel.customPeriod)
+            let date = calendar.startOfDay(for: selectedDate)
+            updatedPeriod = .init(
+                startDay: .init(
+                    value: date,
+                    collapsed: true
+                ),
+                endDay: viewModel.customPeriod.endDay
+            )
         case .endDate:
+            guard let date = calendar.endOfDay(for: selectedDate) else {
+                return
+            }
             let endDate = Lens.endDayValue.get(viewModel.customPeriod).map {
                 Lens.endDayDate.set(date, $0)
             }
 
-            updatedPeriod = Lens.endDayValue.set(endDate, viewModel.customPeriod)
+            updatedPeriod = .init(
+                startDay: viewModel.customPeriod.startDay,
+                endDay: .init(value: endDate, collapsed: true)
+            )
         }
 
         updateViewModel(viewModel: .init(

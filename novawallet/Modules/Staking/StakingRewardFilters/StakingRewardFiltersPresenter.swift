@@ -3,11 +3,12 @@ import Foundation
 final class StakingRewardFiltersPresenter {
     weak var view: StakingRewardFiltersViewProtocol?
     weak var delegate: StakingRewardFiltersDelegate?
-    private var period: StakingRewardFiltersPeriod?
+
+    let period: StakingRewardFiltersPeriod
     let wireframe: StakingRewardFiltersWireframeProtocol
 
     init(
-        initialState: StakingRewardFiltersPeriod?,
+        initialState: StakingRewardFiltersPeriod,
         delegate: StakingRewardFiltersDelegate,
         wireframe: StakingRewardFiltersWireframeProtocol
     ) {
@@ -19,9 +20,7 @@ final class StakingRewardFiltersPresenter {
 
 extension StakingRewardFiltersPresenter: StakingRewardFiltersPresenterProtocol {
     func setup() {
-        if let period = period {
-            view?.didReceive(viewModel: period)
-        }
+        view?.didReceive(viewModel: period)
     }
 
     func save(_ period: StakingRewardFiltersPeriod) {

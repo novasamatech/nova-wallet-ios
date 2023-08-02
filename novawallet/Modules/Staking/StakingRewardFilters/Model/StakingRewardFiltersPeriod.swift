@@ -101,24 +101,27 @@ extension StakingRewardFiltersPeriod {
 
 extension StakingRewardFiltersPeriod {
     var interval: (startTimestamp: Int64?, endTimestamp: Int64?) {
+        let calendar = Calendar.current
+        let endToday = calendar.dateInterval(of: .day, for: Date())?.end ?? Date()
+
         switch self {
         case .allTime:
             return (startTimestamp: nil, endTimestamp: nil)
         case .lastWeek:
-            let sevenDaysAgo = Date().addingTimeInterval(-(.secondsInDay * 7)).timeIntervalSince1970
-            return (startTimestamp: Int64(sevenDaysAgo), endTimestamp: nil)
+            let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: endToday)?.timeIntervalSince1970
+            return (startTimestamp: sevenDaysAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastMonth:
-            let monthAgo = Date().addingTimeInterval(-(.secondsInDay * 7 * 4)).timeIntervalSince1970
-            return (startTimestamp: Int64(monthAgo), endTimestamp: nil)
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: endToday)?.timeIntervalSince1970
+            return (startTimestamp: monthAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastThreeMonths:
-            let threeMonthsAgo = Date().addingTimeInterval(-(.secondsInDay * 7 * 4 * 3)).timeIntervalSince1970
-            return (startTimestamp: Int64(threeMonthsAgo), endTimestamp: nil)
+            let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: endToday)?.timeIntervalSince1970
+            return (startTimestamp: threeMonthsAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastSixMonths:
-            let sixMonthsAgo = Date().addingTimeInterval(-(.secondsInDay * 7 * 4 * 6)).timeIntervalSince1970
-            return (startTimestamp: Int64(sixMonthsAgo), endTimestamp: nil)
+            let sixMonthsAgo = calendar.date(byAdding: .month, value: -6, to: endToday)?.timeIntervalSince1970
+            return (startTimestamp: sixMonthsAgo.map { Int64($0) }, endTimestamp: nil)
         case .lastYear:
-            let twelveMonthsAgo = Date().addingTimeInterval(-(.secondsInDay * 7 * 4 * 12)).timeIntervalSince1970
-            return (startTimestamp: Int64(twelveMonthsAgo), endTimestamp: nil)
+            let twelveMonthsAgo = calendar.date(byAdding: .year, value: -1, to: endToday)?.timeIntervalSince1970
+            return (startTimestamp: twelveMonthsAgo.map { Int64($0) }, endTimestamp: nil)
         case let .custom(customPeriod):
             switch customPeriod {
             case let .interval(start, end):

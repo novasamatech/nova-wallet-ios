@@ -140,11 +140,19 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         switch consensus {
         case .babe:
             return BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
-        case .aura:
+        case .auraGeneral:
             return AuraEraOperationFactory(
                 storageRequestFactory: storageRequestFactory,
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+            )
+        case .auraAzero:
+            return AuraEraOperationFactory(
+                storageRequestFactory: storageRequestFactory,
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
             )
         }
     }

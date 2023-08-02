@@ -49,10 +49,17 @@ final class StakingSharedStateFactory {
         switch consensus {
         case .babe:
             return BabeStakingDurationFactory()
-        case .aura:
+        case .auraGeneral:
             return AuraStakingDurationFactory(
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain)
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+            )
+        case .auraAzero:
+            return AuraStakingDurationFactory(
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
             )
         }
     }
