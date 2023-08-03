@@ -133,7 +133,7 @@ struct StartStakingInfoViewFactory {
 
         let interactor = createParachainInteractor(state: state, currencyManager: currencyManager)
 
-        let wireframe = StartStakingInfoWireframe()
+        let wireframe = StartStakingInfoParachainWireframe(state: state)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: stakingOption.chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)

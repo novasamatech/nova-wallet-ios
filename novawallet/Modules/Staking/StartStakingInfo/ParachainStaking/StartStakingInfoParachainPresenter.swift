@@ -49,7 +49,7 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case let .networkInfo(error):
+        case .networkInfo:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryNetworkStakingInfo()
             }

@@ -58,12 +58,12 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     }
 
     deinit {
+        state.throttle()
+
         clear(cancellable: &networkInfoCancellable)
         clear(cancellable: &rewardCalculatorCancellable)
         clear(cancellable: &durationCancellable)
         clear(cancellable: &rewardPaymentDelayCancellable)
-
-        state.throttle()
     }
 
     private func provideNetworkInfo() {

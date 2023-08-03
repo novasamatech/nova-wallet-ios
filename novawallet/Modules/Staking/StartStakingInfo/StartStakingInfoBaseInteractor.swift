@@ -30,11 +30,6 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         self.currencyManager = currencyManager
     }
 
-    deinit {
-        clear(streamableProvider: &priceProvider)
-        clear(streamableProvider: &balanceProvider)
-    }
-
     private func performPriceSubscription() {
         clear(streamableProvider: &priceProvider)
 
