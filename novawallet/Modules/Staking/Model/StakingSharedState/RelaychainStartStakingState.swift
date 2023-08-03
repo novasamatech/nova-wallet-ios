@@ -14,8 +14,8 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
 
     var npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol? { get }
     var npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol? { get }
-    var npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol? { get }
     var activePoolsService: EraNominationPoolsServiceProtocol? { get }
+    var npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol { get }
 
     func setup(for accountId: AccountId?) throws
     func throttle()
@@ -47,7 +47,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
     let npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?
     let npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?
-    let npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol?
+    let npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let activePoolsService: EraNominationPoolsServiceProtocol?
 
     private var relaychainGlobalSubscriptionId: UUID?
@@ -68,7 +68,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         relaychainRewardCalculatorService: RewardCalculatorServiceProtocol,
         npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?,
         npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?,
-        npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol?,
+        npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         activePoolsService: EraNominationPoolsServiceProtocol?,
         logger: LoggerProtocol
     ) {

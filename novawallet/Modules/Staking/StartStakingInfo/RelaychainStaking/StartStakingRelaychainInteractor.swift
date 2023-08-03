@@ -14,7 +14,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     }
 
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
-        state.npLocalSubscriptionFactory!
+        state.npLocalSubscriptionFactory
     }
 
     private var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?

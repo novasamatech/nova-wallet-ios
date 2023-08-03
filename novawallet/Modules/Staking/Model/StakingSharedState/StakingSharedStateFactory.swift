@@ -32,10 +32,10 @@ final class StakingSharedStateFactory {
     }
 
     struct NominationPoolsServices {
-        let remoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol
-        let accountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol
+        let remoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?
+        let accountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?
         let localSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
-        let activePoolsService: EraNominationPoolsServiceProtocol
+        let activePoolsService: EraNominationPoolsServiceProtocol?
     }
 
     let storageFacade: StorageFacadeProtocol
@@ -145,6 +145,22 @@ final class StakingSharedStateFactory {
         for chainAsset: ChainAsset,
         eraValidatorService: EraValidatorServiceProtocol
     ) throws -> NominationPoolsServices {
+        let localSubscriptionFactory = NPoolsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        guard let stakings = chainAsset.asset.stakings, stakings.contains(.nominationPools) else {
+            return NominationPoolsServices(
+                remoteSubscriptionService: nil,
+                accountSubscriptionServiceFactory: nil,
+                localSubscriptionFactory: localSubscriptionFactory,
+                activePoolsService: nil
+            )
+        }
+
         let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
         let substrateRepository = substrateRepositoryFactory.createChainStorageItemRepository()
@@ -162,13 +178,6 @@ final class StakingSharedStateFactory {
             repository: substrateRepository,
             syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
             repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
-            logger: logger
-        )
-
-        let localSubscriptionFactory = NPoolsLocalSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: storageFacade,
-            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
             logger: logger
         )
 
@@ -305,16 +314,10 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
     ) throws -> RelaychainStartStakingStateProtocol {
         let relaychainServices = try createRelaychainCommonServices(for: consensus, chainAsset: chainAsset)
 
-        let nominationPoolsService: NominationPoolsServices?
-
-        if let stakings = chainAsset.asset.stakings, stakings.contains(.nominationPools) {
-            nominationPoolsService = try createNominationPoolsServices(
-                for: chainAsset,
-                eraValidatorService: relaychainServices.eraValidatorService
-            )
-        } else {
-            nominationPoolsService = nil
-        }
+        let nominationPoolsService: NominationPoolsServices = try createNominationPoolsServices(
+            for: chainAsset,
+            eraValidatorService: relaychainServices.eraValidatorService
+        )
 
         return RelaychainStartStakingState(
             stakingType: nil,
@@ -326,10 +329,10 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             relaychainLocalSubscriptionFactory: relaychainServices.localSubscriptionFactory,
             eraValidatorService: relaychainServices.eraValidatorService,
             relaychainRewardCalculatorService: relaychainServices.rewardCalculatorService,
-            npRemoteSubstriptionService: nominationPoolsService?.remoteSubscriptionService,
-            npAccountSubscriptionServiceFactory: nominationPoolsService?.accountSubscriptionServiceFactory,
-            npLocalSubscriptionFactory: nominationPoolsService?.localSubscriptionFactory,
-            activePoolsService: nominationPoolsService?.activePoolsService,
+            npRemoteSubstriptionService: nominationPoolsService.remoteSubscriptionService,
+            npAccountSubscriptionServiceFactory: nominationPoolsService.accountSubscriptionServiceFactory,
+            npLocalSubscriptionFactory: nominationPoolsService.localSubscriptionFactory,
+            activePoolsService: nominationPoolsService.activePoolsService,
             logger: logger
         )
     }
