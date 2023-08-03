@@ -54,6 +54,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
+    // swiftlint:disable:next function_body_length
     func provideViewModel(state: StartStakingStateProtocol) {
         self.state = state
 
@@ -72,7 +73,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             locale: selectedLocale
         )
         let wikiUrl = startStakingViewModelFactory.wikiModel(
-            url: applicationConfig.novaWikiURL,
+            url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
             chain: chainAsset.chain,
             locale: selectedLocale
         )

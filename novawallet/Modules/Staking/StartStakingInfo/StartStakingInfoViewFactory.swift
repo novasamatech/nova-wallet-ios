@@ -76,7 +76,8 @@ struct StartStakingInfoViewFactory {
 
         let view = StartStakingInfoViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            themeColor: chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!
         )
 
         presenter.view = view
@@ -154,7 +155,8 @@ struct StartStakingInfoViewFactory {
 
         let view = StartStakingInfoViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            themeColor: stakingOption.chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!
         )
 
         presenter.view = view

@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
-    var style: MultiColorTextStyle = .defaultStyle
+    let style: MultiColorTextStyle
     var skeletonView: SkrullableView?
 
     var header: StackTableHeaderCell = .create {
@@ -40,17 +40,15 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         $0.borderColor = R.color.colorContainerBorder()!
     }
 
-    lazy var actionView: LoadableActionView = .create {
-        $0.actionButton.applyEnabledStyle(colored: self.style.accentTextColor)
-    }
+    let actionView = LoadableActionView()
 
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
     var paragraphViews: [ParagraphView] = []
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(style: MultiColorTextStyle) {
+        self.style = style
 
-        setupLayout()
+        super.init(frame: .zero)
     }
 
     @available(*, unavailable)
@@ -65,6 +63,12 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             updateLoadingState()
             skeletonView?.restartSkrulling()
         }
+    }
+
+    override func setupStyle() {
+        super.setupStyle()
+
+        actionView.actionButton.applyEnabledStyle(colored: style.accentTextColor)
     }
 
     override func setupLayout() {
@@ -163,6 +167,7 @@ extension StartStakingInfoViewLayout: SkeletonableView {
         ] + paragraphViews
     }
 
+    // swiftlint:disable:next function_body_length
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let offsetX: CGFloat = 18
         let offsetY: CGFloat = 39
