@@ -2,7 +2,7 @@ extension YourValidatorList {
     final class SelectedListWireframe: SelectedValidatorListWireframe {
         private let state: ExistingBonding
 
-        init(state: ExistingBonding, stakingState: StakingSharedState) {
+        init(state: ExistingBonding, stakingState: RelaychainStakingSharedStateProtocol) {
             self.state = state
 
             super.init(stakingState: stakingState)

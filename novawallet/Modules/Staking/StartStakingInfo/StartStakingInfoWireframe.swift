@@ -8,4 +8,8 @@ class StartStakingInfoWireframe: StartStakingInfoWireframeProtocol {
 
         view?.controller.navigationController?.pushViewController(accountManagementView.controller, animated: true)
     }
+
+    func showSetupAmount(from _: ControllerBackedProtocol?) {
+        fatalError("Must be overriden by subsclass")
+    }
 }

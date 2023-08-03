@@ -3,9 +3,9 @@ import Foundation
 extension YourValidatorList {
     final class SelectionStartWireframe: SelectValidatorsStartWireframe {
         let state: ExistingBonding
-        let stakingState: StakingSharedState
+        let stakingState: RelaychainStakingSharedStateProtocol
 
-        init(state: ExistingBonding, stakingState: StakingSharedState) {
+        init(state: ExistingBonding, stakingState: RelaychainStakingSharedStateProtocol) {
             self.state = state
             self.stakingState = stakingState
         }

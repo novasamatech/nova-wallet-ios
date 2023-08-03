@@ -40,7 +40,7 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
         from view: StakingDashboardViewProtocol?,
         option: Multistaking.ChainAssetOption
     ) {
-        guard let startStakingView = StartStakingInfoViewFactory.createView(stakingOption: option) else {
+        guard let startStakingView = StartStakingInfoViewFactory.createView(chainAsset: option.chainAsset) else {
             return
         }
 

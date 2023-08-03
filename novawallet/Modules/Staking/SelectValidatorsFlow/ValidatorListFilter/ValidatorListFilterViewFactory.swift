@@ -3,7 +3,7 @@ import SoraKeystore
 
 struct ValidatorListFilterViewFactory {
     static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         filter: CustomValidatorListFilter,
         hasIdentity: Bool,
         delegate: ValidatorListFilterDelegate?

@@ -90,7 +90,10 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         switch StakingMoreOptionsSection(rawValue: indexPath.section) {
         case .dApps:
             let cell: DAppCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
@@ -107,14 +110,20 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
         switch StakingMoreOptionsSection(rawValue: indexPath.section) {
         case .dApps:
             let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
                 forSupplementaryViewOfKind: kind,
                 for: indexPath
             )
-            header?.bind(title: R.string.localizable.stakingMoreOptionsDAppsTitle(preferredLanguages: selectedLocale.rLanguages))
+            header?.bind(
+                title: R.string.localizable.stakingMoreOptionsDAppsTitle(preferredLanguages: selectedLocale.rLanguages)
+            )
             header?.titleLabel.apply(style: .title3Primary)
             header?.contentInsets = .zero
             return header ?? .init()

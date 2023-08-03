@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct ParaStkCollatorsSearchViewFactory {
     static func createView(
-        for state: ParachainStakingSharedState,
+        for state: ParachainStakingSharedStateProtocol,
         collators: [CollatorSelectionInfo],
         delegate: ParaStkSelectCollatorsDelegate
     ) -> ParaStkCollatorsSearchViewProtocol? {

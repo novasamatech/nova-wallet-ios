@@ -3,7 +3,7 @@ import SoraKeystore
 import RobinHood
 
 struct StakingRewardDestSetupViewFactory {
-    static func createView(for state: StakingSharedState) -> StakingRewardDestSetupViewProtocol? {
+    static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingRewardDestSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -56,17 +56,18 @@ struct StakingRewardDestSetupViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRewardDestSetupInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-            let rewardCalculationService = state.rewardCalculationService,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let rewardCalculationService = state.rewardCalculatorService
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -90,7 +91,7 @@ struct StakingRewardDestSetupViewFactory {
         return StakingRewardDestSetupInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicServiceFactory: extrinsicServiceFactory,

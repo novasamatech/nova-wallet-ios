@@ -117,7 +117,7 @@ final class EraNominationPoolsService: BaseSyncService {
 
                     self?.logger?.debug("Active pools for era \(activePools.era): \(activePools.pools.count)")
                     self?.handle(newActivePools: activePools)
-                    self?.complete(nil)
+                    self?.completeImmediate(nil)
                     self?.notifyAll()
                 } catch {
                     self?.logger?.error("Can't fetch active pools: \(error)")
@@ -224,6 +224,7 @@ extension EraNominationPoolsService: NPoolsLocalStorageSubscriber, NPoolsLocalSu
             }
         case let .failure(error):
             logger?.error("Did receive error: \(error)")
+            completeImmediate(error)
         }
     }
 }

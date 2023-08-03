@@ -16,7 +16,6 @@ protocol StartStakingInfoInteractorInputProtocol: AnyObject {
 }
 
 protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
-    func didReceive(chainAsset: ChainAsset)
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
     func didReceive(baseError: BaseStartStakingInfoError)
@@ -24,22 +23,19 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
 }
 
 protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
-    func retryNetworkStakingInfo()
-    func remakeMinNominatorBondSubscription()
-    func remakeBagListSizeSubscription()
+    func retryDirectStakingMinStake()
     func retryEraCompletionTime()
+    func retryNominationPoolsMinStake()
     func remakeCalculator()
-    func remakeAccountRemoteSubscription()
 }
 
 protocol StartStakingInfoRelaychainInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
-    func didReceive(minNominatorBond: BigUInt?)
-    func didReceive(bagListSize: UInt32?)
-    func didReceive(networkInfo: NetworkStakingInfo?)
+    func didReceive(networkInfo: NetworkStakingInfo)
+    func didReceive(directStakingMinStake: BigUInt)
+    func didReceive(nominationPoolMinStake: BigUInt?)
     func didReceive(eraCountdown: EraCountdown?)
     func didReceive(error: RelaychainStartStakingInfoError)
     func didReceive(calculator: RewardCalculatorEngineProtocol)
-    func didReceive(stakingSharedState: StakingSharedState)
 }
 
 protocol StartStakingInfoParachainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
@@ -61,14 +57,7 @@ protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInte
 
 protocol StartStakingInfoWireframeProtocol: CommonRetryable, AlertPresentable, NoAccountSupportPresentable {
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
-}
-
-protocol StartStakingInfoRelaychainWireframeProtocol: StartStakingInfoWireframeProtocol {
-    func showSetupAmount(
-        from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset,
-        state: StakingSharedState
-    )
+    func showSetupAmount(from view: ControllerBackedProtocol?)
 }
 
 enum BaseStartStakingInfoError: Error {
@@ -77,13 +66,11 @@ enum BaseStartStakingInfoError: Error {
 }
 
 enum RelaychainStartStakingInfoError: Error {
-    case networkStakingInfo(Error)
     case createState(Error)
     case eraCountdown(Error)
-    case bagListSize(Error)
-    case minNominatorBond(Error)
+    case directStakingMinStake(Error)
+    case nominationPoolsMinStake(Error)
     case calculator(Error)
-    case accountRemoteSubscription(Error)
 }
 
 enum ParachainStartStakingInfoError: Error {

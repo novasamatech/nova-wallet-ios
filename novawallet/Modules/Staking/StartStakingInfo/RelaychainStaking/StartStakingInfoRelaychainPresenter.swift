@@ -4,8 +4,6 @@ import BigInt
 
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoRelaychainInteractorInputProtocol
-    let relaychainWireframe: StartStakingInfoRelaychainWireframeProtocol
-    private var stakingState: StakingSharedState?
 
     private var state: State = .init() {
         didSet {
@@ -14,17 +12,18 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     }
 
     init(
+        chainAsset: ChainAsset,
         interactor: StartStakingInfoRelaychainInteractorInputProtocol,
-        wireframe: StartStakingInfoRelaychainWireframeProtocol,
+        wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
-        relaychainWireframe = wireframe
 
         super.init(
+            chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
@@ -36,46 +35,35 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
 
     override func setup() {
         super.setup()
+
         view?.didReceive(viewModel: .loading)
-    }
-
-    override func didReceive(chainAsset: ChainAsset) {
-        super.didReceive(chainAsset: chainAsset)
-        state.chainAsset = chainAsset
-    }
-
-    override func showSetupAmount() {
-        guard let chainAsset = state.chainAsset, let stakingState = stakingState else {
-            return
-        }
-        relaychainWireframe.showSetupAmount(from: view, chainAsset: chainAsset, state: stakingState)
     }
 }
 
 extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInteractorOutputProtocol {
-    func didReceive(minNominatorBond: BigUInt?) {
-        state.minNominatorBond = .loaded(value: minNominatorBond)
-    }
-
-    func didReceive(bagListSize: UInt32?) {
-        state.bagListSize = .loaded(value: bagListSize)
-    }
-
-    func didReceive(networkInfo: NetworkStakingInfo?) {
-        state.networkInfo = networkInfo
-    }
-
     func didReceive(eraCountdown: EraCountdown?) {
         state.eraCountdown = eraCountdown
     }
 
+    func didReceive(networkInfo: NetworkStakingInfo) {
+        state.networkInfo = networkInfo
+    }
+
+    func didReceive(directStakingMinStake: BigUInt) {
+        state.directStakingMinimumStake = directStakingMinStake
+    }
+
+    func didReceive(nominationPoolMinStake: BigUInt?) {
+        state.nominationPoolMinimumStake = nominationPoolMinStake
+    }
+
     func didReceive(error: RelaychainStartStakingInfoError) {
-        logger?.error("Did receive error: \(error)")
+        logger.error("Did receive error: \(error)")
 
         switch error {
-        case .networkStakingInfo:
+        case .directStakingMinStake:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryNetworkStakingInfo()
+                self?.interactor.retryDirectStakingMinStake()
             }
         case .createState:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -85,21 +73,13 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryEraCompletionTime()
             }
-        case .bagListSize:
+        case .nominationPoolsMinStake:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeBagListSizeSubscription()
-            }
-        case .minNominatorBond:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeMinNominatorBondSubscription()
+                self?.interactor.retryNominationPoolsMinStake()
             }
         case .calculator:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeCalculator()
-            }
-        case .accountRemoteSubscription:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeAccountRemoteSubscription()
             }
         }
     }
@@ -107,51 +87,21 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
     func didReceive(calculator: RewardCalculatorEngineProtocol) {
         state.maxApy = calculator.calculateMaxEarnings(amount: 1, isCompound: true, period: .year)
     }
-
-    func didReceive(stakingSharedState: StakingSharedState) {
-        stakingState = stakingSharedState
-    }
 }
 
 extension StartStakingInfoRelaychainPresenter {
     struct State: StartStakingStateProtocol {
-        var minNominatorBond: LoadableViewModelState<BigUInt?> = .loading
-        var bagListSize: LoadableViewModelState<UInt32?> = .loading
         var networkInfo: NetworkStakingInfo?
         var eraCountdown: EraCountdown?
         var maxApy: Decimal?
         var rewardsDestination: DefaultStakingRewardDestination { .stake }
-        var chainAsset: ChainAsset?
-
-        // TODO:
         var nominationPoolMinimumStake: BigUInt?
-
-        var directStakingMinimumStake: BigUInt? {
-            guard let networkInfo = networkInfo,
-                  let minNominatorBond = minNominatorBond.value,
-                  let bagListSize = bagListSize.value else {
-                return nil
-            }
-
-            return networkInfo.calculateMinimumStake(
-                given: minNominatorBond,
-                votersCount: bagListSize
-            )
-        }
+        var directStakingMinimumStake: BigUInt?
 
         var minStake: BigUInt? {
-            guard let chainAsset = chainAsset else {
-                return nil
-            }
-
-            if chainAsset.asset.supportedStakings?.contains(.nominationPools) == true {
-                if let nominationPoolMinimumStake = nominationPoolMinimumStake,
-                   let directStakingMinimumStake = directStakingMinimumStake {
-                    return min(nominationPoolMinimumStake, directStakingMinimumStake)
-                } else {
-                    // TODO: return nil
-                    return directStakingMinimumStake
-                }
+            if let nominationPoolMinimumStake = nominationPoolMinimumStake,
+               let directStakingMinimumStake = directStakingMinimumStake {
+                return min(nominationPoolMinimumStake, directStakingMinimumStake)
             } else {
                 return directStakingMinimumStake
             }
@@ -174,19 +124,14 @@ extension StartStakingInfoRelaychainPresenter {
         }
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? {
-            guard let chainAsset = chainAsset else {
-                return nil
-            }
-            guard chainAsset.asset.supportedStakings?.contains(.nominationPools) == true else {
-                return nil
-            }
-
-            guard let directStakingMinimumStake = directStakingMinimumStake,
-                  let minStake = minStake else {
+            guard
+                nominationPoolMinimumStake != nil,
+                let directStakingMinimumStake = directStakingMinimumStake,
+                let minStake = minStake else {
                 return nil
             }
 
-            return directStakingMinimumStake == minStake ? nil : directStakingMinimumStake
+            return directStakingMinimumStake <= minStake ? nil : directStakingMinimumStake
         }
 
         var govThresholdAmount: BigUInt? {

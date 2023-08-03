@@ -11,9 +11,11 @@ protocol StakingMainPresenterFactoryProtocol {
 
 final class StakingMainPresenterFactory {
     let applicationHandler: ApplicationHandlerProtocol
+    let sharedStateFactory: StakingSharedStateFactoryProtocol
 
-    init(applicationHandler: ApplicationHandlerProtocol) {
+    init(applicationHandler: ApplicationHandlerProtocol, sharedStateFactory: StakingSharedStateFactoryProtocol) {
         self.applicationHandler = applicationHandler
+        self.sharedStateFactory = sharedStateFactory
     }
 }
 
@@ -23,14 +25,10 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol? {
         switch stakingOption.type {
-        case .relaychain, .nominationPools:
-            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .babe)
-        case .auraRelaychain:
-            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .auraGeneral)
+        case .relaychain, .nominationPools, .auraRelaychain, .azero:
+            return createRelaychainPresenter(for: stakingOption, view: view)
         case .parachain, .turing:
             return createParachainPresenter(for: stakingOption, view: view)
-        case .azero:
-            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .auraAzero)
         case .unsupported:
             return nil
         }

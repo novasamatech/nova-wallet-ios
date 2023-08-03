@@ -16,7 +16,7 @@ extension UILabel {
         model: AccentTextModel,
         with style: MultiColorTextStyle
     ) {
-        var attributedString = NSAttributedString(
+        let attributedString = NSAttributedString(
             string: model.text,
             attributes: [.foregroundColor: style.textColor,
                          .font: style.font]

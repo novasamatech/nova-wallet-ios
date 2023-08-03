@@ -4,7 +4,7 @@ import SoraKeystore
 import RobinHood
 
 final class StakingRebondSetupViewFactory {
-    static func createView(for state: StakingSharedState) -> StakingRebondSetupViewProtocol? {
+    static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingRebondSetupViewProtocol? {
         // MARK: Interactor
 
         guard let interactor = createInteractor(state: state),
@@ -53,7 +53,7 @@ final class StakingRebondSetupViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRebondSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -86,7 +86,7 @@ final class StakingRebondSetupViewFactory {
             chainAsset: chainAsset,
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,

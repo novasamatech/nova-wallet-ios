@@ -1,9 +1,9 @@
 import Foundation
 
 final class StakingRelaychainWireframe {
-    let state: StakingSharedState
+    let state: RelaychainStakingSharedStateProtocol
 
-    init(state: StakingSharedState) {
+    init(state: RelaychainStakingSharedStateProtocol) {
         self.state = state
     }
 }

@@ -7,7 +7,7 @@ import SubstrateSdk
 struct StakingRebondConfirmationViewFactory {
     static func createView(
         for variant: SelectedRebondVariant,
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRebondConfirmationViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
@@ -72,7 +72,7 @@ struct StakingRebondConfirmationViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRebondConfirmationInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -106,7 +106,7 @@ struct StakingRebondConfirmationViewFactory {
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: SigningWrapperFactory(),
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,

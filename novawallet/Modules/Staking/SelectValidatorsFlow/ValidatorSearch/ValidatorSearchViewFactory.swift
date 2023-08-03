@@ -5,7 +5,7 @@ import SubstrateSdk
 
 struct ValidatorSearchViewFactory {
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> ValidatorSearchInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -13,11 +13,12 @@ struct ValidatorSearchViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let eraValidatorService = state.eraValidatorService,
-            let rewardCalculationService = state.rewardCalculationService else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let eraValidatorService = state.eraValidatorService
+        let rewardCalculationService = state.rewardCalculatorService
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -43,7 +44,7 @@ struct ValidatorSearchViewFactory {
 
 extension ValidatorSearchViewFactory {
     static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
         delegate: ValidatorSearchDelegate?

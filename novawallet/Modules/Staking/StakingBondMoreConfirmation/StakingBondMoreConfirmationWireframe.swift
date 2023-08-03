@@ -1,8 +1,8 @@
 final class StakingBondMoreConfirmationWireframe: StakingBondMoreConfirmationWireframeProtocol,
     ModalAlertPresenting {
-    let state: StakingSharedState
+    let state: RelaychainStakingSharedStateProtocol
 
-    init(state: StakingSharedState) {
+    init(state: RelaychainStakingSharedStateProtocol) {
         self.state = state
     }
 

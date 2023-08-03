@@ -1,14 +1,12 @@
-final class StartStakingInfoRelaychainWireframe: StartStakingInfoWireframe,
-    StartStakingInfoRelaychainWireframeProtocol {
-    func showSetupAmount(
-        from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset,
-        state: StakingSharedState
-    ) {
-        guard let setupAmountView = StakingSetupAmountViewFactory.createView(
-            chainAsset: chainAsset,
-            state: state
-        ) else {
+final class StartStakingInfoRelaychainWireframe: StartStakingInfoWireframe {
+    let state: RelaychainStartStakingStateProtocol
+
+    init(state: RelaychainStartStakingStateProtocol) {
+        self.state = state
+    }
+
+    override func showSetupAmount(from view: ControllerBackedProtocol?) {
+        guard let setupAmountView = StakingSetupAmountViewFactory.createView(for: state) else {
             return
         }
 

@@ -2,9 +2,9 @@ import Foundation
 
 final class ChangeTargetsSelectValidatorsStartWireframe: SelectValidatorsStartWireframe {
     let state: ExistingBonding
-    let stakingState: StakingSharedState
+    let stakingState: RelaychainStakingSharedStateProtocol
 
-    init(state: ExistingBonding, stakingState: StakingSharedState) {
+    init(state: ExistingBonding, stakingState: RelaychainStakingSharedStateProtocol) {
         self.state = state
         self.stakingState = stakingState
     }

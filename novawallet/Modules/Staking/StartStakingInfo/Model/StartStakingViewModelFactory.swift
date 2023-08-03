@@ -199,7 +199,9 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 precision: Int16(chainAsset.asset.precision)
             ) ?? 0.0
             let formattedAmount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
-            action = R.string.localizable.stakingStartGovNominationDirectStakingAction(preferredLanguages: locale.rLanguages)
+            action = R.string.localizable.stakingStartGovNominationDirectStakingAction(
+                preferredLanguages: locale.rLanguages
+            )
             text = R.string.localizable.stakingStartGovDirectStaking(
                 formattedAmount,
                 action,

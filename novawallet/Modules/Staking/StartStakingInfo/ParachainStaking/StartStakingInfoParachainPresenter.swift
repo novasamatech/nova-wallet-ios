@@ -13,16 +13,18 @@ final class StartStakingInfoParachainPresenter: StartStakingInfoBasePresenter {
     }
 
     init(
+        chainAsset: ChainAsset,
         interactor: StartStakingInfoParachainInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
 
         super.init(
+            chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
@@ -44,10 +46,10 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
     }
 
     func didReceive(error: ParachainStartStakingInfoError) {
-        logger?.error("Did receive error: \(error)")
+        logger.error("Did receive error: \(error)")
 
         switch error {
-        case let .networkInfo(error):
+        case .networkInfo:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryNetworkStakingInfo()
             }

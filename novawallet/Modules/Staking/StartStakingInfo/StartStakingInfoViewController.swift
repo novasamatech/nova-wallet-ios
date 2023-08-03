@@ -8,11 +8,16 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
     private var viewModel: LoadableViewModelState<StartStakingViewModel>?
     private var balance = ""
 
+    let themeColor: UIColor
+
     init(
         presenter: StartStakingInfoPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        themeColor: UIColor
     ) {
         self.presenter = presenter
+        self.themeColor = themeColor
+
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -23,7 +28,10 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = StartStakingInfoViewLayout()
+        let style = ParagraphView.Style.createStyle(for: themeColor)
+        let layout = StartStakingInfoViewLayout(style: style)
+
+        view = layout
     }
 
     override func viewDidLoad() {

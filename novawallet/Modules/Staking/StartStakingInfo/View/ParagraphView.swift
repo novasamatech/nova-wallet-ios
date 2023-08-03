@@ -42,4 +42,12 @@ extension ParagraphView.Style {
         accentTextColor: R.color.colorPolkadotBrand()!,
         font: .semiBoldTitle3
     )
+
+    static func createStyle(for themeColor: UIColor) -> ParagraphView.Style {
+        ParagraphView.Style(
+            textColor: R.color.colorTextPrimary()!,
+            accentTextColor: themeColor,
+            font: .semiBoldTitle3
+        )
+    }
 }

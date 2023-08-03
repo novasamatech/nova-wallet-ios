@@ -3,22 +3,28 @@ import SoraFoundation
 import RobinHood
 
 struct StakingSetupAmountViewFactory {
-    static func createView(chainAsset: ChainAsset, state: StakingSharedState) -> StakingSetupAmountViewProtocol? {
+    static func createView(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> StakingSetupAmountViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let chainAsset = state.chainAsset
 
         guard let currencyManager = CurrencyManager.shared,
               let metaAccount = SelectedWalletSettings.shared.value,
               let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-              let mataChainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
               let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-              let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-              let rewardCalculationService = state.rewardCalculationService,
-              let networkInfoOperationFactory = try? state.createNetworkInfoOperationFactory(
-                  for: chainAsset.chain
-              ),
-              let validatorService = state.eraValidatorService else {
+              let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let rewardCalculationService = state.relaychainRewardCalculatorService
+
+        let networkInfoOperationFactory = state.createNetworkInfoOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let validatorService = state.eraValidatorService
 
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
@@ -35,7 +41,7 @@ struct StakingSetupAmountViewFactory {
             selectedChainAsset: chainAsset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
             currencyManager: currencyManager,
             runtimeProvider: runtimeService,
             extrinsicService: extrinsicService,

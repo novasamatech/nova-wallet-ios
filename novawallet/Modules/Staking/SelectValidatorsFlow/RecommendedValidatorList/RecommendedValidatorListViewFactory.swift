@@ -4,7 +4,7 @@ import SubstrateSdk
 
 final class RecommendedValidatorListViewFactory {
     static func createInitiatedBondingView(
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         validators: [SelectedValidatorInfo],
         maxTargets: Int,
         state: InitiatedBonding
@@ -14,7 +14,7 @@ final class RecommendedValidatorListViewFactory {
     }
 
     static func createChangeTargetsView(
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         validators: [SelectedValidatorInfo],
         maxTargets: Int,
         state: ExistingBonding
@@ -24,7 +24,7 @@ final class RecommendedValidatorListViewFactory {
     }
 
     static func createChangeYourValidatorsView(
-        stakingState: StakingSharedState,
+        stakingState: RelaychainStakingSharedStateProtocol,
         validators: [SelectedValidatorInfo],
         maxTargets: Int,
         state: ExistingBonding

@@ -14,7 +14,8 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
         from view: StakingMoreOptionsViewProtocol?,
         option: Multistaking.ChainAssetOption
     ) {
-        guard let startStakingView = StartStakingInfoViewFactory.createView(stakingOption: option) else {
+        // TODO: Open start concrete staking
+        guard let startStakingView = StartStakingInfoViewFactory.createView(chainAsset: option.chainAsset) else {
             return
         }
 

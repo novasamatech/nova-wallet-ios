@@ -58,14 +58,8 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
     }
 
     deinit {
-        clear(streamableProvider: &priceProvider)
-        clear(streamableProvider: &balanceProvider)
         clear(cancellable: &networkInfoCall)
         clear(cancellable: &rewardCalculatorOperation)
-        clear(dataProvider: &minBondProvider)
-        clear(dataProvider: &counterForNominatorsProvider)
-        clear(dataProvider: &maxNominatorsCountProvider)
-        clear(dataProvider: &bagListSizeProvider)
     }
 
     private func performPriceSubscription() {

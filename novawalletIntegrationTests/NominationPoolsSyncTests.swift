@@ -262,7 +262,7 @@ final class NominationPoolsSyncTests: XCTestCase {
                 let optValue: Data? = changes.reduceToLastChange()?.item?.wrappedValue
                 
                 if let value = optValue {
-                    logger.info("Metadata: \(String(data: value, encoding: .utf8))")
+                    logger.info("Metadata: \(String(describing: String(data: value, encoding: .utf8)))")
                     metadataExpectation.fulfill()
                 }
             }, failing: { error in

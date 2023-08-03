@@ -34,7 +34,8 @@ extension TimeInterval {
     ) -> String {
         let days = daysFromSeconds
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
-        let minutes = (self - TimeInterval(days).secondsFromDays - TimeInterval(hours).secondsFromHours).minutesFromSeconds
+        let minutes = (self - TimeInterval(days).secondsFromDays -
+            TimeInterval(hours).secondsFromHours).minutesFromSeconds
 
         var components: [String] = []
 

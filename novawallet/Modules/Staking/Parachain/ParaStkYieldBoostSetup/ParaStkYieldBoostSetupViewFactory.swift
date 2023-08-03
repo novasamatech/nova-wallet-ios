@@ -5,7 +5,7 @@ import RobinHood
 
 struct ParaStkYieldBoostSetupViewFactory {
     static func createView(
-        with state: ParachainStakingSharedState,
+        with state: ParachainStakingSharedStateProtocol,
         initData: ParaStkYieldBoostInitState
     ) -> ParaStkYieldBoostSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -60,7 +60,7 @@ struct ParaStkYieldBoostSetupViewFactory {
 
     // swiftlint:disable:next function_body_length
     private static func createInteractor(
-        with state: ParachainStakingSharedState,
+        with state: ParachainStakingSharedStateProtocol,
         currencyManager: CurrencyManagerProtocol
     ) -> ParaStkYieldBoostSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -72,10 +72,11 @@ struct ParaStkYieldBoostSetupViewFactory {
                 for: chainAsset.chain.accountRequest()
             ),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let rewardService = state.rewardCalculationService else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let rewardService = state.rewardCalculationService
 
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),

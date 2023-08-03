@@ -8,22 +8,24 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let baseInteractor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
-    let logger: LoggerProtocol?
+    let chainAsset: ChainAsset
+    let logger: LoggerProtocol
 
     private(set) var price: PriceData?
-    private(set) var chainAsset: ChainAsset?
     private(set) var accountExistense: AccountExistense?
     private var state: StartStakingStateProtocol?
     private var wallet: MetaAccountModel?
 
     init(
+        chainAsset: ChainAsset,
         interactor: StartStakingInfoInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
+        self.chainAsset = chainAsset
         baseInteractor = interactor
         self.wireframe = wireframe
         self.startStakingViewModelFactory = startStakingViewModelFactory
@@ -33,9 +35,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func provideBalanceModel() {
-        guard let chainAsset = chainAsset else {
+        guard let accountExistense = accountExistense else {
             return
         }
+
         switch accountExistense {
         case let .assetBalance(balance):
             let viewModel = startStakingViewModelFactory.balance(
@@ -48,16 +51,14 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         case .noAccount:
             let viewModel = startStakingViewModelFactory.noAccount(chain: chainAsset.chain, locale: selectedLocale)
             view?.didReceive(balance: viewModel)
-        case .none:
-            break
         }
     }
 
+    // swiftlint:disable:next function_body_length
     func provideViewModel(state: StartStakingStateProtocol) {
         self.state = state
 
         guard
-            let chainAsset = chainAsset,
             let eraDuration = state.eraDuration,
             let unstakingTime = state.unstakingTime,
             let nextEraStartTime = state.nextEraStartTime,
@@ -72,7 +73,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             locale: selectedLocale
         )
         let wikiUrl = startStakingViewModelFactory.wikiModel(
-            url: applicationConfig.novaWikiURL,
+            url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
             chain: chainAsset.chain,
             locale: selectedLocale
         )
@@ -123,11 +124,6 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     // MARK: - StartStakingInfoInteractorOutputProtocol
 
-    func didReceive(chainAsset: ChainAsset) {
-        self.chainAsset = chainAsset
-        provideBalanceModel()
-    }
-
     func didReceive(price: PriceData?) {
         self.price = price
         provideBalanceModel()
@@ -147,7 +143,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func didReceive(baseError error: BaseStartStakingInfoError) {
-        logger?.error("Did receive error: \(error)")
+        logger.error("Did receive error: \(error)")
 
         switch error {
         case .assetBalance, .price:
@@ -165,10 +161,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func startStaking() {
         guard let view = view,
-              let chainAsset = chainAsset,
-              let wallet = wallet else {
+              let wallet = wallet,
+              let accountExistense = accountExistense else {
             return
         }
+
         switch accountExistense {
         case .noAccount:
             let message = R.string.localizable.commonChainAccountMissingMessageFormat(
@@ -188,13 +185,9 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
                 )
             }
         case .assetBalance:
-            showSetupAmount()
-        case .none:
-            break
+            wireframe.showSetupAmount(from: view)
         }
     }
-
-    func showSetupAmount() {}
 }
 
 extension StartStakingInfoBasePresenter: Localizable {
