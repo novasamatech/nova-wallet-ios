@@ -52,7 +52,6 @@ class StakingPayoutsConfirmTests: XCTestCase {
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
 
-        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub()
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(
             balance: BigUInt(2e+12)
         )
@@ -65,10 +64,6 @@ class StakingPayoutsConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
-
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
-
-        let extrinsicOperationFactory = ExtrinsicOperationFactoryStub()
 
         let interactor = StakingPayoutConfirmationInteractor(
             selectedAccount: selectedAccount,
