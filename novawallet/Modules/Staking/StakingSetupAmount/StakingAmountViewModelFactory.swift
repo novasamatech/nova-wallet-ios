@@ -11,7 +11,7 @@ protocol StakingAmountViewModelFactoryProtocol {
 
     func balance(amount: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> TitleHorizontalMultiValueView.Model
 
-    func stakingTypeViewModel(stakingType: SelectedStakingType) -> StakingTypeViewModel
+    func stakingTypeViewModel(stakingType: SelectedStakingOption) -> StakingTypeViewModel
 }
 
 struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
@@ -59,11 +59,17 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
         )
     }
 
-    func stakingTypeViewModel(stakingType: SelectedStakingType) -> StakingTypeViewModel {
+    func stakingTypeViewModel(stakingType: SelectedStakingOption) -> StakingTypeViewModel {
         switch stakingType {
-        case let .direct:
+        case .direct:
             return StakingTypeViewModel(
                 title: "Direct staking",
+                subtitle: "Recommended",
+                isRecommended: true
+            )
+        case .pool:
+            return StakingTypeViewModel(
+                title: "Pool staking",
                 subtitle: "Recommended",
                 isRecommended: true
             )

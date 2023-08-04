@@ -23,37 +23,28 @@ protocol StakingSetupAmountPresenterProtocol: AnyObject {
 protocol StakingSetupAmountInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
-    func estimateFee(
-        for address: String,
-        amount: BigUInt,
-        rewardDestination: RewardDestination<ChainAccountResponse>
-    )
-    func stakingTypeRecomendation(for amount: Decimal)
+    func remakeRecommendationSetup()
+
+    func estimateFee(for amount: BigUInt)
+    func updateRecommendation(for amount: BigUInt)
+    func replaceWithManual(option: SelectedStakingOption)
 }
 
 protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
+    func didReceive(fee: BigUInt?, stakingOption: SelectedStakingOption, amount: BigUInt)
+    func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt)
     func didReceive(error: StakingSetupAmountError)
-    func didReceive(paymentInfo: RuntimeDispatchInfo)
-    func didReceive(minimalBalance: BigUInt)
-    func didReceive(stakingType: SelectedStakingType)
 }
 
-protocol StakingSetupAmountWireframeProtocol: AnyObject {
+protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable, CommonRetryable {
     func showStakingTypeSelection(from view: ControllerBackedProtocol?)
 }
 
 enum StakingSetupAmountError: Error {
     case assetBalance(Error)
     case price(Error)
-    case fetchCoderFactory(Error)
     case fee(Error)
-    case existensialDeposit(Error)
-    case minNominatorBond(Error)
-    case counterForNominators(Error)
-    case maxNominatorsCount(Error)
-    case bagListSize(Error)
-    case networkInfo(Error)
-    case calculator(Error)
+    case recommendation(Error)
 }

@@ -12,6 +12,12 @@ extension NominationPools {
         let pools: [ActivePool]
     }
 
+    struct PoolApy {
+        let poolId: PoolId
+        let bondedAccountId: AccountId
+        let maxApy: Decimal
+    }
+
     struct PoolStats {
         let poolId: PoolId
         let bondedAccountId: AccountId
@@ -24,11 +30,25 @@ extension NominationPools {
         let poolId: PoolId
         let bondedAccountId: AccountId
         let metadata: Data?
+        let maxApy: Decimal?
+
+        init(
+            poolId: PoolId,
+            bondedAccountId: AccountId,
+            metadata: Data?,
+            maxApy: Decimal?
+        ) {
+            self.poolId = poolId
+            self.bondedAccountId = bondedAccountId
+            self.metadata = metadata
+            self.maxApy = maxApy
+        }
 
         init(poolStats: PoolStats) {
             poolId = poolStats.poolId
             bondedAccountId = poolStats.bondedAccountId
             metadata = poolStats.metadata
+            maxApy = poolStats.maxApy
         }
     }
 }

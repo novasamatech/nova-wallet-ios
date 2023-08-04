@@ -5,9 +5,9 @@ protocol NominationPoolsRewardEngineProtocol {
         poolId: NominationPools.PoolId,
         isCompound: Bool,
         period: CalculationPeriod
-    ) throws -> Decimal
+    ) throws -> NominationPools.PoolApy
 
-    func calculateMaxReturn(isCompound: Bool, period: CalculationPeriod) throws -> Decimal
+    func calculateMaxReturn(isCompound: Bool, period: CalculationPeriod) throws -> NominationPools.PoolApy
 }
 
 enum NominationPoolsRewardEngineError: Error {
@@ -33,8 +33,8 @@ final class NominationPoolsRewardEngine {
 
     func setup() {
         maxPoolId = activePools.keys.max { poolId1, poolId2 in
-            let maxApy1 = (try? calculateMaxReturn(poolId: poolId1, isCompound: false, period: .year)) ?? 0
-            let maxApy2 = (try? calculateMaxReturn(poolId: poolId2, isCompound: false, period: .year)) ?? 0
+            let maxApy1 = (try? calculateMaxReturn(poolId: poolId1, isCompound: false, period: .year))?.maxApy ?? 0
+            let maxApy2 = (try? calculateMaxReturn(poolId: poolId2, isCompound: false, period: .year))?.maxApy ?? 0
 
             return maxApy1 <= maxApy2
         }
@@ -46,7 +46,7 @@ extension NominationPoolsRewardEngine: NominationPoolsRewardEngineProtocol {
         poolId: NominationPools.PoolId,
         isCompound: Bool,
         period: CalculationPeriod
-    ) throws -> Decimal {
+    ) throws -> NominationPools.PoolApy {
         guard
             let activePool = activePools[poolId],
             let bondedPool = bondingDetails[poolId] else {
@@ -69,10 +69,16 @@ extension NominationPoolsRewardEngine: NominationPoolsRewardEngineProtocol {
 
         let commission = bondedPool.commission?.current.flatMap { Decimal.fromSubstratePerbill(value: $0.percent) } ?? 0
 
-        return maxReturn * (1 - commission)
+        let maxApy = maxReturn * (1 - commission)
+
+        return .init(
+            poolId: activePool.poolId,
+            bondedAccountId: activePool.bondedAccountId,
+            maxApy: maxApy
+        )
     }
 
-    func calculateMaxReturn(isCompound: Bool, period: CalculationPeriod) throws -> Decimal {
+    func calculateMaxReturn(isCompound: Bool, period: CalculationPeriod) throws -> NominationPools.PoolApy {
         if maxPoolId == nil {
             setup()
         }

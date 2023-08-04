@@ -5,67 +5,68 @@ import BigInt
 final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: StakingSetupAmountInteractorOutputProtocol?
 
-    let selectedChainAsset: ChainAsset
+    var chainAsset: ChainAsset { state.chainAsset }
+
+    let state: RelaychainStartStakingStateProtocol
+    let selectedAccount: ChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let runtimeProvider: RuntimeCodingServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
-    let rewardService: RewardCalculatorServiceProtocol
-    let networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
-    let eraValidatorService: EraValidatorServiceProtocol
-    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let recommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol
+    let runtimeProvider: RuntimeCodingServiceProtocol
+    let operationQueue: OperationQueue
 
-    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
-    private(set) var priceProvider: StreamableProvider<PriceData>?
-    private(set) var balanceProvider: StreamableProvider<AssetBalance>?
-    private(set) var selectedAccount: ChainAccountResponse
-    private(set) var operationQueue: OperationQueue
+    private var priceProvider: StreamableProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var recommendationMediator: RelaychainStakingRecommendationMediating?
 
-    private var rewardCalculatorOperation: CancellableCall?
-    private var networkInfoCall: CancellableCall?
-    private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
-    private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
-    private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
-    private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
-    private var directStakingInfo: DirectStakingInfo = .init()
+    private var lastRecommendedOption: SelectedStakingOption?
 
     init(
+        state: RelaychainStartStakingStateProtocol,
         selectedAccount: ChainAccountResponse,
-        selectedChainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        runtimeProvider: RuntimeCodingServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
-        rewardService: RewardCalculatorServiceProtocol,
-        networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
-        eraValidatorService: EraValidatorServiceProtocol,
-        operationQueue: OperationQueue
+        recommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol
     ) {
+        self.state = state
         self.selectedAccount = selectedAccount
-        self.selectedChainAsset = selectedChainAsset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.runtimeProvider = runtimeProvider
         self.extrinsicService = extrinsicService
+        self.recommendationMediatorFactory = recommendationMediatorFactory
+        self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
-        self.rewardService = rewardService
-        self.networkInfoOperationFactory = networkInfoOperationFactory
-        self.eraValidatorService = eraValidatorService
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.currencyManager = currencyManager
     }
 
-    deinit {
-        clear(cancellable: &networkInfoCall)
-        clear(cancellable: &rewardCalculatorOperation)
+    private func setupRecommendationMediator(for type: StakingType?) {
+        if type == nil {
+            recommendationMediator = recommendationMediatorFactory.createHybridStakingMediator(for: state)
+        } else if type == .nominationPools {
+            recommendationMediator = recommendationMediatorFactory.createPoolStakingMediator(for: state)
+        } else {
+            recommendationMediator = recommendationMediatorFactory.createDirectStakingMediator(for: state)
+        }
+
+        recommendationMediator?.delegate = self
+        recommendationMediator?.startRecommending()
+        recommendationMediator?.update(amount: 0)
+
+        if recommendationMediator == nil {
+            presenter?.didReceive(error: .recommendation(CommonError.dataCorruption))
+            return
+        }
     }
 
     private func performPriceSubscription() {
         clear(streamableProvider: &priceProvider)
 
-        guard let priceId = selectedChainAsset.asset.priceId else {
+        guard let priceId = chainAsset.asset.priceId else {
             presenter?.didReceive(price: nil)
             return
         }
@@ -76,7 +77,7 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
     private func performAssetBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
 
-        let chainAssetId = selectedChainAsset.chainAssetId
+        let chainAssetId = chainAsset.chainAssetId
 
         balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.accountId,
@@ -85,85 +86,23 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         )
     }
 
-    private func provideNetworkInfo() {
-        clear(cancellable: &networkInfoCall)
-
-        let wrapper = networkInfoOperationFactory.networkStakingOperation(
-            for: eraValidatorService,
-            runtimeService: runtimeProvider
-        )
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.networkInfoCall === wrapper else {
-                    return
-                }
-                self?.networkInfoCall = nil
-                do {
-                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.directStakingInfo.networkInfo = info
-                } catch {
-                    self?.presenter?.didReceive(error: .networkInfo(error))
-                }
-            }
-        }
-
-        networkInfoCall = wrapper
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func provideRewardCalculator() {
-        clear(cancellable: &rewardCalculatorOperation)
-
-        let operation = rewardService.fetchCalculatorOperation()
-
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.rewardCalculatorOperation === operation else {
-                    return
-                }
-
-                self?.rewardCalculatorOperation = nil
-                do {
-                    let engine = try operation.extractNoCancellableResultData()
-                    self?.directStakingInfo.calculator = engine
-                } catch {
-                    self?.presenter?.didReceive(error: .calculator(error))
-                }
-            }
-        }
-
-        rewardCalculatorOperation = operation
-        operationQueue.addOperation(operation)
-    }
-
-    private func estimateFee(
-        for address: String,
+    private func estimateDirectStakingFee(
+        accountId: AccountId,
         amount: BigUInt,
-        rewardDestination: RewardDestination<ChainAccountResponse>,
+        validators: PreparedValidators,
         coderFactory: RuntimeCoderFactoryProtocol
     ) {
-        guard let accountAddress = rewardDestination.accountAddress else {
-            return
-        }
-
         let closure: ExtrinsicBuilderClosure = { builder in
-            let controller = try address.toAccountId()
-            let payee = try Staking.RewardDestinationArg(rewardDestination: accountAddress)
-
             let bondClosure = try Staking.Bond.appendCall(
-                for: .accoundId(controller),
+                for: .accoundId(accountId),
                 value: amount,
-                payee: payee,
+                payee: .staked,
                 codingFactory: coderFactory
             )
 
             let callFactory = SubstrateCallFactory()
 
-            let targets = Array(
-                repeating: SelectedValidatorInfo(address: address),
-                count: SubstrateConstants.maxNominations
-            )
+            let targets = validators.targets.map { $0.toSelected(for: nil) }
             let nominateCall = try callFactory.nominate(targets: targets)
 
             return try bondClosure(builder).adding(call: nominateCall)
@@ -172,103 +111,101 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
             switch result {
             case let .success(info):
-                self?.presenter?.didReceive(paymentInfo: info)
+                self?.presenter?.didReceive(
+                    fee: BigUInt(info.fee),
+                    stakingOption: .direct(validators),
+                    amount: amount
+                )
             case let .failure(error):
                 self?.presenter?.didReceive(error: .fee(error))
             }
         }
     }
 
-    private func performMinBondSubscription() {
-        clear(dataProvider: &minBondProvider)
-        minBondProvider = subscribeToMinNominatorBond(for: selectedChainAsset.chain.chainId)
-    }
-
-    private func performCounterForNominatorsSubscription() {
-        clear(dataProvider: &counterForNominatorsProvider)
-        counterForNominatorsProvider = subscribeToCounterForNominators(for: selectedChainAsset.chain.chainId)
-    }
-
-    private func performMaxNominatorsCountSubscription() {
-        clear(dataProvider: &maxNominatorsCountProvider)
-        maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: selectedChainAsset.chain.chainId)
-    }
-
-    private func performBagsListSizeSubscription() {
-        clear(dataProvider: &bagListSizeProvider)
-        bagListSizeProvider = subscribeBagsListSize(for: selectedChainAsset.chain.chainId)
-    }
-
-    private func provideExistentialDeposit() {
-        fetchConstant(
-            for: .existentialDeposit,
-            runtimeCodingService: runtimeProvider,
-            operationManager: operationManager
-        ) { [weak self] (result: Result<BigUInt, Error>) in
-            switch result {
-            case let .success(amount):
-                self?.presenter?.didReceive(minimalBalance: amount)
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .existensialDeposit(error))
-            }
-        }
-    }
+    private func estimatePoolStakingFee(
+        for _: AccountId,
+        amount _: BigUInt,
+        pool _: NominationPools.SelectedPool
+    ) {}
 }
 
 extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtocol, RuntimeConstantFetching {
     func setup() {
         performAssetBalanceSubscription()
         performPriceSubscription()
-        performMinBondSubscription()
-        performCounterForNominatorsSubscription()
-        performMaxNominatorsCountSubscription()
-        performBagsListSizeSubscription()
 
-        provideRewardCalculator()
-        provideNetworkInfo()
-        provideExistentialDeposit()
+        setupRecommendationMediator(for: state.stakingType)
     }
 
     func remakeSubscriptions() {
         performAssetBalanceSubscription()
         performPriceSubscription()
-        performMinBondSubscription()
-        performCounterForNominatorsSubscription()
-        performMaxNominatorsCountSubscription()
-        performBagsListSizeSubscription()
     }
 
-    func estimateFee(
-        for address: String,
-        amount: BigUInt,
-        rewardDestination: RewardDestination<ChainAccountResponse>
-    ) {
-        runtimeProvider.fetchCoderFactory(
-            runningIn: operationManager,
-            completion: { [weak self] coderFactory in
-                self?.estimateFee(
-                    for: address,
-                    amount: amount,
-                    rewardDestination: rewardDestination,
-                    coderFactory: coderFactory
-                )
-            }, errorClosure: { [weak self] error in
-                self?.presenter?.didReceive(error: .fetchCoderFactory(error))
-            }
-        )
+    func remakeRecommendationSetup() {
+        recommendationMediator?.stopRecommending()
+
+        setupRecommendationMediator(for: state.stakingType)
     }
 
-    func stakingTypeRecomendation(for amount: Decimal) {
-        guard amount > 0 else {
+    func estimateFee(for amount: BigUInt) {
+        guard let selectionOption = lastRecommendedOption else {
             return
         }
-        // TODO:
-        presenter?.didReceive(stakingType: .direct(directStakingInfo))
+
+        let accountId = selectedAccount.accountId
+
+        switch selectionOption {
+        case let .direct(preparedValidators):
+            runtimeProvider.fetchCoderFactory(
+                runningIn: OperationManager(operationQueue: operationQueue),
+                completion: { [weak self] coderFactory in
+                    self?.estimateDirectStakingFee(
+                        accountId: accountId,
+                        amount: amount,
+                        validators: preparedValidators,
+                        coderFactory: coderFactory
+                    )
+                }, errorClosure: { [weak self] error in
+                    self?.presenter?.didReceive(error: .fee(error))
+                }
+            )
+        case let .pool(selectedPool):
+            estimatePoolStakingFee(
+                for: accountId,
+                amount: amount,
+                pool: selectedPool
+            )
+        }
+    }
+
+    func updateRecommendation(for amount: BigUInt) {
+        recommendationMediator?.update(amount: amount)
+    }
+
+    func replaceWithManual(option: SelectedStakingOption) {
+        lastRecommendedOption = option
+
+        switch option {
+        case .direct:
+            setupRecommendationMediator(for: .relaychain)
+        case .pool:
+            setupRecommendationMediator(for: .nominationPools)
+        }
     }
 }
 
-extension StakingSetupAmountInteractor: WalletLocalStorageSubscriber,
-    WalletLocalSubscriptionHandler {
+extension StakingSetupAmountInteractor: RelaychainStakingRecommendationDelegate {
+    func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt) {
+        presenter?.didReceive(recommendation: recommendation, amount: amount)
+    }
+
+    func didReceiveRecommendation(error: Error) {
+        presenter?.didReceive(error: .recommendation(error))
+    }
+}
+
+extension StakingSetupAmountInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
@@ -276,8 +213,8 @@ extension StakingSetupAmountInteractor: WalletLocalStorageSubscriber,
         assetId: AssetModel.Id
     ) {
         guard
-            chainId == selectedChainAsset.chain.chainId,
-            assetId == selectedChainAsset.asset.assetId,
+            chainId == chainAsset.chain.chainId,
+            assetId == chainAsset.asset.assetId,
             accountId == selectedAccount.accountId else {
             return
         }
@@ -297,7 +234,7 @@ extension StakingSetupAmountInteractor: WalletLocalStorageSubscriber,
 
 extension StakingSetupAmountInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        if selectedChainAsset.asset.priceId == priceId {
+        if chainAsset.asset.priceId == priceId {
             switch result {
             case let .success(priceData):
                 presenter?.didReceive(price: priceData)
@@ -308,48 +245,10 @@ extension StakingSetupAmountInteractor: PriceLocalStorageSubscriber, PriceLocalS
     }
 }
 
-extension StakingSetupAmountInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(value):
-            directStakingInfo.minNominatorBond = value
-        case let .failure(error):
-            presenter?.didReceive(error: .minNominatorBond(error))
-        }
-    }
-
-    func handleCounterForNominators(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(value):
-            directStakingInfo.counterForNominators = value
-        case let .failure(error):
-            presenter?.didReceive(error: .counterForNominators(error))
-        }
-    }
-
-    func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(value):
-            directStakingInfo.maxNominatorsCount = value
-        case let .failure(error):
-            presenter?.didReceive(error: .maxNominatorsCount(error))
-        }
-    }
-
-    func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(value):
-            directStakingInfo.bagListSize = value
-        case let .failure(error):
-            presenter?.didReceive(error: .bagListSize(error))
-        }
-    }
-}
-
 extension StakingSetupAmountInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil,
-              let priceId = selectedChainAsset.asset.priceId else {
+              let priceId = chainAsset.asset.priceId else {
             return
         }
 
