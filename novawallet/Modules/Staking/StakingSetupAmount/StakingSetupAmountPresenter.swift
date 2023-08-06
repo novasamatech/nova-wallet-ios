@@ -189,12 +189,15 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideStakingTypeViewModel(for model: SelectedStakingOption) {
-        let viewModel = viewModelFactory.stakingTypeViewModel(stakingType: model)
+        let viewModel = viewModelFactory.recommendedStakingTypeViewModel(
+            for: model,
+            locale: selectedLocale
+        )
+
         view?.didReceive(stakingType: .loaded(value: viewModel))
 
         let earnupViewModel = viewModelFactory.earnupModel(
             earnings: model.maxApy,
-            chainAsset: chainAsset,
             locale: selectedLocale
         )
 

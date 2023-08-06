@@ -1,7 +1,9 @@
 import UIKit
 import SoraUI
 
-final class StakingTypeAccountView: RowView<GenericTitleValueView<IconDetailsGenericView<MultiValueView>, UIImageView>> {
+final class StakingTypeAccountView: RowView<
+    GenericTitleValueView<IconDetailsGenericView<MultiValueView>, UIImageView>
+> {
     var iconImageView: UIImageView { rowContentView.titleView.imageView }
     var titleLabel: UILabel { rowContentView.titleView.detailsView.valueTop }
     var subtitleLabel: UILabel { rowContentView.titleView.detailsView.valueBottom }
@@ -23,7 +25,7 @@ final class StakingTypeAccountView: RowView<GenericTitleValueView<IconDetailsGen
     private func configure() {
         roundedBackgroundView.apply(style: .roundedLightCell)
         preferredHeight = 52
-        contentInsets = .init(top: 9, left: 16, bottom: 9, right: 14)
+        contentInsets = .init(top: 9, left: 16, bottom: 9, right: 12)
         borderView.borderType = .none
 
         titleLabel.textAlignment = .left
@@ -65,7 +67,13 @@ final class StakingTypeAccountView: RowView<GenericTitleValueView<IconDetailsGen
     func bind(stakingTypeViewModel: LoadableViewModelState<StakingTypeViewModel>) {
         switch stakingTypeViewModel {
         case let .cached(value), let .loaded(value):
-            bind(viewModel: .init(imageViewModel: nil, title: value.title, subtitle: value.subtitle, isRecommended: value.isRecommended))
+            let viewModel = StakingTypeAccountViewModel(
+                imageViewModel: value.icon,
+                title: value.title,
+                subtitle: value.subtitle,
+                isRecommended: value.isRecommended
+            )
+            bind(viewModel: viewModel)
         case .loading:
             // TODO:
             break

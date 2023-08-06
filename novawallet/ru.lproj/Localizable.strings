@@ -1322,3 +1322,6 @@
 "staking.direct" = "Прямой";
 "staking.pool" = "Пул";
 "staking.setup.amount.title" = "Стейк %@";
+"common.recommended" = "Рекомендованный";
+"staking.direct.staking" = "Прямой стейкинг";
+"staking.pool.staking" = "Пул стейкинг";

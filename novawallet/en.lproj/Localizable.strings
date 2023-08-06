@@ -1322,3 +1322,6 @@
 "staking.direct" = "Direct";
 "staking.pool" = "Pool";
 "staking.setup.amount.title" = "Stake %@";
+"common.recommended" = "Recommended";
+"staking.direct.staking" = "Direct staking";
+"staking.pool.staking" = "Pool staking";
