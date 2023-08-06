@@ -26,7 +26,7 @@ class DirectStakingRecommendationMediator: BaseStakingRecommendationMediator {
         }
 
         let recommendation = RelaychainStakingRecommendation(
-            stakingType: .direct(validators),
+            staking: .direct(validators),
             restrictions: restrictions
         )
 

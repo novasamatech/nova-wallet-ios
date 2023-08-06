@@ -77,12 +77,15 @@ struct StakingSetupAmountViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let feeProxy = ExtrinsicFeeProxy()
+
         return .init(
             state: state,
             selectedAccount: selectedAccount,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
+            extrinsicFeeProxy: feeProxy,
             recommendationMediatorFactory: recommendationFactory,
             runtimeProvider: runtimeProvider,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

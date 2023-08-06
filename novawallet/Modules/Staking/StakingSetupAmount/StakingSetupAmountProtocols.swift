@@ -25,15 +25,14 @@ protocol StakingSetupAmountInteractorInputProtocol: AnyObject {
     func remakeSubscriptions()
     func remakeRecommendationSetup()
 
-    func estimateFee(for amount: BigUInt)
+    func estimateFee(for staking: SelectedStakingOption, amount: BigUInt, feeId: TransactionFeeId)
     func updateRecommendation(for amount: BigUInt)
-    func replaceWithManual(option: SelectedStakingOption)
 }
 
 protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
-    func didReceive(fee: BigUInt?, stakingOption: SelectedStakingOption, amount: BigUInt)
+    func didReceive(fee: BigUInt?, feeId: TransactionFeeId)
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt)
     func didReceive(error: StakingSetupAmountError)
 }
@@ -45,6 +44,6 @@ protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable
 enum StakingSetupAmountError: Error {
     case assetBalance(Error)
     case price(Error)
-    case fee(Error)
+    case fee(Error, TransactionFeeId)
     case recommendation(Error)
 }

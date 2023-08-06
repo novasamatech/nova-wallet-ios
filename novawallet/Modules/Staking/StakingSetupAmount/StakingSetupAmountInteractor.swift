@@ -12,6 +12,7 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
+    let extrinsicFeeProxy: ExtrinsicFeeProxyProtocol
     let recommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
@@ -20,14 +21,13 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var recommendationMediator: RelaychainStakingRecommendationMediating?
 
-    private var lastRecommendedOption: SelectedStakingOption?
-
     init(
         state: RelaychainStartStakingStateProtocol,
         selectedAccount: ChainAccountResponse,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicFeeProxy: ExtrinsicFeeProxyProtocol,
         recommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -38,6 +38,7 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicService = extrinsicService
+        self.extrinsicFeeProxy = extrinsicFeeProxy
         self.recommendationMediatorFactory = recommendationMediatorFactory
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
@@ -53,14 +54,18 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
             recommendationMediator = recommendationMediatorFactory.createDirectStakingMediator(for: state)
         }
 
-        recommendationMediator?.delegate = self
-        recommendationMediator?.startRecommending()
-        recommendationMediator?.update(amount: 0)
+        configureCurrentMediator()
+    }
 
+    private func configureCurrentMediator() {
         if recommendationMediator == nil {
             presenter?.didReceive(error: .recommendation(CommonError.dataCorruption))
             return
         }
+
+        recommendationMediator?.delegate = self
+        recommendationMediator?.startRecommending()
+        recommendationMediator?.update(amount: 0)
     }
 
     private func performPriceSubscription() {
@@ -90,6 +95,7 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         accountId: AccountId,
         amount: BigUInt,
         validators: PreparedValidators,
+        feeId: TransactionFeeId,
         coderFactory: RuntimeCoderFactoryProtocol
     ) {
         let closure: ExtrinsicBuilderClosure = { builder in
@@ -108,29 +114,36 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
             return try bondClosure(builder).adding(call: nominateCall)
         }
 
-        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(info):
-                self?.presenter?.didReceive(
-                    fee: BigUInt(info.fee),
-                    stakingOption: .direct(validators),
-                    amount: amount
-                )
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .fee(error))
-            }
-        }
+        extrinsicFeeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: feeId,
+            setupBy: closure
+        )
     }
 
     private func estimatePoolStakingFee(
-        for _: AccountId,
-        amount _: BigUInt,
-        pool _: NominationPools.SelectedPool
-    ) {}
+        for pool: NominationPools.SelectedPool,
+        amount: BigUInt,
+        feeId: TransactionFeeId
+    ) {
+        let closure: ExtrinsicBuilderClosure = { builder in
+            let call = NominationPools.JoinCall(amount: amount, poolId: pool.poolId)
+
+            return try builder.adding(call: call.runtimeCall())
+        }
+
+        extrinsicFeeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: feeId,
+            setupBy: closure
+        )
+    }
 }
 
 extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtocol, RuntimeConstantFetching {
     func setup() {
+        extrinsicFeeProxy.delegate = self
+
         performAssetBalanceSubscription()
         performPriceSubscription()
 
@@ -148,14 +161,10 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
         setupRecommendationMediator(for: state.stakingType)
     }
 
-    func estimateFee(for amount: BigUInt) {
-        guard let selectionOption = lastRecommendedOption else {
-            return
-        }
-
+    func estimateFee(for staking: SelectedStakingOption, amount: BigUInt, feeId: TransactionFeeId) {
         let accountId = selectedAccount.accountId
 
-        switch selectionOption {
+        switch staking {
         case let .direct(preparedValidators):
             runtimeProvider.fetchCoderFactory(
                 runningIn: OperationManager(operationQueue: operationQueue),
@@ -164,33 +173,30 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
                         accountId: accountId,
                         amount: amount,
                         validators: preparedValidators,
+                        feeId: feeId,
                         coderFactory: coderFactory
                     )
                 }, errorClosure: { [weak self] error in
-                    self?.presenter?.didReceive(error: .fee(error))
+                    self?.presenter?.didReceive(error: .fee(error, feeId))
                 }
             )
         case let .pool(selectedPool):
-            estimatePoolStakingFee(
-                for: accountId,
-                amount: amount,
-                pool: selectedPool
-            )
+            estimatePoolStakingFee(for: selectedPool, amount: amount, feeId: feeId)
         }
     }
 
     func updateRecommendation(for amount: BigUInt) {
         recommendationMediator?.update(amount: amount)
     }
+}
 
-    func replaceWithManual(option: SelectedStakingOption) {
-        lastRecommendedOption = option
-
-        switch option {
-        case .direct:
-            setupRecommendationMediator(for: .relaychain)
-        case .pool:
-            setupRecommendationMediator(for: .nominationPools)
+extension StakingSetupAmountInteractor: ExtrinsicFeeProxyDelegate {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for identifier: TransactionFeeId) {
+        switch result {
+        case let .success(info):
+            presenter?.didReceive(fee: BigUInt(info.fee), feeId: identifier)
+        case let .failure(error):
+            presenter?.didReceive(error: .fee(error, identifier))
         }
     }
 }

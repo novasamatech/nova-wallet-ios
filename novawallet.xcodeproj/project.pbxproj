@@ -45,6 +45,8 @@
 		0C13D3002A7D50C10054BB6F /* PoolStakingRecommendationMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D2FF2A7D50C10054BB6F /* PoolStakingRecommendationMediator.swift */; };
 		0C13D3022A7D53C10054BB6F /* HybridStakingRecommendationMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3012A7D53C10054BB6F /* HybridStakingRecommendationMediator.swift */; };
 		0C13D3042A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3032A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift */; };
+		0C13D3072A7FB92C0054BB6F /* NominationPoolsJoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3062A7FB92C0054BB6F /* NominationPoolsJoin.swift */; };
+		0C13D3092A7FBADB0054BB6F /* StakingSelectionMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3082A7FBADB0054BB6F /* StakingSelectionMethod.swift */; };
 		0C154A0E2A45995500932C3F /* CompoundComparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C154A0D2A45995500932C3F /* CompoundComparator.swift */; };
 		0C17BD972A42F162004AF9E7 /* WalletViewModelObserverContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */; };
 		0C17BD992A42F1BE004AF9E7 /* MoneyPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */; };
@@ -3781,6 +3783,8 @@
 		0C13D2FF2A7D50C10054BB6F /* PoolStakingRecommendationMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolStakingRecommendationMediator.swift; sourceTree = "<group>"; };
 		0C13D3012A7D53C10054BB6F /* HybridStakingRecommendationMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridStakingRecommendationMediator.swift; sourceTree = "<group>"; };
 		0C13D3032A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRecommendationMediatorFactory.swift; sourceTree = "<group>"; };
+		0C13D3062A7FB92C0054BB6F /* NominationPoolsJoin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsJoin.swift; sourceTree = "<group>"; };
+		0C13D3082A7FBADB0054BB6F /* StakingSelectionMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectionMethod.swift; sourceTree = "<group>"; };
 		0C154A0D2A45995500932C3F /* CompoundComparator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundComparator.swift; sourceTree = "<group>"; };
 		0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModelObserverContainer.swift; sourceTree = "<group>"; };
 		0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyPresentable.swift; sourceTree = "<group>"; };
@@ -7704,6 +7708,14 @@
 			path = Recommendation;
 			sourceTree = "<group>";
 		};
+		0C13D3052A7FB9170054BB6F /* NominationPools */ = {
+			isa = PBXGroup;
+			children = (
+				0C13D3062A7FB92C0054BB6F /* NominationPoolsJoin.swift */,
+			);
+			path = NominationPools;
+			sourceTree = "<group>";
+		};
 		0C1FE4F22A52EDD5003769E7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -8629,6 +8641,7 @@
 				77799ADC2A74219A00B7E564 /* ButtonState.swift */,
 				77799AE42A792AE700B7E564 /* StakingTypeViewModel.swift */,
 				77799AE62A792B6F00B7E564 /* StakingTypeAccountViewModel.swift */,
+				0C13D3082A7FBADB0054BB6F /* StakingSelectionMethod.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -10623,6 +10636,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				0C13D3052A7FB9170054BB6F /* NominationPools */,
 				843ADAC12A38FC4C003AE2B5 /* Staking */,
 				88B1C33D29B9C85200DCA101 /* BagList */,
 				845B080B2918D4E9005785D3 /* Democracy */,
@@ -19666,6 +19680,7 @@
 				88D1F1B4298127F600316A1A /* InAppUpdatesInteractorError.swift in Sources */,
 				846C372E26B199D10098F303 /* BabeStakingDurationFactory.swift in Sources */,
 				9B4F0484B81BBF8DFA618599 /* AccountCreateViewFactory.swift in Sources */,
+				0C13D3072A7FB92C0054BB6F /* NominationPoolsJoin.swift in Sources */,
 				845B811728F43C730040CE84 /* TreasuryProposal.swift in Sources */,
 				8460E718284CF124002896E9 /* ParachainStakingValidatorFactoryProtocol.swift in Sources */,
 				846CDECD258D212D009F3E75 /* AlertImageWithTitleView.swift in Sources */,
@@ -21387,6 +21402,7 @@
 				B8FD43D2A80BD41D5F6FE14E /* GovernanceDelegateSetupProtocols.swift in Sources */,
 				12F8A8A869D05D66B658F649 /* GovernanceDelegateSetupWireframe.swift in Sources */,
 				061C16B970BE568D7A80F53A /* GovernanceDelegateSetupPresenter.swift in Sources */,
+				0C13D3092A7FBADB0054BB6F /* StakingSelectionMethod.swift in Sources */,
 				7D690E88EAB7437B9F69C92F /* GovernanceDelegateSetupInteractor.swift in Sources */,
 				847C15BF2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift in Sources */,
 				B8DC27C3CAE9846A5E56B4EE /* GovernanceDelegateSetupViewController.swift in Sources */,

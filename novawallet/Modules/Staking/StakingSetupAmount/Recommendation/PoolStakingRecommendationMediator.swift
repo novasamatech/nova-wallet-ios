@@ -24,7 +24,7 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
         }
 
         let recommendation = RelaychainStakingRecommendation(
-            stakingType: .pool(pool),
+            staking: .pool(pool),
             restrictions: restrictions
         )
 
