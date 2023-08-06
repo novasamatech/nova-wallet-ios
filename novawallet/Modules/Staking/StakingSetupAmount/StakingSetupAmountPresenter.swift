@@ -111,8 +111,9 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideAmountInputViewModel() {
+        let amount = inputResult != nil ? inputAmount() : nil
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
-            inputAmount()
+            amount
         ).value(for: selectedLocale)
 
         view?.didReceiveAmount(inputViewModel: viewModel)
@@ -224,6 +225,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         provideBalanceModel()
         provideChainAssetViewModel()
         provideAmountPriceViewModel()
+        provideAmountInputViewModel()
         provideButtonState()
         refreshFee()
     }
@@ -266,6 +268,8 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
     }
 
     func didReceive(fee: BigUInt?, feeId: TransactionFeeId) {
+        logger.debug("Did receive fee: \(String(describing: fee))")
+
         guard pendingFeeId == feeId else {
             return
         }
@@ -280,6 +284,8 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
     }
 
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt) {
+        logger.debug("Did receive recommendation: \(recommendation)")
+
         // check that we are waiting recommendation for particular amount
         guard pendingRecommendationAmount == amount, setupMethod.isRecommendation else {
             return

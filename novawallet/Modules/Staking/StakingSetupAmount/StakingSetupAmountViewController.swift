@@ -46,6 +46,12 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
             action: #selector(actionContinue),
             for: .touchUpInside
         )
+
+        rootView.stakingTypeView.addTarget(
+            self,
+            action: #selector(selectStakingTypeAction),
+            for: .touchUpInside
+        )
     }
 
     @objc private func actionAmountChange() {
@@ -102,12 +108,6 @@ extension StakingSetupAmountViewController: StakingSetupAmountViewProtocol {
 
     func didReceive(stakingType: LoadableViewModelState<StakingTypeViewModel>?) {
         rootView.setStakingType(viewModel: stakingType)
-
-        rootView.stakingTypeView?.addTarget(
-            self,
-            action: #selector(selectStakingTypeAction),
-            for: .touchUpInside
-        )
     }
 }
 

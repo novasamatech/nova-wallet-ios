@@ -76,8 +76,7 @@ extension NominationPoolRecommendationFactory: NominationPoolRecommendationFacto
         mergeOperation.addDependency(metadataWrapper.targetOperation)
         mergeOperation.addDependency(maxApyPoolOperation)
 
-        let dependencies = maxApyWrapper.allOperations + [maxApyPoolOperation] + metadataWrapper.allOperations +
-            [mergeOperation]
+        let dependencies = maxApyWrapper.allOperations + [maxApyPoolOperation] + metadataWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
