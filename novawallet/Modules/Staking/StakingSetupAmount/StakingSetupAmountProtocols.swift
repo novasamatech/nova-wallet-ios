@@ -34,11 +34,14 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance)
     func didReceive(fee: BigUInt?, feeId: TransactionFeeId)
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt)
+    func didReceive(locks: AssetLocks)
     func didReceive(error: StakingSetupAmountError)
 }
 
-protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable, CommonRetryable {
+protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+    CommonRetryable, StakingErrorPresentable {
     func showStakingTypeSelection(from view: ControllerBackedProtocol?)
+    func showConfirmation(from view: ControllerBackedProtocol?, stakingOption: SelectedStakingOption)
 }
 
 enum StakingSetupAmountError: Error {
@@ -46,4 +49,5 @@ enum StakingSetupAmountError: Error {
     case price(Error)
     case fee(Error, TransactionFeeId)
     case recommendation(Error)
+    case locks(Error)
 }

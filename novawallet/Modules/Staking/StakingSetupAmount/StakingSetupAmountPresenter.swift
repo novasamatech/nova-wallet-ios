@@ -9,6 +9,7 @@ final class StakingSetupAmountPresenter {
     let viewModelFactory: StakingAmountViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
@@ -29,15 +30,7 @@ final class StakingSetupAmountPresenter {
     private var priceData: PriceData?
     private var fee: BigUInt?
     private var pendingFeeId: TransactionFeeId?
-
-    var availableBalanceInPlank: BigUInt? {
-        switch setupMethod.selectedStakingOption {
-        case .none, .direct:
-            return assetBalance?.freeInPlank
-        case .pool:
-            return assetBalance?.transferable
-        }
-    }
+    private var assetLocks: AssetLocks?
 
     init(
         interactor: StakingSetupAmountInteractorInputProtocol,
@@ -45,6 +38,7 @@ final class StakingSetupAmountPresenter {
         viewModelFactory: StakingAmountViewModelFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -54,6 +48,7 @@ final class StakingSetupAmountPresenter {
         self.viewModelFactory = viewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
         self.logger = logger
         self.localizationManager = localizationManager
@@ -61,7 +56,7 @@ final class StakingSetupAmountPresenter {
 
     private func provideBalanceModel() {
         let viewModel = viewModelFactory.balance(
-            amount: availableBalanceInPlank,
+            amount: availableBalanceInPlank(),
             chainAsset: chainAsset,
             locale: selectedLocale
         )
@@ -140,7 +135,25 @@ final class StakingSetupAmountPresenter {
     }
 
     private func availableBalance() -> Decimal? {
-        availableBalanceInPlank.flatMap { $0.decimal(precision: chainAsset.asset.precision) }
+        availableBalanceInPlank().flatMap { $0.decimal(precision: chainAsset.asset.precision) }
+    }
+
+    private func availableBalanceInPlank() -> BigUInt? {
+        switch setupMethod {
+        case .recommendation:
+            return assetBalance?.freeInPlank
+        case let .manual(selectedStakingOption, _):
+            return manualAvailableBalanceInPlank(for: selectedStakingOption)
+        }
+    }
+
+    private func manualAvailableBalanceInPlank(for stakingOption: SelectedStakingOption) -> BigUInt? {
+        switch stakingOption {
+        case .direct:
+            return assetBalance?.freeInPlank
+        case .pool:
+            return assetBalance?.transferable
+        }
     }
 
     private func updateAfterAmountChanged() {
@@ -249,7 +262,71 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         wireframe.showStakingTypeSelection(from: view)
     }
 
-    func proceed() {}
+    // swiftlint:disable:next function_body_length
+    func proceed() {
+        let currentInputAmount = inputAmount()
+
+        let defaultValidations: [DataValidating] = [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            ) { [weak self] in
+                self?.refreshFee()
+            },
+            dataValidatingFactory.canSpendAmountInPlank(
+                balance: availableBalanceInPlank(),
+                spendingAmount: currentInputAmount,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: assetBalance?.transferable,
+                fee: fee,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
+                balance: availableBalanceInPlank(),
+                fee: fee,
+                spendingAmount: currentInputAmount,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.allowsNewNominators(
+                flag: setupMethod.restrictions?.allowsNewStakers ?? false,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canNominateInPlank(
+                amount: currentInputAmount,
+                minimalBalance: setupMethod.restrictions?.minJoinStake,
+                minNominatorBond: setupMethod.restrictions?.minJoinStake,
+                precision: chainAsset.asset.precision,
+                locale: selectedLocale
+            )
+        ]
+
+        let recommendedValidations = setupMethod.recommendation?.validationFactory?.createValidations(
+            for: .init(
+                stakingAmount: currentInputAmount,
+                assetBalance: assetBalance,
+                assetLocks: assetLocks,
+                fee: fee
+            ),
+            controller: view,
+            balanceViewModelFactory: balanceViewModelFactory,
+            presentable: wireframe,
+            locale: selectedLocale
+        ) ?? []
+
+        DataValidationRunner(validators: defaultValidations + recommendedValidations).runValidation { [weak self] in
+            guard let stakingOption = self?.setupMethod.selectedStakingOption else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(from: self?.view, stakingOption: stakingOption)
+        }
+    }
 }
 
 extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtocol {
@@ -303,11 +380,15 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
         refreshFee()
     }
 
+    func didReceive(locks: AssetLocks) {
+        assetLocks = locks
+    }
+
     func didReceive(error: StakingSetupAmountError) {
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .assetBalance, .price:
+        case .assetBalance, .price, .locks:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }

@@ -19,6 +19,7 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var locksProvider: StreamableProvider<AssetLock>?
     private var recommendationMediator: RelaychainStakingRecommendationMediating?
 
     init(
@@ -91,6 +92,18 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         )
     }
 
+    private func performAssetLocksSubscription() {
+        clear(streamableProvider: &locksProvider)
+
+        let chainAssetId = chainAsset.chainAssetId
+
+        locksProvider = subscribeToLocksProvider(
+            for: selectedAccount.accountId,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId
+        )
+    }
+
     private func estimateDirectStakingFee(
         accountId: AccountId,
         amount: BigUInt,
@@ -146,6 +159,7 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
 
         performAssetBalanceSubscription()
         performPriceSubscription()
+        performAssetLocksSubscription()
 
         setupRecommendationMediator(for: state.stakingType)
     }
@@ -153,6 +167,7 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
     func remakeSubscriptions() {
         performAssetBalanceSubscription()
         performPriceSubscription()
+        performAssetLocksSubscription()
     }
 
     func remakeRecommendationSetup() {
@@ -234,6 +249,28 @@ extension StakingSetupAmountInteractor: WalletLocalStorageSubscriber, WalletLoca
             presenter?.didReceive(assetBalance: balance)
         case let .failure(error):
             presenter?.didReceive(error: .assetBalance(error))
+        }
+    }
+
+    func handleAccountLocks(
+        result: Result<[DataProviderChange<AssetLock>], Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        guard
+            chainId == chainAsset.chain.chainId,
+            assetId == chainAsset.asset.assetId,
+            accountId == selectedAccount.accountId else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            let locks = changes.mergeToDict([:]).values
+            presenter?.didReceive(locks: Array(locks))
+        case let .failure(error):
+            presenter?.didReceive(error: .locks(error))
         }
     }
 }

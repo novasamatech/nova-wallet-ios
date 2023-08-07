@@ -156,6 +156,7 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
         }
 
         return HybridStakingRecommendationMediator(
+            chainAsset: state.chainAsset,
             directStakingMediator: directStakingMediator,
             nominationPoolsMediator: poolMediator,
             directStakingRestrictionsBuilder: directStakingRestrictionsBuilder

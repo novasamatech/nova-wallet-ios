@@ -1325,3 +1325,5 @@
 "common.recommended" = "Рекомендованный";
 "staking.direct.staking" = "Прямой стейкинг";
 "staking.pool.staking" = "Пул стейкинг";
+"staking.min.required.stake.error" = "Вы не можете стейкать меньше минимального значения (%@)";
+"staking.locked.pool.violation.error" = "Ваши токены заблокированы из - за %@. Для продолжения введите %@ или %@ и больше. Для стейкинга другой суммы разблокируйте токены.";

@@ -27,7 +27,8 @@ class DirectStakingRecommendationMediator: BaseStakingRecommendationMediator {
 
         let recommendation = RelaychainStakingRecommendation(
             staking: .direct(validators),
-            restrictions: restrictions
+            restrictions: restrictions,
+            validationFactory: nil
         )
 
         didReceive(recommendation: recommendation, for: amount)

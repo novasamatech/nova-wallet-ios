@@ -21,4 +21,22 @@ enum StakingSelectionMethod {
             return staking
         }
     }
+
+    var restrictions: RelaychainStakingRestrictions? {
+        switch self {
+        case let .recommendation(recommendation):
+            return recommendation?.restrictions
+        case let .manual(_, restrictions):
+            return restrictions
+        }
+    }
+
+    var recommendation: RelaychainStakingRecommendation? {
+        switch self {
+        case let .recommendation(recommendation):
+            return recommendation
+        case let .manual:
+            return nil
+        }
+    }
 }

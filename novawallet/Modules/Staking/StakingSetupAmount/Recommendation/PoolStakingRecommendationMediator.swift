@@ -25,7 +25,8 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
 
         let recommendation = RelaychainStakingRecommendation(
             staking: .pool(pool),
-            restrictions: restrictions
+            restrictions: restrictions,
+            validationFactory: nil
         )
 
         didReceive(recommendation: recommendation, for: amount)

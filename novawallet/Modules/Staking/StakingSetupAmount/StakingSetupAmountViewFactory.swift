@@ -25,12 +25,18 @@ struct StakingSetupAmountViewFactory {
         )
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: NetworkViewModelFactory())
 
+        let dataValidatingFactory = StakingDataValidatingFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
+
         let presenter = StakingSetupAmountPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
             chainAsset: state.chainAsset,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -43,6 +49,7 @@ struct StakingSetupAmountViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }

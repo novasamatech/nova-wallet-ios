@@ -5,17 +5,33 @@ final class HybridStakingRecommendationMediator: BaseStakingRecommendationMediat
     let directStakingMediator: RelaychainStakingRecommendationMediating
     let nominationPoolsMediator: RelaychainStakingRecommendationMediating
     let directStakingRestrictionsBuilder: DirectStakingRestrictionsBuilder
+    let chainAsset: ChainAsset
 
     private var restrictions: RelaychainStakingRestrictions?
 
+    private var validationFactory: StakingRecommendationValidationFactoryProtocol?
+
     init(
+        chainAsset: ChainAsset,
         directStakingMediator: RelaychainStakingRecommendationMediating,
         nominationPoolsMediator: RelaychainStakingRecommendationMediating,
         directStakingRestrictionsBuilder: DirectStakingRestrictionsBuilder
     ) {
+        self.chainAsset = chainAsset
         self.directStakingMediator = directStakingMediator
         self.nominationPoolsMediator = nominationPoolsMediator
         self.directStakingRestrictionsBuilder = directStakingRestrictionsBuilder
+    }
+
+    private func updateValidationFactory() {
+        if let minRewardableStake = restrictions?.minRewardableStake {
+            validationFactory = HybridStakingValidationFactory(
+                directRewardableStake: minRewardableStake,
+                chainAsset: chainAsset
+            )
+        } else {
+            validationFactory = nil
+        }
     }
 
     override func updateRecommendation(for amount: BigUInt) {
@@ -65,6 +81,8 @@ extension HybridStakingRecommendationMediator: RelaychainStakingRestrictionsBuil
     ) {
         self.restrictions = restrictions
 
+        updateValidationFactory()
+
         isReady = true
         updateRecommendationIfReady()
     }
@@ -76,7 +94,13 @@ extension HybridStakingRecommendationMediator: RelaychainStakingRestrictionsBuil
 
 extension HybridStakingRecommendationMediator: RelaychainStakingRecommendationDelegate {
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt) {
-        delegate?.didReceive(recommendation: recommendation, amount: amount)
+        let hybridRecommendation = RelaychainStakingRecommendation(
+            staking: recommendation.staking,
+            restrictions: recommendation.restrictions,
+            validationFactory: validationFactory
+        )
+
+        delegate?.didReceive(recommendation: hybridRecommendation, amount: amount)
     }
 
     func didReceiveRecommendation(error: Error) {
