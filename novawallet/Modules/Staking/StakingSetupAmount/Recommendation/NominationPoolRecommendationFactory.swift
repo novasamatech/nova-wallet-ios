@@ -6,6 +6,10 @@ protocol NominationPoolRecommendationFactoryProtocol: AnyObject {
     func createPoolRecommendationWrapper() -> CompoundOperationWrapper<NominationPools.SelectedPool>
 }
 
+enum NominationPoolRecommendationFactoryError: Error {
+    case noPoolToJoin
+}
+
 final class NominationPoolRecommendationFactory {
     let eraPoolsService: EraNominationPoolsServiceProtocol
     let validatorRewardService: RewardCalculatorServiceProtocol
@@ -40,14 +44,40 @@ extension NominationPoolRecommendationFactory: NominationPoolRecommendationFacto
             runtimeService: runtimeService
         )
 
+        let activePoolsOperation = eraPoolsService.fetchInfoOperation()
+
+        let bondedPoolsWrapper = storageOperationFactory.createBondedPoolsWrapper(
+            for: {
+                let allPoolIds = try activePoolsOperation.extractNoCancellableResultData().pools.map(\.poolId)
+                return Set(allPoolIds)
+            },
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        bondedPoolsWrapper.addDependency(operations: [activePoolsOperation])
+
         let maxApyPoolOperation = ClosureOperation<NominationPools.PoolApy> {
-            try maxApyWrapper.targetOperation.extractNoCancellableResultData().calculateMaxReturn(
-                isCompound: true,
-                period: .year
-            )
+            let validPoolIds = try bondedPoolsWrapper.targetOperation
+                .extractNoCancellableResultData()
+                .filter { $0.value.state == .open }
+                .map(\.key)
+
+            let rewardEngine = try maxApyWrapper.targetOperation.extractNoCancellableResultData()
+
+            let optMaxApy = try validPoolIds
+                .map { try rewardEngine.calculateMaxReturn(poolId: $0, isCompound: true, period: .year) }
+                .max { $0.maxApy < $1.maxApy }
+
+            guard let maxApy = optMaxApy else {
+                throw NominationPoolRecommendationFactoryError.noPoolToJoin
+            }
+
+            return maxApy
         }
 
         maxApyPoolOperation.addDependency(maxApyWrapper.targetOperation)
+        maxApyPoolOperation.addDependency(bondedPoolsWrapper.targetOperation)
 
         let metadataWrapper = storageOperationFactory.createMetadataWrapper(
             for: {
@@ -76,7 +106,8 @@ extension NominationPoolRecommendationFactory: NominationPoolRecommendationFacto
         mergeOperation.addDependency(metadataWrapper.targetOperation)
         mergeOperation.addDependency(maxApyPoolOperation)
 
-        let dependencies = maxApyWrapper.allOperations + [maxApyPoolOperation] + metadataWrapper.allOperations
+        let dependencies = maxApyWrapper.allOperations + [activePoolsOperation] + bondedPoolsWrapper.allOperations +
+            [maxApyPoolOperation] + metadataWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }

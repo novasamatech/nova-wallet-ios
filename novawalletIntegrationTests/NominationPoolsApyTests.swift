@@ -19,6 +19,14 @@ final class NominationPoolsApyTests: XCTestCase {
         
         Logger.shared.info("Nova pool apy: \(maxApy.maxApy.stringWithPointSeparator)")
     }
+    
+    func testApyForMaxPool() throws {
+        let calculator = try fetchRewardEngine(for: KnowChainId.polkadot)
+        
+        let maxApy = try calculator.calculateMaxReturn(isCompound: true, period: .year)
+        
+        Logger.shared.info("Pool apy: \(maxApy.maxApy.stringWithPointSeparator)")
+    }
 
     private func fetchRewardEngine(for chainId: ChainModel.Id) throws -> NominationPoolsRewardEngineProtocol {
         // given

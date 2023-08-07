@@ -47,7 +47,6 @@
 		0C13D3042A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3032A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift */; };
 		0C13D3072A7FB92C0054BB6F /* NominationPoolsJoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3062A7FB92C0054BB6F /* NominationPoolsJoin.swift */; };
 		0C13D3092A7FBADB0054BB6F /* StakingSelectionMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3082A7FBADB0054BB6F /* StakingSelectionMethod.swift */; };
-		0C13D30D2A7FCEA20054BB6F /* StakingRecommendationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D30C2A7FCEA20054BB6F /* StakingRecommendationTests.swift */; };
 		0C13D3112A80CA9A0054BB6F /* StakingDataValidatorFactory+Plank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3102A80CA9A0054BB6F /* StakingDataValidatorFactory+Plank.swift */; };
 		0C13D3132A80D06B0054BB6F /* StakingRecommendationValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D3122A80D06B0054BB6F /* StakingRecommendationValidationFactory.swift */; };
 		0C154A0E2A45995500932C3F /* CompoundComparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C154A0D2A45995500932C3F /* CompoundComparator.swift */; };
@@ -3788,7 +3787,6 @@
 		0C13D3032A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRecommendationMediatorFactory.swift; sourceTree = "<group>"; };
 		0C13D3062A7FB92C0054BB6F /* NominationPoolsJoin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsJoin.swift; sourceTree = "<group>"; };
 		0C13D3082A7FBADB0054BB6F /* StakingSelectionMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectionMethod.swift; sourceTree = "<group>"; };
-		0C13D30C2A7FCEA20054BB6F /* StakingRecommendationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRecommendationTests.swift; sourceTree = "<group>"; };
 		0C13D3102A80CA9A0054BB6F /* StakingDataValidatorFactory+Plank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingDataValidatorFactory+Plank.swift"; sourceTree = "<group>"; };
 		0C13D3122A80D06B0054BB6F /* StakingRecommendationValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRecommendationValidationFactory.swift; sourceTree = "<group>"; };
 		0C154A0D2A45995500932C3F /* CompoundComparator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundComparator.swift; sourceTree = "<group>"; };
@@ -9909,7 +9907,6 @@
 				0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */,
 				0C2F86922A72648D00593C01 /* ActiveNominationPoolsTests.swift */,
 				0C2F86992A72948100593C01 /* NominationPoolsApyTests.swift */,
-				0C13D30C2A7FCEA20054BB6F /* StakingRecommendationTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -18074,7 +18071,6 @@
 				84BFE8A228C2420A00140F1F /* AutocompounDelegateStakeTests.swift in Sources */,
 				F49F49A326A5C45600A25931 /* BabeEraOperationFactoryTests.swift in Sources */,
 				84532D5F28E4210E00EF4ADC /* ConvictionVotesFetchTests.swift in Sources */,
-				0C13D30D2A7FCEA20054BB6F /* StakingRecommendationTests.swift in Sources */,
 				84C3420F2831A67200156569 /* BlockTimeEstimationServiceTests.swift in Sources */,
 				84FACB6A25F5759C00F32ED4 /* AccountCreationHelper.swift in Sources */,
 				843E9B3827C8CAC1009C143A /* NftDownloadIntegrationTests.swift in Sources */,
