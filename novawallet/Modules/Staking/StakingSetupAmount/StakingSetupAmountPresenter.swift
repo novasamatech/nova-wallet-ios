@@ -259,20 +259,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     }
 
     func selectStakingType() {
-        let stakingTypeState = StakingTypeInitialState(
-            chainAsset: chainAsset,
-            directStaking: .recommended(maxCount: 20),
-            directStakingMinStake: 410,
-            nominationPoolStaking: .init(
-                name: "Nova",
-                icon: StaticImageViewModel(image: R.image.iconNova()!),
-                recommended: true
-            ),
-            nominationPoolMinStake: 10,
-            selection: .direct,
-            isDirectStakingAvailable: false
-        )
-        wireframe.showStakingTypeSelection(from: view, initialState: stakingTypeState)
+        wireframe.showStakingTypeSelection(from: view, chainAsset: chainAsset, method: setupMethod)
     }
 
     // swiftlint:disable:next function_body_length

@@ -1,3 +1,5 @@
+import UIKit
+
 class GenericStakingTypeAccountView<T>: RowView<GenericTitleValueView<GenericPairValueView<T, MultiValueView>, UIImageView>> where T: UIView {
     var titleLabel: UILabel { rowContentView.titleView.sView.valueTop }
     var subtitleLabel: UILabel { rowContentView.titleView.sView.valueBottom }

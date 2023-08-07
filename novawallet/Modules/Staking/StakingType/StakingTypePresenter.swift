@@ -12,13 +12,25 @@ final class StakingTypePresenter {
     init(
         interactor: StakingTypeInteractorInputProtocol,
         wireframe: StakingTypeWireframeProtocol,
-        initialState: StakingTypeInitialState,
+        chainAsset: ChainAsset,
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        state = initialState
+        state = StakingTypeInitialState(
+            chainAsset: chainAsset,
+            directStaking: .recommended(maxCount: 20),
+            directStakingMinStake: 410,
+            nominationPoolStaking: .init(
+                name: "Nova",
+                icon: StaticImageViewModel(image: R.image.iconNova()!),
+                recommended: true
+            ),
+            nominationPoolMinStake: 10,
+            selection: .direct,
+            isDirectStakingAvailable: false
+        )
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }

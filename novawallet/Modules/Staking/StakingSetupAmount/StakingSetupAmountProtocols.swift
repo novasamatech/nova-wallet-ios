@@ -40,8 +40,11 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
 
 protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, StakingErrorPresentable {
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?, initialState: StakingTypeInitialState)
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?)
+    func showStakingTypeSelection(
+        from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset,
+        method: StakingSelectionMethod
+    )
     func showConfirmation(from view: ControllerBackedProtocol?, stakingOption: SelectedStakingOption)
 }
 

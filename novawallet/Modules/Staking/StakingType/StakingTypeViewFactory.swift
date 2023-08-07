@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct StakingTypeViewFactory {
-    static func createView(initialState: StakingTypeInitialState) -> StakingTypeViewProtocol? {
+    static func createView(chainAsset: ChainAsset, method _: StakingSelectionMethod) -> StakingTypeViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -10,7 +10,7 @@ struct StakingTypeViewFactory {
         let wireframe = StakingTypeWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: initialState.chainAsset.assetDisplayInfo,
+            targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -22,7 +22,7 @@ struct StakingTypeViewFactory {
         let presenter = StakingTypePresenter(
             interactor: interactor,
             wireframe: wireframe,
-            initialState: initialState,
+            chainAsset: chainAsset,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )

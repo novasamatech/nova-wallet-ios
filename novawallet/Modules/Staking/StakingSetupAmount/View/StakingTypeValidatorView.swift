@@ -1,3 +1,5 @@
+import UIKit
+
 final class StakingTypeValidatorView: GenericStakingTypeAccountView<BorderedLabelView>, BindableView {
     var counterLabel: BorderedLabelView { rowContentView.titleView.fView }
 
