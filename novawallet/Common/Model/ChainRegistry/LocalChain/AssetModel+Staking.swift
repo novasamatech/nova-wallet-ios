@@ -8,4 +8,8 @@ extension AssetModel {
 
         return stakings.contains(.nominationPools)
     }
+
+    var hasMultipleStakingOptions: Bool {
+        (stakings ?? []).count > 1
+    }
 }

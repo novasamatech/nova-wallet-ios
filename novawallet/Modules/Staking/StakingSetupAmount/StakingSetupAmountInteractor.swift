@@ -48,7 +48,11 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
 
     private func setupRecommendationMediator(for type: StakingType?) {
         if type == nil {
-            recommendationMediator = recommendationMediatorFactory.createHybridStakingMediator(for: state)
+            if state.supportsPoolStaking() {
+                recommendationMediator = recommendationMediatorFactory.createHybridStakingMediator(for: state)
+            } else {
+                recommendationMediator = recommendationMediatorFactory.createDirectStakingMediator(for: state)
+            }
         } else if type == .nominationPools {
             recommendationMediator = recommendationMediatorFactory.createPoolStakingMediator(for: state)
         } else {

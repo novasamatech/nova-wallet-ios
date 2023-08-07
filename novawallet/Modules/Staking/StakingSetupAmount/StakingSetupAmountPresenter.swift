@@ -11,6 +11,7 @@ final class StakingSetupAmountPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
+    let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
@@ -22,8 +23,11 @@ final class StakingSetupAmountPresenter {
         didSet {
             if inputResult != nil {
                 buttonState = .continueState(enabled: true)
-                provideButtonState()
+            } else {
+                buttonState = .continueState(enabled: false)
             }
+
+            provideButtonState()
         }
     }
 
@@ -42,6 +46,7 @@ final class StakingSetupAmountPresenter {
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
+        recommendsMultipleStakings: Bool,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -53,6 +58,7 @@ final class StakingSetupAmountPresenter {
         self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
+        self.recommendsMultipleStakings = recommendsMultipleStakings
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -188,7 +194,7 @@ final class StakingSetupAmountPresenter {
     private func provideStakingTypeViewModel() {
         switch setupMethod {
         case let .recommendation(stakingRecommendation):
-            if inputResult == nil {
+            if inputResult == nil, recommendsMultipleStakings {
                 view?.didReceive(stakingType: nil)
                 view?.didReceive(estimatedRewards: nil)
             } else if let stakingType = stakingRecommendation?.staking {
@@ -245,6 +251,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         provideAmountInputViewModel()
         provideButtonState()
         refreshFee()
+
+        if !recommendsMultipleStakings {
+            updateRecommendationIfNeeded()
+        }
     }
 
     func updateAmount(_ newValue: Decimal?) {

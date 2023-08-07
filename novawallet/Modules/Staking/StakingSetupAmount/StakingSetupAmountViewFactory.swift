@@ -41,6 +41,7 @@ struct StakingSetupAmountViewFactory {
             balanceDerivationFactory: balanceDerivationFactory,
             dataValidatingFactory: dataValidatingFactory,
             chainAsset: state.chainAsset,
+            recommendsMultipleStakings: state.recommendsMultipleStakings,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
