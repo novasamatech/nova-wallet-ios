@@ -35,6 +35,12 @@ protocol NPoolsLocalSubscriptionHandler {
     func handleMinJoinBond(result: Result<BigUInt?, Error>, chainId: ChainModel.Id)
 
     func handleLastPoolId(result: Result<NominationPools.PoolId?, Error>, chainId: ChainModel.Id)
+
+    func handleMaxPoolMembers(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id)
+
+    func handleCounterForPoolMembers(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id)
+
+    func handleMaxPoolMembersPerPool(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id)
 }
 
 extension NPoolsLocalSubscriptionHandler {
@@ -71,4 +77,10 @@ extension NPoolsLocalSubscriptionHandler {
     func handleMinJoinBond(result _: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {}
 
     func handleLastPoolId(result _: Result<NominationPools.PoolId?, Error>, chainId _: ChainModel.Id) {}
+
+    func handleMaxPoolMembers(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
+
+    func handleCounterForPoolMembers(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
+
+    func handleMaxPoolMembersPerPool(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 }

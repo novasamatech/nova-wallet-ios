@@ -32,4 +32,16 @@ extension NominationPools {
     static var subPoolsPath: StorageCodingPath {
         .init(moduleName: "NominationPools", itemName: "SubPoolsStorage")
     }
+
+    static var maxPoolMembers: StorageCodingPath {
+        .init(moduleName: "NominationPools", itemName: "MaxPoolMembers")
+    }
+
+    static var counterForPoolMembers: StorageCodingPath {
+        .init(moduleName: "NominationPools", itemName: "CounterForPoolMembers")
+    }
+
+    static var maxMembersPerPool: StorageCodingPath {
+        .init(moduleName: "NominationPools", itemName: "MaxPoolMembersPerPool")
+    }
 }
