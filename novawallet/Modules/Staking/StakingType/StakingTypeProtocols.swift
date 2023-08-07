@@ -11,8 +11,14 @@ protocol StakingTypePresenterProtocol: AnyObject {
     func change(stakingTypeSelection: StakingTypeSelection)
 }
 
-protocol StakingTypeInteractorInputProtocol: AnyObject {}
+protocol StakingTypeInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol StakingTypeInteractorOutputProtocol: AnyObject {}
+protocol StakingTypeInteractorOutputProtocol: AnyObject {
+    func didReceive(nominationPoolRestrictions: RelaychainStakingRestrictions)
+    func didReceive(directStakingRestrictions: RelaychainStakingRestrictions)
+    func didReceive(assetBalance: AssetBalance)
+}
 
 protocol StakingTypeWireframeProtocol: AlertPresentable {}

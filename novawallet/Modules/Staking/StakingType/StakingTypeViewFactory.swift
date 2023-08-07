@@ -2,15 +2,18 @@ import Foundation
 import SoraFoundation
 
 struct StakingTypeViewFactory {
-    static func createView(chainAsset: ChainAsset, method _: StakingSelectionMethod) -> StakingTypeViewProtocol? {
+    static func createView(state: RelaychainStartStakingStateProtocol, method _: StakingSelectionMethod) -> StakingTypeViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
-        let interactor = StakingTypeInteractor()
+        guard let interactor = createInteractor(state: state) else {
+            return nil
+        }
+
         let wireframe = StakingTypeWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
+            targetAssetInfo: state.chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -22,7 +25,7 @@ struct StakingTypeViewFactory {
         let presenter = StakingTypePresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chainAsset: chainAsset,
+            chainAsset: state.chainAsset,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
@@ -33,5 +36,67 @@ struct StakingTypeViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        state: RelaychainStartStakingStateProtocol
+    ) -> StakingTypeInteractor? {
+        let request = state.chainAsset.chain.accountRequest()
+        let chainId = state.chainAsset.chain.chainId
+
+        guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: request) else {
+            return nil
+        }
+
+        guard let directStakingRestrictionsBuilder =
+            createDirectStakingRestrictionsBuilder(for: state, operationQueue: OperationManagerFacade.sharedDefaultQueue) else {
+            return nil
+        }
+
+        let nominationPoolsRestrictionsBuilder = PoolStakingRestrictionsBuilder(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory
+        )
+
+        let interactor = StakingTypeInteractor(
+            selectedAccount: selectedAccount,
+            chainAsset: state.chainAsset,
+            directStakingRestrictionsBuilder: directStakingRestrictionsBuilder,
+            nominationPoolsRestrictionsBuilder: nominationPoolsRestrictionsBuilder,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared
+        )
+
+        return interactor
+    }
+
+    private static func createPoolStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> PoolStakingRestrictionsBuilder {
+        PoolStakingRestrictionsBuilder(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory
+        )
+    }
+
+    private static func createDirectStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol,
+        operationQueue: OperationQueue
+    ) -> DirectStakingRestrictionsBuilder? {
+        let networkInfoFactory = state.createNetworkInfoOperationFactory(for: operationQueue)
+
+        let chainId = state.chainAsset.chain.chainId
+
+        guard let runtimeService = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chainId) else {
+            return nil
+        }
+
+        return DirectStakingRestrictionsBuilder(
+            chainAsset: state.chainAsset,
+            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
+            networkInfoFactory: networkInfoFactory,
+            eraValidatorService: state.eraValidatorService,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue
+        )
     }
 }

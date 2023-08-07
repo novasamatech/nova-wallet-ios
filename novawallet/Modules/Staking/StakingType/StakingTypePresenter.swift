@@ -7,7 +7,11 @@ final class StakingTypePresenter {
     let wireframe: StakingTypeWireframeProtocol
     let interactor: StakingTypeInteractorInputProtocol
     let viewModelFactory: StakingTypeViewModelFactoryProtocol
-    private var state: StakingTypeInitialState
+    let chainAsset: ChainAsset
+    private var nominationPoolRestrictions: RelaychainStakingRestrictions?
+    private var directStakingRestrictions: RelaychainStakingRestrictions?
+    private var assetBalance: AssetBalance?
+    private var directStakingAvailable: Bool = false
 
     init(
         interactor: StakingTypeInteractorInputProtocol,
@@ -16,40 +20,42 @@ final class StakingTypePresenter {
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
-        state = StakingTypeInitialState(
-            chainAsset: chainAsset,
-            directStaking: .recommended(maxCount: 20),
-            directStakingMinStake: 410,
-            nominationPoolStaking: .init(
-                name: "Nova",
-                icon: StaticImageViewModel(image: R.image.iconNova()!),
-                recommended: true
-            ),
-            nominationPoolMinStake: 10,
-            selection: .direct,
-            isDirectStakingAvailable: false
-        )
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 
+    private func updateDirectStakingAvailable() {
+        guard let restrictions = directStakingRestrictions, let assetBalance = assetBalance else {
+            return
+        }
+        directStakingAvailable = assetBalance.freeInPlank > restrictions.minRewardableStake ?? 0
+    }
+
     private func provideDirectStakingViewModel() {
+        guard let restrictions = directStakingRestrictions, let assetBalance = assetBalance else {
+            return
+        }
         let viewModel = viewModelFactory.directStakingViewModel(
-            minStake: state.directStakingMinStake,
-            chainAsset: state.chainAsset,
-            choice: state.directStaking,
+            minStake: restrictions.minRewardableStake,
+            chainAsset: chainAsset,
+            choice: nil,
             locale: selectedLocale
         )
-        view?.didReceiveDirectStakingBanner(viewModel: viewModel, available: state.isDirectStakingAvailable)
+
+        view?.didReceiveDirectStakingBanner(viewModel: viewModel, available: directStakingAvailable)
     }
 
     private func provideNominationPoolViewModel() {
+        guard let restrictions = nominationPoolRestrictions else {
+            return
+        }
         let viewModel = viewModelFactory.nominationPoolViewModel(
-            minStake: state.nominationPoolMinStake,
-            chainAsset: state.chainAsset,
-            choice: state.nominationPoolStaking,
+            minStake: restrictions.minRewardableStake,
+            chainAsset: chainAsset,
+            choice: nil,
             locale: selectedLocale
         )
 
@@ -62,16 +68,6 @@ final class StakingTypePresenter {
     }
 }
 
-struct StakingTypeInitialState {
-    let chainAsset: ChainAsset
-    let directStaking: ValidatorChoice
-    let directStakingMinStake: BigUInt
-    let nominationPoolStaking: PoolChoice
-    let nominationPoolMinStake: BigUInt
-    let selection: StakingTypeSelection
-    let isDirectStakingAvailable: Bool
-}
-
 enum StakingTypeSelection {
     case direct
     case nominationPool
@@ -79,8 +75,9 @@ enum StakingTypeSelection {
 
 extension StakingTypePresenter: StakingTypePresenterProtocol {
     func setup() {
+        interactor.setup()
         updateView()
-        view?.didReceive(stakingTypeSelection: state.selection)
+        view?.didReceive(stakingTypeSelection: .direct)
     }
 
     func selectNominators() {
@@ -94,15 +91,18 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
+        guard let restrictions = directStakingRestrictions else {
+            return
+        }
         switch stakingTypeSelection {
         case .direct:
-            if state.isDirectStakingAvailable {
+            if directStakingAvailable {
                 view?.didReceive(stakingTypeSelection: .direct)
             } else {
                 let languages = selectedLocale.rLanguages
                 let minStake = viewModelFactory.minStake(
-                    minStake: state.directStakingMinStake,
-                    chainAsset: state.chainAsset,
+                    minStake: restrictions.minRewardableStake,
+                    chainAsset: chainAsset,
                     locale: selectedLocale
                 )
                 wireframe.present(
@@ -121,7 +121,24 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 }
 
-extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {}
+extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
+    func didReceive(nominationPoolRestrictions: RelaychainStakingRestrictions) {
+        self.nominationPoolRestrictions = nominationPoolRestrictions
+        provideNominationPoolViewModel()
+    }
+
+    func didReceive(directStakingRestrictions: RelaychainStakingRestrictions) {
+        self.directStakingRestrictions = directStakingRestrictions
+        updateDirectStakingAvailable()
+        provideDirectStakingViewModel()
+    }
+
+    func didReceive(assetBalance: AssetBalance) {
+        self.assetBalance = assetBalance
+        updateDirectStakingAvailable()
+        provideDirectStakingViewModel()
+    }
+}
 
 extension StakingTypePresenter: Localizable {
     func applyLocalization() {

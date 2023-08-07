@@ -12,7 +12,7 @@ struct StakingSetupAmountViewFactory {
             return nil
         }
 
-        let wireframe = StakingSetupAmountWireframe()
+        let wireframe = StakingSetupAmountWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,

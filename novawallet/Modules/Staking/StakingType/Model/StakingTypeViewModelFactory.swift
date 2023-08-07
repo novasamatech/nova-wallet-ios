@@ -3,21 +3,21 @@ import SoraFoundation
 
 protocol StakingTypeViewModelFactoryProtocol {
     func directStakingViewModel(
-        minStake: BigUInt,
+        minStake: BigUInt?,
         chainAsset: ChainAsset,
         choice: ValidatorChoice?,
         locale: Locale
     ) -> DirectStakingTypeViewModel
 
     func nominationPoolViewModel(
-        minStake: BigUInt,
+        minStake: BigUInt?,
         chainAsset: ChainAsset,
         choice: PoolChoice?,
         locale: Locale
     ) -> PoolStakingTypeViewModel
 
     func minStake(
-        minStake: BigUInt,
+        minStake: BigUInt?,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> String
@@ -36,14 +36,16 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
     }
 
     func directStakingViewModel(
-        minStake: BigUInt,
+        minStake: BigUInt?,
         chainAsset: ChainAsset,
         choice: ValidatorChoice?,
         locale: Locale
     ) -> DirectStakingTypeViewModel {
         let strings = R.string.localizable.self
         let title = strings.stakingTypeDirect(preferredLanguages: locale.rLanguages)
-        let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: chainAsset.assetDisplayInfo.assetPrecision)
+        let amountDecimal = minStake.map {
+            Decimal.fromSubstrateAmount($0, precision: chainAsset.assetDisplayInfo.assetPrecision)
+        } ?? nil
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? ""
         let minStakeString = strings.stakingTypeMinimumStake(amount, preferredLanguages: locale.rLanguages)
         let rewardsString = strings.stakingTypeAutoRewards(preferredLanguages: locale.rLanguages)
@@ -92,14 +94,16 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
     }
 
     func nominationPoolViewModel(
-        minStake: BigUInt,
+        minStake: BigUInt?,
         chainAsset: ChainAsset,
         choice: PoolChoice?,
         locale: Locale
     ) -> PoolStakingTypeViewModel {
         let strings = R.string.localizable.self
         let title = strings.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
-        let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: chainAsset.assetDisplayInfo.assetPrecision)
+        let amountDecimal = minStake.map {
+            Decimal.fromSubstrateAmount($0, precision: chainAsset.assetDisplayInfo.assetPrecision)
+        } ?? nil
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? ""
         let minStakeString = strings.stakingTypeMinimumStake(amount, preferredLanguages: locale.rLanguages)
         let rewardsString = strings.stakingTypeManualRewards(preferredLanguages: locale.rLanguages)
@@ -127,10 +131,13 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
     }
 
     func minStake(
-        minStake: BigUInt,
+        minStake: BigUInt?,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> String {
+        guard let minStake = minStake else {
+            return ""
+        }
         let strings = R.string.localizable.self
         let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: chainAsset.assetDisplayInfo.assetPrecision)
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? ""
