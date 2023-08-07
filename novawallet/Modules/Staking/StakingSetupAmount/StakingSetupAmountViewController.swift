@@ -6,11 +6,16 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
 
     let presenter: StakingSetupAmountPresenterProtocol
 
+    let keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol
+
     init(
         presenter: StakingSetupAmountPresenterProtocol,
+        keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.keyboardAppearanceStrategy = keyboardAppearanceStrategy
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -32,6 +37,18 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
         setupAmountInputAccessoryView(for: selectedLocale)
 
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        keyboardAppearanceStrategy.onViewWillAppear(for: rootView.amountInputView.textField)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        keyboardAppearanceStrategy.onViewDidAppear(for: rootView.amountInputView.textField)
     }
 
     private func setupHandlers() {

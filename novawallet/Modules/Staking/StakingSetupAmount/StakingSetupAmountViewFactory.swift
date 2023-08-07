@@ -44,6 +44,7 @@ struct StakingSetupAmountViewFactory {
 
         let view = StakingSetupAmountViewController(
             presenter: presenter,
+            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
             localizationManager: LocalizationManager.shared
         )
 
