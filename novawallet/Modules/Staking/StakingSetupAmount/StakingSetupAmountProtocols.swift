@@ -41,7 +41,7 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingSetupAmountWireframeProtocol: AnyObject {
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?)
+    func showStakingTypeSelection(from view: ControllerBackedProtocol?, initialState: StakingTypeInitialState)
 }
 
 enum StakingSetupAmountError: Error {

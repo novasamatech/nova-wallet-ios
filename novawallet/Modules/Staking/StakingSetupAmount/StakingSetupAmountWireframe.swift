@@ -1,8 +1,11 @@
 import Foundation
 
 final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?) {
-        guard let stakingTypeView = StakingTypeViewFactory.createView() else {
+    func showStakingTypeSelection(
+        from view: ControllerBackedProtocol?,
+        initialState: StakingTypeInitialState
+    ) {
+        guard let stakingTypeView = StakingTypeViewFactory.createView(initialState: initialState) else {
             return
         }
 

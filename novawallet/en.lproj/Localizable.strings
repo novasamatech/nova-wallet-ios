@@ -853,6 +853,7 @@
 "welcome.import.subtitle" = "Nova is compatible with all apps";
 "welcome.watch.only.subtitle" = "Track any wallet by its address";
 "common.ok.back" = "Okay, back";
+"common.back" = "Back";
 "no.key.title" = "Oops! Key is missing";
 "no.key.message" = "Your wallet is watch-only, meaning that you cannot do any operations with it";
 "welcome.watch.only.title" = "Add watch-only wallet";
@@ -1322,3 +1323,15 @@
 "staking.direct" = "Direct";
 "staking.pool" = "Pool";
 "staking.setup.amount.title" = "Stake %@";
+"staking.type.direct" = "Direct staking";
+"staking.type.nomination.pool" = "Pool staking";
+"staking.type.minimum.stake" = "Minimum stake: %@";
+"staking.type.auto.rewards" = "Rewards: Paid automatically";
+"staking.type.manual.rewards" = "Rewards: Claim manually";
+"staking.type.gov.reuse.tokens" = "Reuse tokens in Governance";
+"staking.type.staking.managment" = "Advanced staking management";
+"staking.type.validators.title" = "Validators";
+"staking.type.recommended.validators.subtitle" = "Recommended";
+"staking.type.recommended.pool" = "Recommended";
+"staking.type.direct.staking.alert.title" = "Your stake is less than the minimum to earn rewards.";
+"staking.type.direct.staking.alert.message" = "You have specified less than the minimum stake of %@ required to earn rewards with Direct staking. You should consider using Pool staking to earn rewards.";

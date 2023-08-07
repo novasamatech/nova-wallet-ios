@@ -1,10 +1,10 @@
 import SoraUI
 
-final class StakingTypeBannerView: StakingTypeBaseBannerView {
+final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBannerView {
     let radioSelectorView = RadioSelectorView()
     let titleLabel = UILabel(style: .boldTitle2Primary, numberOfLines: 1)
     let detailsLabel = UILabel(style: .regularSubhedlineSecondary)
-    private(set) var accountView: StakingTypeAccountView?
+    private(set) var accountView: ActionView?
 
     let stackView: UIStackView = .create {
         $0.axis = .vertical
@@ -23,18 +23,9 @@ final class StakingTypeBannerView: StakingTypeBaseBannerView {
         }
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override func setupLayout() {
+        super.setupLayout()
 
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupLayout() {
         addSubview(stackView)
         stackView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -45,26 +36,31 @@ final class StakingTypeBannerView: StakingTypeBaseBannerView {
                 radioSelectorView,
                 titleLabel
             ]),
-            detailsLabel
+            UIView.hStack([
+                FlexibleSpaceView(),
+                detailsLabel
+            ])
         ])
-
-//        titleLabel.setContentHuggingPriority(.low, for: .horizontal)
-//        detailsLabel.setContentHuggingPriority(.low, for: .horizontal)
 
         radioSelectorView.snp.makeConstraints {
             $0.width.height.equalTo(24)
         }
 
+        detailsLabel.snp.makeConstraints {
+            $0.leading.equalTo(titleLabel.snp.leading)
+        }
+
         descriptionStack.layoutMargins = .init(top: 0, left: 4, bottom: 0, right: 4)
         descriptionStack.isLayoutMarginsRelativeArrangement = true
         stackView.addArrangedSubview(descriptionStack)
+        stackView.setCustomSpacing(20, after: descriptionStack)
         clipsToBounds = true
     }
 
-    func setAction(viewModel: StakingTypeAccountViewModel?) {
+    func setAction(viewModel: ActionView.TModel?) {
         if let viewModel = viewModel {
             if accountView == nil {
-                let view = StakingTypeAccountView(frame: .zero)
+                let view = ActionView(frame: .zero)
                 stackView.addArrangedSubview(view)
                 view.snp.makeConstraints {
                     $0.height.equalTo(48)

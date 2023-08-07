@@ -2,13 +2,14 @@ import SoraUI
 
 class StakingTypeBaseBannerView: UIView {
     let backgroundView: RoundedView = .create {
-        $0.applyFilledBackgroundStyle()
+        $0.cornerRadius = 12
+        $0.roundingCorners = .allCorners
         $0.fillColor = R.color.colorSecondaryScreenBackground()!
         $0.highlightedFillColor = R.color.colorSecondaryScreenBackground()!
-        $0.strokeWidth = 1
+        $0.strokeWidth = Constants.borderWidth
+        $0.shadowOpacity = 0
         $0.strokeColor = R.color.colorStakingTypeCardBorder()!
         $0.highlightedStrokeColor = R.color.colorActiveBorder()!
-        $0.cornerRadius = 12
     }
 
     let imageView = UIImageView()
@@ -52,7 +53,7 @@ class StakingTypeBaseBannerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -69,6 +70,8 @@ class StakingTypeBaseBannerView: UIView {
             $0.top.equalToSuperview().offset(backgroundImageOffsets.top)
             $0.size.equalTo(backgroundImageSize)
         }
+
+        layer.cornerRadius = 12
     }
 
     private func updateImageConstraints() {
@@ -94,5 +97,6 @@ extension StakingTypeBaseBannerView {
         static let backgroundImageOffsets: (top: CGFloat, right: CGFloat) = (top: 0, right: 0)
         static let backgroundImageSize: CGSize = .init(width: 240, height: 184)
         static let imageSize: CGSize = .init(width: 125, height: 111)
+        static let borderWidth: CGFloat = 1
     }
 }
