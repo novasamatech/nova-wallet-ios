@@ -6,11 +6,16 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
 
     let presenter: StakingSetupAmountPresenterProtocol
 
+    let keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol
+
     init(
         presenter: StakingSetupAmountPresenterProtocol,
+        keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.keyboardAppearanceStrategy = keyboardAppearanceStrategy
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -34,6 +39,18 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        keyboardAppearanceStrategy.onViewWillAppear(for: rootView.amountInputView.textField)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        keyboardAppearanceStrategy.onViewDidAppear(for: rootView.amountInputView.textField)
+    }
+
     private func setupHandlers() {
         rootView.amountInputView.addTarget(
             self,
@@ -44,6 +61,12 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder {
         rootView.actionButton.addTarget(
             self,
             action: #selector(actionContinue),
+            for: .touchUpInside
+        )
+
+        rootView.stakingTypeView.addTarget(
+            self,
+            action: #selector(selectStakingTypeAction),
             for: .touchUpInside
         )
     }
@@ -102,12 +125,6 @@ extension StakingSetupAmountViewController: StakingSetupAmountViewProtocol {
 
     func didReceive(stakingType: LoadableViewModelState<StakingTypeViewModel>?) {
         rootView.setStakingType(viewModel: stakingType)
-
-        rootView.stakingTypeView?.addTarget(
-            self,
-            action: #selector(selectStakingTypeAction),
-            for: .touchUpInside
-        )
     }
 }
 

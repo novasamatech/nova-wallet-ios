@@ -7,15 +7,48 @@ extension NominationPools {
         let validators: Set<AccountId>
     }
 
-    struct PoolDetails {
-        let poolId: PoolId
-        let bondedAccountId: AccountId
-        let bondedPool: BondedPool
-        let metadata: Data?
-    }
-
     struct ActivePools {
         let era: EraIndex
         let pools: [ActivePool]
+    }
+
+    struct PoolApy {
+        let poolId: PoolId
+        let bondedAccountId: AccountId
+        let maxApy: Decimal
+    }
+
+    struct PoolStats {
+        let poolId: PoolId
+        let bondedAccountId: AccountId
+        let membersCount: UInt32
+        let maxApy: Decimal?
+        let metadata: Data?
+    }
+
+    struct SelectedPool {
+        let poolId: PoolId
+        let bondedAccountId: AccountId
+        let metadata: Data?
+        let maxApy: Decimal?
+
+        init(
+            poolId: PoolId,
+            bondedAccountId: AccountId,
+            metadata: Data?,
+            maxApy: Decimal?
+        ) {
+            self.poolId = poolId
+            self.bondedAccountId = bondedAccountId
+            self.metadata = metadata
+            self.maxApy = maxApy
+        }
+
+        init(poolStats: PoolStats) {
+            poolId = poolStats.poolId
+            bondedAccountId = poolStats.bondedAccountId
+            metadata = poolStats.metadata
+            maxApy = poolStats.maxApy
+        }
     }
 }

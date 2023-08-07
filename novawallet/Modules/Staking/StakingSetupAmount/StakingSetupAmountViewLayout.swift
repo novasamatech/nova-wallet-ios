@@ -8,8 +8,13 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
     }
 
     let amountInputView = NewAmountInputView()
-    private var estimatedRewardsView: TitleHorizontalMultiValueView?
-    private(set) var stakingTypeView: StakingTypeAccountView?
+    let estimatedRewardsView: TitleHorizontalMultiValueView = .create { view in
+        view.titleView.apply(style: .footnoteSecondary)
+        view.detailsTitleLabel.apply(style: .semiboldFootnotePositive)
+        view.detailsValueLabel.apply(style: .caption1Secondary)
+    }
+
+    let stakingTypeView = StakingTypeAccountView(frame: .zero)
 
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
@@ -48,50 +53,41 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
         amountInputView.snp.makeConstraints {
             $0.height.equalTo(Constants.amountInputHeight)
         }
+
+        addArrangedSubview(stakingTypeView, spacingAfter: 16)
+
+        addArrangedSubview(estimatedRewardsView)
+
+        estimatedRewardsView.snp.makeConstraints {
+            $0.height.equalTo(Constants.estimatedRewardsHeight)
+        }
+
+        stakingTypeView.isHidden = true
+        estimatedRewardsView.isHidden = true
     }
 
     func setEstimatedRewards(viewModel: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?) {
         if let viewModel = viewModel {
-            if estimatedRewardsView == nil {
-                let view = TitleHorizontalMultiValueView()
-                setup(estimatedRewardsView: view)
-                addArrangedSubview(view)
-                view.snp.makeConstraints {
-                    $0.height.equalTo(Constants.estimatedRewardsHeight)
-                }
-                estimatedRewardsView = view
-            }
-            estimatedRewardsView?.bind(viewModel: viewModel)
+            estimatedRewardsView.isHidden = false
+            estimatedRewardsView.bind(viewModel: viewModel)
         } else {
-            estimatedRewardsView?.removeFromSuperview()
-            estimatedRewardsView = nil
+            estimatedRewardsView.isHidden = true
         }
     }
 
     func setStakingType(viewModel: LoadableViewModelState<StakingTypeViewModel>?) {
         if let viewModel = viewModel {
-            if stakingTypeView == nil {
-                let view = StakingTypeAccountView(frame: .zero)
-                addArrangedSubview(view, spacingAfter: 16)
-                stakingTypeView = view
-            }
-            stakingTypeView?.bind(stakingTypeViewModel: viewModel)
+            stakingTypeView.isHidden = false
+            stakingTypeView.bind(stakingTypeViewModel: viewModel)
         } else {
-            stakingTypeView?.removeFromSuperview()
-            stakingTypeView = nil
+            stakingTypeView.isHidden = true
         }
-    }
-
-    private func setup(estimatedRewardsView: TitleHorizontalMultiValueView) {
-        estimatedRewardsView.titleView.apply(style: .footnoteSecondary)
-        estimatedRewardsView.detailsTitleLabel.apply(style: .semiboldFootnotePositive)
-        estimatedRewardsView.detailsValueLabel.apply(style: .caption1Secondary)
     }
 }
 
 extension StakingSetupAmountViewLayout {
     enum Constants {
-        static let contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        static let contentInsets = UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
         static let amountHeight: CGFloat = 18
         static let amountInputHeight: CGFloat = 64
         static let estimatedRewardsHeight: CGFloat = 44
