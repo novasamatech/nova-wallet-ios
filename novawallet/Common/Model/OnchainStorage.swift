@@ -4,6 +4,15 @@ enum UncertainStorage<T> {
     case undefined
     case defined(T)
 
+    var isDefined: Bool {
+        switch self {
+        case .defined:
+            return true
+        case .undefined:
+            return false
+        }
+    }
+
     var value: T? {
         switch self {
         case let .defined(value):

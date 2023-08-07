@@ -12,7 +12,7 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var relaychainRewardCalculatorService: RewardCalculatorServiceProtocol { get }
 
-    var npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol? { get }
+    var npRemoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol? { get }
     var npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol? { get }
     var activePoolsService: EraNominationPoolsServiceProtocol? { get }
     var npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol { get }
@@ -45,7 +45,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     let relaychainRewardCalculatorService: RewardCalculatorServiceProtocol
     let logger: LoggerProtocol
 
-    let npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?
+    let npRemoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?
     let npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?
     let npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let activePoolsService: EraNominationPoolsServiceProtocol?
@@ -81,7 +81,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         self.relaychainLocalSubscriptionFactory = relaychainLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.relaychainRewardCalculatorService = relaychainRewardCalculatorService
-        self.npRemoteSubstriptionService = npRemoteSubstriptionService
+        npRemoteSubscriptionService = npRemoteSubstriptionService
         self.npAccountSubscriptionServiceFactory = npAccountSubscriptionServiceFactory
         self.npLocalSubscriptionFactory = npLocalSubscriptionFactory
         self.activePoolsService = activePoolsService
@@ -107,7 +107,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         relaychainRewardCalculatorService.setup()
         timeModel.blockTimeService?.setup()
 
-        npGlobalSubscriptionId = npRemoteSubstriptionService?.attachToGlobalData(
+        npGlobalSubscriptionId = npRemoteSubscriptionService?.attachToGlobalData(
             for: chainId,
             queue: .main
         ) { [weak self] result in
@@ -158,7 +158,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         }
 
         if let npGlobalSubscriptionId = npGlobalSubscriptionId {
-            npRemoteSubstriptionService?.detachFromGlobalData(
+            npRemoteSubscriptionService?.detachFromGlobalData(
                 for: npGlobalSubscriptionId,
                 chainId: chainId,
                 queue: .main
@@ -187,7 +187,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     }
 
     func supportsPoolStaking() -> Bool {
-        npRemoteSubstriptionService != nil
+        npRemoteSubscriptionService != nil
     }
 
     func createNetworkInfoOperationFactory(

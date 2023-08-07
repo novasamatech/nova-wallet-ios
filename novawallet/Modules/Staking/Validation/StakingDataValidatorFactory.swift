@@ -62,12 +62,14 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func minStakeIsNotViolated(
+    func minRewardableStakeIsNotViolated(
         amount: Decimal?,
         params: MinStakeIsNotViolatedParams,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
+
+    func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
 }
 
 final class StakingDataValidatingFactory {
@@ -325,7 +327,7 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func minStakeIsNotViolated(
+    func minRewardableStakeIsNotViolated(
         amount: Decimal?,
         params: MinStakeIsNotViolatedParams,
         assetInfo: AssetBalanceDisplayInfo,
@@ -351,7 +353,7 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 roundingMode: .up
             ).value(for: locale)
 
-            self?.presentable.presentMinStakeViolated(
+            self?.presentable.presentMinRewardableStakeViolated(
                 from: view,
                 action: {
                     delegate.didCompleteWarningHandling()
@@ -369,6 +371,18 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
             } else {
                 return true
             }
+        })
+    }
+
+    func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentMaxNumberOfNominatorsReached(from: view, locale: locale)
+        }, preservesCondition: {
+            flag
         })
     }
 }

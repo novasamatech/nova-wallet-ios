@@ -1335,3 +1335,8 @@
 "staking.type.recommended.pool" = "Recommended";
 "staking.type.direct.staking.alert.title" = "Your stake is less than the minimum to earn rewards.";
 "staking.type.direct.staking.alert.message" = "You have specified less than the minimum stake of %@ required to earn rewards with Direct staking. You should consider using Pool staking to earn rewards.";
+"common.recommended" = "Recommended";
+"staking.direct.staking" = "Direct staking";
+"staking.pool.staking" = "Pool staking";
+"staking.min.required.stake.error" = "You can't stake less than the minimal value (%@)";
+"staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter %@ or %@ and more. To stake another amount you should remove your locks.";

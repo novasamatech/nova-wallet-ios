@@ -6,54 +6,16 @@ struct StakingSetupAmountViewFactory {
     static func createView(
         for state: RelaychainStartStakingStateProtocol
     ) -> StakingSetupAmountViewProtocol? {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        let chainAsset = state.chainAsset
-
-        guard let currencyManager = CurrencyManager.shared,
-              let metaAccount = SelectedWalletSettings.shared.value,
-              let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-              let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor(for: state) else {
             return nil
         }
 
-        let rewardCalculationService = state.relaychainRewardCalculatorService
-
-        let networkInfoOperationFactory = state.createNetworkInfoOperationFactory(
-            for: OperationManagerFacade.sharedDefaultQueue
-        )
-
-        let validatorService = state.eraValidatorService
-
-        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
-        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
-
-        let operationQueue = OperationQueue()
-        let extrinsicService = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeService,
-            engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ).createService(account: selectedAccount, chain: chainAsset.chain)
-
-        let interactor = StakingSetupAmountInteractor(
-            selectedAccount: selectedAccount,
-            selectedChainAsset: chainAsset,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
-            currencyManager: currencyManager,
-            runtimeProvider: runtimeService,
-            extrinsicService: extrinsicService,
-            rewardService: rewardCalculationService,
-            networkInfoOperationFactory: networkInfoOperationFactory,
-            eraValidatorService: validatorService,
-            operationQueue: operationQueue
-        )
         let wireframe = StakingSetupAmountWireframe()
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
+            targetAssetInfo: state.chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -63,26 +25,79 @@ struct StakingSetupAmountViewFactory {
         )
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: NetworkViewModelFactory())
 
+        let dataValidatingFactory = StakingDataValidatingFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
+
         let presenter = StakingSetupAmountPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            chainAsset: chainAsset,
-            selectedAccount: selectedAccount,
-            logger: Logger.shared,
-            localizationManager: LocalizationManager.shared
+            dataValidatingFactory: dataValidatingFactory,
+            chainAsset: state.chainAsset,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = StakingSetupAmountViewController(
             presenter: presenter,
+            keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(events: [.viewDidAppear]),
             localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
+    }
+
+    private static func createInteractor(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> StakingSetupAmountInteractor? {
+        let request = state.chainAsset.chain.accountRequest()
+        let chainId = state.chainAsset.chain.chainId
+
+        guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: request) else {
+            return nil
+        }
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
+        ).createService(account: selectedAccount, chain: state.chainAsset.chain)
+
+        let recommendationFactory = StakingRecommendationMediatorFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let feeProxy = ExtrinsicFeeProxy()
+
+        return .init(
+            state: state,
+            selectedAccount: selectedAccount,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            extrinsicService: extrinsicService,
+            extrinsicFeeProxy: feeProxy,
+            recommendationMediatorFactory: recommendationFactory,
+            runtimeProvider: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            currencyManager: currencyManager
+        )
     }
 }

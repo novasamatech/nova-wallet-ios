@@ -208,6 +208,7 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
         scheduleFeeEstimation()
     }
 
+    // swiftlint:disable:next function_body_length
     func proceed() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
@@ -245,7 +246,7 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
                 hasExistingNomination: false,
                 locale: locale
             ),
-            dataValidatingFactory.minStakeIsNotViolated(
+            dataValidatingFactory.minRewardableStakeIsNotViolated(
                 amount: amount,
                 params: .init(
                     networkInfo: networkInfo,

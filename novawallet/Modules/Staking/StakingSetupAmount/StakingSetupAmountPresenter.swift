@@ -9,9 +9,11 @@ final class StakingSetupAmountPresenter {
     let viewModelFactory: StakingAmountViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let chainAsset: ChainAsset
-    let selectedAccount: ChainAccountResponse
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
+
+    private var setupMethod: StakingSelectionMethod = .recommendation(nil)
 
     private var assetBalance: AssetBalance?
     private var buttonState: ButtonState = .startState
@@ -24,10 +26,11 @@ final class StakingSetupAmountPresenter {
         }
     }
 
-    private var stakingType: LoadableViewModelState<SelectedStakingType>?
+    private var pendingRecommendationAmount: BigUInt?
     private var priceData: PriceData?
-    private var fee: LoadableViewModelState<BigUInt?> = .loading
-    private var minimalBalance: BigUInt?
+    private var fee: BigUInt?
+    private var pendingFeeId: TransactionFeeId?
+    private var assetLocks: AssetLocks?
 
     init(
         interactor: StakingSetupAmountInteractorInputProtocol,
@@ -35,29 +38,25 @@ final class StakingSetupAmountPresenter {
         viewModelFactory: StakingAmountViewModelFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
-        selectedAccount: ChainAccountResponse,
-        logger: LoggerProtocol?,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
-        self.selectedAccount = selectedAccount
         self.logger = logger
         self.localizationManager = localizationManager
     }
 
     private func provideBalanceModel() {
-        guard let assetBalance = assetBalance else {
-            return
-        }
-
         let viewModel = viewModelFactory.balance(
-            amount: assetBalance.freeInPlank,
+            amount: availableBalanceInPlank(),
             chainAsset: chainAsset,
             locale: selectedLocale
         )
@@ -93,11 +92,10 @@ final class StakingSetupAmountPresenter {
 
     private func provideAmountPriceViewModel() {
         if chainAsset.chain.utilityAsset()?.priceId != nil {
-            let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
             let priceData = priceData ?? PriceData.zero()
 
             let price = balanceViewModelFactory.priceFromAmount(
-                inputAmount,
+                inputAmount(),
                 priceData: priceData
             ).value(for: selectedLocale)
 
@@ -108,73 +106,130 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideAmountInputViewModel() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-
-        if let inputAmount = inputAmount {
-            interactor.stakingTypeRecomendation(for: inputAmount)
-        }
-
+        let amount = inputResult != nil ? inputAmount() : nil
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
-            inputAmount
+            amount
         ).value(for: selectedLocale)
 
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
     private func balanceMinusFee() -> Decimal {
-        let balanceValue = assetBalance?.freeInPlank ?? 0
-        let feeValue = fee.value ?? 0
+        let feeValue = fee ?? 0
         guard
             let precision = chainAsset.chain.utilityAsset()?.displayInfo.assetPrecision,
-            let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
-            let feeDecimal = Decimal.fromSubstrateAmount(feeValue ?? 0, precision: precision) else {
+            let balance = availableBalance(),
+            let feeDecimal = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
             return 0
         }
 
         return balance - feeDecimal
     }
 
+    private func inputAmount() -> Decimal {
+        inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+    }
+
+    private func inputAmountInPlank() -> BigUInt {
+        inputAmount().toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 0
+    }
+
+    private func availableBalance() -> Decimal? {
+        availableBalanceInPlank().flatMap { $0.decimal(precision: chainAsset.asset.precision) }
+    }
+
+    private func availableBalanceInPlank() -> BigUInt? {
+        switch setupMethod {
+        case .recommendation:
+            return assetBalance?.freeInPlank
+        case let .manual(selectedStakingOption, _):
+            return manualAvailableBalanceInPlank(for: selectedStakingOption)
+        }
+    }
+
+    private func manualAvailableBalanceInPlank(for stakingOption: SelectedStakingOption) -> BigUInt? {
+        switch stakingOption {
+        case .direct:
+            return assetBalance?.freeInPlank
+        case .pool:
+            return assetBalance?.transferable
+        }
+    }
+
     private func updateAfterAmountChanged() {
         refreshFee()
         provideAmountPriceViewModel()
+        updateRecommendationIfNeeded()
     }
 
     private func refreshFee() {
-        estimateFee()
-    }
-
-    private func provideStakingTypeModel() {
-        switch stakingType {
-        case let .cached(value), let .loaded(value):
-            let viewModel = viewModelFactory.stakingTypeViewModel(stakingType: value)
-            view?.didReceive(stakingType: .loaded(value: viewModel))
-
-            if let apy = value.apy {
-                let earnupViewModel = viewModelFactory.earnupModel(
-                    earnings: apy,
-                    chainAsset: chainAsset,
-                    locale: selectedLocale
-                )
-                view?.didReceive(estimatedRewards: .loaded(value: earnupViewModel))
-            }
-        case .loading:
-            view?.didReceive(stakingType: .loading)
-            view?.didReceive(estimatedRewards: .loading)
-        case .none:
-            view?.didReceive(stakingType: nil)
-            view?.didReceive(estimatedRewards: nil)
-        }
-    }
-
-    private func estimateFee() {
-        guard let amount = StakingConstants.maxAmount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
-              let address = selectedAccount.toAddress() else {
+        guard let stakingOption = setupMethod.selectedStakingOption else {
             return
         }
 
-        fee = .loading
-        let rewardDestination = RewardDestination.payout(account: selectedAccount)
-        interactor.estimateFee(for: address, amount: amount, rewardDestination: rewardDestination)
+        let amount = inputAmountInPlank()
+
+        let feeId: String
+
+        switch stakingOption {
+        case let .direct(validators):
+            feeId = "direct" + "\(validators.targets.count)" + "\(amount)"
+        case let .pool(pool):
+            feeId = "pool" + "\(pool.poolId)" + "\(amount)"
+        }
+
+        fee = nil
+        pendingFeeId = feeId
+
+        interactor.estimateFee(for: stakingOption, amount: amount, feeId: feeId)
+    }
+
+    private func provideStakingTypeViewModel() {
+        switch setupMethod {
+        case let .recommendation(stakingRecommendation):
+            if inputResult == nil {
+                view?.didReceive(stakingType: nil)
+                view?.didReceive(estimatedRewards: nil)
+            } else if let stakingType = stakingRecommendation?.staking {
+                provideStakingTypeViewModel(for: stakingType)
+            } else {
+                view?.didReceive(stakingType: .loading)
+                view?.didReceive(estimatedRewards: .loading)
+            }
+        case let .manual(option, _):
+            provideStakingTypeViewModel(for: option)
+        }
+    }
+
+    private func provideStakingTypeViewModel(for model: SelectedStakingOption) {
+        let viewModel = viewModelFactory.recommendedStakingTypeViewModel(
+            for: model,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(stakingType: .loaded(value: viewModel))
+
+        let earnupViewModel = viewModelFactory.earnupModel(
+            earnings: model.maxApy,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(estimatedRewards: .loaded(value: earnupViewModel))
+    }
+
+    private func updateRecommendationIfNeeded() {
+        let amount = inputAmountInPlank()
+
+        guard amount != pendingRecommendationAmount, setupMethod.isRecommendation else {
+            return
+        }
+
+        pendingRecommendationAmount = amount
+        setupMethod = .recommendation(nil)
+
+        provideStakingTypeViewModel()
+
+        interactor.updateRecommendation(for: amount)
     }
 }
 
@@ -186,16 +241,13 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         provideBalanceModel()
         provideChainAssetViewModel()
         provideAmountPriceViewModel()
+        provideAmountInputViewModel()
         provideButtonState()
-        estimateFee()
+        refreshFee()
     }
 
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
-        if let value = newValue {
-            interactor.stakingTypeRecomendation(for: value)
-        }
-
         updateAfterAmountChanged()
     }
 
@@ -223,7 +275,71 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         wireframe.showStakingTypeSelection(from: view, initialState: stakingTypeState)
     }
 
-    func proceed() {}
+    // swiftlint:disable:next function_body_length
+    func proceed() {
+        let currentInputAmount = inputAmount()
+
+        let defaultValidations: [DataValidating] = [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            ) { [weak self] in
+                self?.refreshFee()
+            },
+            dataValidatingFactory.canSpendAmountInPlank(
+                balance: availableBalanceInPlank(),
+                spendingAmount: currentInputAmount,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: assetBalance?.transferable,
+                fee: fee,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
+                balance: availableBalanceInPlank(),
+                fee: fee,
+                spendingAmount: currentInputAmount,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.allowsNewNominators(
+                flag: setupMethod.restrictions?.allowsNewStakers ?? false,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canNominateInPlank(
+                amount: currentInputAmount,
+                minimalBalance: setupMethod.restrictions?.minJoinStake,
+                minNominatorBond: setupMethod.restrictions?.minJoinStake,
+                precision: chainAsset.asset.precision,
+                locale: selectedLocale
+            )
+        ]
+
+        let recommendedValidations = setupMethod.recommendation?.validationFactory?.createValidations(
+            for: .init(
+                stakingAmount: currentInputAmount,
+                assetBalance: assetBalance,
+                assetLocks: assetLocks,
+                fee: fee
+            ),
+            controller: view,
+            balanceViewModelFactory: balanceViewModelFactory,
+            presentable: wireframe,
+            locale: selectedLocale
+        ) ?? []
+
+        DataValidationRunner(validators: defaultValidations + recommendedValidations).runValidation { [weak self] in
+            guard let stakingOption = self?.setupMethod.selectedStakingOption else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(from: self?.view, stakingOption: stakingOption)
+        }
+    }
 }
 
 extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtocol {
@@ -235,24 +351,79 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
     func didReceive(assetBalance: AssetBalance) {
         self.assetBalance = assetBalance
         provideBalanceModel()
+
+        if case .rate = inputResult {
+            // fee and recommendation might change because staking amount depends on balance
+            provideAmountInputViewModel()
+            updateRecommendationIfNeeded()
+            refreshFee()
+        }
     }
 
-    func didReceive(paymentInfo: RuntimeDispatchInfo) {
-        fee = .loaded(value: BigUInt(paymentInfo.fee))
-        provideAmountInputViewModel()
+    func didReceive(fee: BigUInt?, feeId: TransactionFeeId) {
+        logger.debug("Did receive fee: \(String(describing: fee))")
+
+        guard pendingFeeId == feeId else {
+            return
+        }
+
+        self.fee = fee
+        pendingFeeId = nil
+
+        if case .rate = inputResult {
+            provideAmountInputViewModel()
+            updateRecommendationIfNeeded()
+        }
     }
 
-    func didReceive(minimalBalance: BigUInt) {
-        self.minimalBalance = minimalBalance
+    func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt) {
+        logger.debug("Did receive recommendation: \(recommendation)")
+
+        // check that we are waiting recommendation for particular amount
+        guard pendingRecommendationAmount == amount, setupMethod.isRecommendation else {
+            return
+        }
+
+        setupMethod = .recommendation(recommendation)
+
+        // display balance respects staking type
+        provideBalanceModel()
+
+        provideStakingTypeViewModel()
+        refreshFee()
     }
 
-    func didReceive(stakingType: SelectedStakingType) {
-        self.stakingType = .loaded(value: stakingType)
-        provideStakingTypeModel()
+    func didReceive(locks: AssetLocks) {
+        assetLocks = locks
     }
 
     func didReceive(error: StakingSetupAmountError) {
-        logger?.error(error.localizedDescription)
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .assetBalance, .price, .locks:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscriptions()
+            }
+        case let .fee(_, feeId):
+            guard feeId == pendingFeeId else {
+                return
+            }
+
+            pendingFeeId = nil
+
+            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshFee()
+            }
+        case .recommendation:
+            guard setupMethod.isRecommendation else {
+                return
+            }
+
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeRecommendationSetup()
+            }
+        }
     }
 }
 
@@ -261,11 +432,12 @@ extension StakingSetupAmountPresenter: Localizable {
         guard view?.isSetup == true else {
             return
         }
+
         provideBalanceModel()
         provideButtonState()
         provideTitle()
         provideAmountInputViewModel()
         provideAmountPriceViewModel()
-        provideStakingTypeModel()
+        provideStakingTypeViewModel()
     }
 }

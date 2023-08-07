@@ -14,4 +14,8 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
             animated: true
         )
     }
+
+    func showConfirmation(from _: ControllerBackedProtocol?, stakingOption _: SelectedStakingOption) {
+        // TODO: Implement confirmation
+    }
 }

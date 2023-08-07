@@ -5,3 +5,8 @@ struct PreparedNomination<T> {
     let targets: [SelectedValidatorInfo]
     let maxTargets: Int
 }
+
+struct PreparedValidators {
+    let targets: [ElectedValidatorInfo]
+    let maxTargets: Int
+}
