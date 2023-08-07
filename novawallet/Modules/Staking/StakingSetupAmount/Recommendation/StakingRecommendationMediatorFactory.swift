@@ -139,6 +139,8 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
         )
 
         return PoolStakingRecommendationMediator(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             restrictionsBuilder: restrictionsBuilder,
             operationFactory: operationFactory,
             operationQueue: operationQueue
