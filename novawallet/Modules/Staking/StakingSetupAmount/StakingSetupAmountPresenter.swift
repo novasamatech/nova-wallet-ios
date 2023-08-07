@@ -10,6 +10,7 @@ final class StakingSetupAmountPresenter {
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
@@ -38,6 +39,7 @@ final class StakingSetupAmountPresenter {
         viewModelFactory: StakingAmountViewModelFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
@@ -48,6 +50,7 @@ final class StakingSetupAmountPresenter {
         self.viewModelFactory = viewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
         self.logger = logger
@@ -139,12 +142,10 @@ final class StakingSetupAmountPresenter {
     }
 
     private func availableBalanceInPlank() -> BigUInt? {
-        switch setupMethod {
-        case .recommendation:
-            return assetBalance?.freeInPlank
-        case let .manual(selectedStakingOption, _):
-            return manualAvailableBalanceInPlank(for: selectedStakingOption)
-        }
+        balanceDerivationFactory.getAvailableBalance(
+            from: assetBalance,
+            stakingMethod: setupMethod
+        )
     }
 
     private func manualAvailableBalanceInPlank(for stakingOption: SelectedStakingOption) -> BigUInt? {

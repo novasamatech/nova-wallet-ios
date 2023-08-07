@@ -30,12 +30,15 @@ struct StakingSetupAmountViewFactory {
             balanceFactory: balanceViewModelFactory
         )
 
+        let balanceDerivationFactory = StakingTypeBalanceFactory(stakingType: state.stakingType)
+
         let presenter = StakingSetupAmountPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            balanceDerivationFactory: balanceDerivationFactory,
             dataValidatingFactory: dataValidatingFactory,
             chainAsset: state.chainAsset,
             localizationManager: LocalizationManager.shared,

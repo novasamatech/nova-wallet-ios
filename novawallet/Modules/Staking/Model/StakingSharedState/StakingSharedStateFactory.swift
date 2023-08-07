@@ -13,7 +13,8 @@ protocol StakingSharedStateFactoryProtocol {
 
     func createStartRelaychainStaking(
         for chainAsset: ChainAsset,
-        consensus: ConsensusType
+        consensus: ConsensusType,
+        selectedStakingType: StakingType?
     ) throws -> RelaychainStartStakingStateProtocol
 }
 
@@ -310,7 +311,8 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
 
     func createStartRelaychainStaking(
         for chainAsset: ChainAsset,
-        consensus: ConsensusType
+        consensus: ConsensusType,
+        selectedStakingType: StakingType?
     ) throws -> RelaychainStartStakingStateProtocol {
         let relaychainServices = try createRelaychainCommonServices(for: consensus, chainAsset: chainAsset)
 
@@ -320,7 +322,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
         )
 
         return RelaychainStartStakingState(
-            stakingType: nil,
+            stakingType: selectedStakingType,
             consensus: consensus,
             chainAsset: chainAsset,
             relaychainGlobalSubscriptionService: relaychainServices.globalRemoteSubscriptionService,
