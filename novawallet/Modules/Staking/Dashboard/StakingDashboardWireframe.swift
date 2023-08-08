@@ -47,10 +47,7 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
             return
         }
 
-        let navigationController = NovaNavigationController(
-            rootViewController: startStakingView.controller
-        )
-
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

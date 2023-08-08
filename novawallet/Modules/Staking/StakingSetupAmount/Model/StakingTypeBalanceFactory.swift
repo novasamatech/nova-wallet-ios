@@ -20,7 +20,7 @@ final class StakingTypeBalanceFactory: StakingTypeBalanceFactoryProtocol {
         case .relaychain, .auraRelaychain, .azero, .none, .parachain, .turing:
             return true
         case .nominationPools, .unsupported:
-            return true
+            return false
         }
     }
 
@@ -41,7 +41,7 @@ final class StakingTypeBalanceFactory: StakingTypeBalanceFactoryProtocol {
         stakingMethod: StakingSelectionMethod
     ) -> BigUInt? {
         switch stakingMethod {
-        case let .recommendation(recommendation):
+        case .recommendation:
             return stakingTypeAllowsLocks ? assetBalance?.freeInPlank : assetBalance?.transferable
         case let .manual(stakingOption, _):
             return getManualAvailableBalance(for: assetBalance, stakingOption: stakingOption)

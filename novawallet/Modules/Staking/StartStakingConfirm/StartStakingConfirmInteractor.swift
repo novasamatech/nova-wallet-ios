@@ -81,7 +81,7 @@ extension StartStakingConfirmInteractor: StartStakingConfirmInteractorInputProto
         performPriceSubscription()
 
         restrictionsBuilder.start()
-        
+
         estimateFee()
     }
 
