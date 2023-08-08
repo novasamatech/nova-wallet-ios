@@ -4,7 +4,7 @@ import BigInt
 final class HybridStakingRecommendationMediator: BaseStakingRecommendationMediator {
     let directStakingMediator: RelaychainStakingRecommendationMediating
     let nominationPoolsMediator: RelaychainStakingRecommendationMediating
-    let directStakingRestrictionsBuilder: DirectStakingRestrictionsBuilder
+    let directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding
     let chainAsset: ChainAsset
 
     private var restrictions: RelaychainStakingRestrictions?
@@ -15,7 +15,7 @@ final class HybridStakingRecommendationMediator: BaseStakingRecommendationMediat
         chainAsset: ChainAsset,
         directStakingMediator: RelaychainStakingRecommendationMediating,
         nominationPoolsMediator: RelaychainStakingRecommendationMediating,
-        directStakingRestrictionsBuilder: DirectStakingRestrictionsBuilder
+        directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding
     ) {
         self.chainAsset = chainAsset
         self.directStakingMediator = directStakingMediator
