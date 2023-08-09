@@ -5,6 +5,10 @@ protocol DisplayAddressViewModelFactoryProtocol {
     func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel
     func createViewModel(from model: DisplayAddress, using chainFormat: ChainFormat) -> DisplayAddressViewModel
     func createViewModel(from address: AccountAddress, name: String?, iconUrl: URL?) -> DisplayAddressViewModel
+    func createViewModel(
+        from pool: NominationPools.SelectedPool,
+        chainAsset: ChainAsset
+    ) -> DisplayAddressViewModel
 }
 
 extension DisplayAddressViewModelFactoryProtocol {
@@ -15,6 +19,7 @@ extension DisplayAddressViewModelFactoryProtocol {
 
 final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol {
     private lazy var iconGenerator = PolkadotIconGenerator()
+    private lazy var poolIconFactory = NominationPoolsIconFactory()
 
     func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel {
         createViewModel(from: model, chainFormat: nil)
@@ -70,6 +75,25 @@ final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtoc
             address: address,
             name: name,
             imageViewModel: imageViewModel
+        )
+    }
+
+    func createViewModel(
+        from pool: NominationPools.SelectedPool,
+        chainAsset: ChainAsset
+    ) -> DisplayAddressViewModel {
+        let poolIcon = poolIconFactory.createIconViewModel(
+            for: chainAsset,
+            poolId: pool.poolId,
+            bondedAccountId: pool.bondedAccountId
+        )
+
+        let address = try? pool.bondedAddress(for: chainAsset.chain.chainFormat)
+
+        return .init(
+            address: address ?? "",
+            name: pool.name,
+            imageViewModel: poolIcon
         )
     }
 }

@@ -65,7 +65,7 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
 
         view?.didReceiveStakingDetails(
             title: title,
-            info: .init(details: details, imageViewModel: nil)
+            info: .init(address: "", name: details, imageViewModel: nil)
         )
     }
 

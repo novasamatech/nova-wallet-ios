@@ -101,9 +101,10 @@ extension StartStakingConfirmViewController: StartStakingConfirmViewProtocol {
         rootView.stakingTypeCell.bind(details: viewModel)
     }
 
-    func didReceiveStakingDetails(title: String, info: StackCellViewModel) {
+    func didReceiveStakingDetails(title: String, info: DisplayAddressViewModel) {
         rootView.stakingDetailsCell.titleLabel.text = title
-        rootView.stakingDetailsCell.bind(viewModel: info)
+        rootView.stakingDetailsCell.detailsLabel.lineBreakMode = info.lineBreakMode
+        rootView.stakingDetailsCell.bind(viewModel: info.cellViewModel)
     }
 
     func didStartLoading() {

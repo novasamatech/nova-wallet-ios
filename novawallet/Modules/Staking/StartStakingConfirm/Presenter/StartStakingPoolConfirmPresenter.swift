@@ -4,7 +4,7 @@ import SoraFoundation
 final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
     let model: NominationPools.SelectedPool
 
-    private lazy var iconViewModelFactory = NominationPoolsIconFactory()
+    private lazy var addressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
         model: NominationPools.SelectedPool,
@@ -44,18 +44,9 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
     override func provideStakingDetails() {
         let title = R.string.localizable.stakingPool(preferredLanguages: selectedLocale.rLanguages)
 
-        let details = model.title(for: chainAsset.chain.chainFormat)
+        let viewModel = addressViewModelFactory.createViewModel(from: model, chainAsset: chainAsset)
 
-        let icon = iconViewModelFactory.createIconViewModel(
-            for: chainAsset,
-            poolId: model.poolId,
-            bondedAccountId: model.bondedAccountId
-        )
-
-        view?.didReceiveStakingDetails(
-            title: title,
-            info: .init(details: details ?? "", imageViewModel: icon)
-        )
+        view?.didReceiveStakingDetails(title: title, info: viewModel)
     }
 
     override func showStakingDetails() {

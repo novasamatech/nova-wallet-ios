@@ -7,7 +7,7 @@ protocol StartStakingConfirmViewProtocol: ControllerBackedProtocol, LoadableView
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveStakingType(viewModel: String)
-    func didReceiveStakingDetails(title: String, info: StackCellViewModel)
+    func didReceiveStakingDetails(title: String, info: DisplayAddressViewModel)
 }
 
 protocol StartStakingConfirmPresenterProtocol: AnyObject {
