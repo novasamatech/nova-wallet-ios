@@ -93,6 +93,12 @@
 		0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */; };
 		0C66102F2A78E9D700E44634 /* RelaychainStartStakingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102E2A78E9D700E44634 /* RelaychainStartStakingState.swift */; };
 		0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */; };
+		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
+		0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */; };
+		0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */; };
+		0C77B5652A8374EA00B5AE08 /* StaticValidatorListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5642A8374EA00B5AE08 /* StaticValidatorListPresenter.swift */; };
+		0C77B5672A837AC500B5AE08 /* StaticValidatorListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5662A837AC500B5AE08 /* StaticValidatorListWireframe.swift */; };
+		0C77B5692A837D4000B5AE08 /* StaticValidatorListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5682A837D4000B5AE08 /* StaticValidatorListViewFactory.swift */; };
 		0C79C8922A7BD9BB00B171E3 /* SelectedStakingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C79C8912A7BD9BB00B171E3 /* SelectedStakingOption.swift */; };
 		0C79C8952A7BE01100B171E3 /* RelaychainStakingRecommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C79C8942A7BE01100B171E3 /* RelaychainStakingRecommendation.swift */; };
 		0C79C8992A7BE46A00B171E3 /* AssetModel+Staking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C79C8982A7BE46A00B171E3 /* AssetModel+Staking.swift */; };
@@ -3851,6 +3857,12 @@
 		0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingSharedState.swift; sourceTree = "<group>"; };
 		0C66102E2A78E9D700E44634 /* RelaychainStartStakingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStartStakingState.swift; sourceTree = "<group>"; };
 		0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
+		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
+		0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListProtocols.swift; sourceTree = "<group>"; };
+		0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewLayout.swift; sourceTree = "<group>"; };
+		0C77B5642A8374EA00B5AE08 /* StaticValidatorListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListPresenter.swift; sourceTree = "<group>"; };
+		0C77B5662A837AC500B5AE08 /* StaticValidatorListWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListWireframe.swift; sourceTree = "<group>"; };
+		0C77B5682A837D4000B5AE08 /* StaticValidatorListViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewFactory.swift; sourceTree = "<group>"; };
 		0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetProtocols.swift; sourceTree = "<group>"; };
 		0C79C8912A7BD9BB00B171E3 /* SelectedStakingOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingOption.swift; sourceTree = "<group>"; };
 		0C79C8942A7BE01100B171E3 /* RelaychainStakingRecommendation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingRecommendation.swift; sourceTree = "<group>"; };
@@ -7814,6 +7826,19 @@
 				0CAC44AB2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift */,
 			);
 			path = StakingSharedState;
+			sourceTree = "<group>";
+		};
+		0C77B55D2A83713D00B5AE08 /* StaticValidatorList */ = {
+			isa = PBXGroup;
+			children = (
+				0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */,
+				0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */,
+				0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */,
+				0C77B5642A8374EA00B5AE08 /* StaticValidatorListPresenter.swift */,
+				0C77B5662A837AC500B5AE08 /* StaticValidatorListWireframe.swift */,
+				0C77B5682A837D4000B5AE08 /* StaticValidatorListViewFactory.swift */,
+			);
+			path = StaticValidatorList;
 			sourceTree = "<group>";
 		};
 		0C79C8932A7BDED700B171E3 /* TitleHorizontalMultivalueView */ = {
@@ -16609,6 +16634,7 @@
 		AEC8C485266A5634005904F4 /* SelectValidatorsFlow */ = {
 			isa = PBXGroup;
 			children = (
+				0C77B55D2A83713D00B5AE08 /* StaticValidatorList */,
 				AE6F7FD62685E812002BBC3E /* ValidatorListFilter */,
 				AEA2C1AF2681E9690069492E /* ValidatorSearch */,
 				AEA0C8A0267B6AE600F9666F /* SelectedValidatorList */,
@@ -18865,6 +18891,7 @@
 				8448F7A22882ABF50080CEA9 /* CustomSearchView.swift in Sources */,
 				84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */,
 				849D3223291CC43D00D25839 /* MarkdownText.swift in Sources */,
+				0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */,
 				84FFE45B2862076F002432BB /* XcmUnweightedTransferRequest.swift in Sources */,
 				84D1110C26B922D50016D962 /* ConnectionPool.swift in Sources */,
 				840DFF4F28940444001B11EA /* ChainAddressDetailsModel.swift in Sources */,
@@ -18889,6 +18916,7 @@
 				8428768624AE046300D91AD8 /* LanguageSelectionPresenter.swift in Sources */,
 				84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */,
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
+				0C77B5692A837D4000B5AE08 /* StaticValidatorListViewFactory.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,
 				84893C0124DA861D008F6A3F /* AccountCreationMetadata.swift in Sources */,
 				84468A0D28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift in Sources */,
@@ -18983,6 +19011,7 @@
 				84585A2F251BFC8400390F7A /* TriangularedButton+Style.swift in Sources */,
 				84C6801A24D75E2A00006BF5 /* BorderedSubtitleActionView+Inspectable.swift in Sources */,
 				0C2F868F2A725E4F00593C01 /* DefaultStakingRewardDestination.swift in Sources */,
+				0C77B5672A837AC500B5AE08 /* StaticValidatorListWireframe.swift in Sources */,
 				84EB6C4E281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift in Sources */,
 				8430AAD42602285B005B1066 /* StakingStateCommonData.swift in Sources */,
 				F4F2296C260DBDCE00ACFDB8 /* StakingPayoutLabelTableCell.swift in Sources */,
@@ -19204,6 +19233,7 @@
 				8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */,
 				84A6AB64290B021E001B57B2 /* CopyPresentable.swift in Sources */,
 				841AAC2126F6860B00F0A25E /* AssetBalanceFormatterFactory.swift in Sources */,
+				0C77B5652A8374EA00B5AE08 /* StaticValidatorListPresenter.swift in Sources */,
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
 				84DD261929ACA9880032A598 /* BagList+CodingPath.swift in Sources */,
 				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
@@ -19304,6 +19334,7 @@
 				842A738C27DE576C006EE1EA /* NovaTintImageProcessor.swift in Sources */,
 				84FA835A265CE5BE00FDF727 /* TitleMultiValueView.swift in Sources */,
 				849014BB24AA87E4008F705E /* PinSetupWireframe.swift in Sources */,
+				0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */,
 				AEE4E34825E90C6000D6DF31 /* RewardCalculatorService.swift in Sources */,
 				F40D0AF2260CCE5800CBD43B /* StakingPayoutBaseTableCell.swift in Sources */,
 				8490145824A9406D008F705E /* LegalData.swift in Sources */,
@@ -21245,6 +21276,7 @@
 				9E40464B7687006B1EE75C72 /* LocksProtocols.swift in Sources */,
 				30413A3C5ADB96B7D663F94D /* LocksWireframe.swift in Sources */,
 				BE301A0F2286CCEF6A02D341 /* LocksPresenter.swift in Sources */,
+				0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */,
 				0C1BE1A22A46F93B0010933C /* BigUInt+Scientific.swift in Sources */,
 				CE4C1344F03A5132C601A594 /* LocksViewController.swift in Sources */,
 				8A23DD1F4146639EA2F7AEF6 /* LocksViewFactory.swift in Sources */,

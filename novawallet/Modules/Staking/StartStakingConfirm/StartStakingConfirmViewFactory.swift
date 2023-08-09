@@ -54,7 +54,7 @@ struct StartStakingConfirmViewFactory {
             return nil
         }
 
-        let wireframe = StartStakingDirectConfirmWireframe()
+        let wireframe = StartStakingDirectConfirmWireframe(stakingState: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
