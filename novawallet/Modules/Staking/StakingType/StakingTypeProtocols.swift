@@ -11,6 +11,7 @@ protocol StakingTypePresenterProtocol: AnyObject {
     func selectNominationPool()
     func change(stakingTypeSelection: StakingTypeSelection)
     func save()
+    func back()
 }
 
 protocol StakingTypeInteractorInputProtocol: AnyObject {

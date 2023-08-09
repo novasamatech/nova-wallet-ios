@@ -45,11 +45,21 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
         let title = R.string.localizable.commonDone(preferredLanguages: selectedLocale.rLanguages)
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: title,
-            style: .done,
+            style: .plain,
             target: self,
             action: #selector(doneAction)
         )
+        navigationItem.rightBarButtonItem?.tintColor = R.color.colorButtonTextAccent()
         navigationItem.rightBarButtonItem?.isEnabled = false
+
+        let backBarButtonItem = UIBarButtonItem(
+            image: R.image.iconBack()!,
+            style: .plain,
+            target: self,
+            action: #selector(backAction)
+        )
+        backBarButtonItem.imageInsets = .init(top: 0, left: -8, bottom: 0, right: 0)
+        navigationItem.leftBarButtonItem = backBarButtonItem
     }
 
     private func setupHandlers() {
@@ -81,6 +91,10 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 
     @objc private func doneAction() {
         presenter.save()
+    }
+
+    @objc private func backAction() {
+        presenter.back()
     }
 
     private func updateBannerSelection<T1, T2>(

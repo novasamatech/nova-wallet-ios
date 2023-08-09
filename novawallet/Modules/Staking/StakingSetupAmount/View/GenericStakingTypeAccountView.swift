@@ -1,6 +1,8 @@
 import UIKit
 
-class GenericStakingTypeAccountView<T>: RowView<GenericTitleValueView<GenericPairValueView<T, MultiValueView>, UIImageView>> where T: UIView {
+class GenericStakingTypeAccountView<T>: RowView<
+    GenericTitleValueView<GenericPairValueView<T, MultiValueView>, UIImageView>
+> where T: UIView {
     var titleLabel: UILabel { rowContentView.titleView.sView.valueTop }
     var subtitleLabel: UILabel { rowContentView.titleView.sView.valueBottom }
     var disclosureImageView: UIImageView { rowContentView.valueView }
@@ -33,5 +35,6 @@ class GenericStakingTypeAccountView<T>: RowView<GenericTitleValueView<GenericPai
         rowContentView.titleView.makeHorizontal()
         rowContentView.titleView.stackView.alignment = .center
         rowContentView.titleView.spacing = 12
+        rowContentView.titleView.sView.spacing = 2
     }
 }

@@ -2,14 +2,13 @@ import UIKit
 
 final class StakingTypeViewLayout: ScrollableContainerLayoutView {
     let poolStakingBannerView: StakingTypeBannerView<StakingTypeAccountView> = .create {
-        $0.imageView.image = R.image.iconPoolStakingType()
+        $0.imageView.image = R.image.imageStakingTypePool()!
     }
 
     let directStakingBannerView: StakingTypeBannerView<StakingTypeValidatorView> = .create {
-        $0.imageView.image = R.image.iconDirectStakingType()
-        $0.imageSize = .init(width: 128, height: 118)
-        $0.imageOffsets = (top: -18, right: 28)
-        $0.imageView.transform = .init(rotationAngle: 2.75762)
+        $0.imageView.image = R.image.imageStakingTypeDirect()!
+        $0.imageSize = .init(width: 161, height: 156)
+        $0.imageOffsets = (top: -36, right: 43)
     }
 
     override func setupLayout() {

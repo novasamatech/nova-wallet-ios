@@ -17,6 +17,7 @@ final class StakingTypePresenter {
     private var directStakingAvailable: Bool = false
     private var method: StakingSelectionMethod?
     private var selection: StakingTypeSelection?
+    private var hasChanges: Bool = false
 
     init(
         interactor: StakingTypeInteractorInputProtocol,
@@ -75,6 +76,9 @@ final class StakingTypePresenter {
         provideDirectStakingViewModel()
         provideNominationPoolViewModel()
         provideStakingSelection()
+        if hasChanges {
+            view?.didReceiveSaveChangesState(available: true)
+        }
     }
 
     private func provideStakingSelection() {
@@ -98,6 +102,26 @@ final class StakingTypePresenter {
             closeAction: R.string.localizable.commonBack(preferredLanguages: languages),
             from: view
         )
+    }
+
+    private func showSaveChangesAlert() {
+        let languages = selectedLocale.rLanguages
+        let saveActionTitle = R.string.localizable.commonSave(preferredLanguages: languages)
+        let cancelActionTitle = R.string.localizable.commonCancel(preferredLanguages: languages)
+        let saveAction = AlertPresentableAction(title: saveActionTitle) { [weak self] in
+            self?.save()
+        }
+        let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
+            self?.wireframe.complete(from: self?.view)
+        }
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.stakingTypeAlertUnsavedChangesTitle(preferredLanguages: languages),
+            message: R.string.localizable.stakingTypeAlertUnsavedChangesMessage(preferredLanguages: languages),
+            actions: [saveAction, cancelAction],
+            closeAction: nil
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 }
 
@@ -152,6 +176,14 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         delegate?.changeStakingType(method: method)
         wireframe.complete(from: view)
     }
+
+    func back() {
+        guard hasChanges, let method = method else {
+            return
+        }
+
+        showSaveChangesAlert()
+    }
 }
 
 extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
@@ -168,8 +200,8 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
 
     func didReceive(method: StakingSelectionMethod) {
         self.method = method
+        hasChanges = true
         updateView()
-        view?.didReceiveSaveChangesState(available: true)
     }
 
     func didReceive(assetBalance: AssetBalance) {
