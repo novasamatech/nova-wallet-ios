@@ -181,6 +181,70 @@ final class NominationPoolsSyncTests: XCTestCase {
             options: .init()
         )
         
+        let maxPoolMembersExpectation = XCTestExpectation()
+        let maxPoolMembersProvider = try npoolsProviderFactory.getMaxPoolMembers(
+            for: chain.chainId,
+            missingEntryStrategy: .emitError
+        )
+        
+        maxPoolMembersProvider.addObserver(
+            self,
+            deliverOn: nil,
+            executing: { changes in
+                let optMaxPoolMembers: UInt32? = changes.reduceToLastChange()?.item?.value
+                
+                if let maxPoolMembers = optMaxPoolMembers {
+                    logger.info("Max pool members: \(maxPoolMembers)")
+                    maxPoolMembersExpectation.fulfill()
+                }
+            }, failing: { error in
+                logger.error("Error: \(error)")
+            },
+            options: .init()
+        )
+        
+        let maxPoolMembersPerPoolExpectation = XCTestExpectation()
+        let maxPoolMembersPerPoolProvider = try npoolsProviderFactory.getMaxMembersPerPool(
+            for: chain.chainId,
+            missingEntryStrategy: .emitError
+        )
+        
+        maxPoolMembersPerPoolProvider.addObserver(
+            self,
+            deliverOn: nil,
+            executing: { changes in
+                let optMaxPoolMembers: UInt32? = changes.reduceToLastChange()?.item?.value
+                
+                logger.info("Max pool members per pool: \(optMaxPoolMembers)")
+                maxPoolMembersPerPoolExpectation.fulfill()
+            }, failing: { error in
+                logger.error("Error: \(error)")
+            },
+            options: .init()
+        )
+        
+        let counterForPoolMembersExpectation = XCTestExpectation()
+        let counterForPoolMembersProvider = try npoolsProviderFactory.getCounterForPoolMembers(
+            for: chain.chainId,
+            missingEntryStrategy: .emitError
+        )
+        
+        counterForPoolMembersProvider.addObserver(
+            self,
+            deliverOn: nil,
+            executing: { changes in
+                let optCounterForMembers: UInt32? = changes.reduceToLastChange()?.item?.value
+                
+                if let counterForMembers = optCounterForMembers {
+                    logger.info("Counter for pool members: \(counterForMembers)")
+                    counterForPoolMembersExpectation.fulfill()
+                }
+            }, failing: { error in
+                logger.error("Error: \(error)")
+            },
+            options: .init()
+        )
+        
         let bondedPoolExpectation = XCTestExpectation()
         
         let bondedPoolProvider = try npoolsProviderFactory.getBondedPoolProvider(
@@ -271,7 +335,8 @@ final class NominationPoolsSyncTests: XCTestCase {
             options: .init()
         )
         
-        let expectations = [lastPoolIdExpectation, minJoinBondExpectation, bondedPoolExpectation, rewardPoolExpectation, subpoolsExpectation, metadataExpectation]
+        let expectations = [lastPoolIdExpectation, minJoinBondExpectation, bondedPoolExpectation, rewardPoolExpectation, subpoolsExpectation, metadataExpectation, maxPoolMembersExpectation, maxPoolMembersPerPoolExpectation,
+            counterForPoolMembersExpectation]
         
         wait(for: expectations, timeout: 6000)
         
@@ -289,5 +354,8 @@ final class NominationPoolsSyncTests: XCTestCase {
         minJoinBondProvider.removeObserver(self)
         lastPoolIdProvider.removeObserver(self)
         poolMemberProvider.removeObserver(self)
+        maxPoolMembersProvider.removeObserver(self)
+        counterForPoolMembersProvider.removeObserver(self)
+        maxPoolMembersPerPoolProvider.removeObserver(self)
     }
 }

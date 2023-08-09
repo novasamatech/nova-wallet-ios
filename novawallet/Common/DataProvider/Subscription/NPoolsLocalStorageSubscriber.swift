@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self: AnyObject {
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol { get }
@@ -38,6 +39,15 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
         for chainId: ChainModel.Id,
         callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedPoolId>?
+
+    func subscribeMaxPoolMembers(for chainId: ChainModel.Id)
+        -> AnyDataProvider<DecodedU32>?
+
+    func subscribeCounterForPoolMembers(for chainId: ChainModel.Id)
+        -> AnyDataProvider<DecodedU32>?
+
+    func subscribeMaxPoolMembersPerPool(for chainId: ChainModel.Id)
+        -> AnyDataProvider<DecodedU32>?
 }
 
 extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandler {
@@ -265,6 +275,84 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
             },
             callbackQueue: callbackQueue,
             options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+        )
+
+        return provider
+    }
+
+    func subscribeMaxPoolMembers(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
+        guard let provider = try? npoolsLocalSubscriptionFactory.getMaxPoolMembers(
+            for: chainId,
+            missingEntryStrategy: .defaultValue(StringScaleMapper(value: UInt32.max))
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                self?.npoolsLocalSubscriptionHandler.handleMaxPoolMembers(
+                    result: .success(value?.value),
+                    chainId: chainId
+                )
+            }, failureClosure: { [weak self] error in
+                self?.npoolsLocalSubscriptionHandler.handleMaxPoolMembers(
+                    result: .failure(error),
+                    chainId: chainId
+                )
+            }
+        )
+
+        return provider
+    }
+
+    func subscribeCounterForPoolMembers(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
+        guard let provider = try? npoolsLocalSubscriptionFactory.getCounterForPoolMembers(
+            for: chainId,
+            missingEntryStrategy: .defaultValue(StringScaleMapper(value: 0))
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                self?.npoolsLocalSubscriptionHandler.handleCounterForPoolMembers(
+                    result: .success(value?.value),
+                    chainId: chainId
+                )
+            }, failureClosure: { [weak self] error in
+                self?.npoolsLocalSubscriptionHandler.handleCounterForPoolMembers(
+                    result: .failure(error),
+                    chainId: chainId
+                )
+            }
+        )
+
+        return provider
+    }
+
+    func subscribeMaxPoolMembersPerPool(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
+        guard let provider = try? npoolsLocalSubscriptionFactory.getMaxMembersPerPool(
+            for: chainId,
+            missingEntryStrategy: .defaultValue(StringScaleMapper(value: UInt32.max))
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                self?.npoolsLocalSubscriptionHandler.handleMaxPoolMembersPerPool(
+                    result: .success(value?.value),
+                    chainId: chainId
+                )
+            }, failureClosure: { [weak self] error in
+                self?.npoolsLocalSubscriptionHandler.handleMaxPoolMembersPerPool(
+                    result: .failure(error),
+                    chainId: chainId
+                )
+            }
         )
 
         return provider

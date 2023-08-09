@@ -10,6 +10,8 @@ final class StakingSetupAmountPresenter {
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
+    let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
@@ -21,8 +23,11 @@ final class StakingSetupAmountPresenter {
         didSet {
             if inputResult != nil {
                 buttonState = .continueState(enabled: true)
-                provideButtonState()
+            } else {
+                buttonState = .continueState(enabled: false)
             }
+
+            provideButtonState()
         }
     }
 
@@ -38,8 +43,10 @@ final class StakingSetupAmountPresenter {
         viewModelFactory: StakingAmountViewModelFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
+        recommendsMultipleStakings: Bool,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -48,8 +55,10 @@ final class StakingSetupAmountPresenter {
         self.viewModelFactory = viewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
+        self.recommendsMultipleStakings = recommendsMultipleStakings
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -139,12 +148,10 @@ final class StakingSetupAmountPresenter {
     }
 
     private func availableBalanceInPlank() -> BigUInt? {
-        switch setupMethod {
-        case .recommendation:
-            return assetBalance?.freeInPlank
-        case let .manual(selectedStakingOption, _):
-            return manualAvailableBalanceInPlank(for: selectedStakingOption)
-        }
+        balanceDerivationFactory.getAvailableBalance(
+            from: assetBalance,
+            stakingMethod: setupMethod
+        )
     }
 
     private func manualAvailableBalanceInPlank(for stakingOption: SelectedStakingOption) -> BigUInt? {
@@ -169,14 +176,7 @@ final class StakingSetupAmountPresenter {
 
         let amount = inputAmountInPlank()
 
-        let feeId: String
-
-        switch stakingOption {
-        case let .direct(validators):
-            feeId = "direct" + "\(validators.targets.count)" + "\(amount)"
-        case let .pool(pool):
-            feeId = "pool" + "\(pool.poolId)" + "\(amount)"
-        }
+        let feeId = StartStakingFeeIdFactory.generateFeeId(for: stakingOption, amount: amount)
 
         fee = nil
         pendingFeeId = feeId
@@ -187,7 +187,7 @@ final class StakingSetupAmountPresenter {
     private func provideStakingTypeViewModel() {
         switch setupMethod {
         case let .recommendation(stakingRecommendation):
-            if inputResult == nil {
+            if inputResult == nil, recommendsMultipleStakings {
                 view?.didReceive(stakingType: nil)
                 view?.didReceive(estimatedRewards: nil)
             } else if let stakingType = stakingRecommendation?.staking {
@@ -244,6 +244,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         provideAmountInputViewModel()
         provideButtonState()
         refreshFee()
+
+        if !recommendsMultipleStakings {
+            updateRecommendationIfNeeded()
+        }
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -324,7 +328,11 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
                 return
             }
 
-            self?.wireframe.showConfirmation(from: self?.view, stakingOption: stakingOption)
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                stakingOption: stakingOption,
+                amount: currentInputAmount
+            )
         }
     }
 }

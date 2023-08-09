@@ -57,6 +57,18 @@ enum NominationPools {
         @StringCodable var memberCounter: UInt32
         let commission: Commission?
         let state: PoolState
+
+        func checkPoolSpare(for maxMembersPerPool: UInt32?) -> Bool {
+            guard state == .open else {
+                return false
+            }
+
+            if let maxMembersPerPool = maxMembersPerPool {
+                return memberCounter < maxMembersPerPool
+            } else {
+                return true
+            }
+        }
     }
 
     struct RewardPool: Decodable, Equatable {

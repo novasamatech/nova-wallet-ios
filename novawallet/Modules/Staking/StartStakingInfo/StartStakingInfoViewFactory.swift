@@ -4,24 +4,41 @@ import SoraFoundation
 import RobinHood
 
 struct StartStakingInfoViewFactory {
-    static func createView(chainAsset: ChainAsset) -> StartStakingInfoViewProtocol? {
-        let optStakingType = chainAsset.asset.stakings?.sorted { type1, type2 in
+    static func createView(chainAsset: ChainAsset, selectedStakingType: StakingType?) -> StartStakingInfoViewProtocol? {
+        let optMainStakingType = chainAsset.asset.stakings?.sorted { type1, type2 in
             type1.isMorePreferred(than: type2)
         }.first
 
-        guard let stakingType = optStakingType else {
+        guard let mainStakingType = optMainStakingType else {
             return nil
         }
 
-        switch stakingType {
+        switch mainStakingType {
         case .relaychain:
-            return createRelaychainView(chainAsset: chainAsset, consensus: .babe)
+            return createRelaychainView(
+                chainAsset: chainAsset,
+                consensus: .babe,
+                selectedStakingType: selectedStakingType
+            )
         case .auraRelaychain:
-            return createRelaychainView(chainAsset: chainAsset, consensus: .auraGeneral)
+            return createRelaychainView(
+                chainAsset: chainAsset,
+                consensus: .auraGeneral,
+                selectedStakingType: selectedStakingType
+            )
         case .azero:
-            return createRelaychainView(chainAsset: chainAsset, consensus: .auraAzero)
+            return createRelaychainView(
+                chainAsset: chainAsset,
+                consensus: .auraAzero,
+                selectedStakingType: selectedStakingType
+            )
         case .parachain, .turing:
-            return createParachainView(for: .init(chainAsset: chainAsset, type: stakingType))
+            return createParachainView(
+                for: .init(
+                    chainAsset: chainAsset,
+                    type: selectedStakingType ?? mainStakingType
+                )
+            )
         case .unsupported, .nominationPools:
             return nil
         }
@@ -29,7 +46,8 @@ struct StartStakingInfoViewFactory {
 
     private static func createRelaychainView(
         chainAsset: ChainAsset,
-        consensus: ConsensusType
+        consensus: ConsensusType,
+        selectedStakingType: StakingType?
     ) -> StartStakingInfoViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -43,7 +61,11 @@ struct StartStakingInfoViewFactory {
         )
 
         guard
-            let state = try? stateFactory.createStartRelaychainStaking(for: chainAsset, consensus: consensus),
+            let state = try? stateFactory.createStartRelaychainStaking(
+                for: chainAsset,
+                consensus: consensus,
+                selectedStakingType: selectedStakingType
+            ),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }

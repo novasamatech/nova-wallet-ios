@@ -3,7 +3,9 @@ import RobinHood
 import SubstrateSdk
 
 protocol NominationPoolRecommendationFactoryProtocol: AnyObject {
-    func createPoolRecommendationWrapper() -> CompoundOperationWrapper<NominationPools.SelectedPool>
+    func createPoolRecommendationWrapper(
+        for maxMembersPerPool: UInt32?
+    ) -> CompoundOperationWrapper<NominationPools.SelectedPool>
 }
 
 enum NominationPoolRecommendationFactoryError: Error {
@@ -36,7 +38,9 @@ final class NominationPoolRecommendationFactory {
 }
 
 extension NominationPoolRecommendationFactory: NominationPoolRecommendationFactoryProtocol {
-    func createPoolRecommendationWrapper() -> CompoundOperationWrapper<NominationPools.SelectedPool> {
+    func createPoolRecommendationWrapper(
+        for maxMembersPerPool: UInt32?
+    ) -> CompoundOperationWrapper<NominationPools.SelectedPool> {
         let maxApyWrapper = rewardEngineOperationFactory.createEngineWrapper(
             for: eraPoolsService,
             validatorRewardService: validatorRewardService,
@@ -44,70 +48,36 @@ extension NominationPoolRecommendationFactory: NominationPoolRecommendationFacto
             runtimeService: runtimeService
         )
 
-        let activePoolsOperation = eraPoolsService.fetchInfoOperation()
-
-        let bondedPoolsWrapper = storageOperationFactory.createBondedPoolsWrapper(
-            for: {
-                let allPoolIds = try activePoolsOperation.extractNoCancellableResultData().pools.map(\.poolId)
-                return Set(allPoolIds)
+        let poolStatsWrapper = storageOperationFactory.createSparePoolsInfoWrapper(
+            for: eraPoolsService,
+            rewardEngine: {
+                try maxApyWrapper.targetOperation.extractNoCancellableResultData()
             },
+            maxMembersPerPool: { maxMembersPerPool },
             connection: connection,
             runtimeService: runtimeService
         )
 
-        bondedPoolsWrapper.addDependency(operations: [activePoolsOperation])
+        poolStatsWrapper.addDependency(wrapper: maxApyWrapper)
 
-        let maxApyPoolOperation = ClosureOperation<NominationPools.PoolApy> {
-            let validPoolIds = try bondedPoolsWrapper.targetOperation
-                .extractNoCancellableResultData()
-                .filter { $0.value.state == .open }
-                .map(\.key)
+        let mergeOperation = ClosureOperation<NominationPools.SelectedPool> {
+            let poolStatsList = try poolStatsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let rewardEngine = try maxApyWrapper.targetOperation.extractNoCancellableResultData()
-
-            let optMaxApy = try validPoolIds
-                .map { try rewardEngine.calculateMaxReturn(poolId: $0, isCompound: true, period: .year) }
-                .max { $0.maxApy < $1.maxApy }
-
-            guard let maxApy = optMaxApy else {
+            guard let maxPoolStats = poolStatsList.first else {
                 throw NominationPoolRecommendationFactoryError.noPoolToJoin
             }
 
-            return maxApy
-        }
-
-        maxApyPoolOperation.addDependency(maxApyWrapper.targetOperation)
-        maxApyPoolOperation.addDependency(bondedPoolsWrapper.targetOperation)
-
-        let metadataWrapper = storageOperationFactory.createMetadataWrapper(
-            for: {
-                let poolId = try maxApyPoolOperation.extractNoCancellableResultData().poolId
-
-                return [poolId]
-            },
-            connection: connection,
-            runtimeService: runtimeService
-        )
-
-        metadataWrapper.addDependency(operations: [maxApyPoolOperation])
-
-        let mergeOperation = ClosureOperation<NominationPools.SelectedPool> {
-            let metadataDict = try metadataWrapper.targetOperation.extractNoCancellableResultData()
-            let poolApy = try maxApyPoolOperation.extractNoCancellableResultData()
-
             return .init(
-                poolId: poolApy.poolId,
-                bondedAccountId: poolApy.bondedAccountId,
-                metadata: metadataDict[poolApy.poolId],
-                maxApy: poolApy.maxApy
+                poolId: maxPoolStats.poolId,
+                bondedAccountId: maxPoolStats.bondedAccountId,
+                metadata: maxPoolStats.metadata,
+                maxApy: maxPoolStats.maxApy
             )
         }
 
-        mergeOperation.addDependency(metadataWrapper.targetOperation)
-        mergeOperation.addDependency(maxApyPoolOperation)
+        mergeOperation.addDependency(poolStatsWrapper.targetOperation)
 
-        let dependencies = maxApyWrapper.allOperations + [activePoolsOperation] + bondedPoolsWrapper.allOperations +
-            [maxApyPoolOperation] + metadataWrapper.allOperations
+        let dependencies = maxApyWrapper.allOperations + poolStatsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }

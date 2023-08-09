@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol NPoolsLocalSubscriptionFactoryProtocol {
     func getMinJoinBondProvider(
@@ -34,6 +35,21 @@ protocol NPoolsLocalSubscriptionFactoryProtocol {
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedSubPools>
+
+    func getMaxPoolMembers(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
+
+    func getCounterForPoolMembers(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
+
+    func getMaxMembersPerPool(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
 }
 
 final class NPoolsLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory {}
@@ -103,6 +119,66 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
             for: NominationPools.subPoolsPath,
             encodableElement: poolId,
             chainId: chainId
+        )
+    }
+
+    func getMaxPoolMembers(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
+        let codingPath = NominationPools.maxPoolMembers
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            fallback: fallback
+        )
+    }
+
+    func getCounterForPoolMembers(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
+        let codingPath = NominationPools.counterForPoolMembers
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            fallback: fallback
+        )
+    }
+
+    func getMaxMembersPerPool(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
+        let codingPath = NominationPools.maxMembersPerPool
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            fallback: fallback
         )
     }
 }

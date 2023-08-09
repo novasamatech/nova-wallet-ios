@@ -12,7 +12,7 @@ struct StakingSetupAmountViewFactory {
             return nil
         }
 
-        let wireframe = StakingSetupAmountWireframe()
+        let wireframe = StakingSetupAmountWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
@@ -30,14 +30,18 @@ struct StakingSetupAmountViewFactory {
             balanceFactory: balanceViewModelFactory
         )
 
+        let balanceDerivationFactory = StakingTypeBalanceFactory(stakingType: state.stakingType)
+
         let presenter = StakingSetupAmountPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            balanceDerivationFactory: balanceDerivationFactory,
             dataValidatingFactory: dataValidatingFactory,
             chainAsset: state.chainAsset,
+            recommendsMultipleStakings: state.recommendsMultipleStakings,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -87,6 +91,12 @@ struct StakingSetupAmountViewFactory {
 
         let feeProxy = ExtrinsicFeeProxy()
 
+        let extrinsicProxy = StartStakingExtrinsicProxy(
+            selectedAccount: selectedAccount,
+            runtimeService: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         return .init(
             state: state,
             selectedAccount: selectedAccount,
@@ -94,9 +104,8 @@ struct StakingSetupAmountViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             extrinsicFeeProxy: feeProxy,
+            extrinsicSubmissionProxy: extrinsicProxy,
             recommendationMediatorFactory: recommendationFactory,
-            runtimeProvider: runtimeProvider,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

@@ -5,6 +5,8 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     var consensus: ConsensusType { get }
     var chainAsset: ChainAsset { get }
 
+    var recommendsMultipleStakings: Bool { get }
+
     var relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var timeModel: StakingTimeModel { get }
     var relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
@@ -55,6 +57,10 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     private var npAccountService: NominationPoolsAccountUpdatingService?
 
     private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+
+    var recommendsMultipleStakings: Bool {
+        stakingType == nil && chainAsset.asset.hasMultipleStakingOptions
+    }
 
     init(
         stakingType: StakingType?,

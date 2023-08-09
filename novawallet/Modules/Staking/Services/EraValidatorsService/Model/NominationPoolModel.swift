@@ -32,6 +32,10 @@ extension NominationPools {
         let metadata: Data?
         let maxApy: Decimal?
 
+        var name: String? {
+            metadata.flatMap { String(data: $0, encoding: .utf8) }
+        }
+
         init(
             poolId: PoolId,
             bondedAccountId: AccountId,
@@ -49,6 +53,14 @@ extension NominationPools {
             bondedAccountId = poolStats.bondedAccountId
             metadata = poolStats.metadata
             maxApy = poolStats.maxApy
+        }
+
+        func bondedAddress(for chainFormat: ChainFormat) -> AccountAddress? {
+            try? bondedAccountId.toAddress(using: chainFormat)
+        }
+
+        func title(for chainFormat: ChainFormat) -> String? {
+            name ?? bondedAddress(for: chainFormat)
         }
     }
 }

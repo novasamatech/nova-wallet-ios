@@ -14,6 +14,14 @@ protocol StakingRecommendationMediatorFactoryProtocol {
     func createHybridStakingMediator(
         for state: RelaychainStartStakingStateProtocol
     ) -> RelaychainStakingRecommendationMediating?
+
+    func createDirectStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> RelaychainStakingRestrictionsBuilding?
+
+    func createPoolStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> RelaychainStakingRestrictionsBuilding?
 }
 
 final class StakingRecommendationMediatorFactory {
@@ -65,27 +73,6 @@ final class StakingRecommendationMediatorFactory {
             clusterLimit: StakingConstants.targetsClusterLimit
         )
     }
-
-    private func createDirectStakingRestrictionsBuilder(
-        for state: RelaychainStartStakingStateProtocol
-    ) -> DirectStakingRestrictionsBuilder? {
-        let networkInfoFactory = state.createNetworkInfoOperationFactory(for: operationQueue)
-
-        let chainId = state.chainAsset.chain.chainId
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            return nil
-        }
-
-        return DirectStakingRestrictionsBuilder(
-            chainAsset: state.chainAsset,
-            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
-            networkInfoFactory: networkInfoFactory,
-            eraValidatorService: state.eraValidatorService,
-            runtimeService: runtimeService,
-            operationQueue: operationQueue
-        )
-    }
 }
 
 extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol {
@@ -108,14 +95,10 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
     func createPoolStakingMediator(
         for state: RelaychainStartStakingStateProtocol
     ) -> RelaychainStakingRecommendationMediating? {
-        let restrictionsBuilder = PoolStakingRestrictionsBuilder(
-            chainAsset: state.chainAsset,
-            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory
-        )
-
         let chainId = state.chainAsset.chain.chainId
 
         guard
+            let restrictionsBuilder = createPoolStakingRestrictionsBuilder(for: state),
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
             return nil
@@ -139,6 +122,8 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
         )
 
         return PoolStakingRecommendationMediator(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             restrictionsBuilder: restrictionsBuilder,
             operationFactory: operationFactory,
             operationQueue: operationQueue
@@ -160,6 +145,36 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
             directStakingMediator: directStakingMediator,
             nominationPoolsMediator: poolMediator,
             directStakingRestrictionsBuilder: directStakingRestrictionsBuilder
+        )
+    }
+
+    func createDirectStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> RelaychainStakingRestrictionsBuilding? {
+        let networkInfoFactory = state.createNetworkInfoOperationFactory(for: operationQueue)
+
+        let chainId = state.chainAsset.chain.chainId
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            return nil
+        }
+
+        return DirectStakingRestrictionsBuilder(
+            chainAsset: state.chainAsset,
+            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
+            networkInfoFactory: networkInfoFactory,
+            eraValidatorService: state.eraValidatorService,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue
+        )
+    }
+
+    func createPoolStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> RelaychainStakingRestrictionsBuilding? {
+        PoolStakingRestrictionsBuilder(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory
         )
     }
 }
