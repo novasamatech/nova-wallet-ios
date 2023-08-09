@@ -4,7 +4,9 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
     let radioSelectorView = RadioSelectorView()
     let titleLabel = UILabel(style: .boldTitle2Primary, numberOfLines: 1)
     let detailsLabel = UILabel(style: .regularSubhedlineSecondary)
-    private(set) var accountView: ActionView?
+    let accountView: ActionView = .create {
+        $0.isHidden = true
+    }
 
     let stackView: UIStackView = .create {
         $0.axis = .vertical
@@ -54,23 +56,16 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         descriptionStack.isLayoutMarginsRelativeArrangement = true
         stackView.addArrangedSubview(descriptionStack)
         stackView.setCustomSpacing(20, after: descriptionStack)
+        stackView.addArrangedSubview(accountView)
+        accountView.snp.makeConstraints {
+            $0.height.equalTo(48)
+        }
+
         clipsToBounds = true
     }
 
     func setAction(viewModel: ActionView.TModel?) {
-        if let viewModel = viewModel {
-            if accountView == nil {
-                let view = ActionView(frame: .zero)
-                stackView.addArrangedSubview(view)
-                view.snp.makeConstraints {
-                    $0.height.equalTo(48)
-                }
-                accountView = view
-            }
-            accountView?.bind(viewModel: viewModel)
-        } else {
-            accountView?.removeFromSuperview()
-            accountView = nil
-        }
+        accountView.bindOrHide(viewModel: viewModel)
+        invalidateIntrinsicContentSize()
     }
 }

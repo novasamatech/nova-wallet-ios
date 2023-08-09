@@ -14,6 +14,7 @@ final class StakingSetupAmountPresenter {
     let logger: LoggerProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
+    private var stakingTypeWasChanged: Bool = false
 
     private var assetBalance: AssetBalance?
     private var buttonState: ButtonState = .startState
@@ -220,7 +221,7 @@ final class StakingSetupAmountPresenter {
     private func updateRecommendationIfNeeded() {
         let amount = inputAmountInPlank()
 
-        guard amount != pendingRecommendationAmount, setupMethod.isRecommendation else {
+        guard amount != pendingRecommendationAmount, setupMethod.isRecommendation, !stakingTypeWasChanged else {
             return
         }
 
@@ -259,7 +260,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     }
 
     func selectStakingType() {
-        wireframe.showStakingTypeSelection(from: view, chainAsset: chainAsset, method: setupMethod)
+        wireframe.showStakingTypeSelection(from: view, method: setupMethod, delegate: self)
     }
 
     // swiftlint:disable:next function_body_length
@@ -426,5 +427,15 @@ extension StakingSetupAmountPresenter: Localizable {
         provideAmountInputViewModel()
         provideAmountPriceViewModel()
         provideStakingTypeViewModel()
+    }
+}
+
+extension StakingSetupAmountPresenter: StakingTypeDelegate {
+    func changeStakingType(method: StakingSelectionMethod) {
+        setupMethod = method
+        stakingTypeWasChanged = true
+        provideBalanceModel()
+        provideStakingTypeViewModel()
+        refreshFee()
     }
 }

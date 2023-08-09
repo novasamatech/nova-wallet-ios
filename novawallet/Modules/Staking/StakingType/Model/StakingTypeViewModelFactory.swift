@@ -1,18 +1,19 @@
 import BigInt
 import SoraFoundation
+import SubstrateSdk
 
 protocol StakingTypeViewModelFactoryProtocol {
     func directStakingViewModel(
         minStake: BigUInt?,
         chainAsset: ChainAsset,
-        choice: ValidatorChoice?,
+        method: StakingSelectionMethod?,
         locale: Locale
     ) -> DirectStakingTypeViewModel
 
     func nominationPoolViewModel(
         minStake: BigUInt?,
         chainAsset: ChainAsset,
-        choice: PoolChoice?,
+        method: StakingSelectionMethod?,
         locale: Locale
     ) -> PoolStakingTypeViewModel
 
@@ -26,6 +27,7 @@ protocol StakingTypeViewModelFactoryProtocol {
 final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let countFormatter: LocalizableResource<NumberFormatter>
+    private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -35,10 +37,50 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         self.countFormatter = countFormatter
     }
 
+    private func validatorChoice(method: StakingSelectionMethod?) -> ValidatorChoice? {
+        guard let method = method, case let .direct(validators) = method.selectedStakingOption else {
+            return nil
+        }
+        return method.isRecommendation ? .recommended(maxCount: validators.maxTargets) :
+            .selected(count: validators.targets.count, maxCount: validators.maxTargets)
+    }
+
+    private func poolChoice(
+        method: StakingSelectionMethod?,
+        chainAsset _: ChainAsset
+    ) -> PoolChoice? {
+        guard let method = method, case let .pool(pool) = method.selectedStakingOption else {
+            return nil
+        }
+        let image: ImageViewModelProtocol?
+        if pool.poolId.isNovaPool {
+            image = StaticImageViewModel(image: R.image.iconNova()!)
+        } else {
+            if let icon = try? iconGenerator.generateFromAccountId(pool.bondedAccountId) {
+                image = DrawableIconViewModel(icon: icon)
+            } else {
+                image = nil
+            }
+        }
+
+        let name: String
+        if let metadata = pool.metadata, let poolName = String(data: metadata, encoding: .utf8) {
+            name = poolName
+        } else {
+            name = "#\(pool.poolId)"
+        }
+
+        return PoolChoice(
+            name: name,
+            icon: image,
+            recommended: method.isRecommendation
+        )
+    }
+
     func directStakingViewModel(
         minStake: BigUInt?,
         chainAsset: ChainAsset,
-        choice: ValidatorChoice?,
+        method: StakingSelectionMethod?,
         locale: Locale
     ) -> DirectStakingTypeViewModel {
         let strings = R.string.localizable.self
@@ -60,7 +102,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             managmentString
         ].joined(separator: .returnKey)
 
-        switch choice {
+        switch validatorChoice(method: method) {
         case let .recommended(maxCount):
             return .init(
                 title: title,
@@ -96,7 +138,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
     func nominationPoolViewModel(
         minStake: BigUInt?,
         chainAsset: ChainAsset,
-        choice: PoolChoice?,
+        method: StakingSelectionMethod?,
         locale: Locale
     ) -> PoolStakingTypeViewModel {
         let strings = R.string.localizable.self
@@ -113,7 +155,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             rewardsString
         ].joined(separator: .returnKey)
 
-        guard let choice = choice else {
+        guard let choice = poolChoice(method: method, chainAsset: chainAsset) else {
             return .init(title: title, subtile: subtitle, poolModel: nil)
         }
 
@@ -142,5 +184,12 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: chainAsset.assetDisplayInfo.assetPrecision)
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? ""
         return strings.stakingTypeMinimumStake(amount, preferredLanguages: locale.rLanguages)
+    }
+}
+
+extension NominationPools.PoolId {
+    var isNovaPool: Bool {
+        // TODO:
+        false
     }
 }

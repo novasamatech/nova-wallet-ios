@@ -52,7 +52,7 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
                 isRecommended: accountModel.isRecommended
             ))
         } else {
-            poolStakingBannerView.setAction(viewModel: nil)
+            directStakingBannerView.setAction(viewModel: nil)
         }
     }
 

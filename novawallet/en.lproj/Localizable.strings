@@ -1340,3 +1340,4 @@
 "staking.pool.staking" = "Pool staking";
 "staking.min.required.stake.error" = "You can't stake less than the minimal value (%@)";
 "staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter %@ or %@ and more. To stake another amount you should remove your locks.";
+"staking.type.title" = "Staking Type";

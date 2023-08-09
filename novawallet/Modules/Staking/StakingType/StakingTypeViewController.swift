@@ -1,13 +1,20 @@
 import UIKit
+import SoraFoundation
 
 final class StakingTypeViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingTypeViewLayout
 
     let presenter: StakingTypePresenterProtocol
+    private var saveChangesAvailable: Bool = false
 
-    init(presenter: StakingTypePresenterProtocol) {
+    init(
+        presenter: StakingTypePresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -22,18 +29,36 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigationItem()
+        setupLocalization()
         setupHandlers()
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+        title = R.string.localizable.stakingTypeTitle(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonDone(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    private func setupNavigationItem() {
+        let title = R.string.localizable.commonDone(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: title,
+            style: .done,
+            target: self,
+            action: #selector(doneAction)
+        )
+        navigationItem.rightBarButtonItem?.isEnabled = false
     }
 
     private func setupHandlers() {
         rootView.poolStakingBannerView.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
-            action: #selector(didTapOnPoolBanner)
+            action: #selector(poolBannerAction)
         ))
         rootView.directStakingBannerView.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
-            action: #selector(didTapOnDirectBanner)
+            action: #selector(directBannerAction)
         ))
     }
 
@@ -46,20 +71,24 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
         presenter.selectNominationPool()
     }
 
-    @objc private func didTapOnPoolBanner() {
+    @objc private func poolBannerAction() {
         presenter.change(stakingTypeSelection: .nominationPool)
     }
 
-    @objc private func didTapOnDirectBanner() {
+    @objc private func directBannerAction() {
         presenter.change(stakingTypeSelection: .direct)
+    }
+
+    @objc private func doneAction() {
+        presenter.save()
     }
 }
 
 extension StakingTypeViewController: StakingTypeViewProtocol {
     func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel) {
         rootView.bind(poolStakingTypeViewModel: viewModel)
-        rootView.poolStakingBannerView.accountView?.removeTarget(nil, action: nil, for: .allEvents)
-        rootView.poolStakingBannerView.accountView?.addTarget(
+        rootView.poolStakingBannerView.accountView.removeTarget(nil, action: nil, for: .allEvents)
+        rootView.poolStakingBannerView.accountView.addTarget(
             self,
             action: #selector(nominationPoolAction),
             for: .touchUpInside
@@ -68,8 +97,8 @@ extension StakingTypeViewController: StakingTypeViewProtocol {
 
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool) {
         rootView.bind(directStakingTypeViewModel: viewModel)
-        rootView.directStakingBannerView.accountView?.removeTarget(nil, action: nil, for: .allEvents)
-        rootView.directStakingBannerView.accountView?.addTarget(
+        rootView.directStakingBannerView.accountView.removeTarget(nil, action: nil, for: .allEvents)
+        rootView.directStakingBannerView.accountView.addTarget(
             self,
             action: #selector(nominatorsAction),
             for: .touchUpInside
@@ -93,6 +122,18 @@ extension StakingTypeViewController: StakingTypeViewProtocol {
             rootView.directStakingBannerView.radioSelectorView.selected = false
             rootView.poolStakingBannerView.backgroundView.isHighlighted = true
             rootView.poolStakingBannerView.radioSelectorView.selected = true
+        }
+    }
+
+    func didReceiveSaveChangesState(available: Bool) {
+        navigationItem.rightBarButtonItem?.isEnabled = available
+    }
+}
+
+extension StakingTypeViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
         }
     }
 }

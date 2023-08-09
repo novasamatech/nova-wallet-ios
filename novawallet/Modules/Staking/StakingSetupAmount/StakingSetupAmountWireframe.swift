@@ -9,12 +9,13 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
 
     func showStakingTypeSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset _: ChainAsset,
-        method: StakingSelectionMethod
+        method: StakingSelectionMethod,
+        delegate: StakingTypeDelegate?
     ) {
         guard let stakingTypeView = StakingTypeViewFactory.createView(
             state: state,
-            method: method
+            method: method,
+            delegate: delegate
         ) else {
             return
         }

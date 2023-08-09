@@ -8,22 +8,30 @@ final class StakingTypePresenter {
     let interactor: StakingTypeInteractorInputProtocol
     let viewModelFactory: StakingTypeViewModelFactoryProtocol
     let chainAsset: ChainAsset
+    weak var delegate: StakingTypeDelegate?
+
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
     private var assetBalance: AssetBalance?
     private var directStakingAvailable: Bool = false
+    private var method: StakingSelectionMethod?
+    private var selection: StakingTypeSelection?
 
     init(
         interactor: StakingTypeInteractorInputProtocol,
         wireframe: StakingTypeWireframeProtocol,
         chainAsset: ChainAsset,
+        initialMethod: StakingSelectionMethod,
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        delegate: StakingTypeDelegate?
     ) {
         self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.delegate = delegate
+        method = initialMethod
         self.localizationManager = localizationManager
     }
 
@@ -41,7 +49,7 @@ final class StakingTypePresenter {
         let viewModel = viewModelFactory.directStakingViewModel(
             minStake: restrictions.minRewardableStake,
             chainAsset: chainAsset,
-            choice: nil,
+            method: method,
             locale: selectedLocale
         )
 
@@ -55,7 +63,7 @@ final class StakingTypePresenter {
         let viewModel = viewModelFactory.nominationPoolViewModel(
             minStake: restrictions.minRewardableStake,
             chainAsset: chainAsset,
-            choice: nil,
+            method: method,
             locale: selectedLocale
         )
 
@@ -65,29 +73,32 @@ final class StakingTypePresenter {
     private func updateView() {
         provideDirectStakingViewModel()
         provideNominationPoolViewModel()
+        provideStakingSelection()
     }
-}
 
-enum StakingTypeSelection {
-    case direct
-    case nominationPool
+    private func provideStakingSelection() {
+        switch method?.selectedStakingOption {
+        case .direct:
+            view?.didReceive(stakingTypeSelection: .direct)
+        case .pool:
+            view?.didReceive(stakingTypeSelection: .nominationPool)
+        case .none: break
+        }
+    }
 }
 
 extension StakingTypePresenter: StakingTypePresenterProtocol {
     func setup() {
         interactor.setup()
         updateView()
-        view?.didReceive(stakingTypeSelection: .direct)
     }
 
     func selectNominators() {
         // TODO:
-        view?.didReceive(stakingTypeSelection: .direct)
     }
 
     func selectNominationPool() {
         // TODO:
-        view?.didReceive(stakingTypeSelection: .nominationPool)
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
@@ -98,6 +109,10 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         case .direct:
             if directStakingAvailable {
                 view?.didReceive(stakingTypeSelection: .direct)
+                method = nil
+                provideNominationPoolViewModel()
+                selection = .direct
+                interactor.change(stakingTypeSelection: .direct)
             } else {
                 let languages = selectedLocale.rLanguages
                 let minStake = viewModelFactory.minStake(
@@ -117,7 +132,19 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             }
         case .nominationPool:
             view?.didReceive(stakingTypeSelection: .nominationPool)
+            method = nil
+            provideDirectStakingViewModel()
+            selection = .nominationPool
+            interactor.change(stakingTypeSelection: .nominationPool)
         }
+    }
+
+    func save() {
+        guard let method = method else {
+            return
+        }
+        delegate?.changeStakingType(method: method)
+        wireframe.complete(from: view)
     }
 }
 
@@ -133,10 +160,34 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
         provideDirectStakingViewModel()
     }
 
+    func didReceive(method: StakingSelectionMethod) {
+        self.method = method
+        provideNominationPoolViewModel()
+        provideDirectStakingViewModel()
+        provideStakingSelection()
+        view?.didReceiveSaveChangesState(available: true)
+    }
+
     func didReceive(assetBalance: AssetBalance) {
         self.assetBalance = assetBalance
         updateDirectStakingAvailable()
         provideDirectStakingViewModel()
+    }
+
+    func didReceive(error: StakingTypeError) {
+        switch error {
+        case let .restrictions:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        case let .recommendation:
+            guard let selection = selection else {
+                return
+            }
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.change(stakingTypeSelection: selection)
+            }
+        }
     }
 }
 

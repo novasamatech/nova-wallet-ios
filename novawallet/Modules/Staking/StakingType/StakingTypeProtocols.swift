@@ -2,6 +2,7 @@ protocol StakingTypeViewProtocol: ControllerBackedProtocol {
     func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel)
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool)
     func didReceive(stakingTypeSelection: StakingTypeSelection)
+    func didReceiveSaveChangesState(available: Bool)
 }
 
 protocol StakingTypePresenterProtocol: AnyObject {
@@ -9,16 +10,27 @@ protocol StakingTypePresenterProtocol: AnyObject {
     func selectNominators()
     func selectNominationPool()
     func change(stakingTypeSelection: StakingTypeSelection)
+    func save()
 }
 
 protocol StakingTypeInteractorInputProtocol: AnyObject {
     func setup()
+    func change(stakingTypeSelection: StakingTypeSelection)
 }
 
 protocol StakingTypeInteractorOutputProtocol: AnyObject {
     func didReceive(nominationPoolRestrictions: RelaychainStakingRestrictions)
     func didReceive(directStakingRestrictions: RelaychainStakingRestrictions)
     func didReceive(assetBalance: AssetBalance)
+    func didReceive(method: StakingSelectionMethod)
+    func didReceive(error: StakingTypeError)
 }
 
-protocol StakingTypeWireframeProtocol: AlertPresentable {}
+protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
+    func complete(from view: ControllerBackedProtocol?)
+}
+
+enum StakingTypeError: Error {
+    case restrictions(Error)
+    case recommendation(Error)
+}

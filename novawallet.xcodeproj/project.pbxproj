@@ -585,6 +585,7 @@
 		77F033972A8142D1006BC67E /* StakingSetupAmountStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F033962A8142D1006BC67E /* StakingSetupAmountStyles.swift */; };
 		77F033992A8142E5006BC67E /* DirectStakingTypeAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F033982A8142E5006BC67E /* DirectStakingTypeAccountViewModel.swift */; };
 		77F0339B2A814505006BC67E /* StakingSelectionMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F0339A2A814505006BC67E /* StakingSelectionMethod.swift */; };
+		77F0339D2A837AB3006BC67E /* StakingTypeSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F0339C2A837AB3006BC67E /* StakingTypeSelection.swift */; };
 		77F085A407EDCCF906FD6E22 /* StartStakingInfoWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D65686560E2E6C18A5C34CB /* StartStakingInfoWireframe.swift */; };
 		77F1893E2A4996FC00E8B933 /* ParagraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F1893D2A4996FC00E8B933 /* ParagraphView.swift */; };
 		77F189402A49972300E8B933 /* UILabel+bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F1893F2A49972300E8B933 /* UILabel+bind.swift */; };
@@ -4340,7 +4341,8 @@
 		77F033942A8142B0006BC67E /* StakingTypeValidatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTypeValidatorView.swift; sourceTree = "<group>"; };
 		77F033962A8142D1006BC67E /* StakingSetupAmountStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSetupAmountStyles.swift; sourceTree = "<group>"; };
 		77F033982A8142E5006BC67E /* DirectStakingTypeAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingTypeAccountViewModel.swift; sourceTree = "<group>"; };
-		77F0339A2A814505006BC67E /* StakingSelectionMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectionMethod.swift; sourceTree = "<group>"; };
+		77F0339A2A814505006BC67E /* StakingSelectionMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StakingSelectionMethod.swift; path = ../../StakingType/Model/StakingSelectionMethod.swift; sourceTree = "<group>"; };
+		77F0339C2A837AB3006BC67E /* StakingTypeSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTypeSelection.swift; sourceTree = "<group>"; };
 		77F1893D2A4996FC00E8B933 /* ParagraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphView.swift; sourceTree = "<group>"; };
 		77F1893F2A49972300E8B933 /* UILabel+bind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+bind.swift"; sourceTree = "<group>"; };
 		77F189432A49974A00E8B933 /* UITextView+bind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+bind.swift"; sourceTree = "<group>"; };
@@ -8666,6 +8668,7 @@
 				77799AE42A792AE700B7E564 /* StakingTypeViewModel.swift */,
 				77799AE62A792B6F00B7E564 /* StakingTypeAccountViewModel.swift */,
 				77F033982A8142E5006BC67E /* DirectStakingTypeAccountViewModel.swift */,
+				77F0339A2A814505006BC67E /* StakingSelectionMethod.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -8678,7 +8681,7 @@
 				77799AED2A7CFB6A00B7E564 /* DirectStakingTypeViewModel.swift */,
 				77799AEF2A7CFB7C00B7E564 /* ValidatorChoice.swift */,
 				77799AF12A7CFB8D00B7E564 /* PoolChoice.swift */,
-				77F0339A2A814505006BC67E /* StakingSelectionMethod.swift */,
+				77F0339C2A837AB3006BC67E /* StakingTypeSelection.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -19325,6 +19328,7 @@
 				845B821526EF657700D25C72 /* PersistentValueSettings.swift in Sources */,
 				F4DCAE4726207EF900CCA6BF /* PayoutRewardsServiceProtocol.swift in Sources */,
 				848919902A052C18008D57A3 /* ModalNetworksFactory.swift in Sources */,
+				77F0339D2A837AB3006BC67E /* StakingTypeSelection.swift in Sources */,
 				8463A6F925E2F82E003B8160 /* CDSingleValue+CoreDataCodable.swift in Sources */,
 				84ED6BE6286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift in Sources */,
 				84EBFCE7285E7A7C0006327E /* XcmMessage.swift in Sources */,
