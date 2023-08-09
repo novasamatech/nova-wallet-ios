@@ -176,14 +176,7 @@ final class StakingSetupAmountPresenter {
 
         let amount = inputAmountInPlank()
 
-        let feeId: String
-
-        switch stakingOption {
-        case let .direct(validators):
-            feeId = "direct" + "\(validators.targets.count)" + "\(amount)"
-        case let .pool(pool):
-            feeId = "pool" + "\(pool.poolId)" + "\(amount)"
-        }
+        let feeId = StartStakingFeeIdFactory.generateFeeId(for: stakingOption, amount: amount)
 
         fee = nil
         pendingFeeId = feeId
@@ -335,7 +328,11 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
                 return
             }
 
-            self?.wireframe.showConfirmation(from: self?.view, stakingOption: stakingOption)
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                stakingOption: stakingOption,
+                amount: currentInputAmount
+            )
         }
     }
 }
