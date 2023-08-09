@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
     let state: RelaychainStartStakingStateProtocol
@@ -10,11 +11,13 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
     func showStakingTypeSelection(
         from view: ControllerBackedProtocol?,
         method: StakingSelectionMethod,
+        amount: BigUInt,
         delegate: StakingTypeDelegate?
     ) {
         guard let stakingTypeView = StakingTypeViewFactory.createView(
             state: state,
             method: method,
+            amount: amount,
             delegate: delegate
         ) else {
             return

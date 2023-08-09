@@ -12,12 +12,13 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
     let stakingSelectionMethod: StakingSelectionMethod
-
+    let amount: BigUInt
     private var balanceProvider: StreamableProvider<AssetBalance>?
 
     init(
         selectedAccount: ChainAccountResponse,
         chainAsset: ChainAsset,
+        amount: BigUInt,
         stakingSelectionMethod: StakingSelectionMethod,
         directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         nominationPoolsRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
@@ -27,6 +28,7 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
+        self.amount = amount
         self.stakingSelectionMethod = stakingSelectionMethod
         self.directStakingRestrictionsBuilder = directStakingRestrictionsBuilder
         self.nominationPoolsRestrictionsBuilder = nominationPoolsRestrictionsBuilder
@@ -39,6 +41,8 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         clear(streamableProvider: &balanceProvider)
         directStakingRestrictionsBuilder.stop()
         nominationPoolsRestrictionsBuilder.stop()
+        directStakingRecommendationMediator.stopRecommending()
+        nominationPoolRecommendationMediator.stopRecommending()
     }
 
     private func performAssetBalanceSubscription() {
@@ -54,14 +58,16 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func provideDirectStakingRecommendation() {
+        nominationPoolRecommendationMediator.stopRecommending()
         directStakingRecommendationMediator.delegate = self
-        directStakingRecommendationMediator.update(amount: 0)
+        directStakingRecommendationMediator.update(amount: amount)
         directStakingRecommendationMediator.startRecommending()
     }
 
     private func provideNominationPoolStakingRecommendation() {
+        directStakingRecommendationMediator.stopRecommending()
         nominationPoolRecommendationMediator.delegate = self
-        nominationPoolRecommendationMediator.update(amount: 0)
+        nominationPoolRecommendationMediator.update(amount: amount)
         nominationPoolRecommendationMediator.startRecommending()
     }
 }
@@ -110,7 +116,7 @@ extension StakingTypeInteractor: WalletLocalStorageSubscriber, WalletLocalSubscr
             )
             presenter?.didReceive(assetBalance: balance)
         case let .failure(error):
-            break
+            presenter?.didReceive(error: .balance(error))
         }
     }
 }

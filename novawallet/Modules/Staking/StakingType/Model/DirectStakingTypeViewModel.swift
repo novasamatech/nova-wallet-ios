@@ -1,9 +1,9 @@
 struct DirectStakingTypeViewModel {
     let title: String
     let subtile: String
-    let nominatorModel: NominatorModel?
+    let validator: ValidatorModel?
 
-    struct NominatorModel {
+    struct ValidatorModel {
         let title: String
         let subtitle: String
         let isRecommended: Bool

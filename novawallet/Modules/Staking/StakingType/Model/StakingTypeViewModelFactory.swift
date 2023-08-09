@@ -37,7 +37,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         self.countFormatter = countFormatter
     }
 
-    private func validatorChoice(method: StakingSelectionMethod?) -> ValidatorChoice? {
+    private func validatorAccountViewModel(method: StakingSelectionMethod?) -> ValidatorAccountViewModel? {
         guard let method = method, case let .direct(validators) = method.selectedStakingOption else {
             return nil
         }
@@ -45,10 +45,10 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             .selected(count: validators.targets.count, maxCount: validators.maxTargets)
     }
 
-    private func poolChoice(
+    private func poolAccountViewModel(
         method: StakingSelectionMethod?,
         chainAsset _: ChainAsset
-    ) -> PoolChoice? {
+    ) -> PoolAccountViewModel? {
         guard let method = method, case let .pool(pool) = method.selectedStakingOption else {
             return nil
         }
@@ -70,7 +70,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             name = "#\(pool.poolId)"
         }
 
-        return PoolChoice(
+        return PoolAccountViewModel(
             name: name,
             icon: image,
             recommended: method.isRecommendation
@@ -102,12 +102,12 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             managmentString
         ].joined(separator: .returnKey)
 
-        switch validatorChoice(method: method) {
+        switch validatorAccountViewModel(method: method) {
         case let .recommended(maxCount):
             return .init(
                 title: title,
                 subtile: subtitle,
-                nominatorModel: .init(
+                validator: .init(
                     title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
                     subtitle: strings.stakingTypeRecommendedValidatorsSubtitle(preferredLanguages: locale.rLanguages),
                     isRecommended: true,
@@ -123,7 +123,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             return .init(
                 title: title,
                 subtile: subtitle,
-                nominatorModel: .init(
+                validator: .init(
                     title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
                     subtitle: validatorsString,
                     isRecommended: false,
@@ -131,7 +131,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
                 )
             )
         case .none:
-            return .init(title: title, subtile: subtitle, nominatorModel: nil)
+            return .init(title: title, subtile: subtitle, validator: nil)
         }
     }
 
@@ -155,18 +155,19 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             rewardsString
         ].joined(separator: .returnKey)
 
-        guard let choice = poolChoice(method: method, chainAsset: chainAsset) else {
-            return .init(title: title, subtile: subtitle, poolModel: nil)
+        guard let poolAccount = poolAccountViewModel(method: method, chainAsset: chainAsset) else {
+            return .init(title: title, subtile: subtitle, poolAccount: nil)
         }
 
-        let poolSubtitle = choice.recommended ? strings.stakingTypeRecommendedPool(preferredLanguages: locale.rLanguages) : nil
+        let poolSubtitle = poolAccount.recommended ? strings.stakingTypeRecommendedPool(
+            preferredLanguages: locale.rLanguages) : nil
 
         return .init(
             title: title,
             subtile: subtitle,
-            poolModel: .init(
-                icon: choice.icon,
-                title: choice.name,
+            poolAccount: .init(
+                icon: poolAccount.icon,
+                title: poolAccount.name,
                 subtitle: poolSubtitle
             )
         )
@@ -184,12 +185,5 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: chainAsset.assetDisplayInfo.assetPrecision)
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? ""
         return strings.stakingTypeMinimumStake(amount, preferredLanguages: locale.rLanguages)
-    }
-}
-
-extension NominationPools.PoolId {
-    var isNovaPool: Bool {
-        // TODO:
-        false
     }
 }

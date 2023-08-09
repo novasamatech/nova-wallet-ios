@@ -43,6 +43,7 @@ protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable
     func showStakingTypeSelection(
         from view: ControllerBackedProtocol?,
         method: StakingSelectionMethod,
+        amount: BigUInt,
         delegate: StakingTypeDelegate?
     )
     func showConfirmation(from view: ControllerBackedProtocol?, stakingOption: SelectedStakingOption)

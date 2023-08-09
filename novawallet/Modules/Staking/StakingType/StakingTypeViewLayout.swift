@@ -25,7 +25,7 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
             string: viewModel.subtile,
             attributes: attributesForDescription
         )
-        if let accountModel = viewModel.poolModel {
+        if let accountModel = viewModel.poolAccount {
             poolStakingBannerView.setAction(viewModel: .init(
                 imageViewModel: accountModel.icon,
                 title: accountModel.title,
@@ -44,7 +44,7 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
             attributes: attributesForDescription
         )
 
-        if let accountModel = viewModel.nominatorModel {
+        if let accountModel = viewModel.validator {
             directStakingBannerView.setAction(viewModel: .init(
                 count: accountModel.count,
                 title: accountModel.title,

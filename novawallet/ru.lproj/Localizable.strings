@@ -1328,13 +1328,13 @@
 "staking.type.minimum.stake" = "Минимальный стейк: %@";
 "staking.type.auto.rewards" = "Вознаграждения: Выплачиваются автоматически";
 "staking.type.manual.rewards" = "Вознаграждения: Нужно клеймить вручную";
-"staking.type.gov.reuse.tokens" = "Переиспользование токено в Голосовании";
+"staking.type.gov.reuse.tokens" = "Переиспользование токенов в Голосовании";
 "staking.type.staking.managment" = "Расширенное управление стейкингом";
 "staking.type.validators.title" = "Валидаторы";
 "staking.type.recommended.validators.subtitle" = "Рекомендованные";
 "staking.type.recommended.pool" = "Рекомендованный";
-"staking.type.direct.staking.alert.title" = "Ваш стейк меньше чем минимальный для начисления наград.";
-"staking.type.direct.staking.alert.message" = "Ваш стейк меньше минимальной ставки в %@, необходимой для получения вознаграждения с помощью Прямого стейкинга. Вам следует рассмотреть стейкинг в Пуле для получения вознаграждения.";
+"staking.type.direct.staking.alert.title" = "Ваш стейк меньше, чем минимальный для начисления наград.";
+"staking.type.direct.staking.alert.message" = "Ваш стейк меньше минимального в %@, необходимого для получения вознаграждения с помощью Прямого стейкинга. Вам следует рассмотреть стейкинг в Пуле для получения вознаграждения.";
 "common.recommended" = "Рекомендованный";
 "staking.direct.staking" = "Прямой стейкинг";
 "staking.pool.staking" = "Пул стейкинг";

@@ -37,7 +37,8 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = R.string.localizable.stakingTypeTitle(preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonDone(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonDone(
+            preferredLanguages: selectedLocale.rLanguages)
     }
 
     private func setupNavigationItem() {
@@ -62,9 +63,8 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
         ))
     }
 
-    @objc private func nominatorsAction() {
-        didReceive(stakingTypeSelection: .direct)
-        presenter.selectNominators()
+    @objc private func validatorsAction() {
+        presenter.selectValidators()
     }
 
     @objc private func nominationPoolAction() {
@@ -81,6 +81,16 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 
     @objc private func doneAction() {
         presenter.save()
+    }
+
+    private func updateBannerSelection<T1, T2>(
+        activeBanner: StakingTypeBannerView<T1>,
+        inactiveBanner: StakingTypeBannerView<T2>
+    ) {
+        activeBanner.backgroundView.isHighlighted = true
+        activeBanner.radioSelectorView.selected = true
+        inactiveBanner.backgroundView.isHighlighted = false
+        inactiveBanner.radioSelectorView.selected = false
     }
 }
 
@@ -100,28 +110,24 @@ extension StakingTypeViewController: StakingTypeViewProtocol {
         rootView.directStakingBannerView.accountView.removeTarget(nil, action: nil, for: .allEvents)
         rootView.directStakingBannerView.accountView.addTarget(
             self,
-            action: #selector(nominatorsAction),
+            action: #selector(validatorsAction),
             for: .touchUpInside
         )
-        if !available {
-            rootView.directStakingBannerView.alpha = 0.5
-        } else {
-            rootView.directStakingBannerView.alpha = 1
-        }
+        rootView.directStakingBannerView.alpha = available ? 1 : 0.5
     }
 
     func didReceive(stakingTypeSelection: StakingTypeSelection) {
         switch stakingTypeSelection {
         case .direct:
-            rootView.poolStakingBannerView.backgroundView.isHighlighted = false
-            rootView.poolStakingBannerView.radioSelectorView.selected = false
-            rootView.directStakingBannerView.backgroundView.isHighlighted = true
-            rootView.directStakingBannerView.radioSelectorView.selected = true
+            updateBannerSelection(
+                activeBanner: rootView.directStakingBannerView,
+                inactiveBanner: rootView.poolStakingBannerView
+            )
         case .nominationPool:
-            rootView.directStakingBannerView.backgroundView.isHighlighted = false
-            rootView.directStakingBannerView.radioSelectorView.selected = false
-            rootView.poolStakingBannerView.backgroundView.isHighlighted = true
-            rootView.poolStakingBannerView.radioSelectorView.selected = true
+            updateBannerSelection(
+                activeBanner: rootView.poolStakingBannerView,
+                inactiveBanner: rootView.directStakingBannerView
+            )
         }
     }
 

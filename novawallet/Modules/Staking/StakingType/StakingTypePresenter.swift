@@ -4,11 +4,12 @@ import BigInt
 
 final class StakingTypePresenter {
     weak var view: StakingTypeViewProtocol?
+    weak var delegate: StakingTypeDelegate?
+
     let wireframe: StakingTypeWireframeProtocol
     let interactor: StakingTypeInteractorInputProtocol
     let viewModelFactory: StakingTypeViewModelFactoryProtocol
     let chainAsset: ChainAsset
-    weak var delegate: StakingTypeDelegate?
 
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
@@ -43,7 +44,7 @@ final class StakingTypePresenter {
     }
 
     private func provideDirectStakingViewModel() {
-        guard let restrictions = directStakingRestrictions, let assetBalance = assetBalance else {
+        guard let restrictions = directStakingRestrictions else {
             return
         }
         let viewModel = viewModelFactory.directStakingViewModel(
@@ -85,6 +86,19 @@ final class StakingTypePresenter {
         case .none: break
         }
     }
+
+    private func showDirectStakingNotAvailableAlert(minStake: String) {
+        let languages = selectedLocale.rLanguages
+        wireframe.present(
+            message: R.string.localizable.stakingTypeDirectStakingAlertMessage(
+                minStake,
+                preferredLanguages: languages
+            ),
+            title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
+            closeAction: R.string.localizable.commonBack(preferredLanguages: languages),
+            from: view
+        )
+    }
 }
 
 extension StakingTypePresenter: StakingTypePresenterProtocol {
@@ -93,7 +107,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         updateView()
     }
 
-    func selectNominators() {
+    func selectValidators() {
         // TODO:
     }
 
@@ -112,31 +126,23 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
                 method = nil
                 provideNominationPoolViewModel()
                 selection = .direct
-                interactor.change(stakingTypeSelection: .direct)
             } else {
-                let languages = selectedLocale.rLanguages
                 let minStake = viewModelFactory.minStake(
                     minStake: restrictions.minRewardableStake,
                     chainAsset: chainAsset,
                     locale: selectedLocale
                 )
-                wireframe.present(
-                    message: R.string.localizable.stakingTypeDirectStakingAlertMessage(
-                        minStake,
-                        preferredLanguages: languages
-                    ),
-                    title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
-                    closeAction: R.string.localizable.commonBack(preferredLanguages: languages),
-                    from: view
-                )
+                showDirectStakingNotAvailableAlert(minStake: minStake)
+                return
             }
         case .nominationPool:
             view?.didReceive(stakingTypeSelection: .nominationPool)
             method = nil
             provideDirectStakingViewModel()
             selection = .nominationPool
-            interactor.change(stakingTypeSelection: .nominationPool)
         }
+
+        selection.map(interactor.change)
     }
 
     func save() {
@@ -162,9 +168,7 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
 
     func didReceive(method: StakingSelectionMethod) {
         self.method = method
-        provideNominationPoolViewModel()
-        provideDirectStakingViewModel()
-        provideStakingSelection()
+        updateView()
         view?.didReceiveSaveChangesState(available: true)
     }
 
@@ -176,11 +180,11 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
 
     func didReceive(error: StakingTypeError) {
         switch error {
-        case let .restrictions:
+        case .restrictions, .balance:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
             }
-        case let .recommendation:
+        case .recommendation:
             guard let selection = selection else {
                 return
             }

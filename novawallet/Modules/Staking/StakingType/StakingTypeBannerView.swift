@@ -66,6 +66,5 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
 
     func setAction(viewModel: ActionView.TModel?) {
         accountView.bindOrHide(viewModel: viewModel)
-        invalidateIntrinsicContentSize()
     }
 }

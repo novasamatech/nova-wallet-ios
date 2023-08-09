@@ -260,7 +260,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     }
 
     func selectStakingType() {
-        wireframe.showStakingTypeSelection(from: view, method: setupMethod, delegate: self)
+        wireframe.showStakingTypeSelection(from: view, method: setupMethod, amount: inputAmountInPlank(), delegate: self)
     }
 
     // swiftlint:disable:next function_body_length

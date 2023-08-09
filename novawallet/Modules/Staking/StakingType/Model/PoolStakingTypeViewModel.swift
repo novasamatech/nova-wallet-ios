@@ -1,9 +1,9 @@
 struct PoolStakingTypeViewModel {
     let title: String
     let subtile: String
-    let poolModel: PoolModel?
+    let poolAccount: PoolAccountModel?
 
-    struct PoolModel {
+    struct PoolAccountModel {
         let icon: ImageViewModelProtocol?
         let title: String
         let subtitle: String?

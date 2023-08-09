@@ -7,7 +7,7 @@ protocol StakingTypeViewProtocol: ControllerBackedProtocol {
 
 protocol StakingTypePresenterProtocol: AnyObject {
     func setup()
-    func selectNominators()
+    func selectValidators()
     func selectNominationPool()
     func change(stakingTypeSelection: StakingTypeSelection)
     func save()
@@ -33,4 +33,5 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
 enum StakingTypeError: Error {
     case restrictions(Error)
     case recommendation(Error)
+    case balance(Error)
 }
