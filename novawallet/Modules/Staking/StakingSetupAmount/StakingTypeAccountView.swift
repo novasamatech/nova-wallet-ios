@@ -11,15 +11,35 @@ final class StakingTypeAccountView: RowView<
 
     private var imageViewModel: ImageViewModelProtocol?
 
+    var skeletonView: SkrullableView?
+
+    private var isLoading: Bool = false
+
+    var canProceed: Bool = true {
+        didSet {
+            updateActivityState()
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         configure()
+        updateActivityState()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
     }
 
     private func configure() {
@@ -35,7 +55,16 @@ final class StakingTypeAccountView: RowView<
             textColor: R.color.colorTextPositive(),
             font: .caption1
         ))
-        disclosureImageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
+    }
+
+    private func updateActivityState() {
+        if canProceed {
+            disclosureImageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
+        } else {
+            disclosureImageView.image = nil
+        }
+
+        isUserInteractionEnabled = canProceed
     }
 
     func bind(viewModel: StakingTypeAccountViewModel) {
@@ -63,20 +92,48 @@ final class StakingTypeAccountView: RowView<
 
         iconImageView.isHidden = viewModel.imageViewModel == nil
     }
+}
 
-    func bind(stakingTypeViewModel: LoadableViewModelState<StakingTypeViewModel>) {
-        switch stakingTypeViewModel {
-        case let .cached(value), let .loaded(value):
-            let viewModel = StakingTypeAccountViewModel(
-                imageViewModel: value.icon,
-                title: value.title,
-                subtitle: value.subtitle,
-                isRecommended: value.isRecommended
-            )
-            bind(viewModel: viewModel)
-        case .loading:
-            // TODO:
-            break
-        }
+extension StakingTypeAccountView: SkeletonableView {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let titleSize = CGSize(width: 80, height: 10)
+        let titleOffset = CGPoint(x: contentInsets.left, y: contentInsets.top + 4)
+
+        let titleRow = SingleSkeleton.createRow(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: titleOffset,
+            size: titleSize
+        )
+
+        let detailsSize = CGSize(width: 101, height: 8)
+        let detailsOffset = CGPoint(x: contentInsets.left, y: titleOffset.y + titleSize.height + 8)
+
+        let detailsRow = SingleSkeleton.createRow(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: detailsOffset,
+            size: detailsSize
+        )
+
+        return [titleRow, detailsRow]
+    }
+
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [rowContentView]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }

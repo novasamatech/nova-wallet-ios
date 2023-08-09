@@ -2,7 +2,6 @@ import Foundation
 import BigInt
 
 protocol StakingSetupAmountViewProtocol: ControllerBackedProtocol {
-    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?)
     func didReceive(balance: TitleHorizontalMultiValueView.Model)
     func didReceive(title: String)
     func didReceiveButtonState(title: String, enabled: Bool)

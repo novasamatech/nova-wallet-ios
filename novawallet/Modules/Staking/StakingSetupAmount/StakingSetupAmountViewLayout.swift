@@ -8,7 +8,7 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
     }
 
     let amountInputView = NewAmountInputView()
-    let estimatedRewardsView: TitleHorizontalMultiValueView = .create { view in
+    let estimatedRewardsView: LoadableTitleHorizontalMultiValueView = .create { view in
         view.titleView.apply(style: .footnoteSecondary)
         view.detailsTitleLabel.apply(style: .semiboldFootnotePositive)
         view.detailsValueLabel.apply(style: .caption1Secondary)
@@ -66,21 +66,35 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
         estimatedRewardsView.isHidden = true
     }
 
-    func setEstimatedRewards(viewModel: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?) {
-        if let viewModel = viewModel {
-            estimatedRewardsView.isHidden = false
-            estimatedRewardsView.bind(viewModel: viewModel)
-        } else {
-            estimatedRewardsView.isHidden = true
-        }
-    }
-
     func setStakingType(viewModel: LoadableViewModelState<StakingTypeViewModel>?) {
         if let viewModel = viewModel {
             stakingTypeView.isHidden = false
-            stakingTypeView.bind(stakingTypeViewModel: viewModel)
+            estimatedRewardsView.isHidden = false
+
+            stakingTypeView.stopLoadingIfNeeded()
+            estimatedRewardsView.stopLoadingIfNeeded()
+
+            switch viewModel {
+            case let .cached(value), let .loaded(value):
+                let typeViewModel = StakingTypeAccountViewModel(
+                    imageViewModel: value.icon,
+                    title: value.title,
+                    subtitle: value.subtitle,
+                    isRecommended: value.isRecommended
+                )
+
+                stakingTypeView.bind(viewModel: typeViewModel)
+                stakingTypeView.canProceed = value.shouldEnableSelection
+
+                estimatedRewardsView.detailsTitleLabel.text = value.maxApy
+            case .loading:
+                stakingTypeView.startLoadingIfNeeded()
+                estimatedRewardsView.startLoadingIfNeeded()
+            }
+
         } else {
             stakingTypeView.isHidden = true
+            estimatedRewardsView.isHidden = true
         }
     }
 }

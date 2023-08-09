@@ -3,15 +3,11 @@ import SoraFoundation
 import BigInt
 
 protocol StakingAmountViewModelFactoryProtocol {
-    func earnupModel(
-        earnings: Decimal?,
-        locale: Locale
-    ) -> TitleHorizontalMultiValueView.Model
-
     func balance(amount: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> TitleHorizontalMultiValueView.Model
 
     func recommendedStakingTypeViewModel(
         for stakingType: SelectedStakingOption,
+        chainAsset: ChainAsset,
         locale: Locale
     ) -> StakingTypeViewModel
 }
@@ -26,18 +22,6 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.estimatedEarningsFormatter = estimatedEarningsFormatter
-    }
-
-    func earnupModel(
-        earnings: Decimal?,
-        locale: Locale
-    ) -> TitleHorizontalMultiValueView.Model {
-        let amount = earnings.map { estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0) } ?? ""
-        return .init(
-            title: R.string.localizable.stakingEstimatedEarnings(preferredLanguages: locale.rLanguages),
-            subtitle: amount ?? "",
-            value: R.string.localizable.commonPerYear(preferredLanguages: locale.rLanguages)
-        )
     }
 
     func balance(
@@ -62,22 +46,31 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
 
     func recommendedStakingTypeViewModel(
         for stakingType: SelectedStakingOption,
+        chainAsset: ChainAsset,
         locale: Locale
     ) -> StakingTypeViewModel {
+        let amount = stakingType.maxApy.flatMap {
+            estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0)
+        }
+
         switch stakingType {
         case .direct:
             return StakingTypeViewModel(
                 icon: nil,
                 title: R.string.localizable.stakingDirectStaking(preferredLanguages: locale.rLanguages),
                 subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages),
-                isRecommended: true
+                isRecommended: true,
+                maxApy: amount ?? "",
+                shouldEnableSelection: chainAsset.asset.hasMultipleStakingOptions
             )
         case .pool:
             return StakingTypeViewModel(
                 icon: nil,
                 title: R.string.localizable.stakingPoolStaking(preferredLanguages: locale.rLanguages),
                 subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages),
-                isRecommended: true
+                isRecommended: true,
+                maxApy: amount ?? "",
+                shouldEnableSelection: chainAsset.asset.hasMultipleStakingOptions
             )
         }
     }

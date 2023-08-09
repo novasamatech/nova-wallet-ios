@@ -189,12 +189,10 @@ final class StakingSetupAmountPresenter {
         case let .recommendation(stakingRecommendation):
             if inputResult == nil, recommendsMultipleStakings {
                 view?.didReceive(stakingType: nil)
-                view?.didReceive(estimatedRewards: nil)
             } else if let stakingType = stakingRecommendation?.staking {
                 provideStakingTypeViewModel(for: stakingType)
             } else {
                 view?.didReceive(stakingType: .loading)
-                view?.didReceive(estimatedRewards: .loading)
             }
         case let .manual(option, _):
             provideStakingTypeViewModel(for: option)
@@ -204,17 +202,11 @@ final class StakingSetupAmountPresenter {
     private func provideStakingTypeViewModel(for model: SelectedStakingOption) {
         let viewModel = viewModelFactory.recommendedStakingTypeViewModel(
             for: model,
+            chainAsset: chainAsset,
             locale: selectedLocale
         )
 
         view?.didReceive(stakingType: .loaded(value: viewModel))
-
-        let earnupViewModel = viewModelFactory.earnupModel(
-            earnings: model.maxApy,
-            locale: selectedLocale
-        )
-
-        view?.didReceive(estimatedRewards: .loaded(value: earnupViewModel))
     }
 
     private func updateRecommendationIfNeeded() {
@@ -243,6 +235,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         provideAmountPriceViewModel()
         provideAmountInputViewModel()
         provideButtonState()
+        provideStakingTypeViewModel()
         refreshFee()
 
         if !recommendsMultipleStakings {

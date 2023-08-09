@@ -33,8 +33,8 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder, Impo
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLocalization()
         setupHandlers()
-        setupAmountInputAccessoryView(for: selectedLocale)
 
         presenter.setup()
     }
@@ -49,6 +49,18 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder, Impo
         super.viewDidAppear(animated)
 
         keyboardAppearanceStrategy.onViewDidAppear(for: rootView.amountInputView.textField)
+    }
+
+    private func setupLocalization() {
+        setupAmountInputAccessoryView(for: selectedLocale)
+
+        rootView.estimatedRewardsView.titleView.text = R.string.localizable.stakingEstimatedEarnings(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.estimatedRewardsView.detailsValueLabel.text = R.string.localizable.commonPerYear(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     private func setupHandlers() {
@@ -95,12 +107,8 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder, Impo
 }
 
 extension StakingSetupAmountViewController: StakingSetupAmountViewProtocol {
-    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?) {
-        rootView.setEstimatedRewards(viewModel: estimatedRewards)
-    }
-
     func didReceive(balance: TitleHorizontalMultiValueView.Model) {
-        rootView.amountView.bind(balance: balance)
+        rootView.amountView.bind(model: balance)
     }
 
     func didReceive(title: String) {
@@ -142,9 +150,8 @@ extension StakingSetupAmountViewController: AmountInputAccessoryViewDelegate {
 
 extension StakingSetupAmountViewController: Localizable {
     func applyLocalization() {
-        guard isViewLoaded else {
-            return
+        if isViewLoaded {
+            setupLocalization()
         }
-        setupAmountInputAccessoryView(for: selectedLocale)
     }
 }
