@@ -81,12 +81,16 @@ extension GenericStakingTypeAccountView: SkeletonableView {
                 y: spaceSize.height / 2.0 - genericViewSkeletonSize.height / 2.0
             )
 
+            let cornerRadius = 6 / genericViewSkeletonSize.height
+            let cornerRadii = CGSize(width: cornerRadius, height: cornerRadius)
+
             let genericViewSkeleton = SingleSkeleton.createRow(
                 on: self,
                 containerView: self,
                 spaceSize: spaceSize,
                 offset: offset,
-                size: genericViewSkeletonSize
+                size: genericViewSkeletonSize,
+                cornerRadii: cornerRadii
             )
 
             skeletons.append(genericViewSkeleton)
