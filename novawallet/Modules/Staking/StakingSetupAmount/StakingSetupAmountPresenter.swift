@@ -230,7 +230,7 @@ final class StakingSetupAmountPresenter {
         let stakingType = StakingTypeViewModel(
             type: innerViewModel,
             maxApy: maxApy,
-            shouldEnableSelection: chainAsset.asset.hasMultipleStakingOptions
+            shouldEnableSelection: true
         )
 
         view?.didReceive(stakingType: .loaded(value: stakingType))
@@ -247,7 +247,7 @@ final class StakingSetupAmountPresenter {
         let stakingType = StakingTypeViewModel(
             type: .recommended(viewModel),
             maxApy: maxApy,
-            shouldEnableSelection: chainAsset.asset.hasMultipleStakingOptions
+            shouldEnableSelection: true
         )
 
         view?.didReceive(stakingType: .loaded(value: stakingType))
@@ -300,12 +300,16 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     }
 
     func selectStakingType() {
-        wireframe.showStakingTypeSelection(
-            from: view,
-            method: setupMethod,
-            amount: inputAmountInPlank(),
-            delegate: self
-        )
+        if chainAsset.asset.hasMultipleStakingOptions {
+            wireframe.showStakingTypeSelection(
+                from: view,
+                method: setupMethod,
+                amount: inputAmountInPlank(),
+                delegate: self
+            )
+        } else if case let .direct(validators) = setupMethod.selectedStakingOption {
+            wireframe.showSelectValidators(from: view, selectedValidators: validators)
+        }
     }
 
     // swiftlint:disable:next function_body_length

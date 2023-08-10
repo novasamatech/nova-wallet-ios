@@ -10,6 +10,7 @@ final class StakingTypePresenter {
     let interactor: StakingTypeInteractorInputProtocol
     let viewModelFactory: StakingTypeViewModelFactoryProtocol
     let chainAsset: ChainAsset
+    let canChangeType: Bool
     let amount: BigUInt
 
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
@@ -24,6 +25,7 @@ final class StakingTypePresenter {
         wireframe: StakingTypeWireframeProtocol,
         chainAsset: ChainAsset,
         amount: BigUInt,
+        canChangeType: Bool,
         initialMethod: StakingSelectionMethod,
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -35,6 +37,7 @@ final class StakingTypePresenter {
         self.viewModelFactory = viewModelFactory
         self.delegate = delegate
         self.amount = amount
+        self.canChangeType = canChangeType
         method = initialMethod
         self.localizationManager = localizationManager
     }
@@ -65,7 +68,9 @@ final class StakingTypePresenter {
             locale: selectedLocale
         )
 
-        view?.didReceiveDirectStakingBanner(viewModel: viewModel, available: directStakingAvailable)
+        let available = selection == .direct || canChangeType && directStakingAvailable
+
+        view?.didReceiveDirectStakingBanner(viewModel: viewModel, available: available)
     }
 
     private func provideNominationPoolViewModel() {
@@ -80,7 +85,9 @@ final class StakingTypePresenter {
             locale: selectedLocale
         )
 
-        view?.didReceivePoolBanner(viewModel: viewModel)
+        let available = selection == .nominationPool || canChangeType
+
+        view?.didReceivePoolBanner(viewModel: viewModel, available: available)
     }
 
     private func updateView() {
@@ -111,7 +118,7 @@ final class StakingTypePresenter {
         let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
             self?.wireframe.complete(from: self?.view)
         }
-        
+
         let viewModel = AlertPresentableViewModel(
             title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
             message: R.string.localizable.stakingTypeDirectStakingAlertMessage(
@@ -161,9 +168,10 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
-        guard let restrictions = directStakingRestrictions else {
+        guard canChangeType, let restrictions = directStakingRestrictions else {
             return
         }
+
         switch stakingTypeSelection {
         case .direct:
             if directStakingAvailable {

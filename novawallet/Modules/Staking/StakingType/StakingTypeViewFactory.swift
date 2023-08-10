@@ -37,6 +37,7 @@ enum StakingTypeViewFactory {
             wireframe: wireframe,
             chainAsset: state.chainAsset,
             amount: amount,
+            canChangeType: state.stakingType == nil,
             initialMethod: method,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,

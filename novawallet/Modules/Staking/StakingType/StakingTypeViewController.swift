@@ -112,7 +112,7 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 }
 
 extension StakingTypeViewController: StakingTypeViewProtocol {
-    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel) {
+    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool) {
         rootView.bind(poolStakingTypeViewModel: viewModel)
         rootView.poolStakingBannerView.accountView.removeTarget(nil, action: nil, for: .allEvents)
         rootView.poolStakingBannerView.accountView.addTarget(
@@ -120,6 +120,8 @@ extension StakingTypeViewController: StakingTypeViewProtocol {
             action: #selector(nominationPoolAction),
             for: .touchUpInside
         )
+
+        rootView.poolStakingBannerView.alpha = available ? 1 : 0.5
     }
 
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool) {

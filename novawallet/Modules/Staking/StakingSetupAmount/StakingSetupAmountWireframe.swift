@@ -48,4 +48,8 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
             animated: true
         )
     }
+
+    func showSelectValidators(from _: ControllerBackedProtocol?, selectedValidators _: PreparedValidators) {
+        // TODO: Add validators flow adopted
+    }
 }

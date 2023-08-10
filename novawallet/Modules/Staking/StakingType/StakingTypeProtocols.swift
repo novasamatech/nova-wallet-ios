@@ -1,5 +1,5 @@
 protocol StakingTypeViewProtocol: ControllerBackedProtocol {
-    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel)
+    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool)
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool)
     func didReceive(stakingTypeSelection: StakingTypeSelection)
     func didReceiveSaveChangesState(available: Bool)
