@@ -43,11 +43,19 @@ extension ParagraphView.Style {
         font: .semiBoldTitle3
     )
 
-    static func createStyle(for themeColor: UIColor) -> ParagraphView.Style {
+    static func createParagraphStyle(for themeColor: UIColor) -> ParagraphView.Style {
         ParagraphView.Style(
             textColor: R.color.colorTextPrimary()!,
             accentTextColor: themeColor,
             font: .semiBoldTitle3
+        )
+    }
+
+    static func createHeaderStyle(for themeColor: UIColor) -> ParagraphView.Style {
+        ParagraphView.Style(
+            textColor: R.color.colorTextPrimary()!,
+            accentTextColor: themeColor,
+            font: .boldTitle1
         )
     }
 }

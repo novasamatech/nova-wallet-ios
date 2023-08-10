@@ -28,8 +28,13 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        let style = ParagraphView.Style.createStyle(for: themeColor)
-        let layout = StartStakingInfoViewLayout(style: style)
+        let headerStyle = ParagraphView.Style.createHeaderStyle(for: themeColor)
+        let paragraphStyle = ParagraphView.Style.createParagraphStyle(for: themeColor)
+
+        let layout = StartStakingInfoViewLayout(
+            headerStyle: headerStyle,
+            paragraphStyle: paragraphStyle
+        )
 
         view = layout
     }
