@@ -40,19 +40,4 @@ final class StakingTypeAccountView: GenericStakingTypeAccountView<UIImageView>, 
 
         iconImageView.isHidden = viewModel.imageViewModel == nil
     }
-
-    func bind(stakingTypeViewModel: LoadableViewModelState<StakingTypeViewModel>) {
-        switch stakingTypeViewModel {
-        case let .cached(value), let .loaded(value):
-            bind(viewModel: .init(
-                imageViewModel: nil,
-                title: value.title,
-                subtitle: value.subtitle,
-                isRecommended: value.isRecommended
-            ))
-        case .loading:
-            // TODO:
-            break
-        }
-    }
 }

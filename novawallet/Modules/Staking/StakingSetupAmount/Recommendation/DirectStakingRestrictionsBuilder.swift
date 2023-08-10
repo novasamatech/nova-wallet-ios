@@ -90,7 +90,7 @@ final class DirectStakingRestrictionsBuilder: AnyCancellableCleaning {
             let maxNominatorsCount = maxNominatorCountStorage.valueWhenDefined(else: nil) {
             allowsNewStakers = counterForNominators < maxNominatorsCount
         } else {
-            allowsNewStakers = false
+            allowsNewStakers = true
         }
 
         let restrictions = RelaychainStakingRestrictions(

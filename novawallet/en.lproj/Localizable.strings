@@ -1343,3 +1343,4 @@
 "staking.type.title" = "Staking Type";
 "staking.type.alert.unsaved.changes.title" = "Unsaved changes";
 "staking.type.alert.unsaved.changes.message" = "Do you want to save the changes?";
+"staking.validators" = "Validators";

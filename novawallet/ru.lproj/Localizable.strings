@@ -1343,3 +1343,4 @@
 "staking.type.title" = "Тип стейкинга";
 "staking.type.alert.unsaved.changes.title" = "Несохраненные изменения";
 "staking.type.alert.unsaved.changes.message" = "Хотите сохранить изменения?";
+"staking.validators" = "Валидаторы";

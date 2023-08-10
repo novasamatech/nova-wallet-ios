@@ -1,6 +1,7 @@
 import UIKit
+import SoraUI
 
-final class TitleHorizontalMultiValueView: GenericTitleValueView<UILabel, UIStackView> {
+class TitleHorizontalMultiValueView: GenericTitleValueView<UILabel, UIStackView> {
     let detailsTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextSecondary()
@@ -34,5 +35,53 @@ final class TitleHorizontalMultiValueView: GenericTitleValueView<UILabel, UIStac
         valueView.addArrangedSubview(detailsValueLabel)
 
         detailsTitleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+    }
+}
+
+final class LoadableTitleHorizontalMultiValueView: TitleHorizontalMultiValueView {
+    var skeletonView: SkrullableView?
+
+    private var isLoading: Bool = false
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
+    }
+}
+
+extension LoadableTitleHorizontalMultiValueView: SkeletonableView {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let size = CGSize(width: 57, height: 10)
+        let offset = CGPoint(x: spaceSize.width - size.width, y: spaceSize.height / 2.0 - size.height / 2.0)
+
+        let row = SingleSkeleton.createRow(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: offset,
+            size: size
+        )
+
+        return [row]
+    }
+
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [valueView]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }

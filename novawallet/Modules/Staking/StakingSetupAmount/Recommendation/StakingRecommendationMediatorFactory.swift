@@ -14,9 +14,7 @@ protocol StakingRecommendationMediatorFactoryProtocol {
     func createHybridStakingMediator(
         for state: RelaychainStartStakingStateProtocol
     ) -> RelaychainStakingRecommendationMediating?
-}
 
-protocol StakingRestrictionsBuilderFactoryProtocol {
     func createDirectStakingRestrictionsBuilder(
         for state: RelaychainStartStakingStateProtocol
     ) -> RelaychainStakingRestrictionsBuilding?
@@ -97,13 +95,10 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
     func createPoolStakingMediator(
         for state: RelaychainStartStakingStateProtocol
     ) -> RelaychainStakingRecommendationMediating? {
-        guard let restrictionsBuilder = createPoolStakingRestrictionsBuilder(for: state) else {
-            return nil
-        }
-
         let chainId = state.chainAsset.chain.chainId
 
         guard
+            let restrictionsBuilder = createPoolStakingRestrictionsBuilder(for: state),
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
             return nil
@@ -127,6 +122,8 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
         )
 
         return PoolStakingRecommendationMediator(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             restrictionsBuilder: restrictionsBuilder,
             operationFactory: operationFactory,
             operationQueue: operationQueue
@@ -150,17 +147,6 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
             directStakingRestrictionsBuilder: directStakingRestrictionsBuilder
         )
     }
-}
-
-extension StakingRecommendationMediatorFactory: StakingRestrictionsBuilderFactoryProtocol {
-    func createPoolStakingRestrictionsBuilder(
-        for state: RelaychainStartStakingStateProtocol
-    ) -> RelaychainStakingRestrictionsBuilding? {
-        PoolStakingRestrictionsBuilder(
-            chainAsset: state.chainAsset,
-            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory
-        )
-    }
 
     func createDirectStakingRestrictionsBuilder(
         for state: RelaychainStartStakingStateProtocol
@@ -180,6 +166,15 @@ extension StakingRecommendationMediatorFactory: StakingRestrictionsBuilderFactor
             eraValidatorService: state.eraValidatorService,
             runtimeService: runtimeService,
             operationQueue: operationQueue
+        )
+    }
+
+    func createPoolStakingRestrictionsBuilder(
+        for state: RelaychainStartStakingStateProtocol
+    ) -> RelaychainStakingRestrictionsBuilding? {
+        PoolStakingRestrictionsBuilder(
+            chainAsset: state.chainAsset,
+            npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory
         )
     }
 }

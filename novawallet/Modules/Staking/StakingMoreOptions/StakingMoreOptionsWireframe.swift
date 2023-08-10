@@ -14,14 +14,15 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
         from view: StakingMoreOptionsViewProtocol?,
         option: Multistaking.ChainAssetOption
     ) {
-        // TODO: Open start concrete staking
-        guard let startStakingView = StartStakingInfoViewFactory.createView(chainAsset: option.chainAsset) else {
+        guard let startStakingView = StartStakingInfoViewFactory.createView(
+            chainAsset: option.chainAsset,
+            selectedStakingType: option.type
+        ) else {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            startStakingView.controller,
-            animated: true
-        )
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

@@ -54,6 +54,13 @@ extension ValidatorInfoViewFactory {
     ) -> ValidatorInfoViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
+        return createView(with: validatorInfo, chainAsset: chainAsset)
+    }
+
+    static func createView(
+        with validatorInfo: ValidatorInfoProtocol,
+        chainAsset: ChainAsset
+    ) -> ValidatorInfoViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let interactor = AnyValidatorInfoInteractor(

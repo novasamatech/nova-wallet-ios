@@ -20,7 +20,10 @@ final class NominationPoolsRemoteSubscriptionService: RemoteSubscriptionService 
     private static var globalDataStoragePaths: [StorageCodingPath] {
         [
             NominationPools.lastPoolIdPath,
-            NominationPools.minJoinBondPath
+            NominationPools.minJoinBondPath,
+            NominationPools.maxPoolMembers,
+            NominationPools.counterForPoolMembers,
+            NominationPools.maxMembersPerPool
         ]
     }
 }
