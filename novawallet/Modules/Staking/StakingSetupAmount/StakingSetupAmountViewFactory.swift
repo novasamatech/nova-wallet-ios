@@ -36,6 +36,7 @@ struct StakingSetupAmountViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            stakingTypeViewModelFactory: SelectedStakingViewModelFactory(),
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             balanceDerivationFactory: balanceDerivationFactory,

@@ -10,7 +10,6 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
         $0.imageView.image = R.image.imageStakingTypeDirect()!
         $0.imageSize = .init(width: 161, height: 156)
         $0.imageOffsets = (top: -36, right: 43)
-        $0.accountView.genericViewSkeletonSize = CGSize(width: 24, height: 24)
     }
 
     override func setupLayout() {

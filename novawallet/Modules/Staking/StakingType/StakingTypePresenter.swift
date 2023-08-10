@@ -107,15 +107,22 @@ final class StakingTypePresenter {
 
     private func showDirectStakingNotAvailableAlert(minStake: String) {
         let languages = selectedLocale.rLanguages
-        wireframe.present(
+        let cancelActionTitle = R.string.localizable.commonBack(preferredLanguages: languages)
+        let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
+            self?.wireframe.complete(from: self?.view)
+        }
+        
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
             message: R.string.localizable.stakingTypeDirectStakingAlertMessage(
                 minStake,
                 preferredLanguages: languages
             ),
-            title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
-            closeAction: R.string.localizable.commonBack(preferredLanguages: languages),
-            from: view
+            actions: [cancelAction],
+            closeAction: nil
         )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 
     private func showSaveChangesAlert() {

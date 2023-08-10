@@ -5,8 +5,11 @@ final class StakingTypeValidatorView: GenericStakingTypeAccountView<BorderedLabe
 
     override func configure() {
         super.configure()
+
         counterLabel.contentInsets = .init(top: 6, left: 6, bottom: 5, right: 6)
         counterLabel.apply(style: .counter)
+
+        genericViewSkeletonSize = CGSize(width: 24, height: 24)
     }
 
     func bind(viewModel: DirectStakingTypeAccountViewModel) {

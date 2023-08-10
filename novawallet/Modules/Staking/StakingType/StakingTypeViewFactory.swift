@@ -29,7 +29,7 @@ enum StakingTypeViewFactory {
 
         let viewModelFactory = StakingTypeViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            countFormatter: NumberFormatter.quantity.localizableResource()
+            stakingViewModelFactory: SelectedStakingViewModelFactory()
         )
 
         let presenter = StakingTypePresenter(

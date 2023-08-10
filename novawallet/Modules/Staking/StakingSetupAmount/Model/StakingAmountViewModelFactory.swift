@@ -5,11 +5,7 @@ import BigInt
 protocol StakingAmountViewModelFactoryProtocol {
     func balance(amount: BigUInt?, chainAsset: ChainAsset, locale: Locale) -> TitleHorizontalMultiValueView.Model
 
-    func recommendedStakingTypeViewModel(
-        for stakingType: SelectedStakingOption,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> StakingTypeViewModel
+    func maxApy(for stakingType: SelectedStakingOption, locale: Locale) -> String
 }
 
 struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
@@ -44,34 +40,11 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
         )
     }
 
-    func recommendedStakingTypeViewModel(
-        for stakingType: SelectedStakingOption,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> StakingTypeViewModel {
+    func maxApy(for stakingType: SelectedStakingOption, locale: Locale) -> String {
         let amount = stakingType.maxApy.flatMap {
             estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0)
         }
 
-        switch stakingType {
-        case .direct:
-            return StakingTypeViewModel(
-                icon: nil,
-                title: R.string.localizable.stakingDirectStaking(preferredLanguages: locale.rLanguages),
-                subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages),
-                isRecommended: true,
-                maxApy: amount ?? "",
-                shouldEnableSelection: chainAsset.asset.hasMultipleStakingOptions
-            )
-        case .pool:
-            return StakingTypeViewModel(
-                icon: nil,
-                title: R.string.localizable.stakingPoolStaking(preferredLanguages: locale.rLanguages),
-                subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages),
-                isRecommended: true,
-                maxApy: amount ?? "",
-                shouldEnableSelection: chainAsset.asset.hasMultipleStakingOptions
-            )
-        }
+        return amount ?? ""
     }
 }

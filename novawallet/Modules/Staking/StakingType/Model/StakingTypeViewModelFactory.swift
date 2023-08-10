@@ -26,53 +26,14 @@ protocol StakingTypeViewModelFactoryProtocol {
 
 final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let countFormatter: LocalizableResource<NumberFormatter>
-    private lazy var iconGenerator = PolkadotIconGenerator()
+    let stakingViewModelFactory: SelectedStakingViewModelFactoryProtocol
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        countFormatter: LocalizableResource<NumberFormatter>
+        stakingViewModelFactory: SelectedStakingViewModelFactoryProtocol
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.countFormatter = countFormatter
-    }
-
-    private func validatorAccountViewModel(method: StakingSelectionMethod?) -> ValidatorAccountViewModel? {
-        guard let method = method, case let .direct(validators) = method.selectedStakingOption else {
-            return nil
-        }
-
-        return method.shouldUseRecommendationStyle ? .recommended(maxCount: validators.maxTargets) :
-            .selected(count: validators.targets.count, maxCount: validators.maxTargets)
-    }
-
-    private func poolAccountViewModel(method: StakingSelectionMethod?) -> PoolAccountViewModel? {
-        guard let method = method, case let .pool(pool) = method.selectedStakingOption else {
-            return nil
-        }
-        let image: ImageViewModelProtocol?
-        if pool.poolId.isNovaPool {
-            image = StaticImageViewModel(image: R.image.iconNova()!)
-        } else {
-            if let icon = try? iconGenerator.generateFromAccountId(pool.bondedAccountId) {
-                image = DrawableIconViewModel(icon: icon)
-            } else {
-                image = nil
-            }
-        }
-
-        let name: String
-        if let metadata = pool.metadata, let poolName = String(data: metadata, encoding: .utf8) {
-            name = poolName
-        } else {
-            name = "#\(pool.poolId)"
-        }
-
-        return PoolAccountViewModel(
-            name: name,
-            icon: image,
-            recommended: method.shouldUseRecommendationStyle
-        )
+        self.stakingViewModelFactory = stakingViewModelFactory
     }
 
     func directStakingViewModel(
@@ -100,37 +61,19 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             managmentString
         ].joined(separator: .returnKey)
 
-        switch validatorAccountViewModel(method: method) {
-        case let .recommended(maxCount):
-            return .init(
-                title: title,
-                subtile: subtitle,
-                validator: .init(
-                    title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
-                    subtitle: strings.stakingTypeRecommendedValidatorsSubtitle(preferredLanguages: locale.rLanguages),
-                    isRecommended: true,
-                    count: countFormatter.value(for: locale).string(from: NSNumber(value: maxCount)) ?? ""
-                )
-            )
-        case let .selected(count, maxCount):
-            let validatorsString = strings.stakingCustomHeaderValidatorsTitle(
-                count,
-                maxCount,
-                preferredLanguages: locale.rLanguages
-            )
-            return .init(
-                title: title,
-                subtile: subtitle,
-                validator: .init(
-                    title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
-                    subtitle: validatorsString,
-                    isRecommended: false,
-                    count: countFormatter.value(for: locale).string(from: NSNumber(value: count)) ?? ""
-                )
-            )
-        case .none:
+        guard
+            let method = method,
+            case let .direct(validators) = method.selectedStakingOption else {
             return .init(title: title, subtile: subtitle, validator: nil)
         }
+
+        let validatorViewModel = stakingViewModelFactory.createValidator(
+            for: validators,
+            displaysRecommended: method.shouldUseRecommendationStyle,
+            locale: locale
+        )
+
+        return .init(title: title, subtile: subtitle, validator: validatorViewModel)
     }
 
     func nominationPoolViewModel(
@@ -153,22 +96,20 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             rewardsString
         ].joined(separator: .returnKey)
 
-        guard let poolAccount = poolAccountViewModel(method: method) else {
+        guard
+            let method = method,
+            case let .pool(selectedPool) = method.selectedStakingOption else {
             return .init(title: title, subtile: subtitle, poolAccount: nil)
         }
 
-        let poolSubtitle = poolAccount.recommended ? strings.stakingTypeRecommendedPool(
-            preferredLanguages: locale.rLanguages) : nil
-
-        return .init(
-            title: title,
-            subtile: subtitle,
-            poolAccount: .init(
-                icon: poolAccount.icon,
-                title: poolAccount.name,
-                subtitle: poolSubtitle
-            )
+        let poolViewModel = stakingViewModelFactory.createPool(
+            for: selectedPool,
+            chainAsset: chainAsset,
+            displaysRecommended: method.shouldUseRecommendationStyle,
+            locale: locale
         )
+
+        return .init(title: title, subtile: subtitle, poolAccount: poolViewModel)
     }
 
     func minStake(
