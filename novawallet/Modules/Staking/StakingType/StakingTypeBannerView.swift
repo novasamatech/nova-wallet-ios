@@ -64,7 +64,7 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         clipsToBounds = true
     }
 
-    func setAction(viewModel: ActionView.TModel?) {
-        accountView.bindOrHide(viewModel: viewModel)
+    func setAction(viewModel: ActionView.TModel) {
+        accountView.bind(viewModel: viewModel)
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 
 enum StakingSelectionMethod {
     case recommendation(RelaychainStakingRecommendation?)
-    case manual(SelectedStakingOption, RelaychainStakingRestrictions)
+    case manual(RelaychainStakingManual)
 
     var isRecommendation: Bool {
         switch self {
@@ -17,8 +17,8 @@ enum StakingSelectionMethod {
         switch self {
         case let .recommendation(recommendation):
             return recommendation?.staking
-        case let .manual(staking, _):
-            return staking
+        case let .manual(manual):
+            return manual.staking
         }
     }
 
@@ -26,8 +26,8 @@ enum StakingSelectionMethod {
         switch self {
         case let .recommendation(recommendation):
             return recommendation?.restrictions
-        case let .manual(_, restrictions):
-            return restrictions
+        case let .manual(manual):
+            return manual.restrictions
         }
     }
 
@@ -35,7 +35,7 @@ enum StakingSelectionMethod {
         switch self {
         case let .recommendation(recommendation):
             return recommendation
-        case let .manual:
+        case .manual:
             return nil
         }
     }

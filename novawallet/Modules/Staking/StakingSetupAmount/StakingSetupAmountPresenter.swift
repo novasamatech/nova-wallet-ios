@@ -16,7 +16,6 @@ final class StakingSetupAmountPresenter {
     let logger: LoggerProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
-    private var stakingTypeWasChanged: Bool = false
 
     private var assetBalance: AssetBalance?
     private var buttonState: ButtonState = .startState
@@ -195,8 +194,9 @@ final class StakingSetupAmountPresenter {
             } else {
                 view?.didReceive(stakingType: .loading)
             }
-        case let .manual(option, _):
-            provideStakingTypeViewModel(for: option)
+        case let .manual(stakingManual):
+            // TODO: Implement manual factory method
+            provideStakingTypeViewModel(for: stakingManual.staking)
         }
     }
 
@@ -213,7 +213,7 @@ final class StakingSetupAmountPresenter {
     private func updateRecommendationIfNeeded() {
         let amount = inputAmountInPlank()
 
-        guard amount != pendingRecommendationAmount, setupMethod.isRecommendation, !stakingTypeWasChanged else {
+        guard amount != pendingRecommendationAmount, setupMethod.isRecommendation else {
             return
         }
 
@@ -257,7 +257,12 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     }
 
     func selectStakingType() {
-        wireframe.showStakingTypeSelection(from: view, method: setupMethod, amount: inputAmountInPlank(), delegate: self)
+        wireframe.showStakingTypeSelection(
+            from: view,
+            method: setupMethod,
+            amount: inputAmountInPlank(),
+            delegate: self
+        )
     }
 
     // swiftlint:disable:next function_body_length
@@ -433,10 +438,13 @@ extension StakingSetupAmountPresenter: Localizable {
 
 extension StakingSetupAmountPresenter: StakingTypeDelegate {
     func changeStakingType(method: StakingSelectionMethod) {
+        pendingRecommendationAmount = nil
+
         setupMethod = method
-        stakingTypeWasChanged = true
+
         provideBalanceModel()
         provideStakingTypeViewModel()
+        updateRecommendationIfNeeded()
         refreshFee()
     }
 }

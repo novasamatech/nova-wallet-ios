@@ -10,6 +10,7 @@ final class StakingTypePresenter {
     let interactor: StakingTypeInteractorInputProtocol
     let viewModelFactory: StakingTypeViewModelFactoryProtocol
     let chainAsset: ChainAsset
+    let amount: BigUInt
 
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
@@ -23,6 +24,7 @@ final class StakingTypePresenter {
         interactor: StakingTypeInteractorInputProtocol,
         wireframe: StakingTypeWireframeProtocol,
         chainAsset: ChainAsset,
+        amount: BigUInt,
         initialMethod: StakingSelectionMethod,
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -33,23 +35,32 @@ final class StakingTypePresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.delegate = delegate
+        self.amount = amount
         method = initialMethod
         self.localizationManager = localizationManager
     }
 
     private func updateDirectStakingAvailable() {
-        guard let restrictions = directStakingRestrictions, let assetBalance = assetBalance else {
+        guard let restrictions = directStakingRestrictions else {
             return
         }
-        directStakingAvailable = assetBalance.freeInPlank > restrictions.minRewardableStake ?? 0
+
+        if let minRewardableStake = restrictions.minRewardableStake {
+            directStakingAvailable = amount >= minRewardableStake
+        } else if let minJoinStake = restrictions.minJoinStake {
+            directStakingAvailable = amount >= minJoinStake
+        } else {
+            directStakingAvailable = true
+        }
     }
 
     private func provideDirectStakingViewModel() {
         guard let restrictions = directStakingRestrictions else {
             return
         }
+
         let viewModel = viewModelFactory.directStakingViewModel(
-            minStake: restrictions.minRewardableStake,
+            minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
             method: method,
             locale: selectedLocale
@@ -62,8 +73,9 @@ final class StakingTypePresenter {
         guard let restrictions = nominationPoolRestrictions else {
             return
         }
+
         let viewModel = viewModelFactory.nominationPoolViewModel(
-            minStake: restrictions.minRewardableStake,
+            minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
             method: method,
             locale: selectedLocale
@@ -76,6 +88,7 @@ final class StakingTypePresenter {
         provideDirectStakingViewModel()
         provideNominationPoolViewModel()
         provideStakingSelection()
+
         if hasChanges {
             view?.didReceiveSaveChangesState(available: true)
         }
@@ -178,11 +191,11 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func back() {
-        guard hasChanges, let method = method else {
-            return
+        if hasChanges {
+            showSaveChangesAlert()
+        } else {
+            wireframe.complete(from: view)
         }
-
-        showSaveChangesAlert()
     }
 }
 

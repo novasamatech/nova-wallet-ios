@@ -45,10 +45,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             .selected(count: validators.targets.count, maxCount: validators.maxTargets)
     }
 
-    private func poolAccountViewModel(
-        method: StakingSelectionMethod?,
-        chainAsset _: ChainAsset
-    ) -> PoolAccountViewModel? {
+    private func poolAccountViewModel(method: StakingSelectionMethod?) -> PoolAccountViewModel? {
         guard let method = method, case let .pool(pool) = method.selectedStakingOption else {
             return nil
         }
@@ -155,7 +152,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             rewardsString
         ].joined(separator: .returnKey)
 
-        guard let poolAccount = poolAccountViewModel(method: method, chainAsset: chainAsset) else {
+        guard let poolAccount = poolAccountViewModel(method: method) else {
             return .init(title: title, subtile: subtitle, poolAccount: nil)
         }
 

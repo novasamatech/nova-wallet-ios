@@ -4,7 +4,6 @@ import BigInt
 
 final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: StakingTypeInteractorOutputProtocol?
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding
     let nominationPoolsRestrictionsBuilder: RelaychainStakingRestrictionsBuilding
     let directStakingRecommendationMediator: RelaychainStakingRecommendationMediating
@@ -13,7 +12,6 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainAsset: ChainAsset
     let stakingSelectionMethod: StakingSelectionMethod
     let amount: BigUInt
-    private var balanceProvider: StreamableProvider<AssetBalance>?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -23,8 +21,7 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         nominationPoolsRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         directStakingRecommendationMediator: RelaychainStakingRecommendationMediating,
-        nominationPoolRecommendationMediator: RelaychainStakingRecommendationMediating,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+        nominationPoolRecommendationMediator: RelaychainStakingRecommendationMediating
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -34,38 +31,28 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.nominationPoolsRestrictionsBuilder = nominationPoolsRestrictionsBuilder
         self.directStakingRecommendationMediator = directStakingRecommendationMediator
         self.nominationPoolRecommendationMediator = nominationPoolRecommendationMediator
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
     }
 
     deinit {
-        clear(streamableProvider: &balanceProvider)
         directStakingRestrictionsBuilder.stop()
         nominationPoolsRestrictionsBuilder.stop()
         directStakingRecommendationMediator.stopRecommending()
         nominationPoolRecommendationMediator.stopRecommending()
     }
 
-    private func performAssetBalanceSubscription() {
-        clear(streamableProvider: &balanceProvider)
-
-        let chainAssetId = chainAsset.chainAssetId
-
-        balanceProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.accountId,
-            chainId: chainAssetId.chainId,
-            assetId: chainAssetId.assetId
-        )
-    }
-
     private func provideDirectStakingRecommendation() {
+        nominationPoolRecommendationMediator.delegate = nil
         nominationPoolRecommendationMediator.stopRecommending()
+
         directStakingRecommendationMediator.delegate = self
         directStakingRecommendationMediator.update(amount: amount)
         directStakingRecommendationMediator.startRecommending()
     }
 
     private func provideNominationPoolStakingRecommendation() {
+        directStakingRecommendationMediator.delegate = nil
         directStakingRecommendationMediator.stopRecommending()
+
         nominationPoolRecommendationMediator.delegate = self
         nominationPoolRecommendationMediator.update(amount: amount)
         nominationPoolRecommendationMediator.startRecommending()
@@ -74,7 +61,6 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
 extension StakingTypeInteractor: StakingTypeInteractorInputProtocol {
     func setup() {
-        performAssetBalanceSubscription()
         [
             directStakingRestrictionsBuilder,
             nominationPoolsRestrictionsBuilder
@@ -90,33 +76,6 @@ extension StakingTypeInteractor: StakingTypeInteractorInputProtocol {
             provideDirectStakingRecommendation()
         case .nominationPool:
             provideNominationPoolStakingRecommendation()
-        }
-    }
-}
-
-extension StakingTypeInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
-    ) {
-        guard
-            chainId == chainAsset.chain.chainId,
-            assetId == chainAsset.asset.assetId,
-            accountId == selectedAccount.accountId else {
-            return
-        }
-
-        switch result {
-        case let .success(balance):
-            let balance = balance ?? .createZero(
-                for: .init(chainId: chainId, assetId: assetId),
-                accountId: accountId
-            )
-            presenter?.didReceive(assetBalance: balance)
-        case let .failure(error):
-            presenter?.didReceive(error: .balance(error))
         }
     }
 }
@@ -146,14 +105,19 @@ extension StakingTypeInteractor: RelaychainStakingRecommendationDelegate {
         recommendation: RelaychainStakingRecommendation,
         amount _: BigUInt
     ) {
-        presenter?.didReceive(method: .recommendation(recommendation))
+        let model = RelaychainStakingManual(
+            staking: recommendation.staking,
+            restrictions: recommendation.restrictions,
+            usedRecommendation: true
+        )
+
+        presenter?.didReceive(method: .manual(model))
+
         directStakingRecommendationMediator.stopRecommending()
         nominationPoolRecommendationMediator.stopRecommending()
     }
 
-    func didReceiveRecommendation(
-        error: Error
-    ) {
+    func didReceiveRecommendation(error: Error) {
         presenter?.didReceive(error: .recommendation(error))
     }
 }

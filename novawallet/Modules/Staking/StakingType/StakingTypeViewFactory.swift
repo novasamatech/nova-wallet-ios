@@ -36,6 +36,7 @@ enum StakingTypeViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
+            amount: amount,
             initialMethod: method,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
@@ -70,8 +71,12 @@ enum StakingTypeViewFactory {
         )
 
         guard
-            let directStakingRestrictionsBuilder = recommendationFactory.createDirectStakingRestrictionsBuilder(for: state),
-            let nominationPoolsRestrictionsBuilder = recommendationFactory.createPoolStakingRestrictionsBuilder(for: state),
+            let directStakingRestrictionsBuilder = recommendationFactory.createDirectStakingRestrictionsBuilder(
+                for: state
+            ),
+            let nominationPoolsRestrictionsBuilder = recommendationFactory.createPoolStakingRestrictionsBuilder(
+                for: state
+            ),
             let directStakingRecommendationMediator = recommendationFactory.createDirectStakingMediator(for: state),
             let nominationPoolRecommendationMediator = recommendationFactory.createPoolStakingMediator(for: state)
         else {
@@ -86,8 +91,7 @@ enum StakingTypeViewFactory {
             directStakingRestrictionsBuilder: directStakingRestrictionsBuilder,
             nominationPoolsRestrictionsBuilder: nominationPoolsRestrictionsBuilder,
             directStakingRecommendationMediator: directStakingRecommendationMediator,
-            nominationPoolRecommendationMediator: nominationPoolRecommendationMediator,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared
+            nominationPoolRecommendationMediator: nominationPoolRecommendationMediator
         )
 
         return interactor
