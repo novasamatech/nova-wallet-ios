@@ -22,7 +22,6 @@ protocol StakingTypeInteractorInputProtocol: AnyObject {
 protocol StakingTypeInteractorOutputProtocol: AnyObject {
     func didReceive(nominationPoolRestrictions: RelaychainStakingRestrictions)
     func didReceive(directStakingRestrictions: RelaychainStakingRestrictions)
-    func didReceive(assetBalance: AssetBalance)
     func didReceive(method: StakingSelectionMethod)
     func didReceive(error: StakingTypeError)
 }
@@ -34,5 +33,4 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
 enum StakingTypeError: Error {
     case restrictions(Error)
     case recommendation(Error)
-    case balance(Error)
 }

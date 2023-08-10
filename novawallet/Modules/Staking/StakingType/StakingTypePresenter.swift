@@ -14,7 +14,6 @@ final class StakingTypePresenter {
 
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
-    private var assetBalance: AssetBalance?
     private var directStakingAvailable: Bool = false
     private var method: StakingSelectionMethod?
     private var selection: StakingTypeSelection?
@@ -89,8 +88,10 @@ final class StakingTypePresenter {
         provideNominationPoolViewModel()
         provideStakingSelection()
 
-        if hasChanges {
+        if hasChanges, method != nil {
             view?.didReceiveSaveChangesState(available: true)
+        } else {
+            view?.didReceiveSaveChangesState(available: false)
         }
     }
 
@@ -165,7 +166,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
                 selection = .direct
             } else {
                 let minStake = viewModelFactory.minStake(
-                    minStake: restrictions.minRewardableStake,
+                    minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
                     chainAsset: chainAsset,
                     locale: selectedLocale
                 )
@@ -217,15 +218,9 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(assetBalance: AssetBalance) {
-        self.assetBalance = assetBalance
-        updateDirectStakingAvailable()
-        provideDirectStakingViewModel()
-    }
-
     func didReceive(error: StakingTypeError) {
         switch error {
-        case .restrictions, .balance:
+        case .restrictions:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
             }

@@ -41,7 +41,8 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         guard let method = method, case let .direct(validators) = method.selectedStakingOption else {
             return nil
         }
-        return method.isRecommendation ? .recommended(maxCount: validators.maxTargets) :
+
+        return method.shouldUseRecommendationStyle ? .recommended(maxCount: validators.maxTargets) :
             .selected(count: validators.targets.count, maxCount: validators.maxTargets)
     }
 
@@ -70,7 +71,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         return PoolAccountViewModel(
             name: name,
             icon: image,
-            recommended: method.isRecommendation
+            recommended: method.shouldUseRecommendationStyle
         )
     }
 

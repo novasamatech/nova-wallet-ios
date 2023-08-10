@@ -13,6 +13,15 @@ enum StakingSelectionMethod {
         }
     }
 
+    var shouldUseRecommendationStyle: Bool {
+        switch self {
+        case .recommendation:
+            return true
+        case let .manual(manual):
+            return manual.usedRecommendation
+        }
+    }
+
     var selectedStakingOption: SelectedStakingOption? {
         switch self {
         case let .recommendation(recommendation):

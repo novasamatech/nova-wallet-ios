@@ -57,9 +57,6 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         stackView.addArrangedSubview(descriptionStack)
         stackView.setCustomSpacing(20, after: descriptionStack)
         stackView.addArrangedSubview(accountView)
-        accountView.snp.makeConstraints {
-            $0.height.equalTo(48)
-        }
 
         clipsToBounds = true
     }

@@ -42,20 +42,18 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func provideDirectStakingRecommendation() {
         nominationPoolRecommendationMediator.delegate = nil
-        nominationPoolRecommendationMediator.stopRecommending()
 
         directStakingRecommendationMediator.delegate = self
-        directStakingRecommendationMediator.update(amount: amount)
         directStakingRecommendationMediator.startRecommending()
+        directStakingRecommendationMediator.update(amount: amount)
     }
 
     private func provideNominationPoolStakingRecommendation() {
         directStakingRecommendationMediator.delegate = nil
-        directStakingRecommendationMediator.stopRecommending()
 
         nominationPoolRecommendationMediator.delegate = self
-        nominationPoolRecommendationMediator.update(amount: amount)
         nominationPoolRecommendationMediator.startRecommending()
+        nominationPoolRecommendationMediator.update(amount: amount)
     }
 }
 
@@ -112,9 +110,6 @@ extension StakingTypeInteractor: RelaychainStakingRecommendationDelegate {
         )
 
         presenter?.didReceive(method: .manual(model))
-
-        directStakingRecommendationMediator.stopRecommending()
-        nominationPoolRecommendationMediator.stopRecommending()
     }
 
     func didReceiveRecommendation(error: Error) {
