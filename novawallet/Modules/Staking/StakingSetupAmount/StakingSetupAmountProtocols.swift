@@ -2,7 +2,6 @@ import Foundation
 import BigInt
 
 protocol StakingSetupAmountViewProtocol: ControllerBackedProtocol {
-    func didReceive(estimatedRewards: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?)
     func didReceive(balance: TitleHorizontalMultiValueView.Model)
     func didReceive(title: String)
     func didReceiveButtonState(title: String, enabled: Bool)
@@ -40,13 +39,20 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
 
 protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, StakingErrorPresentable {
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?)
+    func showStakingTypeSelection(
+        from view: ControllerBackedProtocol?,
+        method: StakingSelectionMethod,
+        amount: BigUInt,
+        delegate: StakingTypeDelegate?
+    )
 
     func showConfirmation(
         from view: ControllerBackedProtocol?,
         stakingOption: SelectedStakingOption,
         amount: Decimal
     )
+
+    func showSelectValidators(from view: ControllerBackedProtocol?, selectedValidators: PreparedValidators)
 }
 
 enum StakingSetupAmountError: Error {

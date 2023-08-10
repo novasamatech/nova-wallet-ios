@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
     let state: RelaychainStartStakingStateProtocol
@@ -7,8 +8,18 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
         self.state = state
     }
 
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?) {
-        guard let stakingTypeView = StakingTypeViewFactory.createView() else {
+    func showStakingTypeSelection(
+        from view: ControllerBackedProtocol?,
+        method: StakingSelectionMethod,
+        amount: BigUInt,
+        delegate: StakingTypeDelegate?
+    ) {
+        guard let stakingTypeView = StakingTypeViewFactory.createView(
+            state: state,
+            method: method,
+            amount: amount,
+            delegate: delegate
+        ) else {
             return
         }
 
@@ -36,5 +47,9 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
             confirmationView.controller,
             animated: true
         )
+    }
+
+    func showSelectValidators(from _: ControllerBackedProtocol?, selectedValidators _: PreparedValidators) {
+        // TODO: Add validators flow adopted
     }
 }

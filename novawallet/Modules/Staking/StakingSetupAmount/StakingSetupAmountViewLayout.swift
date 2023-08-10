@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
     let amountView: TitleHorizontalMultiValueView = .create {
@@ -8,13 +9,13 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
     }
 
     let amountInputView = NewAmountInputView()
-    let estimatedRewardsView: TitleHorizontalMultiValueView = .create { view in
+    let estimatedRewardsView: LoadableTitleHorizontalMultiValueView = .create { view in
         view.titleView.apply(style: .footnoteSecondary)
         view.detailsTitleLabel.apply(style: .semiboldFootnotePositive)
         view.detailsValueLabel.apply(style: .caption1Secondary)
     }
 
-    let stakingTypeView = StakingTypeAccountView(frame: .zero)
+    var stakingTypeView: BackgroundedContentControl = StakingTypeAccountView(frame: .zero)
 
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
@@ -49,12 +50,12 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
             $0.height.equalTo(Constants.amountHeight)
         }
 
-        addArrangedSubview(amountInputView, spacingAfter: 16)
+        addArrangedSubview(amountInputView, spacingAfter: Constants.verticalSpacing)
         amountInputView.snp.makeConstraints {
             $0.height.equalTo(Constants.amountInputHeight)
         }
 
-        addArrangedSubview(stakingTypeView, spacingAfter: 16)
+        addArrangedSubview(stakingTypeView, spacingAfter: Constants.verticalSpacing)
 
         addArrangedSubview(estimatedRewardsView)
 
@@ -66,21 +67,146 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
         estimatedRewardsView.isHidden = true
     }
 
-    func setEstimatedRewards(viewModel: LoadableViewModelState<TitleHorizontalMultiValueView.Model>?) {
+    func setStakingType(viewModel: LoadableViewModelState<StakingTypeViewModel>?) {
         if let viewModel = viewModel {
+            stakingTypeView.isHidden = false
             estimatedRewardsView.isHidden = false
-            estimatedRewardsView.bind(viewModel: viewModel)
+
+            estimatedRewardsView.stopLoadingIfNeeded()
+
+            switch viewModel {
+            case let .cached(value), let .loaded(value):
+                setSelectedStaking(
+                    viewModel: viewModel.map(with: { $0.type }),
+                    canProceed: value.shouldEnableSelection
+                )
+
+                estimatedRewardsView.detailsTitleLabel.text = value.maxApy
+            case .loading:
+                setSelectedStaking(viewModel: .loading, canProceed: false)
+                estimatedRewardsView.startLoadingIfNeeded()
+            }
+
         } else {
+            stakingTypeView.isHidden = true
             estimatedRewardsView.isHidden = true
         }
     }
 
-    func setStakingType(viewModel: LoadableViewModelState<StakingTypeViewModel>?) {
-        if let viewModel = viewModel {
-            stakingTypeView.isHidden = false
-            stakingTypeView.bind(stakingTypeViewModel: viewModel)
+    private func setSelectedStaking(
+        viewModel: LoadableViewModelState<StakingTypeViewModel.TypeModel>,
+        canProceed: Bool
+    ) {
+        switch viewModel {
+        case let .cached(value), let .loaded(value):
+            if let accountTypeViewModel = mapAccountViewModel(from: value) {
+                setStakingAccountType(
+                    viewModel: viewModel.map { _ in accountTypeViewModel },
+                    canProceed: canProceed
+                )
+            } else if let validatorViewModel = mapValidatorViewModel(from: value) {
+                setStakingValidatorType(
+                    viewModel: viewModel.map(with: { _ in validatorViewModel }),
+                    canProceed: canProceed
+                )
+            }
+        case .loading:
+            setStakingAccountType(viewModel: .loading, canProceed: canProceed)
+        }
+    }
+
+    private func mapAccountViewModel(from viewModel: StakingTypeViewModel.TypeModel) -> StakingTypeAccountViewModel? {
+        switch viewModel {
+        case let .recommended(viewModel):
+            return StakingTypeAccountViewModel(
+                imageViewModel: nil,
+                title: viewModel.title,
+                subtitle: viewModel.subtitle,
+                isRecommended: true
+            )
+        case let .pools(viewModel):
+            return StakingTypeAccountViewModel(
+                imageViewModel: viewModel.icon,
+                title: viewModel.title,
+                subtitle: viewModel.subtitle,
+                isRecommended: viewModel.isRecommended
+            )
+        case .direct:
+            return nil
+        }
+    }
+
+    private func mapValidatorViewModel(
+        from viewModel: StakingTypeViewModel.TypeModel
+    ) -> DirectStakingTypeAccountViewModel? {
+        switch viewModel {
+        case .recommended, .pools:
+            return nil
+        case let .direct(validatorViewModel):
+            return DirectStakingTypeAccountViewModel(
+                count: validatorViewModel.count,
+                title: validatorViewModel.title,
+                subtitle: validatorViewModel.subtitle,
+                isRecommended: validatorViewModel.isRecommended
+            )
+        }
+    }
+
+    private func setStakingAccountType(
+        viewModel: LoadableViewModelState<StakingTypeAccountViewModel>,
+        canProceed: Bool
+    ) {
+        let typeView: StakingTypeAccountView
+
+        if let currentTypeView = stakingTypeView as? StakingTypeAccountView {
+            typeView = currentTypeView
         } else {
-            stakingTypeView.isHidden = true
+            stakingTypeView.removeFromSuperview()
+
+            typeView = StakingTypeAccountView(frame: .zero)
+            insertArrangedSubview(typeView, after: amountInputView, spacingAfter: Constants.verticalSpacing)
+
+            stakingTypeView = typeView
+        }
+
+        typeView.canProceed = canProceed
+
+        typeView.stopLoadingIfNeeded()
+
+        switch viewModel {
+        case let .cached(value), let .loaded(value):
+            typeView.bind(viewModel: value)
+        case .loading:
+            typeView.startLoadingIfNeeded()
+        }
+    }
+
+    private func setStakingValidatorType(
+        viewModel: LoadableViewModelState<DirectStakingTypeAccountViewModel>,
+        canProceed: Bool
+    ) {
+        let typeView: StakingTypeValidatorView
+
+        if let currentTypeView = stakingTypeView as? StakingTypeValidatorView {
+            typeView = currentTypeView
+        } else {
+            stakingTypeView.removeFromSuperview()
+
+            typeView = StakingTypeValidatorView(frame: .zero)
+            insertArrangedSubview(typeView, after: amountInputView, spacingAfter: Constants.verticalSpacing)
+
+            stakingTypeView = typeView
+        }
+
+        typeView.canProceed = canProceed
+
+        typeView.stopLoadingIfNeeded()
+
+        switch viewModel {
+        case let .cached(value), let .loaded(value):
+            typeView.bind(viewModel: value)
+        case .loading:
+            typeView.startLoadingIfNeeded()
         }
     }
 }
@@ -91,5 +217,6 @@ extension StakingSetupAmountViewLayout {
         static let amountHeight: CGFloat = 18
         static let amountInputHeight: CGFloat = 64
         static let estimatedRewardsHeight: CGFloat = 44
+        static let verticalSpacing: CGFloat = 16
     }
 }

@@ -7,6 +7,7 @@ final class StakingSetupAmountPresenter {
     let wireframe: StakingSetupAmountWireframeProtocol
     let interactor: StakingSetupAmountInteractorInputProtocol
     let viewModelFactory: StakingAmountViewModelFactoryProtocol
+    let stakingTypeViewModelFactory: SelectedStakingViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -41,6 +42,7 @@ final class StakingSetupAmountPresenter {
         interactor: StakingSetupAmountInteractorInputProtocol,
         wireframe: StakingSetupAmountWireframeProtocol,
         viewModelFactory: StakingAmountViewModelFactoryProtocol,
+        stakingTypeViewModelFactory: SelectedStakingViewModelFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
@@ -53,6 +55,7 @@ final class StakingSetupAmountPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.stakingTypeViewModelFactory = stakingTypeViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
@@ -189,32 +192,65 @@ final class StakingSetupAmountPresenter {
         case let .recommendation(stakingRecommendation):
             if inputResult == nil, recommendsMultipleStakings {
                 view?.didReceive(stakingType: nil)
-                view?.didReceive(estimatedRewards: nil)
             } else if let stakingType = stakingRecommendation?.staking {
-                provideStakingTypeViewModel(for: stakingType)
+                provideRecommendedStakingTypeViewModel(for: stakingType)
             } else {
                 view?.didReceive(stakingType: .loading)
-                view?.didReceive(estimatedRewards: .loading)
             }
-        case let .manual(option, _):
-            provideStakingTypeViewModel(for: option)
+        case let .manual(stakingManual):
+            provideManualStakingTypeViewModel(for: stakingManual)
         }
     }
 
-    private func provideStakingTypeViewModel(for model: SelectedStakingOption) {
-        let viewModel = viewModelFactory.recommendedStakingTypeViewModel(
+    private func provideManualStakingTypeViewModel(for model: RelaychainStakingManual) {
+        let innerViewModel: StakingTypeViewModel.TypeModel
+
+        switch model.staking {
+        case let .direct(validators):
+            let validatorViewModel = stakingTypeViewModelFactory.createValidator(
+                for: validators,
+                displaysRecommended: model.usedRecommendation,
+                locale: selectedLocale
+            )
+
+            innerViewModel = .direct(validatorViewModel)
+        case let .pool(selectedPool):
+            let poolViewModel = stakingTypeViewModelFactory.createPool(
+                for: selectedPool,
+                chainAsset: chainAsset,
+                displaysRecommended: model.usedRecommendation,
+                locale: selectedLocale
+            )
+
+            innerViewModel = .pools(poolViewModel)
+        }
+
+        let maxApy = viewModelFactory.maxApy(for: model.staking, locale: selectedLocale)
+
+        let stakingType = StakingTypeViewModel(
+            type: innerViewModel,
+            maxApy: maxApy,
+            shouldEnableSelection: true
+        )
+
+        view?.didReceive(stakingType: .loaded(value: stakingType))
+    }
+
+    private func provideRecommendedStakingTypeViewModel(for model: SelectedStakingOption) {
+        let viewModel = stakingTypeViewModelFactory.createRecommended(
             for: model,
             locale: selectedLocale
         )
 
-        view?.didReceive(stakingType: .loaded(value: viewModel))
+        let maxApy = viewModelFactory.maxApy(for: model, locale: selectedLocale)
 
-        let earnupViewModel = viewModelFactory.earnupModel(
-            earnings: model.maxApy,
-            locale: selectedLocale
+        let stakingType = StakingTypeViewModel(
+            type: .recommended(viewModel),
+            maxApy: maxApy,
+            shouldEnableSelection: true
         )
 
-        view?.didReceive(estimatedRewards: .loaded(value: earnupViewModel))
+        view?.didReceive(stakingType: .loaded(value: stakingType))
     }
 
     private func updateRecommendationIfNeeded() {
@@ -243,6 +279,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
         provideAmountPriceViewModel()
         provideAmountInputViewModel()
         provideButtonState()
+        provideStakingTypeViewModel()
         refreshFee()
 
         if !recommendsMultipleStakings {
@@ -263,7 +300,16 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     }
 
     func selectStakingType() {
-        wireframe.showStakingTypeSelection(from: view)
+        if chainAsset.asset.hasMultipleStakingOptions {
+            wireframe.showStakingTypeSelection(
+                from: view,
+                method: setupMethod,
+                amount: inputAmountInPlank(),
+                delegate: self
+            )
+        } else if case let .direct(validators) = setupMethod.selectedStakingOption {
+            wireframe.showSelectValidators(from: view, selectedValidators: validators)
+        }
     }
 
     // swiftlint:disable:next function_body_length
@@ -434,5 +480,18 @@ extension StakingSetupAmountPresenter: Localizable {
         provideAmountInputViewModel()
         provideAmountPriceViewModel()
         provideStakingTypeViewModel()
+    }
+}
+
+extension StakingSetupAmountPresenter: StakingTypeDelegate {
+    func changeStakingType(method: StakingSelectionMethod) {
+        pendingRecommendationAmount = nil
+
+        setupMethod = method
+
+        provideBalanceModel()
+        provideStakingTypeViewModel()
+        updateRecommendationIfNeeded()
+        refreshFee()
     }
 }

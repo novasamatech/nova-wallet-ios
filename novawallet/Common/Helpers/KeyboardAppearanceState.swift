@@ -12,20 +12,30 @@ final class EventDrivenKeyboardStrategy: KeyboardAppearanceStrategyProtocol {
     }
 
     let events: Set<EventType>
+    let triggersOnes: Bool
 
-    init(events: Set<EventType>) {
+    private var triggered: Bool = false
+
+    private var canTrigger: Bool {
+        !(triggersOnes && triggered)
+    }
+
+    init(events: Set<EventType>, triggersOnes: Bool = false) {
         self.events = events
+        self.triggersOnes = triggersOnes
     }
 
     func onViewWillAppear(for target: UIView) {
-        if events.contains(.viewWillAppear) {
+        if canTrigger, events.contains(.viewWillAppear) {
             target.becomeFirstResponder()
+            triggered = true
         }
     }
 
     func onViewDidAppear(for target: UIView) {
-        if events.contains(.viewDidAppear) {
+        if canTrigger, events.contains(.viewDidAppear) {
             target.becomeFirstResponder()
+            triggered = true
         }
     }
 }

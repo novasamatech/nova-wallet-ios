@@ -71,8 +71,6 @@ extension StakingMainPresenterFactory {
             logger: logger
         )
 
-        let consensusDependingFactory = RelaychainConsensusStateDependingFactory()
-
         let networkInfoFactory = state.createNetworkInfoOperationFactory(
             for: OperationManagerFacade.sharedDefaultQueue
         )

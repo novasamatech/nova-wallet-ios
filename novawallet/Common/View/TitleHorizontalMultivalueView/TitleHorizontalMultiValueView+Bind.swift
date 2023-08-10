@@ -7,15 +7,9 @@ extension TitleHorizontalMultiValueView {
         let value: String
     }
 
-    func bind(viewModel: LoadableViewModelState<Model>) {
-        titleView.text = viewModel.value?.title
-        detailsTitleLabel.text = viewModel.value?.subtitle
-        detailsValueLabel.text = viewModel.value?.value
-    }
-
-    func bind(balance: Model) {
-        titleView.text = balance.title
-        detailsTitleLabel.text = balance.subtitle
-        detailsValueLabel.text = balance.value
+    func bind(model: Model) {
+        titleView.text = model.title
+        detailsTitleLabel.text = model.subtitle
+        detailsValueLabel.text = model.value
     }
 }

@@ -1,7 +1,22 @@
 import Foundation
 
-final class StartStakingDirectConfirmWireframe: StartStakingConfirmWireframe, StartStakingDirectConfirmWireframeProtocol {
-    func showSelectedValidators(from _: StartStakingConfirmViewProtocol?, validators _: PreparedValidators) {
-        // TODO: Add transition
+final class StartStakingDirectConfirmWireframe: StartStakingConfirmWireframe,
+    StartStakingDirectConfirmWireframeProtocol {
+    let stakingState: RelaychainStartStakingStateProtocol
+
+    init(stakingState: RelaychainStartStakingStateProtocol) {
+        self.stakingState = stakingState
+    }
+
+    func showSelectedValidators(from view: StartStakingConfirmViewProtocol?, validators: PreparedValidators) {
+        guard
+            let listView = StaticValidatorListViewFactory.createView(
+                validatorList: validators,
+                stakingState: stakingState
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(listView.controller, animated: true)
     }
 }
