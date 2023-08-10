@@ -49,7 +49,10 @@ struct StakingSetupAmountViewFactory {
 
         let view = StakingSetupAmountViewController(
             presenter: presenter,
-            keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(events: [.viewDidAppear]),
+            keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(
+                events: [.viewDidAppear],
+                triggersOnes: true
+            ),
             localizationManager: LocalizationManager.shared
         )
 
