@@ -24,6 +24,7 @@ protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable, AlertPresentable
 
     func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
-        option: Multistaking.ChainAssetOption
+        chainAsset: ChainAsset,
+        stakingType: StakingType?
     )
 }

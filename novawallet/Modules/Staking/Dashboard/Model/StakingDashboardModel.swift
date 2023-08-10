@@ -1,23 +1,17 @@
 import Foundation
 import RobinHood
 
-struct StakingDashboardItemModel: Equatable {
-    let stakingOption: Multistaking.ChainAssetOption
-    let dashboardItem: Multistaking.DashboardItem?
-    let accountId: AccountId?
-    let balance: AssetBalance?
-    let price: PriceData?
-    let isOnchainSync: Bool
-    let isOffchainSync: Bool
+protocol StakingDashboardItemModelCommonProtocol {
+    var chainAsset: ChainAsset { get }
+    var accountId: AccountId? { get }
+    var balance: AssetBalance? { get }
+    var price: PriceData? { get }
+    var maxApy: Decimal? { get }
+    var isOnchainSync: Bool { get }
+    var isOffchainSync: Bool { get }
+}
 
-    var hasStaking: Bool {
-        guard let dashboardItem = dashboardItem else {
-            return false
-        }
-
-        return dashboardItem.stake != nil
-    }
-
+extension StakingDashboardItemModelCommonProtocol {
     var hasAnySync: Bool {
         isOnchainSync || isOffchainSync
     }
@@ -26,27 +20,114 @@ struct StakingDashboardItemModel: Equatable {
         Decimal.fiatValue(
             from: balance?.freeInPlank,
             price: price,
-            precision: stakingOption.chainAsset.assetDisplayInfo.assetPrecision
-        )
-    }
-
-    func stakeValue() -> Decimal {
-        Decimal.fiatValue(
-            from: dashboardItem?.stake,
-            price: price,
-            precision: stakingOption.chainAsset.assetDisplayInfo.assetPrecision
+            precision: chainAsset.assetDisplayInfo.assetPrecision
         )
     }
 }
 
+enum StakingDashboardItemModel: Equatable {
+    struct Concrete: Equatable, StakingDashboardItemModelCommonProtocol {
+        let stakingOption: Multistaking.ChainAssetOption
+        let dashboardItem: Multistaking.DashboardItem?
+        let accountId: AccountId?
+        let balance: AssetBalance?
+        let price: PriceData?
+        let isOnchainSync: Bool
+        let isOffchainSync: Bool
+
+        var chainAsset: ChainAsset {
+            stakingOption.chainAsset
+        }
+
+        var hasStaking: Bool {
+            dashboardItem?.hasStaking ?? false
+        }
+
+        var maxApy: Decimal? {
+            dashboardItem?.maxApy
+        }
+
+        func stakeValue() -> Decimal {
+            Decimal.fiatValue(
+                from: dashboardItem?.stake,
+                price: price,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            )
+        }
+    }
+
+    struct Combined: Equatable, StakingDashboardItemModelCommonProtocol {
+        let chainAsset: ChainAsset
+        let maxApy: Decimal?
+        let accountId: AccountId?
+        let balance: AssetBalance?
+        let price: PriceData?
+        let isOnchainSync: Bool
+        let isOffchainSync: Bool
+
+        init(
+            chainAsset: ChainAsset,
+            maxApy: Decimal?,
+            accountId: AccountId?,
+            balance: AssetBalance?,
+            price: PriceData?,
+            isOnchainSync: Bool,
+            isOffchainSync: Bool
+        ) {
+            self.chainAsset = chainAsset
+            self.maxApy = maxApy
+            self.accountId = accountId
+            self.balance = balance
+            self.price = price
+            self.isOnchainSync = isOnchainSync
+            self.isOffchainSync = isOffchainSync
+        }
+
+        init(concrete: Concrete) {
+            self.init(
+                chainAsset: concrete.chainAsset,
+                maxApy: concrete.dashboardItem?.maxApy,
+                accountId: concrete.accountId,
+                balance: concrete.balance,
+                price: concrete.price,
+                isOnchainSync: concrete.isOnchainSync,
+                isOffchainSync: concrete.isOffchainSync
+            )
+        }
+
+        func replacingWithGreatesApy(for newApy: Decimal?) -> Combined {
+            let updatedApy: Decimal?
+
+            if let maxApy = maxApy, let newApy = newApy {
+                updatedApy = max(maxApy, newApy)
+            } else {
+                updatedApy = maxApy ?? newApy
+            }
+
+            return .init(
+                chainAsset: chainAsset,
+                maxApy: updatedApy,
+                accountId: accountId,
+                balance: balance,
+                price: price,
+                isOnchainSync: isOnchainSync,
+                isOffchainSync: isOffchainSync
+            )
+        }
+    }
+
+    case concrete(Concrete)
+    case combined(Combined)
+}
+
 struct StakingDashboardModel: Equatable {
-    let active: [StakingDashboardItemModel]
-    let inactive: [StakingDashboardItemModel]
+    let active: [StakingDashboardItemModel.Concrete]
+    let inactive: [StakingDashboardItemModel.Combined]
     let more: [StakingDashboardItemModel]
 
     init(
-        active: [StakingDashboardItemModel] = [],
-        inactive: [StakingDashboardItemModel] = [],
+        active: [StakingDashboardItemModel.Concrete] = [],
+        inactive: [StakingDashboardItemModel.Combined] = [],
         more: [StakingDashboardItemModel] = []
     ) {
         self.active = active
@@ -58,12 +139,31 @@ struct StakingDashboardModel: Equatable {
         active.isEmpty && inactive.isEmpty && more.isEmpty
     }
 
-    var all: [StakingDashboardItemModel] {
+    var allConcrete: [StakingDashboardItemModel.Concrete] {
+        let moreOptionsConcrete: [StakingDashboardItemModel.Concrete] = more.compactMap { item in
+            switch item {
+            case let .concrete(concrete):
+                return concrete
+            case .combined:
+                return nil
+            }
+        }
+
+        return active + moreOptionsConcrete
+    }
+
+    var all: [StakingDashboardItemModelCommonProtocol] {
         active + inactive + more
+    }
+
+    func getActiveCounters() -> [ChainAssetId: Int] {
+        active.reduce(into: [ChainAssetId: Int]()) { accum, item in
+            accum[item.chainAsset.chainAssetId] = (accum[item.chainAsset.chainAssetId] ?? 0) + 1
+        }
     }
 }
 
-extension Array where Element == StakingDashboardItemModel {
+extension Array where Element: StakingDashboardItemModelCommonProtocol {
     static var totalStakeOrder: [ChainModel.Id: Int] {
         [
             KnowChainId.polkadot: 0,
@@ -78,7 +178,43 @@ extension Array where Element == StakingDashboardItemModel {
         ]
     }
 
-    func sortedByStake() -> [StakingDashboardItemModel] {
+    func sortedByBalance() -> [Element] {
+        sorted { item1, item2 in
+            CompoundComparator.compare(list: [{
+                let chain1 = item1.chainAsset.chain
+                let chain2 = item2.chainAsset.chain
+
+                return ChainModelCompator.priorityAndTestnetComparator(chain1: chain1, chain2: chain2)
+            }, {
+                let balance1 = item1.balanceValue()
+                let balance2 = item2.balanceValue()
+
+                return CompoundComparator.compare(item1: balance1, item2: balance2, isAsc: false)
+            }, {
+                let hasBalance1 = item1.balance != nil ? 0 : 1
+                let hasBalance2 = item2.balance != nil ? 0 : 1
+
+                return CompoundComparator.compare(item1: hasBalance1, item2: hasBalance2, isAsc: true)
+            }, {
+                let chain1 = item1.chainAsset.chain
+                let chain2 = item2.chainAsset.chain
+
+                let totalStaked1 = Self.totalStakeOrder[chain1.chainId] ?? Int.max
+                let totalStaked2 = Self.totalStakeOrder[chain2.chainId] ?? Int.max
+
+                return CompoundComparator.compare(item1: totalStaked1, item2: totalStaked2, isAsc: true)
+            }, {
+                let chain1 = item1.chainAsset.chain
+                let chain2 = item2.chainAsset.chain
+
+                return chain1.name.localizedCaseInsensitiveCompare(chain2.name)
+            }])
+        }
+    }
+}
+
+extension Array where Element == StakingDashboardItemModel.Concrete {
+    func sortedByStake() -> [StakingDashboardItemModel.Concrete] {
         sorted { item1, item2 in
             CompoundComparator.compare(list: [{
                 let stake1 = item1.stakeValue()
@@ -95,48 +231,33 @@ extension Array where Element == StakingDashboardItemModel {
                 let chain2 = item2.stakingOption.chainAsset.chain
 
                 return chain1.name.localizedCaseInsensitiveCompare(chain2.name)
-            }])
-        }
-    }
-
-    func sortedByBalance() -> [StakingDashboardItemModel] {
-        sorted { item1, item2 in
-            CompoundComparator.compare(list: [{
-                let chain1 = item1.stakingOption.chainAsset.chain
-                let chain2 = item2.stakingOption.chainAsset.chain
-
-                return ChainModelCompator.priorityAndTestnetComparator(chain1: chain1, chain2: chain2)
             }, {
-                let balance1 = item1.balanceValue()
-                let balance2 = item2.balanceValue()
+                let type1 = item1.stakingOption.type
+                let type2 = item2.stakingOption.type
 
-                return CompoundComparator.compare(item1: balance1, item2: balance2, isAsc: false)
-            }, {
-                let hasBalance1 = item1.balance != nil ? 0 : 1
-                let hasBalance2 = item2.balance != nil ? 0 : 1
-
-                return CompoundComparator.compare(item1: hasBalance1, item2: hasBalance2, isAsc: true)
-            }, {
-                let chain1 = item1.stakingOption.chainAsset.chain
-                let chain2 = item2.stakingOption.chainAsset.chain
-
-                let totalStaked1 = Self.totalStakeOrder[chain1.chainId] ?? Int.max
-                let totalStaked2 = Self.totalStakeOrder[chain2.chainId] ?? Int.max
-
-                return CompoundComparator.compare(item1: totalStaked1, item2: totalStaked2, isAsc: true)
-            }, {
-                let chain1 = item1.stakingOption.chainAsset.chain
-                let chain2 = item2.stakingOption.chainAsset.chain
-
-                return chain1.name.localizedCaseInsensitiveCompare(chain2.name)
+                return type1.isMorePreferred(than: type2) ? .orderedAscending : .orderedDescending
             }])
         }
     }
 }
 
-extension StakingDashboardItemModel {
-    func byChangingSyncState(isOnchainSync: Bool, isOffchainSync: Bool) -> StakingDashboardItemModel {
-        StakingDashboardItemModel(
+extension StakingDashboardItemModel.Combined {
+    func byChangingSyncState(isOnchainSync: Bool, isOffchainSync: Bool) -> StakingDashboardItemModel.Combined {
+        StakingDashboardItemModel.Combined(
+            chainAsset: chainAsset,
+            maxApy: maxApy,
+            accountId: accountId,
+            balance: balance,
+            price: price,
+            isOnchainSync: isOnchainSync,
+            isOffchainSync: isOffchainSync
+        )
+    }
+}
+
+extension StakingDashboardItemModel.Concrete {
+    func byChangingSyncState(isOnchainSync: Bool, isOffchainSync: Bool) -> StakingDashboardItemModel.Concrete {
+        StakingDashboardItemModel.Concrete(
             stakingOption: stakingOption,
             dashboardItem: dashboardItem,
             accountId: accountId,
@@ -145,5 +266,83 @@ extension StakingDashboardItemModel {
             isOnchainSync: isOnchainSync,
             isOffchainSync: isOffchainSync
         )
+    }
+}
+
+extension StakingDashboardItemModel {
+    func byChangingSyncState(isOnchainSync: Bool, isOffchainSync: Bool) -> StakingDashboardItemModel {
+        switch self {
+        case let .combined(value):
+            let newValue = value.byChangingSyncState(isOnchainSync: isOnchainSync, isOffchainSync: isOffchainSync)
+            return .combined(newValue)
+        case let .concrete(value):
+            let newValue = value.byChangingSyncState(isOnchainSync: isOnchainSync, isOffchainSync: isOffchainSync)
+            return .concrete(newValue)
+        }
+    }
+}
+
+extension StakingDashboardItemModel: StakingDashboardItemModelCommonProtocol {
+    var chainAsset: ChainAsset {
+        switch self {
+        case let .combined(value):
+            return value.chainAsset
+        case let .concrete(value):
+            return value.chainAsset
+        }
+    }
+
+    var accountId: AccountId? {
+        switch self {
+        case let .combined(value):
+            return value.accountId
+        case let .concrete(value):
+            return value.accountId
+        }
+    }
+
+    var balance: AssetBalance? {
+        switch self {
+        case let .combined(value):
+            return value.balance
+        case let .concrete(value):
+            return value.balance
+        }
+    }
+
+    var price: PriceData? {
+        switch self {
+        case let .combined(value):
+            return value.price
+        case let .concrete(value):
+            return value.price
+        }
+    }
+
+    var maxApy: Decimal? {
+        switch self {
+        case let .combined(value):
+            return value.maxApy
+        case let .concrete(value):
+            return value.maxApy
+        }
+    }
+
+    var isOnchainSync: Bool {
+        switch self {
+        case let .combined(value):
+            return value.isOnchainSync
+        case let .concrete(value):
+            return value.isOnchainSync
+        }
+    }
+
+    var isOffchainSync: Bool {
+        switch self {
+        case let .combined(value):
+            return value.isOffchainSync
+        case let .concrete(value):
+            return value.isOffchainSync
+        }
     }
 }

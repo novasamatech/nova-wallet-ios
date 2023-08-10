@@ -116,6 +116,10 @@ extension Multistaking {
         let totalRewards: BigUInt?
         let maxApy: Decimal?
 
+        var hasStaking: Bool {
+            stake != nil
+        }
+
         var state: State? {
             switch onchainState {
             case .none:
