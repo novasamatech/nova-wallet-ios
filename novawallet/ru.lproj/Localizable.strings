@@ -1329,3 +1329,6 @@
 "staking.locked.pool.violation.error" = "Ваши токены заблокированы из - за %@. Для продолжения введите %@ или %@ и больше. Для стейкинга другой суммы разблокируйте токены.";
 "staking.type.title" = "Тип стейкинга";
 "staking.validators" = "Валидаторы";
+"staking.select.pool.count" = "активные пулы: %@";
+"staking.select.pool.members" = "участники";
+"staking.select.pool.title" = "Выбор пула";

@@ -1329,3 +1329,7 @@
 "staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter %@ or %@ and more. To stake another amount you should remove your locks.";
 "staking.type.title" = "Staking type";
 "staking.validators" = "Validators";
+"staking.select.pool.count" = "active pools: %@";
+"staking.select.pool.members" = "members";
+"staking.select.pool.title" = "Select pool";
+

@@ -76,6 +76,16 @@ extension UILabel.Style {
         font: .caption1
     )
 
+    static let caption1Tertiary = UILabel.Style(
+        textColor: R.color.colorTextTertiary(),
+        font: .caption1
+    )
+
+    static let caption1Positive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .caption1
+    )
+
     static let caption2Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .caption2
