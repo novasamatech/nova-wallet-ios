@@ -43,8 +43,8 @@ final class StakingTypeBalanceFactory: StakingTypeBalanceFactoryProtocol {
         switch stakingMethod {
         case .recommendation:
             return stakingTypeAllowsLocks ? assetBalance?.freeInPlank : assetBalance?.transferable
-        case let .manual(stakingOption, _):
-            return getManualAvailableBalance(for: assetBalance, stakingOption: stakingOption)
+        case let .manual(stakingManual):
+            return getManualAvailableBalance(for: assetBalance, stakingOption: stakingManual.staking)
         }
     }
 }

@@ -29,6 +29,8 @@ extension SkeletonableView {
     func startLoadingIfNeeded() {
         hidingViews.forEach { $0.alpha = 0 }
 
+        didStartSkeleton()
+
         guard skeletonView == nil else {
             return
         }
@@ -38,12 +40,12 @@ extension SkeletonableView {
         if skeletonView != nil {
             hidingViews.forEach { $0.alpha = 0 }
         }
-
-        didStartSkeleton()
     }
 
     func stopLoadingIfNeeded() {
         hidingViews.forEach { $0.alpha = 1 }
+
+        didStopSkeleton()
 
         guard skeletonView != nil else {
             return
@@ -52,8 +54,6 @@ extension SkeletonableView {
         skeletonView?.stopSkrulling()
         skeletonView?.removeFromSuperview()
         skeletonView = nil
-
-        didStopSkeleton()
     }
 
     var skeletonSpaceSize: CGSize { frame.size }

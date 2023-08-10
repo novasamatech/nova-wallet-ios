@@ -28,7 +28,6 @@ extension StakingRewardsFilterMapper: CoreDataMapperProtocol {
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
         let chainAccountId = try Data(hexString: entity.chainAccountId!)
-        let chainId = entity.chainId
         let chainAssetId = ChainAssetId(
             chainId: entity.chainId!,
             assetId: UInt32(bitPattern: entity.assetId)
