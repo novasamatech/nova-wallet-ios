@@ -1,4 +1,4 @@
-protocol StakingSelectPoolViewProtocol: AnyObject {
+protocol StakingSelectPoolViewProtocol: ControllerBackedProtocol {
     func didReceivePools(viewModels: [StakingSelectPoolViewModel])
 }
 

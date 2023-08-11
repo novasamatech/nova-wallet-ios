@@ -599,6 +599,7 @@
 		77F033A22A84E00F006BC67E /* StakingPoolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F033A12A84E00F006BC67E /* StakingPoolView.swift */; };
 		77F033A42A84E028006BC67E /* StakingSelectPoolListHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F033A32A84E028006BC67E /* StakingSelectPoolListHeaderView.swift */; };
 		77F033A62A84EAC3006BC67E /* StakingPoolTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F033A52A84EAC3006BC67E /* StakingPoolTableViewCell.swift */; };
+		77F033A82A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F033A72A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift */; };
 		77F085A407EDCCF906FD6E22 /* StartStakingInfoWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D65686560E2E6C18A5C34CB /* StartStakingInfoWireframe.swift */; };
 		77F1893E2A4996FC00E8B933 /* ParagraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F1893D2A4996FC00E8B933 /* ParagraphView.swift */; };
 		77F189402A49972300E8B933 /* UILabel+bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F1893F2A49972300E8B933 /* UILabel+bind.swift */; };
@@ -4380,6 +4381,7 @@
 		77F033A12A84E00F006BC67E /* StakingPoolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPoolView.swift; sourceTree = "<group>"; };
 		77F033A32A84E028006BC67E /* StakingSelectPoolListHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolListHeaderView.swift; sourceTree = "<group>"; };
 		77F033A52A84EAC3006BC67E /* StakingPoolTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPoolTableViewCell.swift; sourceTree = "<group>"; };
+		77F033A72A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewModelFactory.swift; sourceTree = "<group>"; };
 		77F1893D2A4996FC00E8B933 /* ParagraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphView.swift; sourceTree = "<group>"; };
 		77F1893F2A49972300E8B933 /* UILabel+bind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+bind.swift"; sourceTree = "<group>"; };
 		77F189432A49974A00E8B933 /* UITextView+bind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+bind.swift"; sourceTree = "<group>"; };
@@ -16426,6 +16428,7 @@
 				86F7ACFB151C31B3A5044DCD /* StakingSelectPoolInteractor.swift */,
 				E7F38FDB907F69A26B93B4E6 /* StakingSelectPoolViewController.swift */,
 				4E553E3D45A7A759C917A4B2 /* StakingSelectPoolViewFactory.swift */,
+				77F033A72A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift */,
 			);
 			path = StakingSelectPool;
 			sourceTree = "<group>";
@@ -18871,6 +18874,7 @@
 				AEE5FAFD26415DE2002B8FDC /* StakingRebondSetupViewController.swift in Sources */,
 				84CAC1CE298A7A4800F78169 /* GovernanceDelegationAdditions.swift in Sources */,
 				F47F5A7A2626E91A009BCFF4 /* StakingRewardHistoryViewModel.swift in Sources */,
+				77F033A82A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift in Sources */,
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,

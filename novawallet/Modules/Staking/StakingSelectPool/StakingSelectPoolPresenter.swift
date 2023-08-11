@@ -1,21 +1,45 @@
 import Foundation
+import SoraFoundation
 
 final class StakingSelectPoolPresenter {
     weak var view: StakingSelectPoolViewProtocol?
     let wireframe: StakingSelectPoolWireframeProtocol
     let interactor: StakingSelectPoolInteractorInputProtocol
+    let viewModelFactory: StakingSelectPoolViewModelFactoryProtocol
+    let chainAsset: ChainAsset
+
+    private var poolStats: [NominationPools.PoolStats]?
 
     init(
         interactor: StakingSelectPoolInteractorInputProtocol,
-        wireframe: StakingSelectPoolWireframeProtocol
+        wireframe: StakingSelectPoolWireframeProtocol,
+        viewModelFactory: StakingSelectPoolViewModelFactoryProtocol,
+        chainAsset: ChainAsset,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
+        self.chainAsset = chainAsset
+        self.localizationManager = localizationManager
+    }
+
+    private func provideViewModel() {
+        guard let stats = poolStats else {
+            return
+        }
+        viewModelFactory.createStakingSelectPoolViewModels(
+            from: stats,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
     }
 }
 
 extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 
     func selectPool(poolId _: NominationPools.PoolId) {}
 
@@ -23,5 +47,16 @@ extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
 }
 
 extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol {
-    func didReceive(poolStats _: [NominationPools.PoolStats]) {}
+    func didReceive(poolStats: [NominationPools.PoolStats]) {
+        self.poolStats = poolStats
+        provideViewModel()
+    }
+}
+
+extension StakingSelectPoolPresenter: Localizable {
+    func applyLocalization() {
+        if view?.isSetup == true {
+            provideViewModel()
+        }
+    }
 }

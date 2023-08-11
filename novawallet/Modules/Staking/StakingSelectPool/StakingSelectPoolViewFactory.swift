@@ -31,8 +31,18 @@ struct StakingSelectPoolViewFactory {
         )
 
         let wireframe = StakingSelectPoolWireframe()
+        let viewModelFactory = StakingSelectPoolViewModelFactory(
+            apyFormatter: NumberFormatter.percentAPY.localizableResource(),
+            membersFormatter: NumberFormatter.quantity.localizableResource()
+        )
 
-        let presenter = StakingSelectPoolPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = StakingSelectPoolPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            chainAsset: state.chainAsset,
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = StakingSelectPoolViewController(
             presenter: presenter,
