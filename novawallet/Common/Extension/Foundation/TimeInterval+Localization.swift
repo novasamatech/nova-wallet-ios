@@ -6,14 +6,19 @@ extension TimeInterval {
         for locale: Locale,
         preposition: String? = nil,
         separator: String = " ",
-        shortcutHandler: PredefinedTimeShortcutProtocol? = nil
+        shortcutHandler: PredefinedTimeShortcutProtocol? = nil,
+        roundsDown: Bool = true
     ) -> String {
-        if let shortcut = shortcutHandler?.getShortcut(for: self, locale: locale) {
+        if
+            let shortcut = shortcutHandler?.getShortcut(
+                for: self,
+                roundsDown: roundsDown,
+                locale: locale
+            ) {
             return shortcut
         }
 
-        let days = daysFromSeconds
-        let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
+        let (days, hours) = getDaysAndHours(roundingDown: roundsDown)
 
         var components: [String] = []
 

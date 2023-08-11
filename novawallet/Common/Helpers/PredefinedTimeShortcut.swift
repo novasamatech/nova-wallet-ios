@@ -1,20 +1,14 @@
 import Foundation
 
 protocol PredefinedTimeShortcutProtocol {
-    func getShortcut(for timeInterval: TimeInterval, locale: Locale) -> String?
+    func getShortcut(for timeInterval: TimeInterval, roundsDown: Bool, locale: Locale) -> String?
 }
 
 final class EverydayShortcut: PredefinedTimeShortcutProtocol {
-    func getShortcut(for timeInterval: TimeInterval, locale: Locale) -> String? {
-        let days = timeInterval.daysFromSeconds
+    func getShortcut(for timeInterval: TimeInterval, roundsDown: Bool, locale: Locale) -> String? {
+        let (days, hours) = timeInterval.getDaysAndHours(roundingDown: roundsDown)
 
-        guard days == 1 else {
-            return nil
-        }
-
-        let hours = (timeInterval - TimeInterval(days).secondsFromDays).hoursFromSeconds
-
-        guard hours == 0 else {
+        guard days == 1, hours == 0 else {
             return nil
         }
 

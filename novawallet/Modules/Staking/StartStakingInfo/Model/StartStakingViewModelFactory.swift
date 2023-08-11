@@ -79,7 +79,13 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let timePreposition = R.string.localizable.commonTimeIn(preferredLanguages: locale.rLanguages)
-        let time = nextEra.localizedDaysHours(for: locale, preposition: timePreposition, separator: separator)
+        let time = nextEra.localizedDaysHours(
+            for: locale,
+            preposition: timePreposition,
+            separator: separator,
+            roundsDown: false
+        )
+
         let precision = chainAsset.assetDisplayInfo.assetPrecision
         let textWithAccents: AccentTextModel
 
@@ -119,8 +125,10 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         let unstakePeriodString = unstakePeriod.localizedDaysHours(
             for: locale,
             preposition: preposition,
-            separator: separator
+            separator: separator,
+            roundsDown: false
         )
+
         let text = R.string.localizable.stakingStartUnstake(unstakePeriodString, preferredLanguages: locale.rLanguages)
         let textWithAccents = AccentTextModel(
             text: text,
@@ -145,8 +153,10 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
             for: locale,
             preposition: preposition,
             separator: separator,
-            shortcutHandler: EverydayShortcut()
+            shortcutHandler: EverydayShortcut(),
+            roundsDown: false
         )
+
         let text: String
 
         if let amount = amount {
