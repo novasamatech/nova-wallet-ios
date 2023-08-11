@@ -2,7 +2,16 @@ import Foundation
 import SoraFoundation
 
 extension TimeInterval {
-    func localizedDaysHours(for locale: Locale) -> String {
+    func localizedDaysHours(
+        for locale: Locale,
+        preposition: String? = nil,
+        separator: String = " ",
+        shortcutHandler: PredefinedTimeShortcutProtocol? = nil
+    ) -> String {
+        if let shortcut = shortcutHandler?.getShortcut(for: self, locale: locale) {
+            return shortcut
+        }
+
         let days = daysFromSeconds
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
 
@@ -24,7 +33,13 @@ extension TimeInterval {
             components.append(hoursString)
         }
 
-        return components.joined(separator: " ")
+        let timeString = components.joined(separator: separator)
+
+        if let preposition = preposition, !preposition.isEmpty {
+            return preposition + " " + timeString
+        } else {
+            return timeString
+        }
     }
 
     func localizedDaysHoursMinutes(
