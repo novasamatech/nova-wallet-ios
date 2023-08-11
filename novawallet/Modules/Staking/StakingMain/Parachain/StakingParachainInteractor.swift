@@ -108,12 +108,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     }
 
     func setupSharedState() {
-        do {
-            let accountId = selectedAccount?.chainAccount.accountId
-            sharedState.setup(for: accountId)
-        } catch {
-            logger?.error("Couldn't create shared state")
-            presenter?.didReceiveError(error)
-        }
+        let accountId = selectedAccount?.chainAccount.accountId
+        sharedState.setup(for: accountId)
     }
 }

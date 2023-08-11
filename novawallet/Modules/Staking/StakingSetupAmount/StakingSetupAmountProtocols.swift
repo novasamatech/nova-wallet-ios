@@ -39,13 +39,20 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
 
 protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, StakingErrorPresentable {
-    func showStakingTypeSelection(from view: ControllerBackedProtocol?)
+    func showStakingTypeSelection(
+        from view: ControllerBackedProtocol?,
+        method: StakingSelectionMethod,
+        amount: BigUInt,
+        delegate: StakingTypeDelegate?
+    )
 
     func showConfirmation(
         from view: ControllerBackedProtocol?,
         stakingOption: SelectedStakingOption,
         amount: Decimal
     )
+
+    func showSelectValidators(from view: ControllerBackedProtocol?, selectedValidators: PreparedValidators)
 }
 
 enum StakingSetupAmountError: Error {
