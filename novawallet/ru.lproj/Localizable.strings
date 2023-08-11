@@ -1295,7 +1295,7 @@
 "staking.start.gov.nomination.pool.action" = "Участвуйте в голосовании";
 "staking.start.gov.nomination.direct.staking.action" = "участвуйте в голосовании";
 "staking.start.changes.action" = "Проверяйте свой стейк";
-"staking.start.changes" = "Награды & статус стейкинга меняются со временем. %@ время от времени";
+"staking.start.changes" = "Награды и статус стейкинга меняются со временем. %@ время от времени";
 "staking.start.wiki" = "Узнайте больше информации о\n%@ стейкинге на %@";
 "staking.start.wiki.link" = "Nova Wiki";
 "staking.start.terms" = "Смотреть %@";
@@ -1344,3 +1344,4 @@
 "staking.type.alert.unsaved.changes.title" = "Несохраненные изменения";
 "staking.type.alert.unsaved.changes.message" = "Хотите сохранить изменения?";
 "staking.validators" = "Валидаторы";
+"common.every.day" = "каждый день";

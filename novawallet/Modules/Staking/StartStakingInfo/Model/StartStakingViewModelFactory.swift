@@ -83,8 +83,10 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         let precision = chainAsset.assetDisplayInfo.assetPrecision
         let textWithAccents: AccentTextModel
 
-        if let minStake = minStake,
-           let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: precision) {
+        if
+            let minStake = minStake,
+            minStake > 0,
+            let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: precision) {
             let amount = balanceViewModelFactory.amountFromValue(amountDecimal).value(for: locale)
             let text = R.string.localizable.stakingStartStake(amount, time, preferredLanguages: locale.rLanguages)
             textWithAccents = AccentTextModel(
