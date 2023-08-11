@@ -33,7 +33,8 @@ struct StakingSelectPoolViewFactory {
         let wireframe = StakingSelectPoolWireframe()
         let viewModelFactory = StakingSelectPoolViewModelFactory(
             apyFormatter: NumberFormatter.percentAPY.localizableResource(),
-            membersFormatter: NumberFormatter.quantity.localizableResource()
+            membersFormatter: NumberFormatter.quantity.localizableResource(),
+            poolIconFactory: NominationPoolsIconFactory()
         )
 
         let presenter = StakingSelectPoolPresenter(

@@ -76,16 +76,21 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
             }
             self?.poolsCancellable = nil
 
-            do {
-                let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData()
-                self?.presenter?.didReceive(poolStats: stats)
-            } catch {
-                // TODO:
+            DispatchQueue.main.async {
+                do {
+                    let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(poolStats: stats)
+                } catch {
+                    // TODO:
+                }
             }
         }
 
         poolsCancellable = poolStatsWrapper
-        operationQueue.addOperations(poolStatsWrapper.allOperations, waitUntilFinished: false)
+        operationQueue.addOperations(
+            maxApyWrapper.allOperations + poolStatsWrapper.allOperations,
+            waitUntilFinished: false
+        )
     }
 }
 

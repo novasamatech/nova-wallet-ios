@@ -166,7 +166,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectNominationPool() {
-        // TODO:
+        wireframe.showNominationPoolsList(from: view)
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {

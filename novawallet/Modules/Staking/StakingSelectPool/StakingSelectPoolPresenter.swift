@@ -28,11 +28,13 @@ final class StakingSelectPoolPresenter {
         guard let stats = poolStats else {
             return
         }
-        viewModelFactory.createStakingSelectPoolViewModels(
+        let viewModels = viewModelFactory.createStakingSelectPoolViewModels(
             from: stats,
             chainAsset: chainAsset,
             locale: selectedLocale
         )
+
+        view?.didReceivePools(viewModels: viewModels)
     }
 }
 

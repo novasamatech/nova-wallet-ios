@@ -10,8 +10,8 @@ final class StakingPoolTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        configure()
         setupLayout()
+        configure()
     }
 
     @available(*, unavailable)
@@ -19,7 +19,7 @@ final class StakingPoolTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16) {
+    var contentInsets = UIEdgeInsets(top: 5, left: 16, bottom: 5, right: 16) {
         didSet {
             updateLayout()
         }

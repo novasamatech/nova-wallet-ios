@@ -20,7 +20,7 @@ enum StakingTypeViewFactory {
             return nil
         }
 
-        let wireframe = StakingTypeWireframe()
+        let wireframe = StakingTypeWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,

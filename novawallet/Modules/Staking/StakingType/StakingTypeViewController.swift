@@ -63,14 +63,30 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
-        rootView.poolStakingBannerView.addGestureRecognizer(UITapGestureRecognizer(
+        let directStakingTapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(poolBannerAction)
-        ))
-        rootView.directStakingBannerView.addGestureRecognizer(UITapGestureRecognizer(
+        )
+        directStakingTapGesture.delegate = self
+        rootView.directStakingBannerView.addGestureRecognizer(directStakingTapGesture)
+
+        let poolStakingTapGesture = UITapGestureRecognizer(
             target: self,
-            action: #selector(directBannerAction)
-        ))
+            action: #selector(nominationPoolAction)
+        )
+        poolStakingTapGesture.delegate = self
+        rootView.poolStakingBannerView.addGestureRecognizer(directStakingTapGesture)
+
+        rootView.poolStakingBannerView.accountView.addTarget(
+            self,
+            action: #selector(nominationPoolAction),
+            for: .touchUpInside
+        )
+        rootView.directStakingBannerView.accountView.addTarget(
+            self,
+            action: #selector(validatorsAction),
+            for: .touchUpInside
+        )
     }
 
     @objc private func validatorsAction() {
@@ -114,24 +130,11 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 extension StakingTypeViewController: StakingTypeViewProtocol {
     func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool) {
         rootView.bind(poolStakingTypeViewModel: viewModel)
-        rootView.poolStakingBannerView.accountView.removeTarget(nil, action: nil, for: .allEvents)
-        rootView.poolStakingBannerView.accountView.addTarget(
-            self,
-            action: #selector(nominationPoolAction),
-            for: .touchUpInside
-        )
-
         rootView.poolStakingBannerView.alpha = available ? 1 : 0.5
     }
 
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool) {
         rootView.bind(directStakingTypeViewModel: viewModel)
-        rootView.directStakingBannerView.accountView.removeTarget(nil, action: nil, for: .allEvents)
-        rootView.directStakingBannerView.accountView.addTarget(
-            self,
-            action: #selector(validatorsAction),
-            for: .touchUpInside
-        )
         rootView.directStakingBannerView.alpha = available ? 1 : 0.5
     }
 
@@ -160,5 +163,14 @@ extension StakingTypeViewController: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+extension StakingTypeViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UIControl {
+            return false
+        }
+        return true
     }
 }

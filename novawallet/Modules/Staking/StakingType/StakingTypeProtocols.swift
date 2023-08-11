@@ -28,6 +28,7 @@ protocol StakingTypeInteractorOutputProtocol: AnyObject {
 
 protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
     func complete(from view: ControllerBackedProtocol?)
+    func showNominationPoolsList(from view: ControllerBackedProtocol?)
 }
 
 enum StakingTypeError: Error {

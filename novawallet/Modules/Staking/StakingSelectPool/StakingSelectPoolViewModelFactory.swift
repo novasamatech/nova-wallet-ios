@@ -11,12 +11,16 @@ protocol StakingSelectPoolViewModelFactoryProtocol: StakingSelectPoolViewModelFa
 final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactoryProtocol {
     let apyFormatter: LocalizableResource<NumberFormatter>
     let membersFormatter: LocalizableResource<NumberFormatter>
+    let poolIconFactory: NominationPoolsIconFactoryProtocol
+
     init(
         apyFormatter: LocalizableResource<NumberFormatter>,
-        membersFormatter: LocalizableResource<NumberFormatter>
+        membersFormatter: LocalizableResource<NumberFormatter>,
+        poolIconFactory: NominationPoolsIconFactoryProtocol
     ) {
         self.apyFormatter = apyFormatter
         self.membersFormatter = membersFormatter
+        self.poolIconFactory = poolIconFactory
     }
 
     func createStakingSelectPoolViewModels(
@@ -32,9 +36,13 @@ final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactory
             } ?? nil
             let period = R.string.localizable.commonPerYear(preferredLanguages: locale.rLanguages)
             let members = membersFormatter.value(for: locale).string(from: .init(value: $0.membersCount)) ?? ""
-
+            let imageViewModel = poolIconFactory.createIconViewModel(
+                for: chainAsset,
+                poolId: $0.poolId,
+                bondedAccountId: $0.bondedAccountId
+            )
             return StakingSelectPoolViewModel(
-                imageViewModel: nil,
+                imageViewModel: imageViewModel,
                 name: title,
                 apy: apy.map { .init(value: $0, period: period) },
                 members: members,
