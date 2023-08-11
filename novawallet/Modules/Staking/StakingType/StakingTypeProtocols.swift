@@ -1,3 +1,5 @@
+import BigInt
+
 protocol StakingTypeViewProtocol: ControllerBackedProtocol {
     func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool)
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool)
@@ -28,7 +30,12 @@ protocol StakingTypeInteractorOutputProtocol: AnyObject {
 
 protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
     func complete(from view: ControllerBackedProtocol?)
-    func showNominationPoolsList(from view: ControllerBackedProtocol?)
+    func showNominationPoolsList(
+        from view: ControllerBackedProtocol?,
+        amount: BigUInt,
+        delegate: StakingSelectPoolDelegate?,
+        selectedPool: NominationPools.SelectedPool?
+    )
 }
 
 enum StakingTypeError: Error {

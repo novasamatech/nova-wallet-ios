@@ -1,6 +1,7 @@
 import UIKit
 import SubstrateSdk
 import RobinHood
+import BigInt
 
 final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning {
     weak var presenter: StakingSelectPoolInteractorOutputProtocol?
@@ -12,6 +13,8 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let chainAsset: ChainAsset
     let rewardEngineOperationFactory: NPoolsRewardEngineFactoryProtocol
+    let recommendationMediator: RelaychainStakingRecommendationMediating
+    let amount: BigUInt
 
     private var maxMembersPerPoolProvider: AnyDataProvider<DecodedU32>?
     private var maxPoolMembersPerPool: UncertainStorage<UInt32?> = .undefined
@@ -23,26 +26,31 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
         poolsOperationFactory: NominationPoolsOperationFactoryProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         rewardEngineOperationFactory: NPoolsRewardEngineFactoryProtocol,
+        recommendationMediator: RelaychainStakingRecommendationMediating,
         eraPoolsService: EraNominationPoolsServiceProtocol,
         validatorRewardService: RewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         chainAsset: ChainAsset,
+        amount: BigUInt,
         operationQueue: OperationQueue
     ) {
         self.poolsOperationFactory = poolsOperationFactory
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.rewardEngineOperationFactory = rewardEngineOperationFactory
+        self.recommendationMediator = recommendationMediator
         self.eraPoolsService = eraPoolsService
         self.validatorRewardService = validatorRewardService
         self.connection = connection
         self.runtimeService = runtimeService
         self.chainAsset = chainAsset
+        self.amount = amount
         self.operationQueue = operationQueue
     }
 
     deinit {
         clear(dataProvider: &maxMembersPerPoolProvider)
+        recommendationMediator.stopRecommending()
     }
 
     private func performMaxMembersPerPoolSubscription() {
@@ -92,11 +100,18 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
             waitUntilFinished: false
         )
     }
+
+    private func provideRecommendation() {
+        recommendationMediator.delegate = self
+        recommendationMediator.startRecommending()
+        recommendationMediator.update(amount: amount)
+    }
 }
 
 extension StakingSelectPoolInteractor: StakingSelectPoolInteractorInputProtocol {
     func setup() {
         performMaxMembersPerPoolSubscription()
+        provideRecommendation()
     }
 
     func refreshPools() {
@@ -104,6 +119,7 @@ extension StakingSelectPoolInteractor: StakingSelectPoolInteractorInputProtocol 
             return
         }
         fetchSparePoolsInfo()
+        provideRecommendation()
     }
 }
 
@@ -117,5 +133,22 @@ extension StakingSelectPoolInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
             break
             // TODO:
         }
+    }
+}
+
+extension StakingSelectPoolInteractor: RelaychainStakingRecommendationDelegate {
+    func didReceive(
+        recommendation: RelaychainStakingRecommendation,
+        amount _: BigUInt
+    ) {
+        guard case let .pool(recommendedPool) = recommendation.staking else {
+            return
+        }
+
+        presenter?.didReceive(recommendedPool: recommendedPool)
+    }
+
+    func didReceiveRecommendation(error _: Error) {
+        // TODO:
     }
 }

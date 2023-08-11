@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 final class StakingTypeWireframe: StakingTypeWireframeProtocol {
     let state: RelaychainStartStakingStateProtocol
@@ -11,8 +12,18 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
         view?.controller.navigationController?.popViewController(animated: true)
     }
 
-    func showNominationPoolsList(from view: ControllerBackedProtocol?) {
-        guard let poolListView = StakingSelectPoolViewFactory.createView(state: state) else {
+    func showNominationPoolsList(
+        from view: ControllerBackedProtocol?,
+        amount: BigUInt,
+        delegate: StakingSelectPoolDelegate?,
+        selectedPool: NominationPools.SelectedPool?
+    ) {
+        guard let poolListView = StakingSelectPoolViewFactory.createView(
+            state: state,
+            amount: amount,
+            selectedPool: selectedPool,
+            delegate: delegate
+        ) else {
             return
         }
 

@@ -1,5 +1,6 @@
 protocol StakingSelectPoolViewProtocol: ControllerBackedProtocol {
     func didReceivePools(viewModels: [StakingSelectPoolViewModel])
+    func didReceivePoolUpdate(viewModel: StakingSelectPoolViewModel)
 }
 
 protocol StakingSelectPoolPresenterProtocol: AnyObject {
@@ -14,6 +15,9 @@ protocol StakingSelectPoolInteractorInputProtocol: AnyObject {
 
 protocol StakingSelectPoolInteractorOutputProtocol: AnyObject {
     func didReceive(poolStats: [NominationPools.PoolStats])
+    func didReceive(recommendedPool: NominationPools.SelectedPool)
 }
 
-protocol StakingSelectPoolWireframeProtocol: AnyObject {}
+protocol StakingSelectPoolWireframeProtocol: AnyObject, AddressOptionsPresentable {
+    func complete(from view: ControllerBackedProtocol?)
+}

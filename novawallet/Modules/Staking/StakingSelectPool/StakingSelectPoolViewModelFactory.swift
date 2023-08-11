@@ -3,9 +3,17 @@ import SoraFoundation
 protocol StakingSelectPoolViewModelFactoryProtocol: StakingSelectPoolViewModelFactory {
     func createStakingSelectPoolViewModels(
         from poolStats: [NominationPools.PoolStats],
+        selectedPoolId: NominationPools.PoolId?,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> [StakingSelectPoolViewModel]
+
+    func createStakingSelectPoolViewModel(
+        from poolStats: NominationPools.PoolStats,
+        selectedPoolId: NominationPools.PoolId?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> StakingSelectPoolViewModel
 }
 
 final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactoryProtocol {
@@ -25,29 +33,45 @@ final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactory
 
     func createStakingSelectPoolViewModels(
         from poolStats: [NominationPools.PoolStats],
+        selectedPoolId: NominationPools.PoolId?,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> [StakingSelectPoolViewModel] {
         poolStats.map {
-            let selectedPool = NominationPools.SelectedPool(poolStats: $0)
-            let title = selectedPool.title(for: chainAsset.chain.chainFormat) ?? ""
-            let apy = selectedPool.maxApy.map {
-                apyFormatter.value(for: locale).stringFromDecimal($0)
-            } ?? nil
-            let period = R.string.localizable.commonPerYear(preferredLanguages: locale.rLanguages)
-            let members = membersFormatter.value(for: locale).string(from: .init(value: $0.membersCount)) ?? ""
-            let imageViewModel = poolIconFactory.createIconViewModel(
-                for: chainAsset,
-                poolId: $0.poolId,
-                bondedAccountId: $0.bondedAccountId
-            )
-            return StakingSelectPoolViewModel(
-                imageViewModel: imageViewModel,
-                name: title,
-                apy: apy.map { .init(value: $0, period: period) },
-                members: members,
-                id: $0.poolId
+            createStakingSelectPoolViewModel(
+                from: $0,
+                selectedPoolId: selectedPoolId,
+                chainAsset: chainAsset,
+                locale: locale
             )
         }
+    }
+
+    func createStakingSelectPoolViewModel(
+        from poolStats: NominationPools.PoolStats,
+        selectedPoolId: NominationPools.PoolId?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> StakingSelectPoolViewModel {
+        let selectedPool = NominationPools.SelectedPool(poolStats: poolStats)
+        let title = selectedPool.title(for: chainAsset.chain.chainFormat) ?? ""
+        let apy = selectedPool.maxApy.map {
+            apyFormatter.value(for: locale).stringFromDecimal($0)
+        } ?? nil
+        let period = R.string.localizable.commonPerYear(preferredLanguages: locale.rLanguages)
+        let members = membersFormatter.value(for: locale).string(from: .init(value: poolStats.membersCount)) ?? ""
+        let imageViewModel = selectedPoolId != poolStats.poolId ? poolIconFactory.createIconViewModel(
+            for: chainAsset,
+            poolId: poolStats.poolId,
+            bondedAccountId: poolStats.bondedAccountId
+        ) : StaticImageViewModel(image: R.image.iconCheckbox()!)
+
+        return StakingSelectPoolViewModel(
+            imageViewModel: imageViewModel,
+            name: title,
+            apy: apy.map { .init(value: $0, period: period) },
+            members: members,
+            id: poolStats.poolId
+        )
     }
 }

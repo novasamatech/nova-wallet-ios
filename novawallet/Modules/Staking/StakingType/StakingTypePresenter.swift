@@ -166,7 +166,17 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectNominationPool() {
-        wireframe.showNominationPoolsList(from: view)
+        guard let method = method else {
+            return
+        }
+        let selectedPool = NominationPools.Lens.pool.get(method)
+
+        wireframe.showNominationPoolsList(
+            from: view,
+            amount: amount,
+            delegate: self,
+            selectedPool: selectedPool
+        )
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
@@ -260,5 +270,16 @@ extension StakingTypePresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension StakingTypePresenter: StakingSelectPoolDelegate {
+    func changePoolSelection(selectedPool: NominationPools.SelectedPool) {
+        guard let method = method else {
+            return
+        }
+        hasChanges = true
+        self.method = NominationPools.Lens.pool.set(selectedPool, method)
+        updateView()
     }
 }

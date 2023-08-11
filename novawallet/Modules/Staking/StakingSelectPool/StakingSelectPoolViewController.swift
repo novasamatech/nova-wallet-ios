@@ -49,6 +49,17 @@ extension StakingSelectPoolViewController: StakingSelectPoolViewProtocol {
         pools = viewModels
         rootView.tableView.reloadData()
     }
+
+    func didReceivePoolUpdate(viewModel: StakingSelectPoolViewModel) {
+        guard let index = pools.firstIndex(where: { $0.id == viewModel.id }) else {
+            return
+        }
+        pools[index] = viewModel
+
+        if let cell = rootView.tableView.visibleCells[safe: index] as? StakingPoolTableViewCell {
+            cell.bind(viewModel: viewModel)
+        }
+    }
 }
 
 extension StakingSelectPoolViewController: UITableViewDataSource {

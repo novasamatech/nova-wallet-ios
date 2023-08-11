@@ -1,8 +1,18 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
-struct StakingSelectPoolViewFactory {
-    static func createView(state: RelaychainStartStakingStateProtocol) -> StakingSelectPoolViewProtocol? {
+protocol StakingSelectPoolDelegate: AnyObject {
+    func changePoolSelection(selectedPool: NominationPools.SelectedPool)
+}
+
+enum StakingSelectPoolViewFactory {
+    static func createView(
+        state: RelaychainStartStakingStateProtocol,
+        amount: BigUInt,
+        selectedPool: NominationPools.SelectedPool?,
+        delegate: StakingSelectPoolDelegate?
+    ) -> StakingSelectPoolViewProtocol? {
         let chainId = state.chainAsset.chain.chainId
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -12,8 +22,15 @@ struct StakingSelectPoolViewFactory {
             let activePoolService = state.activePoolsService else {
             return nil
         }
-
         let queue = OperationQueue()
+
+        let recommendationFactory = StakingRecommendationMediatorFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: queue
+        )
+        guard let recommendationMediator = recommendationFactory.createPoolStakingMediator(for: state) else {
+            return nil
+        }
 
         let poolsOperationFactory = NominationPoolsOperationFactory(operationQueue: queue)
         let rewardCalculationFactory = NPoolsRewardEngineFactory(operationFactory: poolsOperationFactory)
@@ -22,11 +39,13 @@ struct StakingSelectPoolViewFactory {
             poolsOperationFactory: poolsOperationFactory,
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             rewardEngineOperationFactory: rewardCalculationFactory,
+            recommendationMediator: recommendationMediator,
             eraPoolsService: activePoolService,
             validatorRewardService: state.relaychainRewardCalculatorService,
             connection: connection,
             runtimeService: runtimeService,
             chainAsset: state.chainAsset,
+            amount: amount,
             operationQueue: queue
         )
 
@@ -42,6 +61,8 @@ struct StakingSelectPoolViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             chainAsset: state.chainAsset,
+            delegate: delegate,
+            selectedPool: selectedPool,
             localizationManager: LocalizationManager.shared
         )
 
