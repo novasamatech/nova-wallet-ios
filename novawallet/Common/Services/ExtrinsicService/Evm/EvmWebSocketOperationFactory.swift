@@ -94,4 +94,31 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
 
         return operation
     }
+
+    func createReducedBlockOperation(
+        for blockOption: EthereumBlock
+    ) -> RobinHood.BaseOperation<EthereumReducedBlockObject> {
+        let params = JSON.arrayValue(
+            [
+                JSON.stringValue(blockOption.rawValue), // block number
+                JSON.boolValue(false) // should return full transactions
+            ]
+        )
+
+        return JSONRPCOperation<JSON, EthereumReducedBlockObject>(
+            engine: connection,
+            method: EthereumMethod.blockByNumber.rawValue,
+            parameters: params,
+            timeout: timeout
+        )
+    }
+
+    func createMaxPriorityPerGasOperation() -> BaseOperation<HexCodable<BigUInt>> {
+        JSONRPCListOperation<HexCodable<BigUInt>>(
+            engine: connection,
+            method: EthereumMethod.maxPriorityFeePerGas.rawValue,
+            parameters: [],
+            timeout: timeout
+        )
+    }
 }

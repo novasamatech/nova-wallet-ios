@@ -20,6 +20,12 @@ protocol EthereumOperationFactoryProtocol {
     func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt?>
 
     func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject>
+
+    func createReducedBlockOperation(
+        for blockOption: EthereumBlock
+    ) -> RobinHood.BaseOperation<EthereumReducedBlockObject>
+
+    func createMaxPriorityPerGasOperation() -> BaseOperation<HexCodable<BigUInt>>
 }
 
 enum EthereumBlock: String {
@@ -35,4 +41,5 @@ enum EthereumMethod: String {
     case sendRawTransaction = "eth_sendRawTransaction"
     case transactionReceipt = "eth_getTransactionReceipt"
     case blockByNumber = "eth_getBlockByNumber"
+    case maxPriorityFeePerGas = "eth_maxPriorityFeePerGas"
 }

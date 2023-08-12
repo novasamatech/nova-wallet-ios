@@ -34,17 +34,20 @@ enum EvmTransactionServiceError: Error {
 final class EvmTransactionService {
     let accountId: AccountId
     let operationFactory: EthereumOperationFactoryProtocol
+    let gasPriceProvider: EvmGasPriceProviderProtocol
     let chain: ChainModel
     let operationQueue: OperationQueue
 
     init(
         accountId: AccountId,
         operationFactory: EthereumOperationFactoryProtocol,
+        gasPriceProvider: EvmGasPriceProviderProtocol,
         chain: ChainModel,
         operationQueue: OperationQueue
     ) {
         self.accountId = accountId
         self.operationFactory = operationFactory
+        self.gasPriceProvider = gasPriceProvider
         self.chain = chain
         self.operationQueue = operationQueue
     }
@@ -92,21 +95,17 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 fallbackGasLimit: fallbackGasLimit
             )
 
-            let gasPriceOperation = operationFactory.createGasPriceOperation()
+            let gasPriceWrapper = gasPriceProvider.getGasPriceWrapper()
 
             let mapOperation = ClosureOperation<BigUInt> {
                 let gasLimit = try gasEstimationWrapper.targetOperation.extractNoCancellableResultData()
-                let gasPriceString = try gasPriceOperation.extractNoCancellableResultData()
-
-                guard let gasPrice = BigUInt.fromHexString(gasPriceString) else {
-                    throw EvmTransactionServiceError.invalidGasPrice(gasPriceString)
-                }
+                let gasPrice = try gasPriceWrapper.targetOperation.extractNoCancellableResultData()
 
                 return gasLimit * gasPrice
             }
 
             mapOperation.addDependency(gasEstimationWrapper.targetOperation)
-            mapOperation.addDependency(gasPriceOperation)
+            mapOperation.addDependency(gasPriceWrapper.targetOperation)
 
             mapOperation.completionBlock = {
                 queue.async {
@@ -119,7 +118,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 }
             }
 
-            let operations = gasEstimationWrapper.allOperations + [gasPriceOperation, mapOperation]
+            let operations = gasEstimationWrapper.allOperations + gasPriceWrapper.allOperations + [mapOperation]
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
@@ -141,20 +140,16 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             let builder = try closure(initBuilder)
 
             let gasEstimationOperation = operationFactory.createGasLimitOperation(for: builder.buildTransaction())
-            let gasPriceOperation = operationFactory.createGasPriceOperation()
+            let gasPriceWrapper = gasPriceProvider.getGasPriceWrapper()
             let nonceOperation = operationFactory.createTransactionsCountOperation(for: accountId, block: .pending)
 
             let sendOperation = operationFactory.createSendTransactionOperation {
                 let gasLimitString = try gasEstimationOperation.extractNoCancellableResultData()
-                let gasPriceString = try gasPriceOperation.extractNoCancellableResultData()
+                let gasPrice = try gasPriceWrapper.targetOperation.extractNoCancellableResultData()
                 let nonceString = try nonceOperation.extractNoCancellableResultData()
 
                 guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
                     throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
-                }
-
-                guard let gasPrice = BigUInt.fromHexString(gasPriceString) else {
-                    throw EvmTransactionServiceError.invalidGasPrice(gasLimitString)
                 }
 
                 guard let nonce = BigUInt.fromHexString(nonceString) else {
@@ -172,7 +167,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             }
 
             sendOperation.addDependency(gasEstimationOperation)
-            sendOperation.addDependency(gasPriceOperation)
+            sendOperation.addDependency(gasPriceWrapper.targetOperation)
             sendOperation.addDependency(nonceOperation)
 
             sendOperation.completionBlock = {
@@ -186,7 +181,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 }
             }
 
-            let operations = [gasEstimationOperation, gasPriceOperation, nonceOperation, sendOperation]
+            let operations = [gasEstimationOperation] + gasPriceWrapper.allOperations + [nonceOperation, sendOperation]
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
