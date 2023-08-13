@@ -116,11 +116,6 @@ struct TransferConfirmOnChainViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
-        let gasPriceProvider = EvmGasPriceProviderFactory.createMaxPriorityWithLegacyFallback(
-            operationFactory: operationFactory,
-            operationQueue: operationQueue,
-            logger: Logger.shared
-        )
 
         let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
             for: asset,
@@ -134,7 +129,8 @@ struct TransferConfirmOnChainViewFactory {
         let extrinsicService = EvmTransactionService(
             accountId: account.accountId,
             operationFactory: operationFactory,
-            gasPriceProvider: gasPriceProvider,
+            maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
+            defaultGasPriceProvider: EvmLegacyGasPriceProvider(operationFactory: operationFactory),
             gasLimitProvider: gasLimitProvider,
             nonceProvider: nonceProvider,
             chain: chain,
@@ -149,8 +145,6 @@ struct TransferConfirmOnChainViewFactory {
             repository: transactionStorage,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
-
-        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
 
         return TransferEvmOnChainConfirmInteractor(
             selectedAccount: account,

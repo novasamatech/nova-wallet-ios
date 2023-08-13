@@ -15,6 +15,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     private var transaction: EthereumTransaction?
     private var ethereumService: EvmTransactionServiceProtocol?
     private var signingWrapper: SigningWrapperProtocol?
+    private var lastFee: EvmFeeModel?
 
     init(
         chainId: String,
@@ -51,14 +52,16 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             return
         }
 
-        let gasPriceProvider = createGasPriceProvider(for: transaction)
+        let defaultGasPriceProvider = createDefaultGasPriceProvider(for: transaction)
+        let maxPriorityGasPriceProvider = createMaxPriorityGasPriceProvider(for: transaction)
         let gasLimitProvider = createGasLimitProvider(for: transaction)
         let nonceProvider = createNonceProvider(for: transaction)
 
         ethereumService = EvmTransactionService(
             accountId: chainAccountId,
             operationFactory: ethereumOperationFactory,
-            gasPriceProvider: gasPriceProvider,
+            maxPriorityGasPriceProvider: maxPriorityGasPriceProvider,
+            defaultGasPriceProvider: defaultGasPriceProvider,
             gasLimitProvider: gasLimitProvider,
             nonceProvider: nonceProvider,
             chainFormat: .ethereum,
@@ -106,11 +109,23 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         }
     }
 
-    private func createGasPriceProvider(for transaction: EthereumTransaction) -> EvmGasPriceProviderProtocol {
+    private func createDefaultGasPriceProvider(
+        for transaction: EthereumTransaction
+    ) -> EvmGasPriceProviderProtocol {
         if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
             return EvmConstantGasPriceProvider(value: value)
         } else {
             return EvmLegacyGasPriceProvider(operationFactory: ethereumOperationFactory)
+        }
+    }
+
+    private func createMaxPriorityGasPriceProvider(
+        for transaction: EthereumTransaction
+    ) -> EvmGasPriceProviderProtocol {
+        if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
+            return EvmConstantGasPriceProvider(value: value)
+        } else {
+            return EvmMaxPriorityGasPriceProvider(operationFactory: ethereumOperationFactory)
         }
     }
 
@@ -144,15 +159,14 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         for transaction: EthereumTransaction,
         service: EvmTransactionServiceProtocol
     ) {
+        lastFee = nil
+
         service.estimateFee(createBuilderClosure(for: transaction), runningIn: .main) { [weak self] result in
             switch result {
-            case let .success(fee):
-                let dispatchInfo = RuntimeDispatchInfo(
-                    fee: String(fee),
-                    weight: 0
-                )
+            case let .success(model):
+                self?.lastFee = model
 
-                self?.presenter?.didReceive(feeResult: .success(dispatchInfo))
+                self?.presenter?.didReceive(feeResult: .success(model.fee))
             case let .failure(error):
                 self?.presenter?.didReceive(feeResult: .failure(error))
             }
@@ -161,11 +175,13 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
 
     private func confirmSend(
         for transaction: EthereumTransaction,
+        price: EvmTransactionPrice,
         service: EvmTransactionServiceProtocol,
         signer: SigningWrapperProtocol
     ) {
         service.submit(
             createBuilderClosure(for: transaction),
+            price: price,
             signer: signer,
             runningIn: .main
         ) { [weak self] result in
@@ -192,11 +208,13 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
 
     private func confirmSign(
         for transaction: EthereumTransaction,
+        price: EvmTransactionPrice,
         service: EvmTransactionServiceProtocol,
         signer: SigningWrapperProtocol
     ) {
         service.sign(
             createBuilderClosure(for: transaction),
+            price: price,
             signer: signer,
             runningIn: .main
         ) { [weak self] result in
@@ -250,13 +268,21 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
             let transaction = transaction,
             let ethereumService = ethereumService,
             let signer = signingWrapper else {
+            presenter?.didReceive(modelResult: .failure(CommonError.dataCorruption))
             return
         }
 
+        guard let feeModel = lastFee else {
+            presenter?.didReceive(feeResult: .failure(CommonError.dataCorruption))
+            return
+        }
+
+        let txPrice = EvmTransactionPrice(gasLimit: feeModel.gasLimit, gasPrice: feeModel.gasPrice)
+
         if shouldSendTransaction {
-            confirmSend(for: transaction, service: ethereumService, signer: signer)
+            confirmSend(for: transaction, price: txPrice, service: ethereumService, signer: signer)
         } else {
-            confirmSign(for: transaction, service: ethereumService, signer: signer)
+            confirmSign(for: transaction, price: txPrice, service: ethereumService, signer: signer)
         }
     }
 

@@ -21,6 +21,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
     let extrinsicService: EvmTransactionServiceProtocol
 
     private(set) var transferType: TransferType?
+    private(set) var lastFeeModel: EvmFeeModel?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -143,6 +144,8 @@ extension EvmOnChainTransferInteractor {
 
             let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
 
+            lastFeeModel = nil
+
             feeProxy.estimateFee(
                 using: extrinsicService,
                 reuseIdentifier: identifier
@@ -188,12 +191,13 @@ extension EvmOnChainTransferInteractor {
 
 extension EvmOnChainTransferInteractor: EvmTransactionFeeProxyDelegate {
     func didReceiveFee(
-        result: Result<BigUInt, Error>,
+        result: Result<EvmFeeModel, Error>,
         for _: TransactionFeeId
     ) {
         switch result {
-        case let .success(fee):
-            presenter?.didReceiveFee(result: .success(fee))
+        case let .success(model):
+            lastFeeModel = model
+            presenter?.didReceiveFee(result: .success(model.fee))
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))
         }

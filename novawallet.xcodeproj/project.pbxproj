@@ -65,6 +65,8 @@
 		0C3205D82A896009002EB914 /* EvmDefaultNonceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205D72A896009002EB914 /* EvmDefaultNonceProvider.swift */; };
 		0C3205DA2A896029002EB914 /* EvmConstantNonceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205D92A896029002EB914 /* EvmConstantNonceProvider.swift */; };
 		0C3205DC2A89677B002EB914 /* EvmGasLimitProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205DB2A89677B002EB914 /* EvmGasLimitProviderFactory.swift */; };
+		0C3205DE2A896C19002EB914 /* EvmFeeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205DD2A896C19002EB914 /* EvmFeeModel.swift */; };
+		0C3205E02A896C7E002EB914 /* EvmTransactionPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205DF2A896C7E002EB914 /* EvmTransactionPrice.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
@@ -3736,6 +3738,8 @@
 		0C3205D72A896009002EB914 /* EvmDefaultNonceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmDefaultNonceProvider.swift; sourceTree = "<group>"; };
 		0C3205D92A896029002EB914 /* EvmConstantNonceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmConstantNonceProvider.swift; sourceTree = "<group>"; };
 		0C3205DB2A89677B002EB914 /* EvmGasLimitProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGasLimitProviderFactory.swift; sourceTree = "<group>"; };
+		0C3205DD2A896C19002EB914 /* EvmFeeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmFeeModel.swift; sourceTree = "<group>"; };
+		0C3205DF2A896C7E002EB914 /* EvmTransactionPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionPrice.swift; sourceTree = "<group>"; };
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
@@ -12853,6 +12857,8 @@
 				84A59161292B590100BCCF8F /* EvmTransactionFeeProxy.swift */,
 				84FCCD97292E3610002D2D3D /* JSONRPCError+Evm.swift */,
 				84B1318B29ED70BF004EA1FF /* EvmFallbackGasLimit.swift */,
+				0C3205DD2A896C19002EB914 /* EvmFeeModel.swift */,
+				0C3205DF2A896C7E002EB914 /* EvmTransactionPrice.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -20272,6 +20278,7 @@
 				2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */,
 				8499FE6A27BD2FA900712589 /* RMRKNftV2.swift in Sources */,
 				844B6EC528A3153C00A8BE83 /* MetaAccountModelType+SignatureFormat.swift in Sources */,
+				0C3205DE2A896C19002EB914 /* EvmFeeModel.swift in Sources */,
 				2932BD7922FDCD64F4E9A57D /* AssetListPresenter.swift in Sources */,
 				84355CF628B63D19004E5C5E /* LedgerCrypto+Conversion.swift in Sources */,
 				8463781F2979DACB0034162B /* ReferendumsActivityViewModelFactory.swift in Sources */,
@@ -20312,6 +20319,7 @@
 				E04E3ABA985AA3D89AE20BF5 /* CrowdloanYourContributionsProtocols.swift in Sources */,
 				84C98A5C29A158D700F5328B /* DelegateVotedReferendaParams.swift in Sources */,
 				5E621A350A6DDD78597CC9E5 /* CrowdloanYourContributionsWireframe.swift in Sources */,
+				0C3205E02A896C7E002EB914 /* EvmTransactionPrice.swift in Sources */,
 				716F0819BAB14322E34E416C /* CrowdloanYourContributionsPresenter.swift in Sources */,
 				F0675F495766D07473B065F7 /* CrowdloanYourContributionsInteractor.swift in Sources */,
 				845B080D2918D4F8005785D3 /* Democracy+Call.swift in Sources */,

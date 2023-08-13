@@ -16,7 +16,7 @@ final class DAppOperationConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private var confirmationModel: DAppOperationConfirmModel?
-    private var feeModel: RuntimeDispatchInfo?
+    private var feeModel: BigUInt?
     private var priceData: PriceData?
 
     init(
@@ -55,14 +55,12 @@ final class DAppOperationConfirmPresenter {
             return
         }
 
-        guard
-            let fee = BigUInt(feeModel.fee),
-            let feeDecimal = viewModelFactory.convertBalanceToDecimal(fee) else {
+        guard let feeDecimal = viewModelFactory.convertBalanceToDecimal(feeModel) else {
             view?.didReceive(feeViewModel: .loading)
             return
         }
 
-        if fee > 0 {
+        if feeModel > 0 {
             let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
                 .value(for: selectedLocale)
             view?.didReceive(feeViewModel: .loaded(value: viewModel))
@@ -147,7 +145,7 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         provideFeeViewModel()
     }
 
-    func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>) {
+    func didReceive(feeResult: Result<BigUInt, Error>) {
         switch feeResult {
         case let .success(fee):
             feeModel = fee

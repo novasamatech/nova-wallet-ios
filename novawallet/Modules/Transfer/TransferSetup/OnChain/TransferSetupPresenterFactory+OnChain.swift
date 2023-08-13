@@ -150,12 +150,6 @@ extension TransferSetupPresenterFactory {
 
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
 
-        let gasPriceProvider = EvmGasPriceProviderFactory.createMaxPriorityWithLegacyFallback(
-            operationFactory: operationFactory,
-            operationQueue: operationQueue,
-            logger: Logger.shared
-        )
-
         let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
             for: asset,
             operationFactory: operationFactory,
@@ -168,7 +162,8 @@ extension TransferSetupPresenterFactory {
         let extrinsicService = EvmTransactionService(
             accountId: selectedAccount.accountId,
             operationFactory: operationFactory,
-            gasPriceProvider: gasPriceProvider,
+            maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
+            defaultGasPriceProvider: EvmLegacyGasPriceProvider(operationFactory: operationFactory),
             gasLimitProvider: gasLimitProvider,
             nonceProvider: nonceProvider,
             chain: chain,

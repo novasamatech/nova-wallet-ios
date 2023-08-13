@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 protocol EvmTransactionFeeProxyDelegate: AnyObject {
-    func didReceiveFee(result: Result<BigUInt, Error>, for identifier: TransactionFeeId)
+    func didReceiveFee(result: Result<EvmFeeModel, Error>, for identifier: TransactionFeeId)
 }
 
 protocol EvmTransactionFeeProxyProtocol: AnyObject {
@@ -15,10 +15,10 @@ protocol EvmTransactionFeeProxyProtocol: AnyObject {
     )
 }
 
-final class EvmTransactionFeeProxy: TransactionFeeProxy<BigUInt> {
+final class EvmTransactionFeeProxy: TransactionFeeProxy<EvmFeeModel> {
     weak var delegate: EvmTransactionFeeProxyDelegate?
 
-    private func handle(result: Result<BigUInt, Error>, for identifier: TransactionFeeId) {
+    private func handle(result: Result<EvmFeeModel, Error>, for identifier: TransactionFeeId) {
         update(result: result, for: identifier)
 
         delegate?.didReceiveFee(result: result, for: identifier)

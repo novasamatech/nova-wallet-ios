@@ -70,7 +70,8 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
 extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
     func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
-            guard let transferType = transferType else {
+            guard let transferType = transferType, let lastFeeModel = lastFeeModel else {
+                presenter?.didReceiveError(CommonError.dataCorruption)
                 return
             }
 
@@ -97,6 +98,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
             extrinsicService.submit(
                 extrinsicClosure,
+                price: EvmTransactionPrice(gasLimit: lastFeeModel.gasLimit, gasPrice: lastFeeModel.gasPrice),
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in
