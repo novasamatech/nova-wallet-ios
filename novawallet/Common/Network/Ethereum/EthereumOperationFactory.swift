@@ -4,14 +4,14 @@ import SoraKeystore
 import BigInt
 
 protocol EthereumOperationFactoryProtocol {
-    func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<String>
+    func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<HexCodable<BigUInt>>
 
-    func createGasPriceOperation() -> BaseOperation<String>
+    func createGasPriceOperation() -> BaseOperation<HexCodable<BigUInt>>
 
     func createTransactionsCountOperation(
         for accountAddress: Data,
         block: EthereumBlock
-    ) -> BaseOperation<String>
+    ) -> BaseOperation<HexCodable<BigUInt>>
 
     func createSendTransactionOperation(
         for transactionDataClosure: @escaping () throws -> Data

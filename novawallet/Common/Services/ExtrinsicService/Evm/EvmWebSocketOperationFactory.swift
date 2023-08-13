@@ -45,8 +45,8 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
         )
     }
 
-    func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<String> {
-        JSONRPCOperation<[EthereumTransaction], String>(
+    func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<HexCodable<BigUInt>> {
+        JSONRPCOperation<[EthereumTransaction], HexCodable<BigUInt>>(
             engine: connection,
             method: EthereumMethod.estimateGas.rawValue,
             parameters: [transaction],
@@ -54,7 +54,7 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
         )
     }
 
-    func createGasPriceOperation() -> BaseOperation<String> {
+    func createGasPriceOperation() -> BaseOperation<HexCodable<BigUInt>> {
         JSONRPCListOperation(
             engine: connection,
             method: EthereumMethod.gasPrice.rawValue,
@@ -63,7 +63,10 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
         )
     }
 
-    func createTransactionsCountOperation(for accountAddress: Data, block: EthereumBlock) -> BaseOperation<String> {
+    func createTransactionsCountOperation(
+        for accountAddress: Data,
+        block: EthereumBlock
+    ) -> BaseOperation<HexCodable<BigUInt>> {
         let parameters = [accountAddress.toHex(includePrefix: true), block.rawValue]
 
         return JSONRPCListOperation(

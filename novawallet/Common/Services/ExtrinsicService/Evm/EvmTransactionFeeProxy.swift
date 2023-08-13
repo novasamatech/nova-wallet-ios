@@ -18,12 +18,6 @@ protocol EvmTransactionFeeProxyProtocol: AnyObject {
 final class EvmTransactionFeeProxy: TransactionFeeProxy<BigUInt> {
     weak var delegate: EvmTransactionFeeProxyDelegate?
 
-    let fallbackGasLimit: BigUInt
-
-    init(fallbackGasLimit: BigUInt) {
-        self.fallbackGasLimit = fallbackGasLimit
-    }
-
     private func handle(result: Result<BigUInt, Error>, for identifier: TransactionFeeId) {
         update(result: result, for: identifier)
 
@@ -47,7 +41,7 @@ extension EvmTransactionFeeProxy: EvmTransactionFeeProxyProtocol {
 
         setCachedState(.loading, for: reuseIdentifier)
 
-        service.estimateFee(closure, fallbackGasLimit: fallbackGasLimit, runningIn: .main) { [weak self] result in
+        service.estimateFee(closure, runningIn: .main) { [weak self] result in
             self?.handle(result: result, for: reuseIdentifier)
         }
     }

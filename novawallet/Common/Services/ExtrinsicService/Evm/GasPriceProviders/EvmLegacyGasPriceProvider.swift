@@ -16,13 +16,7 @@ extension EvmLegacyGasPriceProvider: EvmGasPriceProviderProtocol {
         let fetchOperation = operationFactory.createGasPriceOperation()
 
         let mapOperation = ClosureOperation<BigUInt> {
-            let gasPriceString = try fetchOperation.extractNoCancellableResultData()
-
-            guard let gasPrice = BigUInt.fromHexString(gasPriceString) else {
-                throw CommonError.dataCorruption
-            }
-
-            return gasPrice
+            try fetchOperation.extractNoCancellableResultData().wrappedValue
         }
 
         mapOperation.addDependency(fetchOperation)

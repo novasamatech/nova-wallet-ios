@@ -122,10 +122,21 @@ struct TransferConfirmOnChainViewFactory {
             logger: Logger.shared
         )
 
+        let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
+            for: asset,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+
+        let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
+
         let extrinsicService = EvmTransactionService(
             accountId: account.accountId,
             operationFactory: operationFactory,
             gasPriceProvider: gasPriceProvider,
+            gasLimitProvider: gasLimitProvider,
+            nonceProvider: nonceProvider,
             chain: chain,
             operationQueue: operationQueue
         )
@@ -145,7 +156,7 @@ struct TransferConfirmOnChainViewFactory {
             selectedAccount: account,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
+            feeProxy: EvmTransactionFeeProxy(),
             extrinsicService: extrinsicService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

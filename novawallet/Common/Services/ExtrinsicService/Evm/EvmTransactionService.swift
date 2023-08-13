@@ -6,13 +6,14 @@ import RobinHood
 typealias EvmFeeTransactionResult = Result<BigUInt, Error>
 typealias EvmEstimateFeeClosure = (EvmFeeTransactionResult) -> Void
 typealias EvmSubmitTransactionResult = Result<String, Error>
+typealias EvmSignTransactionResult = Result<Data, Error>
 typealias EvmTransactionSubmitClosure = (EvmSubmitTransactionResult) -> Void
+typealias EvmTransactionSignClosure = (EvmSignTransactionResult) -> Void
 typealias EvmTransactionBuilderClosure = (EvmTransactionBuilderProtocol) throws -> EvmTransactionBuilderProtocol
 
 protocol EvmTransactionServiceProtocol {
     func estimateFee(
         _ closure: @escaping EvmTransactionBuilderClosure,
-        fallbackGasLimit: BigUInt,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmEstimateFeeClosure
     )
@@ -23,78 +24,114 @@ protocol EvmTransactionServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmTransactionSubmitClosure
     )
-}
 
-enum EvmTransactionServiceError: Error {
-    case invalidGasLimit(String)
-    case invalidGasPrice(String)
-    case invalidNonce(String)
+    func sign(
+        _ closure: @escaping EvmTransactionBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EvmTransactionSignClosure
+    )
 }
 
 final class EvmTransactionService {
     let accountId: AccountId
     let operationFactory: EthereumOperationFactoryProtocol
     let gasPriceProvider: EvmGasPriceProviderProtocol
-    let chain: ChainModel
+    let gasLimitProvider: EvmGasLimitProviderProtocol
+    let nonceProvider: EvmNonceProviderProtocol
+    let chainFormat: ChainFormat
+    let evmChainId: String
     let operationQueue: OperationQueue
 
     init(
         accountId: AccountId,
         operationFactory: EthereumOperationFactoryProtocol,
         gasPriceProvider: EvmGasPriceProviderProtocol,
+        gasLimitProvider: EvmGasLimitProviderProtocol,
+        nonceProvider: EvmNonceProviderProtocol,
         chain: ChainModel,
         operationQueue: OperationQueue
     ) {
         self.accountId = accountId
         self.operationFactory = operationFactory
         self.gasPriceProvider = gasPriceProvider
-        self.chain = chain
+        self.gasLimitProvider = gasLimitProvider
+        self.nonceProvider = nonceProvider
+        chainFormat = chain.chainFormat
+        evmChainId = chain.evmChainId
         self.operationQueue = operationQueue
     }
 
-    private func createGasLimitOrDefaultWrapper(
-        for transaction: EthereumTransaction,
-        fallbackGasLimit: BigUInt
-    ) -> CompoundOperationWrapper<BigUInt> {
-        let gasEstimationOperation = operationFactory.createGasLimitOperation(for: transaction)
+    init(
+        accountId: AccountId,
+        operationFactory: EthereumOperationFactoryProtocol,
+        gasPriceProvider: EvmGasPriceProviderProtocol,
+        gasLimitProvider: EvmGasLimitProviderProtocol,
+        nonceProvider: EvmNonceProviderProtocol,
+        chainFormat: ChainFormat,
+        evmChainId: String,
+        operationQueue: OperationQueue
+    ) {
+        self.accountId = accountId
+        self.operationFactory = operationFactory
+        self.gasPriceProvider = gasPriceProvider
+        self.gasLimitProvider = gasLimitProvider
+        self.nonceProvider = nonceProvider
+        self.chainFormat = chainFormat
+        self.evmChainId = evmChainId
+        self.operationQueue = operationQueue
+    }
 
-        let mappingOperation = ClosureOperation<BigUInt> {
-            do {
-                let gasLimitString = try gasEstimationOperation.extractNoCancellableResultData()
+    private func createSignedTransactionWrapper(
+        _ closure: @escaping EvmTransactionBuilderClosure,
+        signer: SigningWrapperProtocol
+    ) throws -> CompoundOperationWrapper<Data> {
+        let address = try accountId.toAddress(using: chainFormat)
+        let initBuilder = EvmTransactionBuilder(address: address, chainId: evmChainId)
+        let builder = try closure(initBuilder)
 
-                guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
-                    throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
-                }
+        let gasEstimationWrapper = gasLimitProvider.getGasLimitWrapper(for: builder.buildTransaction())
+        let gasPriceWrapper = gasPriceProvider.getGasPriceWrapper()
+        let nonceWrapper = nonceProvider.getNonceWrapper(for: accountId, block: .pending)
 
-                return gasLimit
-            } catch is JSONRPCError {
-                return fallbackGasLimit
-            }
+        let buildOperation = ClosureOperation<Data> {
+            let gasLimit = try gasEstimationWrapper.targetOperation.extractNoCancellableResultData()
+            let gasPrice = try gasPriceWrapper.targetOperation.extractNoCancellableResultData()
+            let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try builder
+                .usingGasLimit(gasLimit)
+                .usingGasPrice(gasPrice)
+                .usingNonce(nonce)
+                .signing(using: { data in
+                    try signer.sign(data).rawData()
+                })
+                .build()
         }
 
-        mappingOperation.addDependency(gasEstimationOperation)
+        buildOperation.addDependency(gasEstimationWrapper.targetOperation)
+        buildOperation.addDependency(gasPriceWrapper.targetOperation)
+        buildOperation.addDependency(nonceWrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [gasEstimationOperation])
+        let dependencies = gasEstimationWrapper.allOperations + gasPriceWrapper.allOperations +
+            nonceWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: buildOperation, dependencies: dependencies)
     }
 }
 
 extension EvmTransactionService: EvmTransactionServiceProtocol {
     func estimateFee(
         _ closure: @escaping EvmTransactionBuilderClosure,
-        fallbackGasLimit: BigUInt,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmEstimateFeeClosure
     ) {
         do {
-            let address = try accountId.toAddress(using: chain.chainFormat)
-            let builder = EvmTransactionBuilder(address: address, chainId: chain.evmChainId)
+            let address = try accountId.toAddress(using: chainFormat)
+            let builder = EvmTransactionBuilder(address: address, chainId: evmChainId)
             let transaction = (try closure(builder)).buildTransaction()
 
-            let gasEstimationWrapper = createGasLimitOrDefaultWrapper(
-                for: transaction,
-                fallbackGasLimit: fallbackGasLimit
-            )
-
+            let gasEstimationWrapper = gasLimitProvider.getGasLimitWrapper(for: transaction)
             let gasPriceWrapper = gasPriceProvider.getGasPriceWrapper()
 
             let mapOperation = ClosureOperation<BigUInt> {
@@ -135,40 +172,13 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
         completion completionClosure: @escaping EvmTransactionSubmitClosure
     ) {
         do {
-            let address = try accountId.toAddress(using: chain.chainFormat)
-            let initBuilder = EvmTransactionBuilder(address: address, chainId: chain.evmChainId)
-            let builder = try closure(initBuilder)
-
-            let gasEstimationOperation = operationFactory.createGasLimitOperation(for: builder.buildTransaction())
-            let gasPriceWrapper = gasPriceProvider.getGasPriceWrapper()
-            let nonceOperation = operationFactory.createTransactionsCountOperation(for: accountId, block: .pending)
+            let transactionWrapper = try createSignedTransactionWrapper(closure, signer: signer)
 
             let sendOperation = operationFactory.createSendTransactionOperation {
-                let gasLimitString = try gasEstimationOperation.extractNoCancellableResultData()
-                let gasPrice = try gasPriceWrapper.targetOperation.extractNoCancellableResultData()
-                let nonceString = try nonceOperation.extractNoCancellableResultData()
-
-                guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
-                    throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
-                }
-
-                guard let nonce = BigUInt.fromHexString(nonceString) else {
-                    throw EvmTransactionServiceError.invalidNonce(nonceString)
-                }
-
-                return try builder
-                    .usingGasLimit(gasLimit)
-                    .usingGasPrice(gasPrice)
-                    .usingNonce(nonce)
-                    .signing(using: { data in
-                        try signer.sign(data).rawData()
-                    })
-                    .build()
+                try transactionWrapper.targetOperation.extractNoCancellableResultData()
             }
 
-            sendOperation.addDependency(gasEstimationOperation)
-            sendOperation.addDependency(gasPriceWrapper.targetOperation)
-            sendOperation.addDependency(nonceOperation)
+            sendOperation.addDependency(transactionWrapper.targetOperation)
 
             sendOperation.completionBlock = {
                 queue.async {
@@ -181,9 +191,37 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 }
             }
 
-            let operations = [gasEstimationOperation] + gasPriceWrapper.allOperations + [nonceOperation, sendOperation]
+            let operations = transactionWrapper.allOperations + [sendOperation]
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
+        } catch {
+            dispatchInQueueWhenPossible(queue) {
+                completionClosure(.failure(error))
+            }
+        }
+    }
+
+    func sign(
+        _ closure: @escaping EvmTransactionBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EvmTransactionSignClosure
+    ) {
+        do {
+            let transactionWrapper = try createSignedTransactionWrapper(closure, signer: signer)
+
+            transactionWrapper.targetOperation.completionBlock = {
+                queue.async {
+                    do {
+                        let txData = try transactionWrapper.targetOperation.extractNoCancellableResultData()
+                        completionClosure(.success(txData))
+                    } catch {
+                        completionClosure(.failure(error))
+                    }
+                }
+            }
+
+            operationQueue.addOperations(transactionWrapper.allOperations, waitUntilFinished: false)
         } catch {
             dispatchInQueueWhenPossible(queue) {
                 completionClosure(.failure(error))

@@ -149,27 +149,37 @@ extension TransferSetupPresenterFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
+
         let gasPriceProvider = EvmGasPriceProviderFactory.createMaxPriorityWithLegacyFallback(
             operationFactory: operationFactory,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
 
+        let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
+            for: asset,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+
+        let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
+
         let extrinsicService = EvmTransactionService(
             accountId: selectedAccount.accountId,
             operationFactory: operationFactory,
             gasPriceProvider: gasPriceProvider,
+            gasLimitProvider: gasLimitProvider,
+            nonceProvider: nonceProvider,
             chain: chain,
             operationQueue: operationQueue
         )
-
-        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
 
         return EvmOnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
+            feeProxy: EvmTransactionFeeProxy(),
             extrinsicService: extrinsicService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
