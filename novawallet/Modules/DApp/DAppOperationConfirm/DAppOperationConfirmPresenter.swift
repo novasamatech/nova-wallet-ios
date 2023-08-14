@@ -16,7 +16,7 @@ final class DAppOperationConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private var confirmationModel: DAppOperationConfirmModel?
-    private var feeModel: DAppOperationConfirmFee?
+    private var feeModel: FeeOutputModel?
     private var priceData: PriceData?
 
     init(
@@ -166,7 +166,7 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         provideFeeViewModel()
     }
 
-    func didReceive(feeResult: Result<DAppOperationConfirmFee, Error>) {
+    func didReceive(feeResult: Result<FeeOutputModel, Error>) {
         switch feeResult {
         case let .success(fee):
             feeModel = fee

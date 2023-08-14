@@ -22,14 +22,9 @@ protocol DAppOperationConfirmInteractorInputProtocol: AnyObject {
     func prepareTxDetails()
 }
 
-struct DAppOperationConfirmFee {
-    let value: BigUInt
-    let validationProvider: ExtrinsicValidationProviderProtocol?
-}
-
 protocol DAppOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)
-    func didReceive(feeResult: Result<DAppOperationConfirmFee, Error>)
+    func didReceive(feeResult: Result<FeeOutputModel, Error>)
     func didReceive(priceResult: Result<PriceData?, Error>)
     func didReceive(responseResult: Result<DAppOperationResponse, Error>, for request: DAppOperationRequest)
     func didReceive(txDetailsResult: Result<JSON, Error>)

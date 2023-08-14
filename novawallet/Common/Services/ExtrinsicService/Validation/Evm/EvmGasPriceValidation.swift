@@ -64,7 +64,7 @@ extension EvmGasPriceValidationProvider: ExtrinsicValidationProviderProtocol {
                 return true
             }
 
-            return self.model.defaultGasPrice * self.multiplier < maxPriorityPrice * self.divisor
+            return self.model.defaultGasPrice * self.multiplier > maxPriorityPrice * self.divisor
         })
     }
 }
