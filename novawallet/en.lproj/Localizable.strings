@@ -1292,3 +1292,5 @@
 "evm.transaction.fee.too.high.title" = "Network fee too high";
 "evm.transaction.fee.too.high.message" = "The estimated network fee​ (%@) is much higher than the default network fee (%@). This might be due to temporary network congestion. You can refresh to wait for a lower network fee.";
 "common.refresh.fee" = "Refresh fee";
+"token.add.remote.exist.message" = "The entered contract address is present in Nova as a %@ token. Are you sure you want to modify it?";
+"update.token.completion.message" = "%@ token updated";

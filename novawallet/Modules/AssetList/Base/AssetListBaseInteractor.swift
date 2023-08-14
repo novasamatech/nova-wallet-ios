@@ -222,18 +222,15 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
 
     func updatePriceSubscription(from changes: [DataProviderChange<ChainModel>]) {
         let prevPrices = availableTokenPrice
+
         for change in changes {
             switch change {
             case let .insert(chain), let .update(chain):
                 availableTokenPrice = availableTokenPrice.filter { $0.key.chainId != chain.chainId }
 
                 availableTokenPrice = chain.assets.reduce(into: availableTokenPrice) { result, asset in
-                    guard let priceId = asset.priceId else {
-                        return
-                    }
-
                     let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-                    result[chainAssetId] = priceId
+                    result[chainAssetId] = asset.priceId
                 }
             case let .delete(deletedIdentifier):
                 availableTokenPrice = availableTokenPrice.filter { $0.key.chainId != deletedIdentifier }
@@ -241,6 +238,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         }
 
         if prevPrices != availableTokenPrice {
+            removeNotExistingPriceIds(from: Set(availableTokenPrice.keys))
             updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
         }
     }
@@ -252,6 +250,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         case let .failure(error):
             baseBuilder?.applyPrice(error: error)
         }
+    }
+
+    private func removeNotExistingPriceIds(from chainAssetIds: Set<ChainAssetId>) {
+        baseBuilder?.applyRemovedPriceChainAssets(chainAssetIds)
     }
 
     private func updatePriceProvider(
