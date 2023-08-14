@@ -1295,7 +1295,7 @@
 "staking.start.gov.nomination.pool.action" = "Participate in governance";
 "staking.start.gov.nomination.direct.staking.action" = "participate in governance";
 "staking.start.changes.action" = "Monitor your stake";
-"staking.start.changes" = "Rewards & staking status vary over time. %@ from time to time";
+"staking.start.changes" = "Rewards and staking status vary over time. %@ from time to time";
 "staking.start.wiki" = "Find out more information about\n%@ staking over at the %@";
 "staking.start.wiki.link" = "Nova Wiki";
 "staking.start.terms" = "See %@";
@@ -1344,3 +1344,4 @@
 "staking.type.alert.unsaved.changes.title" = "Unsaved changes";
 "staking.type.alert.unsaved.changes.message" = "Do you want to save the changes?";
 "staking.validators" = "Validators";
+"common.every.day" = "everyday";

@@ -4,20 +4,19 @@ import BigInt
 
 protocol StakingDashboardViewModelFactoryProtocol {
     func createActiveStakingViewModel(
-        for model: StakingDashboardItemModel,
-        displaysRelaychainType: Bool,
+        for model: StakingDashboardItemModel.Concrete,
+        singleActive: Bool,
         locale: Locale
     ) -> StakingDashboardEnabledViewModel
 
     func createInactiveStakingViewModel(
         for model: StakingDashboardItemModel,
-        displaysRelaychainType: Bool,
         locale: Locale
     ) -> StakingDashboardDisabledViewModel
 
     func createUpdateViewModel(
         from model: StakingDashboardModel,
-        syncChange: Set<Multistaking.ChainAssetOption>,
+        syncChange: StakingDashboardBuilderResult.SyncChange,
         locale: Locale
     ) -> StakingDashboardUpdateViewModel
 
@@ -89,7 +88,7 @@ final class StakingDashboardViewModelFactory {
     }
 
     private func createStakingStatus(
-        for model: StakingDashboardItemModel
+        for model: StakingDashboardItemModel.Concrete
     ) -> LoadableViewModelState<StakingDashboardEnabledViewModel.Status> {
         guard let dashboardItem = model.dashboardItem else {
             return .loading
@@ -100,10 +99,30 @@ final class StakingDashboardViewModelFactory {
     }
 
     private func createStakingType(
-        for stakingOption: Multistaking.ChainAssetOption,
-        displayForRelaychain: Bool,
+        for model: StakingDashboardItemModel,
         locale: Locale
     ) -> TitleIconViewModel? {
+        switch model {
+        case let .concrete(concrete):
+            return createStakingType(
+                for: concrete.stakingOption,
+                singleActive: false,
+                locale: locale
+            )
+        case .combined:
+            return nil
+        }
+    }
+
+    private func createStakingType(
+        for stakingOption: Multistaking.ChainAssetOption,
+        singleActive: Bool,
+        locale: Locale
+    ) -> TitleIconViewModel? {
+        guard !singleActive else {
+            return nil
+        }
+
         let stakings = stakingOption.chainAsset.asset.supportedStakings ?? []
 
         guard stakings.count > 1 else {
@@ -112,10 +131,6 @@ final class StakingDashboardViewModelFactory {
 
         switch stakingOption.type {
         case .auraRelaychain, .azero, .relaychain:
-            guard displayForRelaychain else {
-                return nil
-            }
-
             return TitleIconViewModel(
                 title: R.string.localizable.stakingDirect(preferredLanguages: locale.rLanguages).uppercased(),
                 icon: R.image.iconStakingDirect()
@@ -134,11 +149,11 @@ final class StakingDashboardViewModelFactory {
 
 extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProtocol {
     func createActiveStakingViewModel(
-        for model: StakingDashboardItemModel,
-        displaysRelaychainType: Bool,
+        for model: StakingDashboardItemModel.Concrete,
+        singleActive: Bool,
         locale: Locale
     ) -> StakingDashboardEnabledViewModel {
-        let chainAsset = model.stakingOption.chainAsset
+        let chainAsset = model.chainAsset
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
         let networkViewModel = networkViewModelFactory.createViewModel(
@@ -174,7 +189,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let stakingType = createStakingType(
             for: model.stakingOption,
-            displayForRelaychain: displaysRelaychainType,
+            singleActive: singleActive,
             locale: locale
         )
 
@@ -190,10 +205,9 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
     func createInactiveStakingViewModel(
         for model: StakingDashboardItemModel,
-        displaysRelaychainType: Bool,
         locale: Locale
     ) -> StakingDashboardDisabledViewModel {
-        let chainAsset = model.stakingOption.chainAsset
+        let chainAsset = model.chainAsset
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
         let networkViewModel = networkViewModelFactory.createViewModel(
@@ -201,7 +215,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         )
 
         let estimatedEarnings = createEstimatedEarnings(
-            from: model.dashboardItem?.maxApy,
+            from: model.maxApy,
             isSyncing: model.isOffchainSync,
             locale: locale
         )
@@ -217,11 +231,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
             .cached(value: networkViewModel) : .loaded(value: networkViewModel)
 
-        let stakingType = createStakingType(
-            for: model.stakingOption,
-            displayForRelaychain: displaysRelaychainType,
-            locale: locale
-        )
+        let stakingType = createStakingType(for: model, locale: locale)
 
         return .init(
             networkViewModel: network,
@@ -235,18 +245,21 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         from model: StakingDashboardModel,
         locale: Locale
     ) -> StakingDashboardViewModel {
+        let activeCounters = model.getActiveCounters()
+
         let activeViewModels = model.active.map {
-            createActiveStakingViewModel(
+            let counter = activeCounters[$0.chainAsset.chainAssetId] ?? 0
+
+            return createActiveStakingViewModel(
                 for: $0,
-                displaysRelaychainType: false,
+                singleActive: counter <= 1,
                 locale: locale
             )
         }
 
         let inactiveViewModels = model.inactive.map {
             createInactiveStakingViewModel(
-                for: $0,
-                displaysRelaychainType: false,
+                for: .combined($0),
                 locale: locale
             )
         }
@@ -264,28 +277,34 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
     func createUpdateViewModel(
         from model: StakingDashboardModel,
-        syncChange: Set<Multistaking.ChainAssetOption>,
+        syncChange: StakingDashboardBuilderResult.SyncChange,
         locale: Locale
     ) -> StakingDashboardUpdateViewModel {
+        let activeCounters = model.getActiveCounters()
+
         let activeViewModels: [(Int, StakingDashboardEnabledViewModel)] = model.active.enumerated().compactMap { item in
-            guard syncChange.contains(item.1.stakingOption) else {
+            guard syncChange.byStakingOption.contains(item.1.stakingOption) else {
                 return nil
             }
 
-            let viewModel = createActiveStakingViewModel(for: item.1, displaysRelaychainType: false, locale: locale)
+            let counter = activeCounters[item.1.chainAsset.chainAssetId] ?? 0
+            let viewModel = createActiveStakingViewModel(
+                for: item.1,
+                singleActive: counter <= 1,
+                locale: locale
+            )
 
             return (item.0, viewModel)
         }
 
         let inactiveViewModels: [(Int, StakingDashboardDisabledViewModel)] = model.inactive
             .enumerated().compactMap { item in
-                guard syncChange.contains(item.1.stakingOption) else {
+                guard syncChange.byStakingChainAsset.contains(item.1.chainAsset) else {
                     return nil
                 }
 
                 let viewModel = createInactiveStakingViewModel(
-                    for: item.1,
-                    displaysRelaychainType: false,
+                    for: .combined(item.1),
                     locale: locale
                 )
 

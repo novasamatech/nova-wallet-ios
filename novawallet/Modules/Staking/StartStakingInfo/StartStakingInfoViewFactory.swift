@@ -129,6 +129,7 @@ struct StartStakingInfoViewFactory {
             currencyManager: currencyManager,
             networkInfoOperationFactory: networkOperationFactory,
             eraCoundownOperationFactory: eraCountdownFactory,
+            eventCenter: EventCenter.shared,
             operationQueue: operationQueue
         )
     }

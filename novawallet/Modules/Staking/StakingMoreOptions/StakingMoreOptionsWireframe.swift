@@ -12,11 +12,12 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
 
     func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
-        option: Multistaking.ChainAssetOption
+        chainAsset: ChainAsset,
+        stakingType: StakingType?
     ) {
         guard let startStakingView = StartStakingInfoViewFactory.createView(
-            chainAsset: option.chainAsset,
-            selectedStakingType: option.type
+            chainAsset: chainAsset,
+            selectedStakingType: stakingType
         ) else {
             return
         }

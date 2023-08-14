@@ -36,12 +36,9 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
         )
     }
 
-    func showStartStaking(
-        from view: StakingDashboardViewProtocol?,
-        option: Multistaking.ChainAssetOption
-    ) {
+    func showStartStaking(from view: StakingDashboardViewProtocol?, chainAsset: ChainAsset) {
         guard let startStakingView = StartStakingInfoViewFactory.createView(
-            chainAsset: option.chainAsset,
+            chainAsset: chainAsset,
             selectedStakingType: nil
         ) else {
             return
