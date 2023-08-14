@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 protocol StakingSelectPoolDelegate: AnyObject {
-    func changePoolSelection(selectedPool: NominationPools.SelectedPool)
+    func changePoolSelection(selectedPool: NominationPools.SelectedPool, isRecommended: Bool)
 }
 
 enum StakingSelectPoolViewFactory {

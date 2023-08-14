@@ -82,8 +82,9 @@ final class StakingSelectPoolPresenter {
         guard let poolStats = poolStatsMap[selectedPoolId] else {
             return
         }
+        let isRecommended = recommendedPoolId == selectedPoolId
 
-        delegate?.changePoolSelection(selectedPool: .init(poolStats: poolStats))
+        delegate?.changePoolSelection(selectedPool: .init(poolStats: poolStats), isRecommended: isRecommended)
     }
 
     private func provideRecommendedButtonViewModel() {
@@ -116,7 +117,10 @@ extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
         provideSingleViewModel(poolId: previousSelectedPoolId)
         provideSingleViewModel(poolId: poolId)
         provideRecommendedButtonViewModel()
-        delegate?.changePoolSelection(selectedPool: .init(poolStats: poolStats))
+        delegate?.changePoolSelection(
+            selectedPool: .init(poolStats: poolStats),
+            isRecommended: poolId == recommendedPoolId
+        )
         wireframe.complete(from: view)
     }
 

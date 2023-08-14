@@ -274,12 +274,17 @@ extension StakingTypePresenter: Localizable {
 }
 
 extension StakingTypePresenter: StakingSelectPoolDelegate {
-    func changePoolSelection(selectedPool: NominationPools.SelectedPool) {
-        guard let method = method else {
+    func changePoolSelection(selectedPool: NominationPools.SelectedPool, isRecommended: Bool) {
+        guard let restrictions = nominationPoolRestrictions else {
             return
         }
+
         hasChanges = true
-        self.method = NominationPools.Lens.pool.set(selectedPool, method)
+        method = .manual(.init(
+            staking: .pool(selectedPool),
+            restrictions: restrictions,
+            usedRecommendation: isRecommended
+        ))
         updateView()
     }
 }
