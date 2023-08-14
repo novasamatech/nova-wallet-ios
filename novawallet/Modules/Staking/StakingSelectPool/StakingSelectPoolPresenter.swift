@@ -150,8 +150,8 @@ extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol 
         }
         notifySelectedPoolChangedIfNeeded(oldSelection: selectedPoolId)
         sortPools()
-        provideViewModel()
         provideRecommendedButtonViewModel()
+        provideViewModel()
     }
 
     func didReceive(recommendedPool: NominationPools.SelectedPool) {
@@ -161,8 +161,8 @@ extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol 
             notifySelectedPoolChangedIfNeeded(oldSelection: nil)
         }
         sortPools()
-        provideViewModel()
         provideRecommendedButtonViewModel()
+        provideViewModel()
     }
 
     func didReceive(error: StakingSelectPoolError) {

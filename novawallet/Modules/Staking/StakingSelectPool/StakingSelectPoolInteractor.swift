@@ -48,11 +48,8 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
         self.operationQueue = operationQueue
     }
 
-    deinit {
-        clear(dataProvider: &maxMembersPerPoolProvider)
-    }
-
     private func performMaxMembersPerPoolSubscription() {
+        clear(dataProvider: &maxMembersPerPoolProvider)
         maxMembersPerPoolProvider = subscribeMaxPoolMembersPerPool(for: chainAsset.chain.chainId)
     }
 
