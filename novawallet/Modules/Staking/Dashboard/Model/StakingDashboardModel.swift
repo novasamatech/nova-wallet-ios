@@ -95,7 +95,7 @@ enum StakingDashboardItemModel: Equatable {
             )
         }
 
-        func replacingWithGreatesApy(for newApy: Decimal?) -> Combined {
+        func replacingWithGreatestApy(for newApy: Decimal?) -> Combined {
             let updatedApy: Decimal?
 
             if let maxApy = maxApy, let newApy = newApy {

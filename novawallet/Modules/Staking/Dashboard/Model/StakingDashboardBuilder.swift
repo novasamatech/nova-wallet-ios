@@ -94,7 +94,7 @@ final class StakingDashboardBuilder {
                 isOnchainSync: currentValue.isOnchainSync || item.isOnchainSync,
                 isOffchainSync: currentValue.isOffchainSync || item.isOffchainSync
             )
-            .replacingWithGreatesApy(for: item.maxApy)
+            .replacingWithGreatestApy(for: item.maxApy)
 
         store[chainAssetId] = currentValue
     }
