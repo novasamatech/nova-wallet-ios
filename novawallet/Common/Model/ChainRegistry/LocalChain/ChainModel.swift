@@ -199,6 +199,25 @@ enum ChainOptions: String, Codable {
 }
 
 extension ChainModel {
+    func adding(asset: AssetModel) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets.union([asset]),
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
+    }
+
     func addingOrUpdating(asset: AssetModel) -> ChainModel {
         let filteredAssets = assets.filter { $0.assetId != asset.assetId }
         let newAssets = filteredAssets.union([asset])
