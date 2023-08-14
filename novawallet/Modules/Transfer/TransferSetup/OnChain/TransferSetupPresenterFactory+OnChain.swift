@@ -10,12 +10,13 @@ extension TransferSetupPresenterFactory {
     ) -> TransferSetupChildPresenterProtocol? {
         guard
             let selectedAccountAddress = wallet.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
-            let interactor = createInteractor(for: chainAsset),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let wireframe = OnChainTransferSetupWireframe(transferCompletion: transferCompletion)
+        let optInteractor: (OnChainTransferBaseInteractor & OnChainTransferSetupInteractorInputProtocol)?
+        let wireframe: OnChainTransferSetupWireframeProtocol
+
         let localizationManager = LocalizationManager.shared
 
         let networkViewModelFactory = NetworkViewModelFactory()
@@ -38,6 +39,27 @@ extension TransferSetupPresenterFactory {
             )
         } else {
             utilityBalanceViewModelFactory = nil
+        }
+
+        if chainAsset.asset.isAnyEvm {
+            let evmWireframe = EvmOnChainTransferSetupWireframe(transferCompletion: transferCompletion)
+            wireframe = evmWireframe
+
+            let assetInfo = chainAsset.chain.utilityAssetDisplayInfo() ?? chainAsset.assetDisplayInfo
+            let validationProviderFactory = EvmValidationProviderFactory(
+                presentable: evmWireframe,
+                balanceViewModelFactory: utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory,
+                assetInfo: assetInfo
+            )
+
+            optInteractor = createEvmInteractor(for: chainAsset, validationProviderFactory: validationProviderFactory)
+        } else {
+            wireframe = OnChainTransferSetupWireframe(transferCompletion: transferCompletion)
+            optInteractor = createSubstrateInteractor(for: chainAsset)
+        }
+
+        guard let interactor = optInteractor else {
+            return nil
         }
 
         let dataValidatingFactory = TransferDataValidatorFactory(
@@ -76,16 +98,6 @@ extension TransferSetupPresenterFactory {
         interactor.presenter = presenter
 
         return presenter
-    }
-
-    private func createInteractor(
-        for chainAsset: ChainAsset
-    ) -> (OnChainTransferBaseInteractor & OnChainTransferSetupInteractorInputProtocol)? {
-        if chainAsset.asset.isAnyEvm {
-            return createEvmInteractor(for: chainAsset)
-        } else {
-            return createSubstrateInteractor(for: chainAsset)
-        }
     }
 
     private func createSubstrateInteractor(for chainAsset: ChainAsset) -> OnChainTransferSetupInteractor? {
@@ -135,7 +147,10 @@ extension TransferSetupPresenterFactory {
         )
     }
 
-    private func createEvmInteractor(for chainAsset: ChainAsset) -> EvmOnChainTransferSetupInteractor? {
+    private func createEvmInteractor(
+        for chainAsset: ChainAsset,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol
+    ) -> EvmOnChainTransferSetupInteractor? {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
@@ -148,21 +163,35 @@ extension TransferSetupPresenterFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
+        let operationFactory = EvmWebSocketOperationFactory(connection: connection)
+
+        let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
+            for: asset,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+
+        let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
+
         let extrinsicService = EvmTransactionService(
             accountId: selectedAccount.accountId,
-            operationFactory: EvmWebSocketOperationFactory(connection: connection),
+            operationFactory: operationFactory,
+            maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
+            defaultGasPriceProvider: EvmLegacyGasPriceProvider(operationFactory: operationFactory),
+            gasLimitProvider: gasLimitProvider,
+            nonceProvider: nonceProvider,
             chain: chain,
             operationQueue: operationQueue
         )
-
-        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
 
         return EvmOnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
+            feeProxy: EvmTransactionFeeProxy(),
             extrinsicService: extrinsicService,
+            validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,

@@ -88,7 +88,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = fee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.value,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -144,7 +144,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         }
     }
 
-    override func didReceiveFee(result: Result<BigUInt, Error>) {
+    override func didReceiveFee(result: Result<FeeOutputModel, Error>) {
         super.didReceiveFee(result: result)
 
         if case .success = result {
@@ -215,6 +215,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
             for: amount.value,
             recepientAddress: recepientAccountAddress,
             utilityAssetInfo: utilityAssetInfo,
+            view: view,
             selectedLocale: selectedLocale
         )
 
@@ -228,7 +229,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.interactor.submit(
                 amount: amountInPlank,
                 recepient: strongSelf.recepientAccountAddress,
-                lastFee: strongSelf.fee
+                lastFee: strongSelf.fee?.value
             )
         }
     }

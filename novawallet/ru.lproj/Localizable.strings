@@ -1289,3 +1289,6 @@
 "asset.operation.send.title" = "Отправить";
 "asset.operation.receive.title" = "Получить";
 "asset.operation.buy.title" = "Купить";
+"evm.transaction.fee.too.high.title" = "Комиссия сети слишком большая";
+"evm.transaction.fee.too.high.message" = "Подсчитанная комиссия сети​ (%@) получилась намного чем комиссия сети по умолчанию (%@). Это может быть из-за временной нагрузки на сеть. Вы можете обновить комиссию для получения меньшего значения.";
+"common.refresh.fee" = "Обновить";

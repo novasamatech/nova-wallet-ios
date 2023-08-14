@@ -1,6 +1,6 @@
 import Foundation
 
-final class TransferConfirmWireframe: TransferConfirmWireframeProtocol, ModalAlertPresenting {
+class TransferConfirmWireframe: TransferConfirmWireframeProtocol, ModalAlertPresenting {
     func complete(on view: TransferConfirmCommonViewProtocol?, locale: Locale, completion: @escaping () -> Void) {
         let title = R.string.localizable
             .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
@@ -13,3 +13,5 @@ final class TransferConfirmWireframe: TransferConfirmWireframeProtocol, ModalAle
         }
     }
 }
+
+final class EvmTransferConfirmWireframe: TransferConfirmWireframe, EvmValidationErrorPresentable {}

@@ -105,11 +105,6 @@ class ControllerAccountTests: XCTestCase {
         )
         presenter.didReceiveControllerAccountInfo(result: .success(controllerAccountInfo), address: controllerAddress)
 
-        let stashAccountInfo = AccountInfo(
-            nonce: 0,
-            data: AccountData(free: 100000000000000, reserved: 0, miscFrozen: 0, feeFrozen: 0)
-        )
-
         let stashAccountId = try! stashAddress.toAccountId()
         let stashBalance = AssetBalance(
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: chain.utilityAsset()!.assetId),

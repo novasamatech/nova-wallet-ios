@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputProtocol {
     func setup() {
@@ -96,7 +97,12 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 
                 do {
                     let info = try feeWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(feeResult: .success(info))
+                    if let fee = BigUInt(info.fee) {
+                        let feeModel = FeeOutputModel(value: fee, validationProvider: nil)
+                        self?.presenter?.didReceive(feeResult: .success(feeModel))
+                    } else {
+                        self?.presenter?.didReceive(feeResult: .failure(CommonError.dataCorruption))
+                    }
                 } catch {
                     self?.presenter?.didReceive(feeResult: .failure(error))
                 }

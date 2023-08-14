@@ -176,7 +176,6 @@ class ChainSyncServiceTests: XCTestCase {
         let remoteItems = ChainModelGenerator.generateRemote(count: 3)
         let chainWithEvmTokens = remoteItems[0]
         let otherChainWithEvmTokens = remoteItems[1]
-        let chainWithoutEvmTokens = remoteItems[2]
         let evmToken = ChainModelGenerator.generateEvmToken(chainId1: chainWithEvmTokens.chainId,
                                                             chainId2: otherChainWithEvmTokens.chainId)
         let usdChainAssets = [evmToken].chainAssets()

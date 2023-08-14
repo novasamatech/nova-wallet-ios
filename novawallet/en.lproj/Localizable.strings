@@ -1289,3 +1289,6 @@
 "asset.operation.send.title" = "Send";
 "asset.operation.receive.title" = "Receive";
 "asset.operation.buy.title" = "Buy";
+"evm.transaction.fee.too.high.title" = "Network fee too high";
+"evm.transaction.fee.too.high.message" = "The estimated network fee​ (%@) is much higher than the default network fee (%@). This might be due to temporary network congestion. You can refresh to wait for a lower network fee.";
+"common.refresh.fee" = "Refresh fee";
