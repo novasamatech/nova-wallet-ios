@@ -19,6 +19,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
 
     let feeProxy: EvmTransactionFeeProxyProtocol
     let extrinsicService: EvmTransactionServiceProtocol
+    let validationProviderFactory: EvmValidationProviderFactoryProtocol
 
     private(set) var transferType: TransferType?
     private(set) var lastFeeModel: EvmFeeModel?
@@ -29,6 +30,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
         extrinsicService: EvmTransactionServiceProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -36,6 +38,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
     ) {
         self.feeProxy = feeProxy
         self.extrinsicService = extrinsicService
+        self.validationProviderFactory = validationProviderFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -197,7 +200,10 @@ extension EvmOnChainTransferInteractor: EvmTransactionFeeProxyDelegate {
         switch result {
         case let .success(model):
             lastFeeModel = model
-            presenter?.didReceiveFee(result: .success(model.fee))
+
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
+            let feeModel = FeeOutputModel(value: model.fee, validationProvider: validationProvider)
+            presenter?.didReceiveFee(result: .success(feeModel))
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))
         }

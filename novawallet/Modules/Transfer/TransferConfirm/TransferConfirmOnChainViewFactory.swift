@@ -16,16 +16,12 @@ struct TransferConfirmOnChainViewFactory {
             let wallet = walletSettings.value,
             let selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let senderAccountAddress = selectedAccount.toAddress(),
-            let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(
-                for: chainAsset,
-                account: selectedAccount,
-                accountMetaId: wallet.metaId
-            ) else {
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let wireframe = TransferConfirmWireframe()
+        let optInteractor: (OnChainTransferBaseInteractor & TransferConfirmOnChainInteractorInputProtocol)?
+        let wireframe: TransferConfirmWireframeProtocol
 
         let localizationManager = LocalizationManager.shared
 
@@ -48,6 +44,35 @@ struct TransferConfirmOnChainViewFactory {
             )
         } else {
             utilityBalanceViewModelFactory = nil
+        }
+
+        if chainAsset.asset.isAnyEvm {
+            let evmWireframe = EvmTransferConfirmWireframe()
+            wireframe = evmWireframe
+
+            let assetInfo = chainAsset.chain.utilityAssetDisplayInfo() ?? chainAsset.assetDisplayInfo
+            let validationProviderFactory = EvmValidationProviderFactory(
+                presentable: evmWireframe,
+                balanceViewModelFactory: utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory,
+                assetInfo: assetInfo
+            )
+
+            optInteractor = createEvmInteractor(
+                for: chainAsset,
+                account: selectedAccount,
+                validationProviderFactory: validationProviderFactory
+            )
+        } else {
+            wireframe = TransferConfirmWireframe()
+            optInteractor = createSubstrateInteractor(
+                for: chainAsset,
+                account: selectedAccount,
+                accountMetaId: wallet.metaId
+            )
+        }
+
+        guard let interactor = optInteractor else {
+            return nil
         }
 
         let dataValidatingFactory = TransferDataValidatorFactory(
@@ -86,21 +111,10 @@ struct TransferConfirmOnChainViewFactory {
         return view
     }
 
-    private static func createInteractor(
-        for chainAsset: ChainAsset,
-        account: ChainAccountResponse,
-        accountMetaId: String
-    ) -> (OnChainTransferBaseInteractor & TransferConfirmOnChainInteractorInputProtocol)? {
-        if chainAsset.asset.isAnyEvm {
-            return createEvmInteractor(for: chainAsset, account: account)
-        } else {
-            return createSubstrateInteractor(for: chainAsset, account: account, accountMetaId: accountMetaId)
-        }
-    }
-
     private static func createEvmInteractor(
         for chainAsset: ChainAsset,
-        account: ChainAccountResponse
+        account: ChainAccountResponse,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol
     ) -> TransferEvmOnChainConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = chainAsset.chain
@@ -152,6 +166,7 @@ struct TransferConfirmOnChainViewFactory {
             asset: asset,
             feeProxy: EvmTransactionFeeProxy(),
             extrinsicService: extrinsicService,
+            validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             signingWrapper: signingWrapper,

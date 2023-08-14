@@ -7,6 +7,7 @@ import SubstrateSdk
 final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
     let ethereumOperationFactory: EthereumOperationFactoryProtocol
+    let validationProviderFactory: EvmValidationProviderFactoryProtocol
     let operationQueue: OperationQueue
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let shouldSendTransaction: Bool
@@ -21,6 +22,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         chainId: String,
         request: DAppOperationRequest,
         ethereumOperationFactory: EthereumOperationFactoryProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         operationQueue: OperationQueue,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         shouldSendTransaction: Bool
@@ -28,6 +30,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         self.chainId = chainId
         self.request = request
         self.ethereumOperationFactory = ethereumOperationFactory
+        self.validationProviderFactory = validationProviderFactory
         self.operationQueue = operationQueue
         self.signingWrapperFactory = signingWrapperFactory
         self.shouldSendTransaction = shouldSendTransaction
@@ -157,7 +160,8 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
 
     private func provideFeeModel(
         for transaction: EthereumTransaction,
-        service: EvmTransactionServiceProtocol
+        service: EvmTransactionServiceProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol
     ) {
         lastFee = nil
 
@@ -165,8 +169,10 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             switch result {
             case let .success(model):
                 self?.lastFee = model
+                let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
+                let feeModel = DAppOperationConfirmFee(value: model.fee, validationProvider: validationProvider)
 
-                self?.presenter?.didReceive(feeResult: .success(model.fee))
+                self?.presenter?.didReceive(feeResult: .success(feeModel))
             case let .failure(error):
                 self?.presenter?.didReceive(feeResult: .failure(error))
             }
@@ -250,7 +256,11 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
         }
 
         provideConfirmationModel(for: transaction)
-        provideFeeModel(for: transaction, service: ethereumService)
+        provideFeeModel(
+            for: transaction,
+            service: ethereumService,
+            validationProviderFactory: validationProviderFactory
+        )
     }
 
     func estimateFee() {
@@ -260,7 +270,11 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
             return
         }
 
-        provideFeeModel(for: transaction, service: ethereumService)
+        provideFeeModel(
+            for: transaction,
+            service: ethereumService,
+            validationProviderFactory: validationProviderFactory
+        )
     }
 
     func confirm() {

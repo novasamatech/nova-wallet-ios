@@ -39,7 +39,7 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     }
 
     private func provideZeroFee() {
-        presenter?.didReceive(feeResult: .success(0))
+        presenter?.didReceive(feeResult: .success(.init(value: 0, validationProvider: nil)))
         presenter?.didReceive(priceResult: .success(nil))
     }
 

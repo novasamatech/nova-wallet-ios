@@ -45,7 +45,8 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     private func provideZeroFee() {
-        presenter?.didReceive(feeResult: .success(0))
+        let feeModel = DAppOperationConfirmFee(value: 0, validationProvider: nil)
+        presenter?.didReceive(feeResult: .success(feeModel))
         presenter?.didReceive(priceResult: .success(nil))
     }
 

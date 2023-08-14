@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-final class DAppOperationConfirmWireframe: DAppOperationConfirmWireframeProtocol {
+class DAppOperationConfirmWireframe: DAppOperationConfirmWireframeProtocol {
     func close(view: DAppOperationConfirmViewProtocol?) {
         view?.controller.presentingViewController?.dismiss(animated: true, completion: nil)
     }
@@ -15,3 +15,5 @@ final class DAppOperationConfirmWireframe: DAppOperationConfirmWireframeProtocol
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }
+
+final class DAppOperationEvmConfirmWireframe: DAppOperationConfirmWireframe, EvmValidationErrorPresentable {}
