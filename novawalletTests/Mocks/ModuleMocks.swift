@@ -12416,9 +12416,9 @@ import SubstrateSdk
     
     
     
-     func didReceive(feeResult: Result<BigUInt, Error>)  {
+     func didReceive(feeResult: Result<DAppOperationConfirmFee, Error>)  {
         
-    return cuckoo_manager.call("didReceive(feeResult: Result<BigUInt, Error>)",
+    return cuckoo_manager.call("didReceive(feeResult: Result<DAppOperationConfirmFee, Error>)",
             parameters: (feeResult),
             escapingParameters: (feeResult),
             superclassCall:
@@ -12488,9 +12488,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<BigUInt, Error>)> where M1.MatchedType == Result<BigUInt, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: feeResult) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(feeResult: Result<BigUInt, Error>)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppOperationConfirmFee, Error>)> where M1.MatchedType == Result<DAppOperationConfirmFee, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppOperationConfirmFee, Error>)>] = [wrap(matchable: feeResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(feeResult: Result<DAppOperationConfirmFee, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable>(priceResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -12531,9 +12531,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.__DoNotUse<(Result<BigUInt, Error>), Void> where M1.MatchedType == Result<BigUInt, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: feeResult) { $0 }]
-	        return cuckoo_manager.verify("didReceive(feeResult: Result<BigUInt, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.__DoNotUse<(Result<DAppOperationConfirmFee, Error>), Void> where M1.MatchedType == Result<DAppOperationConfirmFee, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppOperationConfirmFee, Error>)>] = [wrap(matchable: feeResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(feeResult: Result<DAppOperationConfirmFee, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -12571,7 +12571,7 @@ import SubstrateSdk
     
     
     
-     func didReceive(feeResult: Result<BigUInt, Error>)   {
+     func didReceive(feeResult: Result<DAppOperationConfirmFee, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
