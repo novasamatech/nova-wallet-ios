@@ -166,11 +166,9 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectNominationPool() {
-        guard let method = method else {
+        guard case let .pool(selectedPool) = method?.selectedStakingOption else {
             return
         }
-        let selectedPool = NominationPools.Lens.pool.get(method)
-
         wireframe.showNominationPoolsList(
             from: view,
             amount: amount,
