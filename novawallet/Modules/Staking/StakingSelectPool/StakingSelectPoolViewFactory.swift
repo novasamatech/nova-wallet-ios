@@ -40,7 +40,7 @@ enum StakingSelectPoolViewFactory {
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             rewardEngineOperationFactory: rewardCalculationFactory,
             recommendationMediator: recommendationMediator,
-            eraPoolsService: activePoolService,
+            eraNominationPoolsService: activePoolService,
             validatorRewardService: state.relaychainRewardCalculatorService,
             connection: connection,
             runtimeService: runtimeService,

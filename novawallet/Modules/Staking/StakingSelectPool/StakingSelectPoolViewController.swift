@@ -5,9 +5,11 @@ typealias StakingSelectPoolViewModel = StakingPoolTableViewCell.Model
 
 final class StakingSelectPoolViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingSelectPoolViewLayout
-    private var pools: [StakingSelectPoolViewModel] = []
+
     let presenter: StakingSelectPoolPresenterProtocol
     let numberFormatter: LocalizableResource<NumberFormatter>
+
+    private var state: LoadableViewModelState<[StakingSelectPoolViewModel]> = .loading
 
     init(
         presenter: StakingSelectPoolPresenterProtocol,
@@ -34,42 +36,78 @@ final class StakingSelectPoolViewController: UIViewController, ViewHolder {
 
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
-        setupTitle()
+        setupLocalization()
+        setupHandlers()
 
         presenter.setup()
     }
 
-    private func setupTitle() {
+    private func setupLocalization() {
         title = R.string.localizable.stakingSelectPoolTitle(preferredLanguages: selectedLocale.rLanguages)
+        rootView.recommendedButton.imageWithTitleView?.title =
+            R.string.localizable.stakingSelectValidatorsRecommendedButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    private func setupHandlers() {
+        rootView.recommendedButton.addTarget(self, action: #selector(selectRecommendedAction), for: .touchUpInside)
+    }
+
+    @objc private func selectRecommendedAction() {
+        presenter.selectRecommended()
     }
 }
 
 extension StakingSelectPoolViewController: StakingSelectPoolViewProtocol {
-    func didReceivePools(viewModels: [StakingSelectPoolViewModel]) {
-        pools = viewModels
-        rootView.tableView.reloadData()
+    func didReceivePools(state: LoadableViewModelState<[StakingSelectPoolViewModel]>) {
+        switch state {
+        case .loading:
+            rootView.loadingView.isHidden = false
+            rootView.loadingView.start()
+        case let .cached(value), let .loaded(value):
+            rootView.loadingView.stop()
+            rootView.loadingView.isHidden = true
+            rootView.tableView.reloadData()
+        }
+        self.state = state
     }
 
     func didReceivePoolUpdate(viewModel: StakingSelectPoolViewModel) {
-        guard let index = pools.firstIndex(where: { $0.id == viewModel.id }) else {
+        guard let viewModels = state.value,
+              let index = viewModels.firstIndex(where: { $0.id == viewModel.id }) else {
             return
         }
-        pools[index] = viewModel
+
+        state.insert(newElement: viewModel, at: index)
 
         if let cell = rootView.tableView.visibleCells[safe: index] as? StakingPoolTableViewCell {
             cell.bind(viewModel: viewModel)
+        }
+    }
+
+    func didReceiveRecommendedButton(viewModel: ButtonViewModel) {
+        switch viewModel {
+        case .hidden:
+            rootView.recommendedButton.isHidden = true
+        case .active:
+            rootView.recommendedButton.isHidden = false
+            rootView.recommendedButton.isUserInteractionEnabled = true
+            rootView.recommendedButton.apply(style: .accentButton)
+        case .inactive:
+            rootView.recommendedButton.isHidden = false
+            rootView.recommendedButton.isUserInteractionEnabled = false
+            rootView.recommendedButton.apply(style: .inactiveButton)
         }
     }
 }
 
 extension StakingSelectPoolViewController: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        pools.count
+        state.value?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: StakingPoolTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        if let model = pools[safe: indexPath.row] {
+        if let model = state.value?[safe: indexPath.row] {
             cell.bind(viewModel: model)
             cell.infoAction = { [weak self] viewModel in
                 self?.presenter.showPoolInfo(poolId: viewModel.id)
@@ -82,7 +120,7 @@ extension StakingSelectPoolViewController: UITableViewDataSource {
 extension StakingSelectPoolViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let model = pools[safe: indexPath.row] else {
+        guard let model = state.value?[safe: indexPath.row] else {
             return
         }
         presenter.selectPool(poolId: model.id)
@@ -93,12 +131,18 @@ extension StakingSelectPoolViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        26
+        guard let viewModels = state.value, !viewModels.isEmpty else {
+            return 0
+        }
+        return 26
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        guard let viewModels = state.value, !viewModels.isEmpty else {
+            return nil
+        }
         let header: StakingSelectPoolListHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let count = numberFormatter.value(for: selectedLocale).string(from: NSNumber(value: pools.count))
+        let count = numberFormatter.value(for: selectedLocale).string(from: NSNumber(value: viewModels.count))
         let title = R.string.localizable.stakingSelectPoolCount(
             count ?? "",
             preferredLanguages: selectedLocale.rLanguages
@@ -116,7 +160,7 @@ extension StakingSelectPoolViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             rootView.tableView.reloadData()
-            setupTitle()
+            setupLocalization()
         }
     }
 }

@@ -3,9 +3,8 @@ import SoraUI
 
 final class StakingSelectPoolViewLayout: UIView {
     let recommendedButton: RoundedButton = .create {
-        $0.applySecondaryStyle()
-        $0.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundInactive()!
-        $0.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
+        $0.apply(style: .inactiveButton)
+        $0.contentInsets = .init(top: 7, left: 12, bottom: 8, right: 12)
     }
 
     let tableView: UITableView = .create {
@@ -14,6 +13,10 @@ final class StakingSelectPoolViewLayout: UIView {
         $0.separatorStyle = .none
         $0.registerClassForCell(StakingPoolTableViewCell.self)
         $0.registerHeaderFooterView(withClass: StakingSelectPoolListHeaderView.self)
+    }
+
+    let loadingView: ListLoadingView = .create {
+        $0.isHidden = true
     }
 
     override init(frame: CGRect) {
@@ -30,16 +33,21 @@ final class StakingSelectPoolViewLayout: UIView {
     private func setupLayout() {
         addSubview(recommendedButton)
         recommendedButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(16)
-            $0.top.equalToSuperview().inset(12)
+            $0.leading.equalToSuperview().offset(16)
+            $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(12)
             $0.trailing.lessThanOrEqualToSuperview()
             $0.height.equalTo(32)
         }
 
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(recommendedButton.snp.bottom).inset(16)
+            $0.top.equalTo(recommendedButton.snp.bottom).offset(16)
             $0.leading.bottom.trailing.equalToSuperview()
+        }
+
+        addSubview(loadingView)
+        loadingView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
 }

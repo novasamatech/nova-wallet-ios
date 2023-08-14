@@ -6,7 +6,7 @@ import BigInt
 final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning {
     weak var presenter: StakingSelectPoolInteractorOutputProtocol?
     let poolsOperationFactory: NominationPoolsOperationFactoryProtocol
-    let eraPoolsService: EraNominationPoolsServiceProtocol
+    let eraNominationPoolsService: EraNominationPoolsServiceProtocol
     let validatorRewardService: RewardCalculatorServiceProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -27,7 +27,7 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         rewardEngineOperationFactory: NPoolsRewardEngineFactoryProtocol,
         recommendationMediator: RelaychainStakingRecommendationMediating,
-        eraPoolsService: EraNominationPoolsServiceProtocol,
+        eraNominationPoolsService: EraNominationPoolsServiceProtocol,
         validatorRewardService: RewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -39,7 +39,7 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.rewardEngineOperationFactory = rewardEngineOperationFactory
         self.recommendationMediator = recommendationMediator
-        self.eraPoolsService = eraPoolsService
+        self.eraNominationPoolsService = eraNominationPoolsService
         self.validatorRewardService = validatorRewardService
         self.connection = connection
         self.runtimeService = runtimeService
@@ -50,7 +50,6 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
 
     deinit {
         clear(dataProvider: &maxMembersPerPoolProvider)
-        recommendationMediator.stopRecommending()
     }
 
     private func performMaxMembersPerPoolSubscription() {
@@ -61,14 +60,14 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
         clear(cancellable: &poolsCancellable)
 
         let maxApyWrapper = rewardEngineOperationFactory.createEngineWrapper(
-            for: eraPoolsService,
+            for: eraNominationPoolsService,
             validatorRewardService: validatorRewardService,
             connection: connection,
             runtimeService: runtimeService
         )
 
         let poolStatsWrapper = poolsOperationFactory.createSparePoolsInfoWrapper(
-            for: eraPoolsService,
+            for: eraNominationPoolsService,
             rewardEngine: {
                 try maxApyWrapper.targetOperation.extractNoCancellableResultData()
             },
@@ -89,7 +88,7 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
                     let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData()
                     self?.presenter?.didReceive(poolStats: stats)
                 } catch {
-                    // TODO:
+                    self?.presenter?.didReceive(error: .poolStats(error))
                 }
             }
         }
@@ -116,9 +115,13 @@ extension StakingSelectPoolInteractor: StakingSelectPoolInteractorInputProtocol 
 
     func refreshPools() {
         guard maxPoolMembersPerPool.isDefined else {
+            performMaxMembersPerPoolSubscription()
             return
         }
         fetchSparePoolsInfo()
+    }
+
+    func refreshRecommendation() {
         provideRecommendation()
     }
 }
@@ -130,8 +133,7 @@ extension StakingSelectPoolInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
             maxPoolMembersPerPool = .defined(value)
             fetchSparePoolsInfo()
         case let .failure(error):
-            break
-            // TODO:
+            presenter?.didReceive(error: .poolStats(error))
         }
     }
 }
@@ -144,11 +146,10 @@ extension StakingSelectPoolInteractor: RelaychainStakingRecommendationDelegate {
         guard case let .pool(recommendedPool) = recommendation.staking else {
             return
         }
-
         presenter?.didReceive(recommendedPool: recommendedPool)
     }
 
-    func didReceiveRecommendation(error _: Error) {
-        // TODO:
+    func didReceiveRecommendation(error: Error) {
+        presenter?.didReceive(error: .recommendation(error))
     }
 }

@@ -44,7 +44,7 @@ final class StakingSelectPoolPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceivePools(viewModels: viewModels)
+        view?.didReceivePools(state: .loaded(value: viewModels))
     }
 
     private func provideSingleViewModel(poolId: NominationPools.PoolId?) {
@@ -85,11 +85,26 @@ final class StakingSelectPoolPresenter {
 
         delegate?.changePoolSelection(selectedPool: .init(poolStats: poolStats))
     }
+
+    private func provideRecommendedButtonViewModel() {
+        guard let recommendedPoolId = recommendedPoolId, !poolStatsMap.isEmpty else {
+            view?.didReceiveRecommendedButton(viewModel: .hidden)
+            return
+        }
+
+        if recommendedPoolId == selectedPoolId {
+            view?.didReceiveRecommendedButton(viewModel: .inactive)
+        } else {
+            view?.didReceiveRecommendedButton(viewModel: .active)
+        }
+    }
 }
 
 extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
     func setup() {
         interactor.setup()
+        provideRecommendedButtonViewModel()
+        view?.didReceivePools(state: .loading)
     }
 
     func selectPool(poolId: NominationPools.PoolId) {
@@ -100,6 +115,7 @@ extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
         selectedPoolId = poolId
         provideSingleViewModel(poolId: previousSelectedPoolId)
         provideSingleViewModel(poolId: poolId)
+        provideRecommendedButtonViewModel()
         delegate?.changePoolSelection(selectedPool: .init(poolStats: poolStats))
         wireframe.complete(from: view)
     }
@@ -117,6 +133,13 @@ extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
             locale: selectedLocale
         )
     }
+
+    func selectRecommended() {
+        guard let recommendedPoolId = recommendedPoolId else {
+            return
+        }
+        selectPool(poolId: recommendedPoolId)
+    }
 }
 
 extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol {
@@ -128,6 +151,7 @@ extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol 
         notifySelectedPoolChangedIfNeeded(oldSelection: selectedPoolId)
         sortPools()
         provideViewModel()
+        provideRecommendedButtonViewModel()
     }
 
     func didReceive(recommendedPool: NominationPools.SelectedPool) {
@@ -138,6 +162,20 @@ extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol 
         }
         sortPools()
         provideViewModel()
+        provideRecommendedButtonViewModel()
+    }
+
+    func didReceive(error: StakingSelectPoolError) {
+        switch error {
+        case let .poolStats(error):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshPools()
+            }
+        case let .recommendation(error):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshRecommendation()
+            }
+        }
     }
 }
 
