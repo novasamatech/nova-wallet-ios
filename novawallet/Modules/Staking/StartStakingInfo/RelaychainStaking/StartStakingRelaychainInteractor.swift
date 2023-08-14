@@ -8,6 +8,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     let chainRegistry: ChainRegistryProtocol
     let networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
     let eraCoundownOperationFactory: EraCountdownOperationFactoryProtocol
+    let eventCenter: EventCenterProtocol
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
         state.relaychainLocalSubscriptionFactory
@@ -40,12 +41,14 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         currencyManager: CurrencyManagerProtocol,
         networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
         eraCoundownOperationFactory: EraCountdownOperationFactoryProtocol,
+        eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue
     ) {
         self.state = state
         self.chainRegistry = chainRegistry
         self.networkInfoOperationFactory = networkInfoOperationFactory
         self.eraCoundownOperationFactory = eraCoundownOperationFactory
+        self.eventCenter = eventCenter
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -219,6 +222,8 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         performBagListSizeSubscription()
         performMinJoinBondSubscription()
         provideEraCompletionTime()
+
+        eventCenter.add(observer: self, dispatchIn: .main)
     }
 }
 
@@ -270,5 +275,16 @@ extension StartStakingRelaychainInteractor: StartStakingInfoRelaychainInteractor
 
     func retryNominationPoolsMinStake() {
         performMinJoinBondSubscription()
+    }
+}
+
+extension StartStakingRelaychainInteractor: EventVisitorProtocol {
+    func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
+        provideNetworkStakingInfo()
+    }
+
+    func processBlockTimeChanged(event _: BlockTimeChanged) {
+        provideNetworkStakingInfo()
+        provideEraCompletionTime()
     }
 }

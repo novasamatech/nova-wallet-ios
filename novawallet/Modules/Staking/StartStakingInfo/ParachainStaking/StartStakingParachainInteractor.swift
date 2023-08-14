@@ -237,6 +237,10 @@ extension StartStakingParachainInteractor: EventVisitorProtocol {
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
         provideNetworkInfo()
     }
+
+    func processBlockTimeChanged(event _: BlockTimeChanged) {
+        provideStakingDurationInfo()
+    }
 }
 
 extension StartStakingParachainInteractor: ParastakingLocalStorageSubscriber,

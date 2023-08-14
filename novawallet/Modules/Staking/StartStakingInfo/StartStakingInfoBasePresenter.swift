@@ -54,6 +54,22 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
+    func shouldUpdateEraDuration(for newValue: TimeInterval?, oldValue: TimeInterval?) -> Bool {
+        guard let oldValue = oldValue else {
+            return true
+        }
+
+        guard let newValue = newValue else {
+            return false
+        }
+
+        if newValue > oldValue {
+            return true
+        } else {
+            return oldValue - newValue > StartStakingInfoConstants.eraDurationReduceThreshold
+        }
+    }
+
     // swiftlint:disable:next function_body_length
     func provideViewModel(state: StartStakingStateProtocol) {
         self.state = state

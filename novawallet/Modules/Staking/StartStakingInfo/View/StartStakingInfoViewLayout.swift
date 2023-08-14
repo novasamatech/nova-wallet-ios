@@ -2,7 +2,8 @@ import UIKit
 import SoraUI
 
 final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
-    let style: MultiColorTextStyle
+    let headerStyle: MultiColorTextStyle
+    let paragraphStyle: MultiColorTextStyle
     var skeletonView: SkrullableView?
 
     var header: StackTableHeaderCell = .create {
@@ -45,8 +46,9 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
     var paragraphViews: [ParagraphView] = []
 
-    init(style: MultiColorTextStyle) {
-        self.style = style
+    init(headerStyle: MultiColorTextStyle, paragraphStyle: MultiColorTextStyle) {
+        self.headerStyle = headerStyle
+        self.paragraphStyle = paragraphStyle
 
         super.init(frame: .zero)
     }
@@ -68,7 +70,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     override func setupStyle() {
         super.setupStyle()
 
-        actionView.actionButton.applyEnabledStyle(colored: style.accentTextColor)
+        actionView.actionButton.applyEnabledStyle(colored: headerStyle.accentTextColor)
     }
 
     override func setupLayout() {
@@ -126,7 +128,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     private func set(title: AccentTextModel) {
-        header.titleLabel.bind(model: title, with: style)
+        header.titleLabel.bind(model: title, with: headerStyle)
         header.titleLabel.numberOfLines = 0
         stackView.addArrangedSubview(header)
     }
@@ -134,7 +136,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private func set(paragraphs: [ParagraphView.Model]) {
         paragraphs.forEach {
             let view = ParagraphView(frame: .zero)
-            view.style = style
+            view.style = paragraphStyle
             view.bind(viewModel: $0)
             view.contentInsets = .zero
             paragraphViews.append(view)
@@ -171,7 +173,7 @@ extension StartStakingInfoViewLayout: SkeletonableView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let offsetX: CGFloat = 18
         let offsetY: CGFloat = 39
-        let spacing: CGFloat = 41
+        let spacing: CGFloat = 55
         let iconSize = CGSize(width: 28, height: 28)
         let titleSize = CGSize(width: 155, height: 10)
         let subtitleSize = CGSize(width: 126, height: 10)
@@ -180,8 +182,7 @@ extension StartStakingInfoViewLayout: SkeletonableView {
         let headerSecondLineSize = CGSize(width: 185, height: 16)
         let headerThirdLineSize = CGSize(width: 109, height: 16)
 
-        let topOffsetY = safeAreaInsets.top + Constants.containerInsets.top +
-            header.titleLabel.font.lineHeight - headerFirstLineSize.height / 2
+        let topOffsetY = safeAreaInsets.top + 23
 
         let headerFirstLineOffset = CGPoint(
             x: spaceSize.width / 2 - headerFirstLineSize.width / 2,
@@ -235,7 +236,7 @@ extension StartStakingInfoViewLayout: SkeletonableView {
 
             let titleOffset = CGPoint(
                 x: iconOffset.x + iconSize.width + 18,
-                y: iconOffset.y + 8
+                y: iconOffset.y + 7
             )
 
             let titleSkeleton = SingleSkeleton.createRow(

@@ -42,7 +42,12 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
 
 extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInteractorOutputProtocol {
     func didReceive(eraCountdown: EraCountdown?) {
-        state.eraCountdown = eraCountdown
+        if shouldUpdateEraDuration(
+            for: eraCountdown?.eraTimeInterval,
+            oldValue: state.eraCountdown?.eraTimeInterval
+        ) {
+            state.eraCountdown = eraCountdown
+        }
     }
 
     func didReceive(networkInfo: NetworkStakingInfo) {

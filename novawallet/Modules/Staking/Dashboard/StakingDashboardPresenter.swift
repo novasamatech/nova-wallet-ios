@@ -61,7 +61,7 @@ final class StakingDashboardPresenter {
 
     private func updateStakingView(
         using model: StakingDashboardModel,
-        syncChange: Set<Multistaking.ChainAssetOption>
+        syncChange: StakingDashboardBuilderResult.SyncChange
     ) {
         let updateViewModel = viewModelFactory.createUpdateViewModel(
             from: model,
@@ -91,7 +91,7 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
             return
         }
 
-        wireframe.showStartStaking(from: view, option: item.stakingOption)
+        wireframe.showStartStaking(from: view, chainAsset: item.chainAsset)
     }
 
     func selectMoreOptions() {

@@ -87,7 +87,12 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
     }
 
     func didReceive(stakingDuration: ParachainStakingDuration) {
-        state.stakingDuration = stakingDuration
+        if shouldUpdateEraDuration(
+            for: stakingDuration.round,
+            oldValue: state.stakingDuration?.round
+        ) {
+            state.stakingDuration = stakingDuration
+        }
     }
 
     func didReceive(rewardPaymentDelay: UInt32) {

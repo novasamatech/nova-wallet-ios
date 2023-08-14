@@ -35,4 +35,30 @@ extension TimeInterval {
 
         return UInt64(nextHour).timeInterval
     }
+
+    func getDaysAndHours(roundingDown: Bool) -> (Int, Int) {
+        let days = daysFromSeconds
+        let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
+
+        if !roundingDown {
+            return roundUp(days: days, hours: hours)
+        } else {
+            return (days, hours)
+        }
+    }
+
+    private func roundUp(days: Int, hours: Int) -> (Int, Int) {
+        let diff = self - TimeInterval(days).secondsFromDays - TimeInterval(hours).secondsFromHours
+        let remainedMinutes = diff.minutesFromSeconds
+
+        guard remainedMinutes > TimeInterval.secondsInHour.minutesFromSeconds / 2 else {
+            return (days, hours)
+        }
+
+        guard TimeInterval(hours + 1).secondsFromHours.daysFromSeconds == 0 else {
+            return (days + 1, 0)
+        }
+
+        return (days, hours + 1)
+    }
 }
