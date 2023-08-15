@@ -81,6 +81,8 @@
 		0C56B4FD2A4B0CA90030F9C9 /* AssetListBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C8A25592A553A6C0072882A /* KeyboardAppearanceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8A25582A553A6C0072882A /* KeyboardAppearanceState.swift */; };
+		0C9680F12A8A85BB006A411B /* TokenAddValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680F02A8A85BB006A411B /* TokenAddValidationFactory.swift */; };
+		0C9680F32A8AC2F2006A411B /* EvmTokenAddResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */; };
 		0C9ECB5A2A4A9AB400BDCA73 /* AssetListAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */; };
 		0CA307BC2F570941CD22C9AA /* ExportMnemonicConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF4688AF0658F8BB7A90C2BE /* ExportMnemonicConfirmViewFactory.swift */; };
 		0CAC01552A52E0CC0069413E /* AssetListModelHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */; };
@@ -3761,6 +3763,8 @@
 		0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetProtocols.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C8A25582A553A6C0072882A /* KeyboardAppearanceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAppearanceState.swift; sourceTree = "<group>"; };
+		0C9680F02A8A85BB006A411B /* TokenAddValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenAddValidationFactory.swift; sourceTree = "<group>"; };
+		0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTokenAddResult.swift; sourceTree = "<group>"; };
 		0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAccountCell.swift; sourceTree = "<group>"; };
 		0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListModelHelpers.swift; sourceTree = "<group>"; };
 		0CAC01562A52E1960069413E /* AssetListPresenterHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListPresenterHelpers.swift; sourceTree = "<group>"; };
@@ -12748,6 +12752,7 @@
 				849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */,
 				849F14482944443500D9F9BA /* CoingeckoUrlParser.swift */,
 				849F144C29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift */,
+				0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -12947,6 +12952,7 @@
 			isa = PBXGroup;
 			children = (
 				84A7AC7F29465BF9001A39CF /* TokenAddErrorPresentable.swift */,
+				0C9680F02A8A85BB006A411B /* TokenAddValidationFactory.swift */,
 			);
 			path = Validating;
 			sourceTree = "<group>";
@@ -18767,6 +18773,7 @@
 				8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */,
 				0C3205C02A867DD6002EB914 /* EvmMaxPriorityGasPriceProvider.swift in Sources */,
 				8499FECF27BFA25100712589 /* NftType.swift in Sources */,
+				0C9680F12A8A85BB006A411B /* TokenAddValidationFactory.swift in Sources */,
 				84EF8D40288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift in Sources */,
 				AEA2C1B62681E9B20069492E /* ValidatorSearchViewFactory.swift in Sources */,
 				84AE7ABB27D411CE00495267 /* RMRKV2DetailsInteractor.swift in Sources */,
@@ -19742,6 +19749,7 @@
 				847EA1D62A1CA47500F1CBD8 /* SubqueryMultistaking.swift in Sources */,
 				8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */,
 				8427495528FEB92700B2B70B /* GovernanceLockStateFactory.swift in Sources */,
+				0C9680F32A8AC2F2006A411B /* EvmTokenAddResult.swift in Sources */,
 				842BDB2C278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift in Sources */,
 				849346AF2A1F7F7D00CB75B7 /* MultistakingServices.swift in Sources */,
 				848919DB26FB663D004DBAD5 /* CrowdloansChainViewModel.swift in Sources */,
