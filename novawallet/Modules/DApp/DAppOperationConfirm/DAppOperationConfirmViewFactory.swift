@@ -220,7 +220,8 @@ struct DAppOperationConfirmViewFactory {
     ) -> DAppEthereumSignBytesInteractor {
         DAppEthereumSignBytesInteractor(
             request: request,
-            signingWrapperFactory: SigningWrapperFactory()
+            signingWrapperFactory: SigningWrapperFactory(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

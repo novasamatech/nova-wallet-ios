@@ -3,20 +3,26 @@ import IrohaCrypto
 import SoraKeystore
 import SubstrateSdk
 
-final class EthereumSigner: SignatureCreatorProtocol {
+final class EthereumSigner: BaseSigner {
     let keystore: KeystoreProtocol
     let metaId: String
     let accountId: AccountId?
     let publicKeyData: Data
 
-    init(keystore: KeystoreProtocol, ethereumAccountResponse: MetaEthereumAccountResponse) {
+    init(
+        keystore: KeystoreProtocol,
+        ethereumAccountResponse: MetaEthereumAccountResponse,
+        settingsManager: SettingsManagerProtocol
+    ) {
         self.keystore = keystore
         metaId = ethereumAccountResponse.metaId
         accountId = ethereumAccountResponse.isChainAccount ? ethereumAccountResponse.address : nil
         publicKeyData = ethereumAccountResponse.publicKey
+
+        super.init(settingsManager: settingsManager)
     }
 
-    func sign(_ hashedData: Data) throws -> IRSignatureProtocol {
+    override func signData(_ data: Data) throws -> IRSignatureProtocol {
         let tag = KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId)
 
         let secretKey = try keystore.fetchKey(for: tag)
@@ -28,6 +34,6 @@ final class EthereumSigner: SignatureCreatorProtocol {
 
         let signer = SECSigner(privateKey: privateKey)
 
-        return try signer.sign(hashedData)
+        return try signer.sign(data)
     }
 }
