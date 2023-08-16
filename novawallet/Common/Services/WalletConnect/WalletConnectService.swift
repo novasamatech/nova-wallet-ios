@@ -376,8 +376,8 @@ private final class DefaultWebSocket: WebSocketConnecting {
     private func protectedRestart() {
         mutex.lock()
         
-        self?.stopWebsocket()
-        self?.startWebsocket()
+        stopWebsocket()
+        startWebsocket()
         
         mutex.unlock()
     }
