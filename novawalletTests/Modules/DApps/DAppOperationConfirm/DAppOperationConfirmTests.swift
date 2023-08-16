@@ -234,7 +234,8 @@ class DAppOperationConfirmTests: XCTestCase {
         let interactor = DAppSignBytesConfirmInteractor(
             request: request,
             chain: chain,
-            signingWrapperFactory: signingWrapperFactory
+            signingWrapperFactory: signingWrapperFactory,
+            operationQueue: OperationQueue()
         )
 
         let delegate = MockDAppOperationConfirmDelegate()

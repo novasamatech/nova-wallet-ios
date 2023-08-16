@@ -167,7 +167,8 @@ struct DAppOperationConfirmViewFactory {
         DAppSignBytesConfirmInteractor(
             request: request,
             chain: chain,
-            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 
@@ -219,7 +220,8 @@ struct DAppOperationConfirmViewFactory {
     ) -> DAppEthereumSignBytesInteractor {
         DAppEthereumSignBytesInteractor(
             request: request,
-            signingWrapperFactory: SigningWrapperFactory()
+            signingWrapperFactory: SigningWrapperFactory(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }
