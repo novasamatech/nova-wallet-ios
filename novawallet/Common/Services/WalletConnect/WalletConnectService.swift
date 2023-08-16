@@ -372,13 +372,13 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket?.forceDisconnect()
         webSocket = nil
     }
-    
+
     private func protectedRestart() {
         mutex.lock()
-        
+
         stopWebsocket()
         startWebsocket()
-        
+
         mutex.unlock()
     }
 
