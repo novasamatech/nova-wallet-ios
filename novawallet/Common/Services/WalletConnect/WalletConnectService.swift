@@ -346,10 +346,10 @@ private final class DefaultWebSocket: WebSocketConnecting {
             case .cancelled:
                 self?.markDisconnectedAndNotify(error: nil)
             case .reconnectSuggested:
-                self?.makeRestart()
+                self?.protectedRestart()
             case let .viabilityChanged(isViable):
                 if isViable {
-                    self?.makeRestart()
+                    self?.protectedRestart()
                 } else {
                     self?.markDisconnectedAndNotify(error: nil)
                 }
@@ -373,7 +373,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket = nil
     }
     
-    private func makeRestart() {
+    private func protectedRestart() {
         mutex.lock()
         
         self?.stopWebsocket()
