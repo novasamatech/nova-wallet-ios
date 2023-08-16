@@ -1294,3 +1294,5 @@
 "common.refresh.fee" = "Refresh fee";
 "token.add.remote.exist.message" = "The entered contract address is present in Nova as a %@ token. Are you sure you want to modify it?";
 "update.token.completion.message" = "%@ token updated";
+"send.system.account.title" = "Tokens will be lost";
+"send.system.account.message" = "Recipient is a system account. It is not controlled by any company or individual. Are you sure you still want to perform this transfer?";

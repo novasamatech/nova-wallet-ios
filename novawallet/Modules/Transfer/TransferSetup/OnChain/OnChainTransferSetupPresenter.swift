@@ -329,7 +329,12 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
             selectedLocale: selectedLocale
         )
 
-        validators.append(
+        validators.append(contentsOf: [
+            dataValidatingFactory.accountIsNotSystem(
+                for: getRecepientAccountId(),
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
                 fee: isUtilityTransfer ? fee?.value : 0,
@@ -337,7 +342,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             )
-        )
+        ])
 
         validators.append(
             phishingValidatingFactory.notPhishing(
