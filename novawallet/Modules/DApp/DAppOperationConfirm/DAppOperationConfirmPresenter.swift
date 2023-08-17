@@ -80,7 +80,7 @@ final class DAppOperationConfirmPresenter {
         let rejectAction = AlertPresentableAction(
             title: R.string.localizable.commonReject(preferredLanguages: selectedLocale.rLanguages)
         ) { [weak self] in
-            self?.refreshFee()
+            self?.interactor.reject()
         }
 
         let errorContent = error.toErrorContent(for: selectedLocale)
