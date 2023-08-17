@@ -7,6 +7,11 @@ protocol StakingSharedStateFactoryProtocol {
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> RelaychainStakingSharedStateProtocol
 
+    func createNominationPools(
+        for chainAsset: ChainAsset,
+        consensus: ConsensusType
+    ) throws -> NPoolsStakingSharedStateProtocol
+
     func createParachain(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> ParachainStakingSharedStateProtocol
@@ -23,6 +28,14 @@ enum StakingSharedStateFactoryError: Error {
 }
 
 final class StakingSharedStateFactory {
+    struct RelaychainGlobalCommonServices {
+        let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
+        let eraValidatorService: EraValidatorServiceProtocol
+        let rewardCalculatorService: RewardCalculatorServiceProtocol
+        let timeModel: StakingTimeModel
+        let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    }
+
     struct RelaychainCommonServices {
         let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
         let accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol
@@ -63,10 +76,10 @@ final class StakingSharedStateFactory {
     }
 
     // swiftlint:disable:next function_body_length
-    private func createRelaychainCommonServices(
+    private func createRelaychainGlobalCommonServices(
         for consensus: ConsensusType,
         chainAsset: ChainAsset
-    ) throws -> RelaychainCommonServices {
+    ) throws -> RelaychainGlobalCommonServices {
         let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
         let substrateRepository = substrateRepositoryFactory.createChainStorageItemRepository()
@@ -76,26 +89,6 @@ final class StakingSharedStateFactory {
             syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
             repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
             logger: logger
-        )
-
-        let substrateDataProviderFactory = SubstrateDataProviderFactory(
-            facade: storageFacade,
-            operationManager: OperationManager(operationQueue: repositoryOperationQueue)
-        )
-
-        let childSubscriptionFactory = ChildSubscriptionFactory(
-            storageFacade: storageFacade,
-            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
-            eventCenter: eventCenter,
-            logger: logger
-        )
-
-        let accountRemoteSubscriptionService = StakingAccountUpdatingService(
-            chainRegistry: chainRegistry,
-            substrateRepositoryFactory: substrateRepositoryFactory,
-            substrateDataProviderFactory: substrateDataProviderFactory,
-            childSubscriptionFactory: childSubscriptionFactory,
-            operationQueue: syncOperationQueue
         )
 
         let stakingServiceFactory = StakingServiceFactory(
@@ -133,11 +126,50 @@ final class StakingSharedStateFactory {
 
         return .init(
             globalRemoteSubscriptionService: globalRemoteSubscriptionService,
-            accountRemoteSubscriptionService: accountRemoteSubscriptionService,
             eraValidatorService: eraValidatorService,
             rewardCalculatorService: rewardCalculatorService,
             timeModel: timeModel,
             localSubscriptionFactory: localSubscriptionFactory
+        )
+    }
+
+    private func createRelaychainCommonServices(
+        for consensus: ConsensusType,
+        chainAsset: ChainAsset
+    ) throws -> RelaychainCommonServices {
+        let globalServices = try createRelaychainGlobalCommonServices(for: consensus, chainAsset: chainAsset)
+
+        let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
+
+        let substrateRepository = substrateRepositoryFactory.createChainStorageItemRepository()
+
+        let substrateDataProviderFactory = SubstrateDataProviderFactory(
+            facade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue)
+        )
+
+        let childSubscriptionFactory = ChildSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            eventCenter: eventCenter,
+            logger: logger
+        )
+
+        let accountRemoteSubscriptionService = StakingAccountUpdatingService(
+            chainRegistry: chainRegistry,
+            substrateRepositoryFactory: substrateRepositoryFactory,
+            substrateDataProviderFactory: substrateDataProviderFactory,
+            childSubscriptionFactory: childSubscriptionFactory,
+            operationQueue: syncOperationQueue
+        )
+
+        return .init(
+            globalRemoteSubscriptionService: globalServices.globalRemoteSubscriptionService,
+            accountRemoteSubscriptionService: accountRemoteSubscriptionService,
+            eraValidatorService: globalServices.eraValidatorService,
+            rewardCalculatorService: globalServices.rewardCalculatorService,
+            timeModel: globalServices.timeModel,
+            localSubscriptionFactory: globalServices.localSubscriptionFactory
         )
     }
 
@@ -234,6 +266,38 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             eraValidatorService: services.eraValidatorService,
             rewardCalculatorService: services.rewardCalculatorService,
             timeModel: services.timeModel,
+            logger: logger
+        )
+    }
+
+    func createNominationPools(
+        for chainAsset: ChainAsset,
+        consensus: ConsensusType
+    ) throws -> NPoolsStakingSharedStateProtocol {
+        let relaychainServices = try createRelaychainGlobalCommonServices(for: consensus, chainAsset: chainAsset)
+        let nominationPoolServices = try createNominationPoolsServices(
+            for: chainAsset,
+            eraValidatorService: relaychainServices.eraValidatorService
+        )
+
+        guard
+            let npRemoteSubscriptionService = nominationPoolServices.remoteSubscriptionService,
+            let npAccountSubscriptionServiceFactory = nominationPoolServices.accountSubscriptionServiceFactory,
+            let activePoolsService = nominationPoolServices.activePoolsService else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+
+        return NPoolsStakingSharedState(
+            chainAsset: chainAsset,
+            relaychainGlobalSubscriptionService: relaychainServices.globalRemoteSubscriptionService,
+            timeModel: relaychainServices.timeModel,
+            relaychainLocalSubscriptionFactory: relaychainServices.localSubscriptionFactory,
+            eraValidatorService: relaychainServices.eraValidatorService,
+            rewardCalculatorService: relaychainServices.rewardCalculatorService,
+            npRemoteSubscriptionService: npRemoteSubscriptionService,
+            npAccountSubscriptionServiceFactory: npAccountSubscriptionServiceFactory,
+            activePoolsService: activePoolsService,
+            npLocalSubscriptionFactory: nominationPoolServices.localSubscriptionFactory,
             logger: logger
         )
     }
