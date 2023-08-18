@@ -144,6 +144,13 @@ extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
         }
         selectPool(poolId: recommendedPoolId)
     }
+
+    func search() {
+        guard let delegate = delegate else {
+            return
+        }
+        wireframe.showSearch(from: view, delegate: delegate)
+    }
 }
 
 extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol {

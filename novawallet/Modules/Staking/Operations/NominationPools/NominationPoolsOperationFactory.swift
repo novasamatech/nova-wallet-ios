@@ -33,6 +33,13 @@ protocol NominationPoolsOperationFactoryProtocol {
         for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[NominationPools.PoolId: AccountId]>
+
+    func createAllPoolsInfoWrapper(
+        rewardEngine: @escaping () throws -> NominationPoolsRewardEngineProtocol,
+        lastPoolId: NominationPools.PoolId,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolStats]>
 }
 
 final class NominationPoolsOperationFactory {
@@ -82,36 +89,39 @@ final class NominationPoolsOperationFactory {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    private func createSparePoolsMergeOperation(
+    private func createPoolsMergeOperation(
         dependedingOn bondedPoolsOperation: BaseOperation<[NominationPools.PoolId: NominationPools.BondedPool]>,
         bondedAccountsOperation: BaseOperation<[NominationPools.PoolId: AccountId]>,
         metadataOperation: BaseOperation<[NominationPools.PoolId: Data]>,
         rewardEngine: @escaping () throws -> NominationPoolsRewardEngineProtocol,
-        maxMembersPerPool: @escaping () throws -> UInt32?
+        filter: NominationPoolsFilterProtocol?
     ) -> BaseOperation<[NominationPools.PoolStats]> {
         ClosureOperation<[NominationPools.PoolStats]> {
             let bondedPools = try bondedPoolsOperation.extractNoCancellableResultData()
             let bondedAccounts = try bondedAccountsOperation.extractNoCancellableResultData()
             let metadataDict = try metadataOperation.extractNoCancellableResultData()
-            let maxMembersPerPool = try maxMembersPerPool()
             let rewardEngine = try rewardEngine()
 
             let poolStats: [NominationPools.PoolStats] = try bondedPools.keys.compactMap { poolId in
                 guard
                     let bondedPool = bondedPools[poolId],
-                    let bondedAccountId = bondedAccounts[poolId],
-                    bondedPool.checkPoolSpare(for: maxMembersPerPool) else {
+                    let bondedAccountId = bondedAccounts[poolId] else {
                     return nil
                 }
 
-                let maxPoolApy = try rewardEngine.calculateMaxReturn(poolId: poolId, isCompound: true, period: .year)
+                if let filter = filter, try filter.apply(for: bondedPool) == false {
+                    return nil
+                }
+
+                let maxPoolApy = try? rewardEngine.calculateMaxReturn(poolId: poolId, isCompound: true, period: .year)
 
                 return NominationPools.PoolStats(
                     poolId: poolId,
                     bondedAccountId: bondedAccountId,
                     membersCount: bondedPool.memberCounter,
-                    maxApy: maxPoolApy.maxApy,
-                    metadata: metadataDict[poolId]
+                    maxApy: maxPoolApy?.maxApy,
+                    metadata: metadataDict[poolId],
+                    state: bondedPool.state
                 )
             }
 
@@ -122,6 +132,54 @@ final class NominationPoolsOperationFactory {
                 return apy1 > apy2
             }
         }
+    }
+
+    private func fetchPoolsInfoWrapper(
+        pollIdsOperationWrapper: CompoundOperationWrapper<Set<NominationPools.PoolId>>,
+        rewardEngine: @escaping () throws -> NominationPoolsRewardEngineProtocol,
+        filter: NominationPoolsFilterProtocol?,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolStats]> {
+        let poolIdsClosure: () throws -> Set<NominationPools.PoolId> = {
+            try pollIdsOperationWrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        let bondedWrapper = createBondedPoolsWrapper(
+            for: poolIdsClosure,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        let bondedAccountWrapper = createBondedAccountsWrapper(
+            for: poolIdsClosure,
+            runtimeService: runtimeService
+        )
+
+        let metadataWrapper = createMetadataWrapper(
+            for: poolIdsClosure,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        bondedWrapper.addDependency(wrapper: pollIdsOperationWrapper)
+        bondedAccountWrapper.addDependency(wrapper: pollIdsOperationWrapper)
+        metadataWrapper.addDependency(wrapper: pollIdsOperationWrapper)
+
+        let mergeOperation = createPoolsMergeOperation(
+            dependedingOn: bondedWrapper.targetOperation,
+            bondedAccountsOperation: bondedAccountWrapper.targetOperation,
+            metadataOperation: metadataWrapper.targetOperation,
+            rewardEngine: rewardEngine,
+            filter: filter
+        )
+
+        let dependencies = pollIdsOperationWrapper.allOperations + bondedWrapper.allOperations + bondedAccountWrapper.allOperations +
+            metadataWrapper.allOperations
+
+        dependencies.forEach { mergeOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 }
 
@@ -270,46 +328,38 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[NominationPools.PoolStats]> {
         let activePoolsOperation = poolService.fetchInfoOperation()
-
-        let poolIdsClosure: () throws -> Set<NominationPools.PoolId> = {
+        let mapOperation = ClosureOperation<Set<NominationPools.PoolId>> {
             let poolIds = try activePoolsOperation.extractNoCancellableResultData().pools.map(\.poolId)
             return Set(poolIds)
         }
+        mapOperation.addDependency(activePoolsOperation)
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [activePoolsOperation])
+        let filter = SpareNominationPoolsFilter(maxMembersPerPoolClosure: maxMembersPerPool)
 
-        let bondedWrapper = createBondedPoolsWrapper(
-            for: poolIdsClosure,
-            connection: connection,
-            runtimeService: runtimeService
-        )
-
-        let bondedAccountWrapper = createBondedAccountsWrapper(
-            for: poolIdsClosure,
-            runtimeService: runtimeService
-        )
-
-        let metadataWrapper = createMetadataWrapper(
-            for: poolIdsClosure,
-            connection: connection,
-            runtimeService: runtimeService
-        )
-
-        bondedWrapper.addDependency(operations: [activePoolsOperation])
-        bondedAccountWrapper.addDependency(operations: [activePoolsOperation])
-        metadataWrapper.addDependency(operations: [activePoolsOperation])
-
-        let mergeOperation = createSparePoolsMergeOperation(
-            dependedingOn: bondedWrapper.targetOperation,
-            bondedAccountsOperation: bondedAccountWrapper.targetOperation,
-            metadataOperation: metadataWrapper.targetOperation,
+        return fetchPoolsInfoWrapper(
+            pollIdsOperationWrapper: wrapper,
             rewardEngine: rewardEngine,
-            maxMembersPerPool: maxMembersPerPool
+            filter: filter,
+            connection: connection,
+            runtimeService: runtimeService
         )
+    }
 
-        let dependencies = [activePoolsOperation] + bondedWrapper.allOperations + bondedAccountWrapper.allOperations +
-            metadataWrapper.allOperations
+    func createAllPoolsInfoWrapper(
+        rewardEngine: @escaping () throws -> NominationPoolsRewardEngineProtocol,
+        lastPoolId: NominationPools.PoolId,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolStats]> {
+        let allPoolIds = Set(0 ... lastPoolId)
+        let wrapper = CompoundOperationWrapper.createWithResult(allPoolIds)
 
-        dependencies.forEach { mergeOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+        return fetchPoolsInfoWrapper(
+            pollIdsOperationWrapper: wrapper,
+            rewardEngine: rewardEngine,
+            filter: nil,
+            connection: connection,
+            runtimeService: runtimeService
+        )
     }
 }

@@ -38,6 +38,7 @@ final class StakingSelectPoolViewController: UIViewController, ViewHolder {
         rootView.tableView.delegate = self
         setupLocalization()
         setupHandlers()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.searchButton)
 
         presenter.setup()
     }
@@ -50,10 +51,15 @@ final class StakingSelectPoolViewController: UIViewController, ViewHolder {
 
     private func setupHandlers() {
         rootView.recommendedButton.addTarget(self, action: #selector(selectRecommendedAction), for: .touchUpInside)
+        rootView.searchButton.addTarget(self, action: #selector(searchAction), for: .touchUpInside)
     }
 
     @objc private func selectRecommendedAction() {
         presenter.selectRecommended()
+    }
+
+    @objc private func searchAction() {
+        presenter.search()
     }
 }
 

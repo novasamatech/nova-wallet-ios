@@ -1347,5 +1347,7 @@
 "staking.select.pool.count" = "active pools: %@";
 "staking.select.pool.members" = "members";
 "staking.select.pool.title" = "Select pool";
-
+"staking.search.pool.empty" = "No pool with entered name or pool\nID were found. Make sure\nyou entered correct data";
+"staking.search.pool.placeholder" = "Search by name or pool ID";
 "common.every.day" = "everyday";
+"staking.search.pool.selection.error.message" = "This pool currently unavailable to staking";
