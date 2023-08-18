@@ -49,7 +49,8 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: selectedLocale.rLanguages)
         let message = R.string.localizable.stakingSearchPoolSelectionErrorMessage(
             preferredLanguages: selectedLocale.rLanguages)
-        wireframe.present(message: message, title: title, closeAction: nil, from: view)
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+        wireframe.present(message: message, title: title, closeAction: closeAction, from: view)
     }
 }
 

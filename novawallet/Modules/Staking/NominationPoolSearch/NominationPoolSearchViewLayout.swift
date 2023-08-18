@@ -12,7 +12,6 @@ final class NominationPoolSearchViewLayout: BaseTableSearchViewLayout {
 
         tableView.estimatedRowHeight = 44
         tableView.separatorStyle = .none
-        searchField.autocorrectionType = .no
 
         setupEmptyView()
     }
