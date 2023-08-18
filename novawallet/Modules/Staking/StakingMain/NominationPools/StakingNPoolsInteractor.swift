@@ -52,6 +52,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.state = state
@@ -62,6 +63,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {

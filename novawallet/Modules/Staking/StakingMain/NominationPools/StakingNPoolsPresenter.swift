@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-final class StakingPoolsPresenter {
+final class StakingNPoolsPresenter {
     weak var view: StakingMainViewProtocol?
 
     let interactor: StakingNPoolsInteractorInputProtocol
@@ -53,7 +53,7 @@ final class StakingPoolsPresenter {
     }
 }
 
-extension StakingPoolsPresenter: StakingMainChildPresenterProtocol {
+extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
     func setup() {
         updateView()
         interactor.setup()
@@ -80,7 +80,7 @@ extension StakingPoolsPresenter: StakingMainChildPresenterProtocol {
     func selectPeriod(_: StakingRewardFiltersPeriod) {}
 }
 
-extension StakingPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
+extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
     func didReceive(minStake: BigUInt?) {
         self.minStake = minStake
 
@@ -129,7 +129,7 @@ extension StakingPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
     }
 }
 
-extension StakingPoolsPresenter: Localizable {
+extension StakingNPoolsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateView()
