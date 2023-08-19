@@ -150,9 +150,9 @@ final class NetworkInfoView: UIView {
     }
 
     func bind(viewModel: NetworkStakingInfoViewModel) {
-        self.viewModel = viewModel
-
         stopLoadingIfNeeded()
+
+        self.viewModel = viewModel
 
         applyViewModel()
 
@@ -388,7 +388,7 @@ extension NetworkInfoView: SkeletonableView {
 
         var skeletons: [Skeletonable] = []
 
-        if viewModel?.activeNominators?.isLoading == true {
+        if viewModel?.totalStake?.isLoading == true {
             skeletons.append(contentsOf: [
                 SingleSkeleton.createRow(
                     on: totalStakedView,
