@@ -42,7 +42,8 @@ final class StakingNPoolsPresenter {
         let viewModel = infoViewModelFactory.createNPoolsStakingInfoViewModel(
             for: params,
             chainAsset: chainAsset,
-            priceData: priceData
+            priceData: priceData,
+            locale: selectedLocale
         )
 
         view?.didRecieveNetworkStakingInfo(viewModel: viewModel)

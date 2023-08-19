@@ -19,14 +19,16 @@ protocol NetworkInfoViewModelFactoryProtocol {
         with networkStakingInfo: NetworkStakingInfo,
         chainAsset: ChainAsset,
         params: NetworkInfoViewModelParams,
-        priceData: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModel>
+        priceData: PriceData?,
+        locale: Locale
+    ) -> NetworkStakingInfoViewModel
 
     func createNPoolsStakingInfoViewModel(
         for params: NPoolsDetailsInfoParams,
         chainAsset: ChainAsset,
-        priceData: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModel>?
+        priceData: PriceData?,
+        locale: Locale
+    ) -> NetworkStakingInfoViewModel
 }
 
 final class NetworkInfoViewModelFactory {
@@ -136,72 +138,70 @@ extension NetworkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol {
         with networkStakingInfo: NetworkStakingInfo,
         chainAsset: ChainAsset,
         params: NetworkInfoViewModelParams,
-        priceData: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModel> {
-        let localizedTotalStake = createTotalStakeViewModel(
+        priceData: PriceData?,
+        locale: Locale
+    ) -> NetworkStakingInfoViewModel {
+        let totalStake = createTotalStakeViewModel(
             with: networkStakingInfo,
             chainAsset: chainAsset,
             priceData: priceData
-        )
+        ).value(for: locale)
 
-        let localizedMinimalStake = createMinimalStakeViewModel(
+        let minimalStake = createMinimalStakeViewModel(
             with: networkStakingInfo,
             chainAsset: chainAsset,
             minNominatorBond: params.minNominatorBond,
             votersCount: params.votersCount,
             priceData: priceData
+        ).value(for: locale)
+
+        let nominatorsCount = createActiveNominatorsViewModel(with: networkStakingInfo).value(for: locale)
+
+        let lockUpPeriod = createLockUpPeriodViewModel(with: networkStakingInfo).value(for: locale)
+
+        let stakingPeriod = createStakingPeriod().value(for: locale)
+
+        return .init(
+            totalStake: .loaded(value: totalStake),
+            minimalStake: .loaded(value: minimalStake),
+            activeNominators: .loaded(value: nominatorsCount),
+            stakingPeriod: .loaded(value: stakingPeriod),
+            lockUpPeriod: .loaded(value: lockUpPeriod)
         )
-
-        let nominatorsCount = createActiveNominatorsViewModel(with: networkStakingInfo)
-
-        let localizedLockUpPeriod = createLockUpPeriodViewModel(with: networkStakingInfo)
-
-        let stakingPeriod = createStakingPeriod()
-
-        return LocalizableResource { locale in
-            NetworkStakingInfoViewModel(
-                totalStake: localizedTotalStake.value(for: locale),
-                minimalStake: localizedMinimalStake.value(for: locale),
-                activeNominators: nominatorsCount.value(for: locale),
-                stakingPeriod: stakingPeriod.value(for: locale),
-                lockUpPeriod: localizedLockUpPeriod.value(for: locale)
-            )
-        }
     }
 
     func createNPoolsStakingInfoViewModel(
         for params: NPoolsDetailsInfoParams,
         chainAsset: ChainAsset,
-        priceData: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModel>? {
-        let localizedTotalStake = params.totalActiveStake.map { totalStake in
+        priceData: PriceData?,
+        locale: Locale
+    ) -> NetworkStakingInfoViewModel {
+        let totalStake = params.totalActiveStake.map { totalStake in
             createStakeViewModel(
                 stake: totalStake,
                 chainAsset: chainAsset,
                 priceData: priceData
             )
-        }
+        }?.value(for: locale)
 
-        let localizedMinimalStake = params.minStake.map { minStake in
+        let minimalStake = params.minStake.map { minStake in
             createStakeViewModel(
                 stake: minStake,
                 chainAsset: chainAsset,
                 priceData: priceData
             )
-        }
+        }?.value(for: locale)
 
-        let localizedLockUpPeriod = params.duration?.localizableUnlockingString
+        let lockUpPeriod = params.duration?.localizableUnlockingString.value(for: locale)
 
-        let stakingPeriod = createStakingPeriod()
+        let stakingPeriod = createStakingPeriod().value(for: locale)
 
-        return LocalizableResource { locale in
-            NetworkStakingInfoViewModel(
-                totalStake: localizedTotalStake?.value(for: locale),
-                minimalStake: localizedMinimalStake?.value(for: locale),
-                activeNominators: nil,
-                stakingPeriod: stakingPeriod.value(for: locale),
-                lockUpPeriod: localizedLockUpPeriod?.value(for: locale)
-            )
-        }
+        return .init(
+            totalStake: totalStake.map { .loaded(value: $0) } ?? .loading,
+            minimalStake: minimalStake.map { .loaded(value: $0) } ?? .loading,
+            activeNominators: nil,
+            stakingPeriod: .loaded(value: stakingPeriod),
+            lockUpPeriod: lockUpPeriod.map { .loaded(value: $0) } ?? .loading
+        )
     }
 }

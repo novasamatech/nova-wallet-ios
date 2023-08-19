@@ -19,4 +19,8 @@ struct StakingRelaychainStatics: StakingMainStaticViewModelProtocol {
             preferredLanguages: locale.rLanguages
         ).uppercased()
     }
+
+    func networkInfoTitle(for locale: Locale) -> String {
+        R.string.localizable.stakingNetworkInfoTitle(preferredLanguages: locale.rLanguages)
+    }
 }

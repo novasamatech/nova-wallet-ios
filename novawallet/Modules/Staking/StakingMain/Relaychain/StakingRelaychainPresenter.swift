@@ -82,11 +82,12 @@ final class StakingRelaychainPresenter {
                     with: networkStakingInfo,
                     chainAsset: chainAsset,
                     params: params,
-                    priceData: commonData?.price
+                    priceData: commonData?.price,
+                    locale: view?.selectedLocale ?? Locale.current
                 )
             view?.didRecieveNetworkStakingInfo(viewModel: networkStakingInfoViewModel)
         } else {
-            view?.didRecieveNetworkStakingInfo(viewModel: nil)
+            view?.didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel.allLoading)
         }
     }
 

@@ -44,11 +44,13 @@ final class StakingParachainPresenter {
                 from: networkInfo,
                 duration: optCommonData?.stakingDuration,
                 chainAsset: chainAsset,
-                price: optCommonData?.price
+                price: optCommonData?.price,
+                locale: view?.selectedLocale ?? Locale.current
             )
+
             view?.didRecieveNetworkStakingInfo(viewModel: viewModel)
         } else {
-            view?.didRecieveNetworkStakingInfo(viewModel: nil)
+            view?.didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel.allLoading)
         }
     }
 

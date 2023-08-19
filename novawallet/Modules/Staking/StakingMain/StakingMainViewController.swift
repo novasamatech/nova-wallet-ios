@@ -393,9 +393,7 @@ extension StakingMainViewController: RewardEstimationViewDelegate {
 }
 
 extension StakingMainViewController: StakingMainViewProtocol {
-    func didRecieveNetworkStakingInfo(
-        viewModel: LocalizableResource<NetworkStakingInfoViewModel>?
-    ) {
+    func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel) {
         networkInfoView.bind(viewModel: viewModel)
     }
 
