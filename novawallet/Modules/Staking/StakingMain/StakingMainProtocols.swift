@@ -14,16 +14,11 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
 
 protocol StakingMainPresenterProtocol: AnyObject {
     func setup()
-    func performMainAction()
-    func performRewardInfoAction()
-    func performChangeValidatorsAction()
-    func performSetupValidatorsForBondedAction()
-    func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
-    func performRebag()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
+    func performAlertAction(_ alert: StakingAlert)
     func selectPeriod()
 }
 
@@ -50,14 +45,9 @@ protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresent
 
 protocol StakingMainChildPresenterProtocol: AnyObject {
     func setup()
-    func performMainAction()
-    func performRewardInfoAction()
-    func performChangeValidatorsAction()
-    func performSetupValidatorsForBondedAction()
-    func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
-    func performRebag()
     func performManageAction(_ action: StakingManageOption)
+    func performAlertAction(_ alert: StakingAlert)
     func selectPeriod(_ period: StakingRewardFiltersPeriod)
 }

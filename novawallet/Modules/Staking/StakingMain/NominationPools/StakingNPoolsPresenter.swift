@@ -65,25 +65,25 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         interactor.setup()
     }
 
-    func performMainAction() {}
+    func performRedeemAction() {
+        // TODO:
+    }
 
-    func performRewardInfoAction() {}
+    func performRebondAction() {
+        // TODO:
+    }
 
-    func performChangeValidatorsAction() {}
+    func performManageAction(_: StakingManageOption) {
+        // TODO:
+    }
 
-    func performSetupValidatorsForBondedAction() {}
+    func performAlertAction(_: StakingAlert) {
+        // TODO:
+    }
 
-    func performStakeMoreAction() {}
-
-    func performRedeemAction() {}
-
-    func performRebondAction() {}
-
-    func performRebag() {}
-
-    func performManageAction(_: StakingManageOption) {}
-
-    func selectPeriod(_: StakingRewardFiltersPeriod) {}
+    func selectPeriod(_: StakingRewardFiltersPeriod) {
+        // TODO:
+    }
 }
 
 extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {

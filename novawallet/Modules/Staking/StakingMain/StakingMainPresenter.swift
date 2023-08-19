@@ -65,65 +65,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         interactor.setup()
     }
 
-    func performMainAction() {
-        let chain = stakingOption.chainAsset.chain
-
-        if wallet.fetchMetaChainAccount(for: chain.accountRequest()) != nil {
-            childPresenter?.performMainAction()
-        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
-            guard let view = view else {
-                return
-            }
-
-            let locale = view.selectedLocale
-
-            let message = R.string.localizable.commonChainAccountMissingMessageFormat(
-                chain.name,
-                preferredLanguages: locale.rLanguages
-            )
-
-            wireframe.presentAddAccount(
-                from: view,
-                chainName: chain.name,
-                message: message,
-                locale: locale
-            ) { [weak self] in
-                guard let wallet = self?.wallet else {
-                    return
-                }
-
-                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
-            }
-        } else {
-            guard let view = view, let locale = view.localizationManager?.selectedLocale else {
-                return
-            }
-
-            wireframe.presentNoAccountSupport(
-                from: view,
-                walletType: wallet.type,
-                chainName: chain.name,
-                locale: locale
-            )
-        }
-    }
-
-    func performRewardInfoAction() {
-        childPresenter?.performRewardInfoAction()
-    }
-
-    func performChangeValidatorsAction() {
-        childPresenter?.performChangeValidatorsAction()
-    }
-
-    func performSetupValidatorsForBondedAction() {
-        childPresenter?.performSetupValidatorsForBondedAction()
-    }
-
-    func performStakeMoreAction() {
-        childPresenter?.performStakeMoreAction()
-    }
-
     func performRedeemAction() {
         childPresenter?.performRedeemAction()
     }
@@ -132,16 +73,16 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         childPresenter?.performRebondAction()
     }
 
-    func performRebag() {
-        childPresenter?.performRebag()
-    }
-
     func networkInfoViewDidChangeExpansion(isExpanded: Bool) {
         interactor.saveNetworkInfoViewExpansion(isExpanded: isExpanded)
     }
 
     func performManageAction(_ action: StakingManageOption) {
         childPresenter?.performManageAction(action)
+    }
+
+    func performAlertAction(_ alert: StakingAlert) {
+        childPresenter?.performAlertAction(alert)
     }
 
     func selectPeriod() {
