@@ -60,8 +60,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNetworkInfoView()
         setupAlertsView()
+        setupNetworkInfoView()
         setupScrollView()
         setupLocalization()
         presenter.setup()
@@ -130,7 +130,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: networkInfoContainerView, innerView: networkInfoView)
 
-        stackView.insertArrangedSubview(networkInfoContainerView, at: 0)
+        stackView.addArrangedSubview(networkInfoContainerView)
     }
 
     private func setupAlertsView() {
@@ -139,7 +139,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: alertsContainerView, innerView: alertsView)
 
-        stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
+        stackView.insertArrangedSubview(alertsContainerView, at: 0)
 
         alertsView.delegate = self
     }
@@ -189,10 +189,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             newActionsView.locale = selectedLocale
             newActionsView.delegate = self
             newActionsView.statics = staticsViewModel
-            stackView.addArrangedSubview(newActionsView)
+            stackView.insertArranged(view: newActionsView, before: networkInfoContainerView)
             newActionsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
             }
+
+            stackView.setCustomSpacing(8.0, after: newActionsView)
 
             actionsView = newActionsView
         }
@@ -216,7 +218,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             if let stateView = stateContainerView {
                 stackView.insertArranged(view: newUnbondingsView, after: stateView)
             } else {
-                stackView.addArrangedSubview(newUnbondingsView)
+                stackView.insertArranged(view: newUnbondingsView, before: networkInfoContainerView)
             }
 
             newUnbondingsView.snp.makeConstraints { make in

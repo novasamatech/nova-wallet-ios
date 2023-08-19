@@ -16,4 +16,9 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(error: StakingNPoolsError)
 }
 
-protocol StakingNPoolsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol StakingNPoolsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func showStakeMore(from view: StakingMainViewProtocol?)
+    func showUnstake(from view: StakingMainViewProtocol?)
+    func showRedeem(from view: StakingMainViewProtocol?)
+    func showClaimRewards(from view: StakingMainViewProtocol?)
+}

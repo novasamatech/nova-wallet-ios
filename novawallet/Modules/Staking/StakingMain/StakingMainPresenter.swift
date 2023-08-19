@@ -11,8 +11,6 @@ final class StakingMainPresenter {
     let viewModelFactory: StakingMainViewModelFactoryProtocol
     let stakingOption: Multistaking.ChainAssetOption
     let logger: LoggerProtocol?
-    let wallet: MetaAccountModel
-    let accountManagementFilter: AccountManagementFilterProtocol
 
     private var childPresenter: StakingMainChildPresenterProtocol?
     private var period: StakingRewardFiltersPeriod?
@@ -20,18 +18,14 @@ final class StakingMainPresenter {
     init(
         interactor: StakingMainInteractorInputProtocol,
         wireframe: StakingMainWireframeProtocol,
-        wallet: MetaAccountModel,
         stakingOption: Multistaking.ChainAssetOption,
-        accountManagementFilter: AccountManagementFilterProtocol,
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
         logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.wallet = wallet
         self.stakingOption = stakingOption
-        self.accountManagementFilter = accountManagementFilter
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
         self.logger = logger

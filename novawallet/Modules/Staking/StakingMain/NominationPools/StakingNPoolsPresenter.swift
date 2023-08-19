@@ -66,23 +66,30 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performRedeemAction() {
-        // TODO:
+        wireframe.showRedeem(from: view)
     }
 
     func performRebondAction() {
-        // TODO:
+        logger.warning("Not possible action for nomination pools")
     }
 
-    func performManageAction(_: StakingManageOption) {
-        // TODO:
+    func performManageAction(_ action: StakingManageOption) {
+        switch action {
+        case .stakeMore:
+            wireframe.showStakeMore(from: view)
+        case .unstake:
+            wireframe.showUnstake(from: view)
+        default:
+            logger.warning("Unsupported action: \(action)")
+        }
     }
 
     func performAlertAction(_: StakingAlert) {
-        // TODO:
+        // TODO: Implement in task for alerts
     }
 
     func selectPeriod(_: StakingRewardFiltersPeriod) {
-        // TODO:
+        // TODO: Implement in task for rewards
     }
 }
 
