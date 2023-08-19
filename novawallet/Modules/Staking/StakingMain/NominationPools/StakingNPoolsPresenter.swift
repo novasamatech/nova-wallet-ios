@@ -32,6 +32,10 @@ final class StakingNPoolsPresenter {
         self.localizationManager = localizationManager
     }
 
+    private func provideStatics() {
+        view?.didReceiveStatics(viewModel: StakingNominationPoolsStatics())
+    }
+
     private func provideStakingInfo() {
         let params = NPoolsDetailsInfoParams(
             totalActiveStake: totalActiveStake,
@@ -50,6 +54,7 @@ final class StakingNPoolsPresenter {
     }
 
     private func updateView() {
+        provideStatics()
         provideStakingInfo()
     }
 }
