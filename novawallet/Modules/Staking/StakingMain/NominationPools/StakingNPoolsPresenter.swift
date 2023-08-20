@@ -13,6 +13,13 @@ final class StakingNPoolsPresenter {
 
     private var totalActiveStake: BigUInt?
     private var minStake: BigUInt?
+    private var activeEra: ActiveEraInfo?
+    private var poolMember: NominationPools.PoolMember?
+    private var bondedPool: NominationPools.BondedPool?
+    private var poolLedger: StakingLedger?
+    private var poolNomination: Nomination?
+    private var poolBondedAccountId: AccountId?
+    private var activePools: Set<NominationPools.PoolId>?
     private var duration: StakingDuration?
     private var priceData: PriceData?
 
@@ -112,6 +119,34 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideStakingInfo()
     }
 
+    func didReceive(activeEra: ActiveEraInfo?) {
+        self.activeEra = activeEra
+    }
+
+    func didReceive(poolLedger: StakingLedger?) {
+        self.poolLedger = poolLedger
+    }
+
+    func didReceive(poolNomination: Nomination?) {
+        self.poolNomination = poolNomination
+    }
+
+    func didReceive(poolMember: NominationPools.PoolMember?) {
+        self.poolMember = poolMember
+    }
+
+    func didReceive(bondedPool: NominationPools.BondedPool?) {
+        self.bondedPool = bondedPool
+    }
+
+    func didReceive(poolBondedAccountId: AccountId) {
+        self.poolBondedAccountId = poolBondedAccountId
+    }
+
+    func didReceive(activePools: Set<NominationPools.PoolId>) {
+        self.activePools = activePools
+    }
+
     func didReceive(price: PriceData?) {
         priceData = price
 
@@ -137,6 +172,10 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         case .stakingDuration:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryStakingDuration()
+            }
+        case .activePools:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryActivePools()
             }
         }
     }

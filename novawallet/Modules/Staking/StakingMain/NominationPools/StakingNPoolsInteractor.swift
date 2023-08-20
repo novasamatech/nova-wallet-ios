@@ -3,7 +3,7 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetching {
+final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetching, NominationPoolsDataProviding {
     weak var presenter: StakingNPoolsInteractorOutputProtocol?
 
     let state: NPoolsStakingSharedStateProtocol
@@ -15,6 +15,10 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     let applicationHandler: ApplicationHandlerProtocol
     let operationQueue: OperationQueue
 
+    var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
+        state.relaychainLocalSubscriptionFactory
+    }
+
     private var minJoinBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var lastPoolIdProvider: AnyDataProvider<DecodedU32>?
     private var poolMemberProvider: AnyDataProvider<DecodedPoolMember>?
@@ -22,11 +26,17 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     private var metadataProvider: AnyDataProvider<DecodedBytes>?
     private var subpoolsProvider: AnyDataProvider<DecodedSubPools>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
+    private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
+    private var poolNominationProvider: AnyDataProvider<DecodedNomination>?
+    private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var activeStakeCancellable: CancellableCall?
     private var durationCancellable: CancellableCall?
+    private var bondedAccountIdCancellable: CancellableCall?
+    private var activePoolsCancellable: CancellableCall?
     private var lastPoolId: NominationPools.PoolId?
+    private var currentPoolId: NominationPools.PoolId?
 
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
         state.npLocalSubscriptionFactory
@@ -75,6 +85,8 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     func clearOperations() {
         clear(cancellable: &activeStakeCancellable)
         clear(cancellable: &durationCancellable)
+        clear(cancellable: &bondedAccountIdCancellable)
+        clear(cancellable: &activePoolsCancellable)
     }
 
     func setupBaseProviders() {
@@ -83,9 +95,13 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         subpoolsProvider = nil
         rewardPoolProvider = nil
 
+        lastPoolId = nil
+        currentPoolId = nil
+
         minJoinBondProvider = subscribeMinJoinBond(for: chainId)
         lastPoolIdProvider = subscribeLastPoolId(for: chainId)
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
+        activeEraProvider = subscribeActiveEra(for: chainId)
     }
 
     func setupCurrencyProvider() {
@@ -167,6 +183,69 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
+
+    private func provideBondedAccountId() {
+        clear(cancellable: &bondedAccountIdCancellable)
+
+        guard let poolId = currentPoolId else {
+            return
+        }
+
+        bondedAccountIdCancellable = fetchBondedAccounts(
+            for: npoolsOperationFactory,
+            poolIds: { [poolId] },
+            runtimeService: runtimeCodingService,
+            operationQueue: operationQueue,
+            completion: { [weak self] result in
+                self?.bondedAccountIdCancellable = nil
+
+                switch result {
+                case let .success(accountIds):
+                    if let accountId = accountIds[poolId] {
+                        self?.presenter?.didReceive(poolBondedAccountId: accountId)
+                    }
+                case let .failure(error):
+                    self?.presenter?.didReceive(error: .subscription(error, "bondedAccountId"))
+                }
+            }
+        )
+    }
+
+    private func provideActivePools() {
+        clear(cancellable: &activePoolsCancellable)
+
+        let poolsOperation = state.activePoolsService.fetchInfoOperation()
+
+        let mapOperation = ClosureOperation<Set<NominationPools.PoolId>> {
+            let activePools = try poolsOperation.extractNoCancellableResultData()
+            return Set(activePools.pools.map(\.poolId))
+        }
+
+        mapOperation.addDependency(poolsOperation)
+
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [poolsOperation])
+
+        mapOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.activePoolsCancellable else {
+                    return
+                }
+
+                self?.activePoolsCancellable = nil
+
+                do {
+                    let activePools = try mapOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(activePools: activePools)
+                } catch {
+                    self?.presenter?.didReceive(error: .activePools(error))
+                }
+            }
+        }
+
+        activePoolsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
 }
 
 extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
@@ -177,6 +256,7 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
             setupBaseProviders()
             setupCurrencyProvider()
             provideStakingDuration()
+            provideActivePools()
 
             eventCenter.add(observer: self, dispatchIn: .main)
             applicationHandler.delegate = self
@@ -196,6 +276,10 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
 
     func retryStakingDuration() {
         provideStakingDuration()
+    }
+
+    func retryActivePools() {
+        provideActivePools()
     }
 }
 
@@ -226,8 +310,13 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
     ) {
         switch result {
         case let .success(optPoolMember):
-            if let poolId = optPoolMember?.poolId {
+            presenter?.didReceive(poolMember: optPoolMember)
+
+            if let poolId = optPoolMember?.poolId, currentPoolId != poolId {
+                self.currentPoolId = poolId
+
                 setupProviders(for: poolId)
+                provideBondedAccountId()
             }
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "poolMember"))
@@ -241,7 +330,7 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
     ) {
         switch result {
         case let .success(optBondedPool):
-            break
+            presenter?.didReceive(bondedPool: optBondedPool)
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "bondedPool"))
         }
@@ -287,6 +376,35 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
     }
 }
 
+extension StakingNPoolsInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(optActiveEra):
+            presenter?.didReceive(activeEra: optActiveEra)
+        case let .failure(error):
+            presenter?.didReceive(error: .subscription(error, "activeEra"))
+        }
+    }
+
+    func handleNomination(result: Result<Nomination?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(optNomination):
+            presenter?.didReceive(poolNomination: optNomination)
+        case let .failure(error):
+            presenter?.didReceive(error: .subscription(error, "poolNomination"))
+        }
+    }
+
+    func handleLedgerInfo(result: Result<StakingLedger?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(optLedger):
+            presenter?.didReceive(poolLedger: optLedger)
+        case let .failure(error):
+            presenter?.didReceive(error: .subscription(error, "stakingLedger"))
+        }
+    }
+}
+
 extension StakingNPoolsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
@@ -301,6 +419,7 @@ extension StakingNPoolsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscr
 extension StakingNPoolsInteractor: EventVisitorProtocol {
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
         provideTotalActiveStake()
+        provideActivePools()
     }
 
     func processBlockTimeChanged(event _: BlockTimeChanged) {

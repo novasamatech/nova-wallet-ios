@@ -6,11 +6,19 @@ protocol StakingNPoolsInteractorInputProtocol: AnyObject {
     func remakeSubscriptions()
     func retryActiveStake()
     func retryStakingDuration()
+    func retryActivePools()
 }
 
 protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(totalActiveStake: BigUInt)
     func didReceive(minStake: BigUInt?)
+    func didReceive(activeEra: ActiveEraInfo?)
+    func didReceive(poolLedger: StakingLedger?)
+    func didReceive(poolNomination: Nomination?)
+    func didReceive(poolMember: NominationPools.PoolMember?)
+    func didReceive(bondedPool: NominationPools.BondedPool?)
+    func didReceive(poolBondedAccountId: AccountId)
+    func didReceive(activePools: Set<NominationPools.PoolId>)
     func didReceive(duration: StakingDuration)
     func didReceive(price: PriceData?)
     func didReceive(error: StakingNPoolsError)
