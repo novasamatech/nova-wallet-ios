@@ -165,7 +165,6 @@
 		1269C0103216CDBDA25A5101 /* ReferendumFullDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80D934D47929D2331111AD7 /* ReferendumFullDetailsWireframe.swift */; };
 		12734D7CC6ACA5B657F44519 /* DAppAddFavoriteViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DA8D51B588486D304F1B73 /* DAppAddFavoriteViewFactory.swift */; };
 		12F8A8A869D05D66B658F649 /* GovernanceDelegateSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E4E9A052F9F04A92F158D6 /* GovernanceDelegateSetupWireframe.swift */; };
-		13047D248D28D484F16C9C8F /* NominationPoolSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116D3B1C6F015EE6E7A28DDF /* NominationPoolSearchTests.swift */; };
 		135CEEC5363BE34130958578 /* ControllerAccountConfirmationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8473AA386E1AD6F0F0C964 /* ControllerAccountConfirmationInteractor.swift */; };
 		135E979B52DC1BD29A5FC389 /* ParaStkRedeemProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1179D4A18F46C75B19CAC2 /* ParaStkRedeemProtocols.swift */; };
 		13CF38563E1849EAF1B4E4B6 /* ParitySignerAddConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CF76ABE7BC9A99724D393 /* ParitySignerAddConfirmViewFactory.swift */; };
@@ -22035,7 +22034,6 @@
 				84B7C748289BFA79001A3566 /* WalletListTests.swift in Sources */,
 				84B7C720289BFA79001A3566 /* ReferralCrowdloanTests.swift in Sources */,
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
-				13047D248D28D484F16C9C8F /* NominationPoolSearchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
