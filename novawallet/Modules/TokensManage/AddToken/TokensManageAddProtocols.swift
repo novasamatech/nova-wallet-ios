@@ -23,11 +23,11 @@ protocol TokensManageAddInteractorInputProtocol: AnyObject {
 
 protocol TokensManageAddInteractorOutputProtocol: AnyObject {
     func didReceiveDetails(_ tokenDetails: EvmContractMetadata, for address: AccountAddress)
-    func didSaveEvmToken(_ token: AssetModel)
+    func didSaveEvmToken(_ result: EvmTokenAddResult)
     func didReceiveError(_ error: TokensManageAddInteractorError)
 }
 
 protocol TokensManageAddWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, TokenAddErrorPresentable {
-    func complete(from view: TokensManageAddViewProtocol?, token: AssetModel, locale: Locale)
+    func complete(from view: TokensManageAddViewProtocol?, result: EvmTokenAddResult, locale: Locale)
 }

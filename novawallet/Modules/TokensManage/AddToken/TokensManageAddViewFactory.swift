@@ -9,9 +9,13 @@ struct TokensManageAddViewFactory {
 
         let wireframe = TokensManageAddWireframe()
 
+        let validationFactory = TokenAddValidationFactory(wireframe: wireframe)
+
         let presenter = TokensManageAddPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            chain: chain,
+            validationFactory: validationFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -23,6 +27,7 @@ struct TokensManageAddViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        validationFactory.view = view
 
         return view
     }

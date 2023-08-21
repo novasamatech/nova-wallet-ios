@@ -11739,6 +11739,7 @@ import SubstrateSdk
 import Cuckoo
 @testable import novawallet
 
+import BigInt
 import SubstrateSdk
 
 
@@ -12415,9 +12416,9 @@ import SubstrateSdk
     
     
     
-     func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceive(feeResult: Result<FeeOutputModel, Error>)  {
         
-    return cuckoo_manager.call("didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceive(feeResult: Result<FeeOutputModel, Error>)",
             parameters: (feeResult),
             escapingParameters: (feeResult),
             superclassCall:
@@ -12487,9 +12488,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: feeResult) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<FeeOutputModel, Error>)> where M1.MatchedType == Result<FeeOutputModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<FeeOutputModel, Error>)>] = [wrap(matchable: feeResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(feeResult: Result<FeeOutputModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable>(priceResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -12530,9 +12531,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: feeResult) { $0 }]
-	        return cuckoo_manager.verify("didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.__DoNotUse<(Result<FeeOutputModel, Error>), Void> where M1.MatchedType == Result<FeeOutputModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<FeeOutputModel, Error>)>] = [wrap(matchable: feeResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(feeResult: Result<FeeOutputModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -12570,7 +12571,7 @@ import SubstrateSdk
     
     
     
-     func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceive(feeResult: Result<FeeOutputModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -176,7 +176,7 @@ class StakingRebondSetupTests: XCTestCase {
 
         // then
 
-        wait(for: [inputExpectation, assetExpectation, feeExpectation], timeout: 10)
+        wait(for: [inputExpectation, assetExpectation, feeExpectation, transferableExpectation], timeout: 10)
 
         return presenter
     }
