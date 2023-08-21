@@ -37,6 +37,14 @@ final class AssetDetailsPresenter {
         localizationManager = localizableManager
     }
 
+    private func hasLocks(for balance: AssetBalance, crowdloans: [CrowdloanContributionData]) -> Bool {
+        balance.locked > 0 || !crowdloans.isEmpty
+    }
+
+    private func calculateTotalCrowdloans(for crowdloans: [CrowdloanContributionData]) -> BigUInt {
+        crowdloans.reduce(0) { $0 + $1.amount }
+    }
+
     private func updateView() {
         guard let view = view else {
             return
@@ -54,8 +62,10 @@ final class AssetDetailsPresenter {
         )
         view.didReceive(assetModel: assetDetailsModel)
 
+        let totalCrowdloans = calculateTotalCrowdloans(for: crowdloans)
+
         let totalBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.totalInPlank,
+            value: balance.totalInPlank + totalCrowdloans,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
@@ -69,7 +79,7 @@ final class AssetDetailsPresenter {
         )
 
         let lockedBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.locked,
+            value: balance.locked + totalCrowdloans,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
@@ -77,7 +87,10 @@ final class AssetDetailsPresenter {
 
         view.didReceive(totalBalance: totalBalance)
         view.didReceive(transferableBalance: transferableBalance)
-        view.didReceive(lockedBalance: lockedBalance, isSelectable: !locks.isEmpty || !crowdloans.isEmpty)
+
+        let isSelectable = hasLocks(for: balance, crowdloans: crowdloans)
+        view.didReceive(lockedBalance: lockedBalance, isSelectable: isSelectable)
+
         view.didReceive(availableOperations: availableOperations)
     }
 
@@ -173,7 +186,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             free: balance.freeInPlank.decimal(precision: precision),
             reserved: balance.reservedInPlank.decimal(precision: precision),
             frozen: balance.frozenInPlank.decimal(precision: precision),
-            crowdloans: crowdloans.reduce(0) { $0 + $1.amount }.decimal(precision: precision),
+            crowdloans: calculateTotalCrowdloans(for: crowdloans).decimal(precision: precision),
             price: priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0,
             priceChange: priceData?.dayChange ?? 0,
             priceId: priceData?.currencyId,

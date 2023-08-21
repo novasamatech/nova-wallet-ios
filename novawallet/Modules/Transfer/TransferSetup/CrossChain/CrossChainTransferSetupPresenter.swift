@@ -395,7 +395,12 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
             selectedLocale: selectedLocale
         )
 
-        validators.append(
+        validators.append(contentsOf: [
+            dataValidatingFactory.accountIsNotSystem(
+                for: getRecepientAccountId(),
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
                 fee: isOriginUtilityTransfer ? originFee : 0,
@@ -403,7 +408,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
                 minBalance: originSendingMinBalance,
                 locale: selectedLocale
             )
-        )
+        ])
 
         validators.append(
             phishingValidatingFactory.notPhishing(

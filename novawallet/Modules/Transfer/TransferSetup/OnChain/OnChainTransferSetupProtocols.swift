@@ -12,7 +12,7 @@ protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance)
     func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance)
     func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance)
-    func didReceiveFee(result: Result<BigUInt, Error>)
+    func didReceiveFee(result: Result<FeeOutputModel, Error>)
     func didReceiveSendingAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetMinBalance(_ value: BigUInt)

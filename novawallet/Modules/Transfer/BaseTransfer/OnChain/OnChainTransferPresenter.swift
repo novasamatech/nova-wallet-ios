@@ -30,7 +30,7 @@ class OnChainTransferPresenter {
 
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
-    private(set) var fee: BigUInt?
+    private(set) var fee: FeeOutputModel?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -70,7 +70,7 @@ class OnChainTransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
-    func updateFee(_ newValue: BigUInt?) {
+    func updateFee(_ newValue: FeeOutputModel?) {
         fee = newValue
     }
 
@@ -83,6 +83,7 @@ class OnChainTransferPresenter {
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
         utilityAssetInfo: AssetBalanceDisplayInfo,
+        view: ControllerBackedProtocol?,
         selectedLocale: Locale
     ) -> [DataValidating] {
         var validators: [DataValidating] = [
@@ -99,7 +100,7 @@ class OnChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(fee: fee?.value, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
                 return
             },
@@ -113,14 +114,14 @@ class OnChainTransferPresenter {
 
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: senderUtilityAssetTransferable,
-                fee: fee,
+                fee: fee?.value,
                 spendingAmount: isUtilityTransfer ? sendingAmount : nil,
                 asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.notViolatingMinBalancePaying(
-                fee: fee,
+                fee: fee?.value,
                 total: senderUtilityAssetTotal,
                 minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
                 locale: selectedLocale
@@ -150,6 +151,18 @@ class OnChainTransferPresenter {
             validators.append(accountProviderValidation)
         }
 
+        let optFeeValidation = fee?.validationProvider?.getValidations(
+            for: view,
+            onRefresh: { [weak self] in
+                self?.refreshFee()
+            },
+            locale: selectedLocale
+        )
+
+        if let feeValidation = optFeeValidation {
+            validators.append(feeValidation)
+        }
+
         return validators
     }
 
@@ -169,7 +182,7 @@ class OnChainTransferPresenter {
         recepientUtilityAssetBalance = balance
     }
 
-    func didReceiveFee(result: Result<BigUInt, Error>) {
+    func didReceiveFee(result: Result<FeeOutputModel, Error>) {
         switch result {
         case let .success(fee):
             self.fee = fee

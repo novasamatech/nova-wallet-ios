@@ -4,7 +4,6 @@ import Core
 
 struct EthereumBlockObject: Codable {
     struct Transaction: Codable {
-        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case hash
             case sender = "from"

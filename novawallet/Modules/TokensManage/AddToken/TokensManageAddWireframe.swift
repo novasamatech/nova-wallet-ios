@@ -1,8 +1,20 @@
 import Foundation
 
 final class TokensManageAddWireframe: TokensManageAddWireframeProtocol, ModalAlertPresenting {
-    func complete(from view: TokensManageAddViewProtocol?, token: AssetModel, locale: Locale) {
-        let title = R.string.localizable.addTokenCompletionMessage(token.symbol, preferredLanguages: locale.rLanguages)
+    func complete(from view: TokensManageAddViewProtocol?, result: EvmTokenAddResult, locale: Locale) {
+        let title: String
+
+        if result.isNew {
+            title = R.string.localizable.addTokenCompletionMessage(
+                result.chainAsset.asset.symbol,
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            title = R.string.localizable.updateTokenCompletionMessage(
+                result.chainAsset.asset.symbol,
+                preferredLanguages: locale.rLanguages
+            )
+        }
 
         let presenter = view?.controller.navigationController?.presentingViewController
 

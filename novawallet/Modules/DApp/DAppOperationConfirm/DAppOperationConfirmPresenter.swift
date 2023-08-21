@@ -16,7 +16,7 @@ final class DAppOperationConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private var confirmationModel: DAppOperationConfirmModel?
-    private var feeModel: RuntimeDispatchInfo?
+    private var feeModel: FeeOutputModel?
     private var priceData: PriceData?
 
     init(
@@ -49,20 +49,25 @@ final class DAppOperationConfirmPresenter {
         view?.didReceive(confirmationViewModel: viewModel)
     }
 
+    private func refreshFee() {
+        feeModel = nil
+        provideFeeViewModel()
+
+        interactor.estimateFee()
+    }
+
     private func provideFeeViewModel() {
         guard let feeModel = feeModel else {
             view?.didReceive(feeViewModel: .loading)
             return
         }
 
-        guard
-            let fee = BigUInt(feeModel.fee),
-            let feeDecimal = viewModelFactory.convertBalanceToDecimal(fee) else {
+        guard let feeDecimal = viewModelFactory.convertBalanceToDecimal(feeModel.value) else {
             view?.didReceive(feeViewModel: .loading)
             return
         }
 
-        if fee > 0 {
+        if feeModel.value > 0 {
             let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
                 .value(for: selectedLocale)
             view?.didReceive(feeViewModel: .loaded(value: viewModel))
@@ -100,7 +105,21 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmPresenterProtocol {
     }
 
     func confirm() {
-        interactor.confirm()
+        let optValidation = feeModel?.validationProvider?.getValidations(
+            for: view,
+            onRefresh: { [weak self] in
+                self?.interactor.estimateFee()
+            },
+            locale: selectedLocale
+        )
+
+        if let validation = optValidation {
+            DataValidationRunner(validators: [validation]).runValidation { [weak self] in
+                self?.interactor.confirm()
+            }
+        } else {
+            interactor.confirm()
+        }
     }
 
     func reject() {
@@ -147,7 +166,7 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         provideFeeViewModel()
     }
 
-    func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>) {
+    func didReceive(feeResult: Result<FeeOutputModel, Error>) {
         switch feeResult {
         case let .success(fee):
             feeModel = fee
@@ -158,7 +177,7 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
                 on: view,
                 locale: selectedLocale
             ) { [weak self] in
-                self?.interactor.estimateFee()
+                self?.refreshFee()
             }
         }
 

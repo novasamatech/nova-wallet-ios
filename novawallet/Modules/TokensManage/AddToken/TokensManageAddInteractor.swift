@@ -120,7 +120,7 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
             chain: chain
         )
 
-        let chainModifyOperation = ClosureOperation<ChainAsset> {
+        let chainModifyOperation = ClosureOperation<EvmTokenAddResult> {
             try contractExistenseWrapper.targetOperation.extractNoCancellableResultData()
 
             let priceId = try priceIdWrapper.targetOperation.extractNoCancellableResultData()
@@ -129,20 +129,26 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
                 throw TokensManageAddInteractorError.tokenSaveFailed(CommonError.dataCorruption)
             }
 
-            if let asset = chain.assets.first(where: { $0.assetId == newAsset.assetId }) {
+            let optAsset = chain.assets.first(where: { $0.assetId == newAsset.assetId })
+
+            // a user can't update default assets
+            if let asset = optAsset, asset.source == .remote {
                 throw TokensManageAddInteractorError.tokenAlreadyExists(asset)
             }
 
-            let newChain = chain.adding(asset: newAsset)
+            let newChain = chain.addingOrUpdating(asset: newAsset)
 
-            return ChainAsset(chain: newChain, asset: newAsset)
+            let chainAsset = ChainAsset(chain: newChain, asset: newAsset)
+            let isNew = optAsset == nil
+
+            return EvmTokenAddResult(chainAsset: chainAsset, isNew: isNew)
         }
 
         chainModifyOperation.addDependency(contractExistenseWrapper.targetOperation)
         chainModifyOperation.addDependency(priceIdWrapper.targetOperation)
 
         let saveOperation = chainRepository.saveOperation({
-            let newChain = try chainModifyOperation.extractNoCancellableResultData().chain
+            let newChain = try chainModifyOperation.extractNoCancellableResultData().chainAsset.chain
 
             return [newChain]
         }, {
@@ -154,11 +160,10 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         saveOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let chainAsset = try chainModifyOperation.extractNoCancellableResultData()
+                    let result = try chainModifyOperation.extractNoCancellableResultData()
                     try saveOperation.extractNoCancellableResultData()
 
-                    self?.chain = chainAsset.chain
-                    self?.presenter?.didSaveEvmToken(chainAsset.asset)
+                    self?.presenter?.didSaveEvmToken(result)
                 } catch {
                     if let interactorError = error as? TokensManageAddInteractorError {
                         self?.presenter?.didReceiveError(interactorError)

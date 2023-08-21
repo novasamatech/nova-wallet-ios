@@ -17,6 +17,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
         extrinsicService: EvmTransactionServiceProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
@@ -35,6 +36,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             asset: asset,
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
+            validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
@@ -70,7 +72,8 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
 extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
     func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
-            guard let transferType = transferType else {
+            guard let transferType = transferType, let lastFeeModel = lastFeeModel else {
+                presenter?.didReceiveError(CommonError.dataCorruption)
                 return
             }
 
@@ -97,6 +100,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
             extrinsicService.submit(
                 extrinsicClosure,
+                price: EvmTransactionPrice(gasLimit: lastFeeModel.gasLimit, gasPrice: lastFeeModel.gasPrice),
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in

@@ -13,33 +13,88 @@ struct DAppOperationConfirmViewFactory {
         switch type {
         case let .extrinsic(chain):
             let interactor = createExtrinsicInteractor(for: request, chain: chain)
-            return createView(for: interactor, chain: .left(chain), delegate: delegate)
+            return createGenericView(for: interactor, chain: .left(chain), delegate: delegate)
         case let .bytes(chain):
             let interactor = createSignBytesInteractor(for: request, chain: chain)
-            return createView(for: interactor, chain: .left(chain), delegate: delegate)
+            return createGenericView(for: interactor, chain: .left(chain), delegate: delegate)
         case let .ethereumSendTransaction(chain):
-            let interactor = createEthereumInteractor(
-                for: request,
-                chain: chain,
+            return createEvmTransactionView(
+                for: chain,
+                request: request,
+                delegate: delegate,
                 shouldSendTransaction: true
             )
-
-            return createView(for: interactor, chain: chain, delegate: delegate)
         case let .ethereumSignTransaction(chain):
-            let interactor = createEthereumInteractor(
-                for: request,
-                chain: chain,
+            return createEvmTransactionView(
+                for: chain,
+                request: request,
+                delegate: delegate,
                 shouldSendTransaction: false
             )
-
-            return createView(for: interactor, chain: chain, delegate: delegate)
         case let .ethereumBytes(chain):
             let interactor = createEthereumPersonalSignInteractor(for: request)
-            return createView(for: interactor, chain: chain, delegate: delegate)
+            return createGenericView(for: interactor, chain: chain, delegate: delegate)
         }
     }
 
-    private static func createView(
+    private static func createEvmTransactionView(
+        for chain: DAppEitherChain,
+        request: DAppOperationRequest,
+        delegate: DAppOperationConfirmDelegate,
+        shouldSendTransaction: Bool
+    ) -> DAppOperationConfirmViewProtocol? {
+        guard
+            let assetInfo = chain.utilityAssetBalanceInfo,
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let wireframe = DAppOperationEvmConfirmWireframe()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let validationProviderFactory = EvmValidationProviderFactory(
+            presentable: wireframe,
+            balanceViewModelFactory: balanceViewModelFactory,
+            assetInfo: assetInfo
+        )
+
+        guard
+            let interactor = createEthereumInteractor(
+                for: request,
+                chain: chain,
+                validationProviderFactory: validationProviderFactory,
+                shouldSendTransaction: shouldSendTransaction
+            ) else {
+            return nil
+        }
+
+        let presenter = DAppOperationConfirmPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            delegate: delegate,
+            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
+            balanceViewModelFactory: balanceViewModelFactory,
+            chain: chain,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
+
+        let view = DAppOperationConfirmViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createGenericView(
         for interactor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?,
         chain: DAppEitherChain,
         delegate: DAppOperationConfirmDelegate
@@ -112,13 +167,15 @@ struct DAppOperationConfirmViewFactory {
         DAppSignBytesConfirmInteractor(
             request: request,
             chain: chain,
-            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 
     private static func createEthereumInteractor(
         for request: DAppOperationRequest,
         chain: Either<ChainModel, DAppUnknownChain>,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         shouldSendTransaction: Bool
     ) -> DAppEthereumConfirmInteractor? {
         let operationFactory: EthereumOperationFactoryProtocol
@@ -151,9 +208,9 @@ struct DAppOperationConfirmViewFactory {
             chainId: chainId,
             request: request,
             ethereumOperationFactory: operationFactory,
+            validationProviderFactory: validationProviderFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
-            serializationFactory: EthereumSerializationFactory(),
             shouldSendTransaction: shouldSendTransaction
         )
     }
@@ -163,7 +220,8 @@ struct DAppOperationConfirmViewFactory {
     ) -> DAppEthereumSignBytesInteractor {
         DAppEthereumSignBytesInteractor(
             request: request,
-            signingWrapperFactory: SigningWrapperFactory()
+            signingWrapperFactory: SigningWrapperFactory(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

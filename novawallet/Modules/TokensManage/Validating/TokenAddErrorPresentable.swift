@@ -28,6 +28,13 @@ protocol TokenAddErrorPresentable: BaseErrorPresentable {
         from view: ControllerBackedProtocol,
         locale: Locale?
     )
+
+    func presentTokenUpdate(
+        from view: ControllerBackedProtocol,
+        symbol: String,
+        onContinue: @escaping () -> Void,
+        locale: Locale?
+    )
 }
 
 extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -93,5 +100,31 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentTokenUpdate(
+        from view: ControllerBackedProtocol,
+        symbol: String,
+        onContinue: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.addTokenAlreadyExistsTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.tokenAddRemoteExistMessage(symbol, preferredLanguages: locale?.rLanguages)
+
+        let continueAction = AlertPresentableAction(
+            title: R.string.localizable.commonContinue(preferredLanguages: locale?.rLanguages),
+            style: .destructive
+        ) {
+            onContinue()
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [continueAction],
+            closeAction: R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 }

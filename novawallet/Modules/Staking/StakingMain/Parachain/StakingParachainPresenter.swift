@@ -44,11 +44,13 @@ final class StakingParachainPresenter {
                 from: networkInfo,
                 duration: optCommonData?.stakingDuration,
                 chainAsset: chainAsset,
-                price: optCommonData?.price
+                price: optCommonData?.price,
+                locale: view?.selectedLocale ?? Locale.current
             )
+
             view?.didRecieveNetworkStakingInfo(viewModel: viewModel)
         } else {
-            view?.didRecieveNetworkStakingInfo(viewModel: nil)
+            view?.didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel.allLoading)
         }
     }
 
@@ -138,41 +140,6 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         interactor.setup()
     }
 
-    func performMainAction() {
-        wireframe.showStakeTokens(
-            from: view,
-            initialDelegator: nil,
-            initialScheduledRequests: nil,
-            delegationIdentities: nil
-        )
-    }
-
-    func performRewardInfoAction() {
-        guard
-            let state = stateMachine.viewState(using: { (state: ParachainStaking.BaseState) in state }),
-            let rewardCalculator = state.commonData.calculatorEngine,
-            let asset = state.commonData.chainAsset?.asset else {
-            return
-        }
-
-        let maxReward = rewardCalculator.calculateMaxReturn(for: .year)
-        let avgReward = rewardCalculator.calculateAvgReturn(for: .year)
-
-        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward, symbol: asset.symbol)
-    }
-
-    func performChangeValidatorsAction() {
-        wireframe.showYourCollators(from: view)
-    }
-
-    func performSetupValidatorsForBondedAction() {
-        // no support at this point
-    }
-
-    func performRebag() {
-        // no support at this point
-    }
-
     func performStakeMoreAction() {
         wireframe.showYourCollators(from: view)
     }
@@ -230,6 +197,17 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         case .yieldBoost:
             handleYieldBoostAction()
         default:
+            break
+        }
+    }
+
+    func performAlertAction(_ alert: StakingAlert) {
+        switch alert {
+        case .nominatorLowStake:
+            performStakeMoreAction()
+        case .redeemUnbonded:
+            performRedeemAction()
+        case .rebag, .waitingNextEra, .bondedSetValidators, .nominatorChangeValidators, .nominatorAllOversubscribed:
             break
         }
     }

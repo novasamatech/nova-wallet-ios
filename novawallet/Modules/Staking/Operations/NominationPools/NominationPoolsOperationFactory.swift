@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import BigInt
 
 protocol NominationPoolsOperationFactoryProtocol {
     func createSparePoolsInfoWrapper(
@@ -40,6 +41,50 @@ protocol NominationPoolsOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[NominationPools.PoolStats]>
+
+    func createPoolsActiveStakeWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        eraValidatorService: EraValidatorServiceProtocol,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: BigUInt]>
+}
+
+extension NominationPoolsOperationFactoryProtocol {
+    func createPoolsActiveStakeWrapper(
+        for lastPoolId: NominationPools.PoolId,
+        eraValidatorService: EraValidatorServiceProtocol,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: BigUInt]> {
+        let allPoolIds = Set(0 ... lastPoolId)
+
+        return createPoolsActiveStakeWrapper(
+            for: { allPoolIds },
+            eraValidatorService: eraValidatorService,
+            runtimeService: runtimeService
+        )
+    }
+
+    func createPoolsActiveTotalStakeWrapper(
+        for lastPoolId: NominationPools.PoolId,
+        eraValidatorService: EraValidatorServiceProtocol,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<BigUInt> {
+        let wrapper = createPoolsActiveStakeWrapper(
+            for: lastPoolId,
+            eraValidatorService: eraValidatorService,
+            runtimeService: runtimeService
+        )
+
+        let mapOperation = ClosureOperation<BigUInt> {
+            let stakes = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            return stakes.values.reduce(0) { $0 + $1 }
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+    }
 }
 
 final class NominationPoolsOperationFactory {
@@ -361,5 +406,43 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
             connection: connection,
             runtimeService: runtimeService
         )
+    }
+
+    func createPoolsActiveStakeWrapper(
+        for poolIds: @escaping () throws -> Set<NominationPools.PoolId>,
+        eraValidatorService: EraValidatorServiceProtocol,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolId: BigUInt]> {
+        let bondedAccountIdWrapper = createBondedAccountsWrapper(
+            for: poolIds,
+            runtimeService: runtimeService
+        )
+
+        let validatorsOperation = eraValidatorService.fetchInfoOperation()
+
+        let mapOperation = ClosureOperation<[NominationPools.PoolId: BigUInt]> {
+            let validators = try validatorsOperation.extractNoCancellableResultData()
+            let poolAccountIds = try bondedAccountIdWrapper.targetOperation.extractNoCancellableResultData()
+
+            let stakeByAccountId = validators.validators.reduce(into: [AccountId: BigUInt]()) { accum, validator in
+                accum[validator.accountId] = validator.exposure.own
+
+                for nominator in validator.exposure.others {
+                    let prevStake = accum[nominator.who] ?? 0
+                    accum[nominator.who] = prevStake + nominator.value
+                }
+            }
+
+            return poolAccountIds.reduce(into: [NominationPools.PoolId: BigUInt]()) { accum, keyValue in
+                accum[keyValue.key] = stakeByAccountId[keyValue.value]
+            }
+        }
+
+        mapOperation.addDependency(bondedAccountIdWrapper.targetOperation)
+        mapOperation.addDependency(validatorsOperation)
+
+        let dependencies = bondedAccountIdWrapper.allOperations + [validatorsOperation]
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 }

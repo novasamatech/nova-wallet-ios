@@ -1,19 +1,23 @@
 import Foundation
 import SubstrateSdk
 import SoraKeystore
+import RobinHood
 
 final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
     let signingWrapperFactory: SigningWrapperFactoryProtocol
+    let operationQueue: OperationQueue
 
     private(set) var account: MetaEthereumAccountResponse?
 
     init(
         request: DAppOperationRequest,
-        signingWrapperFactory: SigningWrapperFactoryProtocol
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.request = request
         self.signingWrapperFactory = signingWrapperFactory
+        self.operationQueue = operationQueue
     }
 
     private func validateAndProvideConfirmationModel() {
@@ -39,9 +43,7 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     }
 
     private func provideZeroFee() {
-        let fee = RuntimeDispatchInfo(fee: "0", weight: 0)
-
-        presenter?.didReceive(feeResult: .success(fee))
+        presenter?.didReceive(feeResult: .success(.init(value: 0, validationProvider: nil)))
         presenter?.didReceive(priceResult: .success(nil))
     }
 
@@ -88,11 +90,28 @@ extension DAppEthereumSignBytesInteractor: DAppOperationConfirmInteractorInputPr
 
             let rawBytes = try prepareRawBytes()
 
-            let signature = try signer.sign(rawBytes).rawData()
+            let signingOperation = ClosureOperation<Data> {
+                try signer.sign(rawBytes).rawData()
+            }
 
-            let response = DAppOperationResponse(signature: signature)
+            signingOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard let self = self else {
+                        return
+                    }
 
-            presenter?.didReceive(responseResult: .success(response), for: request)
+                    do {
+                        let signature = try signingOperation.extractNoCancellableResultData()
+                        let response = DAppOperationResponse(signature: signature)
+
+                        self.presenter?.didReceive(responseResult: .success(response), for: self.request)
+                    } catch {
+                        self.presenter?.didReceive(responseResult: .failure(error), for: self.request)
+                    }
+                }
+            }
+
+            operationQueue.addOperation(signingOperation)
         } catch {
             presenter?.didReceive(responseResult: .failure(error), for: request)
         }

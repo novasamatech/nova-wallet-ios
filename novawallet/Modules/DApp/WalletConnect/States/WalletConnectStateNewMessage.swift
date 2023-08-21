@@ -24,11 +24,12 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
 
     init(
         message: WalletConnectTransportMessage,
-        stateMachine: WalletConnectStateMachineProtocol
+        stateMachine: WalletConnectStateMachineProtocol,
+        logger: LoggerProtocol
     ) {
         self.message = message
 
-        super.init(stateMachine: stateMachine)
+        super.init(stateMachine: stateMachine, logger: logger)
     }
 
     private func process(proposal: Session.Proposal, dataSource: DAppStateDataSource) {
@@ -55,7 +56,8 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         let nextState = WalletConnectStateAuthorizing(
             proposal: proposal,
             resolution: resolution,
-            stateMachine: stateMachine
+            stateMachine: stateMachine,
+            logger: logger
         )
 
         stateMachine.emit(authRequest: authRequest, nextState: nextState)
@@ -72,7 +74,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
 
         stateMachine.emit(
             signDecision: decision,
-            nextState: WalletConnectStateReady(stateMachine: stateMachine),
+            nextState: WalletConnectStateReady(stateMachine: stateMachine, logger: logger),
             error: error
         )
     }
@@ -128,15 +130,12 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         }
 
         guard let method = WalletConnectMethod(rawValue: request.method) else {
-            rejectRequest(request: request, reason: "unsupported method \(request.method)")
+            logger.warning("Rejecting unsupported method: \(request.method)")
+            rejectRequest(request: request, reason: nil)
             return
         }
 
-        guard
-            let chain = WalletConnectModelFactory.resolveChain(
-                for: request.chainId,
-                chainsStore: chainsStore
-            ) else {
+        guard let chain = WalletConnectModelFactory.resolveChain(for: request.chainId, chainsStore: chainsStore) else {
             rejectRequest(request: request, reason: "unsupported chain id: \(request.chainId)")
             return
         }
@@ -171,7 +170,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 operationData: operationData
             )
 
-            let nextState = WalletConnectStateSigning(request: request, stateMachine: stateMachine)
+            let nextState = WalletConnectStateSigning(request: request, stateMachine: stateMachine, logger: logger)
 
             stateMachine.emit(
                 signingRequest: signingRequest,

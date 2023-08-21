@@ -9,14 +9,13 @@ enum SigningWrapperError: Error {
     case pinCheckNotPassed
 }
 
-final class SigningWrapper: SigningWrapperProtocol, AuthorizationPresentable {
+final class SigningWrapper: BaseSigner, SigningWrapperProtocol {
     let keystore: KeystoreProtocol
     let metaId: String
     let accountId: AccountId?
     let isEthereumBased: Bool
     let cryptoType: MultiassetCryptoType
     let publicKeyData: Data
-    let settingsManager: SettingsManagerProtocol
 
     init(
         keystore: KeystoreProtocol,
@@ -33,7 +32,8 @@ final class SigningWrapper: SigningWrapperProtocol, AuthorizationPresentable {
         self.cryptoType = cryptoType
         self.isEthereumBased = isEthereumBased
         self.publicKeyData = publicKeyData
-        self.settingsManager = settingsManager
+
+        super.init(settingsManager: settingsManager)
     }
 
     init(
@@ -48,7 +48,8 @@ final class SigningWrapper: SigningWrapperProtocol, AuthorizationPresentable {
         isEthereumBased = accountResponse.isEthereumBased
         cryptoType = accountResponse.cryptoType
         publicKeyData = accountResponse.publicKey
-        self.settingsManager = settingsManager
+
+        super.init(settingsManager: settingsManager)
     }
 
     init(
@@ -62,52 +63,11 @@ final class SigningWrapper: SigningWrapperProtocol, AuthorizationPresentable {
         isEthereumBased = true
         cryptoType = MultiassetCryptoType.ethereumEcdsa
         publicKeyData = ethereumAccountResponse.publicKey
-        self.settingsManager = settingsManager
+
+        super.init(settingsManager: settingsManager)
     }
 
-    func sign(_ originalData: Data) throws -> IRSignatureProtocol {
-        if settingsManager.pinConfirmationEnabled == true {
-            let signingResult = signAfterAutorization(originalData)
-            switch signingResult {
-            case let .success(signature):
-                return signature
-            case let .failure(error):
-                throw error
-            }
-        } else {
-            return try _sign(originalData)
-        }
-    }
-
-    private func signAfterAutorization(_ originalData: Data) -> Result<IRSignatureProtocol, Error> {
-        let semaphore = DispatchSemaphore(value: 0)
-        var signResult: Result<IRSignatureProtocol, Error>?
-
-        DispatchQueue.main.async {
-            self.authorize(animated: true, cancellable: true) { [weak self] completed in
-                defer {
-                    semaphore.signal()
-                }
-                guard let self = self else {
-                    return
-                }
-                if completed {
-                    do {
-                        let sign = try self._sign(originalData)
-                        signResult = .success(sign)
-                    } catch {
-                        signResult = .failure(error)
-                    }
-                }
-            }
-        }
-
-        semaphore.wait()
-
-        return signResult ?? .failure(SigningWrapperError.pinCheckNotPassed)
-    }
-
-    private func _sign(_ originalData: Data) throws -> IRSignatureProtocol {
+    override func signData(_ data: Data) throws -> IRSignatureProtocol {
         let tag: String = isEthereumBased ?
             KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId) :
             KeystoreTagV2.substrateSecretKeyTagForMetaId(metaId, accountId: accountId)
@@ -116,13 +76,13 @@ final class SigningWrapper: SigningWrapperProtocol, AuthorizationPresentable {
 
         switch cryptoType {
         case .sr25519:
-            return try signSr25519(originalData, secretKeyData: secretKey, publicKeyData: publicKeyData)
+            return try signSr25519(data, secretKeyData: secretKey, publicKeyData: publicKeyData)
         case .ed25519:
-            return try signEd25519(originalData, secretKey: secretKey)
+            return try signEd25519(data, secretKey: secretKey)
         case .substrateEcdsa:
-            return try signEcdsa(originalData, secretKey: secretKey)
+            return try signEcdsa(data, secretKey: secretKey)
         case .ethereumEcdsa:
-            return try signEthereum(originalData, secretKey: secretKey)
+            return try signEthereum(data, secretKey: secretKey)
         }
     }
 }
