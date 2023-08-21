@@ -1,0 +1,130 @@
+import Foundation
+import SoraFoundation
+
+struct StakingNPoolsViewModelParams {
+    let poolMember: NominationPools.PoolMember?
+    let bondedPool: NominationPools.BondedPool?
+    let poolLedger: StakingLedger?
+    let poolNomination: Nomination?
+    let activePools: Set<NominationPools.PoolId>?
+    let activeEra: ActiveEraInfo?
+    let eraCountdown: EraCountdownDisplayProtocol?
+}
+
+protocol StakingNPoolsViewModelFactoryProtocol {
+    func createState(
+        for params: StakingNPoolsViewModelParams,
+        chainAsset: ChainAsset,
+        price: PriceData?
+    ) -> StakingViewState
+}
+
+final class StakingNPoolsViewModelFactory {
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+
+    init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
+        self.balanceViewModelFactory = balanceViewModelFactory
+    }
+
+    private func createStakeViewModel(
+        for params: StakingNPoolsViewModelParams,
+        chainAsset: ChainAsset,
+        price: PriceData?
+    ) -> LocalizableResource<BalanceViewModelProtocol>? {
+        guard
+            let poolMember = params.poolMember,
+            let poolLedger = params.poolLedger,
+            let bondedPool = params.bondedPool else {
+            return nil
+        }
+
+        let amount = NominationPools.pointsToBalance(
+            for: poolMember.points,
+            totalPoints: bondedPool.points,
+            poolBalance: poolLedger.active
+        ).decimal(precision: chainAsset.asset.precision)
+
+        return balanceViewModelFactory.balanceFromPrice(amount, priceData: price)
+    }
+
+    private func createNominationStatus(for params: StakingNPoolsViewModelParams) -> NominationViewStatus {
+        guard
+            let activePools = params.activePools,
+            let poolMember = params.poolMember,
+            let nomination = params.poolNomination else {
+            return .undefined
+        }
+
+        let poolState = Multistaking.NominationPoolState(
+            poolMember: poolMember,
+            era: params.activeEra,
+            ledger: params.poolLedger,
+            nomination: nomination,
+            bondedPool: params.bondedPool
+        )
+
+        guard let onchainState = Multistaking.DashboardItemOnchainState.from(nominationPoolState: poolState) else {
+            return .undefined
+        }
+
+        switch onchainState {
+        case .active:
+            if activePools.contains(poolMember.poolId) {
+                return .active
+            } else {
+                return .inactive
+            }
+        case .bonded:
+            return .inactive
+        case .waiting:
+            return .waiting(eraCountdown: params.eraCountdown, nominationEra: nomination.submittedIn)
+        }
+    }
+
+    private func createNominationViewModel(
+        for params: StakingNPoolsViewModelParams,
+        chainAsset: ChainAsset,
+        price: PriceData?
+    ) -> LocalizableResource<NominationViewModel> {
+        let localizedStakeViewModel = createStakeViewModel(
+            for: params,
+            chainAsset: chainAsset,
+            price: price
+        )
+
+        let status = createNominationStatus(for: params)
+
+        return LocalizableResource { locale in
+            let stakeViewModel = localizedStakeViewModel?.value(for: locale)
+
+            return .init(
+                totalStakedAmount: stakeViewModel?.amount ?? "",
+                totalStakedPrice: stakeViewModel?.price ?? "",
+                status: status,
+                hasPrice: chainAsset.asset.priceId != nil
+            )
+        }
+    }
+}
+
+extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
+    func createState(
+        for params: StakingNPoolsViewModelParams,
+        chainAsset: ChainAsset,
+        price: PriceData?
+    ) -> StakingViewState {
+        let nominationViewModel = createNominationViewModel(
+            for: params,
+            chainAsset: chainAsset,
+            price: price
+        )
+
+        return .nominator(
+            viewModel: nominationViewModel,
+            alerts: [], // TODO: Implement alerts in a separate task
+            reward: nil, // TODO: Implement rewards in a separate task
+            unbondings: nil, // TODO: Implement unbondings in a separate task
+            actions: [.stakeMore, .unstake]
+        )
+    }
+}

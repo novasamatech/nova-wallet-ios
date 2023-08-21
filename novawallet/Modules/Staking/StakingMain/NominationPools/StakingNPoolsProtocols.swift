@@ -7,6 +7,7 @@ protocol StakingNPoolsInteractorInputProtocol: AnyObject {
     func retryActiveStake()
     func retryStakingDuration()
     func retryActivePools()
+    func retryEraCountdown()
 }
 
 protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
@@ -20,6 +21,7 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(poolBondedAccountId: AccountId)
     func didReceive(activePools: Set<NominationPools.PoolId>)
     func didReceive(duration: StakingDuration)
+    func didReceive(eraCountdown: EraCountdown)
     func didReceive(price: PriceData?)
     func didReceive(error: StakingNPoolsError)
 }

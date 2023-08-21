@@ -8,6 +8,7 @@ final class StakingNPoolsPresenter {
     let interactor: StakingNPoolsInteractorInputProtocol
     let wireframe: StakingNPoolsWireframeProtocol
     let infoViewModelFactory: NetworkInfoViewModelFactoryProtocol
+    let stateViewModelFactory: StakingNPoolsViewModelFactoryProtocol
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
@@ -21,12 +22,14 @@ final class StakingNPoolsPresenter {
     private var poolBondedAccountId: AccountId?
     private var activePools: Set<NominationPools.PoolId>?
     private var duration: StakingDuration?
+    private var eraCountdown: EraCountdown?
     private var priceData: PriceData?
 
     init(
         interactor: StakingNPoolsInteractorInputProtocol,
         wireframe: StakingNPoolsWireframeProtocol,
         infoViewModelFactory: NetworkInfoViewModelFactoryProtocol,
+        stateViewModelFactory: StakingNPoolsViewModelFactoryProtocol,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -34,6 +37,7 @@ final class StakingNPoolsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.infoViewModelFactory = infoViewModelFactory
+        self.stateViewModelFactory = stateViewModelFactory
         self.chainAsset = chainAsset
         self.logger = logger
         self.localizationManager = localizationManager
@@ -60,9 +64,26 @@ final class StakingNPoolsPresenter {
         view?.didRecieveNetworkStakingInfo(viewModel: viewModel)
     }
 
+    private func provideState() {
+        let params = StakingNPoolsViewModelParams(
+            poolMember: poolMember,
+            bondedPool: bondedPool,
+            poolLedger: poolLedger,
+            poolNomination: poolNomination,
+            activePools: activePools,
+            activeEra: activeEra,
+            eraCountdown: eraCountdown
+        )
+
+        let viewModel = stateViewModelFactory.createState(for: params, chainAsset: chainAsset, price: priceData)
+
+        view?.didReceiveStakingState(viewModel: viewModel)
+    }
+
     private func updateView() {
         provideStatics()
         provideStakingInfo()
+        provideState()
     }
 }
 
@@ -120,37 +141,72 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
     }
 
     func didReceive(activeEra: ActiveEraInfo?) {
+        logger.debug("Active era: \(String(describing: activeEra))")
+
         self.activeEra = activeEra
+
+        provideState()
     }
 
     func didReceive(poolLedger: StakingLedger?) {
+        logger.debug("Pool Ledger: \(String(describing: poolLedger))")
+
         self.poolLedger = poolLedger
+
+        provideState()
     }
 
     func didReceive(poolNomination: Nomination?) {
+        logger.debug("Pool nomination: \(String(describing: poolNomination))")
+
         self.poolNomination = poolNomination
+
+        provideState()
     }
 
     func didReceive(poolMember: NominationPools.PoolMember?) {
+        logger.debug("Pool member: \(String(describing: poolMember))")
+
         self.poolMember = poolMember
+
+        provideState()
     }
 
     func didReceive(bondedPool: NominationPools.BondedPool?) {
+        logger.debug("Bonded pool: \(String(describing: bondedPool))")
+
         self.bondedPool = bondedPool
+
+        provideState()
     }
 
     func didReceive(poolBondedAccountId: AccountId) {
+        logger.debug("Pool account id: \(String(describing: poolBondedAccountId))")
+
         self.poolBondedAccountId = poolBondedAccountId
     }
 
     func didReceive(activePools: Set<NominationPools.PoolId>) {
+        logger.debug("Active pools: \(String(describing: activePools.count))")
+
         self.activePools = activePools
+
+        provideState()
+    }
+
+    func didReceive(eraCountdown: EraCountdown) {
+        logger.debug("Era countdown: \(String(describing: eraCountdown))")
+
+        self.eraCountdown = eraCountdown
+
+        provideState()
     }
 
     func didReceive(price: PriceData?) {
         priceData = price
 
         provideStakingInfo()
+        provideState()
     }
 
     func didReceive(error: StakingNPoolsError) {
@@ -176,6 +232,10 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         case .activePools:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryActivePools()
+            }
+        case .eraCountdown:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryEraCountdown()
             }
         }
     }

@@ -2,6 +2,7 @@ import Foundation
 import BigInt
 import RobinHood
 import SoraFoundation
+import SubstrateSdk
 
 final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetching, NominationPoolsDataProviding {
     weak var presenter: StakingNPoolsInteractorOutputProtocol?
@@ -9,6 +10,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     let state: NPoolsStakingSharedStateProtocol
     let selectedAccount: MetaChainAccountResponse
     let npoolsOperationFactory: NominationPoolsOperationFactoryProtocol
+    let connection: JSONRPCEngine
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
@@ -35,8 +37,11 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     private var durationCancellable: CancellableCall?
     private var bondedAccountIdCancellable: CancellableCall?
     private var activePoolsCancellable: CancellableCall?
+    private var eraCountdownCancellable: CancellableCall?
+
     private var lastPoolId: NominationPools.PoolId?
     private var currentPoolId: NominationPools.PoolId?
+    private var poolAccountId: AccountId?
 
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
         state.npLocalSubscriptionFactory
@@ -58,6 +63,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         state: NPoolsStakingSharedStateProtocol,
         selectedAccount: MetaChainAccountResponse,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
+        connection: JSONRPCEngine,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
@@ -70,6 +76,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         self.npoolsOperationFactory = npoolsOperationFactory
         self.runtimeCodingService = runtimeCodingService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.connection = connection
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -87,6 +94,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         clear(cancellable: &durationCancellable)
         clear(cancellable: &bondedAccountIdCancellable)
         clear(cancellable: &activePoolsCancellable)
+        clear(cancellable: &eraCountdownCancellable)
     }
 
     func setupBaseProviders() {
@@ -94,6 +102,8 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         metadataProvider = nil
         subpoolsProvider = nil
         rewardPoolProvider = nil
+        poolLedgerProvider = nil
+        poolNominationProvider = nil
 
         lastPoolId = nil
         currentPoolId = nil
@@ -118,6 +128,18 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
         metadataProvider = subscribePoolMetadata(for: poolId, chainId: chainId)
         subpoolsProvider = subscribeSubPools(for: poolId, chainId: chainId)
         rewardPoolProvider = subscribeRewardPool(for: poolId, chainId: chainId)
+    }
+
+    func setupBondedAccountProviders() {
+        poolLedgerProvider = nil
+        poolNominationProvider = nil
+
+        guard let accountId = poolAccountId else {
+            return
+        }
+
+        poolLedgerProvider = subscribeLedgerInfo(for: accountId, chainId: chainId)
+        poolNominationProvider = subscribeNomination(for: accountId, chainId: chainId)
     }
 
     func provideStakingDuration() {
@@ -203,6 +225,9 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
                 case let .success(accountIds):
                     if let accountId = accountIds[poolId] {
                         self?.presenter?.didReceive(poolBondedAccountId: accountId)
+
+                        self?.poolAccountId = accountId
+                        self?.setupBondedAccountProviders()
                     }
                 case let .failure(error):
                     self?.presenter?.didReceive(error: .subscription(error, "bondedAccountId"))
@@ -246,6 +271,35 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
+
+    private func provideEraCountdown() {
+        clear(cancellable: &eraCountdownCancellable)
+
+        let factory = state.createEraCountdownOperationFactory(for: operationQueue)
+
+        let wrapper = factory.fetchCountdownOperationWrapper(for: connection, runtimeService: runtimeCodingService)
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.eraCountdownCancellable else {
+                    return
+                }
+
+                self?.eraCountdownCancellable = nil
+
+                do {
+                    let eraCountdown = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(eraCountdown: eraCountdown)
+                } catch {
+                    self?.presenter?.didReceive(error: .eraCountdown(error))
+                }
+            }
+        }
+
+        eraCountdownCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
 }
 
 extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
@@ -257,6 +311,7 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
             setupCurrencyProvider()
             provideStakingDuration()
             provideActivePools()
+            provideEraCountdown()
 
             eventCenter.add(observer: self, dispatchIn: .main)
             applicationHandler.delegate = self
@@ -280,6 +335,10 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
 
     func retryActivePools() {
         provideActivePools()
+    }
+
+    func retryEraCountdown() {
+        provideEraCountdown()
     }
 }
 
@@ -424,6 +483,7 @@ extension StakingNPoolsInteractor: EventVisitorProtocol {
 
     func processBlockTimeChanged(event _: BlockTimeChanged) {
         provideStakingDuration()
+        provideEraCountdown()
     }
 }
 

@@ -6,4 +6,5 @@ enum StakingNPoolsError: Error {
     case totalActiveStake(Error)
     case stakingDuration(Error)
     case activePools(Error)
+    case eraCountdown(Error)
 }
