@@ -27,7 +27,7 @@ extension WalletConnectStateInitiating: WalletConnectStateProtocol {
         let chainIds = dataSource.chainsStore.availableChainIds()
 
         if !chainIds.isEmpty {
-            stateMachine.emit(nextState: WalletConnectStateReady(stateMachine: stateMachine))
+            stateMachine.emit(nextState: WalletConnectStateReady(stateMachine: stateMachine, logger: logger))
         }
     }
 }

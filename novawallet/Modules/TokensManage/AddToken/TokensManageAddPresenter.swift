@@ -3,12 +3,14 @@ import SoraFoundation
 
 final class TokensManageAddPresenter {
     static let priceIdUrlPlaceholder = "coingecko.com/coins/tether"
-    static let maxDecimals: Int = 36
+    static let maxDecimals: UInt8 = 36
 
     weak var view: TokensManageAddViewProtocol?
     let wireframe: TokensManageAddWireframeProtocol
     let interactor: TokensManageAddInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
+    let chain: ChainModel
+    let validationFactory: TokenAddValidationFactoryProtocol
     let logger: LoggerProtocol
 
     private var partialAddress: String?
@@ -21,11 +23,15 @@ final class TokensManageAddPresenter {
     init(
         interactor: TokensManageAddInteractorInputProtocol,
         wireframe: TokensManageAddWireframeProtocol,
+        chain: ChainModel,
+        validationFactory: TokenAddValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chain = chain
+        self.validationFactory = validationFactory
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -118,41 +124,45 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
     }
 
     func confirmTokenAdd() {
+        let locale = localizationManager.selectedLocale
+
         guard let contractAddress = constructEvmAddress() else {
             if let view = view {
-                wireframe.presentInvalidContractAddress(from: view, locale: localizationManager.selectedLocale)
+                wireframe.presentInvalidContractAddress(from: view, locale: locale)
             }
             return
         }
 
-        guard let symbol = partialSymbol, let decimals = partialDecimals.flatMap({ UInt8($0) }) else {
+        guard
+            let symbol = partialSymbol,
+            let decimalsString = partialDecimals,
+            let decimals = UInt8(decimalsString) else {
             return
         }
 
-        guard decimals <= Self.maxDecimals else {
-            if let view = view {
-                wireframe.presentInvalidDecimals(
-                    from: view,
-                    maxValue: String(Self.maxDecimals),
-                    locale: localizationManager.selectedLocale
-                )
+        DataValidationRunner(validators: [
+            validationFactory.decimalsNotExceedMax(for: decimals, maxValue: Self.maxDecimals, locale: locale),
+            validationFactory.noRemoteToken(for: contractAddress, chain: chain, locale: locale),
+            validationFactory.warnDuplicates(for: contractAddress, chain: chain, locale: locale)
+        ]).runValidation { [weak self] in
+            guard let self = self else {
+                return
             }
-            return
+
+            let isPriceIdUrlEmpty = (self.partialPriceIdUrl ?? "").isEmpty
+
+            let request = EvmTokenAddRequest(
+                contractAddress: contractAddress,
+                name: nil,
+                symbol: symbol,
+                decimals: decimals,
+                priceIdUrl: !isPriceIdUrlEmpty ? self.partialPriceIdUrl : nil
+            )
+
+            self.view?.didStartLoading()
+
+            self.interactor.save(newToken: request)
         }
-
-        let isPriceIdUrlEmpty = (partialPriceIdUrl ?? "").isEmpty
-
-        let request = EvmTokenAddRequest(
-            contractAddress: contractAddress,
-            name: nil,
-            symbol: symbol,
-            decimals: decimals,
-            priceIdUrl: !isPriceIdUrlEmpty ? partialPriceIdUrl : nil
-        )
-
-        view?.didStartLoading()
-
-        interactor.save(newToken: request)
     }
 }
 
@@ -178,8 +188,8 @@ extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
         }
     }
 
-    func didSaveEvmToken(_ token: AssetModel) {
-        wireframe.complete(from: view, token: token, locale: localizationManager.selectedLocale)
+    func didSaveEvmToken(_ result: EvmTokenAddResult) {
+        wireframe.complete(from: view, result: result, locale: localizationManager.selectedLocale)
     }
 
     func didReceiveError(_ error: TokensManageAddInteractorError) {

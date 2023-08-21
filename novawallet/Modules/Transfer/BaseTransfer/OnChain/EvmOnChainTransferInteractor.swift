@@ -19,8 +19,10 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
 
     let feeProxy: EvmTransactionFeeProxyProtocol
     let extrinsicService: EvmTransactionServiceProtocol
+    let validationProviderFactory: EvmValidationProviderFactoryProtocol
 
     private(set) var transferType: TransferType?
+    private(set) var lastFeeModel: EvmFeeModel?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -28,6 +30,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
         extrinsicService: EvmTransactionServiceProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -35,6 +38,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
     ) {
         self.feeProxy = feeProxy
         self.extrinsicService = extrinsicService
+        self.validationProviderFactory = validationProviderFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -143,6 +147,8 @@ extension EvmOnChainTransferInteractor {
 
             let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
 
+            lastFeeModel = nil
+
             feeProxy.estimateFee(
                 using: extrinsicService,
                 reuseIdentifier: identifier
@@ -188,12 +194,16 @@ extension EvmOnChainTransferInteractor {
 
 extension EvmOnChainTransferInteractor: EvmTransactionFeeProxyDelegate {
     func didReceiveFee(
-        result: Result<BigUInt, Error>,
+        result: Result<EvmFeeModel, Error>,
         for _: TransactionFeeId
     ) {
         switch result {
-        case let .success(fee):
-            presenter?.didReceiveFee(result: .success(fee))
+        case let .success(model):
+            lastFeeModel = model
+
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
+            let feeModel = FeeOutputModel(value: model.fee, validationProvider: validationProvider)
+            presenter?.didReceiveFee(result: .success(feeModel))
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))
         }

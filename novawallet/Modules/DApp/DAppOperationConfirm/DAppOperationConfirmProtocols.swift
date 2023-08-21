@@ -1,4 +1,5 @@
 import SubstrateSdk
+import BigInt
 
 protocol DAppOperationConfirmViewProtocol: ControllerBackedProtocol {
     func didReceive(confirmationViewModel: DAppOperationConfirmViewModel)
@@ -23,7 +24,7 @@ protocol DAppOperationConfirmInteractorInputProtocol: AnyObject {
 
 protocol DAppOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)
-    func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)
+    func didReceive(feeResult: Result<FeeOutputModel, Error>)
     func didReceive(priceResult: Result<PriceData?, Error>)
     func didReceive(responseResult: Result<DAppOperationResponse, Error>, for request: DAppOperationRequest)
     func didReceive(txDetailsResult: Result<JSON, Error>)

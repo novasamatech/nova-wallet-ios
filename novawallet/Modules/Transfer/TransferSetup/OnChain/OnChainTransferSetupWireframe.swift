@@ -1,6 +1,6 @@
 import Foundation
 
-final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
+class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
     let transferCompletion: TransferCompletionClosure?
 
     init(transferCompletion: TransferCompletionClosure?) {
@@ -29,3 +29,5 @@ final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol
         navigationController.pushViewController(confirmView.controller, animated: true)
     }
 }
+
+final class EvmOnChainTransferSetupWireframe: OnChainTransferSetupWireframe, EvmValidationErrorPresentable {}

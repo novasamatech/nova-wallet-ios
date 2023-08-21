@@ -106,7 +106,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = fee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.value,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -160,7 +160,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let feeValue = isUtilityTransfer ? (fee ?? 0) : 0
+        let feeValue = isUtilityTransfer ? (fee?.value ?? 0) : 0
 
         let precision = chainAsset.assetDisplayInfo.assetPrecision
 
@@ -231,7 +231,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         updateTransferableBalance()
     }
 
-    override func didReceiveFee(result: Result<BigUInt, Error>) {
+    override func didReceiveFee(result: Result<FeeOutputModel, Error>) {
         super.didReceiveFee(result: result)
 
         if case .success = result {
@@ -325,18 +325,24 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
             for: sendingAmount,
             recepientAddress: partialRecepientAddress,
             utilityAssetInfo: utilityAssetInfo,
+            view: view,
             selectedLocale: selectedLocale
         )
 
-        validators.append(
+        validators.append(contentsOf: [
+            dataValidatingFactory.accountIsNotSystem(
+                for: getRecepientAccountId(),
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
-                fee: isUtilityTransfer ? fee : 0,
+                fee: isUtilityTransfer ? fee?.value : 0,
                 totalAmount: senderSendingAssetBalance?.totalInPlank,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             )
-        )
+        ])
 
         validators.append(
             phishingValidatingFactory.notPhishing(

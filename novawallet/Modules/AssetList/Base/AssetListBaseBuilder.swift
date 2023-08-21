@@ -208,6 +208,24 @@ class AssetListBaseBuilder {
         groups.apply(changes: groupChanges)
     }
 
+    private func processRemovedPriceChainAssets(_ chainAssetIds: Set<ChainAssetId>) -> Bool {
+        let currentPrices: [ChainAssetId: PriceData] = (try? priceResult?.get()) ?? [:]
+
+        let removedChainAssetIds = currentPrices.keys.filter { !chainAssetIds.contains($0) }
+
+        guard !removedChainAssetIds.isEmpty else {
+            return false
+        }
+
+        let newPrices = currentPrices.filter { !removedChainAssetIds.contains($0.key) }
+
+        priceResult = .success(newPrices)
+
+        updateAssetModels()
+
+        return true
+    }
+
     private func processPriceChanges(_ changes: [ChainAssetId: DataProviderChange<PriceData>]) {
         var currentPrices: [ChainAssetId: PriceData] = (try? priceResult?.get()) ?? [:]
 
@@ -259,6 +277,18 @@ extension AssetListBaseBuilder {
             self?.processCrowdloans(result)
 
             self?.scheduleRebuildModel()
+        }
+    }
+
+    func applyRemovedPriceChainAssets(_ chainAssetIds: Set<ChainAssetId>) {
+        workingQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            if self.processRemovedPriceChainAssets(chainAssetIds) {
+                self.scheduleRebuildModel()
+            }
         }
     }
 
