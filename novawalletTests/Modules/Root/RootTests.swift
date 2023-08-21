@@ -27,7 +27,6 @@ class RootTests: XCTestCase {
         )
 
         let onboardingExpectation = XCTestExpectation()
-        let securityLayerExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
             when(stub).showOnboarding(on: any()).then { _ in

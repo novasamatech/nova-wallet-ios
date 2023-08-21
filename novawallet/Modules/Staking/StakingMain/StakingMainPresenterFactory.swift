@@ -26,11 +26,11 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
         case .relaychain:
             return createRelaychainPresenter(for: stakingOption, view: view, consensus: .babe)
         case .auraRelaychain:
-            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .aura)
+            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .auraGeneral)
         case .parachain, .turing:
             return createParachainPresenter(for: stakingOption, view: view)
         case .azero:
-            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .aura)
+            return createRelaychainPresenter(for: stakingOption, view: view, consensus: .auraAzero)
         case .unsupported:
             return nil
         }

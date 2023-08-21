@@ -218,6 +218,28 @@ extension ChainModel {
         )
     }
 
+    func addingOrUpdating(asset: AssetModel) -> ChainModel {
+        let filteredAssets = assets.filter { $0.assetId != asset.assetId }
+        let newAssets = filteredAssets.union([asset])
+
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: newAssets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
+    }
+
     func byChanging(assets: Set<AssetModel>? = nil, name: String? = nil) -> ChainModel {
         let newAssets = assets ?? self.assets
         let newName = name ?? self.name

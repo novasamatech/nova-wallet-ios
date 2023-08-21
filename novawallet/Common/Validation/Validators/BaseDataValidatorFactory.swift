@@ -28,6 +28,8 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
         minimumBalance: BigUInt?,
         locale: Locale
     ) -> DataValidating
+
+    func accountIsNotSystem(for accountId: AccountId?, locale: Locale) -> DataValidating
 }
 
 extension BaseDataValidatingFactoryProtocol {
@@ -205,5 +207,29 @@ extension BaseDataValidatingFactoryProtocol {
         let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
 
         return has(fee: feeDecimal, locale: locale, onError: onError)
+    }
+
+    func accountIsNotSystem(for accountId: AccountId?, locale: Locale) -> DataValidating {
+        WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.basePresentable.presentIsSystemAccount(
+                from: view,
+                onContinue: {
+                    delegate.didCompleteWarningHandling()
+                },
+                locale: locale
+            )
+        }, preservesCondition: {
+            guard let accountId = accountId else {
+                return true
+            }
+
+            let validation = CompoundSystemAccountValidation.substrateAccounts()
+
+            return !validation.isSystem(accountId: accountId)
+        })
     }
 }

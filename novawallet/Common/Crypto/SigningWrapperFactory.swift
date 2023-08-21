@@ -90,7 +90,11 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol {
         switch ethereumAccountResponse.type {
         case .secrets:
-            return EthereumSigner(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
+            return EthereumSigner(
+                keystore: keystore,
+                ethereumAccountResponse: ethereumAccountResponse,
+                settingsManager: settingsManager
+            )
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:

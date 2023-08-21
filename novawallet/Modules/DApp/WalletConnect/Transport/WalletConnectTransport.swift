@@ -203,7 +203,7 @@ extension WalletConnectTransport {
         service.delegate = self
         service.setup()
 
-        state = WalletConnectStateInitiating(stateMachine: self)
+        state = WalletConnectStateInitiating(stateMachine: self, logger: logger)
         state?.proceed(with: dataSource)
     }
 

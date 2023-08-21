@@ -5,10 +5,10 @@ import SubstrateSdk
 final class WalletConnectStateSigning: WalletConnectBaseState {
     let request: Request
 
-    init(request: Request, stateMachine: WalletConnectStateMachineProtocol) {
+    init(request: Request, stateMachine: WalletConnectStateMachineProtocol, logger: LoggerProtocol) {
         self.request = request
 
-        super.init(stateMachine: stateMachine)
+        super.init(stateMachine: stateMachine, logger: logger)
     }
 }
 
@@ -26,7 +26,7 @@ extension WalletConnectStateSigning: WalletConnectStateProtocol {
             return
         }
 
-        let nextState = WalletConnectStateReady(stateMachine: stateMachine)
+        let nextState = WalletConnectStateReady(stateMachine: stateMachine, logger: logger)
 
         if
             let signature = response.signature,

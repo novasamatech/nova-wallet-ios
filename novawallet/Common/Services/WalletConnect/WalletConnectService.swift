@@ -136,7 +136,7 @@ final class WalletConnectService {
             return
         }
 
-        let socketFactory = DefaultSocketFactory()
+        let socketFactory = DefaultSocketFactory(logger: logger)
         let relayClient = RelayClient(relayHost: relayHost, projectId: metadata.projectId, socketFactory: socketFactory)
         networking = NetworkingClientFactory.create(relayClient: relayClient)
     }
@@ -262,20 +262,16 @@ extension WalletConnectService: WalletConnectServiceProtocol {
 
 private final class DefaultWebSocket: WebSocketConnecting {
     public var isConnected: Bool {
-        connected
-    }
+        mutex.lock()
 
-    public var request: URLRequest {
-        get {
-            webSocket.request
+        defer {
+            mutex.unlock()
         }
 
-        set {
-            webSocket.request = newValue
-        }
+        return connected
     }
 
-    @Atomic(defaultValue: false) private var connected: Bool
+    private var connected: Bool = false
 
     public var onConnect: (() -> Void)?
 
@@ -283,12 +279,63 @@ private final class DefaultWebSocket: WebSocketConnecting {
 
     public var onText: ((String) -> Void)?
 
-    private let webSocket: WebSocket
+    private var webSocket: WebSocket?
 
-    init(request: URLRequest, engine: Engine) {
+    let logger: LoggerProtocol
+    let engineFactory: WebSocketEngineFactoryProtocol
+    let mutex = NSLock()
+    var request: URLRequest
+
+    init(request: URLRequest, engineFactory: WebSocketEngineFactoryProtocol, logger: LoggerProtocol) {
+        self.engineFactory = engineFactory
+        self.request = request
+        self.logger = logger
+    }
+
+    func connect() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        logger.debug("Will connect")
+
+        stopWebsocket()
+        startWebsocket()
+    }
+
+    func disconnect() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        connected = false
+
+        logger.debug("Will disconnect")
+
+        stopWebsocket()
+    }
+
+    func write(string: String, completion: (() -> Void)?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        webSocket?.write(string: string, completion: completion)
+    }
+
+    private func startWebsocket() {
+        let engine = engineFactory.createEngine()
         webSocket = WebSocket(request: request, engine: engine)
 
-        webSocket.onEvent = { [weak self] event in
+        webSocket?.onEvent = { [weak self] event in
+            self?.logger.debug("Did receive event: \(event)")
+
             switch event {
             case .connected:
                 self?.markConnectedAndNotify()
@@ -296,71 +343,95 @@ private final class DefaultWebSocket: WebSocketConnecting {
                 self?.markDisconnectedAndNotify(
                     error: WSError(type: .protocolError, message: message, code: code)
                 )
-            case .cancelled, .reconnectSuggested:
+            case .cancelled:
                 self?.markDisconnectedAndNotify(error: nil)
+            case .reconnectSuggested:
+                self?.protectedRestart()
+            case let .viabilityChanged(isViable):
+                if isViable {
+                    self?.protectedRestart()
+                } else {
+                    self?.markDisconnectedAndNotify(error: nil)
+                }
             case let .error(error):
                 self?.markDisconnectedAndNotify(error: error)
             case let .text(text):
                 self?.onText?(text)
-            default:
+            case .binary:
+                self?.logger.warning("Binary received but not supported")
+            case .ping, .pong:
                 break
             }
         }
+
+        webSocket?.connect()
     }
 
-    func connect() {
-        webSocket.connect()
+    private func stopWebsocket() {
+        webSocket?.onEvent = nil
+        webSocket?.forceDisconnect()
+        webSocket = nil
     }
 
-    func disconnect() {
-        guard connected else {
-            return
-        }
+    private func protectedRestart() {
+        mutex.lock()
 
-        connected = false
+        stopWebsocket()
+        startWebsocket()
 
-        webSocket.forceDisconnect()
-
-        onDisconnect?(nil)
-    }
-
-    func write(string: String, completion: (() -> Void)?) {
-        webSocket.write(string: string, completion: completion)
+        mutex.unlock()
     }
 
     private func markConnectedAndNotify() {
-        guard !connected else {
-            return
-        }
+        mutex.lock()
 
         connected = true
+
+        mutex.unlock()
 
         onConnect?()
     }
 
     private func markDisconnectedAndNotify(error: Error?) {
-        guard connected else {
-            return
-        }
+        mutex.lock()
 
         connected = false
+
+        stopWebsocket()
+
+        mutex.unlock()
+
         onDisconnect?(error)
     }
 }
 
-private struct DefaultSocketFactory: WebSocketFactory {
+private protocol WebSocketEngineFactoryProtocol {
+    func createEngine() -> Engine
+}
+
+private final class DefaultEngineFactory: WebSocketEngineFactoryProtocol {
+    func createEngine() -> Engine {
+        WSEngine(
+            transport: FoundationTransport(),
+            certPinner: FoundationSecurity(),
+            compressionHandler: nil
+        )
+    }
+}
+
+private final class DefaultSocketFactory: WebSocketFactory {
+    let logger: LoggerProtocol
+
+    init(logger: LoggerProtocol) {
+        self.logger = logger
+    }
+
     func create(with url: URL) -> WebSocketConnecting {
         var urlRequest = URLRequest(url: url)
 
         // This is specifics of Starscream due to how Origin is set
         urlRequest.addValue("allowed.domain.com", forHTTPHeaderField: "Origin")
 
-        let engine = WSEngine(
-            transport: FoundationTransport(),
-            certPinner: FoundationSecurity(),
-            compressionHandler: nil
-        )
-
-        return DefaultWebSocket(request: urlRequest, engine: engine)
+        return DefaultWebSocket(request: urlRequest, engineFactory: DefaultEngineFactory(), logger: logger)
     }
 }
