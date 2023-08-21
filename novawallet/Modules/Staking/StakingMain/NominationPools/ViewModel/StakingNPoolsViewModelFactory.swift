@@ -48,11 +48,16 @@ final class StakingNPoolsViewModelFactory {
     }
 
     private func createNominationStatus(for params: StakingNPoolsViewModelParams) -> NominationViewStatus {
-        guard
-            let activePools = params.activePools,
-            let poolMember = params.poolMember,
-            let nomination = params.poolNomination else {
+        guard let activePools = params.activePools, let poolMember = params.poolMember else {
             return .undefined
+        }
+
+        guard !activePools.contains(poolMember.poolId) else {
+            return .active
+        }
+
+        guard let nomination = params.poolNomination else {
+            return .inactive
         }
 
         let poolState = Multistaking.NominationPoolState(
@@ -64,16 +69,13 @@ final class StakingNPoolsViewModelFactory {
         )
 
         guard let onchainState = Multistaking.DashboardItemOnchainState.from(nominationPoolState: poolState) else {
-            return .undefined
+            return .inactive
         }
 
         switch onchainState {
         case .active:
-            if activePools.contains(poolMember.poolId) {
-                return .active
-            } else {
-                return .inactive
-            }
+            // we previously found that pool id still not in active pools list and not waiting
+            return .inactive
         case .bonded:
             return .inactive
         case .waiting:
