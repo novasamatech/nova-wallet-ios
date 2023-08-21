@@ -107,6 +107,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
         lastPoolId = nil
         currentPoolId = nil
+        poolAccountId = nil
 
         minJoinBondProvider = subscribeMinJoinBond(for: chainId)
         lastPoolIdProvider = subscribeLastPoolId(for: chainId)
