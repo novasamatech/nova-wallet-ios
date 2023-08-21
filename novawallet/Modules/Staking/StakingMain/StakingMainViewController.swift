@@ -60,8 +60,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNetworkInfoView()
         setupAlertsView()
+        setupNetworkInfoView()
         setupScrollView()
         setupLocalization()
         presenter.setup()
@@ -130,7 +130,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: networkInfoContainerView, innerView: networkInfoView)
 
-        stackView.insertArrangedSubview(networkInfoContainerView, at: 0)
+        stackView.addArrangedSubview(networkInfoContainerView)
     }
 
     private func setupAlertsView() {
@@ -139,7 +139,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: alertsContainerView, innerView: alertsView)
 
-        stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
+        stackView.insertArrangedSubview(alertsContainerView, at: 0)
 
         alertsView.delegate = self
     }
@@ -189,10 +189,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             newActionsView.locale = selectedLocale
             newActionsView.delegate = self
             newActionsView.statics = staticsViewModel
-            stackView.addArrangedSubview(newActionsView)
+            stackView.insertArranged(view: newActionsView, before: networkInfoContainerView)
             newActionsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
             }
+
+            stackView.setCustomSpacing(8.0, after: newActionsView)
 
             actionsView = newActionsView
         }
@@ -216,7 +218,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             if let stateView = stateContainerView {
                 stackView.insertArranged(view: newUnbondingsView, after: stateView)
             } else {
-                stackView.addArrangedSubview(newUnbondingsView)
+                stackView.insertArranged(view: newUnbondingsView, before: networkInfoContainerView)
             }
 
             newUnbondingsView.snp.makeConstraints { make in
@@ -289,20 +291,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         return stateView
     }
 
-    private func setupRewardEstimationViewIfNeeded() -> RewardEstimationView? {
-        if let rewardView = stateView as? RewardEstimationView {
-            return rewardView
-        }
-
-        let size = CGSize(width: 343, height: 202.0)
-        let stateView = setupView { RewardEstimationView(frame: CGRect(origin: .zero, size: size)) }
-
-        stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
-        stateView?.delegate = self
-
-        return stateView
-    }
-
     private func setupNominatorViewIfNeeded() -> NominatorStateView? {
         if let nominatorView = stateView as? NominatorStateView {
             return nominatorView
@@ -332,17 +320,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private func applyNominator(viewModel: LocalizableResource<NominationViewModel>) {
         let nominatorView = setupNominatorViewIfNeeded()
         nominatorView?.bind(viewModel: viewModel)
-    }
-
-    private func applyBonded(viewModel: StakingEstimationViewModel) {
-        let rewardView = setupRewardEstimationViewIfNeeded()
-        rewardView?.bind(viewModel: viewModel)
-    }
-
-    private func applyNoStash(viewModel: StakingEstimationViewModel) {
-        let rewardView = setupRewardEstimationViewIfNeeded()
-        rewardView?.bind(viewModel: viewModel)
-        scrollView.layoutIfNeeded()
     }
 
     private func applyValidator(viewModel: LocalizableResource<ValidationViewModel>) {
@@ -382,20 +359,8 @@ extension StakingMainViewController: Localizable {
     }
 }
 
-extension StakingMainViewController: RewardEstimationViewDelegate {
-    func rewardEstimationDidStartAction(_: RewardEstimationView) {
-        presenter.performMainAction()
-    }
-
-    func rewardEstimationDidRequestInfo(_: RewardEstimationView) {
-        presenter.performRewardInfoAction()
-    }
-}
-
 extension StakingMainViewController: StakingMainViewProtocol {
-    func didRecieveNetworkStakingInfo(
-        viewModel: LocalizableResource<NetworkStakingInfoViewModel>?
-    ) {
+    func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel) {
         networkInfoView.bind(viewModel: viewModel)
     }
 
@@ -416,17 +381,9 @@ extension StakingMainViewController: StakingMainViewProtocol {
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case let .noStash(viewModel, alerts):
-            applyNoStash(viewModel: viewModel)
-            applyAlerts(alerts)
-
-            if !hasSameTypes {
-                expandNetworkInfoView(true)
-            }
-
-            clearStakingRewardViewIfNeeded()
-            updateActionsView(for: nil)
-            updateUnbondingsView(for: nil)
+        case .noStash:
+            // TODO: consider to remove as unreachable
+            break
         case let .nominator(viewModel, alerts, optReward, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
@@ -494,20 +451,7 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
 
 extension StakingMainViewController: AlertsViewDelegate {
     func didSelectStakingAlert(_ alert: StakingAlert) {
-        switch alert {
-        case .nominatorChangeValidators, .nominatorAllOversubscribed:
-            presenter.performChangeValidatorsAction()
-        case .bondedSetValidators:
-            presenter.performSetupValidatorsForBondedAction()
-        case .nominatorLowStake:
-            presenter.performStakeMoreAction()
-        case .redeemUnbonded:
-            presenter.performRedeemAction()
-        case .rebag:
-            presenter.performRebag()
-        case .waitingNextEra:
-            break
-        }
+        presenter.performAlertAction(alert)
     }
 }
 

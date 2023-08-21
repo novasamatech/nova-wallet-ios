@@ -31,9 +31,7 @@ enum StakingMainViewFactory {
         let presenter = StakingMainPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            wallet: SelectedWalletSettings.shared.value,
             stakingOption: stakingOption,
-            accountManagementFilter: AccountManagementFilter(),
             childPresenterFactory: childPresenterFactory,
             viewModelFactory: StakingMainViewModelFactory(),
             logger: Logger.shared

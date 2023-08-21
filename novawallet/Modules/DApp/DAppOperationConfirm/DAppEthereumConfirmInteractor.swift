@@ -7,145 +7,141 @@ import SubstrateSdk
 final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
     let ethereumOperationFactory: EthereumOperationFactoryProtocol
+    let validationProviderFactory: EvmValidationProviderFactoryProtocol
     let operationQueue: OperationQueue
     let signingWrapperFactory: SigningWrapperFactoryProtocol
-    let serializationFactory: EthereumSerializationFactoryProtocol
     let shouldSendTransaction: Bool
     let chainId: String
+
+    private var transaction: EthereumTransaction?
+    private var ethereumService: EvmTransactionServiceProtocol?
+    private var signingWrapper: SigningWrapperProtocol?
+    private var lastFee: EvmFeeModel?
 
     init(
         chainId: String,
         request: DAppOperationRequest,
         ethereumOperationFactory: EthereumOperationFactoryProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         operationQueue: OperationQueue,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
-        serializationFactory: EthereumSerializationFactoryProtocol,
         shouldSendTransaction: Bool
     ) {
         self.chainId = chainId
         self.request = request
         self.ethereumOperationFactory = ethereumOperationFactory
+        self.validationProviderFactory = validationProviderFactory
         self.operationQueue = operationQueue
         self.signingWrapperFactory = signingWrapperFactory
-        self.serializationFactory = serializationFactory
         self.shouldSendTransaction = shouldSendTransaction
     }
 
-    private func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<String> {
-        if let gasLimit = transaction.gas, let value = try? BigUInt(hex: gasLimit), value > 0 {
-            return BaseOperation.createWithResult(gasLimit)
-        } else {
-            let gasTransaction = EthereumTransaction.gasEstimationTransaction(from: transaction)
-            return ethereumOperationFactory.createGasLimitOperation(for: gasTransaction)
-        }
-    }
+    private func setupServices() {
+        let optTransaction = try? request.operationData.map(to: EthereumTransaction.self)
 
-    private func createGasPriceOperation(for transaction: EthereumTransaction) -> BaseOperation<String> {
-        if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
-            return BaseOperation.createWithResult(gasPrice)
-        } else {
-            return ethereumOperationFactory.createGasPriceOperation()
-        }
-    }
-
-    private func createNonceOperation(for transaction: EthereumTransaction) -> BaseOperation<String> {
-        if let nonce = transaction.nonce {
-            return BaseOperation.createWithResult(nonce)
-        } else {
-            guard let addressData = try? Data(hexString: transaction.from) else {
-                let error = DAppOperationConfirmInteractorError.extrinsicBadField(name: "from")
-                return BaseOperation.createWithError(error)
-            }
-
-            return ethereumOperationFactory.createTransactionsCountOperation(
-                for: addressData,
-                block: .pending
-            )
-        }
-    }
-
-    private func createSigningTransactionWrapper(
-        for request: DAppOperationRequest
-    ) -> CompoundOperationWrapper<EthereumTransaction> {
-        guard let transaction = try? request.operationData.map(to: EthereumTransaction.self) else {
+        guard let transaction = optTransaction else {
             let error = DAppOperationConfirmInteractorError.extrinsicBadField(name: "root")
-            return CompoundOperationWrapper.createWithError(error)
+            presenter?.didReceive(modelResult: .failure(error))
+            return
         }
 
-        let nonceOperation = createNonceOperation(for: transaction)
-        let gasOperation = createGasLimitOperation(for: transaction)
-        let gasPriceOperation = createGasPriceOperation(for: transaction)
+        self.transaction = transaction
 
-        let mapOperation = ClosureOperation<EthereumTransaction> {
-            let nonce = try nonceOperation.extractNoCancellableResultData()
-            let gas = try gasOperation.extractNoCancellableResultData()
-            let gasPrice = try gasPriceOperation.extractNoCancellableResultData()
-
-            let gasTransaction = EthereumTransaction.gasEstimationTransaction(from: transaction)
-            return gasTransaction
-                .replacing(gas: gas)
-                .replacing(gasPrice: gasPrice)
-                .replacing(nonce: nonce)
-        }
-
-        let dependencies = [gasOperation, gasPriceOperation, nonceOperation]
-        dependencies.forEach { mapOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
-    }
-
-    private func createSerializationOperation(
-        chainId: String,
-        dependingOn transactionOperation: BaseOperation<EthereumTransaction>,
-        signatureOperation: BaseOperation<Data>?,
-        serializationFactory: EthereumSerializationFactoryProtocol
-    ) -> BaseOperation<Data> {
-        ClosureOperation {
-            let transaction = try transactionOperation.extractNoCancellableResultData()
-            let maybeRawSignature = try signatureOperation?.extractNoCancellableResultData()
-
-            let maybeSignature = try maybeRawSignature.map { rawSignature in
-                guard let signature = EthereumSignature(rawValue: rawSignature) else {
-                    throw DAppOperationConfirmInteractorError.signingFailed
-                }
-
-                return signature
-            }
-
-            return try serializationFactory.serialize(
-                transaction: transaction,
-                chainId: chainId,
-                signature: maybeSignature
-            )
-        }
-    }
-
-    private func createSigningOperation(
-        using wallet: MetaAccountModel,
-        dependingOn signingDataOperation: BaseOperation<Data>,
-        transactionOperation: BaseOperation<EthereumTransaction>,
-        signingWrapperFactory: SigningWrapperFactoryProtocol
-    ) -> BaseOperation<Data> {
-        ClosureOperation {
-            let transaction = try transactionOperation.extractNoCancellableResultData()
-            let signingData = try signingDataOperation.extractNoCancellableResultData()
-
-            guard
-                let addressData = try? Data(hexString: transaction.from),
-                let accountResponse = wallet.fetchEthereum(for: addressData) else {
-                throw ChainAccountFetchingError.accountNotExists
-            }
-
-            let signingWrapper = signingWrapperFactory.createSigningWrapper(for: accountResponse)
-
-            return try signingWrapper.sign(signingData).rawData()
-        }
-    }
-
-    private func provideConfirmationModel() {
         guard
             let transaction = try? request.operationData.map(to: EthereumTransaction.self),
-            let chainAccountId = try? Data(hexString: transaction.from) else {
+            let chainAccountId = try? AccountId(hexString: transaction.from),
+            let accountResponse = request.wallet.fetchEthereum(for: chainAccountId) else {
+            presenter?.didReceive(modelResult: .failure(ChainAccountFetchingError.accountNotExists))
+            return
+        }
+
+        let defaultGasPriceProvider = createDefaultGasPriceProvider(for: transaction)
+        let maxPriorityGasPriceProvider = createMaxPriorityGasPriceProvider(for: transaction)
+        let gasLimitProvider = createGasLimitProvider(for: transaction)
+        let nonceProvider = createNonceProvider(for: transaction)
+
+        ethereumService = EvmTransactionService(
+            accountId: chainAccountId,
+            operationFactory: ethereumOperationFactory,
+            maxPriorityGasPriceProvider: maxPriorityGasPriceProvider,
+            defaultGasPriceProvider: defaultGasPriceProvider,
+            gasLimitProvider: gasLimitProvider,
+            nonceProvider: nonceProvider,
+            chainFormat: .ethereum,
+            evmChainId: chainId,
+            operationQueue: operationQueue
+        )
+
+        signingWrapper = signingWrapperFactory.createSigningWrapper(for: accountResponse)
+    }
+
+    private func createBuilderClosure(for transaction: EthereumTransaction) -> EvmTransactionBuilderClosure {
+        { builder in
+
+            var currentBuilder = builder
+
+            if let dataHex = transaction.data {
+                guard let data = try? Data(hexString: dataHex) else {
+                    throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "data")
+                }
+
+                currentBuilder = currentBuilder.usingTransactionData(data)
+            }
+
+            if let value = transaction.value {
+                guard let valueInt = BigUInt.fromHexString(value) else {
+                    throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "value")
+                }
+
+                currentBuilder = currentBuilder.sendingValue(valueInt)
+            }
+
+            if let receiver = transaction.to {
+                currentBuilder = currentBuilder.toAddress(receiver)
+            }
+
+            return currentBuilder
+        }
+    }
+
+    private func createGasLimitProvider(for transaction: EthereumTransaction) -> EvmGasLimitProviderProtocol {
+        if let gasLimit = transaction.gas, let value = try? BigUInt(hex: gasLimit), value > 0 {
+            return EvmConstantGasLimitProvider(value: value)
+        } else {
+            return EvmDefaultGasLimitProvider(operationFactory: ethereumOperationFactory)
+        }
+    }
+
+    private func createDefaultGasPriceProvider(
+        for transaction: EthereumTransaction
+    ) -> EvmGasPriceProviderProtocol {
+        if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
+            return EvmConstantGasPriceProvider(value: value)
+        } else {
+            return EvmLegacyGasPriceProvider(operationFactory: ethereumOperationFactory)
+        }
+    }
+
+    private func createMaxPriorityGasPriceProvider(
+        for transaction: EthereumTransaction
+    ) -> EvmGasPriceProviderProtocol {
+        if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
+            return EvmConstantGasPriceProvider(value: value)
+        } else {
+            return EvmMaxPriorityGasPriceProvider(operationFactory: ethereumOperationFactory)
+        }
+    }
+
+    private func createNonceProvider(for transaction: EthereumTransaction) -> EvmNonceProviderProtocol {
+        if let nonce = transaction.nonce, let value = BigUInt.fromHexString(nonce) {
+            return EvmConstantNonceProvider(value: value)
+        } else {
+            return EvmDefaultNonceProvider(operationFactory: ethereumOperationFactory)
+        }
+    }
+
+    private func provideConfirmationModel(for transaction: EthereumTransaction) {
+        guard let chainAccountId = try? Data(hexString: transaction.from) else {
             presenter?.didReceive(feeResult: .failure(ChainAccountFetchingError.accountNotExists))
             return
         }
@@ -162,189 +158,145 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         presenter?.didReceive(modelResult: .success(model))
     }
 
-    private func provideFeeViewModel() {
-        guard let transaction = try? request.operationData.map(to: EthereumTransaction.self) else {
-            let result: Result<RuntimeDispatchInfo, Error> = .failure(
-                DAppOperationConfirmInteractorError.extrinsicBadField(name: "root")
-            )
-            presenter?.didReceive(feeResult: result)
-            return
-        }
+    private func provideFeeModel(
+        for transaction: EthereumTransaction,
+        service: EvmTransactionServiceProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol
+    ) {
+        lastFee = nil
 
-        let gasOperation = createGasLimitOperation(for: transaction)
-        let gasPriceOperation = createGasPriceOperation(for: transaction)
+        service.estimateFee(createBuilderClosure(for: transaction), runningIn: .main) { [weak self] result in
+            switch result {
+            case let .success(model):
+                self?.lastFee = model
+                let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
+                let feeModel = FeeOutputModel(value: model.fee, validationProvider: validationProvider)
 
-        let mapOperation = ClosureOperation<RuntimeDispatchInfo> {
-            let gasHex = try gasOperation.extractNoCancellableResultData()
-            let gasPriceHex = try gasPriceOperation.extractNoCancellableResultData()
-
-            guard
-                let gas = BigUInt.fromHexString(gasHex),
-                let gasPrice = BigUInt.fromHexString(gasPriceHex) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "gas")
-            }
-
-            let fee = gas * gasPrice
-
-            return RuntimeDispatchInfo(
-                fee: String(fee),
-                weight: 0
-            )
-        }
-
-        mapOperation.addDependency(gasOperation)
-        mapOperation.addDependency(gasPriceOperation)
-
-        mapOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let dispatchInfo = try mapOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(feeResult: .success(dispatchInfo))
-                } catch {
-                    self?.presenter?.didReceive(feeResult: .failure(error))
-                }
+                self?.presenter?.didReceive(feeResult: .success(feeModel))
+            case let .failure(error):
+                self?.presenter?.didReceive(feeResult: .failure(error))
             }
         }
-
-        operationQueue.addOperations(
-            [gasOperation, gasPriceOperation, mapOperation],
-            waitUntilFinished: false
-        )
     }
 
-    private func confirmSend() {
-        let transactionWrapper = createSigningTransactionWrapper(for: request)
-        let signatureDataOperation = createSerializationOperation(
-            chainId: chainId,
-            dependingOn: transactionWrapper.targetOperation,
-            signatureOperation: nil,
-            serializationFactory: serializationFactory
-        )
+    private func confirmSend(
+        for transaction: EthereumTransaction,
+        price: EvmTransactionPrice,
+        service: EvmTransactionServiceProtocol,
+        signer: SigningWrapperProtocol
+    ) {
+        service.submit(
+            createBuilderClosure(for: transaction),
+            price: price,
+            signer: signer,
+            runningIn: .main
+        ) { [weak self] result in
+            guard let self = self else {
+                return
+            }
 
-        signatureDataOperation.addDependency(transactionWrapper.targetOperation)
-
-        let signingOperation = createSigningOperation(
-            using: request.wallet,
-            dependingOn: signatureDataOperation,
-            transactionOperation: transactionWrapper.targetOperation,
-            signingWrapperFactory: signingWrapperFactory
-        )
-
-        signingOperation.addDependency(signatureDataOperation)
-        signingOperation.addDependency(transactionWrapper.targetOperation)
-
-        let serializationOperation = createSerializationOperation(
-            chainId: chainId,
-            dependingOn: transactionWrapper.targetOperation,
-            signatureOperation: signingOperation,
-            serializationFactory: serializationFactory
-        )
-
-        serializationOperation.addDependency(transactionWrapper.targetOperation)
-        serializationOperation.addDependency(signingOperation)
-
-        let sendOperation = ethereumOperationFactory.createSendTransactionOperation {
-            try serializationOperation.extractNoCancellableResultData()
-        }
-
-        sendOperation.addDependency(serializationOperation)
-
-        sendOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard let strongSelf = self else {
-                    return
-                }
-
-                do {
-                    let txHash = try sendOperation.extractNoCancellableResultData()
+            do {
+                switch result {
+                case let .success(txHash):
                     let txHashData = try Data(hexString: txHash)
                     let response = DAppOperationResponse(signature: txHashData)
                     let result: Result<DAppOperationResponse, Error> = .success(response)
-                    strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
-                } catch {
-                    let result: Result<DAppOperationResponse, Error> = .failure(error)
-                    strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
+                    self.presenter?.didReceive(responseResult: result, for: self.request)
+                case let .failure(error):
+                    throw error
                 }
+            } catch {
+                let result: Result<DAppOperationResponse, Error> = .failure(error)
+                self.presenter?.didReceive(responseResult: result, for: self.request)
             }
         }
-
-        let allOperations = transactionWrapper.allOperations +
-            [signatureDataOperation, signingOperation, serializationOperation, sendOperation]
-
-        operationQueue.addOperations(allOperations, waitUntilFinished: false)
     }
 
-    private func confirmSign() {
-        let transactionWrapper = createSigningTransactionWrapper(for: request)
-        let signatureDataOperation = createSerializationOperation(
-            chainId: chainId,
-            dependingOn: transactionWrapper.targetOperation,
-            signatureOperation: nil,
-            serializationFactory: serializationFactory
-        )
+    private func confirmSign(
+        for transaction: EthereumTransaction,
+        price: EvmTransactionPrice,
+        service: EvmTransactionServiceProtocol,
+        signer: SigningWrapperProtocol
+    ) {
+        service.sign(
+            createBuilderClosure(for: transaction),
+            price: price,
+            signer: signer,
+            runningIn: .main
+        ) { [weak self] result in
+            guard let self = self else {
+                return
+            }
 
-        signatureDataOperation.addDependency(transactionWrapper.targetOperation)
-
-        let signingOperation = createSigningOperation(
-            using: request.wallet,
-            dependingOn: signatureDataOperation,
-            transactionOperation: transactionWrapper.targetOperation,
-            signingWrapperFactory: signingWrapperFactory
-        )
-
-        signingOperation.addDependency(signatureDataOperation)
-        signingOperation.addDependency(transactionWrapper.targetOperation)
-
-        let serializationOperation = createSerializationOperation(
-            chainId: chainId,
-            dependingOn: transactionWrapper.targetOperation,
-            signatureOperation: signingOperation,
-            serializationFactory: serializationFactory
-        )
-
-        serializationOperation.addDependency(transactionWrapper.targetOperation)
-        serializationOperation.addDependency(signingOperation)
-
-        serializationOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard let strongSelf = self else {
-                    return
-                }
-
-                do {
-                    let transaction = try serializationOperation.extractNoCancellableResultData()
-                    let response = DAppOperationResponse(signature: transaction)
+            do {
+                switch result {
+                case let .success(signedTransaction):
+                    let response = DAppOperationResponse(signature: signedTransaction)
                     let result: Result<DAppOperationResponse, Error> = .success(response)
-                    strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
-                } catch {
-                    let result: Result<DAppOperationResponse, Error> = .failure(error)
-                    strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
+                    self.presenter?.didReceive(responseResult: result, for: self.request)
+                case let .failure(error):
+                    throw error
                 }
+            } catch {
+                let result: Result<DAppOperationResponse, Error> = .failure(error)
+                self.presenter?.didReceive(responseResult: result, for: self.request)
             }
         }
-
-        let allOperations = transactionWrapper.allOperations +
-            [signatureDataOperation, signingOperation, serializationOperation]
-
-        operationQueue.addOperations(allOperations, waitUntilFinished: false)
     }
 }
 
 extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProtocol {
     func setup() {
-        provideConfirmationModel()
-        provideFeeViewModel()
+        setupServices()
+
+        guard
+            let transaction = transaction,
+            let ethereumService = ethereumService else {
+            return
+        }
+
+        provideConfirmationModel(for: transaction)
+        provideFeeModel(
+            for: transaction,
+            service: ethereumService,
+            validationProviderFactory: validationProviderFactory
+        )
     }
 
     func estimateFee() {
-        provideFeeViewModel()
+        guard
+            let transaction = transaction,
+            let ethereumService = ethereumService else {
+            return
+        }
+
+        provideFeeModel(
+            for: transaction,
+            service: ethereumService,
+            validationProviderFactory: validationProviderFactory
+        )
     }
 
     func confirm() {
+        guard
+            let transaction = transaction,
+            let ethereumService = ethereumService,
+            let signer = signingWrapper else {
+            presenter?.didReceive(modelResult: .failure(CommonError.dataCorruption))
+            return
+        }
+
+        guard let feeModel = lastFee else {
+            presenter?.didReceive(feeResult: .failure(CommonError.dataCorruption))
+            return
+        }
+
+        let txPrice = EvmTransactionPrice(gasLimit: feeModel.gasLimit, gasPrice: feeModel.gasPrice)
+
         if shouldSendTransaction {
-            confirmSend()
+            confirmSend(for: transaction, price: txPrice, service: ethereumService, signer: signer)
         } else {
-            confirmSign()
+            confirmSign(for: transaction, price: txPrice, service: ethereumService, signer: signer)
         }
     }
 

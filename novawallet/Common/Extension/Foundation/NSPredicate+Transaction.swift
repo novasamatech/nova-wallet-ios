@@ -44,7 +44,7 @@ extension NSPredicate {
         if let filter = filter {
             let filterPredicate = filterTransactionsByType(filter)
 
-            return NSCompoundPredicate(orPredicateWithSubpredicates: [filterPredicate, filterByAsset])
+            return NSCompoundPredicate(andPredicateWithSubpredicates: [filterByAsset, filterPredicate])
         } else {
             return filterByAsset
         }
@@ -93,7 +93,7 @@ extension NSPredicate {
         if let filter = filter {
             let filterPredicate = filterTransactionsByType(filter)
 
-            return NSCompoundPredicate(orPredicateWithSubpredicates: [filterPredicate, filterByAsset])
+            return NSCompoundPredicate(andPredicateWithSubpredicates: [filterByAsset, filterPredicate])
         } else {
             return filterByAsset
         }

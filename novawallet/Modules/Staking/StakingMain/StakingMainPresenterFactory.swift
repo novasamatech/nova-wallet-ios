@@ -25,10 +25,12 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol? {
         switch stakingOption.type {
-        case .relaychain, .nominationPools, .auraRelaychain, .azero:
+        case .relaychain, .auraRelaychain, .azero:
             return createRelaychainPresenter(for: stakingOption, view: view)
         case .parachain, .turing:
             return createParachainPresenter(for: stakingOption, view: view)
+        case .nominationPools:
+            return createNominationPoolsPresenter(for: stakingOption.chainAsset, view: view)
         case .unsupported:
             return nil
         }
