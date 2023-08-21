@@ -1345,3 +1345,4 @@
 "staking.type.alert.unsaved.changes.message" = "Хотите сохранить изменения?";
 "staking.validators" = "Валидаторы";
 "common.every.day" = "каждый день";
+"staking.pool.network.info" = "Информация о пул стейкинге";

@@ -1345,3 +1345,4 @@
 "staking.type.alert.unsaved.changes.message" = "Do you want to save the changes?";
 "staking.validators" = "Validators";
 "common.every.day" = "everyday";
+"staking.pool.network.info" = "Pool's staking info";

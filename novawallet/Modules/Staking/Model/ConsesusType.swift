@@ -18,6 +18,18 @@ enum ConsensusType {
         }
     }
 
+    init?(asset: AssetModel) {
+        let optMainStakingType = asset.stakings?.sorted { type1, type2 in
+            type1.isMorePreferred(than: type2)
+        }.first
+
+        guard let mainStakingType = optMainStakingType else {
+            return nil
+        }
+
+        self.init(stakingType: mainStakingType)
+    }
+
     var stakingType: StakingType {
         switch self {
         case .babe:
