@@ -47,6 +47,7 @@ final class StakingPoolView: GenericTitleValueView<SelectPoolAccountView, Select
         iconView.snp.makeConstraints {
             $0.size.equalTo(Constants.iconSize)
         }
+        membersCountLabel.apply(style: .footnotePrimary)
     }
 }
 
