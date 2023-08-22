@@ -18,6 +18,7 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(poolNomination: Nomination?)
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
+    func didReceive(subPools: NominationPools.SubPools?)
     func didReceive(poolBondedAccountId: AccountId)
     func didReceive(activePools: Set<NominationPools.PoolId>)
     func didReceive(duration: StakingDuration)

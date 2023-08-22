@@ -416,7 +416,7 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
     ) {
         switch result {
         case let .success(optSubPools):
-            break
+            presenter?.didReceive(subPools: optSubPools)
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "subPools"))
         }

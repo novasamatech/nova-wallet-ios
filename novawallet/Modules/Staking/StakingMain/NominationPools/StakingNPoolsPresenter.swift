@@ -17,6 +17,7 @@ final class StakingNPoolsPresenter {
     private var activeEra: ActiveEraInfo?
     private var poolMember: NominationPools.PoolMember?
     private var bondedPool: NominationPools.BondedPool?
+    private var subPools: NominationPools.SubPools?
     private var poolLedger: StakingLedger?
     private var poolNomination: Nomination?
     private var poolBondedAccountId: AccountId?
@@ -68,6 +69,7 @@ final class StakingNPoolsPresenter {
         let params = StakingNPoolsViewModelParams(
             poolMember: poolMember,
             bondedPool: bondedPool,
+            subPools: subPools,
             poolLedger: poolLedger,
             poolNomination: poolNomination,
             activePools: activePools,
@@ -176,6 +178,14 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         logger.debug("Bonded pool: \(String(describing: bondedPool))")
 
         self.bondedPool = bondedPool
+
+        provideState()
+    }
+
+    func didReceive(subPools: NominationPools.SubPools?) {
+        logger.debug("SubPools: \(String(describing: subPools))")
+
+        self.subPools = subPools
 
         provideState()
     }

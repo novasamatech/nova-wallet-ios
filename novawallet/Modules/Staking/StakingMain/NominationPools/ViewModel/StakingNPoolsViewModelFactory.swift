@@ -4,6 +4,7 @@ import SoraFoundation
 struct StakingNPoolsViewModelParams {
     let poolMember: NominationPools.PoolMember?
     let bondedPool: NominationPools.BondedPool?
+    let subPools: NominationPools.SubPools?
     let poolLedger: StakingLedger?
     let poolNomination: Nomination?
     let activePools: Set<NominationPools.PoolId>?
@@ -107,6 +108,44 @@ final class StakingNPoolsViewModelFactory {
             )
         }
     }
+
+    private func createUnbondingViewModel(
+        from params: StakingNPoolsViewModelParams,
+        chainAsset: ChainAsset
+    ) -> StakingUnbondingViewModel? {
+        guard let poolMember = params.poolMember, let subPools = params.subPools else {
+            return nil
+        }
+
+        let poolsByEra = subPools.withEra.reduce(into: [EraIndex: NominationPools.UnbondPool]()) {
+            $0[$1.key.value] = $1.value
+        }
+
+        let viewModels = poolMember
+            .unbondingEras
+            .sorted(by: { $0.key.value < $1.key.value })
+            .map { unbondingKeyValue in
+                let eraIndex = unbondingKeyValue.key.value
+                let points = unbondingKeyValue.value.value
+
+                let pool = poolsByEra[eraIndex] ?? subPools.noEra
+
+                let unbondingAmount = NominationPools.pointsToBalance(
+                    for: points,
+                    totalPoints: pool.points,
+                    poolBalance: pool.balance
+                ).decimal(precision: chainAsset.asset.precision)
+
+                let unbondingAmountString = balanceViewModelFactory.amountFromValue(unbondingAmount)
+
+                return StakingUnbondingItemViewModel(
+                    amount: unbondingAmountString,
+                    unbondingEra: eraIndex
+                )
+            }
+
+        return StakingUnbondingViewModel(eraCountdown: params.eraCountdown, items: viewModels)
+    }
 }
 
 extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
@@ -121,11 +160,16 @@ extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
             price: price
         )
 
+        let unbondingViewModel = createUnbondingViewModel(
+            from: params,
+            chainAsset: chainAsset
+        )
+
         return .nominator(
             viewModel: nominationViewModel,
             alerts: [], // TODO: Implement alerts in a separate task
             reward: nil, // TODO: Implement rewards in a separate task
-            unbondings: nil, // TODO: Implement unbondings in a separate task
+            unbondings: unbondingViewModel,
             actions: [.stakeMore, .unstake]
         )
     }
