@@ -26,6 +26,8 @@ final class StakingNPoolsPresenter {
     private var claimableRewards: BigUInt?
     private var eraCountdown: EraCountdown?
     private var priceData: PriceData?
+    private var totalRewardsFilter: StakingRewardFiltersPeriod?
+    private var totalRewards: TotalRewardItem?
 
     init(
         interactor: StakingNPoolsInteractorInputProtocol,
@@ -119,8 +121,9 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         // TODO: Implement in task for alerts
     }
 
-    func selectPeriod(_: StakingRewardFiltersPeriod) {
-        // TODO: Implement in task for rewards
+    func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
+        totalRewardsFilter = filter
+        interactor.setupTotalRewards(filter: filter)
     }
 }
 
@@ -228,6 +231,14 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideState()
     }
 
+    func didReceive(totalRewards: TotalRewardItem?) {
+        logger.debug("Total rewards: \(String(describing: totalRewards))")
+
+        self.totalRewards = totalRewards
+
+        provideState()
+    }
+
     func didReceive(error: StakingNPoolsError) {
         logger.error("Did receive error: \(error)")
 
@@ -259,6 +270,12 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         case .claimableRewards:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryClaimableRewards()
+            }
+        case .totalRewards:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let filter = self?.totalRewardsFilter {
+                    self?.interactor.setupTotalRewards(filter: filter)
+                }
             }
         }
     }

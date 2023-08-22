@@ -8,4 +8,5 @@ enum StakingNPoolsError: Error {
     case activePools(Error)
     case eraCountdown(Error)
     case claimableRewards(Error)
+    case totalRewards(Error)
 }

@@ -13,7 +13,8 @@ protocol SubqueryRewardOperationFactoryProtocol {
     func createTotalRewardOperation(
         for address: AccountAddress,
         startTimestamp: Int64?,
-        endTimestamp: Int64?
+        endTimestamp: Int64?,
+        stakingType: SubqueryStakingType
     ) -> BaseOperation<BigUInt>
 }
 
@@ -75,20 +76,23 @@ final class SubqueryRewardOperationFactory {
     private func prepareTotalRewardQuery(
         for address: AccountAddress,
         startTimestamp: Int64?,
-        endTimestamp: Int64?
+        endTimestamp: Int64?,
+        stakingType: SubqueryStakingType
     ) -> String {
         let rewardsQuery = accountRewardsQuery(
             address: address,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
-            type: .reward
+            rewardType: .reward,
+            stakingType: stakingType
         )
 
         let slashQuery = accountRewardsQuery(
             address: address,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
-            type: .slash
+            rewardType: .slash,
+            stakingType: stakingType
         )
 
         return """
@@ -103,11 +107,12 @@ final class SubqueryRewardOperationFactory {
         address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        type: SubqueryRewardType
+        rewardType: SubqueryRewardType,
+        stakingType: SubqueryStakingType
     ) -> String {
         var commonFilters: [SubqueryFilter] = [
             SubqueryEqualToFilter(fieldName: "address", value: address),
-            SubqueryEqualToFilter(fieldName: "type", value: type)
+            SubqueryEqualToFilter(fieldName: "type", value: rewardType)
         ]
 
         if let startTimestamp = startTimestamp {
@@ -122,8 +127,17 @@ final class SubqueryRewardOperationFactory {
 
         let queryFilter = SubqueryFilterBuilder.buildBlock(SubqueryCompoundFilter.and(commonFilters))
 
+        let entityName: String
+
+        switch stakingType {
+        case .direct:
+            entityName = "accountRewards"
+        case .pools:
+            entityName = "accountPoolRewards"
+        }
+
         return """
-            accountRewards(
+            \(entityName)(
                          \(queryFilter)
                      ) {
                         groupedAggregates(groupBy: [ADDRESS]) {
@@ -184,12 +198,14 @@ extension SubqueryRewardOperationFactory: SubqueryRewardOperationFactoryProtocol
     func createTotalRewardOperation(
         for address: AccountAddress,
         startTimestamp: Int64?,
-        endTimestamp: Int64?
+        endTimestamp: Int64?,
+        stakingType: SubqueryStakingType
     ) -> BaseOperation<BigUInt> {
         let queryString = prepareTotalRewardQuery(
             for: address,
             startTimestamp: startTimestamp,
-            endTimestamp: endTimestamp
+            endTimestamp: endTimestamp,
+            stakingType: stakingType
         )
 
         let requestFactory = BlockNetworkRequestFactory {

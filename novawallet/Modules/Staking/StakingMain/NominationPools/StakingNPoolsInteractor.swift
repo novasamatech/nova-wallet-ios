@@ -4,7 +4,8 @@ import RobinHood
 import SoraFoundation
 import SubstrateSdk
 
-final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetching, NominationPoolsDataProviding {
+final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning,
+    StakingDurationFetching, NominationPoolsDataProviding {
     weak var presenter: StakingNPoolsInteractorOutputProtocol?
 
     let state: NPoolsStakingSharedStateProtocol
@@ -32,6 +33,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     private var poolNominationProvider: AnyDataProvider<DecodedNomination>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
+    private var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var activeStakeCancellable: CancellableCall?
@@ -45,6 +47,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     private var currentPoolRewardCounter: BigUInt?
     private var currentMemberRewardCounter: BigUInt?
     private var poolAccountId: AccountId?
+    private var totalRewardsPeriod: StakingRewardFiltersPeriod?
 
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
         state.npLocalSubscriptionFactory
@@ -52,6 +55,10 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
     var asset: AssetModel {
         state.chainAsset.asset
+    }
+
+    var chain: ChainModel {
+        state.chainAsset.chain
     }
 
     var chainId: ChainModel.Id {
@@ -340,6 +347,31 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
         }
     }
 
+    func setupTotalRewards(filter: StakingRewardFiltersPeriod) {
+        clear(singleValueProvider: &totalRewardProvider)
+
+        totalRewardsPeriod = filter
+
+        if let address = try? accountId.toAddress(using: chain.chainFormat) {
+            if let rewardApi = chain.externalApis?.staking()?.first {
+                let totalRewardInterval = filter.interval
+                totalRewardProvider = subscribePoolTotalReward(
+                    for: address,
+                    startTimestamp: totalRewardInterval.startTimestamp,
+                    endTimestamp: totalRewardInterval.endTimestamp,
+                    api: rewardApi,
+                    assetPrecision: state.chainAsset.assetDisplayInfo.assetPrecision
+                )
+            } else {
+                let zeroReward = TotalRewardItem(
+                    address: address,
+                    amount: AmountDecimal(value: 0)
+                )
+                presenter?.didReceive(totalRewards: zeroReward)
+            }
+        }
+    }
+
     func remakeSubscriptions() {
         setupBaseProviders()
         setupCurrencyProvider()
@@ -483,6 +515,28 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
             presenter?.didRecieve(claimableRewards: rewards)
         case let .failure(error):
             presenter?.didReceive(error: .claimableRewards(error))
+        }
+    }
+
+    func handlePoolTotalReward(
+        result: Result<TotalRewardItem?, Error>,
+        for _: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api _: LocalChainExternalApi
+    ) {
+        guard
+            let interval = totalRewardsPeriod?.interval,
+            startTimestamp == interval.startTimestamp,
+            endTimestamp == interval.endTimestamp else {
+            return
+        }
+
+        switch result {
+        case let .success(totalRewards):
+            presenter?.didReceive(totalRewards: totalRewards)
+        case let .failure(error):
+            presenter?.didReceive(error: .totalRewards(error))
         }
     }
 }

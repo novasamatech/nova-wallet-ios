@@ -49,6 +49,20 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
 
     func subscribeMaxPoolMembersPerPool(for chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedU32>?
+
+    func subscribeClaimableRewards(
+        for chainId: ChainModel.Id,
+        poolId: NominationPools.PoolId,
+        accountId: AccountId
+    ) -> AnySingleValueProvider<String>?
+
+    func subscribePoolTotalReward(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api: LocalChainExternalApi,
+        assetPrecision: Int16
+    ) -> AnySingleValueProvider<TotalRewardItem>?
 }
 
 extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandler {
@@ -389,6 +403,47 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                     chainId: chainId,
                     poolId: poolId,
                     accountId: accountId
+                )
+            }
+        )
+
+        return provider
+    }
+
+    func subscribePoolTotalReward(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api: LocalChainExternalApi,
+        assetPrecision: Int16
+    ) -> AnySingleValueProvider<TotalRewardItem>? {
+        guard let provider = try? npoolsLocalSubscriptionFactory.getTotalReward(
+            for: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            api: api,
+            assetPrecision: assetPrecision
+        ) else {
+            return nil
+        }
+
+        addSingleValueProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                self?.handlePoolTotalReward(
+                    result: .success(value),
+                    for: address,
+                    startTimestamp: startTimestamp,
+                    endTimestamp: endTimestamp,
+                    api: api
+                )
+            }, failureClosure: { [weak self] error in
+                self?.handlePoolTotalReward(
+                    result: .failure(error),
+                    for: address,
+                    startTimestamp: startTimestamp,
+                    endTimestamp: endTimestamp,
+                    api: api
                 )
             }
         )

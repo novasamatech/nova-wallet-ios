@@ -133,6 +133,7 @@
 		0C79C8A02A7BF80700B171E3 /* RelaychainStakingRecommendationMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C79C89F2A7BF80700B171E3 /* RelaychainStakingRecommendationMediator.swift */; };
 		0C7C88612A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88602A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift */; };
 		0C7C88642A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */; };
+		0C7C88662A95030800DD96A1 /* SubqueryStakingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88652A95030800DD96A1 /* SubqueryStakingType.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
@@ -3950,6 +3951,7 @@
 		0C79C89F2A7BF80700B171E3 /* RelaychainStakingRecommendationMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingRecommendationMediator.swift; sourceTree = "<group>"; };
 		0C7C88602A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingNPoolsViewModelFactory+Alerts.swift"; sourceTree = "<group>"; };
 		0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsPendingRewardDataSource.swift; sourceTree = "<group>"; };
+		0C7C88652A95030800DD96A1 /* SubqueryStakingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryStakingType.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
@@ -13274,6 +13276,7 @@
 				84E25BEF27E8EFB500290BF1 /* SubqueryAccumulateReward.swift */,
 				847EA1D32A1CA43A00F1CBD8 /* SubqueryNodes.swift */,
 				847EA1D52A1CA47500F1CBD8 /* SubqueryMultistaking.swift */,
+				0C7C88652A95030800DD96A1 /* SubqueryStakingType.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -21704,6 +21707,7 @@
 				7796C7032A17846B00D56094 /* EmptyCellContentView.swift in Sources */,
 				B8349266F061AEFFA9802237 /* TokenManageSingleViewController.swift in Sources */,
 				D9746967761B1B4772A562B2 /* TokenManageSingleViewLayout.swift in Sources */,
+				0C7C88662A95030800DD96A1 /* SubqueryStakingType.swift in Sources */,
 				0CAC01572A52E1960069413E /* AssetListPresenterHelpers.swift in Sources */,
 				26533668754DB6C1DF2425AB /* TokenManageSingleViewFactory.swift in Sources */,
 				3187CF2169E709F25DFB4C0D /* TokensAddSelectNetworkProtocols.swift in Sources */,

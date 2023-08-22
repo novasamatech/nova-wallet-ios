@@ -48,6 +48,14 @@ protocol NPoolsLocalSubscriptionHandler {
         poolId: NominationPools.PoolId,
         accountId: AccountId
     )
+
+    func handlePoolTotalReward(
+        result _: Result<TotalRewardItem?, Error>,
+        for _: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api _: LocalChainExternalApi
+    )
 }
 
 extension NPoolsLocalSubscriptionHandler {
@@ -96,5 +104,13 @@ extension NPoolsLocalSubscriptionHandler {
         chainId _: ChainModel.Id,
         poolId _: NominationPools.PoolId,
         accountId _: AccountId
+    ) {}
+
+    func handlePoolTotalReward(
+        result _: Result<TotalRewardItem?, Error>,
+        for _: AccountAddress,
+        startTimestamp _: Int64?,
+        endTimestamp _: Int64?,
+        api _: LocalChainExternalApi
     ) {}
 }
