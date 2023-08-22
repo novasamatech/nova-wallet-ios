@@ -320,6 +320,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
             }
 
             let newState = state.applying(change: stateChange)
+            self.state = newState
 
             logger?.debug("Pool new state: \(newState)")
 
