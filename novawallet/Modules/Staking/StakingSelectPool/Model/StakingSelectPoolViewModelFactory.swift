@@ -1,13 +1,6 @@
 import SoraFoundation
 
-protocol StakingSelectPoolViewModelFactoryProtocol: StakingSelectPoolViewModelFactory {
-    func createStakingSelectPoolViewModels(
-        from poolStats: [NominationPools.PoolStats],
-        selectedPoolId: NominationPools.PoolId?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> [StakingSelectPoolViewModel]
-
+protocol StakingSelectPoolViewModelFactoryProtocol {
     func createStakingSelectPoolViewModel(
         from poolStats: NominationPools.PoolStats,
         selectedPoolId: NominationPools.PoolId?,
@@ -29,22 +22,6 @@ final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactory
         self.apyFormatter = apyFormatter
         self.membersFormatter = membersFormatter
         self.poolIconFactory = poolIconFactory
-    }
-
-    func createStakingSelectPoolViewModels(
-        from poolStats: [NominationPools.PoolStats],
-        selectedPoolId: NominationPools.PoolId?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> [StakingSelectPoolViewModel] {
-        poolStats.map {
-            createStakingSelectPoolViewModel(
-                from: $0,
-                selectedPoolId: selectedPoolId,
-                chainAsset: chainAsset,
-                locale: locale
-            )
-        }
     }
 
     func createStakingSelectPoolViewModel(
@@ -73,5 +50,23 @@ final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactory
             members: members,
             id: poolStats.poolId
         )
+    }
+}
+
+extension StakingSelectPoolViewModelFactoryProtocol {
+    func createStakingSelectPoolViewModels(
+        from poolStats: [NominationPools.PoolStats],
+        selectedPoolId: NominationPools.PoolId?,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> [StakingSelectPoolViewModel] {
+        poolStats.map {
+            createStakingSelectPoolViewModel(
+                from: $0,
+                selectedPoolId: selectedPoolId,
+                chainAsset: chainAsset,
+                locale: locale
+            )
+        }
     }
 }
