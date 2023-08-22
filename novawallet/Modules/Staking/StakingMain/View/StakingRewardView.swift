@@ -94,18 +94,14 @@ final class StakingRewardView: UIView {
             return
         }
 
-        let title = viewModel.amount.value ?? ""
-        let price: String? = viewModel.price?.value
+        let title = viewModel.totalRewards.value?.amount ?? ""
+        let price: String? = viewModel.totalRewards.value?.price
         rewardView.bind(topValue: title, bottomValue: price)
 
         var newSkeletonOptions: StakingRewardSkeletonOptions = []
 
-        if title.isEmpty {
+        if viewModel.totalRewards.isLoading {
             newSkeletonOptions.insert(.reward)
-            newSkeletonOptions.insert(.price)
-        }
-
-        if let price = price, price.isEmpty {
             newSkeletonOptions.insert(.price)
         }
 

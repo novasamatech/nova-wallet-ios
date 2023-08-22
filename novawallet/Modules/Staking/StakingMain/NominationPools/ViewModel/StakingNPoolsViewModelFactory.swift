@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 struct StakingNPoolsViewModelParams {
     let poolMember: NominationPools.PoolMember?
@@ -10,6 +11,9 @@ struct StakingNPoolsViewModelParams {
     let activePools: Set<NominationPools.PoolId>?
     let activeEra: ActiveEraInfo?
     let eraCountdown: EraCountdownDisplayProtocol?
+    let totalRewards: TotalRewardItem?
+    let totalRewardsFilter: StakingRewardFiltersPeriod?
+    let claimableRewards: BigUInt?
 }
 
 protocol StakingNPoolsViewModelFactoryProtocol {
@@ -22,6 +26,8 @@ protocol StakingNPoolsViewModelFactoryProtocol {
 
 final class StakingNPoolsViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+
+    private let calendar = Calendar.current
 
     init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -143,6 +149,37 @@ final class StakingNPoolsViewModelFactory {
 
         return StakingUnbondingViewModel(eraCountdown: params.eraCountdown, items: viewModels)
     }
+
+    private func createRewardsViewModel(
+        from params: StakingNPoolsViewModelParams,
+        chainAsset: ChainAsset,
+        price: PriceData?
+    ) -> LocalizableResource<StakingRewardViewModel> {
+        let localizedTotalRewards = params.totalRewards.map { rewards in
+            balanceViewModelFactory.balanceFromPrice(rewards.amount.decimalValue, priceData: price)
+        }
+
+        let localizedClaimableRewards = params.claimableRewards.map { rewards in
+            balanceViewModelFactory.balanceFromPrice(
+                rewards.decimal(precision: chainAsset.asset.precision),
+                priceData: price
+            )
+        }
+
+        let localizedFilter = params.totalRewardsFilter.map { $0.title(calendar: calendar) }
+
+        return LocalizableResource { locale in
+            let totalRewards = localizedTotalRewards?.value(for: locale)
+            let claimableReward = localizedClaimableRewards?.value(for: locale)
+            let filter = localizedFilter?.value(for: locale)
+
+            return StakingRewardViewModel(
+                totalRewards: totalRewards.map { .loaded(value: $0) } ?? .loading,
+                claimableRewards: claimableReward.map { .loaded(value: $0) } ?? .loading,
+                filter: filter
+            )
+        }
+    }
 }
 
 extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
@@ -167,10 +204,16 @@ extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
 
         let alerts = createStakingAlerts(for: params, status: status, chainAsset: chainAsset)
 
+        let rewards = createRewardsViewModel(
+            from: params,
+            chainAsset: chainAsset,
+            price: price
+        )
+
         return .nominator(
             viewModel: nominationViewModel,
             alerts: alerts,
-            reward: nil, // TODO: Implement rewards in a separate task
+            reward: rewards,
             unbondings: unbondingViewModel,
             actions: [.stakeMore, .unstake]
         )

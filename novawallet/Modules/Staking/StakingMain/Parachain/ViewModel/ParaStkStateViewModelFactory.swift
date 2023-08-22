@@ -143,25 +143,17 @@ final class ParaStkStateViewModelFactory {
                     calendar: self.calendar
                 ) }?.value(for: locale)
 
-                if let price = reward.price {
-                    return StakingRewardViewModel(
-                        amount: .loaded(reward.amount),
-                        price: .loaded(price),
-                        filter: filter
-                    )
-                } else {
-                    return StakingRewardViewModel(
-                        amount: .loaded(reward.amount),
-                        price: nil,
-                        filter: filter
-                    )
-                }
+                return StakingRewardViewModel(
+                    totalRewards: .loaded(value: reward),
+                    claimableRewards: nil,
+                    filter: filter
+                )
             }
         } else {
             return LocalizableResource { _ in
                 StakingRewardViewModel(
-                    amount: .loading,
-                    price: .loading,
+                    totalRewards: .loading,
+                    claimableRewards: nil,
                     filter: nil
                 )
             }

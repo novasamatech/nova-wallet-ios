@@ -77,7 +77,10 @@ final class StakingNPoolsPresenter {
             poolNomination: poolNomination,
             activePools: activePools,
             activeEra: activeEra,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewards: totalRewards,
+            totalRewardsFilter: totalRewardsFilter,
+            claimableRewards: claimableRewards
         )
 
         let viewModel = stateViewModelFactory.createState(for: params, chainAsset: chainAsset, price: priceData)
@@ -124,6 +127,8 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
     func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
         totalRewardsFilter = filter
         interactor.setupTotalRewards(filter: filter)
+
+        provideState()
     }
 }
 
