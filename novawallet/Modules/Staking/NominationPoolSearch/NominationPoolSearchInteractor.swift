@@ -19,6 +19,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
 
     private var poolsCancellable: CancellableCall?
     private let operationQueue: OperationQueue
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     init(
         chainAsset: ChainAsset,
@@ -60,14 +61,20 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
             runtimeService: runtimeService
         )
 
-        let poolStatsWrapper = poolsOperationFactory.createAllPoolsInfoWrapper(
-            rewardEngine: {
-                try maxApyWrapper.targetOperation.extractNoCancellableResultData()
-            },
-            lastPoolId: lastPoolId,
-            connection: connection,
-            runtimeService: runtimeService
-        )
+        let poolStatsWrapper: CompoundOperationWrapper<[NominationPools.PoolStats]?> =
+            OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
+                guard let self = self else {
+                    return nil
+                }
+                let maxApy = try maxApyWrapper.targetOperation.extractNoCancellableResultData()
+
+                return self.poolsOperationFactory.createAllPoolsInfoWrapper(
+                    rewardEngine: { maxApy },
+                    lastPoolId: lastPoolId,
+                    connection: self.connection,
+                    runtimeService: self.runtimeService
+                )
+            }
 
         poolStatsWrapper.addDependency(wrapper: maxApyWrapper)
 
@@ -80,7 +87,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
             DispatchQueue.main.async {
                 do {
                     let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(poolStats: stats)
+                    self?.presenter?.didReceive(poolStats: stats ?? [])
                 } catch {
                     self?.presenter?.didReceive(error: .pools(error))
                 }

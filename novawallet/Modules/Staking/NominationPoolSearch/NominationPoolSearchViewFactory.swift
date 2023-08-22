@@ -25,7 +25,8 @@ struct NominationPoolSearchViewFactory {
             chainAsset: state.chainAsset,
             searchOperationFactory: NominationPoolSearchOperationFactory(),
             delegate: delegate,
-            operationQueue: OperationQueue()
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = NominationPoolSearchViewController(
@@ -51,7 +52,7 @@ struct NominationPoolSearchViewFactory {
             return nil
         }
 
-        let queue = OperationQueue()
+        let queue = OperationManagerFacade.sharedDefaultQueue
         let poolsOperationFactory = NominationPoolsOperationFactory(operationQueue: queue)
         let rewardCalculationFactory = NPoolsRewardEngineFactory(operationFactory: poolsOperationFactory)
 

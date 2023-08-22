@@ -24,7 +24,8 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         chainAsset: ChainAsset,
         searchOperationFactory: NominationPoolSearchOperationFactoryProtocol,
         delegate: StakingSelectPoolDelegate,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -33,6 +34,7 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         self.searchOperationFactory = searchOperationFactory
         self.operationQueue = operationQueue
         self.delegate = delegate
+        self.localizationManager = localizationManager
     }
 
     private func provideVidewModel() {
@@ -89,11 +91,6 @@ extension NominationPoolSearchPresenter: NominationPoolSearchPresenterProtocol {
 
     func selectPool(poolId: NominationPools.PoolId) {
         guard let pool = poolStats.first(where: { $0.poolId == poolId }) else {
-            return
-        }
-
-        if pool.maxApy == nil {
-            showUnsupportedPoolStateAlert()
             return
         }
 
