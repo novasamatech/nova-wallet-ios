@@ -132,6 +132,7 @@
 		0C79C89E2A7BEF1200B171E3 /* NominationPoolRecommendationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C79C89D2A7BEF1200B171E3 /* NominationPoolRecommendationFactory.swift */; };
 		0C79C8A02A7BF80700B171E3 /* RelaychainStakingRecommendationMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C79C89F2A7BF80700B171E3 /* RelaychainStakingRecommendationMediator.swift */; };
 		0C7C88612A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88602A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift */; };
+		0C7C88642A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
@@ -3948,6 +3949,7 @@
 		0C79C89D2A7BEF1200B171E3 /* NominationPoolRecommendationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolRecommendationFactory.swift; sourceTree = "<group>"; };
 		0C79C89F2A7BF80700B171E3 /* RelaychainStakingRecommendationMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingRecommendationMediator.swift; sourceTree = "<group>"; };
 		0C7C88602A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingNPoolsViewModelFactory+Alerts.swift"; sourceTree = "<group>"; };
+		0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsPendingRewardDataSource.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
@@ -8008,6 +8010,14 @@
 			path = TitleHorizontalMultivalueView;
 			sourceTree = "<group>";
 		};
+		0C7C88622A94DFE000DD96A1 /* NominationPools */ = {
+			isa = PBXGroup;
+			children = (
+				0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */,
+			);
+			path = NominationPools;
+			sourceTree = "<group>";
+		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
@@ -11041,6 +11051,7 @@
 		8463A70825E30000003B8160 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0C7C88622A94DFE000DD96A1 /* NominationPools */,
 				8412219C28F0512B00715C82 /* Governance */,
 				846A682A274693D400D1A47A /* Crowdloan */,
 				84EE6826264AD37B0026E6D3 /* Rewards */,
@@ -19019,6 +19030,7 @@
 				84F43C0F25DF016600AEDA56 /* DispatchQueueHelper.swift in Sources */,
 				8490147824A94A37008F705E /* RootPresenterFactory.swift in Sources */,
 				849014C224AA87E4008F705E /* LocalAuthPresenter.swift in Sources */,
+				0C7C88642A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift in Sources */,
 				88BB21A028D34C660019C6B4 /* DataProviderChange+Identifier.swift in Sources */,
 				8446F5F6281916D300B7A86C /* StakingRewardsHeaderCell.swift in Sources */,
 				84B8AA8929FA2FE500347A37 /* WalletConnectTransportError.swift in Sources */,

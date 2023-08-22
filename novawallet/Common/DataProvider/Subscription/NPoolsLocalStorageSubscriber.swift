@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self: AnyObject {
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol { get }
@@ -351,6 +352,43 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
                 self?.npoolsLocalSubscriptionHandler.handleMaxPoolMembersPerPool(
                     result: .failure(error),
                     chainId: chainId
+                )
+            }
+        )
+
+        return provider
+    }
+
+    func subscribeClaimableRewards(
+        for chainId: ChainModel.Id,
+        poolId: NominationPools.PoolId,
+        accountId: AccountId
+    ) -> AnySingleValueProvider<String>? {
+        guard
+            let provider = try? npoolsLocalSubscriptionFactory.getClaimableRewards(
+                for: chainId,
+                accountId: accountId
+            ) else {
+            return nil
+        }
+
+        addSingleValueProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                let amount = value.flatMap { BigUInt($0) }
+
+                self?.npoolsLocalSubscriptionHandler.handleClaimableRewards(
+                    result: .success(amount),
+                    chainId: chainId,
+                    poolId: poolId,
+                    accountId: accountId
+                )
+            }, failureClosure: { [weak self] error in
+                self?.npoolsLocalSubscriptionHandler.handleClaimableRewards(
+                    result: .failure(error),
+                    chainId: chainId,
+                    poolId: poolId,
+                    accountId: accountId
                 )
             }
         )

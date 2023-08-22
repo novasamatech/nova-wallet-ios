@@ -31,6 +31,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
     private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var poolNominationProvider: AnyDataProvider<DecodedNomination>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
+    private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var activeStakeCancellable: CancellableCall?
@@ -41,6 +42,8 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
     private var lastPoolId: NominationPools.PoolId?
     private var currentPoolId: NominationPools.PoolId?
+    private var currentPoolRewardCounter: BigUInt?
+    private var currentMemberRewardCounter: BigUInt?
     private var poolAccountId: AccountId?
 
     var npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
@@ -141,6 +144,22 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
         poolLedgerProvider = subscribeLedgerInfo(for: accountId, chainId: chainId)
         poolNominationProvider = subscribeNomination(for: accountId, chainId: chainId)
+    }
+
+    func setupClaimableRewardsProvider() {
+        guard let poolId = currentPoolId else {
+            return
+        }
+
+        claimableRewardProvider = subscribeClaimableRewards(
+            for: chainId,
+            poolId: poolId,
+            accountId: accountId
+        )
+
+        if claimableRewardProvider == nil {
+            presenter?.didReceive(error: .claimableRewards(CommonError.dataCorruption))
+        }
     }
 
     func provideStakingDuration() {
@@ -341,6 +360,10 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
     func retryEraCountdown() {
         provideEraCountdown()
     }
+
+    func retryClaimableRewards() {
+        setupClaimableRewardsProvider()
+    }
 }
 
 extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubscriptionHandler {
@@ -376,7 +399,14 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
                 self.currentPoolId = poolId
 
                 setupProviders(for: poolId)
+                setupClaimableRewardsProvider()
                 provideBondedAccountId()
+            }
+
+            if currentMemberRewardCounter != optPoolMember?.lastRecordedRewardCounter {
+                currentMemberRewardCounter = optPoolMember?.lastRecordedRewardCounter
+
+                claimableRewardProvider?.refresh()
             }
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "poolMember"))
@@ -424,14 +454,35 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
 
     func handleRewardPool(
         result: Result<NominationPools.RewardPool?, Error>,
-        poolId _: NominationPools.PoolId,
+        poolId: NominationPools.PoolId,
         chainId _: ChainModel.Id
     ) {
+        guard currentPoolId == poolId else {
+            return
+        }
+
+        if case let .success(rewardPool) = result, rewardPool?.lastRecordedRewardCounter != currentPoolRewardCounter {
+            self.currentPoolRewardCounter = rewardPool?.lastRecordedRewardCounter
+
+            claimableRewardProvider?.refresh()
+        }
+    }
+
+    func handleClaimableRewards(
+        result: Result<BigUInt?, Error>,
+        chainId _: ChainModel.Id,
+        poolId: NominationPools.PoolId,
+        accountId _: AccountId
+    ) {
+        guard currentPoolId == poolId else {
+            return
+        }
+
         switch result {
-        case let .success(optRewardPool):
-            break
+        case let .success(rewards):
+            presenter?.didRecieve(claimableRewards: rewards)
         case let .failure(error):
-            presenter?.didReceive(error: .subscription(error, "rewardPool"))
+            presenter?.didReceive(error: .claimableRewards(error))
         }
     }
 }

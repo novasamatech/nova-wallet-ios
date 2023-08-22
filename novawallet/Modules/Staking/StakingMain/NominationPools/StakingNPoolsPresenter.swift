@@ -23,6 +23,7 @@ final class StakingNPoolsPresenter {
     private var poolBondedAccountId: AccountId?
     private var activePools: Set<NominationPools.PoolId>?
     private var duration: StakingDuration?
+    private var claimableRewards: BigUInt?
     private var eraCountdown: EraCountdown?
     private var priceData: PriceData?
 
@@ -219,6 +220,14 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideState()
     }
 
+    func didRecieve(claimableRewards: BigUInt?) {
+        logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
+
+        self.claimableRewards = claimableRewards
+
+        provideState()
+    }
+
     func didReceive(error: StakingNPoolsError) {
         logger.error("Did receive error: \(error)")
 
@@ -246,6 +255,10 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         case .eraCountdown:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryEraCountdown()
+            }
+        case .claimableRewards:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryClaimableRewards()
             }
         }
     }
