@@ -42,6 +42,16 @@ final class StakingUnbondingsView: UIView {
         return button
     }()
 
+    var canCancel: Bool {
+        get {
+            !cancelButton.isHidden
+        }
+
+        set {
+            cancelButton.isHidden = !newValue
+        }
+    }
+
     var locale = Locale.current {
         didSet {
             if oldValue != locale {
@@ -137,21 +147,20 @@ final class StakingUnbondingsView: UIView {
             make.trailing.equalTo(backgroundView).offset(-16.0)
         }
 
-        addSubview(cancelButton)
-        cancelButton.snp.makeConstraints { make in
+        let buttonsView = UIView.hStack(
+            alignment: .fill,
+            distribution: .fillEqually,
+            spacing: 16,
+            margins: nil,
+            [cancelButton, redeemButton]
+        )
+
+        addSubview(buttonsView)
+        buttonsView.snp.makeConstraints { make in
             make.top.equalTo(stackView.snp.bottom).offset(16.0)
-            make.leading.equalTo(backgroundView).offset(16.0)
-            make.trailing.equalTo(backgroundView.snp.centerX).offset(-8.0)
+            make.leading.trailing.equalTo(backgroundView).inset(16.0)
             make.height.equalTo(44.0)
             make.bottom.equalToSuperview().inset(20.0)
-        }
-
-        addSubview(redeemButton)
-        redeemButton.snp.makeConstraints { make in
-            make.top.equalTo(stackView.snp.bottom).offset(16.0)
-            make.leading.equalTo(backgroundView.snp.centerX).offset(8.0)
-            make.trailing.equalTo(backgroundView).offset(-16.0)
-            make.height.equalTo(44.0)
         }
     }
 

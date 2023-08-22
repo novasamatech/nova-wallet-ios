@@ -107,6 +107,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, StakingDurationFetc
 
         lastPoolId = nil
         currentPoolId = nil
+        poolAccountId = nil
 
         minJoinBondProvider = subscribeMinJoinBond(for: chainId)
         lastPoolIdProvider = subscribeLastPoolId(for: chainId)
@@ -415,7 +416,7 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
     ) {
         switch result {
         case let .success(optSubPools):
-            break
+            presenter?.didReceive(subPools: optSubPools)
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "subPools"))
         }
