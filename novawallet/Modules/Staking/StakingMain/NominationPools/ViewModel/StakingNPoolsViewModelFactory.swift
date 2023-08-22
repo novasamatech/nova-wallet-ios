@@ -86,6 +86,7 @@ final class StakingNPoolsViewModelFactory {
 
     private func createNominationViewModel(
         for params: StakingNPoolsViewModelParams,
+        status: NominationViewStatus,
         chainAsset: ChainAsset,
         price: PriceData?
     ) -> LocalizableResource<NominationViewModel> {
@@ -94,8 +95,6 @@ final class StakingNPoolsViewModelFactory {
             chainAsset: chainAsset,
             price: price
         )
-
-        let status = createNominationStatus(for: params)
 
         return LocalizableResource { locale in
             let stakeViewModel = localizedStakeViewModel?.value(for: locale)
@@ -117,9 +116,7 @@ final class StakingNPoolsViewModelFactory {
             return nil
         }
 
-        let poolsByEra = subPools.withEra.reduce(into: [EraIndex: NominationPools.UnbondPool]()) {
-            $0[$1.key.value] = $1.value
-        }
+        let poolsByEra = subPools.getPoolsByEra()
 
         let viewModels = poolMember
             .unbondingEras
@@ -154,8 +151,11 @@ extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
         chainAsset: ChainAsset,
         price: PriceData?
     ) -> StakingViewState {
+        let status = createNominationStatus(for: params)
+
         let nominationViewModel = createNominationViewModel(
             for: params,
+            status: status,
             chainAsset: chainAsset,
             price: price
         )
@@ -165,9 +165,11 @@ extension StakingNPoolsViewModelFactory: StakingNPoolsViewModelFactoryProtocol {
             chainAsset: chainAsset
         )
 
+        let alerts = createStakingAlerts(for: params, status: status, chainAsset: chainAsset)
+
         return .nominator(
             viewModel: nominationViewModel,
-            alerts: [], // TODO: Implement alerts in a separate task
+            alerts: alerts,
             reward: nil, // TODO: Implement rewards in a separate task
             unbondings: unbondingViewModel,
             actions: [.stakeMore, .unstake]
