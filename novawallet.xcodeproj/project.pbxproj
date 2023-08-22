@@ -134,6 +134,8 @@
 		0C7C88612A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88602A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift */; };
 		0C7C88642A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */; };
 		0C7C88662A95030800DD96A1 /* SubqueryStakingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88652A95030800DD96A1 /* SubqueryStakingType.swift */; };
+		0C7C88682A95563100DD96A1 /* StakingClaimableRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88672A95563100DD96A1 /* StakingClaimableRewardView.swift */; };
+		0C7C886A2A95591900DD96A1 /* StakingTotalRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C88692A95591900DD96A1 /* StakingTotalRewardView.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
@@ -3952,6 +3954,8 @@
 		0C7C88602A94A54E00DD96A1 /* StakingNPoolsViewModelFactory+Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingNPoolsViewModelFactory+Alerts.swift"; sourceTree = "<group>"; };
 		0C7C88632A94E09F00DD96A1 /* NPoolsPendingRewardDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsPendingRewardDataSource.swift; sourceTree = "<group>"; };
 		0C7C88652A95030800DD96A1 /* SubqueryStakingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryStakingType.swift; sourceTree = "<group>"; };
+		0C7C88672A95563100DD96A1 /* StakingClaimableRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimableRewardView.swift; sourceTree = "<group>"; };
+		0C7C88692A95591900DD96A1 /* StakingTotalRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTotalRewardView.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
@@ -17021,6 +17025,8 @@
 				8489A6D927FDC49D0040C066 /* StakingUnbondingsView.swift */,
 				8489A6DD27FEA1930040C066 /* StakingUnbondingItemView.swift */,
 				7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */,
+				0C7C88672A95563100DD96A1 /* StakingClaimableRewardView.swift */,
+				0C7C88692A95591900DD96A1 /* StakingTotalRewardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -19565,6 +19571,7 @@
 				8430AAFB260230C5005B1066 /* ValidatorState.swift in Sources */,
 				8424308D265B1814003E07EC /* CrowdloanOperationFactory.swift in Sources */,
 				77EFFC8D2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift in Sources */,
+				0C7C88682A95563100DD96A1 /* StakingClaimableRewardView.swift in Sources */,
 				880855F628D09A3C004255E7 /* CrowdloanContributionStreamableSource.swift in Sources */,
 				0C9C642D2A8CE30A004DC078 /* SystemAccountValidating.swift in Sources */,
 				88D02FF42943207400E26390 /* BigInt+Decimal.swift in Sources */,
@@ -21837,6 +21844,7 @@
 				75249684C6F3EE4E553DABA1 /* GovernanceYourDelegationsPresenter.swift in Sources */,
 				EB20C6B406155664B981BA94 /* GovernanceYourDelegationsInteractor.swift in Sources */,
 				59A0AF440ABAAA459EF7D993 /* GovernanceYourDelegationsViewController.swift in Sources */,
+				0C7C886A2A95591900DD96A1 /* StakingTotalRewardView.swift in Sources */,
 				4FF157CCB838E73449C53831 /* GovernanceYourDelegationsViewLayout.swift in Sources */,
 				D1487642F422F6B96216B0D0 /* GovernanceYourDelegationsViewFactory.swift in Sources */,
 				0C13D3262A8275400054BB6F /* StartStakingFeeIdFactory.swift in Sources */,
