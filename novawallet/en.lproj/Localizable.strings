@@ -1338,7 +1338,7 @@
 "staking.direct.staking" = "Direct staking";
 "staking.pool.staking" = "Pool staking";
 "staking.min.required.stake.error" = "You can't stake less than the minimal value (%@)";
-"staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter %@ or %@ and more. To stake another amount you should remove your locks.";
+"staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter up to %@ or %@ and more. To stake another amount you should remove your locks.";
 "staking.type.title" = "Staking Type";
 "staking.type.alert.unsaved.changes.title" = "Unsaved changes";
 "staking.type.alert.unsaved.changes.message" = "Do you want to save the changes?";
@@ -1353,3 +1353,4 @@
 "evm.transaction.fee.too.high.title" = "Network fee is too high";
 "update.token.completion.message" = "%@ token updated";
 "staking.reward.filters.period.custom.month.short" = "%@D";
+"staking.locked.pool.violation.title" = "You can’t stake the specified amount";
