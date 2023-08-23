@@ -108,7 +108,8 @@ class RewardDataSourceTests: NetworkBaseTests {
             startTimestamp: nil,
             endTimestamp: nil,
             assetPrecision: assetPrecision,
-            operationFactory: operationFactory
+            operationFactory: operationFactory,
+            stakingType: .direct
         )
 
         let provider = SingleValueProvider(
