@@ -49,7 +49,7 @@ enum StakingSelectPoolViewFactory {
             operationQueue: queue
         )
 
-        let wireframe = StakingSelectPoolWireframe()
+        let wireframe = StakingSelectPoolWireframe(state: state)
         let viewModelFactory = StakingSelectPoolViewModelFactory(
             apyFormatter: NumberFormatter.percentAPY.localizableResource(),
             membersFormatter: NumberFormatter.quantity.localizableResource(),

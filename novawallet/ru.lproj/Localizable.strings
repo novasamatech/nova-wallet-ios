@@ -1346,7 +1346,10 @@
 "staking.select.pool.count" = "активные пулы: %@";
 "staking.select.pool.members" = "участники";
 "staking.select.pool.title" = "Выбор пула";
+"staking.search.pool.empty" = "Пулы с таким именем или \nидентификатором не найдены. Убедитесь, что\nввели корректные данные";
 "common.every.day" = "каждый день";
+"staking.search.pool.placeholder" = "Поиск по имени или ID";
+"staking.search.pool.selection.error.message" = "Этот пул недоступен для стейкинга";
 "staking.pool.network.info" = "Информация о пул стейкинге";
 "token.add.remote.exist.message" = "Введенный адрес контракта присутствует в Nova как токен %@. Вы уверены, что хотите изменить его?";
 "send.system.account.message" = "Получатель является системным аккаунтом. Этот аккаунт не контролируется какой-либо компанией или частным лицом. \nВы уверены, что все еще хотите выполнить данный перевод?";

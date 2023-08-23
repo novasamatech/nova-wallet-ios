@@ -25,6 +25,7 @@ extension NominationPools {
         let membersCount: UInt32
         let maxApy: Decimal?
         let metadata: Data?
+        let state: PoolState?
     }
 
     struct SelectedPool {

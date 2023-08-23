@@ -19,6 +19,12 @@ final class StakingSelectPoolViewLayout: UIView {
         $0.isHidden = true
     }
 
+    let searchButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(R.image.iconSearchWhite(), for: .normal)
+        return button
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = R.color.colorSecondaryScreenBackground()
