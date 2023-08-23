@@ -38,7 +38,7 @@ final class DirectStakingRecommendationFactory {
                 clusterSizeLimit: clusterLimit
             ).compose(from: electedValidators)
 
-            return PreparedValidators(targets: recomendedValidators, maxTargets: resultLimit)
+            return PreparedValidators(targets: recomendedValidators, maxTargets: resultLimit, electedValidators: electedValidators)
         }
     }
 }

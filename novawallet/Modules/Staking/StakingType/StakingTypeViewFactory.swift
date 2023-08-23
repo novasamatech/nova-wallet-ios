@@ -117,7 +117,6 @@ enum StakingTypeViewFactory {
             nominationPoolsRestrictionsBuilder: nominationPoolsRestrictionsBuilder,
             directStakingRecommendationMediator: directStakingRecommendationMediator,
             nominationPoolRecommendationMediator: nominationPoolRecommendationMediator,
-            validatorOperationFactory: validatorOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
