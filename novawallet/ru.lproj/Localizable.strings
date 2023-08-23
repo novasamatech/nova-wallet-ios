@@ -1354,3 +1354,4 @@
 "update.token.completion.message" = "%@ токен обновлён";
 "staking.reward.filters.period.custom.month.short" = "%@Д";
 "staking.locked.pool.violation.title" = "Вы не можете застейкать указанную сумму";
+"staking.claim.rewards" = "Забрать награды";

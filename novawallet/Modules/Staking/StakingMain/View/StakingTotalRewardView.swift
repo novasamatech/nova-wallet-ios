@@ -22,6 +22,10 @@ final class StakingTotalRewardView: UIView {
 
     private var isLoading: Bool = false
 
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: 80)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -48,7 +52,7 @@ final class StakingTotalRewardView: UIView {
         stopLoadingIfNeeded()
 
         let title = totalRewards.value?.amount ?? ""
-        let price: String? = totalRewards.value?.price
+        let price = totalRewards.value?.price
         rewardView.bind(topValue: title, bottomValue: price)
 
         if let filter = filter {
@@ -66,22 +70,21 @@ final class StakingTotalRewardView: UIView {
     private func setupLayout() {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview()
             make.top.equalToSuperview()
         }
 
         addSubview(filterView)
         filterView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
-            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.lessThanOrEqualToSuperview()
             make.centerY.equalTo(titleLabel.snp.centerY)
         }
 
         addSubview(rewardView)
         rewardView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
-            make.bottom.equalToSuperview()
+            make.leading.equalToSuperview()
+            make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
         }
     }
 }
@@ -98,17 +101,17 @@ extension StakingTotalRewardView: SkeletonableView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         [
             SingleSkeleton.createRow(
-                under: titleLabel,
+                on: self,
                 containerView: self,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: 12.0),
+                offset: CGPoint(x: 0.0, y: 35.0),
                 size: UIConstants.skeletonBigRowSize
             ),
             SingleSkeleton.createRow(
-                under: titleLabel,
+                on: self,
                 containerView: self,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: 41.0),
+                offset: CGPoint(x: 0.0, y: 65.0),
                 size: UIConstants.skeletonSmallRowSize
             )
         ]
@@ -120,5 +123,26 @@ extension StakingTotalRewardView: SkeletonableView {
 
     func didStopSkeleton() {
         isLoading = false
+    }
+}
+
+extension StakingTotalRewardView: SkeletonLoadable {
+    func didDisappearSkeleton() {
+        if isLoading {
+            skeletonView?.stopSkrulling()
+        }
+    }
+
+    func didAppearSkeleton() {
+        if isLoading {
+            skeletonView?.restartSkrulling()
+        }
+    }
+
+    func didUpdateSkeletonLayout() {
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.stopSkrulling()
+        }
     }
 }

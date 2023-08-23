@@ -109,6 +109,10 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         logger.warning("Not possible action for nomination pools")
     }
 
+    func performClaimRewards() {
+        wireframe.showClaimRewards(from: view)
+    }
+
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:

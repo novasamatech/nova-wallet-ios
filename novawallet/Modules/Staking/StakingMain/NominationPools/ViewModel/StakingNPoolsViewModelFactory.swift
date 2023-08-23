@@ -168,14 +168,20 @@ final class StakingNPoolsViewModelFactory {
 
         let localizedFilter = params.totalRewardsFilter.map { $0.title(calendar: calendar) }
 
+        let canClaimRewards = (params.claimableRewards ?? 0) > 0
+
         return LocalizableResource { locale in
             let totalRewards = localizedTotalRewards?.value(for: locale)
             let claimableReward = localizedClaimableRewards?.value(for: locale)
+            let claimableRewardViewModel = claimableReward.map {
+                StakingRewardViewModel.ClaimableRewards(balance: $0, canClaim: canClaimRewards)
+            }
+
             let filter = localizedFilter?.value(for: locale)
 
             return StakingRewardViewModel(
                 totalRewards: totalRewards.map { .loaded(value: $0) } ?? .loading,
-                claimableRewards: claimableReward.map { .loaded(value: $0) } ?? .loading,
+                claimableRewards: claimableRewardViewModel.map { .loaded(value: $0) } ?? .loading,
                 filter: filter
             )
         }

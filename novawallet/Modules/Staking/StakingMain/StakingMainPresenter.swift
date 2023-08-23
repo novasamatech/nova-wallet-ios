@@ -67,6 +67,10 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         childPresenter?.performRebondAction()
     }
 
+    func performClaimRewards() {
+        childPresenter?.performClaimRewards()
+    }
+
     func networkInfoViewDidChangeExpansion(isExpanded: Bool) {
         interactor.saveNetworkInfoViewExpansion(isExpanded: isExpanded)
     }

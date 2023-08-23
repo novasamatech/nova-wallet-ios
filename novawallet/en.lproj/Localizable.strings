@@ -1354,3 +1354,4 @@
 "update.token.completion.message" = "%@ token updated";
 "staking.reward.filters.period.custom.month.short" = "%@D";
 "staking.locked.pool.violation.title" = "You can’t stake the specified amount";
+"staking.claim.rewards" = "Claim rewards";

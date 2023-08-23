@@ -110,6 +110,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         presenter.selectPeriod()
     }
 
+    @objc private func claimRewardsAction() {
+        presenter.performClaimRewards()
+    }
+
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
     }
@@ -340,6 +344,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private func applyStakingReward(viewModel: LocalizableResource<StakingRewardViewModel>) {
         setupStakingRewardViewIfNeeded()
         rewardView?.bind(viewModel: viewModel)
+
+        rewardView?.claimButton?.addTarget(
+            self,
+            action: #selector(claimRewardsAction),
+            for: .touchUpInside
+        )
     }
 }
 
