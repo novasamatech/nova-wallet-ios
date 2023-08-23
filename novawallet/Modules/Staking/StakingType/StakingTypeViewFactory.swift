@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import BigInt
+import SubstrateSdk
 
 protocol StakingTypeDelegate: AnyObject {
     func changeStakingType(method: StakingSelectionMethod)
@@ -62,12 +63,17 @@ enum StakingTypeViewFactory {
     ) -> StakingTypeInteractor? {
         let request = state.chainAsset.chain.accountRequest()
         let queue = OperationManagerFacade.sharedDefaultQueue
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
         guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: request) else {
             return nil
         }
+        guard
+            let connection = chainRegistry.getConnection(for: state.chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: state.chainAsset.chain.chainId)
+        else { return nil }
 
         let recommendationFactory = StakingRecommendationMediatorFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            chainRegistry: chainRegistry,
             operationQueue: queue
         )
 
@@ -84,6 +90,24 @@ enum StakingTypeViewFactory {
             return nil
         }
 
+        let eraValidatorService = state.eraValidatorService
+        let rewardCalculationService = state.relaychainRewardCalculatorService
+
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let validatorOperationFactory = ValidatorOperationFactory(
+            chainInfo: state.chainAsset.chainAssetInfo,
+            eraValidatorService: eraValidatorService,
+            rewardService: rewardCalculationService,
+            storageRequestFactory: storageRequestFactory,
+            runtimeService: runtimeService,
+            engine: connection,
+            identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
+        )
+
         let interactor = StakingTypeInteractor(
             selectedAccount: selectedAccount,
             chainAsset: state.chainAsset,
@@ -92,7 +116,9 @@ enum StakingTypeViewFactory {
             directStakingRestrictionsBuilder: directStakingRestrictionsBuilder,
             nominationPoolsRestrictionsBuilder: nominationPoolsRestrictionsBuilder,
             directStakingRecommendationMediator: directStakingRecommendationMediator,
-            nominationPoolRecommendationMediator: nominationPoolRecommendationMediator
+            nominationPoolRecommendationMediator: nominationPoolRecommendationMediator,
+            validatorOperationFactory: validatorOperationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         return interactor

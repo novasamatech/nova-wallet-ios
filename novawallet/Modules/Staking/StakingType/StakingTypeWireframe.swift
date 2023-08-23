@@ -32,4 +32,27 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
             animated: true
         )
     }
+
+    func showValidators(
+        from view: ControllerBackedProtocol?,
+        selectionValidatorGroups: SelectionValidatorGroups,
+        selectedValidatorList: SharedList<SelectedValidatorInfo>,
+        validatorsSelectionParams: ValidatorsSelectionParams,
+        delegate: StakingSelectValidatorsDelegate?
+    ) {
+        guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
+            for: state,
+            selectionValidatorGroups: selectionValidatorGroups,
+            selectedValidatorList: selectedValidatorList,
+            validatorsSelectionParams: validatorsSelectionParams,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            validatorsView.controller,
+            animated: true
+        )
+    }
 }

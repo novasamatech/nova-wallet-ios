@@ -12,6 +12,10 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainAsset: ChainAsset
     let stakingSelectionMethod: StakingSelectionMethod
     let amount: BigUInt
+    let validatorOperationFactory: ValidatorOperationFactoryProtocol
+
+    private var allElectedValidatorsCall: CancellableCall?
+    private let operationQueue: OperationQueue
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -21,7 +25,9 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         nominationPoolsRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         directStakingRecommendationMediator: RelaychainStakingRecommendationMediating,
-        nominationPoolRecommendationMediator: RelaychainStakingRecommendationMediating
+        nominationPoolRecommendationMediator: RelaychainStakingRecommendationMediating,
+        validatorOperationFactory: ValidatorOperationFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -31,6 +37,8 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.nominationPoolsRestrictionsBuilder = nominationPoolsRestrictionsBuilder
         self.directStakingRecommendationMediator = directStakingRecommendationMediator
         self.nominationPoolRecommendationMediator = nominationPoolRecommendationMediator
+        self.validatorOperationFactory = validatorOperationFactory
+        self.operationQueue = operationQueue
     }
 
     deinit {
@@ -38,6 +46,36 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         nominationPoolsRestrictionsBuilder.stop()
         directStakingRecommendationMediator.stopRecommending()
         nominationPoolRecommendationMediator.stopRecommending()
+    }
+
+    private func provideElectedValidators() {
+        clear(cancellable: &allElectedValidatorsCall)
+        let allElectedWrapper = validatorOperationFactory.allElectedOperation()
+
+        allElectedWrapper.targetOperation.completionBlock = { [weak self] in
+            guard let self = self, allElectedWrapper === allElectedValidatorsCall else {
+                return
+            }
+            allElectedValidatorsCall = nil
+
+            DispatchQueue.main.async {
+                do {
+                    let validators = try allElectedWrapper.targetOperation.extractNoCancellableResultData()
+                    var filteredValidators = validators
+                        .filter { !$0.hasSlashes && !$0.oversubscribed && !$0.blocked }
+                    if validators.contains { $0.hasIdentity } {
+                        filteredValidators = filteredValidators.filter { $0.hasIdentity }
+                    }
+                    let sortedValidators = filteredValidators.sorted(by: { $0.stakeReturn >= $1.stakeReturn })
+                    self.presenter?.didReceive(electedValidators: sortedValidators)
+                } catch {
+                    self.presenter?.didReceive(error: .electedValidators(error))
+                }
+            }
+        }
+
+        allElectedValidatorsCall = allElectedWrapper
+        operationQueue.addOperations(allElectedWrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideDirectStakingRecommendation() {
@@ -66,15 +104,28 @@ extension StakingTypeInteractor: StakingTypeInteractorInputProtocol {
             $0.delegate = self
             $0.start()
         }
+
+        switch stakingSelectionMethod.selectedStakingOption {
+        case .direct:
+            provideDirectStakingRecommendation()
+            provideElectedValidators()
+        case .pool, .none:
+            break
+        }
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
         switch stakingTypeSelection {
         case .direct:
             provideDirectStakingRecommendation()
+            provideElectedValidators()
         case .nominationPool:
             provideNominationPoolStakingRecommendation()
         }
+    }
+
+    func requestValidators() {
+        provideElectedValidators()
     }
 }
 
@@ -110,6 +161,9 @@ extension StakingTypeInteractor: RelaychainStakingRecommendationDelegate {
         )
 
         presenter?.didReceive(method: .manual(model))
+        if case let .direct(validators) = recommendation.staking {
+            presenter?.didReceive(recommendedValidators: validators)
+        }
     }
 
     func didReceiveRecommendation(error: Error) {

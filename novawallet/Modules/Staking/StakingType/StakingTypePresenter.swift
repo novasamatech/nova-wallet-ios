@@ -19,6 +19,8 @@ final class StakingTypePresenter {
     private var method: StakingSelectionMethod?
     private var selection: StakingTypeSelection
     private var hasChanges: Bool = false
+    private var electedValidators: [ElectedValidatorInfo]?
+    private var recommendedValidators: PreparedValidators?
 
     init(
         interactor: StakingTypeInteractorInputProtocol,
@@ -68,11 +70,10 @@ final class StakingTypePresenter {
         guard let restrictions = directStakingRestrictions else {
             return
         }
-
         let viewModel = viewModelFactory.directStakingViewModel(
             minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
-            method: method,
+            method: electedValidators == nil ? nil : method,
             locale: selectedLocale
         )
 
@@ -162,7 +163,38 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectValidators() {
-        // TODO:
+        guard case let .direct(validators) = method?.selectedStakingOption,
+              let recommendedValidators = recommendedValidators,
+              let electedValidators = electedValidators else {
+            return
+        }
+        let existingStashAddress: AccountAddress? = nil
+
+        let electedValidatorList = electedValidators.map { $0.toSelected(for: existingStashAddress) }
+        let recommendedValidatorList = recommendedValidators.targets.map {
+            $0.toSelected(for: existingStashAddress)
+        } ?? []
+        let selectedValidators = validators.targets.map {
+            $0.toSelected(for: existingStashAddress)
+        }
+        let groups = SelectionValidatorGroups(
+            fullValidatorList: electedValidatorList,
+            recommendedValidatorList: recommendedValidatorList
+        )
+
+        let hasIdentity = validators.targets.contains { $0.hasIdentity }
+        let selectionParams = ValidatorsSelectionParams(
+            maxNominations: validators.maxTargets,
+            hasIdentity: hasIdentity
+        )
+
+        wireframe.showValidators(
+            from: view,
+            selectionValidatorGroups: groups,
+            selectedValidatorList: SharedList(items: selectedValidators),
+            validatorsSelectionParams: selectionParams,
+            delegate: self
+        )
     }
 
     func selectNominationPool() {
@@ -259,7 +291,25 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
 
                 self.interactor.change(stakingTypeSelection: self.selection)
             }
+        case .electedValidators:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                guard let self = self else {
+                    return
+                }
+
+                self.interactor.requestValidators()
+            }
         }
+    }
+
+    func didReceive(electedValidators: [ElectedValidatorInfo]) {
+        self.electedValidators = electedValidators
+        provideDirectStakingViewModel()
+    }
+
+    func didReceive(recommendedValidators: PreparedValidators) {
+        self.recommendedValidators = recommendedValidators
+        provideDirectStakingViewModel()
     }
 }
 
@@ -283,6 +333,30 @@ extension StakingTypePresenter: StakingSelectPoolDelegate {
             restrictions: restrictions,
             usedRecommendation: isRecommended
         ))
+
+        updateView()
+    }
+}
+
+extension StakingTypePresenter: StakingSelectValidatorsDelegate {
+    func changeValidatorsSelection(validatorList: [SelectedValidatorInfo], maxTargets: Int) {
+        guard let restrictions = directStakingRestrictions,
+              let electedValidators = electedValidators,
+              let recommendedValidators = recommendedValidators else {
+            return
+        }
+        let addresses = validatorList.map(\.address)
+        let validators = electedValidators.filter {
+            addresses.contains($0.address)
+        }
+        let usedRecommendation = Set(addresses) == Set(recommendedValidators.targets.map(\.address))
+        hasChanges = true
+        method = .manual(.init(
+            staking: .direct(.init(targets: validators, maxTargets: maxTargets)),
+            restrictions: restrictions,
+            usedRecommendation: usedRecommendation
+        ))
+
         updateView()
     }
 }

@@ -19,6 +19,7 @@ protocol StakingTypePresenterProtocol: AnyObject {
 protocol StakingTypeInteractorInputProtocol: AnyObject {
     func setup()
     func change(stakingTypeSelection: StakingTypeSelection)
+    func requestValidators()
 }
 
 protocol StakingTypeInteractorOutputProtocol: AnyObject {
@@ -26,6 +27,8 @@ protocol StakingTypeInteractorOutputProtocol: AnyObject {
     func didReceive(directStakingRestrictions: RelaychainStakingRestrictions)
     func didReceive(method: StakingSelectionMethod)
     func didReceive(error: StakingTypeError)
+    func didReceive(electedValidators: [ElectedValidatorInfo])
+    func didReceive(recommendedValidators: PreparedValidators)
 }
 
 protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
@@ -36,9 +39,17 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
         delegate: StakingSelectPoolDelegate?,
         selectedPool: NominationPools.SelectedPool?
     )
+    func showValidators(
+        from view: ControllerBackedProtocol?,
+        selectionValidatorGroups: SelectionValidatorGroups,
+        selectedValidatorList: SharedList<SelectedValidatorInfo>,
+        validatorsSelectionParams: ValidatorsSelectionParams,
+        delegate: StakingSelectValidatorsDelegate?
+    )
 }
 
 enum StakingTypeError: Error {
     case restrictions(Error)
     case recommendation(Error)
+    case electedValidators(Error)
 }
