@@ -5808,7 +5808,7 @@
 		8490145724A9406D008F705E /* LegalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalData.swift; sourceTree = "<group>"; };
 		8490145B24A94328008F705E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8490145F24A94373008F705E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8490146224A9438E008F705E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8490146224A9438E008F705E /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8490146924A9463B008F705E /* Locale+Localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Locale+Localization.swift"; sourceTree = "<group>"; };
 		8490146C24A9487A008F705E /* ErrorPresentable+AlertText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ErrorPresentable+AlertText.swift"; sourceTree = "<group>"; };
 		8490146F24A94A37008F705E /* RootProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootProtocol.swift; sourceTree = "<group>"; };

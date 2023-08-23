@@ -65,16 +65,16 @@ final class StakingSelectPoolViewController: UIViewController, ViewHolder {
 
 extension StakingSelectPoolViewController: StakingSelectPoolViewProtocol {
     func didReceivePools(state: LoadableViewModelState<[StakingSelectPoolViewModel]>) {
+        self.state = state
         switch state {
         case .loading:
             rootView.loadingView.isHidden = false
             rootView.loadingView.start()
-        case let .cached(value), let .loaded(value):
+        case let .cached, let .loaded:
             rootView.loadingView.stop()
             rootView.loadingView.isHidden = true
             rootView.tableView.reloadData()
         }
-        self.state = state
     }
 
     func didReceivePoolUpdate(viewModel: StakingSelectPoolViewModel) {
