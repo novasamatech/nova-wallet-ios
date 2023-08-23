@@ -166,20 +166,19 @@ extension NominationPoolSearchViewController: EmptyStateViewOwnerProtocol {
 extension NominationPoolSearchViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
-        let color = R.color.colorTextTertiary()!
         switch state {
         case let .error(text):
-            emptyView.image = R.image.iconEmptySearch()?.withTintColor(color)
+            emptyView.image = R.image.iconEmptySearch()
             emptyView.title = text
         case .loaded:
-            emptyView.image = R.image.iconStartSearch()?.withTintColor(color)
+            emptyView.image = R.image.iconStartSearch()
             emptyView.title = R.string.localizable
                 .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
         case .loading:
             return nil
         }
 
-        emptyView.titleColor = color
+        emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
     }
