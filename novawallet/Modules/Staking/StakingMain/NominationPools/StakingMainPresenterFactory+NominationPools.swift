@@ -23,10 +23,18 @@ extension StakingMainPresenterFactory {
 
         let infoViewModelFactory = NetworkInfoViewModelFactory(priceAssetInfoFactory: priceInfoFactory)
 
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceInfoFactory
+        )
+
+        let stateViewModelFactory = StakingNPoolsViewModelFactory(balanceViewModelFactory: balanceViewModelFactory)
+
         let presenter = StakingNPoolsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             infoViewModelFactory: infoViewModelFactory,
+            stateViewModelFactory: stateViewModelFactory,
             chainAsset: state.chainAsset,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -47,7 +55,8 @@ extension StakingMainPresenterFactory {
 
         guard
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(for: accountRequest),
-            let runtimeService = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chainId) else {
+            let runtimeService = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chainId),
+            let connection = ChainRegistryFacade.sharedRegistry.getConnection(for: chainId) else {
             return nil
         }
 
@@ -57,6 +66,7 @@ extension StakingMainPresenterFactory {
             state: state,
             selectedAccount: selectedAccount,
             npoolsOperationFactory: NominationPoolsOperationFactory(operationQueue: operationQueue),
+            connection: connection,
             runtimeCodingService: runtimeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,

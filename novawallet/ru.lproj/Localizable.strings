@@ -1338,7 +1338,7 @@
 "staking.direct.staking" = "Прямой стейкинг";
 "staking.pool.staking" = "Пул стейкинг";
 "staking.min.required.stake.error" = "Вы не можете стейкать меньше минимального значения (%@)";
-"staking.locked.pool.violation.error" = "Ваши токены заблокированы из - за %@. Для продолжения введите %@ или %@ и больше. Для стейкинга другой суммы разблокируйте токены.";
+"staking.locked.pool.violation.error" = "Ваши токены заблокированы из - за %@. Для продолжения необходим ввести не больше чем %@ или %@ и больше. Для стейкинга другой суммы разблокируйте токены.";
 "staking.type.title" = "Тип стейкинга";
 "staking.type.alert.unsaved.changes.title" = "Несохраненные изменения";
 "staking.type.alert.unsaved.changes.message" = "Хотите сохранить изменения?";
@@ -1356,3 +1356,4 @@
 "evm.transaction.fee.too.high.title" = "Комиссия сети слишком высокая";
 "update.token.completion.message" = "%@ токен обновлён";
 "staking.reward.filters.period.custom.month.short" = "%@Д";
+"staking.locked.pool.violation.title" = "Вы не можете застейкать указанную сумму";

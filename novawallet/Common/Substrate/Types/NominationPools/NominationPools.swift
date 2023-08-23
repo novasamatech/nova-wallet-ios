@@ -83,6 +83,35 @@ enum NominationPools {
     struct SubPools: Decodable, Equatable {
         let noEra: UnbondPool
         let withEra: [SupportPallet.KeyValue<StringScaleMapper<EraIndex>, UnbondPool>]
+
+        func getPoolsByEra() -> [EraIndex: NominationPools.UnbondPool] {
+            withEra.reduce(into: [EraIndex: NominationPools.UnbondPool]()) {
+                $0[$1.key.value] = $1.value
+            }
+        }
+
+        func redeemableBalance(for member: NominationPools.PoolMember, in era: EraIndex) -> BigUInt {
+            let poolsByEra = getPoolsByEra()
+
+            return member.unbondingEras.reduce(BigUInt(0)) { redeemable, unbondingKeyValue in
+                let unbondingEra = unbondingKeyValue.key.value
+                let unbondingPoints = unbondingKeyValue.value.value
+
+                guard era >= unbondingEra else {
+                    return redeemable
+                }
+
+                let subPool = poolsByEra[unbondingEra] ?? noEra
+
+                let newAmount = NominationPools.pointsToBalance(
+                    for: unbondingPoints,
+                    totalPoints: subPool.points,
+                    poolBalance: subPool.balance
+                )
+
+                return redeemable + newAmount
+            }
+        }
     }
 
     enum AccountType: UInt8 {

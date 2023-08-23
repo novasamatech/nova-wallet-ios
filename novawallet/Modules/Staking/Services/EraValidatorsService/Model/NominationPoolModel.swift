@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 extension NominationPools {
     struct ActivePool {

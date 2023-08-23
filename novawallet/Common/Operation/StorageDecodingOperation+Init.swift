@@ -19,4 +19,26 @@ extension PrimitiveConstantOperation {
 
         return operation
     }
+
+    static func wrapper(
+        for path: ConstantCodingPath,
+        runtimeService: RuntimeCodingServiceProtocol,
+        fallbackValue: T? = nil
+    ) -> CompoundOperationWrapper<T> {
+        let factoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let operation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
+
+        operation.configurationBlock = {
+            do {
+                operation.codingFactory = try factoryOperation.extractNoCancellableResultData()
+            } catch {
+                operation.result = .failure(error)
+            }
+        }
+
+        operation.addDependency(factoryOperation)
+
+        return CompoundOperationWrapper(targetOperation: operation, dependencies: [factoryOperation])
+    }
 }
