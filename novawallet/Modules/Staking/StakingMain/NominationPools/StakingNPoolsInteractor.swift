@@ -465,7 +465,7 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
     ) {
         switch result {
         case let .success(optPoolMetadata):
-            break
+            presenter?.didReceive(poolMetadata: optPoolMetadata)
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "poolMetadata"))
         }

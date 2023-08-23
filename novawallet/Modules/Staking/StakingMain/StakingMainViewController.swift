@@ -26,6 +26,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private var actionsView: StakingActionsView?
     private var unbondingsView: StakingUnbondingsView?
 
+    private var selectedEntityView: StackTableView?
+    private var selectedEntityCell: StackAddressCell?
+
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
 
@@ -77,6 +80,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didAppearSkeleton()
+
+        selectedEntityCell?.didAppearSkeleton()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -89,6 +94,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didDisappearSkeleton()
+
+        selectedEntityCell?.didDisappearSkeleton()
     }
 
     override func viewDidLayoutSubviews() {
@@ -101,6 +108,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didUpdateSkeletonLayout()
+
+        selectedEntityCell?.didUpdateSkeletonLayout()
     }
 
     // MARK: - Private functions
@@ -116,6 +125,39 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    }
+
+    private func setupEntityView(for viewModel: StakingSelectedEntityViewModel) {
+        let entityView: StackTableView
+
+        if let selectedEntityView = selectedEntityView {
+            entityView = selectedEntityView
+        } else {
+            entityView = StackTableView()
+
+            if let beforeView = networkInfoContainerView {
+                stackView.insertArranged(view: entityView, before: beforeView)
+            } else {
+                stackView.addArrangedSubview(entityView)
+            }
+
+            stackView.setCustomSpacing(8, after: entityView)
+
+            selectedEntityView = entityView
+        }
+
+        entityView.clear()
+
+        let tableHeader = StackTableHeaderCell()
+        tableHeader.titleLabel.text = viewModel.title
+        entityView.addArrangedSubview(tableHeader)
+
+        let addressCell = StackAddressCell()
+        entityView.addArrangedSubview(addressCell)
+
+        selectedEntityCell = addressCell
+
+        addressCell.bind(viewModel: viewModel.loadingAddress)
     }
 
     private func setupNetworkInfoView() {
@@ -372,6 +414,10 @@ extension StakingMainViewController: Localizable {
 }
 
 extension StakingMainViewController: StakingMainViewProtocol {
+    func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel) {
+        setupEntityView(for: entity)
+    }
+
     func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel) {
         networkInfoView.bind(viewModel: viewModel)
     }

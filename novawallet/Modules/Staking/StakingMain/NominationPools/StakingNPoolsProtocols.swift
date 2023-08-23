@@ -24,6 +24,7 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didRecieve(claimableRewards: BigUInt?)
     func didReceive(totalRewards: TotalRewardItem?)
     func didReceive(poolBondedAccountId: AccountId)
+    func didReceive(poolMetadata: Data?)
     func didReceive(activePools: Set<NominationPools.PoolId>)
     func didReceive(duration: StakingDuration)
     func didReceive(eraCountdown: EraCountdown)

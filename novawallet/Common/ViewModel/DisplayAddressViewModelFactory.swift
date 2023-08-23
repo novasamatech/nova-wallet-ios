@@ -88,7 +88,7 @@ final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtoc
             bondedAccountId: pool.bondedAccountId
         )
 
-        let address = try? pool.bondedAddress(for: chainAsset.chain.chainFormat)
+        let address = pool.bondedAddress(for: chainAsset.chain.chainFormat)
 
         return .init(
             address: address ?? "",

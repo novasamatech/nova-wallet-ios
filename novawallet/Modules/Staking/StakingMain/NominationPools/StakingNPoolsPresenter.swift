@@ -9,6 +9,7 @@ final class StakingNPoolsPresenter {
     let wireframe: StakingNPoolsWireframeProtocol
     let infoViewModelFactory: NetworkInfoViewModelFactoryProtocol
     let stateViewModelFactory: StakingNPoolsViewModelFactoryProtocol
+    let quantityFormatter: LocalizableResource<NumberFormatter>
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
@@ -28,12 +29,16 @@ final class StakingNPoolsPresenter {
     private var priceData: PriceData?
     private var totalRewardsFilter: StakingRewardFiltersPeriod?
     private var totalRewards: TotalRewardItem?
+    private var poolMetadata: UncertainStorage<Data?> = .undefined
+
+    private lazy var displayViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
         interactor: StakingNPoolsInteractorInputProtocol,
         wireframe: StakingNPoolsWireframeProtocol,
         infoViewModelFactory: NetworkInfoViewModelFactoryProtocol,
         stateViewModelFactory: StakingNPoolsViewModelFactoryProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter>,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -42,6 +47,7 @@ final class StakingNPoolsPresenter {
         self.wireframe = wireframe
         self.infoViewModelFactory = infoViewModelFactory
         self.stateViewModelFactory = stateViewModelFactory
+        self.quantityFormatter = quantityFormatter
         self.chainAsset = chainAsset
         self.logger = logger
         self.localizationManager = localizationManager
@@ -88,10 +94,46 @@ final class StakingNPoolsPresenter {
         view?.didReceiveStakingState(viewModel: viewModel)
     }
 
+    private func provideYourPool() {
+        let locale = view?.selectedLocale ?? Locale.current
+
+        if
+            let poolMember = poolMember,
+            let poolBondedAccountId = poolBondedAccountId,
+            case let .defined(poolMetadata) = poolMetadata {
+            let poolNumber = quantityFormatter.value(for: locale).string(from: NSNumber(value: poolMember.poolId))
+            let title = R.string.localizable.stakingYourPoolFormat(
+                poolNumber ?? "",
+                preferredLanguages: locale.rLanguages
+            )
+
+            let selectedPool = NominationPools.SelectedPool(
+                poolId: poolMember.poolId,
+                bondedAccountId: poolBondedAccountId,
+                metadata: poolMetadata,
+                maxApy: nil
+            )
+
+            let displayAddress = displayViewModelFactory.createViewModel(from: selectedPool, chainAsset: chainAsset)
+
+            let entity = StakingSelectedEntityViewModel(title: title, loadingAddress: .loaded(value: displayAddress))
+            view?.didReceiveSelectedEntity(entity)
+
+        } else {
+            let entity = StakingSelectedEntityViewModel(
+                title: R.string.localizable.stakingYourPoolTitle(preferredLanguages: locale.rLanguages),
+                loadingAddress: .loading
+            )
+
+            view?.didReceiveSelectedEntity(entity)
+        }
+    }
+
     private func updateView() {
         provideStatics()
         provideStakingInfo()
         provideState()
+        provideYourPool()
     }
 }
 
@@ -124,8 +166,15 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         }
     }
 
-    func performAlertAction(_: StakingAlert) {
-        // TODO: Implement in task for alerts
+    func performAlertAction(_ alert: StakingAlert) {
+        switch alert {
+        case .redeemUnbonded:
+            performRedeemAction()
+        case .waitingNextEra:
+            break
+        default:
+            logger.warning("Unsupported alert: \(alert)")
+        }
     }
 
     func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
@@ -185,6 +234,7 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         self.poolMember = poolMember
 
         provideState()
+        provideYourPool()
     }
 
     func didReceive(bondedPool: NominationPools.BondedPool?) {
@@ -207,6 +257,8 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         logger.debug("Pool account id: \(String(describing: poolBondedAccountId))")
 
         self.poolBondedAccountId = poolBondedAccountId
+
+        provideYourPool()
     }
 
     func didReceive(activePools: Set<NominationPools.PoolId>) {
@@ -246,6 +298,14 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         self.totalRewards = totalRewards
 
         provideState()
+    }
+
+    func didReceive(poolMetadata: Data?) {
+        logger.debug("Pool metadata: \(String(describing: String(data: poolMetadata ?? Data(), encoding: .utf8)))")
+
+        self.poolMetadata = .defined(poolMetadata)
+
+        provideYourPool()
     }
 
     func didReceive(error: StakingNPoolsError) {
