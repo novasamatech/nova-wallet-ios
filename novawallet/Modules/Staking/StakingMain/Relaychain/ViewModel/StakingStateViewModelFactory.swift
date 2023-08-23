@@ -84,7 +84,8 @@ final class StakingStateViewModelFactory {
                 return StakingRewardViewModel(
                     totalRewards: .loaded(value: reward),
                     claimableRewards: nil,
-                    filter: filter
+                    filter: filter,
+                    hasPrice: chainAsset.asset.hasPrice
                 )
             }
         } else {
@@ -92,7 +93,8 @@ final class StakingStateViewModelFactory {
                 StakingRewardViewModel(
                     totalRewards: .loading,
                     claimableRewards: nil,
-                    filter: nil
+                    filter: nil,
+                    hasPrice: chainAsset.asset.hasPrice
                 )
             }
         }

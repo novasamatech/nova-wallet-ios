@@ -8,7 +8,7 @@ final class StakingClaimableRewardView: UIView {
         view.overlayView.fillColor = R.color.colorBlockBackground()!
         view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
         view.overlayView.strokeWidth = 1
-        view.blurView?.alpha = 0.5
+        view.blurView?.alpha = 0.75
     }
 
     let contentView: GenericTitleValueView<MultiValueView, TriangularedButton> = .create { view in
@@ -149,7 +149,7 @@ extension StakingClaimableRewardView: SkeletonLoadable {
     func didUpdateSkeletonLayout() {
         if isLoading {
             updateLoadingState()
-            skeletonView?.stopSkrulling()
+            skeletonView?.restartSkrulling()
         }
     }
 }

@@ -22,8 +22,12 @@ final class StakingTotalRewardView: UIView {
 
     private var isLoading: Bool = false
 
+    private var hasPrice: Bool = true
+
     override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 80)
+        let height: CGFloat = hasPrice ? 80 : 60
+
+        return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
 
     override init(frame: CGRect) {
@@ -48,12 +52,14 @@ final class StakingTotalRewardView: UIView {
         }
     }
 
-    func bind(totalRewards: LoadableViewModelState<BalanceViewModelProtocol>, filter: String?) {
+    func bind(totalRewards: LoadableViewModelState<BalanceViewModelProtocol>, filter: String?, hasPrice: Bool) {
         stopLoadingIfNeeded()
 
         let title = totalRewards.value?.amount ?? ""
         let price = totalRewards.value?.price
         rewardView.bind(topValue: title, bottomValue: price)
+
+        self.hasPrice = hasPrice
 
         if let filter = filter {
             filterView.isHidden = false
@@ -65,6 +71,9 @@ final class StakingTotalRewardView: UIView {
         if totalRewards.isLoading {
             startLoadingIfNeeded()
         }
+
+        invalidateIntrinsicContentSize()
+        setNeedsLayout()
     }
 
     private func setupLayout() {
@@ -99,22 +108,27 @@ extension StakingTotalRewardView: SkeletonableView {
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        [
-            SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
-                spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: 35.0),
-                size: UIConstants.skeletonBigRowSize
-            ),
-            SingleSkeleton.createRow(
+        let titleSkeleton = SingleSkeleton.createRow(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: CGPoint(x: 0.0, y: 35.0),
+            size: UIConstants.skeletonBigRowSize
+        )
+
+        if hasPrice {
+            let priceSkeleton = SingleSkeleton.createRow(
                 on: self,
                 containerView: self,
                 spaceSize: spaceSize,
                 offset: CGPoint(x: 0.0, y: 65.0),
                 size: UIConstants.skeletonSmallRowSize
             )
-        ]
+
+            return [titleSkeleton, priceSkeleton]
+        } else {
+            return [titleSkeleton]
+        }
     }
 
     func didStartSkeleton() {
@@ -142,7 +156,7 @@ extension StakingTotalRewardView: SkeletonLoadable {
     func didUpdateSkeletonLayout() {
         if isLoading {
             updateLoadingState()
-            skeletonView?.stopSkrulling()
+            skeletonView?.restartSkrulling()
         }
     }
 }

@@ -182,7 +182,8 @@ final class StakingNPoolsViewModelFactory {
             return StakingRewardViewModel(
                 totalRewards: totalRewards.map { .loaded(value: $0) } ?? .loading,
                 claimableRewards: claimableRewardViewModel.map { .loaded(value: $0) } ?? .loading,
-                filter: filter
+                filter: filter,
+                hasPrice: chainAsset.asset.hasPrice
             )
         }
     }

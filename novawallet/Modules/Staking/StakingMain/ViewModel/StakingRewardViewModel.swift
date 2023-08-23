@@ -9,4 +9,5 @@ struct StakingRewardViewModel {
     let totalRewards: LoadableViewModelState<BalanceViewModelProtocol>
     let claimableRewards: LoadableViewModelState<ClaimableRewards>?
     let filter: String?
+    let hasPrice: Bool
 }

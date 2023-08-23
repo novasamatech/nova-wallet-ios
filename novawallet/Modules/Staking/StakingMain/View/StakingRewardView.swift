@@ -53,12 +53,16 @@ final class StakingRewardView: UIView {
 
     private func applyViewModel() {
         guard let viewModel = viewModel?.value(for: locale) else {
-            totalRewardView.bind(totalRewards: .loading, filter: nil)
+            totalRewardView.bind(totalRewards: .loading, filter: nil, hasPrice: true)
             clearClaimableRewardsView()
             return
         }
 
-        totalRewardView.bind(totalRewards: viewModel.totalRewards, filter: viewModel.filter)
+        totalRewardView.bind(
+            totalRewards: viewModel.totalRewards,
+            filter: viewModel.filter,
+            hasPrice: viewModel.hasPrice
+        )
 
         if let claimableRewards = viewModel.claimableRewards {
             setupClaimableRewardsViewIfNeeded()
@@ -67,6 +71,7 @@ final class StakingRewardView: UIView {
             clearClaimableRewardsView()
         }
 
+        invalidateIntrinsicContentSize()
         setNeedsLayout()
     }
 
