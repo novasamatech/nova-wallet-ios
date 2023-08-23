@@ -243,14 +243,23 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
             runtimeService: runtimeService
         )
 
+        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32> = PrimitiveConstantOperation.wrapper(
+            for: .maxNominatorRewardedPerValidator,
+            runtimeService: runtimeService
+        )
+
         let validatorsResolveOperation = ClosureOperation<[NominationPools.PoolId: Set<AccountId>]> {
             let poolAccounts = try poolAccountsWrapper.targetOperation.extractNoCancellableResultData()
             let activeValidators = try validatorsOperation.extractNoCancellableResultData()
+            let maxRewardedNominators = try maxNominatorsWrapper.targetOperation.extractNoCancellableResultData()
 
             let indexedValidators = activeValidators.validators.reduce(
                 into: [AccountId: Set<AccountId>]()
             ) { accum, validator in
-                for nominator in validator.exposure.others {
+                let allNominators = validator.exposure.others
+                let targetNominators = Array(allNominators.prefix(Int(maxRewardedNominators)))
+
+                for nominator in targetNominators {
                     let currentValidators = accum[nominator.who] ?? Set()
                     accum[nominator.who] = currentValidators.union([validator.accountId])
                 }
@@ -261,6 +270,7 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
 
         validatorsResolveOperation.addDependency(poolAccountsWrapper.targetOperation)
         validatorsResolveOperation.addDependency(validatorsOperation)
+        validatorsResolveOperation.addDependency(maxNominatorsWrapper.targetOperation)
 
         let mapOperation = ClosureOperation<NominationPools.ActivePools> {
             let activeValidators = try validatorsOperation.extractNoCancellableResultData()
@@ -285,7 +295,8 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
             return .init(era: activeValidators.activeEra, pools: activePools)
         }
 
-        let dependencies = [validatorsOperation] + poolAccountsWrapper.allOperations + [validatorsResolveOperation]
+        let dependencies = [validatorsOperation] + maxNominatorsWrapper.allOperations +
+            poolAccountsWrapper.allOperations + [validatorsResolveOperation]
 
         dependencies.forEach { mapOperation.addDependency($0) }
 

@@ -250,16 +250,19 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
 
     func presentLockedTokensInPoolStaking(
         from view: ControllerBackedProtocol?,
-        lockReason _: String,
-        availableToStake _: String,
-        directRewardableToStake _: String,
+        lockReason: String,
+        availableToStake: String,
+        directRewardableToStake: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.stakingMaxNominatorsReachedMessage(
+        let message = R.string.localizable.stakingLockedPoolViolationError(
+            lockReason,
+            availableToStake,
+            directRewardableToStake,
             preferredLanguages: locale?.rLanguages
         )
 
-        let title = R.string.localizable.stakingMaxNominatorsReachedTitle(
+        let title = R.string.localizable.stakingLockedPoolViolationTitle(
             preferredLanguages: locale?.rLanguages
         )
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)

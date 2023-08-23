@@ -1,6 +1,8 @@
 import Foundation
 
 protocol StakingMainStaticViewModelProtocol {
+    var canCancelUnbonding: Bool { get }
+
     func networkInfoActiveNominators(for locale: Locale) -> String
     func actionsYourValidators(for locale: Locale) -> String
     func waitingNextEra(for timeString: String, locale: Locale) -> String
@@ -30,4 +32,6 @@ extension StakingMainStaticViewModelProtocol {
     func networkInfoTitle(for locale: Locale) -> String {
         R.string.localizable.stakingNetworkInfoTitle(preferredLanguages: locale.rLanguages)
     }
+
+    var canCancelUnbonding: Bool { true }
 }
