@@ -169,10 +169,10 @@ extension NominationPoolSearchViewController: EmptyStateDataSource {
         let color = R.color.colorTextTertiary()!
         switch state {
         case let .error(text):
-            emptyView.image = R.image.iconEmptySearch()?.tinted(with: color)
+            emptyView.image = R.image.iconEmptySearch()?.withTintColor(color)
             emptyView.title = text
         case .loaded:
-            emptyView.image = R.image.iconStartSearch()?.tinted(with: color)
+            emptyView.image = R.image.iconStartSearch()?.withTintColor(color)
             emptyView.title = R.string.localizable
                 .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
         case .loading:
