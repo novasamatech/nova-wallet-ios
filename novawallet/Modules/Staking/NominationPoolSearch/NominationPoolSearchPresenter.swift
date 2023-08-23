@@ -10,19 +10,15 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
     let interactor: NominationPoolSearchInteractorInputProtocol
     let viewModelFactory: StakingSelectPoolViewModelFactoryProtocol
     let chainAsset: ChainAsset
-    let searchOperationFactory: NominationPoolSearchOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private var poolStats: [NominationPools.PoolStats] = []
-    private var currentSearchOperation: CancellableCall?
-    private var searchOperationClosure: NominationPoolSearchOperationClosure?
 
     init(
         interactor: NominationPoolSearchInteractorInputProtocol,
         wireframe: NominationPoolSearchWireframeProtocol,
         viewModelFactory: StakingSelectPoolViewModelFactoryProtocol,
         chainAsset: ChainAsset,
-        searchOperationFactory: NominationPoolSearchOperationFactoryProtocol,
         delegate: StakingSelectPoolDelegate,
         operationQueue: OperationQueue,
         localizationManager: LocalizationManagerProtocol
@@ -31,7 +27,6 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.chainAsset = chainAsset
-        self.searchOperationFactory = searchOperationFactory
         self.operationQueue = operationQueue
         self.delegate = delegate
         self.localizationManager = localizationManager
@@ -44,7 +39,7 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
             chainAsset: chainAsset,
             locale: selectedLocale
         )
-        searchOperationClosure = searchOperationFactory.createOperationClosure(viewModels: viewModel)
+        view?.didReceivePools(state: .loaded(viewModel: viewModel))
     }
 
     private func showUnsupportedPoolStateAlert() {
@@ -62,31 +57,8 @@ extension NominationPoolSearchPresenter: NominationPoolSearchPresenterProtocol {
         view?.didReceivePools(state: .loaded(viewModel: []))
     }
 
-    func search(for text: String) {
-        guard let searchOperationClosure = searchOperationClosure else {
-            return
-        }
-        if text.isEmpty {
-            view?.didReceivePools(state: .loaded(viewModel: []))
-        } else {
-            clear(cancellable: &currentSearchOperation)
-            let searchOperation = searchOperationClosure(text)
-            searchOperation.completionBlock = { [weak self] in
-                let result = (try? searchOperation.extractNoCancellableResultData()) ?? []
-
-                DispatchQueue.main.async {
-                    if !result.isEmpty {
-                        self?.view?.didReceivePools(state: .loaded(viewModel: result))
-                    } else {
-                        let emptyMessage = R.string.localizable.stakingSearchPoolEmpty(
-                            preferredLanguages: self?.selectedLocale.rLanguages)
-                        self?.view?.didReceivePools(state: .error(emptyMessage))
-                    }
-                }
-            }
-            currentSearchOperation = searchOperation
-            operationQueue.addOperation(searchOperation)
-        }
+    func search(for textEntry: String) {
+        interactor.search(for: textEntry)
     }
 
     func selectPool(poolId: NominationPools.PoolId) {
@@ -138,6 +110,10 @@ extension NominationPoolSearchPresenter: NominationPoolSearchInteractorOutputPro
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
+        case .emptySearchResults:
+            let emptyMessage = R.string.localizable.stakingSearchPoolEmpty(
+                preferredLanguages: selectedLocale.rLanguages)
+            view?.didReceivePools(state: .error(emptyMessage))
         }
     }
 }

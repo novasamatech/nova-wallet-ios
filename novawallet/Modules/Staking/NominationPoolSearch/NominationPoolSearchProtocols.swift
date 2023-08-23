@@ -9,6 +9,7 @@ protocol NominationPoolSearchPresenterProtocol: TableSearchPresenterProtocol {
 
 protocol NominationPoolSearchInteractorInputProtocol: AnyObject {
     func setup()
+    func search(for text: String)
     func refetchPools()
     func remakeSubscriptions()
 }
@@ -25,4 +26,5 @@ protocol NominationPoolSearchWireframeProtocol: AddressOptionsPresentable, Alert
 enum NominationPoolSearchError: Error {
     case pools(Error)
     case subscription(Error)
+    case emptySearchResults
 }

@@ -13,9 +13,12 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let rewardEngineOperationFactory: NPoolsRewardEngineFactoryProtocol
     let chainAsset: ChainAsset
+    let searchOperationFactory: NominationPoolSearchOperationFactoryProtocol
 
     private var lastPoolIdProvider: AnyDataProvider<DecodedPoolId>?
     private var lastPoolId: NominationPools.PoolId?
+    private var currentSearchOperation: CancellableCall?
+    private var searchOperationClosure: NominationPoolSearchOperationClosure?
 
     private var poolsCancellable: CancellableCall?
     private let operationQueue: OperationQueue
@@ -30,6 +33,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
         validatorRewardService: RewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
+        searchOperationFactory: NominationPoolSearchOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -40,6 +44,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
         self.validatorRewardService = validatorRewardService
         self.connection = connection
         self.runtimeService = runtimeService
+        self.searchOperationFactory = searchOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -86,8 +91,8 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
 
             DispatchQueue.main.async {
                 do {
-                    let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(poolStats: stats ?? [])
+                    let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData() ?? []
+                    self?.searchOperationClosure = self?.searchOperationFactory.createOperationClosure(stats: stats)
                 } catch {
                     self?.presenter?.didReceive(error: .pools(error))
                 }
@@ -114,6 +119,32 @@ extension NominationPoolSearchInteractor: NominationPoolSearchInteractorInputPro
 
     func remakeSubscriptions() {
         performLastPoolIdSubscription()
+    }
+
+    func search(for text: String) {
+        guard let searchOperationClosure = searchOperationClosure else {
+            return
+        }
+        if text.isEmpty {
+            presenter?.didReceive(poolStats: [])
+        } else {
+            clear(cancellable: &currentSearchOperation)
+            let searchOperation = searchOperationClosure(text)
+            searchOperation.completionBlock = { [weak self] in
+                let result = (try? searchOperation.extractNoCancellableResultData()) ?? []
+
+                DispatchQueue.main.async {
+                    if !result.isEmpty {
+                        self?.presenter?.didReceive(poolStats: result)
+                    } else {
+                        self?.presenter?.didReceive(error: .emptySearchResults)
+                    }
+                }
+            }
+
+            currentSearchOperation = searchOperation
+            operationQueue.addOperation(searchOperation)
+        }
     }
 }
 

@@ -1,34 +1,34 @@
 import RobinHood
 
 final class NominationPoolSearchManager {
-    let viewModels: [StakingSelectPoolViewModel]
+    let models: [NominationPools.PoolStats]
     let searchKeysExtractor: (NominationPools.PoolId) -> [String]
-    let keyExtractor: (StakingSelectPoolViewModel) -> NominationPools.PoolId
+    let keyExtractor: (NominationPools.PoolStats) -> NominationPools.PoolId
 
-    init(viewModels: [StakingSelectPoolViewModel]) {
-        self.viewModels = viewModels
+    init(stats: [NominationPools.PoolStats]) {
+        models = stats
 
-        let mappedModels = viewModels.reduce(
-            into: [NominationPools.PoolId: StakingSelectPoolViewModel]()) { result, element in
-            result[element.id] = element
+        let mappedModels = models.reduce(
+            into: [NominationPools.PoolId: NominationPools.PoolStats]()) { result, element in
+            result[element.poolId] = element
         }
 
         keyExtractor = { stats in
-            stats.id
+            stats.poolId
         }
 
         searchKeysExtractor = { poolId in
             [
-                mappedModels[poolId]?.name,
+                mappedModels[poolId]?.metadata.map { String(data: $0, encoding: .utf8) } ?? nil,
                 "\(poolId)"
             ].compactMap { $0 }
         }
     }
 
-    func searchOperation(text: String) -> BaseOperation<[StakingSelectPoolViewModel]> {
+    func searchOperation(text: String) -> BaseOperation<[NominationPools.PoolStats]> {
         SearchOperationFactory.searchOperation(
             text: text,
-            in: viewModels,
+            in: models,
             keyExtractor: keyExtractor,
             searchKeysExtractor: searchKeysExtractor
         )

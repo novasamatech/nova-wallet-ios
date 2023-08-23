@@ -23,7 +23,6 @@ struct NominationPoolSearchViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             chainAsset: state.chainAsset,
-            searchOperationFactory: NominationPoolSearchOperationFactory(),
             delegate: delegate,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             localizationManager: LocalizationManager.shared
@@ -65,6 +64,7 @@ struct NominationPoolSearchViewFactory {
             validatorRewardService: state.relaychainRewardCalculatorService,
             connection: connection,
             runtimeService: runtimeService,
+            searchOperationFactory: NominationPoolSearchOperationFactory(),
             operationQueue: queue
         )
 

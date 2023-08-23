@@ -1,13 +1,13 @@
 import RobinHood
 
-typealias NominationPoolSearchOperationClosure = (String) -> BaseOperation<[StakingSelectPoolViewModel]>
+typealias NominationPoolSearchOperationClosure = (String) -> BaseOperation<[NominationPools.PoolStats]>
 
 protocol NominationPoolSearchOperationFactoryProtocol {
-    func createOperationClosure(viewModels: [StakingSelectPoolViewModel]) -> NominationPoolSearchOperationClosure
+    func createOperationClosure(stats: [NominationPools.PoolStats]) -> NominationPoolSearchOperationClosure
 }
 
 final class NominationPoolSearchOperationFactory: NominationPoolSearchOperationFactoryProtocol {
-    func createOperationClosure(viewModels: [StakingSelectPoolViewModel]) -> NominationPoolSearchOperationClosure {
-        NominationPoolSearchManager(viewModels: viewModels).searchOperation
+    func createOperationClosure(stats: [NominationPools.PoolStats]) -> NominationPoolSearchOperationClosure {
+        NominationPoolSearchManager(stats: stats).searchOperation
     }
 }
