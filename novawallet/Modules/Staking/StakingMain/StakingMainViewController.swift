@@ -114,13 +114,16 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
     // MARK: - Private functions
 
-    @objc
-    private func rewardPeriodAction() {
+    @objc private func rewardPeriodAction() {
         presenter.selectPeriod()
     }
 
     @objc private func claimRewardsAction() {
         presenter.performClaimRewards()
+    }
+
+    @objc private func selectedEntityAction() {
+        presenter.performSelectedEntityAction()
     }
 
     private func setupScrollView() {
@@ -133,23 +136,38 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         if let selectedEntityView = selectedEntityView {
             entityView = selectedEntityView
         } else {
+            let containerView = UIView()
+
             entityView = StackTableView()
 
             if let beforeView = networkInfoContainerView {
-                stackView.insertArranged(view: entityView, before: beforeView)
+                stackView.insertArranged(view: containerView, before: beforeView)
             } else {
-                stackView.addArrangedSubview(entityView)
+                stackView.addArrangedSubview(containerView)
             }
 
-            stackView.setCustomSpacing(8, after: entityView)
+            stackView.setCustomSpacing(8, after: containerView)
+
+            containerView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            containerView.addSubview(entityView)
+            entityView.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            }
 
             selectedEntityView = entityView
         }
 
         entityView.clear()
 
+        entityView.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 8.0, right: 16.0)
+
         let tableHeader = StackTableHeaderCell()
         tableHeader.titleLabel.text = viewModel.title
+        tableHeader.titleLabel.apply(style: .regularSubhedlineSecondary)
         entityView.addArrangedSubview(tableHeader)
 
         let addressCell = StackAddressCell()
@@ -158,6 +176,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         selectedEntityCell = addressCell
 
         addressCell.bind(viewModel: viewModel.loadingAddress)
+
+        addressCell.addTarget(self, action: #selector(selectedEntityAction), for: .touchUpInside)
     }
 
     private func setupNetworkInfoView() {
