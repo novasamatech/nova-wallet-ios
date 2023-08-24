@@ -50,6 +50,19 @@ protocol NPoolsLocalSubscriptionFactoryProtocol {
         for chainId: ChainModel.Id,
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32>
+
+    func getClaimableRewards(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnySingleValueProvider<String>
+
+    func getTotalReward(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api: LocalChainExternalApi,
+        assetPrecision: Int16
+    ) throws -> AnySingleValueProvider<TotalRewardItem>
 }
 
 final class NPoolsLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory {}
@@ -180,5 +193,96 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
             storageCodingPath: codingPath,
             fallback: fallback
         )
+    }
+
+    func getClaimableRewards(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnySingleValueProvider<String> {
+        clearIfNeeded()
+
+        let identifier = "poolPending" + chainId + accountId.toHexString()
+
+        if let provider = getProvider(for: identifier) as? SingleValueProvider<String> {
+            return AnySingleValueProvider(provider)
+        }
+
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
+        let repository = SubstrateRepositoryFactory(
+            storageFacade: storageFacade
+        ).createSingleValueRepository()
+
+        let source = NPoolsPendingRewardDataSource(
+            accountId: accountId,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        let anySource = AnySingleValueProviderSource<String>(source)
+
+        let provider = SingleValueProvider(
+            targetIdentifier: identifier,
+            source: anySource,
+            repository: AnyDataProviderRepository(repository)
+        )
+
+        saveProvider(provider, for: identifier)
+
+        return AnySingleValueProvider(provider)
+    }
+
+    func getTotalReward(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api: LocalChainExternalApi,
+        assetPrecision: Int16
+    ) throws -> AnySingleValueProvider<TotalRewardItem> {
+        clearIfNeeded()
+
+        let timeIdentifier = [
+            startTimestamp.map { "\($0)" } ?? "nil",
+            endTimestamp.map { "\($0)" } ?? "nil"
+        ].joined(separator: "-")
+
+        let identifier = ("poolReward" + api.url.absoluteString) + address + timeIdentifier
+
+        if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
+            return AnySingleValueProvider(provider)
+        }
+
+        let repository = SubstrateRepositoryFactory(
+            storageFacade: storageFacade
+        ).createSingleValueRepository()
+
+        let operationFactory = SubqueryRewardOperationFactory(url: api.url)
+
+        let source = SubqueryTotalRewardSource(
+            address: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            assetPrecision: assetPrecision,
+            operationFactory: operationFactory,
+            stakingType: .pools
+        )
+
+        let anySource = AnySingleValueProviderSource<TotalRewardItem>(source)
+
+        let provider = SingleValueProvider(
+            targetIdentifier: identifier,
+            source: anySource,
+            repository: AnyDataProviderRepository(repository)
+        )
+
+        saveProvider(provider, for: identifier)
+
+        return AnySingleValueProvider(provider)
     }
 }

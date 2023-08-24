@@ -258,6 +258,10 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
         handleStakeMore()
     }
 
+    func performClaimRewards() {
+        // not needed action for relaychain staking
+    }
+
     func performRedeemAction() {
         guard let view = view else { return }
         let selectedLocale = view.localizationManager?.selectedLocale

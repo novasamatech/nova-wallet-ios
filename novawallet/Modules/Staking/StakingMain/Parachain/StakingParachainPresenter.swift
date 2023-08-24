@@ -148,6 +148,10 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         wireframe.showRedeemTokens(from: view)
     }
 
+    func performClaimRewards() {
+        // not needed action for parachain staking
+    }
+
     func performRebondAction() {
         guard
             let delegator = stateMachine.viewState(

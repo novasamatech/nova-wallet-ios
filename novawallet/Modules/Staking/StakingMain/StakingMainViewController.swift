@@ -110,6 +110,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         presenter.selectPeriod()
     }
 
+    @objc private func claimRewardsAction() {
+        presenter.performClaimRewards()
+    }
+
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
     }
@@ -149,11 +153,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             return
         }
 
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 116.0))
-        let containerView = UIView(frame: defaultFrame)
-        containerView.translatesAutoresizingMaskIntoConstraints = false
+        let containerView = UIView()
 
-        let rewardView = StakingRewardView(frame: defaultFrame)
+        let rewardView = StakingRewardView()
         rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
         rewardView.filterView.control.addTarget(
             self,
@@ -340,6 +342,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private func applyStakingReward(viewModel: LocalizableResource<StakingRewardViewModel>) {
         setupStakingRewardViewIfNeeded()
         rewardView?.bind(viewModel: viewModel)
+
+        rewardView?.claimButton?.addTarget(
+            self,
+            action: #selector(claimRewardsAction),
+            for: .touchUpInside
+        )
     }
 }
 
