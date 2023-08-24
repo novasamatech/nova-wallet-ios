@@ -1343,7 +1343,13 @@
 "staking.type.alert.unsaved.changes.title" = "Unsaved changes";
 "staking.type.alert.unsaved.changes.message" = "Do you want to save the changes?";
 "staking.validators" = "Validators";
+"staking.select.pool.count" = "active pools: %@";
+"staking.select.pool.members" = "members";
+"staking.select.pool.title" = "Select pool";
+"staking.search.pool.empty" = "No pool with entered name or pool\nID were found. Make sure\nyou entered correct data";
+"staking.search.pool.placeholder" = "Search by name or pool ID";
 "common.every.day" = "everyday";
+"staking.search.pool.selection.error.message" = "This pool currently unavailable to staking";
 "staking.pool.network.info" = "Pool's staking info";
 "token.add.remote.exist.message" = "The entered contract address is present in Nova as a %@ token. Are you sure you want to modify it?";
 "send.system.account.message" = "Recipient is a system account. It is not controlled by any company or individual.\nAre you sure you still want to perform this transfer?";
