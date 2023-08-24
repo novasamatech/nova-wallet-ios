@@ -316,7 +316,8 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
             assetPrecision: assetPrecision,
-            operationFactory: operationFactory
+            operationFactory: operationFactory,
+            stakingType: .direct
         )
 
         let anySource = AnySingleValueProviderSource<TotalRewardItem>(source)

@@ -365,7 +365,7 @@
 "crowdloan.leasing.period" = "Период лизинга";
 "common.till.date" = "до %@";
 "crowdloan.reward" = "Примерное вознаграждение";
-"staking.bonded.inactive" = "Вы не номинируете и не валидируете";
+"staking.bonded.inactive" = "Вы не номинируете и не в��лидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.submit.agreement" = "Подтвердить согласие";
@@ -1364,3 +1364,4 @@
 "staking.pool.has.no.apy.title" = "Вы не получите награды";
 "staking.pool.has.no.apy.message" = "Выбранный вами пул неактивен, поскольку не выбраны валидаторы или его стейк меньше минимального.
 Вы уверены, что хотите продолжить работу с выбранным пулом?";
+"staking.claim.rewards" = "Забрать награды";

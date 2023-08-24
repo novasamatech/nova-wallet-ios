@@ -41,6 +41,21 @@ protocol NPoolsLocalSubscriptionHandler {
     func handleCounterForPoolMembers(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id)
 
     func handleMaxPoolMembersPerPool(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id)
+
+    func handleClaimableRewards(
+        result: Result<BigUInt?, Error>,
+        chainId: ChainModel.Id,
+        poolId: NominationPools.PoolId,
+        accountId: AccountId
+    )
+
+    func handlePoolTotalReward(
+        result _: Result<TotalRewardItem?, Error>,
+        for _: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api _: LocalChainExternalApi
+    )
 }
 
 extension NPoolsLocalSubscriptionHandler {
@@ -83,4 +98,19 @@ extension NPoolsLocalSubscriptionHandler {
     func handleCounterForPoolMembers(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 
     func handleMaxPoolMembersPerPool(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
+
+    func handleClaimableRewards(
+        result _: Result<BigUInt?, Error>,
+        chainId _: ChainModel.Id,
+        poolId _: NominationPools.PoolId,
+        accountId _: AccountId
+    ) {}
+
+    func handlePoolTotalReward(
+        result _: Result<TotalRewardItem?, Error>,
+        for _: AccountAddress,
+        startTimestamp _: Int64?,
+        endTimestamp _: Int64?,
+        api _: LocalChainExternalApi
+    ) {}
 }

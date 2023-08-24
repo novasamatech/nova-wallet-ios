@@ -9,6 +9,14 @@ protocol LocalStorageProviderObserving where Self: AnyObject {
         callbackQueue: DispatchQueue,
         options: DataProviderObserverOptions
     )
+
+    func addSingleValueProviderObserver<T: Codable & Equatable>(
+        for provider: AnySingleValueProvider<T>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        callbackQueue: DispatchQueue,
+        options: DataProviderObserverOptions
+    )
 }
 
 extension LocalStorageProviderObserving {
@@ -37,6 +45,46 @@ extension LocalStorageProviderObserving {
         let update = { (changes: [DataProviderChange<ChainStorageDecodedItem<T>>]) in
             let value = changes.reduceToLastChange()
             updateClosure(value?.item)
+        }
+
+        let failure = { error in
+            failureClosure(error)
+        }
+
+        provider.addObserver(
+            self,
+            deliverOn: callbackQueue,
+            executing: update,
+            failing: failure,
+            options: options
+        )
+    }
+
+    func addSingleValueProviderObserver<T: Codable & Equatable>(
+        for provider: AnySingleValueProvider<T>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        options: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+    ) {
+        addSingleValueProviderObserver(
+            for: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure,
+            callbackQueue: .main,
+            options: options
+        )
+    }
+
+    func addSingleValueProviderObserver<T: Codable & Equatable>(
+        for provider: AnySingleValueProvider<T>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        callbackQueue: DispatchQueue,
+        options: DataProviderObserverOptions
+    ) {
+        let update = { (changes: [DataProviderChange<T>]) in
+            let value = changes.reduceToLastChange()
+            updateClosure(value)
         }
 
         let failure = { error in

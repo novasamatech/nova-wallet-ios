@@ -1364,3 +1364,4 @@
 "staking.pool.has.no.apy.title" = "You will not receive rewards";
 "staking.pool.has.no.apy.message" = "The pool you have selected is inactive due to no validators selected or its stake is less than the minimum.
 Are you sure you want to proceed with the selected Pool?";
+"staking.claim.rewards" = "Claim rewards";

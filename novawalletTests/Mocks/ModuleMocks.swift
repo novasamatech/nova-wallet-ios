@@ -36755,6 +36755,21 @@ import SoraFoundation
     
     
     
+     func performClaimRewards()  {
+        
+    return cuckoo_manager.call("performClaimRewards()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performClaimRewards())
+        
+    }
+    
+    
+    
      func networkInfoViewDidChangeExpansion(isExpanded: Bool)  {
         
     return cuckoo_manager.call("networkInfoViewDidChangeExpansion(isExpanded: Bool)",
@@ -36837,6 +36852,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRebondAction()", parameterMatchers: matchers))
 	    }
 	    
+	    func performClaimRewards() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performClaimRewards()", parameterMatchers: matchers))
+	    }
+	    
 	    func networkInfoViewDidChangeExpansion<M1: Cuckoo.Matchable>(isExpanded: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isExpanded) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "networkInfoViewDidChangeExpansion(isExpanded: Bool)", parameterMatchers: matchers))
@@ -36892,6 +36912,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func performClaimRewards() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performClaimRewards()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func networkInfoViewDidChangeExpansion<M1: Cuckoo.Matchable>(isExpanded: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isExpanded) { $0 }]
 	        return cuckoo_manager.verify("networkInfoViewDidChangeExpansion(isExpanded: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -36939,6 +36965,12 @@ import SoraFoundation
     
     
      func performRebondAction()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performClaimRewards()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -37511,6 +37543,21 @@ import SoraFoundation
     
     
     
+     func performClaimRewards()  {
+        
+    return cuckoo_manager.call("performClaimRewards()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performClaimRewards())
+        
+    }
+    
+    
+    
      func performManageAction(_ action: StakingManageOption)  {
         
     return cuckoo_manager.call("performManageAction(_: StakingManageOption)",
@@ -37578,6 +37625,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRebondAction()", parameterMatchers: matchers))
 	    }
 	    
+	    func performClaimRewards() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performClaimRewards()", parameterMatchers: matchers))
+	    }
+	    
 	    func performManageAction<M1: Cuckoo.Matchable>(_ action: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingManageOption)> where M1.MatchedType == StakingManageOption {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingManageOption)>] = [wrap(matchable: action) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performManageAction(_: StakingManageOption)", parameterMatchers: matchers))
@@ -37628,6 +37680,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func performClaimRewards() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performClaimRewards()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func performManageAction<M1: Cuckoo.Matchable>(_ action: M1) -> Cuckoo.__DoNotUse<(StakingManageOption), Void> where M1.MatchedType == StakingManageOption {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingManageOption)>] = [wrap(matchable: action) { $0 }]
 	        return cuckoo_manager.verify("performManageAction(_: StakingManageOption)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -37669,6 +37727,12 @@ import SoraFoundation
     
     
      func performRebondAction()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performClaimRewards()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

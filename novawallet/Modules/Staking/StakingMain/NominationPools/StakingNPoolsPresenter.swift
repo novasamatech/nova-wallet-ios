@@ -23,8 +23,11 @@ final class StakingNPoolsPresenter {
     private var poolBondedAccountId: AccountId?
     private var activePools: Set<NominationPools.PoolId>?
     private var duration: StakingDuration?
+    private var claimableRewards: BigUInt?
     private var eraCountdown: EraCountdown?
     private var priceData: PriceData?
+    private var totalRewardsFilter: StakingRewardFiltersPeriod?
+    private var totalRewards: TotalRewardItem?
 
     init(
         interactor: StakingNPoolsInteractorInputProtocol,
@@ -74,7 +77,10 @@ final class StakingNPoolsPresenter {
             poolNomination: poolNomination,
             activePools: activePools,
             activeEra: activeEra,
-            eraCountdown: eraCountdown
+            eraCountdown: eraCountdown,
+            totalRewards: totalRewards,
+            totalRewardsFilter: totalRewardsFilter,
+            claimableRewards: claimableRewards
         )
 
         let viewModel = stateViewModelFactory.createState(for: params, chainAsset: chainAsset, price: priceData)
@@ -103,6 +109,10 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         logger.warning("Not possible action for nomination pools")
     }
 
+    func performClaimRewards() {
+        wireframe.showClaimRewards(from: view)
+    }
+
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:
@@ -118,8 +128,11 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         // TODO: Implement in task for alerts
     }
 
-    func selectPeriod(_: StakingRewardFiltersPeriod) {
-        // TODO: Implement in task for rewards
+    func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
+        totalRewardsFilter = filter
+        interactor.setupTotalRewards(filter: filter)
+
+        provideState()
     }
 }
 
@@ -219,6 +232,22 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideState()
     }
 
+    func didRecieve(claimableRewards: BigUInt?) {
+        logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
+
+        self.claimableRewards = claimableRewards
+
+        provideState()
+    }
+
+    func didReceive(totalRewards: TotalRewardItem?) {
+        logger.debug("Total rewards: \(String(describing: totalRewards))")
+
+        self.totalRewards = totalRewards
+
+        provideState()
+    }
+
     func didReceive(error: StakingNPoolsError) {
         logger.error("Did receive error: \(error)")
 
@@ -246,6 +275,16 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         case .eraCountdown:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryEraCountdown()
+            }
+        case .claimableRewards:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryClaimableRewards()
+            }
+        case .totalRewards:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let filter = self?.totalRewardsFilter {
+                    self?.interactor.setupTotalRewards(filter: filter)
+                }
             }
         }
     }

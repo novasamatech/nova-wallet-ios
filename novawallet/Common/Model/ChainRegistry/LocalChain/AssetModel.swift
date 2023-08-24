@@ -76,6 +76,10 @@ struct AssetModel: Equatable, Codable, Hashable {
         self.enabled = enabled
         source = .remote
     }
+
+    var hasPrice: Bool {
+        priceId != nil
+    }
 }
 
 extension AssetModel {
