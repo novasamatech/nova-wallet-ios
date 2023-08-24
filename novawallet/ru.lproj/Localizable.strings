@@ -365,7 +365,7 @@
 "crowdloan.leasing.period" = "Период лизинга";
 "common.till.date" = "до %@";
 "crowdloan.reward" = "Примерное вознаграждение";
-"staking.bonded.inactive" = "Вы не номинируете и не в��лидируете";
+"staking.bonded.inactive" = "Вы не номинируете и не валидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.submit.agreement" = "Подтвердить согласие";
