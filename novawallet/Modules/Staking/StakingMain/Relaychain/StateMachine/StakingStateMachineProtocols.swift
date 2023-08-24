@@ -3,7 +3,6 @@ import BigInt
 
 protocol StakingStateVisitorProtocol {
     func visit(state: InitialStakingState)
-    func visit(state: NoStashState)
     func visit(state: StashState)
     func visit(state: PendingBondedState)
     func visit(state: BondedState)

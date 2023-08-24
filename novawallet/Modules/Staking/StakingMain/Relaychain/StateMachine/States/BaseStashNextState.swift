@@ -44,7 +44,7 @@ class BaseStashNextState: BaseStakingState {
                 bagListNode: nil
             )
         } else {
-            newState = NoStashState(
+            newState = InitialStakingState(
                 stateMachine: stateMachine,
                 commonData: commonData
             )

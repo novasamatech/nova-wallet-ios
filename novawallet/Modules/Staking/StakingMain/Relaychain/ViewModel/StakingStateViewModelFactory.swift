@@ -152,32 +152,6 @@ final class StakingStateViewModelFactory {
         }
     }
 
-    private func createEstimationViewModel(
-        chainAsset: ChainAsset,
-        commonData: StakingStateCommonData
-    ) throws -> StakingEstimationViewModel {
-        guard let calculator = commonData.calculatorEngine else {
-            return StakingEstimationViewModel(tokenSymbol: chainAsset.asset.symbol, reward: nil)
-        }
-
-        let monthlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .month)
-        let yearlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .year)
-
-        let percentageFormatter = NumberFormatter.percentBase.localizableResource()
-
-        let reward = LocalizableResource { locale in
-            PeriodRewardViewModel(
-                monthly: percentageFormatter.value(for: locale).stringFromDecimal(monthlyReturn) ?? "",
-                yearly: percentageFormatter.value(for: locale).stringFromDecimal(yearlyReturn) ?? ""
-            )
-        }
-
-        return StakingEstimationViewModel(
-            tokenSymbol: chainAsset.asset.symbol,
-            reward: reward
-        )
-    }
-
     private func createUnbondingViewModel(
         from stakingLedger: StakingLedger,
         chainAsset: ChainAsset,
@@ -219,26 +193,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         updateCacheForChainAsset(chainAsset)
 
         lastViewModel = .undefined
-    }
-
-    func visit(state: NoStashState) {
-        logger?.debug("No stash state")
-
-        guard let chainAsset = state.commonData.chainAsset else {
-            lastViewModel = .undefined
-            return
-        }
-
-        updateCacheForChainAsset(chainAsset)
-
-        do {
-            let viewModel = try createEstimationViewModel(chainAsset: chainAsset, commonData: state.commonData)
-
-            let alerts = stakingAlertsNoStashState(state)
-            lastViewModel = .noStash(viewModel: viewModel, alerts: alerts)
-        } catch {
-            lastViewModel = .undefined
-        }
     }
 
     func visit(state: StashState) {

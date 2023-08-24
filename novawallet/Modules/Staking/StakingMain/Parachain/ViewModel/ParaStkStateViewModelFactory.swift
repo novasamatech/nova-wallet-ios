@@ -34,29 +34,6 @@ final class ParaStkStateViewModelFactory {
         }
     }
 
-    private func createEstimationViewModel(
-        chainAsset: ChainAsset,
-        commonData: ParachainStaking.CommonData
-    ) throws -> StakingEstimationViewModel {
-        guard let calculator = commonData.calculatorEngine else {
-            return StakingEstimationViewModel(tokenSymbol: chainAsset.asset.symbol, reward: nil)
-        }
-
-        let monthlyReturn = calculator.calculateMaxReturn(for: .month)
-        let yearlyReturn = calculator.calculateMaxReturn(for: .year)
-
-        let percentageFormatter = NumberFormatter.percentBase.localizableResource()
-
-        let reward = LocalizableResource { locale in
-            PeriodRewardViewModel(
-                monthly: percentageFormatter.value(for: locale).stringFromDecimal(monthlyReturn) ?? "",
-                yearly: percentageFormatter.value(for: locale).stringFromDecimal(yearlyReturn) ?? ""
-            )
-        }
-
-        return StakingEstimationViewModel(tokenSymbol: chainAsset.asset.symbol, reward: reward)
-    }
-
     private func createDelegationViewModel(
         for chainAsset: ChainAsset,
         commonData: ParachainStaking.CommonData,
@@ -207,23 +184,6 @@ final class ParaStkStateViewModelFactory {
 extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
     func visit(state _: ParachainStaking.InitState) {
         lastViewModel = .undefined
-    }
-
-    func visit(state: ParachainStaking.NoStakingState) {
-        guard let chainAsset = state.commonData.chainAsset else {
-            lastViewModel = .undefined
-            return
-        }
-
-        guard let rewardViewModel = try? createEstimationViewModel(
-            chainAsset: chainAsset,
-            commonData: state.commonData
-        ) else {
-            lastViewModel = .undefined
-            return
-        }
-
-        lastViewModel = .noStash(viewModel: rewardViewModel, alerts: [])
     }
 
     func visit(state: ParachainStaking.DelegatorState) {

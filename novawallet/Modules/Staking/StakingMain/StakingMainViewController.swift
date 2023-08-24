@@ -459,9 +459,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case .noStash:
-            // TODO: consider to remove as unreachable
-            break
         case let .nominator(viewModel, alerts, optReward, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
