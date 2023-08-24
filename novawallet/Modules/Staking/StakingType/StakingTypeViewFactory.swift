@@ -62,19 +62,14 @@ enum StakingTypeViewFactory {
         amount: BigUInt
     ) -> StakingTypeInteractor? {
         let request = state.chainAsset.chain.accountRequest()
-        let queue = OperationManagerFacade.sharedDefaultQueue
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
         guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: request) else {
             return nil
         }
-        guard
-            let connection = chainRegistry.getConnection(for: state.chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: state.chainAsset.chain.chainId)
-        else { return nil }
 
         let recommendationFactory = StakingRecommendationMediatorFactory(
-            chainRegistry: chainRegistry,
-            operationQueue: queue
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         guard
@@ -90,24 +85,6 @@ enum StakingTypeViewFactory {
             return nil
         }
 
-        let eraValidatorService = state.eraValidatorService
-        let rewardCalculationService = state.relaychainRewardCalculatorService
-
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let validatorOperationFactory = ValidatorOperationFactory(
-            chainInfo: state.chainAsset.chainAssetInfo,
-            eraValidatorService: eraValidatorService,
-            rewardService: rewardCalculationService,
-            storageRequestFactory: storageRequestFactory,
-            runtimeService: runtimeService,
-            engine: connection,
-            identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
-        )
-
         let interactor = StakingTypeInteractor(
             selectedAccount: selectedAccount,
             chainAsset: state.chainAsset,
@@ -116,8 +93,7 @@ enum StakingTypeViewFactory {
             directStakingRestrictionsBuilder: directStakingRestrictionsBuilder,
             nominationPoolsRestrictionsBuilder: nominationPoolsRestrictionsBuilder,
             directStakingRecommendationMediator: directStakingRecommendationMediator,
-            nominationPoolRecommendationMediator: nominationPoolRecommendationMediator,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            nominationPoolRecommendationMediator: nominationPoolRecommendationMediator
         )
 
         return interactor

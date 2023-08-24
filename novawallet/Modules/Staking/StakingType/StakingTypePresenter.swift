@@ -72,7 +72,7 @@ final class StakingTypePresenter {
         let viewModel = viewModelFactory.directStakingViewModel(
             minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
-            method: method,
+            method: recommendedValidators != nil ? method : nil,
             locale: selectedLocale
         )
 
@@ -166,14 +166,13 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
               let recommendedValidators = recommendedValidators else {
             return
         }
-        let existingStashAddress: AccountAddress? = nil
 
-        let electedValidatorList = validators.electedValidators.map { $0.toSelected(for: existingStashAddress) }
+        let electedValidatorList = validators.electedValidators.map { $0.toSelected(for: nil) }
         let recommendedValidatorList = recommendedValidators.targets.map {
-            $0.toSelected(for: existingStashAddress)
+            $0.toSelected(for: nil)
         } ?? []
         let selectedValidators = validators.targets.map {
-            $0.toSelected(for: existingStashAddress)
+            $0.toSelected(for: nil)
         }
         let groups = SelectionValidatorGroups(
             fullValidatorList: electedValidatorList,

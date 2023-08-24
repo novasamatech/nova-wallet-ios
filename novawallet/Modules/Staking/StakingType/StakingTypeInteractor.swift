@@ -12,8 +12,7 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainAsset: ChainAsset
     let stakingSelectionMethod: StakingSelectionMethod
     let amount: BigUInt
-
-    private let operationQueue: OperationQueue
+    private var manualChangeType: Bool = false
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -23,8 +22,7 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         nominationPoolsRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         directStakingRecommendationMediator: RelaychainStakingRecommendationMediating,
-        nominationPoolRecommendationMediator: RelaychainStakingRecommendationMediating,
-        operationQueue: OperationQueue
+        nominationPoolRecommendationMediator: RelaychainStakingRecommendationMediating
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -34,7 +32,6 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.nominationPoolsRestrictionsBuilder = nominationPoolsRestrictionsBuilder
         self.directStakingRecommendationMediator = directStakingRecommendationMediator
         self.nominationPoolRecommendationMediator = nominationPoolRecommendationMediator
-        self.operationQueue = operationQueue
     }
 
     deinit {
@@ -71,15 +68,14 @@ extension StakingTypeInteractor: StakingTypeInteractorInputProtocol {
             $0.start()
         }
 
-        switch stakingSelectionMethod.selectedStakingOption {
-        case .direct:
+        if case .direct = stakingSelectionMethod.selectedStakingOption {
             provideDirectStakingRecommendation()
-        case .pool, .none:
-            break
         }
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
+        manualChangeType = true
+
         switch stakingTypeSelection {
         case .direct:
             provideDirectStakingRecommendation()
@@ -114,13 +110,15 @@ extension StakingTypeInteractor: RelaychainStakingRecommendationDelegate {
         recommendation: RelaychainStakingRecommendation,
         amount _: BigUInt
     ) {
-        let model = RelaychainStakingManual(
-            staking: recommendation.staking,
-            restrictions: recommendation.restrictions,
-            usedRecommendation: true
-        )
+        if manualChangeType {
+            let model = RelaychainStakingManual(
+                staking: recommendation.staking,
+                restrictions: recommendation.restrictions,
+                usedRecommendation: true
+            )
 
-        presenter?.didReceive(method: .manual(model))
+            presenter?.didReceive(method: .manual(model))
+        }
         if case let .direct(validators) = recommendation.staking {
             presenter?.didReceive(recommendedValidators: validators)
         }
