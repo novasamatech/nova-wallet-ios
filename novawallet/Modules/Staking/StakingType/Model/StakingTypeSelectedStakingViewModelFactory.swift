@@ -1,30 +1,12 @@
 import Foundation
-import SoraFoundation
 import BigInt
 
-protocol SelectedStakingViewModelFactoryProtocol {
-    func createRecommended(
-        for stakingType: SelectedStakingOption,
-        locale: Locale
-    ) -> RecommendedStakingTypeViewModel
-
-    func createValidator(
-        for validators: PreparedValidators,
-        displaysRecommended: Bool,
-        locale: Locale
-    ) -> DirectStakingTypeViewModel.ValidatorModel
-
-    func createPool(
-        for pool: NominationPools.SelectedPool,
-        chainAsset: ChainAsset,
-        displaysRecommended: Bool,
-        locale: Locale
-    ) -> PoolStakingTypeViewModel.PoolAccountModel
+final class SelectedStakingTypeViewModelFactory {
+    private lazy var countFormatter = NumberFormatter.quantity.localizableResource()
+    private lazy var poolIconFactory = NominationPoolsIconFactory()
 }
 
-final class SelectedStakingViewModelFactory {}
-
-extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtocol {
+extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryProtocol {
     func createRecommended(
         for stakingType: SelectedStakingOption,
         locale: Locale
@@ -52,13 +34,13 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
 
         if displaysRecommended {
             return .init(
-                title: strings.stakingTypeDirect(preferredLanguages: locale.rLanguages),
+                title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
                 subtitle: strings.stakingTypeRecommendedValidatorsSubtitle(preferredLanguages: locale.rLanguages),
                 isRecommended: true,
-                count: nil
+                count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
             )
         } else {
-            let validatorsString = strings.stakingCustomHeaderValidatorsTitle(
+            let validatorsString = strings.stakingSetupAmountDirectTypeSubtitle(
                 validators.targets.count,
                 validators.maxTargets,
                 preferredLanguages: locale.rLanguages
@@ -68,7 +50,7 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
                 title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
                 subtitle: validatorsString,
                 isRecommended: false,
-                count: nil
+                count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
             )
         }
     }
@@ -79,14 +61,20 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
         displaysRecommended: Bool,
         locale: Locale
     ) -> PoolStakingTypeViewModel.PoolAccountModel {
-        let poolName = pool.title(for: chainAsset.chain.chainFormat) ?? ""
-        let title = R.string.localizable.stakingPoolStaking(preferredLanguages: locale.rLanguages)
+        let iconViewModel = poolIconFactory.createIconViewModel(
+            for: chainAsset,
+            poolId: pool.poolId,
+            bondedAccountId: pool.bondedAccountId
+        )
+
+        let title = pool.title(for: chainAsset.chain.chainFormat) ?? ""
+
         let subtitle = displaysRecommended ? R.string.localizable.commonRecommended(
             preferredLanguages: locale.rLanguages
-        ) : poolName
+        ) : nil
 
         return PoolStakingTypeViewModel.PoolAccountModel(
-            icon: nil,
+            icon: iconViewModel,
             title: title,
             subtitle: subtitle,
             isRecommended: displaysRecommended

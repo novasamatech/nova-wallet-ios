@@ -41,10 +41,7 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
     }
 
     func maxApy(for stakingType: SelectedStakingOption, locale: Locale) -> String {
-        let amount = stakingType.maxApy.flatMap {
-            estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0)
-        }
-
-        return amount ?? ""
+        let maxApy = stakingType.maxApy ?? 0
+        return estimatedEarningsFormatter.value(for: locale).stringFromDecimal(maxApy) ?? ""
     }
 }

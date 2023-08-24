@@ -353,6 +353,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
                 minNominatorBond: setupMethod.restrictions?.minJoinStake,
                 precision: chainAsset.asset.precision,
                 locale: selectedLocale
+            ),
+            dataValidatingFactory.nominationPoolHasApy(
+                method: setupMethod,
+                locale: selectedLocale
             )
         ]
 

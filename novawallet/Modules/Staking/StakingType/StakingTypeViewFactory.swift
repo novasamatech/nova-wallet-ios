@@ -29,7 +29,7 @@ enum StakingTypeViewFactory {
 
         let viewModelFactory = StakingTypeViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            stakingViewModelFactory: SelectedStakingViewModelFactory()
+            stakingViewModelFactory: SelectedStakingTypeViewModelFactory()
         )
 
         let presenter = StakingTypePresenter(
