@@ -65,7 +65,7 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
             )
 
             return .init(
-                title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
+                title: strings.stakingTypeDirect(preferredLanguages: locale.rLanguages),
                 subtitle: validatorsString,
                 isRecommended: false,
                 count: nil
