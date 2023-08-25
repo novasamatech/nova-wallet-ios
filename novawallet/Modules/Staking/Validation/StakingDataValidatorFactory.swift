@@ -407,7 +407,7 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 locale: locale
             )
         }, preservesCondition: {
-            guard case .manual = method, case let .pool(selectedPool) = method.selectedStakingOption else {
+            guard case let .pool(selectedPool) = method.selectedStakingOption else {
                 return true
             }
 
