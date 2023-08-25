@@ -1,4 +1,4 @@
-final class StakingTypeCustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
+final class StartStakingCustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
     private let stakingState: RelaychainStartStakingStateProtocol
     weak var stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegateProtocol?
 

@@ -79,7 +79,7 @@ extension CustomValidatorListViewFactory {
         validatorsSelectionParams: ValidatorsSelectionParams,
         delegate: StakingSelectValidatorsDelegateProtocol?
     ) -> CustomValidatorListViewProtocol? {
-        let wireframe = StakingTypeCustomValidatorListWireframe(
+        let wireframe = StartStakingCustomValidatorListWireframe(
             stakingState: stakingState,
             delegate: delegate
         )
