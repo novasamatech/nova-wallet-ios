@@ -161,7 +161,9 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectValidators() {
-        guard case let .direct(validators) = method?.selectedStakingOption else {
+        guard let method = method,
+              case let .direct(validators) = method.selectedStakingOption,
+              let delegate = delegate else {
             return
         }
 
@@ -315,19 +317,28 @@ extension StakingTypePresenter: StakingSelectPoolDelegate {
     }
 }
 
-extension StakingTypePresenter: StakingSelectValidatorsDelegate {
+extension StakingTypePresenter: StakingSelectValidatorsDelegateProtocol {
     func changeValidatorsSelection(validatorList: [SelectedValidatorInfo], maxTargets: Int) {
+        guard let method = convert(validatorList: validatorList, maxTargets: maxTargets) else {
+            return
+        }
+
+        hasChanges = true
+        self.method = method
+        delegate?.changeStakingType(method: method)
+    }
+
+    private func convert(validatorList: [SelectedValidatorInfo], maxTargets: Int) -> StakingSelectionMethod? {
         guard case let .direct(validators) = method?.selectedStakingOption,
               let restrictions = method?.restrictions else {
-            return
+            return nil
         }
         let selectedAddresses = validatorList.map(\.address)
         let selectedValidators = validators.electedValidators.filter {
             selectedAddresses.contains($0.address)
         }
         let usedRecommendation = Set(selectedAddresses) == Set(validators.recommendedValidators.map(\.address))
-        hasChanges = true
-        method = .manual(.init(
+        return .manual(.init(
             staking: .direct(.init(
                 targets: selectedValidators,
                 maxTargets: maxTargets,
@@ -337,7 +348,5 @@ extension StakingTypePresenter: StakingSelectValidatorsDelegate {
             restrictions: restrictions,
             usedRecommendation: usedRecommendation
         ))
-
-        updateView()
     }
 }

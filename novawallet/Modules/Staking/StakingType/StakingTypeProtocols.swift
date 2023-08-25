@@ -41,7 +41,7 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
-        delegate: StakingSelectValidatorsDelegate?
+        delegate: StakingSelectValidatorsDelegateProtocol?
     )
 }
 

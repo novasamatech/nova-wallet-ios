@@ -1,13 +1,13 @@
 final class StakingTypeCustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
     private let stakingState: RelaychainStartStakingStateProtocol
-    weak var stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegate?
+    weak var stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegateProtocol?
 
     init(
         stakingState: RelaychainStartStakingStateProtocol,
-        stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegate?
+        delegate: StakingSelectValidatorsDelegateProtocol?
     ) {
         self.stakingState = stakingState
-        self.stakingSelectValidatorsDelegate = stakingSelectValidatorsDelegate
+        stakingSelectValidatorsDelegate = delegate
     }
 
     func present(
@@ -69,12 +69,21 @@ final class StakingTypeCustomValidatorListWireframe: CustomValidatorListWirefram
         from view: ControllerBackedProtocol?,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
-        delegate _: SelectedValidatorListDelegate
+        delegate: SelectedValidatorListDelegate
     ) {
-        stakingSelectValidatorsDelegate?.changeValidatorsSelection(
+        guard let selectedValidatorListView = SelectedValidatorListViewFactory.createStartStakingView(
+            startStakingState: stakingState,
             validatorList: validatorList,
-            maxTargets: maxTargets
+            maxTargets: maxTargets,
+            delegate: delegate,
+            stakingSelectValidatorsDelegate: stakingSelectValidatorsDelegate
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            selectedValidatorListView.controller,
+            animated: true
         )
-        view?.controller.navigationController?.popViewController(animated: true)
     }
 }

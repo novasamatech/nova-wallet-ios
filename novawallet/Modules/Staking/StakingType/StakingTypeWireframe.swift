@@ -38,7 +38,7 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
-        delegate: StakingSelectValidatorsDelegate?
+        delegate: StakingSelectValidatorsDelegateProtocol?
     ) {
         guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
             for: state,

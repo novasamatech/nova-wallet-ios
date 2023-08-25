@@ -6,10 +6,6 @@ protocol StakingSelectPoolDelegate: AnyObject {
     func changePoolSelection(selectedPool: NominationPools.SelectedPool, isRecommended: Bool)
 }
 
-protocol StakingSelectValidatorsDelegate: AnyObject {
-    func changeValidatorsSelection(validatorList: [SelectedValidatorInfo], maxTargets: Int)
-}
-
 enum StakingSelectPoolViewFactory {
     static func createView(
         state: RelaychainStartStakingStateProtocol,

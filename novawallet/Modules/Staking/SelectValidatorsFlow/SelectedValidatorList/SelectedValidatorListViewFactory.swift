@@ -11,7 +11,6 @@ struct SelectedValidatorListViewFactory {
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = InitiatedBondingSelectedValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
-            stakingState: stakingState,
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
@@ -28,7 +27,6 @@ struct SelectedValidatorListViewFactory {
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = ChangeTargetsSelectedValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
-            stakingState: stakingState,
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
@@ -45,7 +43,6 @@ struct SelectedValidatorListViewFactory {
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = YourValidatorList.SelectedListWireframe(state: state, stakingState: stakingState)
         return createView(
-            stakingState: stakingState,
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
@@ -54,7 +51,6 @@ struct SelectedValidatorListViewFactory {
     }
 
     static func createView(
-        stakingState _: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
@@ -81,5 +77,24 @@ struct SelectedValidatorListViewFactory {
         presenter.view = view
 
         return view
+    }
+
+    static func createStartStakingView(
+        startStakingState: RelaychainStartStakingStateProtocol,
+        validatorList: [SelectedValidatorInfo],
+        maxTargets: Int,
+        delegate: SelectedValidatorListDelegate,
+        stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegateProtocol?
+    ) -> SelectedValidatorListViewProtocol? {
+        let wireframe = StartStakingSelectedValidatorsListWireframe(
+            state: startStakingState,
+            delegate: stakingSelectValidatorsDelegate
+        )
+        return createView(
+            validatorList: validatorList,
+            maxTargets: maxTargets,
+            delegate: delegate,
+            wireframe: wireframe
+        )
     }
 }

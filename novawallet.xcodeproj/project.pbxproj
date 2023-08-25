@@ -632,6 +632,9 @@
 		77CB33CE2A38780700B6709A /* structures_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77CB33CD2A38780700B6709A /* structures_output.json */; };
 		77CB33D22A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */; };
 		77CB33D72A3998FD00B6709A /* Array+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D62A3998FC00B6709A /* Array+Sort.swift */; };
+		77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */; };
+		77CC82A52A984EDA002D022F /* UINavigaionController+Pop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */; };
+		77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */; };
 		77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */; };
 		77E255672A16145500B644C3 /* StakingRewardsFilterMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */; };
 		77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255682A16148000B644C3 /* StakingRewardsFilter.swift */; };
@@ -4476,6 +4479,9 @@
 		77CB33CD2A38780700B6709A /* structures_output.json */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; path = structures_output.json; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 0; };
 		77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifierWithCanonicalizationData.swift; sourceTree = "<group>"; };
 		77CB33D62A3998FC00B6709A /* Array+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Sort.swift"; sourceTree = "<group>"; };
+		77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingSelectedValidatorsListWireframe.swift; sourceTree = "<group>"; };
+		77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigaionController+Pop.swift"; sourceTree = "<group>"; };
+		77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectValidatorsDelegate.swift; sourceTree = "<group>"; };
 		77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Helpers.swift"; sourceTree = "<group>"; };
 		77E255652A16059A00B644C3 /* MultiassetUserDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilterMapper.swift; sourceTree = "<group>"; };
@@ -8253,6 +8259,7 @@
 				3930902D540DB0B9A2CFD21C /* StakingTypeViewController.swift */,
 				64E66B662DD15424D2B383A7 /* StakingTypeViewLayout.swift */,
 				E4752D80077E85563CF3AD5D /* StakingTypeViewFactory.swift */,
+				77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */,
 			);
 			path = StakingType;
 			sourceTree = "<group>";
@@ -12604,6 +12611,7 @@
 				842D8B792A416A9A00660005 /* UIView+Shimmering.swift */,
 				849F1AFF2A41A5B3003A2CF7 /* ScrullableView+Animation.swift */,
 				0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */,
+				77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -16906,6 +16914,7 @@
 				AEA0C8A5267B6B2600F9666F /* SelectedValidatorListWireframe.swift */,
 				AEA0C8C5268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift */,
 				AEA0C8C7268131DD00F9666F /* ChangeTargetsSelectedValidatorsListWireframe.swift */,
+				77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */,
 			);
 			path = Wireframe;
 			sourceTree = "<group>";
@@ -18930,6 +18939,7 @@
 				849D14CC2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift in Sources */,
 				F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */,
 				8489198E2A0529DA008D57A3 /* NetworkTableViewCell.swift in Sources */,
+				77CC82A52A984EDA002D022F /* UINavigaionController+Pop.swift in Sources */,
 				84E4897329A79017008726FA /* SkeletonDecoration+View.swift in Sources */,
 				2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */,
 				845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */,
@@ -19274,6 +19284,7 @@
 				8428768624AE046300D91AD8 /* LanguageSelectionPresenter.swift in Sources */,
 				84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */,
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
+				77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */,
 				0C77B5692A837D4000B5AE08 /* StaticValidatorListViewFactory.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,
 				84893C0124DA861D008F6A3F /* AccountCreationMetadata.swift in Sources */,
@@ -19820,6 +19831,7 @@
 				842A737127DB7EF1006EE1EA /* OperationSlashViewModel.swift in Sources */,
 				84F1D66F29066F740050F4E3 /* ReferendumVotesViewModel.swift in Sources */,
 				84C5ADE22813E8C1006D7388 /* GradientBannerInfoView.swift in Sources */,
+				77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */,
 				8490142C24A935FE008F705E /* ErrorPresentable.swift in Sources */,
 				84DF21A5253473B0005454AE /* ModalInfoFactory.swift in Sources */,
 				84AF378A272349DA007408D6 /* SiDataTypeMapper.swift in Sources */,

@@ -77,9 +77,12 @@ extension CustomValidatorListViewFactory {
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
-        delegate: StakingSelectValidatorsDelegate?
+        delegate: StakingSelectValidatorsDelegateProtocol?
     ) -> CustomValidatorListViewProtocol? {
-        let wireframe = StakingTypeCustomValidatorListWireframe(stakingState: stakingState, stakingSelectValidatorsDelegate: delegate)
+        let wireframe = StakingTypeCustomValidatorListWireframe(
+            stakingState: stakingState,
+            delegate: delegate
+        )
         return createView(
             chainAsset: stakingState.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,
