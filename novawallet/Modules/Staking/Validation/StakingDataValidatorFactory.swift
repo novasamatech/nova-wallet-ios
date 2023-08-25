@@ -70,11 +70,6 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
     ) -> DataValidating
 
     func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
-
-    func nominationPoolHasApy(
-        method: StakingSelectionMethod,
-        locale: Locale
-    ) -> DataValidating
 }
 
 final class StakingDataValidatingFactory {
@@ -388,34 +383,6 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
             self?.presentable.presentMaxNumberOfNominatorsReached(from: view, locale: locale)
         }, preservesCondition: {
             flag
-        })
-    }
-
-    func nominationPoolHasApy(
-        method: StakingSelectionMethod,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let view = self?.view else {
-                return
-            }
-            self?.presentable.presentNominationPoolHasNoApy(
-                from: view,
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard case let .pool(selectedPool) = method.selectedStakingOption else {
-                return true
-            }
-
-            if let apy = selectedPool.maxApy, apy > 0 {
-                return true
-            } else {
-                return false
-            }
         })
     }
 }

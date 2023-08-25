@@ -62,12 +62,6 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
         directRewardableToStake: String,
         locale: Locale?
     )
-
-    func presentNominationPoolHasNoApy(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    )
 }
 
 extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -274,22 +268,5 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
-    }
-
-    func presentNominationPoolHasNoApy(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    ) {
-        let title = R.string.localizable.stakingPoolHasNoApyTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingPoolHasNoApyMessage(preferredLanguages: locale?.rLanguages)
-
-        presentWarning(
-            for: title,
-            message: message,
-            action: action,
-            view: view,
-            locale: locale
-        )
     }
 }

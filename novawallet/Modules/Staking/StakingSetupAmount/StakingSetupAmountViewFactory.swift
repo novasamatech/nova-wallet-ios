@@ -30,6 +30,10 @@ struct StakingSetupAmountViewFactory {
             balanceFactory: balanceViewModelFactory
         )
 
+        let poolValidatingFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe
+        )
+
         let balanceDerivationFactory = StakingTypeBalanceFactory(stakingType: state.stakingType)
 
         let presenter = StakingSetupAmountPresenter(
@@ -41,6 +45,7 @@ struct StakingSetupAmountViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             balanceDerivationFactory: balanceDerivationFactory,
             dataValidatingFactory: dataValidatingFactory,
+            poolValidatingFactory: poolValidatingFactory,
             chainAsset: state.chainAsset,
             recommendsMultipleStakings: state.recommendsMultipleStakings,
             localizationManager: LocalizationManager.shared,
@@ -59,6 +64,7 @@ struct StakingSetupAmountViewFactory {
         presenter.view = view
         interactor.presenter = presenter
         dataValidatingFactory.view = view
+        poolValidatingFactory.view = view
 
         return view
     }
