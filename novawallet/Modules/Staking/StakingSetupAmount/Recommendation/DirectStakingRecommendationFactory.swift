@@ -33,12 +33,17 @@ final class DirectStakingRecommendationFactory {
             let maxNominations = try maxNominationsOperation.extractNoCancellableResultData()
 
             let resultLimit = min(electedValidators.count, maxNominations)
-            let recomendedValidators = RecommendationsComposer(
+            let recommendedValidators = RecommendationsComposer(
                 resultSize: resultLimit,
                 clusterSizeLimit: clusterLimit
             ).compose(from: electedValidators)
 
-            return PreparedValidators(targets: recomendedValidators, maxTargets: resultLimit, electedValidators: electedValidators)
+            return PreparedValidators(
+                targets: recommendedValidators,
+                maxTargets: resultLimit,
+                electedValidators: electedValidators,
+                recommendedValidators: recommendedValidators
+            )
         }
     }
 }

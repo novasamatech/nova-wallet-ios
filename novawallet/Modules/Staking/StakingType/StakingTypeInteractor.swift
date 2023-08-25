@@ -12,7 +12,6 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainAsset: ChainAsset
     let stakingSelectionMethod: StakingSelectionMethod
     let amount: BigUInt
-    private var changeSelectionMethod: Bool = true
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -67,15 +66,9 @@ extension StakingTypeInteractor: StakingTypeInteractorInputProtocol {
             $0.delegate = self
             $0.start()
         }
-
-        if case .direct = stakingSelectionMethod.selectedStakingOption {
-            provideDirectStakingRecommendation()
-        }
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
-        changeSelectionMethod = true
-
         switch stakingTypeSelection {
         case .direct:
             provideDirectStakingRecommendation()
@@ -110,18 +103,13 @@ extension StakingTypeInteractor: RelaychainStakingRecommendationDelegate {
         recommendation: RelaychainStakingRecommendation,
         amount _: BigUInt
     ) {
-        if changeSelectionMethod {
-            let model = RelaychainStakingManual(
-                staking: recommendation.staking,
-                restrictions: recommendation.restrictions,
-                usedRecommendation: true
-            )
+        let model = RelaychainStakingManual(
+            staking: recommendation.staking,
+            restrictions: recommendation.restrictions,
+            usedRecommendation: true
+        )
 
-            presenter?.didReceive(method: .manual(model))
-        }
-        if case let .direct(validators) = recommendation.staking {
-            presenter?.didReceive(recommendedValidators: validators)
-        }
+        presenter?.didReceive(method: .manual(model))
     }
 
     func didReceiveRecommendation(error: Error) {

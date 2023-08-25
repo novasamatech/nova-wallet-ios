@@ -10,4 +10,5 @@ struct PreparedValidators {
     let targets: [ElectedValidatorInfo]
     let maxTargets: Int
     let electedValidators: [ElectedValidatorInfo]
+    let recommendedValidators: [ElectedValidatorInfo]
 }

@@ -26,7 +26,6 @@ protocol StakingTypeInteractorOutputProtocol: AnyObject {
     func didReceive(directStakingRestrictions: RelaychainStakingRestrictions)
     func didReceive(method: StakingSelectionMethod)
     func didReceive(error: StakingTypeError)
-    func didReceive(recommendedValidators: PreparedValidators)
 }
 
 protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
