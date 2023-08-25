@@ -26,6 +26,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private var actionsView: StakingActionsView?
     private var unbondingsView: StakingUnbondingsView?
 
+    private var selectedEntityView: StackTableView?
+    private var selectedEntityCell: StackAddressCell?
+
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
 
@@ -77,6 +80,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didAppearSkeleton()
+
+        selectedEntityCell?.didAppearSkeleton()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -89,6 +94,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didDisappearSkeleton()
+
+        selectedEntityCell?.didDisappearSkeleton()
     }
 
     override func viewDidLayoutSubviews() {
@@ -101,12 +108,13 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didUpdateSkeletonLayout()
+
+        selectedEntityCell?.didUpdateSkeletonLayout()
     }
 
     // MARK: - Private functions
 
-    @objc
-    private func rewardPeriodAction() {
+    @objc private func rewardPeriodAction() {
         presenter.selectPeriod()
     }
 
@@ -114,8 +122,62 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         presenter.performClaimRewards()
     }
 
+    @objc private func selectedEntityAction() {
+        presenter.performSelectedEntityAction()
+    }
+
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    }
+
+    private func setupEntityView(for viewModel: StakingSelectedEntityViewModel) {
+        let entityView: StackTableView
+
+        if let selectedEntityView = selectedEntityView {
+            entityView = selectedEntityView
+        } else {
+            let containerView = UIView()
+
+            entityView = StackTableView()
+
+            if let beforeView = networkInfoContainerView {
+                stackView.insertArranged(view: containerView, before: beforeView)
+            } else {
+                stackView.addArrangedSubview(containerView)
+            }
+
+            stackView.setCustomSpacing(8, after: containerView)
+
+            containerView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            containerView.addSubview(entityView)
+            entityView.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            }
+
+            selectedEntityView = entityView
+        }
+
+        entityView.clear()
+
+        entityView.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 8.0, right: 16.0)
+
+        let tableHeader = StackTableHeaderCell()
+        tableHeader.titleLabel.text = viewModel.title
+        tableHeader.titleLabel.apply(style: .regularSubhedlineSecondary)
+        entityView.addArrangedSubview(tableHeader)
+
+        let addressCell = StackAddressCell()
+        entityView.addArrangedSubview(addressCell)
+
+        selectedEntityCell = addressCell
+
+        addressCell.bind(viewModel: viewModel.loadingAddress)
+
+        addressCell.addTarget(self, action: #selector(selectedEntityAction), for: .touchUpInside)
     }
 
     private func setupNetworkInfoView() {
@@ -372,6 +434,10 @@ extension StakingMainViewController: Localizable {
 }
 
 extension StakingMainViewController: StakingMainViewProtocol {
+    func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel) {
+        setupEntityView(for: entity)
+    }
+
     func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel) {
         networkInfoView.bind(viewModel: viewModel)
     }
@@ -393,9 +459,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case .noStash:
-            // TODO: consider to remove as unreachable
-            break
         case let .nominator(viewModel, alerts, optReward, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)

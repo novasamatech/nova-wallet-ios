@@ -625,7 +625,7 @@
 "staking.set.separate.account.controller_v2_2_0" = "Select another account as a controller to improve staking security by delegating staking management operations to it";
 "staking.controller.can.hint_v2_2_0" = "Controller is used to: unstake, redeem, return to stake, change validators and set rewards destination";
 "staking.stash.can.hint_v2_2_0" = "Stash is used to: stake more and set the controller";
-"staking.network.info.title" = "About staking";
+"staking.network.info.title" = "Staking info";
 "staking.network.info.staking.period.value" = "Unlimited";
 "staking.network.info.staking.period.title" = "Staking period";
 "crowdloan.learn_v2_2_0" = "%@'s crowdloan website";
@@ -1350,7 +1350,7 @@
 "staking.search.pool.placeholder" = "Search by name or pool ID";
 "common.every.day" = "everyday";
 "staking.search.pool.selection.error.message" = "This pool currently unavailable to staking";
-"staking.pool.network.info" = "Pool's staking info";
+"staking.pool.network.info" = "Pool staking info";
 "token.add.remote.exist.message" = "The entered contract address is present in Nova as a %@ token. Are you sure you want to modify it?";
 "send.system.account.message" = "Recipient is a system account. It is not controlled by any company or individual.\nAre you sure you still want to perform this transfer?";
 "send.system.account.title" = "Tokens will be lost";
@@ -1361,3 +1361,5 @@
 "staking.reward.filters.period.custom.month.short" = "%@D";
 "staking.locked.pool.violation.title" = "You can’t stake the specified amount";
 "staking.claim.rewards" = "Claim rewards";
+"staking.your.pool.title" = "Your pool";
+"staking.your.pool.format" = "Your pool (#%@)";

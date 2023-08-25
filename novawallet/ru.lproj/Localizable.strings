@@ -625,7 +625,7 @@
 "staking.set.separate.account.controller_v2_2_0" = "Установите отдельный аккаунт как контроллер, чтобы увеличить безопасность стейкинга делегируя ему управление стейком";
 "staking.controller.can.hint_v2_2_0" = "Контроллер аккаунт может: вывести, забрать, вернуть в стейк, сменить валидаторов и установить назначение вознаграждений";
 "staking.stash.can.hint_v2_2_0" = "Стэш аккаунт может: застейкать больше и установить контроллер аккаунт";
-"staking.network.info.title" = "О стейкинге";
+"staking.network.info.title" = "Информация о стейкинге";
 "staking.network.info.staking.period.value" = "Неограниченно";
 "staking.network.info.staking.period.title" = "Время стейкинга";
 "crowdloan.learn_v2_2_0" = "Cайт краудлоана %@";
@@ -1361,3 +1361,5 @@
 "staking.reward.filters.period.custom.month.short" = "%@Д";
 "staking.locked.pool.violation.title" = "Вы не можете застейкать указанную сумму";
 "staking.claim.rewards" = "Забрать награды";
+"staking.your.pool.title" = "Ваш пул";
+"staking.your.pool.format" = "Ваш пул (#%@)";

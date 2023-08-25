@@ -2,7 +2,6 @@ import Foundation
 
 protocol ParaStkStateVisitorProtocol {
     func visit(state: ParachainStaking.InitState)
-    func visit(state: ParachainStaking.NoStakingState)
     func visit(state: ParachainStaking.DelegatorState)
 }
 

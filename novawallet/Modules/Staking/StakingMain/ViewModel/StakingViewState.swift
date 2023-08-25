@@ -17,10 +17,6 @@ enum StakingViewState {
         unbondings: StakingUnbondingViewModel?,
         actions: [StakingManageOption]
     )
-    case noStash(
-        viewModel: StakingEstimationViewModel,
-        alerts: [StakingAlert]
-    )
 
     var rawType: Int {
         switch self {
@@ -30,8 +26,6 @@ enum StakingViewState {
             return 1
         case .validator:
             return 2
-        case .noStash:
-            return 3
         }
     }
 }

@@ -38,8 +38,7 @@ final class NetworkInfoView: UIView {
         control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorIconSecondary()!)
         control.identityIconAngle = CGFloat.pi
         control.activationIconAngle = 0.0
-        control.titleLabel.textColor = R.color.colorTextPrimary()
-        control.titleLabel.font = .regularSubheadline
+        control.titleLabel.apply(style: .regularSubhedlineSecondary)
         control.layoutType = .flexible
         control.contentInsets = Constants.contentMargins
         control.horizontalSpacing = 0.0

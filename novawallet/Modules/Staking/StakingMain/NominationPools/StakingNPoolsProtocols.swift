@@ -24,6 +24,7 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didRecieve(claimableRewards: BigUInt?)
     func didReceive(totalRewards: TotalRewardItem?)
     func didReceive(poolBondedAccountId: AccountId)
+    func didReceive(poolMetadata: Data?)
     func didReceive(activePools: Set<NominationPools.PoolId>)
     func didReceive(duration: StakingDuration)
     func didReceive(eraCountdown: EraCountdown)
@@ -31,7 +32,7 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(error: StakingNPoolsError)
 }
 
-protocol StakingNPoolsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol StakingNPoolsWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, CommonRetryable {
     func showStakeMore(from view: StakingMainViewProtocol?)
     func showUnstake(from view: StakingMainViewProtocol?)
     func showRedeem(from view: StakingMainViewProtocol?)

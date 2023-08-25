@@ -35,6 +35,7 @@ extension StakingMainPresenterFactory {
             wireframe: wireframe,
             infoViewModelFactory: infoViewModelFactory,
             stateViewModelFactory: stateViewModelFactory,
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
             chainAsset: state.chainAsset,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared

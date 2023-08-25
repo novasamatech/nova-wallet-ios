@@ -9,6 +9,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveStakingState(viewModel: StakingViewState)
     func expandNetworkInfoView(_ isExpanded: Bool)
     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)
+    func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)
     func didEditRewardFilters()
 }
 
@@ -20,6 +21,7 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
     func performAlertAction(_ alert: StakingAlert)
+    func performSelectedEntityAction()
     func selectPeriod()
 }
 
@@ -51,5 +53,6 @@ protocol StakingMainChildPresenterProtocol: AnyObject {
     func performClaimRewards()
     func performManageAction(_ action: StakingManageOption)
     func performAlertAction(_ alert: StakingAlert)
+    func performSelectedEntityAction()
     func selectPeriod(_ period: StakingRewardFiltersPeriod)
 }
