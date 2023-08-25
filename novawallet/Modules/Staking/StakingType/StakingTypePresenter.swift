@@ -305,15 +305,15 @@ extension StakingTypePresenter: StakingSelectPoolDelegate {
         guard let restrictions = nominationPoolRestrictions else {
             return
         }
-
-        hasChanges = true
-        method = .manual(.init(
+        let method = StakingSelectionMethod.manual(.init(
             staking: .pool(selectedPool),
             restrictions: restrictions,
             usedRecommendation: isRecommended
         ))
 
-        updateView()
+        hasChanges = true
+        self.method = method
+        delegate?.changeStakingType(method: method)
     }
 }
 
