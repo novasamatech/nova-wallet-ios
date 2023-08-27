@@ -5,4 +5,6 @@ enum NPoolsUnstakeBaseError: Error {
     case stakingDuration(Error)
     case eraCountdown(Error)
     case claimableRewards(Error)
+    case unstakeLimits(Error)
+    case fee(Error)
 }

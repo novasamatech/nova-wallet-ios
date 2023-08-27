@@ -10,7 +10,7 @@ enum Staking {
     static var historyDepthCostantPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: module, constantName: "HistoryDepth")
     }
-    
+
     static var maxUnlockingChunks: ConstantCodingPath {
         ConstantCodingPath(moduleName: module, constantName: "MaxUnlockingChunks")
     }

@@ -7,6 +7,7 @@ protocol NPoolsUnstakeBaseInteractorInputProtocol: AnyObject {
     func retryEraCountdown()
     func retryClaimableRewards()
     func retryUnstakeLimits()
+    func estimateFee(for points: BigUInt)
 }
 
 protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
@@ -20,7 +21,7 @@ protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(claimableRewards: BigUInt?)
     func didReceive(minStake: BigUInt?)
     func didReceive(price: PriceData?)
-    func didReceive(unstakingLimits: NominationPoolsUnstakeLimits)
+    func didReceive(unstakingLimits: NominationPools.UnstakeLimits)
     func didReceive(fee: BigUInt?)
     func didReceive(error: NPoolsUnstakeBaseError)
 }

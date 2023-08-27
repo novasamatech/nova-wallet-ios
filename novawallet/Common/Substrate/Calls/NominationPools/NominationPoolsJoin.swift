@@ -13,7 +13,7 @@ extension NominationPools {
         @StringCodable var poolId: NominationPools.PoolId
 
         func runtimeCall() -> RuntimeCall<Self> {
-            RuntimeCall(moduleName: "NominationPools", callName: "join", args: self)
+            RuntimeCall(moduleName: NominationPools.module, callName: "join", args: self)
         }
     }
 }

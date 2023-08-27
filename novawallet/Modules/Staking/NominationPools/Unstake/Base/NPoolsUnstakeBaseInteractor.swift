@@ -1,9 +1,11 @@
 import Foundation
 import RobinHood
+import BigInt
+import SubstrateSdk
 
-class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
+class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataProviding {
     weak var basePresenter: NPoolsUnstakeBaseInteractorOutputProtocol?
-    
+
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let extrinsicService: ExtrinsicServiceProtocol
@@ -14,13 +16,18 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol
+    let durationFactory: StakingDurationOperationFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeService: RuntimeCodingServiceProtocol
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
-    
+
     var accountId: AccountId { selectedAccount.chainAccount.accountId }
     var chainId: ChainModel.Id { chainAsset.chain.chainId }
     var asset: AssetModel { chainAsset.asset }
     var assetId: AssetModel.Id { asset.assetId }
-    
+
     private var poolMemberProvider: AnyDataProvider<DecodedPoolMember>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -28,10 +35,15 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
     private var subpoolsProvider: AnyDataProvider<DecodedSubPools>?
     private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
-    
+
+    private var bondedAccountIdCancellable: CancellableCall?
+    private var eraCountdownCancellable: CancellableCall?
+    private var durationCancellable: CancellableCall?
+    private var unstakeLimitsCancellable: CancellableCall?
+
     private var currentPoolId: NominationPools.PoolId?
     private var poolAccountId: AccountId?
-    
+
     init(
         selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
@@ -41,7 +53,12 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
+        eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol,
+        durationFactory: StakingDurationOperationFactoryProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
+        eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -54,10 +71,28 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.npoolsOperationFactory = npoolsOperationFactory
+        self.connection = connection
+        self.runtimeService = runtimeService
+        self.eraCountdownOperationFactory = eraCountdownOperationFactory
+        self.durationFactory = durationFactory
         self.operationQueue = operationQueue
+        self.eventCenter = eventCenter
         self.currencyManager = currencyManager
     }
-    
+
+    deinit {
+        eventCenter.remove(observer: self)
+
+        clearCancellable()
+    }
+
+    func clearCancellable() {
+        clear(cancellable: &bondedAccountIdCancellable)
+        clear(cancellable: &eraCountdownCancellable)
+        clear(cancellable: &durationCancellable)
+        clear(cancellable: &unstakeLimitsCancellable)
+    }
+
     func provideBondedAccountId() {
         clear(cancellable: &bondedAccountIdCancellable)
 
@@ -68,7 +103,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
         bondedAccountIdCancellable = fetchBondedAccounts(
             for: npoolsOperationFactory,
             poolIds: { [poolId] },
-            runtimeService: runtimeCodingService,
+            runtimeService: runtimeService,
             operationQueue: operationQueue,
             completion: { [weak self] result in
                 self?.bondedAccountIdCancellable = nil
@@ -80,20 +115,20 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
                         self?.setupBondedAccountProviders()
                     }
                 case let .failure(error):
-                    self?.presenter?.didReceive(error: .subscription(error, "bondedAccountId"))
+                    self?.basePresenter?.didReceive(error: .subscription(error, "bondedAccountId"))
                 }
             }
         )
     }
-    
+
     func setupPoolProviders() {
         guard let poolId = currentPoolId else {
             return
         }
-        
+
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
         subpoolsProvider = subscribeSubPools(for: poolId, chainId: chainId)
-        
+
         setupClaimableRewardsProvider()
     }
 
@@ -119,58 +154,257 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning {
         )
 
         if claimableRewardProvider == nil {
-            presenter?.didReceive(error: .claimableRewards(CommonError.dataCorruption))
+            basePresenter?.didReceive(error: .claimableRewards(CommonError.dataCorruption))
         }
     }
-    
+
     func setupCurrencyProvider() {
         guard let priceId = asset.priceId else {
-            presenter?.didReceive(price: nil)
+            basePresenter?.didReceive(price: nil)
             return
         }
 
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
-    
-    func setupBasePoolProviders() {
+
+    func setupBaseProviders() {
         bondedPoolProvider = nil
         subpoolsProvider = nil
         poolLedgerProvider = nil
-        
+
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
-        
+
         setupCurrencyProvider()
+    }
+
+    func provideEraCountdown() {
+        clear(cancellable: &eraCountdownCancellable)
+
+        let wrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
+            for: connection,
+            runtimeService: runtimeService
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.eraCountdownCancellable else {
+                    return
+                }
+
+                self?.eraCountdownCancellable = nil
+
+                do {
+                    let eraCountdown = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.basePresenter?.didReceive(eraCountdown: eraCountdown)
+                } catch {
+                    self?.basePresenter?.didReceive(error: .eraCountdown(error))
+                }
+            }
+        }
+
+        eraCountdownCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func provideStakingDuration() {
+        clear(cancellable: &durationCancellable)
+
+        let wrapper = durationFactory.createDurationOperation(from: runtimeService)
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.durationCancellable else {
+                    return
+                }
+
+                self?.durationCancellable = nil
+
+                do {
+                    let duration = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.basePresenter?.didReceive(stakingDuration: duration)
+                } catch {
+                    self?.basePresenter?.didReceive(error: .stakingDuration(error))
+                }
+            }
+        }
+
+        durationCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func provideUnstakingLimits() {
+        let maxUnlockingsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation(path: Staking.maxUnlockingChunks)
+
+        let mapOperation = ClosureOperation<NominationPools.UnstakeLimits> {
+            let maxUnlockChunks = try maxUnlockingsOperation.extractNoCancellableResultData()
+
+            return .init(
+                globalMaxUnlockings: maxUnlockChunks,
+                poolMemberMaxUnlockings: nil,
+                poolMaxUnlockings: nil
+            )
+        }
+
+        mapOperation.addDependency(maxUnlockingsOperation)
+
+        let dependecies = [maxUnlockingsOperation]
+
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependecies)
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.unstakeLimitsCancellable === wrapper else {
+                    return
+                }
+
+                self?.unstakeLimitsCancellable = nil
+
+                do {
+                    let limits = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.basePresenter?.didReceive(unstakingLimits: limits)
+                } catch {
+                    self?.basePresenter?.didReceive(error: .unstakeLimits(error))
+                }
+            }
+        }
+
+        unstakeLimitsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func createExtrinsicClosure(for points: BigUInt, accountId: AccountId) -> ExtrinsicBuilderClosure {
+        { builder in
+            let call = NominationPools.UnbondCall(
+                memberAccount: .accoundId(accountId),
+                unbondingPoints: points
+            )
+            return try builder.adding(call: call.runtimeCall())
+        }
+    }
+}
+
+extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol {
+    func setup() {
+        setupBaseProviders()
+        provideEraCountdown()
+        provideStakingDuration()
+
+        feeProxy.delegate = self
+        eventCenter.add(observer: self, dispatchIn: .main)
+    }
+
+    func retrySubscriptions() {
+        setupBaseProviders()
+    }
+
+    func retryStakingDuration() {
+        provideStakingDuration()
+    }
+
+    func retryEraCountdown() {
+        provideEraCountdown()
+    }
+
+    func retryClaimableRewards() {
+        setupClaimableRewardsProvider()
+    }
+
+    func retryUnstakeLimits() {
+        provideUnstakingLimits()
+    }
+
+    func estimateFee(for points: BigUInt) {
+        let identifier = String(points)
+
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: identifier,
+            setupBy: createExtrinsicClosure(for: points, accountId: accountId)
+        )
+    }
+}
+
+extension NPoolsUnstakeBaseInteractor: ExtrinsicFeeProxyDelegate {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+        switch result {
+        case let .success(dispatchInfo):
+            basePresenter?.didReceive(fee: BigUInt(dispatchInfo.fee))
+        case let .failure(error):
+            basePresenter?.didReceive(error: .fee(error))
+        }
     }
 }
 
 extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubscriptionHandler {
     func handlePoolMember(
         result: Result<NominationPools.PoolMember?, Error>,
-        accountId: AccountId, chainId: ChainModel.Id
+        accountId _: AccountId, chainId _: ChainModel.Id
     ) {
         switch result {
         case let .success(optPoolMember):
-            self.currentPoolId = optPoolMember?.poolId
-            
+            currentPoolId = optPoolMember?.poolId
+
             setupPoolProviders()
-            
+            provideBondedAccountId()
+
             basePresenter?.didReceive(poolMember: optPoolMember)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "pool member"))
         }
     }
+
+    func handleSubPools(
+        result: Result<NominationPools.SubPools?, Error>,
+        poolId _: NominationPools.PoolId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(subPools):
+            basePresenter?.didReceive(subPools: subPools)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "subPools"))
+        }
+    }
+
+    func handleClaimableRewards(
+        result: Result<BigUInt?, Error>,
+        chainId _: ChainModel.Id,
+        poolId _: NominationPools.PoolId,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(rewards):
+            basePresenter?.didReceive(claimableRewards: rewards)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .claimableRewards(error))
+        }
+    }
 }
 
 extension NPoolsUnstakeBaseInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    
+    func handleLedgerInfo(
+        result: Result<StakingLedger?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(ledger):
+            basePresenter?.didReceive(stakingLedger: ledger)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "ledger"))
+        }
+    }
 }
 
 extension NPoolsUnstakeBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
-        accountId: AccountId, chainId: ChainModel.Id,
-        assetId: AssetModel.Id
+        accountId _: AccountId, chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
         switch result {
         case let .success(assetBalance):
@@ -182,13 +416,20 @@ extension NPoolsUnstakeBaseInteractor: WalletLocalStorageSubscriber, WalletLocal
 }
 
 extension NPoolsUnstakeBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
             basePresenter?.didReceive(price: priceData)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "price"))
         }
+    }
+}
+
+extension NPoolsUnstakeBaseInteractor: EventVisitorProtocol {
+    func processBlockTimeChanged(event _: BlockTimeChanged) {
+        provideEraCountdown()
+        provideStakingDuration()
     }
 }
 

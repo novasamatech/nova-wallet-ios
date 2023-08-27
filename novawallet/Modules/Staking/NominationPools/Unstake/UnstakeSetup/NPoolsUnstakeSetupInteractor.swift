@@ -1,6 +1,5 @@
 import UIKit
 
-final class NPoolsUnstakeSetupInteractor: NPoolsUnstakeBaseInteractor {
-}
+final class NPoolsUnstakeSetupInteractor: NPoolsUnstakeBaseInteractor {}
 
 extension NPoolsUnstakeSetupInteractor: NPoolsUnstakeSetupInteractorInputProtocol {}

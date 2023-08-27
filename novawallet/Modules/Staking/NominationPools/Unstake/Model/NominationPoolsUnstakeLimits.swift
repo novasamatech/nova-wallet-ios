@@ -1,7 +1,9 @@
 import Foundation
 
-struct NominationPoolsUnstakeLimits {
-    let globalMaxUnlockings: UInt32?
-    let poolMemberMaxUnlockings: UInt32?
-    let poolMaxUnlockings: UInt32?
+extension NominationPools {
+    struct UnstakeLimits {
+        let globalMaxUnlockings: UInt32?
+        let poolMemberMaxUnlockings: UInt32?
+        let poolMaxUnlockings: UInt32?
+    }
 }
