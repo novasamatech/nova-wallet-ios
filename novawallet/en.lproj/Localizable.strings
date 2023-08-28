@@ -1363,3 +1363,4 @@
 "staking.claim.rewards" = "Claim rewards";
 "staking.your.pool.title" = "Your pool";
 "staking.your.pool.format" = "Your pool (#%@)";
+"staking.pool.rewards.claim.hint" = "Your rewards (%@) will also be claimed and added to your free balance";

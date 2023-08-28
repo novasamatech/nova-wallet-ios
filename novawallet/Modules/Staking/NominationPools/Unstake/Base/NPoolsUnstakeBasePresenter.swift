@@ -8,6 +8,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     let baseWireframe: NPoolsUnstakeBaseWireframeProtocol
     let baseInteractor: NPoolsUnstakeBaseInteractorInputProtocol
     let chainAsset: ChainAsset
+    let hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -27,12 +28,14 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         baseInteractor: NPoolsUnstakeBaseInteractorInputProtocol,
         baseWireframe: NPoolsUnstakeBaseWireframeProtocol,
         chainAsset: ChainAsset,
+        hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.baseInteractor = baseInteractor
         self.baseWireframe = baseWireframe
         self.chainAsset = chainAsset
+        self.hintsViewModelFactory = hintsViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }

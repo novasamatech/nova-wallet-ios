@@ -4,16 +4,29 @@ import SoraFoundation
 
 struct NPoolsUnstakeSetupViewFactory {
     static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsUnstakeSetupViewProtocol? {
-        guard let interactor = createInteractor(for: state) else {
+        guard
+            let interactor = createInteractor(for: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = NPoolsUnstakeSetupWireframe()
 
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: state.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let hintsViewModelFactory = NPoolsUnstakeHintsFactory(
+            chainAsset: state.chainAsset,
+            balanceViewModelFactory: balanceViewModelFactory
+        )
+
         let presenter = NPoolsUnstakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
+            hintsViewModelFactory: hintsViewModelFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

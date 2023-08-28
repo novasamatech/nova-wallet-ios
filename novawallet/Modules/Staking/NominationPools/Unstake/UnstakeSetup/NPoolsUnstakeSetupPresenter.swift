@@ -16,6 +16,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
         interactor: NPoolsUnstakeSetupInteractorInputProtocol,
         wireframe: NPoolsUnstakeSetupWireframeProtocol,
         chainAsset: ChainAsset,
+        hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -23,6 +24,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
             baseInteractor: interactor,
             baseWireframe: wireframe,
             chainAsset: chainAsset,
+            hintsViewModelFactory: hintsViewModelFactory,
             localizationManager: localizationManager,
             logger: logger
         )
