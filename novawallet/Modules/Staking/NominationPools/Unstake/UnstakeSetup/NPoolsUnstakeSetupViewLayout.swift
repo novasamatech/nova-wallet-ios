@@ -14,6 +14,12 @@ final class NPoolsUnstakeSetupViewLayout: SCSingleActionLayoutView {
     var actionButton: TriangularedButton {
         genericActionView
     }
+    
+    override func setupStyle() {
+        super.setupStyle()
+        
+        actionButton.applyDefaultStyle()
+    }
 
     override func setupLayout() {
         super.setupLayout()

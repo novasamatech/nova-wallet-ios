@@ -363,6 +363,19 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
         }
     }
 
+    func handleBondedPool(
+        result: Result<NominationPools.BondedPool?, Error>,
+        poolId _: NominationPools.PoolId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(bondedPool):
+            basePresenter?.didReceive(bondedPool: bondedPool)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "bonded pool"))
+        }
+    }
+
     func handleClaimableRewards(
         result: Result<BigUInt?, Error>,
         chainId _: ChainModel.Id,

@@ -47,7 +47,11 @@ extension NPoolsUnstakeHintsFactory: NPoolsUnstakeHintsFactoryProtocol {
 
         if let rewards = rewards, rewards > 0 {
             let decimalAmount = rewards.decimal(precision: chainAsset.asset.precision)
-            let hint = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
+            let amountString = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
+            let hint = R.string.localizable.stakingPoolRewardsClaimHint(
+                amountString,
+                preferredLanguages: locale.rLanguages
+            )
 
             hints.append(hint)
         }

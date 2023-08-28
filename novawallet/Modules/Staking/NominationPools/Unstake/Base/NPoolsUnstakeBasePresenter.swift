@@ -129,11 +129,12 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
 
     func refreshFee() {
         guard
-            let inputAmount = getInputAmountInPlank(),
             let stakingLedger = stakingLedger,
             let bondedPool = bondedPool else {
             return
         }
+
+        let inputAmount = getInputAmountInPlank() ?? 0
 
         fee = nil
 

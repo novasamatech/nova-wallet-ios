@@ -11,8 +11,14 @@ final class StakingNPoolsWireframe: StakingNPoolsWireframeProtocol {
         // TODO: Implement in task for stake more
     }
 
-    func showUnstake(from _: StakingMainViewProtocol?) {
-        // TODO: Implement in task for unstake
+    func showUnstake(from view: StakingMainViewProtocol?) {
+        guard let unstakeView = NPoolsUnstakeSetupViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: unstakeView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 
     func showRedeem(from _: StakingMainViewProtocol?) {

@@ -50,6 +50,7 @@ final class NPoolsUnstakeSetupViewController: UIViewController, ViewHolder {
 
         rootView.networkFeeView.locale = selectedLocale
 
+        setupAmountInputAccessoryView()
         updateActionButtonState()
     }
 
