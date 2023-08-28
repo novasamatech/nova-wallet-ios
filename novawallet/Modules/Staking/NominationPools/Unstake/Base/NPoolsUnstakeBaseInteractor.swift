@@ -87,8 +87,6 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     }
 
     deinit {
-        eventCenter.remove(observer: self)
-
         clearCancellable()
     }
 
