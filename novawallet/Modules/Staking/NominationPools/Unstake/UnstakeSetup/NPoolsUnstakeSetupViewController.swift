@@ -6,9 +6,11 @@ final class NPoolsUnstakeSetupViewController: UIViewController {
 
     let presenter: NPoolsUnstakeSetupPresenterProtocol
 
-    init(presenter: NPoolsUnstakeSetupPresenterProtocol) {
+    init(presenter: NPoolsUnstakeSetupPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -23,12 +25,34 @@ final class NPoolsUnstakeSetupViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLocalization()
+
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: selectedLocale.rLanguages)
     }
 }
 
-extension NPoolsUnstakeSetupViewController: NPoolsUnstakeSetupViewProtocol {}
+extension NPoolsUnstakeSetupViewController: NPoolsUnstakeSetupViewProtocol {
+    func didReceiveAssetBalance(viewModel _: AssetBalanceViewModelProtocol) {}
+
+    func didReceiveInput(viewModel _: AmountInputViewModelProtocol) {}
+
+    func didReceiveFee(viewModel _: BalanceViewModelProtocol?) {}
+
+    func didReceiveTransferable(viewModel _: BalanceViewModelProtocol?) {}
+
+    func didReceiveHints(viewModel _: [String]) {}
+}
+
+extension NPoolsUnstakeSetupViewController: ImportantViewProtocol {}
 
 extension NPoolsUnstakeSetupViewController: Localizable {
-    func applyLocalization() {}
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
+    }
 }

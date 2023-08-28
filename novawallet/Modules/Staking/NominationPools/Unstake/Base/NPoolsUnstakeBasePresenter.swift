@@ -10,6 +10,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     let chainAsset: ChainAsset
     let hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol
     let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -29,6 +30,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         baseWireframe: NPoolsUnstakeBaseWireframeProtocol,
         chainAsset: ChainAsset,
         hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -37,6 +39,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         self.baseWireframe = baseWireframe
         self.chainAsset = chainAsset
         self.hintsViewModelFactory = hintsViewModelFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatorFactory = dataValidatorFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -75,6 +78,10 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
             totalPoints: bondedPool.points,
             poolBalance: stakingLedger.active
         )
+    }
+
+    func getStakedAmount() -> Decimal? {
+        getStakedAmountInPlank()?.decimal(precision: chainAsset.asset.precision)
     }
 
     func getValidations() -> [DataValidating] {
@@ -190,6 +197,8 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         logger.debug("Staking duration: \(stakingDuration)")
 
         self.stakingDuration = stakingDuration
+
+        provideHints()
     }
 
     func didReceive(eraCountdown: EraCountdown) {
@@ -202,6 +211,8 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
 
         self.claimableRewards = claimableRewards
+
+        provideHints()
     }
 
     func didReceive(minStake: BigUInt?) {

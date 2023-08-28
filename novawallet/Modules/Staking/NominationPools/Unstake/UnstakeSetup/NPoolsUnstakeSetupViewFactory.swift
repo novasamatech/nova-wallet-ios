@@ -10,7 +10,7 @@ struct NPoolsUnstakeSetupViewFactory {
             return nil
         }
 
-        let wireframe = NPoolsUnstakeSetupWireframe()
+        let wireframe = NPoolsUnstakeSetupWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
@@ -32,12 +32,16 @@ struct NPoolsUnstakeSetupViewFactory {
             wireframe: wireframe,
             chainAsset: state.chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
-        let view = NPoolsUnstakeSetupViewController(presenter: presenter)
+        let view = NPoolsUnstakeSetupViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
