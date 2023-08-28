@@ -68,7 +68,6 @@ final class StakingTypePresenter {
         guard let restrictions = directStakingRestrictions else {
             return
         }
-
         let viewModel = viewModelFactory.directStakingViewModel(
             minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
@@ -162,7 +161,37 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectValidators() {
-        // TODO:
+        guard let method = method,
+              case let .direct(validators) = method.selectedStakingOption,
+              let delegate = delegate else {
+            return
+        }
+
+        let electedValidatorList = validators.electedValidators.map { $0.toSelected(for: nil) }
+        let recommendedValidatorList = validators.recommendedValidators.map {
+            $0.toSelected(for: nil)
+        } ?? []
+        let selectedValidators = validators.targets.map {
+            $0.toSelected(for: nil)
+        }
+        let groups = SelectionValidatorGroups(
+            fullValidatorList: electedValidatorList,
+            recommendedValidatorList: recommendedValidatorList
+        )
+
+        let hasIdentity = validators.targets.contains { $0.hasIdentity }
+        let selectionParams = ValidatorsSelectionParams(
+            maxNominations: validators.maxTargets,
+            hasIdentity: hasIdentity
+        )
+
+        wireframe.showValidators(
+            from: view,
+            selectionValidatorGroups: groups,
+            selectedValidatorList: SharedList(items: selectedValidators),
+            validatorsSelectionParams: selectionParams,
+            delegate: self
+        )
     }
 
     func selectNominationPool() {
@@ -276,13 +305,48 @@ extension StakingTypePresenter: StakingSelectPoolDelegate {
         guard let restrictions = nominationPoolRestrictions else {
             return
         }
-
-        hasChanges = true
-        method = .manual(.init(
+        let method = StakingSelectionMethod.manual(.init(
             staking: .pool(selectedPool),
             restrictions: restrictions,
             usedRecommendation: isRecommended
         ))
-        updateView()
+
+        hasChanges = true
+        self.method = method
+        delegate?.changeStakingType(method: method)
+    }
+}
+
+extension StakingTypePresenter: StakingSelectValidatorsDelegateProtocol {
+    func changeValidatorsSelection(validatorList: [SelectedValidatorInfo], maxTargets: Int) {
+        guard let method = convert(validatorList: validatorList, maxTargets: maxTargets) else {
+            return
+        }
+
+        hasChanges = true
+        self.method = method
+        delegate?.changeStakingType(method: method)
+    }
+
+    private func convert(validatorList: [SelectedValidatorInfo], maxTargets: Int) -> StakingSelectionMethod? {
+        guard case let .direct(validators) = method?.selectedStakingOption,
+              let restrictions = method?.restrictions else {
+            return nil
+        }
+        let selectedAddresses = validatorList.map(\.address)
+        let selectedValidators = validators.electedValidators.filter {
+            selectedAddresses.contains($0.address)
+        }
+        let usedRecommendation = Set(selectedAddresses) == Set(validators.recommendedValidators.map(\.address))
+        return .manual(.init(
+            staking: .direct(.init(
+                targets: selectedValidators,
+                maxTargets: maxTargets,
+                electedValidators: validators.electedValidators,
+                recommendedValidators: validators.recommendedValidators
+            )),
+            restrictions: restrictions,
+            usedRecommendation: usedRecommendation
+        ))
     }
 }

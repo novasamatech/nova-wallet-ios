@@ -7,6 +7,6 @@ struct DirectStakingTypeViewModel {
         let title: String
         let subtitle: String
         let isRecommended: Bool
-        let count: String
+        let count: String?
     }
 }

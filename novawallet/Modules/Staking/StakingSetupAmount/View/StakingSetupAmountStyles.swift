@@ -8,7 +8,8 @@ extension BorderedLabelView.Style {
             shadowOpacity: 0,
             strokeWidth: 0,
             fillColor: R.color.colorBlockBackground()!,
-            highlightedFillColor: R.color.colorBlockBackground()!
+            highlightedFillColor: R.color.colorBlockBackground()!,
+            rounding: .init(radius: 6, corners: .allCorners)
         )
     )
 }
