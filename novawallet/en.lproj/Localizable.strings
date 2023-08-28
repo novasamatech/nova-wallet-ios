@@ -1360,6 +1360,10 @@
 "update.token.completion.message" = "%@ token updated";
 "staking.reward.filters.period.custom.month.short" = "%@D";
 "staking.locked.pool.violation.title" = "You can’t stake the specified amount";
+"staking.setup.amount.direct.type.subtitle" = "Selected: %li of %li";
+"staking.pool.has.no.apy.title" = "You will not receive rewards";
+"staking.pool.has.no.apy.message" = "The pool you have selected is inactive due to no validators selected or its stake is less than the minimum.
+Are you sure you want to proceed with the selected Pool?";
 "staking.claim.rewards" = "Claim rewards";
 "staking.your.pool.title" = "Your pool";
 "staking.your.pool.format" = "Your pool (#%@)";

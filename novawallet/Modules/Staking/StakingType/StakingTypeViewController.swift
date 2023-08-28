@@ -65,17 +65,17 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         let directStakingTapGesture = UITapGestureRecognizer(
             target: self,
-            action: #selector(poolBannerAction)
+            action: #selector(directBannerAction)
         )
         directStakingTapGesture.delegate = self
         rootView.directStakingBannerView.addGestureRecognizer(directStakingTapGesture)
 
         let poolStakingTapGesture = UITapGestureRecognizer(
             target: self,
-            action: #selector(nominationPoolAction)
+            action: #selector(poolBannerAction)
         )
         poolStakingTapGesture.delegate = self
-        rootView.poolStakingBannerView.addGestureRecognizer(directStakingTapGesture)
+        rootView.poolStakingBannerView.addGestureRecognizer(poolStakingTapGesture)
 
         rootView.poolStakingBannerView.accountView.addTarget(
             self,

@@ -13,7 +13,13 @@ final class StakingTypeValidatorView: GenericStakingTypeAccountView<BorderedLabe
     }
 
     func bind(viewModel: DirectStakingTypeAccountViewModel) {
-        counterLabel.titleLabel.text = viewModel.count
+        if let count = viewModel.count {
+            counterLabel.isHidden = false
+            counterLabel.titleLabel.text = count
+        } else {
+            counterLabel.isHidden = true
+        }
+
         titleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
 

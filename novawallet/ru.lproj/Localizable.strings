@@ -1360,6 +1360,10 @@
 "update.token.completion.message" = "%@ токен обновлён";
 "staking.reward.filters.period.custom.month.short" = "%@Д";
 "staking.locked.pool.violation.title" = "Вы не можете застейкать указанную сумму";
+"staking.setup.amount.direct.type.subtitle" = "Выбраны: %li из %li";
+"staking.pool.has.no.apy.title" = "Вы не получите награды";
+"staking.pool.has.no.apy.message" = "Выбранный вами пул неактивен, поскольку не выбраны валидаторы или его стейк меньше минимального.
+Вы уверены, что хотите продолжить работу с выбранным пулом?";
 "staking.claim.rewards" = "Забрать награды";
 "staking.your.pool.title" = "Ваш пул";
 "staking.your.pool.format" = "Ваш пул (#%@)";
