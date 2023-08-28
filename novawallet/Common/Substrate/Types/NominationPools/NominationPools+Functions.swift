@@ -27,4 +27,12 @@ extension NominationPools {
 
         return (poolBalance * targetPoints) / totalPoints
     }
+
+    static func balanceToPoints(for targetBalance: BigUInt, totalPoints: BigUInt, poolBalance: BigUInt) -> BigUInt {
+        guard poolBalance != 0, totalPoints != 0, targetBalance != 0 else {
+            return 0
+        }
+
+        return (targetBalance * totalPoints) / poolBalance
+    }
 }
