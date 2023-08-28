@@ -22,11 +22,17 @@ struct NPoolsUnstakeSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
 
+        let dataValidatingFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
+
         let presenter = NPoolsUnstakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
+            dataValidatorFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -35,6 +41,7 @@ struct NPoolsUnstakeSetupViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }

@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class NPoolsUnstakeSetupViewController: UIViewController {
     typealias RootViewType = NPoolsUnstakeSetupViewLayout
@@ -27,3 +28,7 @@ final class NPoolsUnstakeSetupViewController: UIViewController {
 }
 
 extension NPoolsUnstakeSetupViewController: NPoolsUnstakeSetupViewProtocol {}
+
+extension NPoolsUnstakeSetupViewController: Localizable {
+    func applyLocalization() {}
+}

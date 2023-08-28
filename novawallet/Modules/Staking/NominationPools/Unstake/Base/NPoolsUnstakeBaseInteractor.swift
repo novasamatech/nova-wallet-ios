@@ -33,10 +33,10 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var bondedPoolProvider: AnyDataProvider<DecodedBondedPool>?
-    private var subpoolsProvider: AnyDataProvider<DecodedSubPools>?
     private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
+    private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var eraCountdownCancellable: CancellableCall?
@@ -133,7 +133,6 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         }
 
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
-        subpoolsProvider = subscribeSubPools(for: poolId, chainId: chainId)
         rewardPoolProvider = subscribeRewardPool(for: poolId, chainId: chainId)
 
         setupClaimableRewardsProvider()
@@ -176,12 +175,13 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
 
     func setupBaseProviders() {
         bondedPoolProvider = nil
-        subpoolsProvider = nil
         poolLedgerProvider = nil
         rewardPoolProvider = nil
+        claimableRewardProvider = nil
 
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
+        minStakeProvider = subscribeMinJoinBond(for: chainId)
 
         setupCurrencyProvider()
     }
@@ -363,19 +363,6 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
         }
     }
 
-    func handleSubPools(
-        result: Result<NominationPools.SubPools?, Error>,
-        poolId _: NominationPools.PoolId,
-        chainId _: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(subPools):
-            basePresenter?.didReceive(subPools: subPools)
-        case let .failure(error):
-            basePresenter?.didReceive(error: .subscription(error, "subPools"))
-        }
-    }
-
     func handleClaimableRewards(
         result: Result<BigUInt?, Error>,
         chainId _: ChainModel.Id,
@@ -403,6 +390,15 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
             self.currentPoolRewardCounter = rewardPool?.lastRecordedRewardCounter
 
             claimableRewardProvider?.refresh()
+        }
+    }
+
+    func handleMinJoinBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(minStake):
+            basePresenter?.didReceive(minStake: minStake)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "min stake"))
         }
     }
 }

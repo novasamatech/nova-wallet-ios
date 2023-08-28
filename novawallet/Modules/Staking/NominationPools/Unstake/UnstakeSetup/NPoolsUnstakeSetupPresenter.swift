@@ -17,6 +17,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
         wireframe: NPoolsUnstakeSetupWireframeProtocol,
         chainAsset: ChainAsset,
         hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
+        dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -25,6 +26,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
             baseWireframe: wireframe,
             chainAsset: chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
+            dataValidatorFactory: dataValidatorFactory,
             localizationManager: localizationManager,
             logger: logger
         )

@@ -41,18 +41,41 @@ extension NPoolsUnstakeOperationFactory: NPoolsUnstakeOperationFactoryProtocol {
             }
         }
 
+        let unlockingOperation: PrimitiveConstantOperation<UInt32> = PrimitiveConstantOperation(
+            path: Staking.maxUnlockingChunksConstantPath
+        )
+
+        unlockingOperation.configurationBlock = {
+            do {
+                unlockingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                unlockingOperation.result = .failure(error)
+            }
+        }
+
         maxUnlockingsOperation.addDependency(codingFactoryOperation)
+        unlockingOperation.addDependency(codingFactoryOperation)
 
         let knownPoolMemberChunksOperation = createKnownPoolMemberChunksLimit(for: chain.chainId)
 
         let mapOperation = ClosureOperation<NominationPools.UnstakeLimits> {
             let maxUnlockChunks = try maxUnlockingsOperation.extractNoCancellableResultData()
             let maxMemberChunks = try knownPoolMemberChunksOperation.extractNoCancellableResultData()
+            let unlockingDuration = try unlockingOperation.extractNoCancellableResultData()
 
-            return .init(globalMaxUnlockings: maxUnlockChunks, poolMemberMaxUnlockings: maxMemberChunks ?? maxUnlockChunks)
+            return .init(
+                globalMaxUnlockings: maxUnlockChunks,
+                poolMemberMaxUnlockings: maxMemberChunks ?? maxUnlockChunks,
+                bondingDuration: unlockingDuration
+            )
         }
 
-        let dependencies = [codingFactoryOperation, maxUnlockingsOperation, knownPoolMemberChunksOperation]
+        let dependencies = [
+            codingFactoryOperation,
+            maxUnlockingsOperation,
+            unlockingOperation,
+            knownPoolMemberChunksOperation
+        ]
 
         dependencies.forEach { operation in
             mapOperation.addDependency(operation)
