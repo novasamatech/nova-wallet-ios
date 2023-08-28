@@ -1,12 +1,35 @@
 import UIKit
 
-final class NPoolsUnstakeSetupViewLayout: UIView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+final class NPoolsUnstakeSetupViewLayout: SCSingleActionLayoutView {
+    let amountView = TitleHorizontalMultiValueView()
+
+    let amountInputView = NewAmountInputView()
+
+    let transferableView = TitleAmountView.dark()
+
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
+
+    let hintListView = HintListView()
+
+    var actionButton: TriangularedButton {
+        genericActionView
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func setupLayout() {
+        super.setupLayout()
+
+        addArrangedSubview(amountView, spacingAfter: 8)
+        amountView.snp.makeConstraints { make in
+            make.height.equalTo(34.0)
+        }
+
+        addArrangedSubview(amountInputView, spacingAfter: 16)
+        amountInputView.snp.makeConstraints { make in
+            make.height.equalTo(64)
+        }
+
+        addArrangedSubview(transferableView)
+        addArrangedSubview(networkFeeView, spacingAfter: 16)
+        addArrangedSubview(hintListView)
     }
 }

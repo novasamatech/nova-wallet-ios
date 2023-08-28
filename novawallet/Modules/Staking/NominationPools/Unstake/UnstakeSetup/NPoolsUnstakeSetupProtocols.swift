@@ -11,7 +11,7 @@ protocol NPoolsUnstakeSetupViewProtocol: ControllerBackedProtocol {
 protocol NPoolsUnstakeSetupPresenterProtocol: AnyObject {
     func setup()
     func selectAmountPercentage(_ percentage: Float)
-    func updateAmount(_ newValue: Decimal)
+    func updateAmount(_ newValue: Decimal?)
     func proceed()
 }
 

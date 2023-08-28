@@ -174,8 +174,8 @@ extension NPoolsUnstakeSetupPresenter: NPoolsUnstakeSetupPresenterProtocol {
         refreshFee()
     }
 
-    func updateAmount(_ newValue: Decimal) {
-        inputResult = .absolute(newValue)
+    func updateAmount(_ newValue: Decimal?) {
+        inputResult = newValue.map { AmountInputResult.absolute($0) }
 
         provideAmountInputViewModel()
 
