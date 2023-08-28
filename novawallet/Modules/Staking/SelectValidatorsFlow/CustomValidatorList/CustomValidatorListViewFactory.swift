@@ -4,7 +4,7 @@ import SoraKeystore
 
 enum CustomValidatorListViewFactory {
     private static func createView(
-        for stakingState: RelaychainStakingSharedStateProtocol,
+        chainAsset: ChainAsset,
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
@@ -13,8 +13,6 @@ enum CustomValidatorListViewFactory {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
-
-        let chainAsset = stakingState.stakingOption.chainAsset
 
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,
@@ -66,7 +64,27 @@ extension CustomValidatorListViewFactory {
     ) -> CustomValidatorListViewProtocol? {
         let wireframe = InitBondingCustomValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
-            for: stakingState,
+            chainAsset: stakingState.stakingOption.chainAsset,
+            selectionValidatorGroups: selectionValidatorGroups,
+            selectedValidatorList: selectedValidatorList,
+            validatorsSelectionParams: validatorsSelectionParams,
+            wireframe: wireframe
+        )
+    }
+
+    static func createValidatorListView(
+        for stakingState: RelaychainStartStakingStateProtocol,
+        selectionValidatorGroups: SelectionValidatorGroups,
+        selectedValidatorList: SharedList<SelectedValidatorInfo>,
+        validatorsSelectionParams: ValidatorsSelectionParams,
+        delegate: StakingSelectValidatorsDelegateProtocol?
+    ) -> CustomValidatorListViewProtocol? {
+        let wireframe = StartStakingCustomValidatorListWireframe(
+            stakingState: stakingState,
+            delegate: delegate
+        )
+        return createView(
+            chainAsset: stakingState.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,
             selectedValidatorList: selectedValidatorList,
             validatorsSelectionParams: validatorsSelectionParams,
@@ -83,7 +101,7 @@ extension CustomValidatorListViewFactory {
     ) -> CustomValidatorListViewProtocol? {
         let wireframe = ChangeTargetsCustomValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
-            for: stakingState,
+            chainAsset: stakingState.stakingOption.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,
             selectedValidatorList: selectedValidatorList,
             validatorsSelectionParams: validatorsSelectionParams,
@@ -100,7 +118,7 @@ extension CustomValidatorListViewFactory {
     ) -> CustomValidatorListViewProtocol? {
         let wireframe = YourValidatorList.CustomListWireframe(state: state, stakingState: stakingState)
         return createView(
-            for: stakingState,
+            chainAsset: stakingState.stakingOption.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,
             selectedValidatorList: selectedValidatorList,
             validatorsSelectionParams: validatorsSelectionParams,

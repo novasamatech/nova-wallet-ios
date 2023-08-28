@@ -8,7 +8,12 @@ final class StakingSelectPoolWireframe: StakingSelectPoolWireframeProtocol {
     }
 
     func complete(from view: ControllerBackedProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
+        if let stakingSetupAmountView: StakingSetupAmountViewProtocol = view?.controller.navigationController?.findTopView() {
+            view?.controller.navigationController?.popToViewController(
+                stakingSetupAmountView.controller,
+                animated: true
+            )
+        }
     }
 
     func showSearch(from view: ControllerBackedProtocol?, delegate: StakingSelectPoolDelegate) {

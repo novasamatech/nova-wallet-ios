@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import BigInt
+import SubstrateSdk
 
 protocol StakingTypeDelegate: AnyObject {
     func changeStakingType(method: StakingSelectionMethod)
@@ -61,14 +62,14 @@ enum StakingTypeViewFactory {
         amount: BigUInt
     ) -> StakingTypeInteractor? {
         let request = state.chainAsset.chain.accountRequest()
-        let queue = OperationManagerFacade.sharedDefaultQueue
+
         guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: request) else {
             return nil
         }
 
         let recommendationFactory = StakingRecommendationMediatorFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: queue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         guard
