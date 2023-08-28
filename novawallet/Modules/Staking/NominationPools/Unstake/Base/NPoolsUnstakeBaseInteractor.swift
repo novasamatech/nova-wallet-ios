@@ -34,6 +34,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var bondedPoolProvider: AnyDataProvider<DecodedBondedPool>?
     private var subpoolsProvider: AnyDataProvider<DecodedSubPools>?
     private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
+    private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
 
     private var bondedAccountIdCancellable: CancellableCall?
@@ -42,6 +43,8 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var unstakeLimitsCancellable: CancellableCall?
 
     private var currentPoolId: NominationPools.PoolId?
+    private var currentPoolRewardCounter: BigUInt?
+    private var currentMemberRewardCounter: BigUInt?
     private var poolAccountId: AccountId?
 
     init(
@@ -128,6 +131,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
 
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
         subpoolsProvider = subscribeSubPools(for: poolId, chainId: chainId)
+        rewardPoolProvider = subscribeRewardPool(for: poolId, chainId: chainId)
 
         setupClaimableRewardsProvider()
     }
@@ -171,6 +175,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         bondedPoolProvider = nil
         subpoolsProvider = nil
         poolLedgerProvider = nil
+        rewardPoolProvider = nil
 
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
@@ -346,10 +351,18 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
     ) {
         switch result {
         case let .success(optPoolMember):
-            currentPoolId = optPoolMember?.poolId
+            if currentPoolId != optPoolMember?.poolId {
+                currentPoolId = optPoolMember?.poolId
 
-            setupPoolProviders()
-            provideBondedAccountId()
+                setupPoolProviders()
+                provideBondedAccountId()
+            }
+
+            if currentMemberRewardCounter != optPoolMember?.lastRecordedRewardCounter {
+                currentMemberRewardCounter = optPoolMember?.lastRecordedRewardCounter
+
+                claimableRewardProvider?.refresh()
+            }
 
             basePresenter?.didReceive(poolMember: optPoolMember)
         case let .failure(error):
@@ -381,6 +394,22 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
             basePresenter?.didReceive(claimableRewards: rewards)
         case let .failure(error):
             basePresenter?.didReceive(error: .claimableRewards(error))
+        }
+    }
+
+    func handleRewardPool(
+        result: Result<NominationPools.RewardPool?, Error>,
+        poolId: NominationPools.PoolId,
+        chainId _: ChainModel.Id
+    ) {
+        guard currentPoolId == poolId else {
+            return
+        }
+
+        if case let .success(rewardPool) = result, rewardPool?.lastRecordedRewardCounter != currentPoolRewardCounter {
+            self.currentPoolRewardCounter = rewardPool?.lastRecordedRewardCounter
+
+            claimableRewardProvider?.refresh()
         }
     }
 }

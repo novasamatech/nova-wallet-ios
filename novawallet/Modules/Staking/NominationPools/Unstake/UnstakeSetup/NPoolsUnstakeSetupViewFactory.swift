@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 struct NPoolsUnstakeSetupViewFactory {
     static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsUnstakeSetupViewProtocol? {
@@ -9,7 +10,13 @@ struct NPoolsUnstakeSetupViewFactory {
 
         let wireframe = NPoolsUnstakeSetupWireframe()
 
-        let presenter = NPoolsUnstakeSetupPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = NPoolsUnstakeSetupPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chainAsset: state.chainAsset,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
         let view = NPoolsUnstakeSetupViewController(presenter: presenter)
 

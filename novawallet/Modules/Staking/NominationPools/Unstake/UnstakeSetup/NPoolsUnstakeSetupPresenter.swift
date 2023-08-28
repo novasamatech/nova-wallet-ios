@@ -1,21 +1,40 @@
 import Foundation
+import SoraFoundation
 
-final class NPoolsUnstakeSetupPresenter {
+final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
     weak var view: NPoolsUnstakeSetupViewProtocol?
-    let wireframe: NPoolsUnstakeSetupWireframeProtocol
-    let interactor: NPoolsUnstakeSetupInteractorInputProtocol
+
+    var wireframe: NPoolsUnstakeSetupWireframeProtocol? {
+        baseWireframe as? NPoolsUnstakeSetupWireframeProtocol
+    }
+
+    var interactor: NPoolsUnstakeSetupInteractorInputProtocol? {
+        baseInteractor as? NPoolsUnstakeSetupInteractorInputProtocol
+    }
 
     init(
         interactor: NPoolsUnstakeSetupInteractorInputProtocol,
-        wireframe: NPoolsUnstakeSetupWireframeProtocol
+        wireframe: NPoolsUnstakeSetupWireframeProtocol,
+        chainAsset: ChainAsset,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
-        self.interactor = interactor
-        self.wireframe = wireframe
+        super.init(
+            baseInteractor: interactor,
+            baseWireframe: wireframe,
+            chainAsset: chainAsset,
+            localizationManager: localizationManager,
+            logger: logger
+        )
     }
 }
 
 extension NPoolsUnstakeSetupPresenter: NPoolsUnstakeSetupPresenterProtocol {
-    func setup() {}
+    func setup() {
+        updateView()
+
+        interactor?.setup()
+    }
 }
 
 extension NPoolsUnstakeSetupPresenter: NPoolsUnstakeSetupInteractorOutputProtocol {}

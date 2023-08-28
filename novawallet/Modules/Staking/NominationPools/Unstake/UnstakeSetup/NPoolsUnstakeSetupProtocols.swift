@@ -1,11 +1,11 @@
-protocol NPoolsUnstakeSetupViewProtocol: AnyObject {}
+protocol NPoolsUnstakeSetupViewProtocol: ControllerBackedProtocol {}
 
 protocol NPoolsUnstakeSetupPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol NPoolsUnstakeSetupInteractorInputProtocol: AnyObject {}
+protocol NPoolsUnstakeSetupInteractorInputProtocol: NPoolsUnstakeBaseInteractorInputProtocol {}
 
-protocol NPoolsUnstakeSetupInteractorOutputProtocol: AnyObject {}
+protocol NPoolsUnstakeSetupInteractorOutputProtocol: NPoolsUnstakeBaseInteractorOutputProtocol {}
 
-protocol NPoolsUnstakeSetupWireframeProtocol: AnyObject {}
+protocol NPoolsUnstakeSetupWireframeProtocol: NPoolsUnstakeBaseWireframeProtocol {}
