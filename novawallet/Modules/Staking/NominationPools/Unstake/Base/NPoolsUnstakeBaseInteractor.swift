@@ -17,6 +17,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol
+    let unstakeLimitsFactory: NPoolsUnstakeOperationFactoryProtocol
     let durationFactory: StakingDurationOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -61,6 +62,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol,
         durationFactory: StakingDurationOperationFactoryProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
+        unstakeLimitsFactory: NPoolsUnstakeOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -78,6 +80,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         self.runtimeService = runtimeService
         self.eraCountdownOperationFactory = eraCountdownOperationFactory
         self.durationFactory = durationFactory
+        self.unstakeLimitsFactory = unstakeLimitsFactory
         self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.currencyManager = currencyManager
@@ -241,23 +244,12 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     }
 
     func provideUnstakingLimits() {
-        let maxUnlockingsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation(path: Staking.maxUnlockingChunks)
+        clear(cancellable: &unstakeLimitsCancellable)
 
-        let mapOperation = ClosureOperation<NominationPools.UnstakeLimits> {
-            let maxUnlockChunks = try maxUnlockingsOperation.extractNoCancellableResultData()
-
-            return .init(
-                globalMaxUnlockings: maxUnlockChunks,
-                poolMemberMaxUnlockings: nil,
-                poolMaxUnlockings: nil
-            )
-        }
-
-        mapOperation.addDependency(maxUnlockingsOperation)
-
-        let dependecies = [maxUnlockingsOperation]
-
-        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependecies)
+        let wrapper = unstakeLimitsFactory.createLimitsWrapper(
+            for: chainAsset.chain,
+            runtimeService: runtimeService
+        )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -297,6 +289,7 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
         setupBaseProviders()
         provideEraCountdown()
         provideStakingDuration()
+        provideUnstakingLimits()
 
         feeProxy.delegate = self
         eventCenter.add(observer: self, dispatchIn: .main)

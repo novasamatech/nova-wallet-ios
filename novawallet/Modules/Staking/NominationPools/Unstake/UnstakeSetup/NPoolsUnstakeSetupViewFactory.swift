@@ -82,6 +82,7 @@ struct NPoolsUnstakeSetupViewFactory {
             eraCountdownOperationFactory: eraCountdownOperationFactory,
             durationFactory: durationOperationFactory,
             npoolsOperationFactory: npoolsOperationFactory,
+            unstakeLimitsFactory: NPoolsUnstakeOperationFactory(),
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue
