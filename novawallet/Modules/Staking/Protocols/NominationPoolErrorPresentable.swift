@@ -60,7 +60,10 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         locale: Locale
     ) {
         let title = R.string.localizable.stakingUnstakeNoSpaceTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingUnstakeNoSpaceMessage(unstakeAfter, preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.stakingUnstakeNoSpaceMessage(
+            unstakeAfter,
+            preferredLanguages: locale.rLanguages
+        )
 
         present(
             message: message,
@@ -100,6 +103,6 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
             closeAction: nil
         )
 
-        present(viewModel: viewModel, style: .actionSheet, from: view)
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 }

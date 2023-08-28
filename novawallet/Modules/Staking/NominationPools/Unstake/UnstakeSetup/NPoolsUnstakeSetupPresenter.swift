@@ -170,14 +170,14 @@ extension NPoolsUnstakeSetupPresenter: NPoolsUnstakeSetupPresenterProtocol {
     func selectAmountPercentage(_ percentage: Float) {
         inputResult = .rate(Decimal(Double(percentage)))
 
+        provideAmountInputViewModel()
+
         provideAssetViewModel()
         refreshFee()
     }
 
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { AmountInputResult.absolute($0) }
-
-        provideAmountInputViewModel()
 
         provideAssetViewModel()
         refreshFee()
