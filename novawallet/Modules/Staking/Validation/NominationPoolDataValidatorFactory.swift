@@ -145,8 +145,6 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return false
             }
 
-            let targetEra = eraCountdown.activeEra + limits.bondingDuration
-
             let hasSpace = stakingLedger.unlocking.count < limits.globalMaxUnlockings
             let hasRedeemable = stakingLedger.redeemable(inEra: eraCountdown.activeEra) > 0
 
