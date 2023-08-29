@@ -134,7 +134,7 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
     }
 
     func submit(for strategy: NominationPools.ClaimRewardsStrategy) {
-        extrinsicService.buildExtrinsic(
+        extrinsicService.submit(
             createExtrinsicBuilderClosure(for: strategy),
             signer: signingWrapper,
             runningIn: .main

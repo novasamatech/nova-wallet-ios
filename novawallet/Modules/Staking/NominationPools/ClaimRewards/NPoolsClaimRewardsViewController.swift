@@ -49,6 +49,14 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
         )
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
+
+        rootView.restakeCell.titleLabel.text = R.string.localizable.stakingRestakeTitle_v2_2_0(
+            preferredLanguages: languages
+        )
+
+        rootView.restakeCell.subtitleLabel.text = R.string.localizable.stakingRestakeMessage(
+            preferredLanguages: languages
+        )
     }
 
     private func setupHandlers() {
@@ -63,6 +71,12 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
             action: #selector(actionSelectAccount),
             for: .touchUpInside
         )
+
+        rootView.restakeCell.switchControl.addTarget(
+            self,
+            action: #selector(actionToggleClaimStrategy),
+            for: .valueChanged
+        )
     }
 
     @objc private func actionConfirm() {
@@ -71,6 +85,10 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
 
     @objc private func actionSelectAccount() {
         presenter.selectAccount()
+    }
+
+    @objc private func actionToggleClaimStrategy() {
+        presenter.toggleClaimStrategy()
     }
 }
 
@@ -91,7 +109,10 @@ extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveClaimStrategy(viewModel _: NominationPools.ClaimRewardsStrategy) {}
+    func didReceiveClaimStrategy(viewModel: NominationPools.ClaimRewardsStrategy) {
+        let shouldRestake = viewModel == .restake
+        rootView.restakeCell.switchControl.setOn(shouldRestake, animated: false)
+    }
 
     func didStartLoading() {
         rootView.loadingView.startLoading()

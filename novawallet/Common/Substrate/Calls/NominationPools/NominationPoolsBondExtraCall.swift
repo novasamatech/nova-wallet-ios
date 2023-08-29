@@ -37,7 +37,8 @@ extension NominationPools {
                     try container.encode(Self.freeBalanceField)
                     try container.encode(StringScaleMapper(value: balance))
                 case .rewards:
-                    try container.encode(Self.rewards)
+                    try container.encode(Self.rewardsField)
+                    try container.encode(JSON.null)
                 }
             }
         }

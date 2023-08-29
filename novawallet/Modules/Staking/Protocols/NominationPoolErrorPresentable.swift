@@ -117,7 +117,7 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         action: @escaping () -> Void,
         locale: Locale
     ) {
-        let title = R.string.localizable.commonConfirmTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string.localizable.commonConfirmationTitle(preferredLanguages: locale.rLanguages)
         let message = R.string.localizable.stakingWarningTinyPayout(preferredLanguages: locale.rLanguages)
 
         presentWarning(
