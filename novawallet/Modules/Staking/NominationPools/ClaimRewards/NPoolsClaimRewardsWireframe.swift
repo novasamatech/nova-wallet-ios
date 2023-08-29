@@ -1,3 +1,3 @@
 import Foundation
 
-final class NPoolsClaimRewardsWireframe: NPoolsClaimRewardsWireframeProtocol {}
+final class NPoolsClaimRewardsWireframe: NPoolsClaimRewardsWireframeProtocol, ModalAlertPresenting {}

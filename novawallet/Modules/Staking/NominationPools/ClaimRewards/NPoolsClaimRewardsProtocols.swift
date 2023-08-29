@@ -1,12 +1,18 @@
 import BigInt
 
-protocol NPoolsClaimRewardsViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {}
+protocol NPoolsClaimRewardsViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+    func didReceiveAmount(viewModel: BalanceViewModelProtocol)
+    func didReceiveWallet(viewModel: DisplayWalletViewModel)
+    func didReceiveAccount(viewModel: DisplayAddressViewModel)
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveClaimStrategy(viewModel: NominationPools.ClaimRewardsStrategy)
+}
 
 protocol NPoolsClaimRewardsPresenterProtocol: AnyObject {
     func setup()
     func confirm()
     func selectAccount()
-    func select(claimStrategy: NominationPools.ClaimRewardsStrategy)
+    func toggleClaimStrategy()
 }
 
 protocol NPoolsClaimRewardsInteractorInputProtocol: AnyObject {
@@ -25,4 +31,6 @@ protocol NPoolsClaimRewardsInteractorOutputProtocol: AnyObject {
     func didReceive(error: NPoolsClaimRewardsError)
 }
 
-protocol NPoolsClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable {}
+protocol NPoolsClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    AddressOptionsPresentable, MessageSheetPresentable,
+    ExtrinsicSubmissionPresenting, NominationPoolErrorPresentable {}
