@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
 
-final class NPoolsClaimRewardsViewController: UIViewController {
+final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
     typealias RootViewType = NPoolsClaimRewardsViewLayout
 
     let presenter: NPoolsClaimRewardsPresenterProtocol
@@ -26,24 +26,80 @@ final class NPoolsClaimRewardsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
     }
 
-    private func setupLocalization() {}
+    private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.stakingClaimRewards(preferredLanguages: languages)
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.networkFeeCell.rowContentView.locale = selectedLocale
+    }
+
+    private func setupHandlers() {
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionConfirm),
+            for: .touchUpInside
+        )
+
+        rootView.accountCell.addTarget(
+            self,
+            action: #selector(actionSelectAccount),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func actionConfirm() {
+        presenter.confirm()
+    }
+
+    @objc private func actionSelectAccount() {
+        presenter.selectAccount()
+    }
 }
 
 extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
-    func didReceiveAmount(viewModel _: BalanceViewModelProtocol) {}
+    func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
+        rootView.amountView.bind(viewModel: viewModel)
+    }
 
-    func didReceiveWallet(viewModel _: DisplayWalletViewModel) {}
+    func didReceiveWallet(viewModel: DisplayWalletViewModel) {
+        rootView.walletCell.bind(viewModel: viewModel.cellViewModel)
+    }
 
-    func didReceiveAccount(viewModel _: DisplayAddressViewModel) {}
+    func didReceiveAccount(viewModel: DisplayAddressViewModel) {
+        rootView.accountCell.bind(viewModel: viewModel.cellViewModel)
+    }
 
-    func didReceiveFee(viewModel _: BalanceViewModelProtocol?) {}
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
+    }
 
     func didReceiveClaimStrategy(viewModel _: NominationPools.ClaimRewardsStrategy) {}
+
+    func didStartLoading() {
+        rootView.loadingView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.loadingView.stopLoading()
+    }
 }
 
 extension NPoolsClaimRewardsViewController: Localizable {
