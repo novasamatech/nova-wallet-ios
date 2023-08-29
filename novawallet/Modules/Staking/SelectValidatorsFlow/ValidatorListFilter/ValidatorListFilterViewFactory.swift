@@ -10,6 +10,20 @@ struct ValidatorListFilterViewFactory {
     ) -> ValidatorListFilterViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
+        return createView(
+            chainAsset: chainAsset,
+            filter: filter,
+            hasIdentity: hasIdentity,
+            delegate: delegate
+        )
+    }
+
+    static func createView(
+        chainAsset: ChainAsset,
+        filter: CustomValidatorListFilter,
+        hasIdentity: Bool,
+        delegate: ValidatorListFilterDelegate?
+    ) -> ValidatorListFilterViewProtocol? {
         let wireframe = ValidatorListFilterWireframe()
 
         let viewModelFactory = ValidatorListFilterViewModelFactory()

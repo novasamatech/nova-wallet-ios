@@ -36,6 +36,13 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
         delegate: StakingSelectPoolDelegate?,
         selectedPool: NominationPools.SelectedPool?
     )
+    func showValidators(
+        from view: ControllerBackedProtocol?,
+        selectionValidatorGroups: SelectionValidatorGroups,
+        selectedValidatorList: SharedList<SelectedValidatorInfo>,
+        validatorsSelectionParams: ValidatorsSelectionParams,
+        delegate: StakingSelectValidatorsDelegateProtocol?
+    )
 }
 
 enum StakingTypeError: Error {

@@ -3,6 +3,7 @@ import SubstrateSdk
 import BigInt
 
 enum NominationPools {
+    static let module = "NominationPools"
     typealias PoolId = UInt32
 
     struct PoolMember: Decodable, Equatable {

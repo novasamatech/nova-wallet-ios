@@ -15,6 +15,7 @@ final class StakingSetupAmountPresenter {
     let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
+    let poolValidatingFactory: NominationPoolDataValidatorFactoryProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
 
@@ -47,6 +48,7 @@ final class StakingSetupAmountPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        poolValidatingFactory: NominationPoolDataValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         recommendsMultipleStakings: Bool,
         localizationManager: LocalizationManagerProtocol,
@@ -60,6 +62,7 @@ final class StakingSetupAmountPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
+        self.poolValidatingFactory = poolValidatingFactory
         self.chainAsset = chainAsset
         self.recommendsMultipleStakings = recommendsMultipleStakings
         self.logger = logger
@@ -369,7 +372,15 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
             locale: selectedLocale
         ) ?? []
 
-        DataValidationRunner(validators: defaultValidations + recommendedValidations).runValidation { [weak self] in
+        let poolValidations: [DataValidating] = [
+            poolValidatingFactory.nominationPoolHasApy(
+                method: setupMethod,
+                locale: selectedLocale
+            )
+        ]
+
+        let validators = defaultValidations + recommendedValidations + poolValidations
+        DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let stakingOption = self?.setupMethod.selectedStakingOption else {
                 return
             }
