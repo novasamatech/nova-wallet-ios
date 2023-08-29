@@ -1,0 +1,5 @@
+import Foundation
+
+final class NominationPoolBondMoreWireframe: NominationPoolBondMoreBaseWireframe {}
+
+extension NominationPoolBondMoreWireframe: NominationPoolBondMoreWireframeProtocol {}
