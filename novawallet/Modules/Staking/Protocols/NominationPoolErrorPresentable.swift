@@ -61,7 +61,7 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
     ) {
         let title = R.string.localizable.stakingUnstakeNoSpaceTitle(preferredLanguages: locale.rLanguages)
         let message = R.string.localizable.stakingUnstakeNoSpaceMessage(
-            unstakeAfter,
+            "~\(unstakeAfter)",
             preferredLanguages: locale.rLanguages
         )
 
