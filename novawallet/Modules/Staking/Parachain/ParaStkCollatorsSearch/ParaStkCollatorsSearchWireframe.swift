@@ -8,7 +8,14 @@ final class ParaStkCollatorsSearchWireframe: ParaStkCollatorsSearchWireframeProt
     }
 
     func complete(on view: ParaStkCollatorsSearchViewProtocol?) {
-        view?.controller.navigationController?.popToRootViewController(animated: true)
+        let navigationController = view?.controller.navigationController
+        let viewControllers = navigationController?.viewControllers ?? []
+
+        if let setupScreenController = viewControllers.first { $0 is ParaStkStakeSetupViewProtocol } {
+            navigationController?.popToViewController(setupScreenController, animated: true)
+        } else {
+            view?.controller.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     func showCollatorInfo(
