@@ -1,21 +1,49 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import SoraFoundation
 
 struct NPoolsRedeemViewFactory {
     static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsRedeemViewProtocol? {
-        guard let interactor = createInteractor(for: state) else {
+        guard
+            let interactor = createInteractor(for: state),
+            let wallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = NPoolsRedeemWireframe()
 
-        let presenter = NPoolsRedeemPresenter(interactor: interactor, wireframe: wireframe)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: state.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
 
-        let view = NPoolsRedeemViewController(presenter: presenter)
+        let dataValidatingFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
+
+        let presenter = NPoolsRedeemPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            selectedAccount: selectedAccount,
+            chainAsset: state.chainAsset,
+            balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatorFactory: dataValidatingFactory,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
+
+        let view = NPoolsRedeemViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }

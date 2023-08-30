@@ -1,3 +1,3 @@
 import Foundation
 
-final class NPoolsRedeemWireframe: NPoolsRedeemWireframeProtocol {}
+final class NPoolsRedeemWireframe: NPoolsRedeemWireframeProtocol, ModalAlertPresenting {}

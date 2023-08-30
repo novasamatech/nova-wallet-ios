@@ -236,6 +236,8 @@ extension NPoolsRedeemInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubsc
                 currentPoolId = optPoolMember?.poolId
 
                 setupPoolProviders()
+
+                estimateFee()
             }
 
             presenter?.didReceive(poolMember: optPoolMember)
