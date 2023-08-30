@@ -11,4 +11,14 @@ final class NominationPoolSearchViewLayout: BaseTableSearchViewLayout {
         tableView.estimatedRowHeight = 44
         tableView.separatorStyle = .none
     }
+
+    override func setupLayout() {
+        super.setupLayout()
+
+        addSubview(loadingView)
+        loadingView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+        }
+    }
 }

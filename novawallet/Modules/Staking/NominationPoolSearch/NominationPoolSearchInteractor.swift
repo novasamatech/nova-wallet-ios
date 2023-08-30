@@ -24,6 +24,8 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
     private let operationQueue: OperationQueue
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
+    private var currentSearchText: String?
+
     init(
         chainAsset: ChainAsset,
         poolsOperationFactory: NominationPoolsOperationFactoryProtocol,
@@ -46,6 +48,11 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
         self.runtimeService = runtimeService
         self.searchOperationFactory = searchOperationFactory
         self.operationQueue = operationQueue
+    }
+
+    deinit {
+        clear(cancellable: &poolsCancellable)
+        clear(cancellable: &currentSearchOperation)
     }
 
     private func performLastPoolIdSubscription() {
@@ -93,6 +100,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
                 do {
                     let stats = try poolStatsWrapper.targetOperation.extractNoCancellableResultData() ?? []
                     self?.searchOperationClosure = self?.searchOperationFactory.createOperationClosure(stats: stats)
+                    self?.performSearchIfNeeded()
                 } catch {
                     self?.presenter?.didReceive(error: .pools(error))
                 }
@@ -104,6 +112,39 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
             maxApyWrapper.allOperations + poolStatsWrapper.allOperations,
             waitUntilFinished: false
         )
+    }
+
+    private func performSearchIfNeeded() {
+        guard let text = currentSearchText, let searchOperationClosure = searchOperationClosure else {
+            return
+        }
+
+        if text.isEmpty {
+            presenter?.didReceive(poolStats: [])
+        } else {
+            clear(cancellable: &currentSearchOperation)
+            let searchOperation = searchOperationClosure(text)
+            searchOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.currentSearchOperation === searchOperation else {
+                        return
+                    }
+
+                    self?.currentSearchOperation = nil
+
+                    let result = (try? searchOperation.extractNoCancellableResultData()) ?? []
+
+                    if !result.isEmpty {
+                        self?.presenter?.didReceive(poolStats: result)
+                    } else {
+                        self?.presenter?.didReceive(error: .emptySearchResults)
+                    }
+                }
+            }
+
+            currentSearchOperation = searchOperation
+            operationQueue.addOperation(searchOperation)
+        }
     }
 }
 
@@ -122,29 +163,14 @@ extension NominationPoolSearchInteractor: NominationPoolSearchInteractorInputPro
     }
 
     func search(for text: String) {
-        guard let searchOperationClosure = searchOperationClosure else {
+        currentSearchText = text
+
+        guard searchOperationClosure != nil else {
+            presenter?.didStartSearch(for: text)
             return
         }
-        if text.isEmpty {
-            presenter?.didReceive(poolStats: [])
-        } else {
-            clear(cancellable: &currentSearchOperation)
-            let searchOperation = searchOperationClosure(text)
-            searchOperation.completionBlock = { [weak self] in
-                let result = (try? searchOperation.extractNoCancellableResultData()) ?? []
 
-                DispatchQueue.main.async {
-                    if !result.isEmpty {
-                        self?.presenter?.didReceive(poolStats: result)
-                    } else {
-                        self?.presenter?.didReceive(error: .emptySearchResults)
-                    }
-                }
-            }
-
-            currentSearchOperation = searchOperation
-            operationQueue.addOperation(searchOperation)
-        }
+        performSearchIfNeeded()
     }
 }
 
