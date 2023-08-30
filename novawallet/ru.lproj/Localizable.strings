@@ -1368,3 +1368,4 @@
 "staking.your.pool.title" = "Ваш пул";
 "staking.your.pool.format" = "Ваш пул (#%@)";
 "staking.pool.rewards.claim.hint" = "Ваши награды (%@) также будут добавлены к свободному балансу";
+"staking.pool.rewards.bond.more.hint" = "Вы будете получать увеличенные награды, начиная со следующей эры";

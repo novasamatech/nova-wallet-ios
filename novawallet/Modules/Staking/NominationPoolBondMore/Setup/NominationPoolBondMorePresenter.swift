@@ -13,6 +13,7 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
         interactor: NominationPoolBondMoreInteractorInputProtocol,
         wireframe: NominationPoolBondMoreWireframeProtocol,
         chainAsset: ChainAsset,
+        hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         logger: LoggerProtocol
 
     ) {
@@ -20,13 +21,19 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
+            hintsViewModelFactory: hintsViewModelFactory,
             logger: logger
         )
     }
 
     override func updateView() {}
 
-    override func provideHints() {}
+    override func provideHints() {
+        hintsViewModelFactory.createHints(
+            rewards: claimableRewards,
+            locale: selectedLocale
+        )
+    }
 
     override func provideFee() {}
 

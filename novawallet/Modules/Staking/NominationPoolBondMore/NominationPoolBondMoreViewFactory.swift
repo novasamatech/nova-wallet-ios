@@ -2,15 +2,25 @@ import Foundation
 
 struct NominationPoolBondMoreViewFactory {
     static func createView(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreViewProtocol? {
-        guard let interactor = createInteractor(state: state) else {
+        guard let currencyManager = CurrencyManager.shared,
+              let interactor = createInteractor(state: state) else {
             return nil
         }
         let wireframe = NominationPoolBondMoreWireframe()
-
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: state.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+        let hintsViewModelFactory = NominationPoolsBondMoreHintsFactory(
+            chainAsset: state.chainAsset,
+            balanceViewModelFactory: balanceViewModelFactory
+        )
         let presenter = NominationPoolBondMorePresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
+            hintsViewModelFactory: hintsViewModelFactory,
             logger: Logger.shared
         )
 

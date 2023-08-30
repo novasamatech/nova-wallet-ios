@@ -14,6 +14,7 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
     func didReceive(stakingLedger: StakingLedger?)
+    func didReceive(claimableRewards: BigUInt?)
 }
 
 protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable {}
@@ -23,4 +24,5 @@ enum NominationPoolBondMoreError: Error {
     case fetchFeeFailed(Error)
     case fetchPriceFailed(Error)
     case subscription(Error, String)
+    case claimableRewards(Error)
 }

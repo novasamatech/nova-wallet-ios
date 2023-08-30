@@ -8,7 +8,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     let baseInteractor: NominationPoolBondMoreBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
-    //  let hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol
+    let hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -17,18 +17,20 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     var stakingLedger: StakingLedger?
     var price: PriceData?
     var fee: BigUInt?
+    var claimableRewards: BigUInt?
 
     init(
         interactor: NominationPoolBondMoreBaseInteractorInputProtocol,
         wireframe: NominationPoolBondMoreWireframeProtocol,
         chainAsset: ChainAsset,
+        hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         logger: LoggerProtocol
-
     ) {
         baseInteractor = interactor
         baseWireframe = wireframe
         self.logger = logger
         self.chainAsset = chainAsset
+        self.hintsViewModelFactory = hintsViewModelFactory
     }
 
     func updateView() {
@@ -64,21 +66,22 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
 
     func refreshFee() {
         guard
-            let inputAmount = getInputAmountInPlank(),
             let stakingLedger = stakingLedger,
             let bondedPool = bondedPool else {
             return
         }
 
+        let inputAmount = getInputAmountInPlank() ?? 0
+
         fee = nil
 
         provideFee()
 
-//        let points = NominationPools.balanceToPoints(
-//            for: inputAmount,
-//            totalPoints: bondedPool.points,
-//            poolBalance: stakingLedger.active
-//        )
+        let points = NominationPools.balanceToPoints(
+            for: inputAmount,
+            totalPoints: bondedPool.points,
+            poolBalance: stakingLedger.active
+        )
 
         baseInteractor.estimateFee(for: 0)
     }
@@ -126,6 +129,12 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.fee = fee
 
         provideFee()
+    }
+
+    func didReceive(claimableRewards: BigUInt?) {
+        self.claimableRewards = claimableRewards
+
+        provideHints()
     }
 
     func didReceive(error _: NominationPoolBondMoreError) {}

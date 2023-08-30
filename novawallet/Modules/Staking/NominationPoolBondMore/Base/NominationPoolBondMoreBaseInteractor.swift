@@ -27,6 +27,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
 
     private var bondedAccountIdCancellable: CancellableCall?
 
+    private var accountId: AccountId { selectedAccount.chainAccount.accountId }
     private var currentPoolId: NominationPools.PoolId?
     private var currentPoolRewardCounter: BigUInt?
     private var currentMemberRewardCounter: BigUInt?
@@ -140,6 +141,23 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         }
 
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
+        setupClaimableRewardsProvider()
+    }
+
+    func setupClaimableRewardsProvider() {
+        guard let poolId = currentPoolId else {
+            return
+        }
+
+        claimableRewardProvider = subscribeClaimableRewards(
+            for: chainId,
+            poolId: poolId,
+            accountId: accountId
+        )
+
+        if claimableRewardProvider == nil {
+            basePresenter?.didReceive(error: .claimableRewards(CommonError.dataCorruption))
+        }
     }
 }
 
