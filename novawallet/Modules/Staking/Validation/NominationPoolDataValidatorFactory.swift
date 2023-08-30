@@ -5,6 +5,14 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         method: StakingSelectionMethod,
         locale: Locale
     ) -> DataValidating
+    func nominationPoolIsDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating
+    func nominationPoolIsFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class NominationPoolDataValidatorFactory {
@@ -42,6 +50,45 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return true
             } else {
                 return false
+            }
+        })
+    }
+
+    func nominationPoolIsDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentNominationPoolIsDestroing(
+                from: view,
+                locale: locale
+            )
+        }, preservesCondition: {
+            if let pool = pool, pool.state == .destroying {
+                return true
+            } else {
+                return false
+            }
+        })
+    }
+
+    func nominationPoolIsFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentPoolIsFullyUnbonding(from: view, locale: locale)
+        }, preservesCondition: {
+            if let poolMember = poolMember, poolMember.points > 0 {
+                return false
+            } else {
+                return true
             }
         })
     }

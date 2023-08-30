@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct NominationPoolBondMoreViewFactory {
     static func createView(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreViewProtocol? {
@@ -16,15 +17,20 @@ struct NominationPoolBondMoreViewFactory {
             chainAsset: state.chainAsset,
             balanceViewModelFactory: balanceViewModelFactory
         )
+        let localizationManager = LocalizationManager.shared
+
         let presenter = NominationPoolBondMorePresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatorFactory: NominationPoolDataValidatorFactory(presentable: wireframe),
+            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = NominationPoolBondMoreViewController(presenter: presenter)
+        let view = NominationPoolBondMoreViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         interactor.basePresenter = presenter
@@ -70,6 +76,7 @@ struct NominationPoolBondMoreViewFactory {
             npoolsOperationFactory: NominationPoolsOperationFactory(operationQueue: operationQueue),
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
+            assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
             operationQueue: operationQueue,
             currencyManager: currencyManager
         )

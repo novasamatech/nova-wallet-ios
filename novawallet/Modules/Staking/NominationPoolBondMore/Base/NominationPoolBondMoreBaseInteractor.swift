@@ -15,8 +15,10 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     let runtimeService: RuntimeCodingServiceProtocol
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
 
     private var operationQueue: OperationQueue
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -24,8 +26,10 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     private var bondedPoolProvider: AnyDataProvider<DecodedBondedPool>?
     private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
+    private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
 
     private var bondedAccountIdCancellable: CancellableCall?
+    private var assetExistenceCancellable: CancellableCall?
 
     private var accountId: AccountId { selectedAccount.chainAccount.accountId }
     private var currentPoolId: NominationPools.PoolId?
@@ -47,6 +51,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -61,6 +66,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         self.runtimeService = runtimeService
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.assetStorageInfoFactory = assetStorageInfoFactory
 
         extrinsicService = extrinsicServiceFactory.createService(
             account: selectedAccount.chainAccount,
@@ -141,6 +147,8 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         }
 
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
+        rewardPoolProvider = subscribeRewardPool(for: poolId, chainId: chainId)
+
         setupClaimableRewardsProvider()
     }
 
@@ -159,13 +167,61 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
             basePresenter?.didReceive(error: .claimableRewards(CommonError.dataCorruption))
         }
     }
+
+    func subscribePoolMember() {
+        clear(dataProvider: &poolMemberProvider)
+        poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
+    }
+
+    func provideAssetExistence() {
+        let assetInfoWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: chainAsset.asset,
+            runtimeProvider: runtimeService
+        )
+
+        let wrapper: CompoundOperationWrapper<AssetBalanceExistence?> =
+            OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
+                guard let self = self else {
+                    return nil
+                }
+                let assetInfo = try assetInfoWrapper.targetOperation.extractNoCancellableResultData()
+
+                return self.assetStorageInfoFactory.createAssetBalanceExistenceOperation(
+                    for: assetInfo,
+                    chainId: chainAsset.chain.chainId,
+                    asset: chainAsset.asset
+                )
+            }
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.assetExistenceCancellable === wrapper else {
+                    return
+                }
+                self?.assetExistenceCancellable = nil
+
+                do {
+                    let assetExistence = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.basePresenter?.didReceive(assetBalanceExistance: assetExistence)
+                } catch {
+                    self?.basePresenter?.didReceive(error: .assetExistance(error))
+                }
+            }
+        }
+
+        assetExistenceCancellable = wrapper
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
 }
 
 extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseInteractorInputProtocol {
     func setup() {
+        feeProxy.delegate = self
+
         subscribeAccountBalance()
+        subscribePoolMember()
         subscribePrice()
-        provideBondedAccountId()
+        provideAssetExistence()
     }
 
     func estimateFee(for points: BigUInt) {
@@ -270,6 +326,28 @@ extension NominationPoolBondMoreBaseInteractor: NPoolsLocalStorageSubscriber, NP
             self.currentPoolRewardCounter = rewardPool?.lastRecordedRewardCounter
 
             claimableRewardProvider?.refresh()
+        }
+    }
+
+    func handleBondedPool(
+        result: Result<NominationPools.BondedPool?, Error>,
+        poolId _: NominationPools.PoolId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(bondedPool):
+            basePresenter?.didReceive(bondedPool: bondedPool)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "bonded pool"))
+        }
+    }
+
+    func handleClaimableRewards(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id, poolId _: NominationPools.PoolId, accountId _: AccountId) {
+        switch result {
+        case let .success(rewards):
+            basePresenter?.didReceive(claimableRewards: rewards)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "claimable rewards"))
         }
     }
 }

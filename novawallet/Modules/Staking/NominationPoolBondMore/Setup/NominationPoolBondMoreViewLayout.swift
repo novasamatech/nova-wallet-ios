@@ -15,17 +15,7 @@ final class NominationPoolBondMoreViewLayout: UIView {
 
     let networkFeeView = UIFactory.default.createNetworkFeeView()
 
-    let eraHintView: IconDetailsView = {
-        let view = IconDetailsView.hint()
-        view.isHidden = true
-        return view
-    }()
-
-    let rewardsHintView: IconDetailsView = {
-        let view = IconDetailsView.hint()
-        view.isHidden = true
-        return view
-    }()
+    let hintListView = HintListView()
 
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
@@ -74,7 +64,6 @@ final class NominationPoolBondMoreViewLayout: UIView {
 
         containerView.stackView.setCustomSpacing(4.0, after: networkFeeView)
 
-        containerView.stackView.addArrangedSubview(eraHintView)
-        containerView.stackView.addArrangedSubview(rewardsHintView)
+        containerView.stackView.addArrangedSubview(hintListView)
     }
 }

@@ -10,6 +10,8 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     let chainAsset: ChainAsset
     let hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol
     let logger: LoggerProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
 
     var assetBalance: AssetBalance?
     var poolMember: NominationPools.PoolMember?
@@ -18,12 +20,16 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     var price: PriceData?
     var fee: BigUInt?
     var claimableRewards: BigUInt?
+    var assetBalanceExistance: AssetBalanceExistence?
 
     init(
         interactor: NominationPoolBondMoreBaseInteractorInputProtocol,
         wireframe: NominationPoolBondMoreWireframeProtocol,
         chainAsset: ChainAsset,
         hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         baseInteractor = interactor
@@ -31,6 +37,9 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.logger = logger
         self.chainAsset = chainAsset
         self.hintsViewModelFactory = hintsViewModelFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.dataValidatorFactory = dataValidatorFactory
+        self.localizationManager = localizationManager
     }
 
     func updateView() {
@@ -42,6 +51,10 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func provideFee() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func getInputAmount() -> Decimal? {
         fatalError("Must be overriden by subsclass")
     }
 
@@ -83,8 +96,65 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
             poolBalance: stakingLedger.active
         )
 
-        baseInteractor.estimateFee(for: 0)
+        baseInteractor.estimateFee(for: points)
     }
+
+    func spendingAmount() -> Decimal? {
+        if let inputAmount = getInputAmount(),
+           let fee = fee?.decimal(precision: chainAsset.asset.precision) {
+            return inputAmount - fee
+        } else {
+            return nil
+        }
+    }
+
+    func spendingAmountInPlank() -> BigUInt? {
+        if let inputAmount = getInputAmountInPlank(),
+           let fee = fee {
+            return inputAmount - fee
+        } else {
+            return nil
+        }
+    }
+
+    func getValidations() -> [DataValidating] {
+        let baseValidators = [
+            dataValidatorFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            ) { [weak self] in
+                self?.refreshFee()
+            },
+            dataValidatorFactory.canSpendAmountInPlank(
+                balance: assetBalance?.transferable,
+                spendingAmount: spendingAmount(),
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatorFactory.exsitentialDepositIsNotViolated(
+                spendingAmount: spendingAmountInPlank(),
+                totalAmount: assetBalance?.totalInPlank,
+                minimumBalance: assetBalanceExistance?.minBalance,
+                locale: selectedLocale
+            )
+        ]
+
+        let poolValidators = [
+            dataValidatorFactory.nominationPoolIsDestroing(
+                pool: bondedPool,
+                locale: selectedLocale
+            ),
+            dataValidatorFactory.nominationPoolIsFullyUnbonding(
+                poolMember: poolMember,
+                locale: selectedLocale
+            )
+        ]
+
+        return baseValidators + poolValidators
+    }
+
+    // MARK: - NominationPoolBondMoreBaseInteractorOutputProtocol
 
     func didReceive(assetBalance: AssetBalance?) {
         self.assetBalance = assetBalance
@@ -135,6 +205,10 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.claimableRewards = claimableRewards
 
         provideHints()
+    }
+
+    func didReceive(assetBalanceExistance: AssetBalanceExistence?) {
+        self.assetBalanceExistance = assetBalanceExistance
     }
 
     func didReceive(error _: NominationPoolBondMoreError) {}

@@ -15,9 +15,10 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(bondedPool: NominationPools.BondedPool?)
     func didReceive(stakingLedger: StakingLedger?)
     func didReceive(claimableRewards: BigUInt?)
+    func didReceive(assetBalanceExistance: AssetBalanceExistence?)
 }
 
-protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable {}
+protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable, NominationPoolErrorPresentable {}
 
 enum NominationPoolBondMoreError: Error {
     case fetchBalanceFailed(Error)
@@ -25,4 +26,5 @@ enum NominationPoolBondMoreError: Error {
     case fetchPriceFailed(Error)
     case subscription(Error, String)
     case claimableRewards(Error)
+    case assetExistance(Error)
 }

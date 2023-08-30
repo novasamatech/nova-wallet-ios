@@ -1,13 +1,19 @@
 import UIKit
+import SoraFoundation
 
-final class NominationPoolBondMoreViewController: UIViewController {
+final class NominationPoolBondMoreViewController: UIViewController, ViewHolder {
     typealias RootViewType = NominationPoolBondMoreViewLayout
 
     let presenter: NominationPoolBondMorePresenterProtocol
+    private var amountInputViewModel: AmountInputViewModelProtocol?
 
-    init(presenter: NominationPoolBondMorePresenterProtocol) {
+    init(
+        presenter: NominationPoolBondMorePresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -22,8 +28,139 @@ final class NominationPoolBondMoreViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupAmountInputAccessoryView()
+        setupHandlers()
+        setupLocalization()
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.stakingBondMore_v190(
+            preferredLanguages: languages
+        )
+
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
+            preferredLanguages: languages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: languages
+        )
+
+        rootView.networkFeeView.locale = selectedLocale
+    }
+
+    private func setupAmountInputAccessoryView() {
+        let accessoryView = UIFactory.default.createAmountAccessoryView(
+            for: self,
+            locale: selectedLocale
+        )
+
+        rootView.amountInputView.textField.inputAccessoryView = accessoryView
+    }
+
+    private func setupHandlers() {
+        rootView.amountInputView.addTarget(
+            self,
+            action: #selector(actionAmountChange),
+            for: .editingChanged
+        )
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionProceed),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionAmountChange() {
+        let amount = rootView.amountInputView.inputViewModel?.decimalAmount
+        presenter.updateAmount(amount)
+
+        updateProceedButtonState()
+    }
+
+    @objc private func actionProceed() {
+        presenter.proceed()
+    }
+
+    private func updateProceedButtonState() {
+        if !rootView.amountInputView.completed {
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = false
+
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.invalidateLayout()
+
+            return
+        }
+
+        rootView.actionButton.applyEnabledStyle()
+        rootView.actionButton.isUserInteractionEnabled = true
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.actionButton.invalidateLayout()
     }
 }
 
-extension NominationPoolBondMoreViewController: NominationPoolBondMoreViewProtocol {}
+extension NominationPoolBondMoreViewController: NominationPoolBondMoreViewProtocol {
+    func didReceiveInput(viewModel: AmountInputViewModelProtocol) {
+        rootView.amountInputView.bind(inputViewModel: viewModel)
+        updateProceedButtonState()
+    }
+
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeView.bind(viewModel: viewModel)
+        updateProceedButtonState()
+    }
+
+    func didReceiveTransferable(viewModel: String?) {
+        rootView.amountView.detailsValueLabel.text = viewModel
+    }
+
+    func didReceiveHints(viewModel: [String]) {
+        rootView.hintListView.bind(texts: viewModel)
+    }
+
+    func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol) {
+        let assetViewModel = AssetViewModel(
+            symbol: viewModel.symbol,
+            imageViewModel: viewModel.iconViewModel
+        )
+
+        rootView.amountInputView.bind(assetViewModel: assetViewModel)
+        rootView.amountInputView.bind(priceViewModel: viewModel.price)
+
+        rootView.amountView.detailsValueLabel.text = viewModel.balance
+    }
+}
+
+extension NominationPoolBondMoreViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
+    }
+}
+
+extension NominationPoolBondMoreViewController: AmountInputAccessoryViewDelegate {
+    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
+        rootView.amountInputView.textField.resignFirstResponder()
+
+        presenter.selectAmountPercentage(percentage)
+    }
+
+    func didSelectDone(on _: AmountInputAccessoryView) {
+        rootView.amountInputView.textField.resignFirstResponder()
+    }
+}
+
+extension NominationPoolBondMoreViewController: ImportantViewProtocol {}

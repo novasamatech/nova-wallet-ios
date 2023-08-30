@@ -9377,6 +9377,7 @@
 				77F9FB082A9D971000820625 /* NominationPoolBondMoreInteractor.swift */,
 				77F9FB0A2A9D97A100820625 /* NominationPoolBondMoreWireframe.swift */,
 				725529DC6B70BF5B091B3748 /* NominationPoolBondMoreProtocols.swift */,
+				EAF2717F0CC0A4529C925814 /* NominationPoolBondMoreViewLayout.swift */,
 			);
 			path = Setup;
 			sourceTree = "<group>";
@@ -17540,7 +17541,6 @@
 				77F9FB042A9D96A700820625 /* Base */,
 				77F9FB052A9D96DF00820625 /* Setup */,
 				F0C9473AB7D1FE4A27403078 /* NominationPoolBondMoreViewController.swift */,
-				EAF2717F0CC0A4529C925814 /* NominationPoolBondMoreViewLayout.swift */,
 				91C760EDD8CDD8073063D76D /* NominationPoolBondMoreViewFactory.swift */,
 				77F9FB0E2A9DD66300820625 /* NominationPoolsBondMoreHintsFactory.swift */,
 			);
