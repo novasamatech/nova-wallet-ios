@@ -161,19 +161,13 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectValidators() {
-        guard let method = method,
-              case let .direct(validators) = method.selectedStakingOption,
-              let delegate = delegate else {
+        guard let method = method, case let .direct(validators) = method.selectedStakingOption else {
             return
         }
 
         let electedValidatorList = validators.electedValidators.map { $0.toSelected(for: nil) }
-        let recommendedValidatorList = validators.recommendedValidators.map {
-            $0.toSelected(for: nil)
-        } ?? []
-        let selectedValidators = validators.targets.map {
-            $0.toSelected(for: nil)
-        }
+        let recommendedValidatorList = validators.recommendedValidators
+
         let groups = SelectionValidatorGroups(
             fullValidatorList: electedValidatorList,
             recommendedValidatorList: recommendedValidatorList
@@ -188,7 +182,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         wireframe.showValidators(
             from: view,
             selectionValidatorGroups: groups,
-            selectedValidatorList: SharedList(items: selectedValidators),
+            selectedValidatorList: SharedList(items: validators.targets),
             validatorsSelectionParams: selectionParams,
             delegate: self
         )
@@ -333,14 +327,13 @@ extension StakingTypePresenter: StakingSelectValidatorsDelegateProtocol {
               let restrictions = method?.restrictions else {
             return nil
         }
+
         let selectedAddresses = validatorList.map(\.address)
-        let selectedValidators = validators.electedValidators.filter {
-            selectedAddresses.contains($0.address)
-        }
+
         let usedRecommendation = Set(selectedAddresses) == Set(validators.recommendedValidators.map(\.address))
         return .manual(.init(
             staking: .direct(.init(
-                targets: selectedValidators,
+                targets: validatorList,
                 maxTargets: maxTargets,
                 electedValidators: validators.electedValidators,
                 recommendedValidators: validators.recommendedValidators

@@ -36,7 +36,9 @@ final class DirectStakingRecommendationFactory {
             let recommendedValidators = RecommendationsComposer(
                 resultSize: resultLimit,
                 clusterSizeLimit: clusterLimit
-            ).compose(from: electedValidators)
+            )
+            .compose(from: electedValidators)
+            .map { $0.toSelected(for: nil) }
 
             return PreparedValidators(
                 targets: recommendedValidators,
