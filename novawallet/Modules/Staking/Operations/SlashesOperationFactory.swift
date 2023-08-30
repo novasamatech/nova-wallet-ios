@@ -5,7 +5,7 @@ import SubstrateSdk
 
 protocol SlashesOperationFactoryProtocol {
     func createSlashingSpansOperationForStash(
-        _ stashAddress: AccountAddress,
+        _ stashAccount: @escaping () throws -> AccountId,
         engine: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     )
@@ -24,7 +24,7 @@ final class SlashesOperationFactory {
 
 extension SlashesOperationFactory: SlashesOperationFactoryProtocol {
     func createSlashingSpansOperationForStash(
-        _ stashAddress: AccountAddress,
+        _ stashAccount: @escaping () throws -> AccountId,
         engine: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     )
@@ -32,7 +32,7 @@ extension SlashesOperationFactory: SlashesOperationFactoryProtocol {
         let runtimeFetchOperation = runtimeService.fetchCoderFactoryOperation()
 
         let keyParams: () throws -> [AccountId] = {
-            let accountId: AccountId = try stashAddress.toAccountId()
+            let accountId: AccountId = try stashAccount()
             return [accountId]
         }
 
