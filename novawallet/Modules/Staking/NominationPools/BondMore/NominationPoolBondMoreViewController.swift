@@ -28,7 +28,6 @@ final class NominationPoolBondMoreViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupAmountInputAccessoryView()
         setupHandlers()
         setupLocalization()
         presenter.setup()
@@ -54,6 +53,9 @@ final class NominationPoolBondMoreViewController: UIViewController, ViewHolder {
         )
 
         rootView.networkFeeView.locale = selectedLocale
+
+        setupAmountInputAccessoryView()
+        updateProceedButtonState()
     }
 
     private func setupAmountInputAccessoryView() {

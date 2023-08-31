@@ -46,9 +46,7 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
     }
 
     func provideAmountInputViewModel() {
-        guard let inputAmount = getInputAmount() else {
-            return
-        }
+        let inputAmount = getInputAmount()
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
             inputAmount
         ).value(for: selectedLocale)
@@ -83,8 +81,8 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
     }
 
     override func updateView() {
-        provideAssetViewModel()
         provideAmountInputViewModel()
+        provideAssetViewModel()
         provideTransferrableBalance()
         provideFee()
         provideHints()
@@ -131,42 +129,49 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
 
         provideAssetViewModel()
         provideTransferrableBalance()
-        provideAmountInputViewModel()
+        updateAmountInputViewModelIfNeeded()
     }
 
     override func didReceive(stakingLedger: StakingLedger?) {
         super.didReceive(stakingLedger: stakingLedger)
 
         provideAssetViewModel()
-        provideAmountInputViewModel()
+        updateAmountInputViewModelIfNeeded()
     }
 
     override func didReceive(price: PriceData?) {
         super.didReceive(price: price)
 
-        provideAssetViewModel()
         provideAmountInputViewModel()
+        provideAssetViewModel()
         provideTransferrableBalance()
         provideFee()
+    }
+
+    func updateAmountInputViewModelIfNeeded() {
+        if case .rate = inputResult {
+            provideAmountInputViewModel()
+        }
     }
 }
 
 extension NominationPoolBondMorePresenter: NominationPoolBondMorePresenterProtocol {
     func setup() {
-        updateView()
         interactor?.setup()
     }
 
     func selectAmountPercentage(_ percentage: Float) {
         inputResult = .rate(Decimal(Double(percentage)))
 
-        provideAssetViewModel()
         provideAmountInputViewModel()
+        provideAssetViewModel()
         refreshFee()
     }
 
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { AmountInputResult.absolute($0) }
+
+        provideAssetViewModel()
         refreshFee()
     }
 

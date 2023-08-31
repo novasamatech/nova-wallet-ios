@@ -211,7 +211,11 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
 
         wrapper.addDependency(wrapper: assetInfoWrapper)
         assetExistenceCancellable = wrapper
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        operationQueue.addOperations(
+            assetInfoWrapper.allOperations + wrapper.allOperations,
+            waitUntilFinished: false
+        )
     }
 }
 

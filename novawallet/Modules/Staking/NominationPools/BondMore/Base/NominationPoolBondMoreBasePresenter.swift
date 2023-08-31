@@ -212,6 +212,8 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func didReceive(error: NominationPoolBondMoreError) {
+        logger.error(error.localizedDescription)
+
         switch error {
         case let .fetchFeeFailed(error):
             baseWireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
