@@ -124,13 +124,6 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
         updateAmountInputViewModelIfNeeded()
     }
 
-    override func didReceive(stakingLedger: StakingLedger?) {
-        super.didReceive(stakingLedger: stakingLedger)
-
-        provideAssetViewModel()
-        updateAmountInputViewModelIfNeeded()
-    }
-
     override func didReceive(price: PriceData?) {
         super.didReceive(price: price)
 
@@ -150,6 +143,7 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
 extension NominationPoolBondMorePresenter: NominationPoolBondMorePresenterProtocol {
     func setup() {
         interactor?.setup()
+        refreshFee()
     }
 
     func selectAmountPercentage(_ percentage: Float) {

@@ -2,7 +2,7 @@ import BigInt
 
 protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for points: BigUInt)
+    func estimateFee(for amount: BigUInt)
     func retrySubscriptions()
     func retryClaimableRewards()
     func retryAssetExistance()
@@ -13,10 +13,8 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(fee: BigUInt?)
     func didReceive(error: NominationPoolBondMoreError)
-
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
-    func didReceive(stakingLedger: StakingLedger?)
     func didReceive(claimableRewards: BigUInt?)
     func didReceive(assetBalanceExistance: AssetBalanceExistence?)
 }

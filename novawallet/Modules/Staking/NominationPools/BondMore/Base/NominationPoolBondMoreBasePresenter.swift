@@ -16,7 +16,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     var assetBalance: AssetBalance?
     var poolMember: NominationPools.PoolMember?
     var bondedPool: NominationPools.BondedPool?
-    var stakingLedger: StakingLedger?
     var price: PriceData?
     var fee: BigUInt?
     var claimableRewards: BigUInt?
@@ -63,25 +62,13 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func refreshFee() {
-        guard
-            let stakingLedger = stakingLedger,
-            let bondedPool = bondedPool else {
-            return
-        }
-
         let inputAmount = getInputAmountInPlank() ?? 0
 
         fee = nil
 
         provideFee()
 
-        let points = NominationPools.balanceToPoints(
-            for: inputAmount,
-            totalPoints: bondedPool.points,
-            poolBalance: stakingLedger.active
-        )
-
-        baseInteractor.estimateFee(for: points)
+        baseInteractor.estimateFee(for: inputAmount)
     }
 
     func spendingAmount() -> Decimal? {
@@ -146,34 +133,11 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func didReceive(poolMember: NominationPools.PoolMember?) {
-        let shouldRefreshFee = poolMember?.points != self.poolMember?.points
-
         self.poolMember = poolMember
-        provideHints()
-
-        if shouldRefreshFee {
-            refreshFee()
-        }
     }
 
     func didReceive(bondedPool: NominationPools.BondedPool?) {
-        let shouldRefreshFee = bondedPool?.points != self.bondedPool?.points
-
         self.bondedPool = bondedPool
-
-        if shouldRefreshFee {
-            refreshFee()
-        }
-    }
-
-    func didReceive(stakingLedger: StakingLedger?) {
-        let shouldRefreshFee = stakingLedger?.active != self.stakingLedger?.active
-
-        self.stakingLedger = stakingLedger
-
-        if shouldRefreshFee {
-            refreshFee()
-        }
     }
 
     func didReceive(price: PriceData?) {
@@ -200,19 +164,19 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         logger.error(error.localizedDescription)
 
         switch error {
-        case let .fetchFeeFailed(error):
+        case let .fetchFeeFailed:
             baseWireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             }
-        case let .subscription(error, string):
+        case let .subscription:
             baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retrySubscriptions()
             }
-        case let .claimableRewards(error):
+        case let .claimableRewards:
             baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryClaimableRewards()
             }
-        case let .assetExistance(error):
+        case let .assetExistance:
             baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryAssetExistance()
             }

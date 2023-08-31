@@ -24,7 +24,6 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var poolMemberProvider: AnyDataProvider<DecodedPoolMember>?
     private var bondedPoolProvider: AnyDataProvider<DecodedBondedPool>?
-    private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
 
@@ -94,44 +93,6 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         } else {
             basePresenter?.didReceive(price: nil)
         }
-    }
-
-    func provideBondedAccountId() {
-        clear(cancellable: &bondedAccountIdCancellable)
-
-        guard let poolId = currentPoolId else {
-            return
-        }
-
-        bondedAccountIdCancellable = fetchBondedAccounts(
-            for: npoolsOperationFactory,
-            poolIds: { [poolId] },
-            runtimeService: runtimeService,
-            operationQueue: operationQueue,
-            completion: { [weak self] result in
-                self?.bondedAccountIdCancellable = nil
-
-                switch result {
-                case let .success(accountIds):
-                    if let accountId = accountIds[poolId] {
-                        self?.poolAccountId = accountId
-                        self?.subscribeBondedAccountProviders()
-                    }
-                case let .failure(error):
-                    self?.basePresenter?.didReceive(error: .subscription(error, "bondedAccountId"))
-                }
-            }
-        )
-    }
-
-    func subscribeBondedAccountProviders() {
-        poolLedgerProvider = nil
-
-        guard let accountId = poolAccountId else {
-            return
-        }
-
-        poolLedgerProvider = subscribeLedgerInfo(for: accountId, chainId: chainId)
     }
 
     func createExtrinsicClosure(for points: BigUInt) -> ExtrinsicBuilderClosure {
@@ -234,12 +195,12 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
         provideAssetExistence()
     }
 
-    func estimateFee(for points: BigUInt) {
-        let reuseIdentifier = String(points)
+    func estimateFee(for amount: BigUInt) {
+        let reuseIdentifier = String(amount)
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: reuseIdentifier,
-            setupBy: createExtrinsicClosure(for: points)
+            setupBy: createExtrinsicClosure(for: amount)
         )
     }
 
@@ -322,7 +283,6 @@ extension NominationPoolBondMoreBaseInteractor: NPoolsLocalStorageSubscriber, NP
                 currentPoolId = poolMember?.poolId
 
                 subscribePoolProviders()
-                provideBondedAccountId()
             }
 
             if currentMemberRewardCounter != poolMember?.lastRecordedRewardCounter {
@@ -381,21 +341,6 @@ extension NominationPoolBondMoreBaseInteractor: NPoolsLocalStorageSubscriber, NP
             basePresenter?.didReceive(claimableRewards: rewards)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "claimable rewards"))
-        }
-    }
-}
-
-extension NominationPoolBondMoreBaseInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
-        accountId _: AccountId,
-        chainId _: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(ledger):
-            basePresenter?.didReceive(stakingLedger: ledger)
-        case let .failure(error):
-            basePresenter?.didReceive(error: .subscription(error, "ledger"))
         }
     }
 }

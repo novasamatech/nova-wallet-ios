@@ -1,4 +1,5 @@
 import SoraFoundation
+import BigInt
 
 protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func nominationPoolHasApy(
@@ -88,6 +89,34 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return false
             }
             return poolMember.points > 0
+        })
+    }
+
+    func exsitentialDepositIsNotViolated(
+        spendingAmount: BigUInt?,
+        totalAmount: BigUInt?,
+        minimumBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentExistentialDeposit(
+                from: view,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            if
+                let spendingAmount = spendingAmount,
+                let totalAmount = totalAmount,
+                let minimumBalance = minimumBalance {
+                return totalAmount - spendingAmount >= minimumBalance
+            } else {
+                return false
+            }
         })
     }
 }
