@@ -8,7 +8,7 @@ final class StakingNPoolsWireframe: StakingNPoolsWireframeProtocol {
     }
 
     func showStakeMore(from view: StakingMainViewProtocol?) {
-        guard let stakeMoreView = NominationPoolBondMoreViewFactory.createView(state: state) else {
+        guard let stakeMoreView = NominationPoolBondMoreSetupViewFactory.createView(state: state) else {
             return
         }
         let navigationController = NovaNavigationController(

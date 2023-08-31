@@ -1,5 +1,7 @@
 import BigInt
 
+protocol NominationPoolBondMoreSetupBaseViewProtocol: ControllerBackedProtocol {}
+
 protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for amount: BigUInt)

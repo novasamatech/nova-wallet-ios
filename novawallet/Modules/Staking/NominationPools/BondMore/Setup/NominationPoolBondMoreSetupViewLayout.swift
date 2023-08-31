@@ -1,6 +1,6 @@
 import UIKit
 
-final class NominationPoolBondMoreViewLayout: SCSingleActionLayoutView {
+final class NominationPoolBondMoreSetupViewLayout: SCSingleActionLayoutView {
     let amountView = TitleHorizontalMultiValueView()
 
     let amountInputView = NewAmountInputView()

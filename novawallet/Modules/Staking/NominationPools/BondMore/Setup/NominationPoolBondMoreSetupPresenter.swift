@@ -1,20 +1,24 @@
 import BigInt
 import SoraFoundation
 
-final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter {
-    var wireframe: NominationPoolBondMoreWireframeProtocol? {
-        baseWireframe as? NominationPoolBondMoreWireframeProtocol
+final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePresenter {
+    weak var view: NominationPoolBondMoreSetupViewProtocol? {
+        baseView as? NominationPoolBondMoreSetupViewProtocol
     }
 
-    var interactor: NominationPoolBondMoreInteractorInputProtocol? {
-        baseInteractor as? NominationPoolBondMoreInteractorInputProtocol
+    var wireframe: NominationPoolBondMoreSetupWireframeProtocol? {
+        baseWireframe as? NominationPoolBondMoreSetupWireframeProtocol
+    }
+
+    var interactor: NominationPoolBondMoreSetupInteractorInputProtocol? {
+        baseInteractor as? NominationPoolBondMoreSetupInteractorInputProtocol
     }
 
     private var inputResult: AmountInputResult?
 
     init(
-        interactor: NominationPoolBondMoreInteractorInputProtocol,
-        wireframe: NominationPoolBondMoreWireframeProtocol,
+        interactor: NominationPoolBondMoreSetupInteractorInputProtocol,
+        wireframe: NominationPoolBondMoreSetupWireframeProtocol,
         chainAsset: ChainAsset,
         hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -140,7 +144,7 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
     }
 }
 
-extension NominationPoolBondMorePresenter: NominationPoolBondMorePresenterProtocol {
+extension NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreSetupPresenterProtocol {
     func setup() {
         interactor?.setup()
         refreshFee()

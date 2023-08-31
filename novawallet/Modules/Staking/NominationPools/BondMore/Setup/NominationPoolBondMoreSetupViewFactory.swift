@@ -1,13 +1,13 @@
 import Foundation
 import SoraFoundation
 
-struct NominationPoolBondMoreViewFactory {
-    static func createView(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreViewProtocol? {
+struct NominationPoolBondMoreSetupViewFactory {
+    static func createView(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreSetupViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let interactor = createInteractor(state: state) else {
             return nil
         }
-        let wireframe = NominationPoolBondMoreWireframe()
+        let wireframe = NominationPoolBondMoreSetupWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
@@ -20,7 +20,7 @@ struct NominationPoolBondMoreViewFactory {
         let localizationManager = LocalizationManager.shared
         let dataValidatorFactory = NominationPoolDataValidatorFactory(presentable: wireframe)
 
-        let presenter = NominationPoolBondMorePresenter(
+        let presenter = NominationPoolBondMoreSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
@@ -31,15 +31,15 @@ struct NominationPoolBondMoreViewFactory {
             logger: Logger.shared
         )
 
-        let view = NominationPoolBondMoreViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = NominationPoolBondMoreSetupViewController(presenter: presenter, localizationManager: localizationManager)
 
-        presenter.view = view
+        presenter.baseView = view
         interactor.basePresenter = presenter
         dataValidatorFactory.view = view
         return view
     }
 
-    static func createInteractor(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreInteractor? {
+    static func createInteractor(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreSetupInteractor? {
         let chainAsset = state.chainAsset
 
         guard

@@ -1,14 +1,14 @@
 import UIKit
 import SoraFoundation
 
-final class NominationPoolBondMoreViewController: UIViewController, ViewHolder {
-    typealias RootViewType = NominationPoolBondMoreViewLayout
+final class NominationPoolBondMoreSetupViewController: UIViewController, ViewHolder {
+    typealias RootViewType = NominationPoolBondMoreSetupViewLayout
 
-    let presenter: NominationPoolBondMorePresenterProtocol
+    let presenter: NominationPoolBondMoreSetupPresenterProtocol
     private var amountInputViewModel: AmountInputViewModelProtocol?
 
     init(
-        presenter: NominationPoolBondMorePresenterProtocol,
+        presenter: NominationPoolBondMoreSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -22,7 +22,7 @@ final class NominationPoolBondMoreViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = NominationPoolBondMoreViewLayout()
+        view = NominationPoolBondMoreSetupViewLayout()
     }
 
     override func viewDidLoad() {
@@ -113,7 +113,7 @@ final class NominationPoolBondMoreViewController: UIViewController, ViewHolder {
     }
 }
 
-extension NominationPoolBondMoreViewController: NominationPoolBondMoreViewProtocol {
+extension NominationPoolBondMoreSetupViewController: NominationPoolBondMoreSetupViewProtocol {
     func didReceiveInput(viewModel: AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: viewModel)
         updateProceedButtonState()
@@ -145,7 +145,7 @@ extension NominationPoolBondMoreViewController: NominationPoolBondMoreViewProtoc
     }
 }
 
-extension NominationPoolBondMoreViewController: Localizable {
+extension NominationPoolBondMoreSetupViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -153,7 +153,7 @@ extension NominationPoolBondMoreViewController: Localizable {
     }
 }
 
-extension NominationPoolBondMoreViewController: AmountInputAccessoryViewDelegate {
+extension NominationPoolBondMoreSetupViewController: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
         rootView.amountInputView.textField.resignFirstResponder()
 
@@ -165,4 +165,4 @@ extension NominationPoolBondMoreViewController: AmountInputAccessoryViewDelegate
     }
 }
 
-extension NominationPoolBondMoreViewController: ImportantViewProtocol {}
+extension NominationPoolBondMoreSetupViewController: ImportantViewProtocol {}

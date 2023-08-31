@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 
 class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorOutputProtocol {
-    weak var view: NominationPoolBondMoreViewProtocol?
+    weak var baseView: NominationPoolBondMoreSetupBaseViewProtocol?
     let baseWireframe: NominationPoolBondMoreBaseWireframeProtocol
     let baseInteractor: NominationPoolBondMoreBaseInteractorInputProtocol
 
@@ -23,7 +23,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
 
     init(
         interactor: NominationPoolBondMoreBaseInteractorInputProtocol,
-        wireframe: NominationPoolBondMoreWireframeProtocol,
+        wireframe: NominationPoolBondMoreSetupWireframeProtocol,
         chainAsset: ChainAsset,
         hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -165,19 +165,19 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
 
         switch error {
         case let .fetchFeeFailed:
-            baseWireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            baseWireframe.presentFeeStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             }
         case let .subscription:
-            baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retrySubscriptions()
             }
         case let .claimableRewards:
-            baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryClaimableRewards()
             }
         case let .assetExistance:
-            baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryAssetExistance()
             }
         }
@@ -186,7 +186,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
 
 extension NominationPoolBondMoreBasePresenter: Localizable {
     func applyLocalization() {
-        if view?.isSetup == true {
+        if baseView?.isSetup == true {
             updateView()
         }
     }

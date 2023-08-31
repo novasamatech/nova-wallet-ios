@@ -1,6 +1,6 @@
 import BigInt
 
-protocol NominationPoolBondMoreViewProtocol: ControllerBackedProtocol {
+protocol NominationPoolBondMoreSetupViewProtocol: NominationPoolBondMoreSetupBaseViewProtocol {
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveTransferable(viewModel: String?)
@@ -8,17 +8,17 @@ protocol NominationPoolBondMoreViewProtocol: ControllerBackedProtocol {
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
 }
 
-protocol NominationPoolBondMorePresenterProtocol: AnyObject {
+protocol NominationPoolBondMoreSetupPresenterProtocol: AnyObject {
     func setup()
     func selectAmountPercentage(_ percentage: Float)
     func updateAmount(_ newValue: Decimal?)
     func proceed()
 }
 
-protocol NominationPoolBondMoreInteractorInputProtocol: NominationPoolBondMoreBaseInteractorInputProtocol {}
+protocol NominationPoolBondMoreSetupInteractorInputProtocol: NominationPoolBondMoreBaseInteractorInputProtocol {}
 
-protocol NominationPoolBondMoreInteractorOutputProtocol: NominationPoolBondMoreBaseInteractorOutputProtocol {}
+protocol NominationPoolBondMoreSetupInteractorOutputProtocol: NominationPoolBondMoreBaseInteractorOutputProtocol {}
 
-protocol NominationPoolBondMoreWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol {
+protocol NominationPoolBondMoreSetupWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol {
     func showConfirm(from view: ControllerBackedProtocol?)
 }
