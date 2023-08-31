@@ -1,6 +1,8 @@
 import BigInt
 
-protocol NominationPoolBondMoreSetupBaseViewProtocol: ControllerBackedProtocol {}
+protocol NominationPoolBondMoreBaseViewProtocol: ControllerBackedProtocol {
+    func didReceiveHints(viewModel: [String])
+}
 
 protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
     func setup()

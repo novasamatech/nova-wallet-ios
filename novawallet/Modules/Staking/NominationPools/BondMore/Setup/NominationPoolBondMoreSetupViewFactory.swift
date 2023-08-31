@@ -7,7 +7,7 @@ struct NominationPoolBondMoreSetupViewFactory {
               let interactor = createInteractor(state: state) else {
             return nil
         }
-        let wireframe = NominationPoolBondMoreSetupWireframe()
+        let wireframe = NominationPoolBondMoreSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,

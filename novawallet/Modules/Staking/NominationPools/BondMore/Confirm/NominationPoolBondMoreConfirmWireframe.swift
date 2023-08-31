@@ -1,3 +1,3 @@
 import Foundation
 
-final class NominationPoolBondMoreConfirmWireframe: NominationPoolBondMoreConfirmWireframeProtocol {}
+final class NominationPoolBondMoreConfirmWireframe: NominationPoolBondMoreConfirmWireframeProtocol, ModalAlertPresenting {}

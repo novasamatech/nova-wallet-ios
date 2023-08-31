@@ -113,3 +113,5 @@ extension NominationPoolBondMoreConfirmViewController: Localizable {
         }
     }
 }
+
+extension NominationPoolBondMoreConfirmViewController: ImportantViewProtocol {}
