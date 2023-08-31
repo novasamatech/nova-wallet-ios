@@ -11,7 +11,6 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
     }
 
     private var inputResult: AmountInputResult?
-    private var transferrableBalance: Decimal?
 
     init(
         interactor: NominationPoolBondMoreInteractorInputProtocol,
@@ -55,7 +54,7 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
     }
 
     func provideAssetViewModel() {
-        let balance = transferrableBalance ?? 0
+        let balance = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) ?? 0
         let inputAmount = getInputAmount() ?? 0
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
             inputAmount,
@@ -73,7 +72,7 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
         switch inputResult {
         case .rate:
             let fee = fee?.decimal(precision: chainAsset.asset.precision) ?? 0
-            let availableAmountDecimal = transferrableBalance ?? 0
+            let availableAmountDecimal = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) ?? 0
             return inputResult.absoluteValue(from: availableAmountDecimal - fee)
         case let .absolute(inputValue):
             return inputResult.absoluteValue(from: inputValue)
@@ -119,13 +118,6 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
 
     override func didReceive(assetBalance: AssetBalance?) {
         super.didReceive(assetBalance: assetBalance)
-
-        transferrableBalance = assetBalance.map {
-            Decimal.fromSubstrateAmount(
-                $0.transferable,
-                precision: Int16(chainAsset.asset.precision)
-            ) ?? 0
-        }
 
         provideAssetViewModel()
         provideTransferrableBalance()

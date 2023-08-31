@@ -179,7 +179,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
             runtimeProvider: runtimeService
         )
 
-        let wrapper: CompoundOperationWrapper<AssetBalanceExistence?> =
+        let assetBalanceExistenceWrapper: CompoundOperationWrapper<AssetBalanceExistence?> =
             OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
                 guard let self = self else {
                     return nil
@@ -192,6 +192,12 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
                     asset: chainAsset.asset
                 )
             }
+        assetBalanceExistenceWrapper.addDependency(wrapper: assetInfoWrapper)
+
+        let wrapper = CompoundOperationWrapper<AssetBalanceExistence?>(
+            targetOperation: assetBalanceExistenceWrapper.targetOperation,
+            dependencies: assetInfoWrapper.allOperations + assetBalanceExistenceWrapper.dependencies
+        )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -209,11 +215,10 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
             }
         }
 
-        wrapper.addDependency(wrapper: assetInfoWrapper)
         assetExistenceCancellable = wrapper
 
         operationQueue.addOperations(
-            assetInfoWrapper.allOperations + wrapper.allOperations,
+            wrapper.allOperations,
             waitUntilFinished: false
         )
     }

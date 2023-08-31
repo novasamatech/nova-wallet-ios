@@ -62,21 +62,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         fatalError("Must be overriden by subsclass")
     }
 
-    func getStakedAmountInPlank() -> BigUInt? {
-        guard
-            let stakingLedger = stakingLedger,
-            let bondedPool = bondedPool,
-            let poolMember = poolMember else {
-            return nil
-        }
-
-        return NominationPools.pointsToBalance(
-            for: poolMember.points,
-            totalPoints: bondedPool.points,
-            poolBalance: stakingLedger.active
-        )
-    }
-
     func refreshFee() {
         guard
             let stakingLedger = stakingLedger,
