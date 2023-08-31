@@ -6,6 +6,8 @@ struct StakingRecommendationValidationParams {
     let assetBalance: AssetBalance?
     let assetLocks: AssetLocks?
     let fee: BigUInt?
+    let existentialDeposit: BigUInt?
+    let stakeUpdateClosure: (Decimal) -> Void
 }
 
 protocol StakingRecommendationValidationFactoryProtocol: AnyObject {
@@ -104,5 +106,130 @@ extension HybridStakingValidationFactory: StakingRecommendationValidationFactory
         )
 
         return [validation]
+    }
+}
+
+final class PoolStakingValidationFactory {
+    let chainAsset: ChainAsset
+
+    init(chainAsset: ChainAsset) {
+        self.chainAsset = chainAsset
+    }
+
+    // swiftlint:disable:next function_body_length
+    private func notViolatingExistentialDeposit(
+        params: StakingRecommendationValidationParams,
+        controller: ControllerBackedProtocol?,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        presentable: StakingErrorPresentable,
+        locale: Locale
+    ) -> DataValidating {
+        let fee = params.fee ?? 0
+        let minBalance = params.existentialDeposit ?? 0
+        let feeAndMinBalance = fee + minBalance
+
+        let precision = chainAsset.asset.precision
+
+        return WarningConditionViolation(onWarning: { delegate in
+            guard
+                let view = controller,
+                let assetBalance = params.assetBalance else {
+                return
+            }
+
+            let maxStake = assetBalance.totalInPlank > feeAndMinBalance ?
+                assetBalance.totalInPlank - feeAndMinBalance : 0
+            let maxStakeDecimal = maxStake.decimal(precision: precision)
+            let maxStakeString = balanceViewModelFactory.amountFromValue(
+                maxStakeDecimal
+            ).value(for: locale)
+
+            let availableBalanceString = balanceViewModelFactory.amountFromValue(
+                assetBalance.transferable.decimal(precision: precision)
+            ).value(for: locale)
+
+            let feeString = balanceViewModelFactory.amountFromValue(
+                fee.decimal(precision: precision)
+            ).value(for: locale)
+
+            let minBalanceString = balanceViewModelFactory.amountFromValue(
+                minBalance.decimal(precision: precision)
+            ).value(for: locale)
+
+            let errorParams = NPoolsEDViolationErrorParams(
+                availableBalance: availableBalanceString,
+                minimumBalance: minBalanceString,
+                fee: feeString,
+                maxStake: maxStakeString
+            )
+
+            presentable.presentExistentialDepositViolationForPools(
+                from: view,
+                params: errorParams,
+                action: {
+                    params.stakeUpdateClosure(maxStakeDecimal)
+                    delegate.didCompleteWarningHandling()
+                }, locale: locale
+            )
+
+        }, preservesCondition: {
+            guard
+                let assetBalance = params.assetBalance,
+                let stakingAmountInPlank = params.stakingAmount?.toSubstrateAmount(
+                    precision: Int16(bitPattern: precision)
+                ) else {
+                return true
+            }
+
+            return stakingAmountInPlank + fee + minBalance <= assetBalance.totalInPlank
+        })
+    }
+}
+
+extension PoolStakingValidationFactory: StakingRecommendationValidationFactoryProtocol {
+    func createValidations(
+        for params: StakingRecommendationValidationParams,
+        controller: ControllerBackedProtocol?,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        presentable: StakingErrorPresentable,
+        locale: Locale
+    ) -> [DataValidating] {
+        let validation = notViolatingExistentialDeposit(
+            params: params,
+            controller: controller,
+            balanceViewModelFactory: balanceViewModelFactory,
+            presentable: presentable,
+            locale: locale
+        )
+
+        return [validation]
+    }
+}
+
+final class CombinedStakingValidationFactory: StakingRecommendationValidationFactoryProtocol {
+    let factories: [StakingRecommendationValidationFactoryProtocol]
+
+    init(factories: [StakingRecommendationValidationFactoryProtocol]) {
+        self.factories = factories
+    }
+
+    func createValidations(
+        for params: StakingRecommendationValidationParams,
+        controller: ControllerBackedProtocol?,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        presentable: StakingErrorPresentable,
+        locale: Locale
+    ) -> [DataValidating] {
+        let validations = factories
+            .map { $0.createValidations(
+                for: params,
+                controller: controller,
+                balanceViewModelFactory: balanceViewModelFactory,
+                presentable: presentable,
+                locale: locale
+            ) }
+            .flatMap { $0 }
+
+        return validations
     }
 }

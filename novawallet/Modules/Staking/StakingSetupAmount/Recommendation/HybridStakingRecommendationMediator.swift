@@ -94,10 +94,15 @@ extension HybridStakingRecommendationMediator: RelaychainStakingRestrictionsBuil
 
 extension HybridStakingRecommendationMediator: RelaychainStakingRecommendationDelegate {
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt) {
+        let factories = [
+            recommendation.validationFactory,
+            validationFactory
+        ].compactMap { $0 }
+
         let hybridRecommendation = RelaychainStakingRecommendation(
             staking: recommendation.staking,
             restrictions: recommendation.restrictions,
-            validationFactory: validationFactory
+            validationFactory: CombinedStakingValidationFactory(factories: factories)
         )
 
         delegate?.didReceive(recommendation: hybridRecommendation, amount: amount)

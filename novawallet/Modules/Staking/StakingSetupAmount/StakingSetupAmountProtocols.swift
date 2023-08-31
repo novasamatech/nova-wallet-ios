@@ -23,6 +23,7 @@ protocol StakingSetupAmountInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
     func remakeRecommendationSetup()
+    func retryExistentialDeposit()
 
     func estimateFee(for staking: SelectedStakingOption, amount: BigUInt, feeId: TransactionFeeId)
     func updateRecommendation(for amount: BigUInt)
@@ -33,6 +34,7 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance)
     func didReceive(fee: BigUInt?, feeId: TransactionFeeId)
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt)
+    func didReceive(existentialDeposit: BigUInt)
     func didReceive(locks: AssetLocks)
     func didReceive(error: StakingSetupAmountError)
 }
@@ -61,4 +63,5 @@ enum StakingSetupAmountError: Error {
     case fee(Error, TransactionFeeId)
     case recommendation(Error)
     case locks(Error)
+    case existentialDeposit(Error)
 }

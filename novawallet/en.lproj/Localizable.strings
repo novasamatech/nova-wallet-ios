@@ -1375,3 +1375,5 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.unstake.crossed.min.message" = "When unstaking partially, you should leave at least %@ in stake. Do you want to perform full unstake by unstaking remaining %@ as well?";
 "staking.unstake.all" = "Unstake all";
 "staking.restake.message" = "Your tokens will be added back to the stake";
+"staking.pool.ed.error.message" = "Your available balance is %@, to continue you have to leave %@ as minimal balance and pay network fee %@. To start staking input not more than %@.";
+"staking.maximum.action" = "Stake maximum";

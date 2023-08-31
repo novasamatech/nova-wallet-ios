@@ -20,6 +20,7 @@ final class StakingSetupAmountPresenter {
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
 
     private var assetBalance: AssetBalance?
+    private var existentialDeposit: BigUInt?
     private var buttonState: ButtonState = .startState
     private var inputResult: AmountInputResult? {
         didSet {
@@ -317,7 +318,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 
     // swiftlint:disable:next function_body_length
     func proceed() {
-        let currentInputAmount = inputAmount()
+        var currentInputAmount = inputAmount()
 
         let defaultValidations: [DataValidating] = [
             dataValidatingFactory.hasInPlank(
@@ -364,7 +365,11 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
                 stakingAmount: currentInputAmount,
                 assetBalance: assetBalance,
                 assetLocks: assetLocks,
-                fee: fee
+                fee: fee,
+                existentialDeposit: existentialDeposit,
+                stakeUpdateClosure: { newStake in
+                    currentInputAmount = newStake
+                }
             ),
             controller: view,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -410,6 +415,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
             updateRecommendationIfNeeded()
             refreshFee()
         }
+    }
+
+    func didReceive(existentialDeposit: BigUInt) {
+        self.existentialDeposit = existentialDeposit
     }
 
     func didReceive(fee: BigUInt?, feeId: TransactionFeeId) {
@@ -474,6 +483,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
 
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeRecommendationSetup()
+            }
+        case .existentialDeposit:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryExistentialDeposit()
             }
         }
     }

@@ -117,6 +117,8 @@ struct StakingSetupAmountViewFactory {
             extrinsicFeeProxy: feeProxy,
             extrinsicSubmissionProxy: extrinsicProxy,
             recommendationMediatorFactory: recommendationFactory,
+            runtimeService: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }
