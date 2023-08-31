@@ -3,6 +3,9 @@ import BigInt
 protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for points: BigUInt)
+    func retrySubscriptions()
+    func retryClaimableRewards()
+    func retryAssetExistance()
 }
 
 protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
@@ -21,9 +24,7 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
 protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable, NominationPoolErrorPresentable {}
 
 enum NominationPoolBondMoreError: Error {
-    case fetchBalanceFailed(Error)
     case fetchFeeFailed(Error)
-    case fetchPriceFailed(Error)
     case subscription(Error, String)
     case claimableRewards(Error)
     case assetExistance(Error)

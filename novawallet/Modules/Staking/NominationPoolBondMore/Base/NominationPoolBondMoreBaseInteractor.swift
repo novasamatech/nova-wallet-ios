@@ -76,17 +76,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         self.currencyManager = currencyManager
     }
 
-    private func subscribePrice() {
-        clear(streamableProvider: &priceProvider)
-
-        if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-        } else {
-            basePresenter?.didReceive(price: nil)
-        }
-    }
-
-    private func subscribeAccountBalance() {
+    func subscribeAccountBalance() {
         clear(streamableProvider: &balanceProvider)
 
         balanceProvider = subscribeToAssetBalanceProvider(
@@ -94,6 +84,16 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
+    }
+
+    func subscribePrice() {
+        clear(streamableProvider: &priceProvider)
+
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        } else {
+            basePresenter?.didReceive(price: nil)
+        }
     }
 
     func provideBondedAccountId() {
@@ -115,7 +115,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
                 case let .success(accountIds):
                     if let accountId = accountIds[poolId] {
                         self?.poolAccountId = accountId
-                        self?.setupBondedAccountProviders()
+                        self?.subscribeBondedAccountProviders()
                     }
                 case let .failure(error):
                     self?.basePresenter?.didReceive(error: .subscription(error, "bondedAccountId"))
@@ -124,7 +124,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         )
     }
 
-    func setupBondedAccountProviders() {
+    func subscribeBondedAccountProviders() {
         poolLedgerProvider = nil
 
         guard let accountId = poolAccountId else {
@@ -141,7 +141,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         }
     }
 
-    func setupPoolProviders() {
+    func subscribePoolProviders() {
         guard let poolId = currentPoolId else {
             return
         }
@@ -149,10 +149,10 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
         rewardPoolProvider = subscribeRewardPool(for: poolId, chainId: chainId)
 
-        setupClaimableRewardsProvider()
+        subscribeClaimableRewardsProvider()
     }
 
-    func setupClaimableRewardsProvider() {
+    func subscribeClaimableRewardsProvider() {
         guard let poolId = currentPoolId else {
             return
         }
@@ -209,6 +209,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
             }
         }
 
+        wrapper.addDependency(wrapper: assetInfoWrapper)
         assetExistenceCancellable = wrapper
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
@@ -232,19 +233,19 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
             setupBy: createExtrinsicClosure(for: points)
         )
     }
-}
 
-extension NominationPoolBondMoreBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(
-        result: Result<PriceData?, Error>,
-        priceId _: AssetModel.PriceId
-    ) {
-        switch result {
-        case let .success(priceData):
-            basePresenter?.didReceive(price: priceData)
-        case let .failure(error):
-            basePresenter?.didReceive(error: .fetchPriceFailed(error))
-        }
+    func retrySubscriptions() {
+        subscribeAccountBalance()
+        subscribePoolMember()
+        subscribePrice()
+    }
+
+    func retryClaimableRewards() {
+        subscribeClaimableRewardsProvider()
+    }
+
+    func retryAssetExistance() {
+        provideAssetExistence()
     }
 }
 
@@ -259,7 +260,21 @@ extension NominationPoolBondMoreBaseInteractor: WalletLocalStorageSubscriber, Wa
         case let .success(balance):
             basePresenter?.didReceive(assetBalance: balance)
         case let .failure(error):
-            basePresenter?.didReceive(error: .fetchBalanceFailed(error))
+            basePresenter?.didReceive(error: .subscription(error, "asset balance"))
+        }
+    }
+}
+
+extension NominationPoolBondMoreBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(
+        result: Result<PriceData?, Error>,
+        priceId _: AssetModel.PriceId
+    ) {
+        switch result {
+        case let .success(priceData):
+            basePresenter?.didReceive(price: priceData)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "price"))
         }
     }
 }
@@ -293,21 +308,21 @@ extension NominationPoolBondMoreBaseInteractor: NPoolsLocalStorageSubscriber, NP
         accountId _: AccountId, chainId _: ChainModel.Id
     ) {
         switch result {
-        case let .success(optPoolMember):
-            if currentPoolId != optPoolMember?.poolId {
-                currentPoolId = optPoolMember?.poolId
+        case let .success(poolMember):
+            if currentPoolId != poolMember?.poolId {
+                currentPoolId = poolMember?.poolId
 
-                setupPoolProviders()
+                subscribePoolProviders()
                 provideBondedAccountId()
             }
 
-            if currentMemberRewardCounter != optPoolMember?.lastRecordedRewardCounter {
-                currentMemberRewardCounter = optPoolMember?.lastRecordedRewardCounter
+            if currentMemberRewardCounter != poolMember?.lastRecordedRewardCounter {
+                currentMemberRewardCounter = poolMember?.lastRecordedRewardCounter
 
                 claimableRewardProvider?.refresh()
             }
 
-            basePresenter?.didReceive(poolMember: optPoolMember)
+            basePresenter?.didReceive(poolMember: poolMember)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "pool member"))
         }
@@ -342,7 +357,16 @@ extension NominationPoolBondMoreBaseInteractor: NPoolsLocalStorageSubscriber, NP
         }
     }
 
-    func handleClaimableRewards(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id, poolId _: NominationPools.PoolId, accountId _: AccountId) {
+    func handleClaimableRewards(
+        result: Result<BigUInt?, Error>,
+        chainId _: ChainModel.Id,
+        poolId: NominationPools.PoolId,
+        accountId _: AccountId
+    ) {
+        guard currentPoolId == poolId else {
+            return
+        }
+
         switch result {
         case let .success(rewards):
             basePresenter?.didReceive(claimableRewards: rewards)

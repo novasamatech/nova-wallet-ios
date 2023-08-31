@@ -32,8 +32,8 @@ extension NominationPoolsBondMoreHintsFactory: NominationPoolsBondMoreHintsFacto
 
         if let rewards = rewards, rewards > 0 {
             let decimalAmount = rewards.decimal(precision: chainAsset.asset.precision)
-            let hint = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
-
+            let amount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
+            let hint = R.string.localizable.stakingPoolRewardsClaimHint(amount, preferredLanguages: locale.rLanguages)
             hints.append(hint)
         }
 

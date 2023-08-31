@@ -18,6 +18,7 @@ struct NominationPoolBondMoreViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
         let localizationManager = LocalizationManager.shared
+        let dataValidatorFactory = NominationPoolDataValidatorFactory(presentable: wireframe)
 
         let presenter = NominationPoolBondMorePresenter(
             interactor: interactor,
@@ -25,7 +26,7 @@ struct NominationPoolBondMoreViewFactory {
             chainAsset: state.chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            dataValidatorFactory: NominationPoolDataValidatorFactory(presentable: wireframe),
+            dataValidatorFactory: dataValidatorFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -34,7 +35,7 @@ struct NominationPoolBondMoreViewFactory {
 
         presenter.view = view
         interactor.basePresenter = presenter
-
+        dataValidatorFactory.view = view
         return view
     }
 

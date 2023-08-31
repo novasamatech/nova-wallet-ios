@@ -91,10 +91,11 @@ final class NominationPoolBondMorePresenter: NominationPoolBondMoreBasePresenter
     }
 
     override func provideHints() {
-        hintsViewModelFactory.createHints(
+        let hints = hintsViewModelFactory.createHints(
             rewards: claimableRewards,
             locale: selectedLocale
         )
+        view?.didReceiveHints(viewModel: hints)
     }
 
     override func provideFee() {
@@ -169,5 +170,13 @@ extension NominationPoolBondMorePresenter: NominationPoolBondMorePresenterProtoc
         refreshFee()
     }
 
-    func proceed() {}
+    func proceed() {
+        let validators = getValidations()
+
+        DataValidationRunner(
+            validators: validators
+        ).runValidation { [weak self] in
+            self?.wireframe?.showConfirm(from: self?.view)
+        }
+    }
 }

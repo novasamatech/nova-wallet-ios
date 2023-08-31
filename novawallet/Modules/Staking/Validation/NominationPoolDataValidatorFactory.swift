@@ -67,11 +67,10 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 locale: locale
             )
         }, preservesCondition: {
-            if let pool = pool, pool.state == .destroying {
-                return true
-            } else {
+            guard let pool = pool else {
                 return false
             }
+            return pool.state != .destroying
         })
     }
 
@@ -85,11 +84,10 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             }
             self?.presentable.presentPoolIsFullyUnbonding(from: view, locale: locale)
         }, preservesCondition: {
-            if let poolMember = poolMember, poolMember.points > 0 {
+            guard let poolMember = poolMember else {
                 return false
-            } else {
-                return true
             }
+            return poolMember.points > 0
         })
     }
 }

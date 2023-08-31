@@ -19,4 +19,6 @@ protocol NominationPoolBondMoreInteractorInputProtocol: NominationPoolBondMoreBa
 
 protocol NominationPoolBondMoreInteractorOutputProtocol: NominationPoolBondMoreBaseInteractorOutputProtocol {}
 
-protocol NominationPoolBondMoreWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol {}
+protocol NominationPoolBondMoreWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol {
+    func showConfirm(from view: ControllerBackedProtocol?)
+}

@@ -102,7 +102,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     func spendingAmount() -> Decimal? {
         if let inputAmount = getInputAmount(),
            let fee = fee?.decimal(precision: chainAsset.asset.precision) {
-            return inputAmount - fee
+            return inputAmount + fee
         } else {
             return nil
         }
@@ -111,7 +111,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     func spendingAmountInPlank() -> BigUInt? {
         if let inputAmount = getInputAmountInPlank(),
            let fee = fee {
-            return inputAmount - fee
+            return inputAmount + fee
         } else {
             return nil
         }
@@ -211,7 +211,26 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.assetBalanceExistance = assetBalanceExistance
     }
 
-    func didReceive(error _: NominationPoolBondMoreError) {}
+    func didReceive(error: NominationPoolBondMoreError) {
+        switch error {
+        case let .fetchFeeFailed(error):
+            baseWireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshFee()
+            }
+        case let .subscription(error, string):
+            baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.baseInteractor.retrySubscriptions()
+            }
+        case let .claimableRewards(error):
+            baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.baseInteractor.retryClaimableRewards()
+            }
+        case let .assetExistance(error):
+            baseWireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.baseInteractor.retryAssetExistance()
+            }
+        }
+    }
 }
 
 extension NominationPoolBondMoreBasePresenter: Localizable {
