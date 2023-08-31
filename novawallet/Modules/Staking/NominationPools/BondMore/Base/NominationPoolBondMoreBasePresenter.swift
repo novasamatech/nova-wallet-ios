@@ -141,11 +141,11 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         ]
 
         let poolValidators = [
-            dataValidatorFactory.nominationPoolIsDestroing(
+            dataValidatorFactory.nominationPoolIsNotDestroing(
                 pool: bondedPool,
                 locale: selectedLocale
             ),
-            dataValidatorFactory.nominationPoolIsFullyUnbonding(
+            dataValidatorFactory.nominationPoolIsNotFullyUnbonding(
                 poolMember: poolMember,
                 locale: selectedLocale
             )

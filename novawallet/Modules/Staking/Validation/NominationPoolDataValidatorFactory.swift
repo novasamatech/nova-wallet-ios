@@ -5,11 +5,11 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         method: StakingSelectionMethod,
         locale: Locale
     ) -> DataValidating
-    func nominationPoolIsDestroing(
+    func nominationPoolIsNotDestroing(
         pool: NominationPools.BondedPool?,
         locale: Locale
     ) -> DataValidating
-    func nominationPoolIsFullyUnbonding(
+    func nominationPoolIsNotFullyUnbonding(
         poolMember: NominationPools.PoolMember?,
         locale: Locale
     ) -> DataValidating
@@ -54,7 +54,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
         })
     }
 
-    func nominationPoolIsDestroing(
+    func nominationPoolIsNotDestroing(
         pool: NominationPools.BondedPool?,
         locale: Locale
     ) -> DataValidating {
@@ -74,7 +74,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
         })
     }
 
-    func nominationPoolIsFullyUnbonding(
+    func nominationPoolIsNotFullyUnbonding(
         poolMember: NominationPools.PoolMember?,
         locale: Locale
     ) -> DataValidating {

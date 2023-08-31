@@ -26,7 +26,7 @@ extension NominationPoolsBondMoreHintsFactory: NominationPoolsBondMoreHintsFacto
         rewards: BigUInt?,
         locale: Locale
     ) -> [String] {
-        let eraHint = R.string.localizable.stakingHintRewardBondMore(preferredLanguages: locale.rLanguages)
+        let eraHint = R.string.localizable.stakingHintRewardBondMore_v2_2_0(preferredLanguages: locale.rLanguages)
 
         var hints: [String] = [eraHint]
 

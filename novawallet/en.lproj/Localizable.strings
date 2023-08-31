@@ -1368,7 +1368,6 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.your.pool.title" = "Your pool";
 "staking.your.pool.format" = "Your pool (#%@)";
 "staking.pool.rewards.claim.hint" = "Your rewards (%@) will also be claimed and added to your free balance";
-"staking.pool.rewards.bond.more.hint" = "You will get increased rewards starting from next era";
 "staking.pool.rewards.bond.more.pool.is.destroing" = "Cannot perform specified operation since pool is in destroying state. It will be closed soon.";
 "staking.pool.rewards.bond.more.pool.unbonding.error.title" = "Unable to stake more";
 "staking.pool.rewards.bond.more.pool.unbonding.error.message" = "You are unstaking all of your tokens. During the unstaking process, you can't stake more.";

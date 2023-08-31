@@ -1368,7 +1368,6 @@
 "staking.your.pool.title" = "Ваш пул";
 "staking.your.pool.format" = "Ваш пул (#%@)";
 "staking.pool.rewards.claim.hint" = "Ваши награды (%@) также будут добавлены к свободному балансу";
-"staking.pool.rewards.bond.more.hint" = "Вы будете получать увеличенные награды, начиная со следующей эры";
 "staking.pool.rewards.bond.more.pool.is.destroing" = "Невозможно выполнить операцию, поскольку пул находится в состоянии уничтожения. Скоро он будет закрыт.";
 "staking.pool.rewards.bond.more.pool.unbonding.error.title" = "Невозможно увеличить стейк";
 "staking.pool.rewards.bond.more.pool.unbonding.error.message" = "Вы в процессе анстейкинга всех своих токенов. Во время процесса анстейкинга вы не можете увеличить стейк.";
