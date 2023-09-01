@@ -42,6 +42,16 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
+
+    func nominationPoolIsNotDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating
+
+    func nominationPoolIsNotFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class NominationPoolDataValidatorFactory {
@@ -80,6 +90,71 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
 
             if let apy = selectedPool.maxApy, apy > 0 {
                 return true
+            } else {
+                return false
+            }
+        })
+    }
+
+    func nominationPoolIsNotDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentNominationPoolIsDestroing(
+                from: view,
+                locale: locale
+            )
+        }, preservesCondition: {
+            guard let pool = pool else {
+                return false
+            }
+            return pool.state != .destroying
+        })
+    }
+
+    func nominationPoolIsNotFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentPoolIsFullyUnbonding(from: view, locale: locale)
+        }, preservesCondition: {
+            guard let poolMember = poolMember else {
+                return false
+            }
+            return poolMember.points > 0
+        })
+    }
+
+    func exsitentialDepositIsNotViolated(
+        spendingAmount: BigUInt?,
+        totalAmount: BigUInt?,
+        minimumBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentExistentialDeposit(
+                from: view,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            if
+                let spendingAmount = spendingAmount,
+                let totalAmount = totalAmount,
+                let minimumBalance = minimumBalance {
+                return totalAmount - spendingAmount >= minimumBalance
             } else {
                 return false
             }

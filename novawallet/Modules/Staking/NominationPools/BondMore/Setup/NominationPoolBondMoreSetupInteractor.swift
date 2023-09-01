@@ -1,0 +1,7 @@
+import UIKit
+import RobinHood
+import BigInt
+
+final class NominationPoolBondMoreSetupInteractor: NominationPoolBondMoreBaseInteractor {}
+
+extension NominationPoolBondMoreSetupInteractor: NominationPoolBondMoreSetupInteractorInputProtocol {}

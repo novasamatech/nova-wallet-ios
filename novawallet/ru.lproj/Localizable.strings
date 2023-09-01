@@ -1368,6 +1368,9 @@
 "staking.your.pool.title" = "Ваш пул";
 "staking.your.pool.format" = "Ваш пул (#%@)";
 "staking.pool.rewards.claim.hint" = "Ваши награды (%@) также будут добавлены к свободному балансу";
+"staking.pool.rewards.bond.more.pool.is.destroing" = "Невозможно выполнить операцию, поскольку пул находится в состоянии уничтожения. Скоро он будет закрыт.";
+"staking.pool.rewards.bond.more.pool.unbonding.error.title" = "Невозможно увеличить стейк";
+"staking.pool.rewards.bond.more.pool.unbonding.error.message" = "Вы забираете все токены из стейка и поэтому не можете увеличивать стейк.";
 "staking.unstake.too.high.message" = "Сумма анстейка больше чем ваш стейк.";
 "staking.unstake.no.space.title" = "Слишком много людей забирают стейк в вашем пуле";
 "staking.unstake.no.space.message" = "В очереде не осталось свободных мест для того, чтобы забрать токены. Пожалуйста, попробуйте через %@";
