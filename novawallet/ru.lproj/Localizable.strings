@@ -365,7 +365,7 @@
 "crowdloan.leasing.period" = "Период лизинга";
 "common.till.date" = "до %@";
 "crowdloan.reward" = "Примерное вознаграждение";
-"staking.bonded.inactive" = "Вы не номинируете и не в��лидируете";
+"staking.bonded.inactive" = "Вы не номинируете и не валидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.submit.agreement" = "Подтвердить согласие";
@@ -793,7 +793,7 @@
 "parastk.pending.revoke.message" = "Вы не можете добавить стейк в коллатора, для которого вы разблокируете все токены.";
 "parastk.cant.bond.more.title" = "Невозможно добавить стейк в выбранного коллатора";
 "parastk.not.active.collator.message" = "Выбранный коллатор намерен прекратить участие в стейкинге.";
-"parastk.not.active.collator.title" = "Невозможно застейкать �� выбранным коллатором";
+"parastk.not.active.collator.title" = "Невозможно застейкать с выбранным коллатором";
 "parachain.staking.delegator.exists.title" = "Стекинг активирован ранее";
 "parachain.staking.delegator.exists.message" = "Стекинг был активирован ранее. Для того чтобы застейкать еще токенов использовать соответствующее действие.";
 "common.rewards.column" = "Награды:";
@@ -953,7 +953,7 @@
 "with.yield.boost" = "с Yield Boost";
 "without.yield.boost" = "без Yield Boost";
 "common.no.changes" = "Нет изменений";
-"common.not.enough.fee.message_v3.8.0" = "�� вас недостаточно средств для оплаты комиссии сети в размере %@.\nДоступный баланс для оплаты комиссии после операции: %@";
+"common.not.enough.fee.message_v3.8.0" = "У вас недостаточно средств для оплаты комиссии сети в размере %@.\nДоступный баланс для оплаты комиссии после операции: %@";
 "yield.boost.not.enough.execution.fee.message" = "У вас недостаточно средств для оплаты сетевой комиссии в размере %@ и комиссии за выполнение первой Yield Boost операции в размере %@. \nДоступный баланс для оплаты комиссии: %@";
 "yield.boost.not.enough.execution.fee.title" = "Недостаточно токенов для оплаты комиссии за первое исполнение";
 "yield.boost.not.enough.threshold.message" = "У вас недостаточно средств, чтобы оплатить комиссию сети в размере %@ и не опуститься ниже порога %@.\nДоступный баланс для оплаты комиссии: %@";
@@ -1147,7 +1147,7 @@
 "gov.vote.by" = "%@ голосов через %@";
 "delegations.voted.referenda.title" = "Голоса за все время";
 "delegations.info.title" = "Информация о делегате";
-"delegations.info.voted.all" = "Голоса за все вре��я";
+"delegations.info.voted.all" = "Голоса за все время";
 "gov.tracks" = "Треки";
 "gov.remove.votes" = "Удалить голоса";
 "delegations.list.multiple.tracks" = "В %@ треках";
