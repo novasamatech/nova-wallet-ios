@@ -206,6 +206,74 @@ extension PoolStakingValidationFactory: StakingRecommendationValidationFactoryPr
     }
 }
 
+final class DirectStakingValidatorFactory {
+    let directRewardableStake: BigUInt?
+    let chainAsset: ChainAsset
+
+    init(directRewardableStake: BigUInt?, chainAsset: ChainAsset) {
+        self.directRewardableStake = directRewardableStake
+        self.chainAsset = chainAsset
+    }
+
+    private func notViolatingRewardableStake(
+        params: StakingRecommendationValidationParams,
+        controller: ControllerBackedProtocol?,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        presentable: StakingErrorPresentable,
+        locale: Locale
+    ) -> DataValidating {
+        let optMinStakeDecimal = directRewardableStake?.decimal(precision: chainAsset.asset.precision)
+
+        return WarningConditionViolation(onWarning: { delegate in
+            guard let view = controller else {
+                return
+            }
+
+            let minStakeString = balanceViewModelFactory.amountFromValue(
+                optMinStakeDecimal ?? 0
+            ).value(for: locale)
+
+            presentable.presentMinRewardableStakeViolated(
+                from: view,
+                action: {
+                    delegate.didCompleteWarningHandling()
+                },
+                minStake: minStakeString,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            guard let minStakeDecimal = optMinStakeDecimal else {
+                return true
+            }
+
+            let stakingAmount = params.stakingAmount ?? 0
+
+            return stakingAmount >= minStakeDecimal
+        })
+    }
+}
+
+extension DirectStakingValidatorFactory: StakingRecommendationValidationFactoryProtocol {
+    func createValidations(
+        for params: StakingRecommendationValidationParams,
+        controller: ControllerBackedProtocol?,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        presentable: StakingErrorPresentable,
+        locale: Locale
+    ) -> [DataValidating] {
+        let validation = notViolatingRewardableStake(
+            params: params,
+            controller: controller,
+            balanceViewModelFactory: balanceViewModelFactory,
+            presentable: presentable,
+            locale: locale
+        )
+
+        return [validation]
+    }
+}
+
 final class CombinedStakingValidationFactory: StakingRecommendationValidationFactoryProtocol {
     let factories: [StakingRecommendationValidationFactoryProtocol]
 

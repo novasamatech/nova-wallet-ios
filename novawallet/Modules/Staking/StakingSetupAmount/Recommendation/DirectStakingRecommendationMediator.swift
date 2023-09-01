@@ -8,13 +8,16 @@ class DirectStakingRecommendationMediator: BaseStakingRecommendationMediator {
     let restrictionsBuilder: RelaychainStakingRestrictionsBuilding
     let operationQueue: OperationQueue
 
+    let chainAsset: ChainAsset
     var restrictions: RelaychainStakingRestrictions?
 
     init(
+        chainAsset: ChainAsset,
         recommendationFactory: DirectStakingRecommendationFactoryProtocol,
         restrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         operationQueue: OperationQueue
     ) {
+        self.chainAsset = chainAsset
         self.recommendationFactory = recommendationFactory
         self.restrictionsBuilder = restrictionsBuilder
         self.operationQueue = operationQueue
@@ -25,10 +28,15 @@ class DirectStakingRecommendationMediator: BaseStakingRecommendationMediator {
             return
         }
 
+        let validationFactory = DirectStakingValidatorFactory(
+            directRewardableStake: restrictions.minRewardableStake,
+            chainAsset: chainAsset
+        )
+
         let recommendation = RelaychainStakingRecommendation(
             staking: .direct(validators),
             restrictions: restrictions,
-            validationFactory: nil
+            validationFactory: validationFactory
         )
 
         didReceive(recommendation: recommendation, for: amount)

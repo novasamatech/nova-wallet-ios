@@ -130,20 +130,20 @@ final class StakingSetupAmountPresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
-    private func balanceMinusFee() -> Decimal {
+    private func stakeableBalanceMinusFee() -> Decimal {
         let feeValue = fee ?? 0
         guard
             let precision = chainAsset.chain.utilityAsset()?.displayInfo.assetPrecision,
-            let balance = availableBalance(),
+            let balance = stakeableBalance(),
             let feeDecimal = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
             return 0
         }
 
-        return balance - feeDecimal
+        return balance >= feeDecimal ? balance - feeDecimal : 0
     }
 
     private func inputAmount() -> Decimal {
-        inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        inputResult?.absoluteValue(from: stakeableBalanceMinusFee()) ?? 0
     }
 
     private func inputAmountInPlank() -> BigUInt {
@@ -154,9 +154,21 @@ final class StakingSetupAmountPresenter {
         availableBalanceInPlank().flatMap { $0.decimal(precision: chainAsset.asset.precision) }
     }
 
+    private func stakeableBalance() -> Decimal? {
+        stakeableBalanceInPlank().flatMap { $0.decimal(precision: chainAsset.asset.precision) }
+    }
+
     private func availableBalanceInPlank() -> BigUInt? {
         balanceDerivationFactory.getAvailableBalance(
             from: assetBalance,
+            stakingMethod: setupMethod
+        )
+    }
+
+    private func stakeableBalanceInPlank() -> BigUInt? {
+        balanceDerivationFactory.getStakeableBalance(
+            from: assetBalance,
+            existentialDeposit: existentialDeposit,
             stakingMethod: setupMethod
         )
     }
