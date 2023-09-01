@@ -9,7 +9,7 @@ struct StaticValidatorListViewFactory {
         let viewModelFactory = SelectedValidatorListViewModelFactory()
         let wireframe = StaticValidatorListWireframe(stakingState: stakingState)
 
-        let selectedValidators = validatorList.targets.map { $0.toSelected(for: nil) }
+        let selectedValidators = validatorList.targets
 
         let presenter = StaticValidatorListPresenter(
             wireframe: wireframe,

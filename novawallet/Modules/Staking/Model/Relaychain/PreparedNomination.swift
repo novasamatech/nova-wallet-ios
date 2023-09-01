@@ -7,8 +7,8 @@ struct PreparedNomination<T> {
 }
 
 struct PreparedValidators {
-    let targets: [ElectedValidatorInfo]
+    let targets: [SelectedValidatorInfo]
     let maxTargets: Int
     let electedValidators: [ElectedValidatorInfo]
-    let recommendedValidators: [ElectedValidatorInfo]
+    let recommendedValidators: [SelectedValidatorInfo]
 }

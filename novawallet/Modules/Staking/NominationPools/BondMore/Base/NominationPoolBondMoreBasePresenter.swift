@@ -76,22 +76,12 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         baseInteractor.estimateFee(for: inputAmount)
     }
 
-    func spendingAmount() -> Decimal? {
-        if let inputAmount = getInputAmount(),
-           let fee = fee?.decimal(precision: chainAsset.asset.precision) {
-            return inputAmount + fee
-        } else {
+    func getSpendingAmountInPlank() -> BigUInt? {
+        guard let inputAmount = getInputAmountInPlank(),
+              let fee = fee else {
             return nil
         }
-    }
-
-    func spendingAmountInPlank() -> BigUInt? {
-        if let inputAmount = getInputAmountInPlank(),
-           let fee = fee {
-            return inputAmount + fee
-        } else {
-            return nil
-        }
+        return inputAmount + fee
     }
 
     func getValidations() -> [DataValidating] {
@@ -105,12 +95,19 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
             },
             dataValidatorFactory.canSpendAmountInPlank(
                 balance: assetBalance?.transferable,
-                spendingAmount: spendingAmount(),
+                spendingAmount: getInputAmount(),
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatorFactory.canPayFeeSpendingAmountInPlank(
+                balance: assetBalance?.transferable,
+                fee: fee,
+                spendingAmount: getInputAmount(),
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
             dataValidatorFactory.exsitentialDepositIsNotViolated(
-                spendingAmount: spendingAmountInPlank(),
+                spendingAmount: getSpendingAmountInPlank(),
                 totalAmount: assetBalance?.totalInPlank,
                 minimumBalance: assetBalanceExistance?.minBalance,
                 locale: selectedLocale

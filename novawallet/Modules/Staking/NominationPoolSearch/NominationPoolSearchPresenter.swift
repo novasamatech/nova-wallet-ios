@@ -10,9 +10,10 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
     let interactor: NominationPoolSearchInteractorInputProtocol
     let viewModelFactory: StakingSelectPoolViewModelFactoryProtocol
     let chainAsset: ChainAsset
+    let logger: LoggerProtocol
     let operationQueue: OperationQueue
 
-    private var poolStats: [NominationPools.PoolStats] = []
+    private var poolStats: LoadableViewModelState<[NominationPools.PoolStats]> = .loaded(value: [])
 
     init(
         interactor: NominationPoolSearchInteractorInputProtocol,
@@ -21,7 +22,8 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         chainAsset: ChainAsset,
         delegate: StakingSelectPoolDelegate,
         operationQueue: OperationQueue,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -29,17 +31,23 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         self.chainAsset = chainAsset
         self.operationQueue = operationQueue
         self.delegate = delegate
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
     private func provideVidewModel() {
-        let viewModel = viewModelFactory.createStakingSelectPoolViewModels(
-            from: poolStats,
-            selectedPoolId: nil,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        )
-        view?.didReceivePools(state: .loaded(viewModel: viewModel))
+        switch poolStats {
+        case .loading:
+            view?.didReceivePools(state: .loading)
+        case let .cached(stats), let .loaded(stats):
+            let viewModel = viewModelFactory.createStakingSelectPoolViewModels(
+                from: stats,
+                selectedPoolId: nil,
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            )
+            view?.didReceivePools(state: .loaded(viewModel: viewModel))
+        }
     }
 
     private func showUnsupportedPoolStateAlert() {
@@ -62,7 +70,7 @@ extension NominationPoolSearchPresenter: NominationPoolSearchPresenterProtocol {
     }
 
     func selectPool(poolId: NominationPools.PoolId) {
-        guard let pool = poolStats.first(where: { $0.poolId == poolId }) else {
+        guard let pool = poolStats.value?.first(where: { $0.poolId == poolId }) else {
             return
         }
 
@@ -79,7 +87,7 @@ extension NominationPoolSearchPresenter: NominationPoolSearchPresenterProtocol {
     }
 
     func showPoolInfo(poolId: NominationPools.PoolId) {
-        guard let view = view, let pool = poolStats.first(where: { $0.poolId == poolId }) else {
+        guard let view = view, let pool = poolStats.value?.first(where: { $0.poolId == poolId }) else {
             return
         }
         guard let address = try? pool.bondedAccountId.toAddress(using: chainAsset.chain.chainFormat) else {
@@ -96,11 +104,19 @@ extension NominationPoolSearchPresenter: NominationPoolSearchPresenterProtocol {
 
 extension NominationPoolSearchPresenter: NominationPoolSearchInteractorOutputProtocol {
     func didReceive(poolStats: [NominationPools.PoolStats]) {
-        self.poolStats = poolStats
+        self.poolStats = .loaded(value: poolStats)
+        provideVidewModel()
+    }
+
+    func didStartSearch(for _: String) {
+        poolStats = .loading
+
         provideVidewModel()
     }
 
     func didReceive(error: NominationPoolSearchError) {
+        logger.error("Did receive error: \(error)")
+
         switch error {
         case .pools:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

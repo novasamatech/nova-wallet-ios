@@ -1,9 +1,10 @@
-import Foundation
+import UIKit
 
 enum ExtrinsicSubmissionPresentingAction {
     case dismiss
     case pop
     case popBack
+    case popBaseAndDismiss
 }
 
 protocol ExtrinsicSubmissionPresenting: AnyObject {
@@ -40,6 +41,16 @@ extension ExtrinsicSubmissionPresenting where Self: ModalAlertPresenting {
             view?.controller.navigationController?.popViewController(animated: true)
 
             presentSuccessNotification(title, from: presenter, completion: nil)
+        case .popBaseAndDismiss:
+            let presenter = view?.controller.navigationController?.presentingViewController
+
+            if let rootNavigationController = presenter as? UINavigationController {
+                rootNavigationController.popToRootViewController(animated: false)
+            }
+
+            presenter?.dismiss(animated: true) { [weak self] in
+                self?.presentSuccessNotification(title, from: presenter, completion: nil)
+            }
         }
     }
 }

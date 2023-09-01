@@ -18,6 +18,7 @@ final class StartStakingConfirmViewLayout: SCLoadableActionLayoutView {
 
     let stakingDetailsCell: StackInfoTableCell = .create {
         $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        $0.iconImageView.contentMode = .scaleAspectFit
     }
 
     override func setupLayout() {

@@ -31,7 +31,8 @@ struct StakingSetupAmountViewFactory {
         )
 
         let poolValidatingFactory = NominationPoolDataValidatorFactory(
-            presentable: wireframe
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
         )
 
         let balanceDerivationFactory = StakingTypeBalanceFactory(stakingType: state.stakingType)

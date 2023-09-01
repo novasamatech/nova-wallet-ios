@@ -17,6 +17,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol
+    let unstakeLimitsFactory: NPoolsUnstakeOperationFactoryProtocol
     let durationFactory: StakingDurationOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -32,10 +33,10 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var bondedPoolProvider: AnyDataProvider<DecodedBondedPool>?
-    private var subpoolsProvider: AnyDataProvider<DecodedSubPools>?
     private var poolLedgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
+    private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var eraCountdownCancellable: CancellableCall?
@@ -61,6 +62,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol,
         durationFactory: StakingDurationOperationFactoryProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
+        unstakeLimitsFactory: NPoolsUnstakeOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -78,14 +80,13 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         self.runtimeService = runtimeService
         self.eraCountdownOperationFactory = eraCountdownOperationFactory
         self.durationFactory = durationFactory
+        self.unstakeLimitsFactory = unstakeLimitsFactory
         self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.currencyManager = currencyManager
     }
 
     deinit {
-        eventCenter.remove(observer: self)
-
         clearCancellable()
     }
 
@@ -130,7 +131,6 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         }
 
         bondedPoolProvider = subscribeBondedPool(for: poolId, chainId: chainId)
-        subpoolsProvider = subscribeSubPools(for: poolId, chainId: chainId)
         rewardPoolProvider = subscribeRewardPool(for: poolId, chainId: chainId)
 
         setupClaimableRewardsProvider()
@@ -173,12 +173,13 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
 
     func setupBaseProviders() {
         bondedPoolProvider = nil
-        subpoolsProvider = nil
         poolLedgerProvider = nil
         rewardPoolProvider = nil
+        claimableRewardProvider = nil
 
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
+        minStakeProvider = subscribeMinJoinBond(for: chainId)
 
         setupCurrencyProvider()
     }
@@ -241,23 +242,12 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     }
 
     func provideUnstakingLimits() {
-        let maxUnlockingsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation(path: Staking.maxUnlockingChunks)
+        clear(cancellable: &unstakeLimitsCancellable)
 
-        let mapOperation = ClosureOperation<NominationPools.UnstakeLimits> {
-            let maxUnlockChunks = try maxUnlockingsOperation.extractNoCancellableResultData()
-
-            return .init(
-                globalMaxUnlockings: maxUnlockChunks,
-                poolMemberMaxUnlockings: nil,
-                poolMaxUnlockings: nil
-            )
-        }
-
-        mapOperation.addDependency(maxUnlockingsOperation)
-
-        let dependecies = [maxUnlockingsOperation]
-
-        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependecies)
+        let wrapper = unstakeLimitsFactory.createLimitsWrapper(
+            for: chainAsset.chain,
+            runtimeService: runtimeService
+        )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -297,6 +287,7 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
         setupBaseProviders()
         provideEraCountdown()
         provideStakingDuration()
+        provideUnstakingLimits()
 
         feeProxy.delegate = self
         eventCenter.add(observer: self, dispatchIn: .main)
@@ -370,16 +361,16 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
         }
     }
 
-    func handleSubPools(
-        result: Result<NominationPools.SubPools?, Error>,
+    func handleBondedPool(
+        result: Result<NominationPools.BondedPool?, Error>,
         poolId _: NominationPools.PoolId,
         chainId _: ChainModel.Id
     ) {
         switch result {
-        case let .success(subPools):
-            basePresenter?.didReceive(subPools: subPools)
+        case let .success(bondedPool):
+            basePresenter?.didReceive(bondedPool: bondedPool)
         case let .failure(error):
-            basePresenter?.didReceive(error: .subscription(error, "subPools"))
+            basePresenter?.didReceive(error: .subscription(error, "bonded pool"))
         }
     }
 
@@ -410,6 +401,15 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
             self.currentPoolRewardCounter = rewardPool?.lastRecordedRewardCounter
 
             claimableRewardProvider?.refresh()
+        }
+    }
+
+    func handleMinJoinBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(minStake):
+            basePresenter?.didReceive(minStake: minStake)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "min stake"))
         }
     }
 }
