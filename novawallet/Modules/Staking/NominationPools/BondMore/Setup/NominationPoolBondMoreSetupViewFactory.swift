@@ -18,7 +18,10 @@ struct NominationPoolBondMoreSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
         let localizationManager = LocalizationManager.shared
-        let dataValidatorFactory = NominationPoolDataValidatorFactory(presentable: wireframe, balanceFactory: balanceViewModelFactory)
+        let dataValidatorFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
 
         let presenter = NominationPoolBondMoreSetupPresenter(
             interactor: interactor,
@@ -31,7 +34,10 @@ struct NominationPoolBondMoreSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = NominationPoolBondMoreSetupViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = NominationPoolBondMoreSetupViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.baseView = view
         interactor.basePresenter = presenter

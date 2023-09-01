@@ -21,7 +21,8 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalanceExistance: AssetBalanceExistence?)
 }
 
-protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable, NominationPoolErrorPresentable {}
+protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,
+    FeeRetryable, NominationPoolErrorPresentable {}
 
 enum NominationPoolBondMoreError: Error {
     case fetchFeeFailed(Error)
