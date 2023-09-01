@@ -145,13 +145,10 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return false
             }
 
-            let targetEra = eraCountdown.activeEra + limits.bondingDuration
-
             let hasSpace = stakingLedger.unlocking.count < limits.globalMaxUnlockings
             let hasRedeemable = stakingLedger.redeemable(inEra: eraCountdown.activeEra) > 0
-            let hasEraUnstaking = stakingLedger.unlocking.contains { $0.era == targetEra }
 
-            return hasSpace || hasRedeemable || hasEraUnstaking
+            return hasSpace || hasRedeemable
         })
     }
 

@@ -127,26 +127,32 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         ]
     }
 
-    func refreshFee() {
+    func getUnstakingPoints() -> BigUInt? {
         guard
             let stakingLedger = stakingLedger,
             let bondedPool = bondedPool else {
-            return
+            return nil
         }
 
         let inputAmount = getInputAmountInPlank() ?? 0
+
+        return NominationPools.balanceToPoints(
+            for: inputAmount,
+            totalPoints: bondedPool.points,
+            poolBalance: stakingLedger.active
+        )
+    }
+
+    func refreshFee() {
+        guard let unstakingPoints = getUnstakingPoints() else {
+            return
+        }
 
         fee = nil
 
         provideFee()
 
-        let points = NominationPools.balanceToPoints(
-            for: inputAmount,
-            totalPoints: bondedPool.points,
-            poolBalance: stakingLedger.active
-        )
-
-        baseInteractor.estimateFee(for: points)
+        baseInteractor.estimateFee(for: unstakingPoints)
     }
 
     // MARK: Unstake Base Interactor Output
