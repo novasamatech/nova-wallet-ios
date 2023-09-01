@@ -14,7 +14,6 @@ protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
-    func didReceive(subPools: NominationPools.SubPools?)
     func didReceive(stakingLedger: StakingLedger?)
     func didReceive(stakingDuration: StakingDuration)
     func didReceive(eraCountdown: EraCountdown)
@@ -26,4 +25,5 @@ protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(error: NPoolsUnstakeBaseError)
 }
 
-protocol NPoolsUnstakeBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable {}
+protocol NPoolsUnstakeBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable,
+    NominationPoolErrorPresentable {}

@@ -25,7 +25,8 @@ struct NominationPoolSearchViewFactory {
             chainAsset: state.chainAsset,
             delegate: delegate,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = NominationPoolSearchViewController(

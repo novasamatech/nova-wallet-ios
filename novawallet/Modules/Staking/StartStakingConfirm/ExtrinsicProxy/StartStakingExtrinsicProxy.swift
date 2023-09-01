@@ -79,7 +79,7 @@ final class StartStakingExtrinsicProxy {
 
             let callFactory = SubstrateCallFactory()
 
-            let targets = params.validators.targets.map { $0.toSelected(for: nil) }
+            let targets = params.validators.targets
             let nominateCall = try callFactory.nominate(targets: targets)
 
             return try bondClosure(builder).adding(call: nominateCall)

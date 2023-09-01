@@ -16,6 +16,7 @@ protocol NominationPoolSearchInteractorInputProtocol: AnyObject {
 
 protocol NominationPoolSearchInteractorOutputProtocol: AnyObject {
     func didReceive(poolStats: [NominationPools.PoolStats])
+    func didStartSearch(for text: String)
     func didReceive(error: NominationPoolSearchError)
 }
 

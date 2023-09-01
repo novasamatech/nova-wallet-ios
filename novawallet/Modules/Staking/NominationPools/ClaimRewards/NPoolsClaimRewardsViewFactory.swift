@@ -2,46 +2,54 @@ import Foundation
 import RobinHood
 import SoraFoundation
 
-struct NPoolsUnstakeSetupViewFactory {
-    static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsUnstakeSetupViewProtocol? {
+struct NPoolsClaimRewardsViewFactory {
+    static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsClaimRewardsViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
+            let wallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let wireframe = NPoolsUnstakeSetupWireframe()
+        let wireframe = NPoolsClaimRewardsWireframe()
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
-        let hintsViewModelFactory = NPoolsUnstakeHintsFactory(
-            chainAsset: state.chainAsset,
-            balanceViewModelFactory: balanceViewModelFactory
+        let dataValidatingFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
         )
 
-        let presenter = NPoolsUnstakeSetupPresenter(
+        let presenter = NPoolsClaimRewardsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            selectedAccount: selectedAccount,
             chainAsset: state.chainAsset,
-            hintsViewModelFactory: hintsViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatorFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
-        let view = NPoolsUnstakeSetupViewController(presenter: presenter)
+        let view = NPoolsClaimRewardsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
 
     private static func createInteractor(
         for state: NPoolsStakingSharedStateProtocol
-    ) -> NPoolsUnstakeSetupInteractor? {
+    ) -> NPoolsClaimRewardsInteractor? {
         let chainAsset = state.chainAsset
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -63,28 +71,18 @@ struct NPoolsUnstakeSetupViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
-        let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(for: operationQueue)
-        let durationOperationFactory = state.createStakingDurationOperationFactory()
+        let signingWrapper = SigningWrapperFactory.createSigner(from: selectedAccount)
 
-        let npoolsOperationFactory = NominationPoolsOperationFactory(operationQueue: operationQueue)
-
-        return NPoolsUnstakeSetupInteractor(
+        return NPoolsClaimRewardsInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
+            signingWrapper: signingWrapper,
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            connection: connection,
-            runtimeService: runtimeService,
-            eraCountdownOperationFactory: eraCountdownOperationFactory,
-            durationFactory: durationOperationFactory,
-            npoolsOperationFactory: npoolsOperationFactory,
-            eventCenter: EventCenter.shared,
-            currencyManager: currencyManager,
-            operationQueue: operationQueue
+            currencyManager: currencyManager
         )
     }
 }

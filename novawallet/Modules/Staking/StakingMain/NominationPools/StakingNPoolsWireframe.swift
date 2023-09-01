@@ -15,15 +15,33 @@ final class StakingNPoolsWireframe: StakingNPoolsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showUnstake(from _: StakingMainViewProtocol?) {
-        // TODO: Implement in task for unstake
+    func showUnstake(from view: StakingMainViewProtocol?) {
+        guard let unstakeView = NPoolsUnstakeSetupViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: unstakeView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 
-    func showRedeem(from _: StakingMainViewProtocol?) {
-        // TODO: Implement in task for redeem
+    func showRedeem(from view: StakingMainViewProtocol?) {
+        guard let redeemView = NPoolsRedeemViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: redeemView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 
-    func showClaimRewards(from _: StakingMainViewProtocol?) {
-        // TODO: Implement in task for claiming rewards
+    func showClaimRewards(from view: StakingMainViewProtocol?) {
+        guard let claimRewardsView = NPoolsClaimRewardsViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: claimRewardsView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 }
