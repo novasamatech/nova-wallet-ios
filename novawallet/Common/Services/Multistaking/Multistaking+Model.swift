@@ -44,7 +44,7 @@ extension Multistaking {
 
     struct DashboardItemNominationPoolPart {
         let stakingOption: OptionWithWallet
-        let state: Multistaking.NominationPoolState
+        let state: Multistaking.NominationPoolState?
     }
 
     struct DashboardItemOffchainPart {

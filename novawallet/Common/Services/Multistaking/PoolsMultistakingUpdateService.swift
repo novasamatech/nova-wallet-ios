@@ -133,7 +133,10 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                 resolvePalletIdAndSubscribeState(for: poolMember, accountId: accountId)
             } else {
                 saveAccountChanges(for: nil, walletAccountId: accountId)
-                completeImmediate(nil)
+
+                state = nil
+
+                saveState(nil)
             }
         case let .failure(error):
             completeImmediate(error)
@@ -332,7 +335,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
         }
     }
 
-    private func saveState(_ state: Multistaking.NominationPoolState) {
+    private func saveState(_ state: Multistaking.NominationPoolState?) {
         let stakingOption = Multistaking.OptionWithWallet(
             walletId: walletId,
             option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)
