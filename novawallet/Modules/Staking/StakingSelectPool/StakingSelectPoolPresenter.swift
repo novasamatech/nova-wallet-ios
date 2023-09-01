@@ -64,9 +64,10 @@ final class StakingSelectPoolPresenter {
     private func sortPools() {
         guard let recommendedPoolId = recommendedPoolId,
               let poolStats = poolStats,
-              let pool = poolStatsMap[recommendedPoolId] else {
+              !poolStats.isEmpty else {
             return
         }
+
         if poolStats[0].poolId != recommendedPoolId {
             if let currentPosition = poolStats.firstIndex(where: { $0.poolId == recommendedPoolId }) {
                 self.poolStats?.remove(at: currentPosition)
@@ -149,7 +150,8 @@ extension StakingSelectPoolPresenter: StakingSelectPoolPresenterProtocol {
         guard let delegate = delegate else {
             return
         }
-        wireframe.showSearch(from: view, delegate: delegate)
+
+        wireframe.showSearch(from: view, delegate: delegate, selectedPoolId: selectedPoolId)
     }
 }
 
@@ -178,11 +180,11 @@ extension StakingSelectPoolPresenter: StakingSelectPoolInteractorOutputProtocol 
 
     func didReceive(error: StakingSelectPoolError) {
         switch error {
-        case let .poolStats(error):
+        case .poolStats:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshPools()
             }
-        case let .recommendation(error):
+        case .recommendation:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshRecommendation()
             }

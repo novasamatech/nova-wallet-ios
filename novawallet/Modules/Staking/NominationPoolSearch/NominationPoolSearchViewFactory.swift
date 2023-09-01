@@ -4,9 +4,12 @@ import SoraFoundation
 struct NominationPoolSearchViewFactory {
     static func createView(
         state: RelaychainStartStakingStateProtocol,
-        delegate: StakingSelectPoolDelegate
+        delegate: StakingSelectPoolDelegate,
+        selectedPoolId: NominationPools.PoolId?
     ) -> NominationPoolSearchViewProtocol? {
-        guard let interactor = createInteractor(for: state) else {
+        guard
+            let interactor = createInteractor(for: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -18,9 +21,21 @@ struct NominationPoolSearchViewFactory {
             poolIconFactory: NominationPoolsIconFactory()
         )
 
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: state.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let dataValidatingFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
+
         let presenter = NominationPoolSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            selectedPoolId: selectedPoolId,
+            dataValidatingFactory: dataValidatingFactory,
             viewModelFactory: viewModelFactory,
             chainAsset: state.chainAsset,
             delegate: delegate,

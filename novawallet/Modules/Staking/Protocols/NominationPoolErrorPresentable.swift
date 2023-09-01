@@ -28,6 +28,16 @@ protocol NominationPoolErrorPresentable: BaseErrorPresentable {
         action: @escaping () -> Void,
         locale: Locale
     )
+
+    func presentPoolIsNotOpen(
+        from view: ControllerBackedProtocol,
+        locale: Locale
+    )
+
+    func presentPoolIsFull(
+        from view: ControllerBackedProtocol,
+        locale: Locale
+    )
 }
 
 extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -126,6 +136,36 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
             action: action,
             view: view,
             locale: locale
+        )
+    }
+
+    func presentPoolIsNotOpen(
+        from view: ControllerBackedProtocol,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.stakingPoolIsNotOpenTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.stakingPoolIsNotOpenMessage(preferredLanguages: locale.rLanguages)
+
+        present(
+            message: message,
+            title: title,
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            from: view
+        )
+    }
+
+    func presentPoolIsFull(
+        from view: ControllerBackedProtocol,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.stakingPoolIsFullTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.stakingPoolIsFullMessage(preferredLanguages: locale.rLanguages)
+
+        present(
+            message: message,
+            title: title,
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            from: view
         )
     }
 }

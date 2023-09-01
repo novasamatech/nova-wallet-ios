@@ -16,11 +16,13 @@ protocol NominationPoolSearchInteractorInputProtocol: AnyObject {
 
 protocol NominationPoolSearchInteractorOutputProtocol: AnyObject {
     func didReceive(poolStats: [NominationPools.PoolStats])
+    func didReceive(maxMembersPerPool: UInt32?)
     func didStartSearch(for text: String)
     func didReceive(error: NominationPoolSearchError)
 }
 
-protocol NominationPoolSearchWireframeProtocol: AddressOptionsPresentable, AlertPresentable, CommonRetryable {
+protocol NominationPoolSearchWireframeProtocol: ErrorPresentable, AddressOptionsPresentable, AlertPresentable,
+    CommonRetryable, NominationPoolErrorPresentable {
     func complete(from view: ControllerBackedProtocol?)
 }
 

@@ -7,6 +7,17 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         locale: Locale
     ) -> DataValidating
 
+    func selectedPoolIsOpen(
+        for pool: NominationPools.PoolStats?,
+        locale: Locale
+    ) -> DataValidating
+
+    func selectedPoolIsNotFull(
+        for pool: NominationPools.PoolStats?,
+        maxMembers: UInt32?,
+        locale: Locale
+    ) -> DataValidating
+
     func hasPoolMemberUnstakeSpace(
         for poolMember: NominationPools.PoolMember?,
         limits: NominationPools.UnstakeLimits?,
@@ -83,6 +94,47 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             } else {
                 return false
             }
+        })
+    }
+
+    func selectedPoolIsOpen(
+        for pool: NominationPools.PoolStats?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentPoolIsNotOpen(from: view, locale: locale)
+
+        }, preservesCondition: {
+            pool?.state == .open
+        })
+    }
+
+    func selectedPoolIsNotFull(
+        for pool: NominationPools.PoolStats?,
+        maxMembers: UInt32?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentPoolIsFull(from: view, locale: locale)
+
+        }, preservesCondition: {
+            guard let pool = pool else {
+                return false
+            }
+
+            guard let maxMembers = maxMembers else {
+                return true
+            }
+
+            return pool.membersCount < maxMembers
         })
     }
 
