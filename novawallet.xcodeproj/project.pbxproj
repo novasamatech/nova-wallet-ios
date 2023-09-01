@@ -174,6 +174,7 @@
 		0CB261E22A9B215B00287305 /* NominationPoolUnstake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261E12A9B215B00287305 /* NominationPoolUnstake.swift */; };
 		0CB261E42A9BE31B00287305 /* NPoolsUnstakeBasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261E32A9BE31B00287305 /* NPoolsUnstakeBasePresenter.swift */; };
 		0CB261E72A9C7C9D00287305 /* NPoolsUnstakeHintsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261E62A9C7C9D00287305 /* NPoolsUnstakeHintsFactory.swift */; };
+		0CB261EA2A9C940A00287305 /* NominationPoolsUnstakeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261E92A9C940A00287305 /* NominationPoolsUnstakeOperationFactory.swift */; };
 		0CBC29C62A421B5000F7B1F7 /* StakingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */; };
 		0CBC29C82A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */; };
 		0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */; };
@@ -4039,6 +4040,7 @@
 		0CB261E12A9B215B00287305 /* NominationPoolUnstake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolUnstake.swift; sourceTree = "<group>"; };
 		0CB261E32A9BE31B00287305 /* NPoolsUnstakeBasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeBasePresenter.swift; sourceTree = "<group>"; };
 		0CB261E62A9C7C9D00287305 /* NPoolsUnstakeHintsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeHintsFactory.swift; sourceTree = "<group>"; };
+		0CB261E92A9C940A00287305 /* NominationPoolsUnstakeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsUnstakeOperationFactory.swift; sourceTree = "<group>"; };
 		0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMainWireframe.swift; sourceTree = "<group>"; };
 		0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardBuilderResult.swift; sourceTree = "<group>"; };
 		0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel18.xcdatamodel; sourceTree = "<group>"; };
@@ -8167,6 +8169,7 @@
 		0CB261D62A9893BD00287305 /* Unstake */ = {
 			isa = PBXGroup;
 			children = (
+				0CB261E82A9C93F500287305 /* Operation */,
 				0CB261E52A9C7C8100287305 /* ViewModel */,
 				0CB261DC2A989D1700287305 /* Model */,
 				DF1349A0832B89817308F2A1 /* UnstakeSetup */,
@@ -8200,6 +8203,14 @@
 				0CB261E62A9C7C9D00287305 /* NPoolsUnstakeHintsFactory.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		0CB261E82A9C93F500287305 /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				0CB261E92A9C940A00287305 /* NominationPoolsUnstakeOperationFactory.swift */,
+			);
+			path = Operation;
 			sourceTree = "<group>";
 		};
 		0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */ = {
@@ -22190,6 +22201,7 @@
 				07AB0BC861AA5F134DB9AC26 /* StartStakingInfoProtocols.swift in Sources */,
 				77F085A407EDCCF906FD6E22 /* StartStakingInfoWireframe.swift in Sources */,
 				52C427F2C572B99D63EB9C21 /* StartStakingInfoBasePresenter.swift in Sources */,
+				0CB261EA2A9C940A00287305 /* NominationPoolsUnstakeOperationFactory.swift in Sources */,
 				0A6114AACBAB1D55BC03F264 /* StartStakingInfoBaseInteractor.swift in Sources */,
 				1A339AB0E007BC2E87B36237 /* StartStakingInfoViewController.swift in Sources */,
 				A83ED3518F2FD1C7B1C48D9E /* StartStakingInfoViewLayout.swift in Sources */,

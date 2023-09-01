@@ -10,7 +10,7 @@ struct NPoolsUnstakeSetupViewFactory {
             return nil
         }
 
-        let wireframe = NPoolsUnstakeSetupWireframe()
+        let wireframe = NPoolsUnstakeSetupWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
@@ -22,19 +22,30 @@ struct NPoolsUnstakeSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
 
+        let dataValidatingFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
+
         let presenter = NPoolsUnstakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: state.chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatorFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
-        let view = NPoolsUnstakeSetupViewController(presenter: presenter)
+        let view = NPoolsUnstakeSetupViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
@@ -82,6 +93,7 @@ struct NPoolsUnstakeSetupViewFactory {
             eraCountdownOperationFactory: eraCountdownOperationFactory,
             durationFactory: durationOperationFactory,
             npoolsOperationFactory: npoolsOperationFactory,
+            unstakeLimitsFactory: NPoolsUnstakeOperationFactory(),
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue

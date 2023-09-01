@@ -1368,3 +1368,9 @@
 "staking.your.pool.title" = "Ваш пул";
 "staking.your.pool.format" = "Ваш пул (#%@)";
 "staking.pool.rewards.claim.hint" = "Ваши награды (%@) также будут добавлены к свободному балансу";
+"staking.unstake.too.high.message" = "Сумма анстейка больше чем ваш стейк.";
+"staking.unstake.no.space.title" = "Слишком много людей забирают стейк в вашем пуле";
+"staking.unstake.no.space.message" = "В очереде не осталось свободных мест для того, чтобы забрать токены. Пожалуйста, попробуйте через %@";
+"staking.unstake.crossed.min.title" = "Слишком маленькая сумма остаётся в стейке";
+"staking.unstake.crossed.min.message" = "Когда стейк забирается частично, необходимо, чтобы в стейке оставалось не менее %@. Вы хотите забрать из стейка остаток %@ тоже?";
+"staking.unstake.all" = "Забрать всё";
