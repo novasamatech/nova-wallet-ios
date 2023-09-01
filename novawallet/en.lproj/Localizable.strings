@@ -1374,3 +1374,4 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.unstake.crossed.min.title" = "Too small amount remains in stake";
 "staking.unstake.crossed.min.message" = "When unstaking partially, you should leave at least %@ in stake. Do you want to perform full unstake by unstaking remaining %@ as well?";
 "staking.unstake.all" = "Unstake all";
+"staking.restake.message" = "Your tokens will be added back to the stake";

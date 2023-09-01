@@ -25,7 +25,13 @@ final class StakingNPoolsWireframe: StakingNPoolsWireframeProtocol {
         // TODO: Implement in task for redeem
     }
 
-    func showClaimRewards(from _: StakingMainViewProtocol?) {
-        // TODO: Implement in task for claiming rewards
+    func showClaimRewards(from view: StakingMainViewProtocol?) {
+        guard let claimRewardsView = NPoolsClaimRewardsViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: claimRewardsView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 }
