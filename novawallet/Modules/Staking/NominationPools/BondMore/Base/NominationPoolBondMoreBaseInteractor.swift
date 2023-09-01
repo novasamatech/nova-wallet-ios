@@ -2,7 +2,8 @@ import UIKit
 import RobinHood
 import BigInt
 
-class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning, NominationPoolsDataProviding {
+class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning,
+    NominationPoolsDataProviding {
     weak var basePresenter: NominationPoolBondMoreBaseInteractorOutputProtocol?
     let chainAsset: ChainAsset
     let selectedAccount: MetaChainAccountResponse
@@ -149,8 +150,8 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
 
                 return self.assetStorageInfoFactory.createAssetBalanceExistenceOperation(
                     for: assetInfo,
-                    chainId: chainAsset.chain.chainId,
-                    asset: chainAsset.asset
+                    chainId: self.chainAsset.chain.chainId,
+                    asset: self.chainAsset.asset
                 )
             }
         assetBalanceExistenceWrapper.addDependency(wrapper: assetInfoWrapper)

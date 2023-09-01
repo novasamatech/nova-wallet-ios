@@ -166,19 +166,19 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         logger.error(error.localizedDescription)
 
         switch error {
-        case let .fetchFeeFailed:
+        case .fetchFeeFailed:
             baseWireframe.presentFeeStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             }
-        case let .subscription:
+        case .subscription:
             baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retrySubscriptions()
             }
-        case let .claimableRewards:
+        case .claimableRewards:
             baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryClaimableRewards()
             }
-        case let .assetExistance:
+        case .assetExistance:
             baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryAssetExistance()
             }
