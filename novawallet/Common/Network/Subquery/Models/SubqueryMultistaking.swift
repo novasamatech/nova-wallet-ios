@@ -34,6 +34,12 @@ enum SubqueryMultistaking {
         let networkId: String
         let stakingType: String
     }
+    
+    struct NetworkAccountStaking: Hashable {
+        let networkId: String
+        let accountId: AccountId
+        let stakingType: String
+    }
 
     struct StatsResponse: Decodable {
         let activeStakers: SubqueryNodes<ActiveStaker>

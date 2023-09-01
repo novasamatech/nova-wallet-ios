@@ -3,7 +3,10 @@ import RobinHood
 import BigInt
 
 final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
-    private func buildAccountFilter(for offchainFilters: Set<Multistaking.OffchainFilter>) throws -> SubqueryFilter {
+    private func buildAccountFilter(
+        for offchainFilters: Set<Multistaking.OffchainFilter>,
+        stakingTypeMapping: (StakingType, ChainAsset) -> String
+    ) throws -> SubqueryFilter {
         let filterItems: [SubqueryFilter] = try offchainFilters.map { nextFilter in
             let chain = nextFilter.chainAsset.chain
             let address: AccountAddress
@@ -29,7 +32,9 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
             )
 
             let typeFilterItems = nextFilter.stakingTypes.map { stakingType in
-                SubqueryEqualToFilter(fieldName: "stakingType", value: stakingType.rawValue)
+                let stakingTypeKey = stakingTypeMapping(stakingType, nextFilter.chainAsset)
+                
+                return SubqueryEqualToFilter(fieldName: "stakingType", value: stakingTypeKey)
             }
 
             let typeFilter = SubqueryCompoundFilter.or(typeFilterItems)
@@ -93,8 +98,18 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
     }
 
     private func buildQuery(for request: Multistaking.OffchainRequest) throws -> String {
-        let activeStakersAccountFilter = try buildAccountFilter(for: request.stateFilters)
-        let rewardsAccountFilter = try buildAccountFilter(for: request.rewardFilters)
+        let activeStakersAccountFilter = try buildAccountFilter(
+            for: request.stateFilters
+        ) { stakingType, chainAsset in
+            SubqueryMultistakingTypeFactory.activeStakersTypeKey(
+                for: stakingType,
+                allTypes: chainAsset.asset.stakings ?? []
+            )
+        }
+        
+        let rewardsAccountFilter = try buildAccountFilter(for: request.rewardFilters) { stakingType, chainAsset in
+            SubqueryMultistakingTypeFactory.rewardsTypeKey(for: stakingType)
+        }
 
         let activeStakerQueryFilter = SubqueryFilterBuilder.buildBlock(activeStakersAccountFilter)
 
@@ -123,9 +138,19 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
         do {
             let query = try buildQuery(for: request)
             let operation = createOperation(for: query) { (result: SubqueryMultistaking.StatsResponse) in
-                let activeStakers: [SubqueryMultistaking.NetworkStaking: AccountAddress]
+                let activeStakers: [SubqueryMultistaking.NetworkAccountStaking: AccountAddress]
                 activeStakers = result.activeStakers.nodes.reduce(into: [:]) {
-                    $0[.init(networkId: $1.networkId, stakingType: $1.stakingType)] = $1.address
+                    guard let accountId = try? $1.address.toAccountId() else {
+                        return
+                    }
+                    
+                    let key = SubqueryMultistaking.NetworkAccountStaking(
+                        networkId: $1.networkId,
+                        accountId: accountId,
+                        stakingType: $1.stakingType
+                    )
+                    
+                    return $0[key] = $1.address
                 }
 
                 let rewards = result.rewards.groupByNetworkStaking()
