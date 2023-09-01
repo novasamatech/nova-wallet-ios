@@ -11,7 +11,7 @@ final class SlashesOperationFactoryStub: SlashesOperationFactoryProtocol {
     }
 
     func createSlashingSpansOperationForStash(
-        _ stashAddress: AccountAddress,
+        _ stashAccount: @escaping () throws -> AccountId,
         engine: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol) -> CompoundOperationWrapper<SlashingSpans?> {
         return CompoundOperationWrapper.createWithResult(slashingSpans)
