@@ -20,7 +20,7 @@ struct NominationPoolBondMoreConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
         let localizationManager = LocalizationManager.shared
-        let dataValidatorFactory = NominationPoolDataValidatorFactory(presentable: wireframe)
+        let dataValidatorFactory = NominationPoolDataValidatorFactory(presentable: wireframe, balanceFactory: balanceViewModelFactory)
 
         let presenter = NominationPoolBondMoreConfirmPresenter(
             interactor: interactor,
