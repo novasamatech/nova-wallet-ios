@@ -39,11 +39,14 @@ final class StartStakingSelectedValidatorsListWireframe: SelectedValidatorListWi
             validatorList: targets,
             maxTargets: maxTargets
         )
+
         if let setupAmountView: StakingSetupAmountViewProtocol = view?.controller.navigationController?.findTopView() {
             view?.controller.navigationController?.popToViewController(
                 setupAmountView.controller,
                 animated: true
             )
+        } else {
+            view?.controller.navigationController?.popViewController(animated: true)
         }
     }
 }
