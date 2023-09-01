@@ -23,5 +23,5 @@ protocol NominationPoolBondMoreConfirmInteractorOutputProtocol: NominationPoolBo
     func didReceive(submissionResult: SubmitExtrinsicResult)
 }
 
-protocol NominationPoolBondMoreConfirmWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol, AddressOptionsPresentable,
-    MessageSheetPresentable, ExtrinsicSubmissionPresenting {}
+protocol NominationPoolBondMoreConfirmWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol,
+    AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSubmissionPresenting {}

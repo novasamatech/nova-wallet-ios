@@ -2,7 +2,10 @@ import Foundation
 import SoraFoundation
 
 struct NominationPoolBondMoreConfirmViewFactory {
-    static func createView(state: NPoolsStakingSharedStateProtocol, amount: Decimal) -> NominationPoolBondMoreConfirmViewProtocol? {
+    static func createView(
+        state: NPoolsStakingSharedStateProtocol,
+        amount: Decimal
+    ) -> NominationPoolBondMoreConfirmViewProtocol? {
         guard let interactor = createInteractor(state: state),
               let currencyManager = CurrencyManager.shared,
               let wallet = SelectedWalletSettings.shared.value,
@@ -20,7 +23,10 @@ struct NominationPoolBondMoreConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
         let localizationManager = LocalizationManager.shared
-        let dataValidatorFactory = NominationPoolDataValidatorFactory(presentable: wireframe, balanceFactory: balanceViewModelFactory)
+        let dataValidatorFactory = NominationPoolDataValidatorFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
 
         let presenter = NominationPoolBondMoreConfirmPresenter(
             interactor: interactor,
@@ -35,7 +41,10 @@ struct NominationPoolBondMoreConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view = NominationPoolBondMoreConfirmViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = NominationPoolBondMoreConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.baseView = view
         interactor.basePresenter = presenter
