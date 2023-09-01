@@ -33,7 +33,7 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
 
             let typeFilterItems = nextFilter.stakingTypes.map { stakingType in
                 let stakingTypeKey = stakingTypeMapping(stakingType, nextFilter.chainAsset)
-                
+
                 return SubqueryEqualToFilter(fieldName: "stakingType", value: stakingTypeKey)
             }
 
@@ -106,8 +106,8 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
                 allTypes: chainAsset.asset.stakings ?? []
             )
         }
-        
-        let rewardsAccountFilter = try buildAccountFilter(for: request.rewardFilters) { stakingType, chainAsset in
+
+        let rewardsAccountFilter = try buildAccountFilter(for: request.rewardFilters) { stakingType, _ in
             SubqueryMultistakingTypeFactory.rewardsTypeKey(for: stakingType)
         }
 
@@ -143,34 +143,54 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
                     guard let accountId = try? $1.address.toAccountId() else {
                         return
                     }
-                    
+
                     let key = SubqueryMultistaking.NetworkAccountStaking(
                         networkId: $1.networkId,
                         accountId: accountId,
                         stakingType: $1.stakingType
                     )
-                    
+
                     return $0[key] = $1.address
                 }
 
                 let rewards = result.rewards.groupByNetworkStaking()
                 let slashes = result.slashes.groupByNetworkStaking()
 
-                let stakings = result.stakingApies.nodes.map { node in
+                let stakings: [Multistaking.OffchainStaking] = result.stakingApies.nodes.compactMap { node in
+                    guard let stakingType = SubqueryMultistakingTypeFactory.stakingType(from: node.stakingType) else {
+                        return nil
+                    }
+
                     let state: Multistaking.OffchainStakingState
 
-                    let networkStaking = SubqueryMultistaking.NetworkStaking(
-                        networkId: node.networkId,
-                        stakingType: node.stakingType
-                    )
+                    let optFilter = request.stateFilters.first { stateFilter in
+                        stateFilter.chainAsset.chain.chainId == node.networkId.withoutHexPrefix() &&
+                            stateFilter.stakingTypes.contains(stakingType)
+                    }
 
-                    if activeStakers[networkStaking] != nil {
+                    let optNetworkAccount = optFilter.map {
+                        SubqueryMultistaking.NetworkAccountStaking(
+                            networkId: node.networkId,
+                            accountId: $0.accountId,
+                            stakingType: SubqueryMultistakingTypeFactory.activeStakersTypeKey(
+                                for: stakingType,
+                                allTypes: $0.chainAsset.asset.stakings ?? []
+                            )
+                        )
+                    }
+
+                    if let networkAccount = optNetworkAccount, activeStakers[networkAccount] != nil {
                         state = .active
                     } else {
                         state = .inactive
                     }
 
                     let totalRewards: BigUInt?
+
+                    let networkStaking = SubqueryMultistaking.NetworkStaking(
+                        networkId: node.networkId,
+                        stakingType: node.stakingType
+                    )
 
                     if let reward = rewards[networkStaking] {
                         let slash = slashes[networkStaking] ?? 0
@@ -182,7 +202,7 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
 
                     return Multistaking.OffchainStaking(
                         chainId: node.networkId.withoutHexPrefix(),
-                        stakingType: StakingType(rawType: node.stakingType),
+                        stakingType: stakingType,
                         maxApy: node.maxApy,
                         state: state,
                         totalRewards: totalRewards
