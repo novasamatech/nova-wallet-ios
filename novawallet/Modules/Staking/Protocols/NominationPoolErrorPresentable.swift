@@ -96,6 +96,7 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
+
     func presentUnstakeAmountToHigh(from view: ControllerBackedProtocol?, locale: Locale) {
         let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale.rLanguages)
         let message = R.string.localizable.stakingUnstakeTooHighMessage(preferredLanguages: locale.rLanguages)

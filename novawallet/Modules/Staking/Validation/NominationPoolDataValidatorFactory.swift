@@ -42,6 +42,16 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
+
+    func nominationPoolIsNotDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating
+
+    func nominationPoolIsNotFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class NominationPoolDataValidatorFactory {
@@ -150,6 +160,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             }
         })
     }
+
     func hasPoolMemberUnstakeSpace(
         for poolMember: NominationPools.PoolMember?,
         limits: NominationPools.UnstakeLimits?,
