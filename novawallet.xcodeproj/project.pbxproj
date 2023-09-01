@@ -9132,13 +9132,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		777CA80B2AA0B8DD00E99751 /* Confirm */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Confirm;
-			sourceTree = "<group>";
-		};
 		778D97A02A24D459002BA681 /* AssetSearch */ = {
 			isa = PBXGroup;
 			children = (
@@ -9364,6 +9357,7 @@
 				84033496FC259BCA5420D52B /* NominationPoolBondMoreBaseInteractor.swift */,
 				6A4009AE7EF95E9CE1EB88B8 /* NominationPoolBondMoreBaseWireframe.swift */,
 				77F9FB0C2A9D9C5600820625 /* NominationPoolBondMoreBaseProtocols.swift */,
+				77F9FB0E2A9DD66300820625 /* NominationPoolsBondMoreHintsFactory.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -17536,10 +17530,8 @@
 		D1AABAFE54CA7C8321264E64 /* BondMore */ = {
 			isa = PBXGroup;
 			children = (
-				777CA80B2AA0B8DD00E99751 /* Confirm */,
 				77F9FB042A9D96A700820625 /* Base */,
 				77F9FB052A9D96DF00820625 /* Setup */,
-				77F9FB0E2A9DD66300820625 /* NominationPoolsBondMoreHintsFactory.swift */,
 			);
 			path = BondMore;
 			sourceTree = "<group>";

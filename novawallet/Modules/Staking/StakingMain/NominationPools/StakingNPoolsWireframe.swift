@@ -11,9 +11,7 @@ final class StakingNPoolsWireframe: StakingNPoolsWireframeProtocol {
         guard let stakeMoreView = NominationPoolBondMoreSetupViewFactory.createView(state: state) else {
             return
         }
-        let navigationController = NovaNavigationController(
-            rootViewController: stakeMoreView.controller
-        )
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: stakeMoreView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 

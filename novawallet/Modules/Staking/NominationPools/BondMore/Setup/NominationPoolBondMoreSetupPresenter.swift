@@ -73,14 +73,12 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
         guard let inputResult = inputResult else {
             return nil
         }
-        switch inputResult {
-        case .rate:
-            let fee = fee?.decimal(precision: chainAsset.asset.precision) ?? 0
-            let availableAmountDecimal = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) ?? 0
-            return inputResult.absoluteValue(from: availableAmountDecimal - fee)
-        case let .absolute(inputValue):
-            return inputResult.absoluteValue(from: inputValue)
-        }
+        let fee = fee?.decimal(precision: chainAsset.asset.precision) ?? 0
+        let transferable = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) ?? 0
+        let total = assetBalance?.totalInPlank.decimal(precision: chainAsset.asset.precision) ?? 0
+        let existentialDeposit = assetBalanceExistance?.minBalance.decimal(precision: chainAsset.asset.precision) ?? 0
+        let value = max(min(transferable - fee, total - fee - existentialDeposit), 0)
+        return inputResult.absoluteValue(from: value)
     }
 
     override func updateView() {
@@ -125,7 +123,7 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
 
         provideAssetViewModel()
         provideTransferrableBalance()
-        updateAmountInputViewModelIfNeeded()
+        provideAmountInputViewModel()
     }
 
     override func didReceive(price: PriceData?) {
@@ -137,10 +135,10 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
         provideFee()
     }
 
-    func updateAmountInputViewModelIfNeeded() {
-        if case .rate = inputResult {
-            provideAmountInputViewModel()
-        }
+    override func didReceive(assetBalanceExistance: AssetBalanceExistence?) {
+        super.didReceive(assetBalanceExistance: assetBalanceExistance)
+
+        provideAmountInputViewModel()
     }
 }
 
