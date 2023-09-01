@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 
 class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorOutputProtocol {
-    weak var baseView: NominationPoolBondMoreSetupBaseViewProtocol?
+    weak var baseView: NominationPoolBondMoreBaseViewProtocol?
     let baseWireframe: NominationPoolBondMoreBaseWireframeProtocol
     let baseInteractor: NominationPoolBondMoreBaseInteractorInputProtocol
 
@@ -23,7 +23,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
 
     init(
         interactor: NominationPoolBondMoreBaseInteractorInputProtocol,
-        wireframe: NominationPoolBondMoreSetupWireframeProtocol,
+        wireframe: NominationPoolBondMoreBaseWireframeProtocol,
         chainAsset: ChainAsset,
         hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -45,10 +45,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         fatalError("Must be overriden by subsclass")
     }
 
-    func provideHints() {
-        fatalError("Must be overriden by subsclass")
-    }
-
     func provideFee() {
         fatalError("Must be overriden by subsclass")
     }
@@ -59,6 +55,15 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
 
     func getInputAmountInPlank() -> BigUInt? {
         fatalError("Must be overriden by subsclass")
+    }
+
+    func provideHints() {
+        let hints = hintsViewModelFactory.createHints(
+            rewards: claimableRewards,
+            locale: selectedLocale
+        )
+
+        baseView?.didReceiveHints(viewModel: hints)
     }
 
     func refreshFee() {

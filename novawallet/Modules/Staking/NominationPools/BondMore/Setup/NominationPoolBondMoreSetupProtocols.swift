@@ -1,10 +1,9 @@
 import BigInt
 
-protocol NominationPoolBondMoreSetupViewProtocol: NominationPoolBondMoreSetupBaseViewProtocol {
+protocol NominationPoolBondMoreSetupViewProtocol: NominationPoolBondMoreBaseViewProtocol {
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveTransferable(viewModel: String?)
-    func didReceiveHints(viewModel: [String])
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
 }
 
@@ -20,5 +19,5 @@ protocol NominationPoolBondMoreSetupInteractorInputProtocol: NominationPoolBondM
 protocol NominationPoolBondMoreSetupInteractorOutputProtocol: NominationPoolBondMoreBaseInteractorOutputProtocol {}
 
 protocol NominationPoolBondMoreSetupWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol {
-    func showConfirm(from view: ControllerBackedProtocol?)
+    func showConfirm(from view: ControllerBackedProtocol?, amount: Decimal)
 }

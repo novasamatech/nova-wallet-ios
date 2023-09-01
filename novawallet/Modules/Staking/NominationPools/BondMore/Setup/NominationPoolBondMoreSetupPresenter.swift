@@ -89,14 +89,6 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
         provideHints()
     }
 
-    override func provideHints() {
-        let hints = hintsViewModelFactory.createHints(
-            rewards: claimableRewards,
-            locale: selectedLocale
-        )
-        view?.didReceiveHints(viewModel: hints)
-    }
-
     override func provideFee() {
         guard let fee = fee?.decimal(precision: chainAsset.asset.precision) else {
             view?.didReceiveFee(viewModel: nil)
@@ -169,7 +161,10 @@ extension NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreSetupPrese
         DataValidationRunner(
             validators: validators
         ).runValidation { [weak self] in
-            self?.wireframe?.showConfirm(from: self?.view)
+            guard let amount = self?.getInputAmount() else {
+                return
+            }
+            self?.wireframe?.showConfirm(from: self?.view, amount: amount)
         }
     }
 }

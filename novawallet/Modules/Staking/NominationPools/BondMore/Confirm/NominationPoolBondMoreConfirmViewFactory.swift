@@ -1,13 +1,18 @@
 import Foundation
 import SoraFoundation
 
-struct NominationPoolBondMoreSetupViewFactory {
-    static func createView(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreSetupViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared,
-              let interactor = createInteractor(state: state) else {
+struct NominationPoolBondMoreConfirmViewFactory {
+    static func createView(
+        state: NPoolsStakingSharedStateProtocol,
+        amount: Decimal
+    ) -> NominationPoolBondMoreConfirmViewProtocol? {
+        guard let interactor = createInteractor(state: state),
+              let currencyManager = CurrencyManager.shared,
+              let wallet = SelectedWalletSettings.shared.value,
+              let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()) else {
             return nil
         }
-        let wireframe = NominationPoolBondMoreSetupWireframe(state: state)
+        let wireframe = NominationPoolBondMoreConfirmWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: state.chainAsset.assetDisplayInfo,
@@ -23,9 +28,11 @@ struct NominationPoolBondMoreSetupViewFactory {
             balanceFactory: balanceViewModelFactory
         )
 
-        let presenter = NominationPoolBondMoreSetupPresenter(
+        let presenter = NominationPoolBondMoreConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            amount: amount,
+            selectedAccount: selectedAccount,
             chainAsset: state.chainAsset,
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -34,7 +41,7 @@ struct NominationPoolBondMoreSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = NominationPoolBondMoreSetupViewController(
+        let view = NominationPoolBondMoreConfirmViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )
@@ -42,10 +49,11 @@ struct NominationPoolBondMoreSetupViewFactory {
         presenter.baseView = view
         interactor.basePresenter = presenter
         dataValidatorFactory.view = view
+
         return view
     }
 
-    static func createInteractor(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreSetupInteractor? {
+    static func createInteractor(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreConfirmInteractor? {
         let chainAsset = state.chainAsset
 
         guard
@@ -70,6 +78,7 @@ struct NominationPoolBondMoreSetupViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let signingWrapper = SigningWrapperFactory.createSigner(from: selectedAccount)
 
         return .init(
             chainAsset: chainAsset,
@@ -85,7 +94,8 @@ struct NominationPoolBondMoreSetupViewFactory {
             stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
             operationQueue: operationQueue,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            signingWrapper: signingWrapper
         )
     }
 }
