@@ -138,23 +138,11 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
         do {
             let query = try buildQuery(for: request)
             let operation = createOperation(for: query) { (result: SubqueryMultistaking.StatsResponse) in
-                let activeStakers: [SubqueryMultistaking.NetworkAccountStaking: AccountAddress]
-                activeStakers = result.activeStakers.nodes.reduce(into: [:]) {
-                    guard let accountId = try? $1.address.toAccountId() else {
-                        return
-                    }
-
-                    let key = SubqueryMultistaking.NetworkAccountStaking(
-                        networkId: $1.networkId,
-                        accountId: accountId,
-                        stakingType: $1.stakingType
-                    )
-
-                    return $0[key] = $1.address
-                }
-
+                let activeStakers = result.activeStakers.groupByNetworkAccountStaking()
                 let rewards = result.rewards.groupByNetworkStaking()
                 let slashes = result.slashes.groupByNetworkStaking()
+
+                let stateFilterByNetworkStaking = request.stateFilters.groupByNetworkStaking()
 
                 let stakings: [Multistaking.OffchainStaking] = result.stakingApies.nodes.compactMap { node in
                     guard let stakingType = SubqueryMultistakingTypeFactory.stakingType(from: node.stakingType) else {
@@ -163,23 +151,27 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
 
                     let state: Multistaking.OffchainStakingState
 
-                    let optFilter = request.stateFilters.first { stateFilter in
-                        stateFilter.chainAsset.chain.chainId == node.networkId.withoutHexPrefix() &&
-                            stateFilter.stakingTypes.contains(stakingType)
-                    }
+                    // it is currently save to assume staking is enabled only for utility assets
+                    let filterKey = Multistaking.Option(
+                        chainAssetId: .init(
+                            chainId: node.networkId.withoutHexPrefix(),
+                            assetId: AssetModel.utilityAssetId
+                        ),
+                        type: stakingType
+                    )
 
-                    let optNetworkAccount = optFilter.map {
+                    let optStakersKey = stateFilterByNetworkStaking[filterKey].map { filter in
                         SubqueryMultistaking.NetworkAccountStaking(
                             networkId: node.networkId,
-                            accountId: $0.accountId,
+                            accountId: filter.accountId,
                             stakingType: SubqueryMultistakingTypeFactory.activeStakersTypeKey(
                                 for: stakingType,
-                                allTypes: $0.chainAsset.asset.stakings ?? []
+                                allTypes: filter.chainAsset.asset.stakings ?? []
                             )
                         )
                     }
 
-                    if let networkAccount = optNetworkAccount, activeStakers[networkAccount] != nil {
+                    if let stakersKey = optStakersKey, activeStakers[stakersKey] != nil {
                         state = .active
                     } else {
                         state = .inactive
@@ -227,6 +219,24 @@ extension SubqueryAggregates where T == SubqueryMultistaking.AccumulatedReward {
             }
 
             $0[.init(networkId: networkId, stakingType: stakingType)] = BigUInt(scientific: $1.sum.amount)
+        }
+    }
+}
+
+extension SubqueryNodes where T == SubqueryMultistaking.ActiveStaker {
+    func groupByNetworkAccountStaking() -> [SubqueryMultistaking.NetworkAccountStaking: AccountAddress] {
+        nodes.reduce(into: [:]) {
+            guard let accountId = try? $1.address.toAccountId() else {
+                return
+            }
+
+            let key = SubqueryMultistaking.NetworkAccountStaking(
+                networkId: $1.networkId,
+                accountId: accountId,
+                stakingType: $1.stakingType
+            )
+
+            return $0[key] = $1.address
         }
     }
 }
