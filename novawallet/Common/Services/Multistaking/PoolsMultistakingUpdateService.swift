@@ -169,6 +169,8 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                         accountType: .bonded,
                         palletId: palletId.wrappedValue
                     ) {
+                    self?.logger?.debug("Derived pool account id: \(poolAccountId.toHex())")
+
                     self?.saveAccountChanges(for: poolAccountId, walletAccountId: accountId)
                     self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
                 } else {

@@ -70,8 +70,6 @@ extension MultistakingOffchainOperationFactoryProtocol {
                 return result
             }
 
-            let stakingTypes = chainAsset.asset.supportedStakings ?? []
-
             let stateFilters = createWrapperFilters(
                 for: bondedAccounts,
                 chainAsset: chainAsset,
