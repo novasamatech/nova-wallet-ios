@@ -50,7 +50,7 @@ protocol NominationPoolErrorPresentable: BaseErrorPresentable {
     func presentExistentialDepositViolation(
         from view: ControllerBackedProtocol,
         params: NPoolsEDViolationErrorParams,
-        action: @escaping () -> Void,
+        action: (() -> Void)?,
         locale: Locale
     )
 }
@@ -212,7 +212,7 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
     func presentExistentialDepositViolation(
         from view: ControllerBackedProtocol,
         params: NPoolsEDViolationErrorParams,
-        action: @escaping () -> Void,
+        action: (() -> Void)?,
         locale: Locale
     ) {
         let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale.rLanguages)
@@ -225,8 +225,17 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         )
 
         let proceedTitle = R.string.localizable.stakingMaximumAction(preferredLanguages: locale.rLanguages)
-        let proceedAction = AlertPresentableAction(title: proceedTitle) {
-            action()
+
+        let actions: [AlertPresentableAction]
+
+        if let action = action {
+            let proceedAction = AlertPresentableAction(title: proceedTitle) {
+                action()
+            }
+
+            actions = [proceedAction]
+        } else {
+            actions = []
         }
 
         let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
@@ -234,14 +243,10 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: message,
-            actions: [proceedAction],
+            actions: actions,
             closeAction: closeTitle
         )
 
-        present(
-            viewModel: viewModel,
-            style: .alert,
-            from: view
-        )
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 }

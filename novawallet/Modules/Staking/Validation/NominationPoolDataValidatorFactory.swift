@@ -414,13 +414,22 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 maxStake: maxStakeString
             )
 
+            let action: (() -> Void)?
+
+            if maxStakeDecimal > 0 {
+                action = {
+                    params.amountUpdateClosure(maxStakeDecimal)
+                    delegate.didCompleteWarningHandling()
+                }
+            } else {
+                action = nil
+            }
+
             self?.presentable.presentExistentialDepositViolation(
                 from: view,
                 params: errorParams,
-                action: {
-                    params.amountUpdateClosure(maxStakeDecimal)
-                    delegate.didCompleteWarningHandling()
-                }, locale: locale
+                action: action,
+                locale: locale
             )
 
         }, preservesCondition: {
