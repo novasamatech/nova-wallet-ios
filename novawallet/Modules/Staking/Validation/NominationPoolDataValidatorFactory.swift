@@ -67,6 +67,16 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
+
+    func nominationPoolIsNotDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating
+
+    func nominationPoolIsNotFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class NominationPoolDataValidatorFactory {
@@ -123,6 +133,29 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
         })
     }
 
+    func nominationPoolIsNotDestroing(
+        pool: NominationPools.BondedPool?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentNominationPoolIsDestroing(
+                from: view,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            guard let pool = pool else {
+                return false
+            }
+
+            return pool.state != .destroying
+        })
+    }
+
     func selectedPoolIsNotFull(
         for pool: NominationPools.PoolStats?,
         maxMembers: UInt32?,
@@ -134,7 +167,6 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             }
 
             self?.presentable.presentPoolIsFull(from: view, locale: locale)
-
         }, preservesCondition: {
             guard let pool = pool else {
                 return false
@@ -145,6 +177,23 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             }
 
             return pool.membersCount < maxMembers
+        })
+    }
+
+    func nominationPoolIsNotFullyUnbonding(
+        poolMember: NominationPools.PoolMember?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentPoolIsFullyUnbonding(from: view, locale: locale)
+        }, preservesCondition: {
+            guard let poolMember = poolMember else {
+                return false
+            }
+            return poolMember.points > 0
         })
     }
 

@@ -7,8 +7,12 @@ final class StakingNPoolsWireframe: StakingNPoolsWireframeProtocol {
         self.state = state
     }
 
-    func showStakeMore(from _: StakingMainViewProtocol?) {
-        // TODO: Implement in task for stake more
+    func showStakeMore(from view: StakingMainViewProtocol?) {
+        guard let stakeMoreView = NominationPoolBondMoreSetupViewFactory.createView(state: state) else {
+            return
+        }
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: stakeMoreView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showUnstake(from view: StakingMainViewProtocol?) {
