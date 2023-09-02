@@ -10,12 +10,11 @@ final class StakingSetupAmountPresenter {
     let stakingTypeViewModelFactory: SelectedStakingViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let dataValidatingFactory: RelaychainStakingValidatorFacadeProtocol
     let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
     let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
-    let poolValidatingFactory: NominationPoolDataValidatorFactoryProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
 
@@ -48,8 +47,7 @@ final class StakingSetupAmountPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
-        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        poolValidatingFactory: NominationPoolDataValidatorFactoryProtocol,
+        dataValidatingFactory: RelaychainStakingValidatorFacadeProtocol,
         chainAsset: ChainAsset,
         recommendsMultipleStakings: Bool,
         localizationManager: LocalizationManagerProtocol,
@@ -63,7 +61,6 @@ final class StakingSetupAmountPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.poolValidatingFactory = poolValidatingFactory
         self.chainAsset = chainAsset
         self.recommendsMultipleStakings = recommendsMultipleStakings
         self.logger = logger
@@ -332,45 +329,23 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
     func proceed() {
         var currentInputAmount = inputAmount()
 
-        let defaultValidations: [DataValidating] = [
-            dataValidatingFactory.hasInPlank(
+        let defaultValidations: [DataValidating] = dataValidatingFactory.createValidations(
+            from: setupMethod,
+            params: .init(
+                chainAsset: chainAsset,
+                stakingAmount: currentInputAmount,
+                availableBalance: availableBalanceInPlank(),
+                assetBalance: assetBalance,
                 fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) { [weak self] in
-                self?.refreshFee()
-            },
-            dataValidatingFactory.canSpendAmountInPlank(
-                balance: availableBalanceInPlank(),
-                spendingAmount: currentInputAmount,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
+                existentialDeposit: existentialDeposit,
+                feeRefreshClosure: { [weak self] in
+                    self?.refreshFee()
+                }, stakeUpdateClosure: { newAmount in
+                    currentInputAmount = newAmount
+                }
             ),
-            dataValidatingFactory.canPayFeeInPlank(
-                balance: assetBalance?.transferable,
-                fee: fee,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
-                balance: availableBalanceInPlank(),
-                fee: fee,
-                spendingAmount: currentInputAmount,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.allowsNewNominators(
-                flag: setupMethod.restrictions?.allowsNewStakers ?? false,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canNominateInPlank(
-                amount: currentInputAmount,
-                minimalBalance: setupMethod.restrictions?.minJoinStake,
-                minNominatorBond: setupMethod.restrictions?.minJoinStake,
-                precision: chainAsset.asset.precision,
-                locale: selectedLocale
-            )
-        ]
+            locale: selectedLocale
+        )
 
         let recommendedValidations = setupMethod.recommendation?.validationFactory?.createValidations(
             for: .init(
@@ -389,14 +364,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
             locale: selectedLocale
         ) ?? []
 
-        let poolValidations: [DataValidating] = [
-            poolValidatingFactory.nominationPoolHasApy(
-                method: setupMethod,
-                locale: selectedLocale
-            )
-        ]
-
-        let validators = defaultValidations + recommendedValidations + poolValidations
+        let validators = defaultValidations + recommendedValidations
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let stakingOption = self?.setupMethod.selectedStakingOption else {
                 return

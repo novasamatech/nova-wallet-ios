@@ -25,12 +25,7 @@ struct StakingSetupAmountViewFactory {
         )
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: NetworkViewModelFactory())
 
-        let dataValidatingFactory = StakingDataValidatingFactory(
-            presentable: wireframe,
-            balanceFactory: balanceViewModelFactory
-        )
-
-        let poolValidatingFactory = NominationPoolDataValidatorFactory(
+        let dataValidatingFactory = RelaychainStakingValidatorFacade(
             presentable: wireframe,
             balanceFactory: balanceViewModelFactory
         )
@@ -46,7 +41,6 @@ struct StakingSetupAmountViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             balanceDerivationFactory: balanceDerivationFactory,
             dataValidatingFactory: dataValidatingFactory,
-            poolValidatingFactory: poolValidatingFactory,
             chainAsset: state.chainAsset,
             recommendsMultipleStakings: state.recommendsMultipleStakings,
             localizationManager: LocalizationManager.shared,
@@ -65,7 +59,6 @@ struct StakingSetupAmountViewFactory {
         presenter.view = view
         interactor.presenter = presenter
         dataValidatingFactory.view = view
-        poolValidatingFactory.view = view
 
         return view
     }

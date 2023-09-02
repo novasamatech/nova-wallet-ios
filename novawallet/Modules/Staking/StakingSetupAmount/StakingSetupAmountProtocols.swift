@@ -40,7 +40,7 @@ protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, StakingErrorPresentable, NominationPoolErrorPresentable {
+    CommonRetryable, RelaychainStakingErrorPresentable {
     func showStakingTypeSelection(
         from view: ControllerBackedProtocol?,
         method: StakingSelectionMethod,

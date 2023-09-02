@@ -1,9 +1,17 @@
 import SoraFoundation
 import BigInt
 
+struct ExistentialDepositValidationParams {
+    let stakingAmount: Decimal?
+    let assetBalance: AssetBalance?
+    let fee: BigUInt?
+    let existentialDeposit: BigUInt?
+    let amountUpdateClosure: (Decimal) -> Void
+}
+
 protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func nominationPoolHasApy(
-        method: StakingSelectionMethod,
+        pool: NominationPools.SelectedPool,
         locale: Locale
     ) -> DataValidating
 
@@ -53,6 +61,12 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
+
+    func poolStakingNotViolatingExistentialDeposit(
+        for params: ExistentialDepositValidationParams,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class NominationPoolDataValidatorFactory {
@@ -70,7 +84,7 @@ final class NominationPoolDataValidatorFactory {
 
 extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactoryProtocol {
     func nominationPoolHasApy(
-        method: StakingSelectionMethod,
+        pool: NominationPools.SelectedPool,
         locale: Locale
     ) -> DataValidating {
         WarningConditionViolation(onWarning: { [weak self] delegate in
@@ -85,11 +99,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 locale: locale
             )
         }, preservesCondition: {
-            guard case let .pool(selectedPool) = method.selectedStakingOption else {
-                return true
-            }
-
-            if let apy = selectedPool.maxApy, apy > 0 {
+            if let apy = pool.maxApy, apy > 0 {
                 return true
             } else {
                 return false
@@ -306,6 +316,74 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             }
 
             return rewards > fee
+        })
+    }
+
+    // swiftlint:disable:next function_body_length
+    func poolStakingNotViolatingExistentialDeposit(
+        for params: ExistentialDepositValidationParams,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> DataValidating {
+        let fee = params.fee ?? 0
+        let minBalance = params.existentialDeposit ?? 0
+        let feeAndMinBalance = fee + minBalance
+
+        let precision = chainAsset.asset.precision
+
+        return WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard
+                let view = self?.view,
+                let assetBalance = params.assetBalance,
+                let balanceFactory = self?.balanceFactory else {
+                return
+            }
+
+            let maxStake = assetBalance.totalInPlank > feeAndMinBalance ?
+                assetBalance.totalInPlank - feeAndMinBalance : 0
+            let maxStakeDecimal = maxStake.decimal(precision: precision)
+            let maxStakeString = balanceFactory.amountFromValue(
+                maxStakeDecimal
+            ).value(for: locale)
+
+            let availableBalanceString = balanceFactory.amountFromValue(
+                assetBalance.transferable.decimal(precision: precision)
+            ).value(for: locale)
+
+            let feeString = balanceFactory.amountFromValue(
+                fee.decimal(precision: precision)
+            ).value(for: locale)
+
+            let minBalanceString = balanceFactory.amountFromValue(
+                minBalance.decimal(precision: precision)
+            ).value(for: locale)
+
+            let errorParams = NPoolsEDViolationErrorParams(
+                availableBalance: availableBalanceString,
+                minimumBalance: minBalanceString,
+                fee: feeString,
+                maxStake: maxStakeString
+            )
+
+            self?.presentable.presentExistentialDepositViolation(
+                from: view,
+                params: errorParams,
+                action: {
+                    params.amountUpdateClosure(maxStakeDecimal)
+                    delegate.didCompleteWarningHandling()
+                }, locale: locale
+            )
+
+        }, preservesCondition: {
+            guard
+                let assetBalance = params.assetBalance,
+                let stakingAmountInPlank = params.stakingAmount?.toSubstrateAmount(
+                    precision: Int16(bitPattern: precision)
+                ) else {
+                return true
+            }
+
+            return stakingAmountInPlank + fee + minBalance <= assetBalance.totalInPlank
         })
     }
 }

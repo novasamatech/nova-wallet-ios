@@ -69,6 +69,13 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
+    func minRewardableStakeIsNotViolated(
+        amount: Decimal?,
+        rewardableStake: BigUInt?,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating
+
     func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
 }
 
@@ -366,6 +373,47 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 let amount = amount,
                 let votersCount = params.votersCount,
                 params.networkInfo?.votersInfo?.hasVotersLimit(for: votersCount) == true,
+                let minStakeDecimal = optMinStakeDecimal {
+                return amount >= minStakeDecimal
+            } else {
+                return true
+            }
+        })
+    }
+
+    func minRewardableStakeIsNotViolated(
+        amount: Decimal?,
+        rewardableStake: BigUInt?,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating {
+        let optMinStakeDecimal = rewardableStake.flatMap {
+            Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
+        }
+
+        return WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard
+                let view = self?.view,
+                let minStakeDecimal = optMinStakeDecimal else {
+                return
+            }
+
+            let amountString = self?.balanceFactory?.amountFromValue(
+                minStakeDecimal,
+                roundingMode: .up
+            ).value(for: locale)
+
+            self?.presentable.presentMinRewardableStakeViolated(
+                from: view,
+                action: {
+                    delegate.didCompleteWarningHandling()
+                },
+                minStake: amountString ?? "",
+                locale: locale
+            )
+        }, preservesCondition: {
+            if
+                let amount = amount,
                 let minStakeDecimal = optMinStakeDecimal {
                 return amount >= minStakeDecimal
             } else {

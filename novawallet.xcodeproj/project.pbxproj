@@ -40,6 +40,7 @@
 		0B48B02E973CB304B765BBC9 /* ReferendumDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */; };
 		0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E894D4633D04AD4415CE1F2 /* GovernanceDelegateInfoViewFactory.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
+		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C13D2F52A7D2B440054BB6F /* DirectStakingRecommendationMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D2F42A7D2B440054BB6F /* DirectStakingRecommendationMediator.swift */; };
 		0C13D2F72A7D45F40054BB6F /* RelaychainStakingRestrictions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D2F62A7D45F40054BB6F /* RelaychainStakingRestrictions.swift */; };
 		0C13D2FA2A7D473B0054BB6F /* DirectStakingRestrictionsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13D2F92A7D473B0054BB6F /* DirectStakingRestrictionsBuilder.swift */; };
@@ -3932,6 +3933,7 @@
 		0B62C2CBCFF1865A1CA0F1B4 /* LedgerNetworkSelectionProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionProtocols.swift; sourceTree = "<group>"; };
 		0C04290B2A67A42A00C3583A /* SubstrateDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel17.xcdatamodel; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
+		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C13D2F42A7D2B440054BB6F /* DirectStakingRecommendationMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingRecommendationMediator.swift; sourceTree = "<group>"; };
 		0C13D2F62A7D45F40054BB6F /* RelaychainStakingRestrictions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingRestrictions.swift; sourceTree = "<group>"; };
 		0C13D2F92A7D473B0054BB6F /* DirectStakingRestrictionsBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingRestrictionsBuilder.swift; sourceTree = "<group>"; };
@@ -15310,6 +15312,7 @@
 				8460E719284D3AF5002896E9 /* ParaStkMinDelegationParams.swift */,
 				0C13D3102A80CA9A0054BB6F /* StakingDataValidatorFactory+Plank.swift */,
 				77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */,
+				0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */,
 			);
 			path = Validation;
 			sourceTree = "<group>";
@@ -20919,6 +20922,7 @@
 				84873AFF26028E2B000A83EE /* StakingStateMachine.swift in Sources */,
 				8442002528E6FEEE00C49C4A /* ReferendumsProtocols.swift in Sources */,
 				3D1FB0EF87D42F08D9250552 /* PurchasePresenter.swift in Sources */,
+				0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */,
 				F4F22976260DBF3F00ACFDB8 /* StakingPayoutRewardTableCell.swift in Sources */,
 				8428229A289BC8E400163031 /* AddAccount+ParitySignerWelcomeWireframe.swift in Sources */,
 				8471577D2910F18300D7D003 /* GovernanceUnlockProtocols.swift in Sources */,

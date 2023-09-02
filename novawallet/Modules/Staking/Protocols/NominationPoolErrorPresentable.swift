@@ -38,6 +38,13 @@ protocol NominationPoolErrorPresentable: BaseErrorPresentable {
         from view: ControllerBackedProtocol,
         locale: Locale
     )
+
+    func presentExistentialDepositViolation(
+        from view: ControllerBackedProtocol,
+        params: NPoolsEDViolationErrorParams,
+        action: @escaping () -> Void,
+        locale: Locale
+    )
 }
 
 extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -165,6 +172,42 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
             message: message,
             title: title,
             closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            from: view
+        )
+    }
+
+    func presentExistentialDepositViolation(
+        from view: ControllerBackedProtocol,
+        params: NPoolsEDViolationErrorParams,
+        action: @escaping () -> Void,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.stakingPoolEdErrorMessage(
+            params.availableBalance,
+            params.minimumBalance,
+            params.fee,
+            params.maxStake,
+            preferredLanguages: locale.rLanguages
+        )
+
+        let proceedTitle = R.string.localizable.stakingMaximumAction(preferredLanguages: locale.rLanguages)
+        let proceedAction = AlertPresentableAction(title: proceedTitle) {
+            action()
+        }
+
+        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [proceedAction],
+            closeAction: closeTitle
+        )
+
+        present(
+            viewModel: viewModel,
+            style: .alert,
             from: view
         )
     }

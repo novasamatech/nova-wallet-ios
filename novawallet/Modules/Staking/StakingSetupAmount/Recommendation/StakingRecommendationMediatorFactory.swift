@@ -86,7 +86,6 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
         }
 
         return DirectStakingRecommendationMediator(
-            chainAsset: state.chainAsset,
             recommendationFactory: recommendationFactory,
             restrictionsBuilder: restrictionsBuilder,
             operationQueue: operationQueue
