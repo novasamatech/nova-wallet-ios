@@ -17,6 +17,7 @@ final class OperationDetailsViewModelFactory {
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
+    lazy var poolIconFactory: NominationPoolsIconFactoryProtocol = NominationPoolsIconFactory()
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -47,7 +48,7 @@ final class OperationDetailsViewModelFactory {
                 R.image.iconIncomingTransfer()!
 
             return StaticImageViewModel(image: image)
-        case .reward, .slash:
+        case .reward, .slash, .poolReward:
             let image = R.image.iconRewardOperation()!
             return StaticImageViewModel(image: image)
         case .extrinsic, .contract:
@@ -89,6 +90,10 @@ final class OperationDetailsViewModelFactory {
             amount = model.amount
             priceData = model.priceData
             prefix = "−"
+        case let .poolReward(model):
+            amount = model.amount
+            priceData = model.priceData
+            prefix = "+"
         }
 
         return Decimal.fromSubstrateAmount(
@@ -214,9 +219,10 @@ final class OperationDetailsViewModelFactory {
 
     private func createContentViewModel(
         from data: OperationDetailsModel.OperationData,
-        feeAssetInfo: AssetBalanceDisplayInfo,
+        chainAsset: ChainAsset,
         locale: Locale
     ) -> OperationDetailsViewModel.ContentViewModel {
+        let feeAssetInfo = chainAsset.assetDisplayInfo
         switch data {
         case let .transfer(model):
             let viewModel = createTransferViewModel(
@@ -246,7 +252,48 @@ final class OperationDetailsViewModelFactory {
         case let .contract(model):
             let viewModel = createContractViewModel(from: model)
             return .contract(viewModel)
+        case let .poolReward(model):
+            let viewModel = createPoolRewardViewModel(
+                from: model,
+                chainAsset: chainAsset,
+                locale: locale
+            )
+            return .poolReward(viewModel)
         }
+    }
+
+    private func createPoolRewardViewModel(
+        from model: OperationPoolRewardModel,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> OperationPoolRewardViewModel {
+        let name = model.pool.name?.isEmpty == true ? nil : model.pool.name
+        let imageViewModel = poolIconFactory.createIconViewModel(
+            for: chainAsset,
+            poolId: model.pool.poolId,
+            bondedAccountId: model.pool.bondedAccountId
+        )
+
+        let pool = DisplayAddressViewModel(
+            address: model.pool.bondedAddress(for: chainAsset.chain.chainFormat) ?? "",
+            name: name,
+            imageViewModel: imageViewModel
+        )
+        let fee = Decimal.fromSubstrateAmount(
+            model.fee,
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ).map { amount in
+            let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
+            return viewModelFactory.balanceFromPrice(
+                amount,
+                priceData: model.feePriceData
+            ).value(for: locale)
+        }
+        return OperationPoolRewardViewModel(
+            eventId: model.eventId,
+            pool: pool,
+            fee: fee
+        )
     }
 }
 
@@ -264,7 +311,7 @@ extension OperationDetailsViewModelFactory: OperationDetailsViewModelFactoryProt
 
         let contentViewModel = createContentViewModel(
             from: model.operation,
-            feeAssetInfo: feeAssetInfo,
+            chainAsset: chainAsset,
             locale: locale
         )
 

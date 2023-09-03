@@ -65,7 +65,13 @@ final class SubqueryHistoryOperationFactory {
         }
 
         if filter.contains(.rewardsAndSlashes) {
-            filterStrings.append("{ reward: { isNull: false } }")
+            let filter = SubqueryInnerFilter(inner:
+                SubqueryCompoundFilter.or([
+                    SubqueryIsNotNullFilter(fieldName: "reward"),
+                    SubqueryIsNotNullFilter(fieldName: "poolReward")
+                ])
+            )
+            filterStrings.append(filter.rawSubqueryFilter())
         }
 
         if filter.contains(.transfers) {
@@ -114,6 +120,7 @@ final class SubqueryHistoryOperationFactory {
                      reward
                      extrinsic
                      \(transferField)
+                     poolReward
                  }
              }
         }

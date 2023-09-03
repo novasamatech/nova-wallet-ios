@@ -40,6 +40,13 @@ struct SubqueryExtrinsic: Decodable {
     let success: Bool
 }
 
+struct SubqueryPoolReward: Codable {
+    let eventIdx: Int
+    let amount: String
+    let isReward: Bool
+    let poolId: Int
+}
+
 struct SubqueryHistoryElement: Decodable {
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
@@ -52,6 +59,7 @@ struct SubqueryHistoryElement: Decodable {
         case extrinsic
         case transfer
         case assetTransfer
+        case poolReward
     }
 
     let identifier: String
@@ -64,6 +72,7 @@ struct SubqueryHistoryElement: Decodable {
     let extrinsic: SubqueryExtrinsic?
     let transfer: SubqueryTransfer?
     let assetTransfer: SubqueryTransfer?
+    let poolReward: SubqueryPoolReward?
 }
 
 struct SubqueryHistoryData: Decodable {

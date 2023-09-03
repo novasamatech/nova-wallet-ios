@@ -11,6 +11,12 @@ struct OperationDetailsViewFactory {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+            return nil
+        }
         let storageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let walletRepository = accountRepositoryFactory.createMetaAccountRepository(
@@ -22,6 +28,13 @@ struct OperationDetailsViewFactory {
             storageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+        let poolsOperationFactory = NominationPoolsOperationFactory(
+            operationQueue: OperationManagerFacade.sharedDefaultQueue)
+        let poolRewardsOperationFactory = PoolRewardsOperationDetailsDataFactory(
+            poolsOperationFactory: poolsOperationFactory,
+            connection: connection,
+            runtimeService: runtimeService
+        )
 
         let interactor = OperationDetailsInteractor(
             transaction: transaction,
@@ -31,7 +44,8 @@ struct OperationDetailsViewFactory {
             transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            poolRewardsOperationFactory: poolRewardsOperationFactory
         )
 
         let wireframe = OperationDetailsWireframe()

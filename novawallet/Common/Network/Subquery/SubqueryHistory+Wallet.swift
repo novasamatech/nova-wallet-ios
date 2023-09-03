@@ -29,6 +29,8 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             return .transfers
         } else if reward != nil {
             return .rewards
+        } else if poolReward != nil {
+            return .poolRewards
         } else {
             return .extrinsics
         }
@@ -46,6 +48,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         } else if let reward = reward {
             return createTransactionFromReward(
                 reward,
+                chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
+            )
+        } else if let poolReward = poolReward {
+            return createTransactionFromPoolReward(
+                poolReward,
                 chainAssetId: chainAsset.chainAssetId,
                 chainFormat: chainAsset.chain.chainFormat
             )
@@ -122,6 +130,33 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txIndex: nil,
             callPath: reward.isReward ? .reward : .slash,
             call: try? JSONEncoder().encode(context)
+        )
+    }
+
+    private func createTransactionFromPoolReward(
+        _ reward: SubqueryPoolReward,
+        chainAssetId: ChainAssetId,
+        chainFormat: ChainFormat
+    ) -> TransactionHistoryItem {
+        let source = TransactionHistoryItemSource.substrate
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
+
+        return .init(
+            identifier: remoteIdentifier,
+            source: source,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: "\(reward.poolId)",
+            receiver: address.normalize(for: chainFormat) ?? address,
+            amountInPlank: reward.amount,
+            status: .success,
+            txHash: extrinsicHash ?? identifier,
+            timestamp: itemTimestamp,
+            fee: nil,
+            blockNumber: blockNumber,
+            txIndex: nil,
+            callPath: .poolReward,
+            call: nil
         )
     }
 

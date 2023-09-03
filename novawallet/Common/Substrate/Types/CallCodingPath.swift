@@ -152,8 +152,12 @@ extension CallCodingPath {
         CallCodingPath(moduleName: "Substrate", callName: "reward")
     }
 
+    static var poolReward: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "poolReward")
+    }
+
     var isRewardOrSlash: Bool {
-        [.slash, .reward].contains(self)
+        [.slash, .reward, .poolReward].contains(self)
     }
 }
 

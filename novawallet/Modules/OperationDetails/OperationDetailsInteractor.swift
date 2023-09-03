@@ -7,7 +7,7 @@ enum OperationDetailsInteractorError: Error {
     case unsupportTxType
 }
 
-final class OperationDetailsInteractor: AccountFetching {
+final class OperationDetailsInteractor: AccountFetching, AnyCancellableCleaning {
     weak var presenter: OperationDetailsInteractorOutputProtocol?
 
     let transaction: TransactionHistoryItem
@@ -20,6 +20,7 @@ final class OperationDetailsInteractor: AccountFetching {
     let operationQueue: OperationQueue
     let wallet: MetaAccountModel
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let poolRewardsOperationFactory: OperationDetailsDataFactoryProtocol
 
     private var accountAddress: AccountAddress? {
         wallet.fetch(for: chain.accountRequest())?.toAddress()
@@ -32,6 +33,8 @@ final class OperationDetailsInteractor: AccountFetching {
     private var priceCalculator: TokenPriceCalculatorProtocol?
     private var feePriceCalculator: TokenPriceCalculatorProtocol?
 
+    private var poolRewardsCall: CancellableCall?
+
     init(
         transaction: TransactionHistoryItem,
         chainAsset: ChainAsset,
@@ -40,7 +43,8 @@ final class OperationDetailsInteractor: AccountFetching {
         transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        poolRewardsOperationFactory: OperationDetailsDataFactoryProtocol
     ) {
         self.transaction = transaction
         self.chainAsset = chainAsset
@@ -49,6 +53,7 @@ final class OperationDetailsInteractor: AccountFetching {
         self.transactionLocalSubscriptionFactory = transactionLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.poolRewardsOperationFactory = poolRewardsOperationFactory
         self.currencyManager = currencyManager
     }
 
@@ -165,6 +170,34 @@ final class OperationDetailsInteractor: AccountFetching {
 
             completion(.reward(model))
         }
+    }
+
+    private func extractPoolRewardOperationData(
+        newFee: BigUInt?,
+        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+    ) {
+        clear(cancellable: &poolRewardsCall)
+
+        let wrapper = poolRewardsOperationFactory.extractOperationData(
+            transaction: transaction,
+            newFee: newFee,
+            priceCalculator: priceCalculator,
+            feePriceCalculator: feePriceCalculator
+        )
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            self?.poolRewardsCall = nil
+
+            DispatchQueue.main.async {
+                do {
+                    let data = try wrapper.targetOperation.extractNoCancellableResultData()
+                    completion(data)
+                } catch {
+                    completion(nil)
+                }
+            }
+        }
+        poolRewardsCall = wrapper
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func getEventId(from context: HistoryRewardContext?) -> String? {
@@ -331,6 +364,8 @@ final class OperationDetailsInteractor: AccountFetching {
             } else {
                 extractExtrinsicOperationData(newFee: newFee, completion)
             }
+        case .poolReward:
+            extractPoolRewardOperationData(newFee: newFee, completion)
         case .none:
             completion(nil)
         }

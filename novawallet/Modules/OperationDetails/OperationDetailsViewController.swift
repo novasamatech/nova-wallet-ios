@@ -227,6 +227,29 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         )
     }
 
+    private func applyPoolReward(
+        viewModel: OperationPoolRewardViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let rewardView: OperationDetailsPoolRewardView = rootView.setupLocalizableView()
+        rewardView.locale = selectedLocale
+        rewardView.bindReward(viewModel: viewModel, networkViewModel: networkViewModel)
+
+        rootView.removeActionButton()
+
+        rewardView.poolView.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        rewardView.eventIdView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
+    }
+
     @objc func actionSender() {
         presenter.showSenderActions()
     }
@@ -264,6 +287,8 @@ extension OperationDetailsViewController: OperationDetailsViewProtocol {
             applySlash(viewModel: slashViewModel, networkViewModel: networkViewModel)
         case let .contract(contractViewModel):
             applyContract(viewModel: contractViewModel, networkViewModel: networkViewModel)
+        case let .poolReward(poolRewardViewModel):
+            applyPoolReward(viewModel: poolRewardViewModel, networkViewModel: networkViewModel)
         }
     }
 }

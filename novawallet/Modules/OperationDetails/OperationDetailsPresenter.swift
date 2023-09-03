@@ -100,6 +100,11 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             }
         case let .contract(contractModel):
             presentAddressOptions(contractModel.sender.address)
+        case let .poolReward(poolRewardModel):
+            guard let address = poolRewardModel.pool.bondedAddress(for: chainAsset.chain.chainFormat) else {
+                return
+            }
+            presentAddressOptions(address)
         case .none:
             break
         }
@@ -128,6 +133,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             presentEventIdOptions(slashModel.eventId)
         case let .contract(contractModel):
             presentTransactionHashOptions(contractModel.txHash)
+        case let .poolReward(poolRewardModel):
+            presentTransactionHashOptions(poolRewardModel.eventId)
         case .none:
             break
         }
