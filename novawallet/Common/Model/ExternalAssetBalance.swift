@@ -1,7 +1,8 @@
 import Foundation
 import BigInt
+import RobinHood
 
-struct ExternalAssetBalance {
+struct ExternalAssetBalance: Equatable, Identifiable {
     enum BalanceType: String {
         case crowdloan
         case nominationPools
@@ -16,6 +17,7 @@ struct ExternalAssetBalance {
         }
     }
 
+    let identifier: String
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let amount: BigUInt
