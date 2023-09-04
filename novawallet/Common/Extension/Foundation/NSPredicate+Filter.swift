@@ -291,13 +291,7 @@ extension NSPredicate {
             NSPredicate(format: "%K == %@", #keyPath(CDExternalBalance.subtype), $0)
         } ?? NSPredicate(format: "%K = nil", #keyPath(CDExternalBalance.subtype))
 
-        let typePredicate = NSPredicate(
-            format: "%K == %@",
-            #keyPath(CDExternalBalance.type),
-            ExternalAssetBalance.BalanceType.crowdloan.rawValue
-        )
-
-        let predicates = [typePredicate, accountChainPredicate, sourcePredicate]
+        let predicates = [accountChainPredicate, sourcePredicate]
         return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
     }
 

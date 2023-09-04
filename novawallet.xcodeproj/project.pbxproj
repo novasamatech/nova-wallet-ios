@@ -119,6 +119,14 @@
 		0C59E8D12AA5FAC5001E11F3 /* PooledAssetBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8D02AA5FAC5001E11F3 /* PooledAssetBalance.swift */; };
 		0C59E8D32AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8D22AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift */; };
 		0C59E8D52AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8D42AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift */; };
+		0C59E8D82AA60490001E11F3 /* ExternalAssetBalanceStreambleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8D72AA60490001E11F3 /* ExternalAssetBalanceStreambleSource.swift */; };
+		0C59E8DA2AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8D92AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift */; };
+		0C59E8DC2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8DB2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift */; };
+		0C59E8DF2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8DE2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift */; };
+		0C59E8E12AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8E02AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift */; };
+		0C59E8E32AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8E22AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift */; };
+		0C59E8E52AA6191E001E11F3 /* ExternalAssetBalanceSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8E42AA6191E001E11F3 /* ExternalAssetBalanceSubscriber.swift */; };
+		0C59E8E72AA61933001E11F3 /* ExternalAssetBalanceSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8E62AA61933001E11F3 /* ExternalAssetBalanceSubscriptionHandler.swift */; };
 		0C626D1B2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */; };
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
@@ -4043,6 +4051,14 @@
 		0C59E8D02AA5FAC5001E11F3 /* PooledAssetBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PooledAssetBalance.swift; sourceTree = "<group>"; };
 		0C59E8D22AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PooledAssetBalanceMapper.swift; sourceTree = "<group>"; };
 		0C59E8D42AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalanceMapper.swift; sourceTree = "<group>"; };
+		0C59E8D72AA60490001E11F3 /* ExternalAssetBalanceStreambleSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalanceStreambleSource.swift; sourceTree = "<group>"; };
+		0C59E8D92AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalanceLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		0C59E8DB2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+ExternalAssetBalance.swift"; sourceTree = "<group>"; };
+		0C59E8DE2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalanceServiceFactoryProtocol.swift; sourceTree = "<group>"; };
+		0C59E8E02AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanExternalServiceFactory.swift; sourceTree = "<group>"; };
+		0C59E8E22AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolExternalServiceFactory.swift; sourceTree = "<group>"; };
+		0C59E8E42AA6191E001E11F3 /* ExternalAssetBalanceSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalanceSubscriber.swift; sourceTree = "<group>"; };
+		0C59E8E62AA61933001E11F3 /* ExternalAssetBalanceSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalanceSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainPresenterFactory+NominationPools.swift"; sourceTree = "<group>"; };
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
@@ -8205,6 +8221,25 @@
 			path = PooledBalanceService;
 			sourceTree = "<group>";
 		};
+		0C59E8D62AA6047A001E11F3 /* ExternalAssetBalance */ = {
+			isa = PBXGroup;
+			children = (
+				0C59E8D72AA60490001E11F3 /* ExternalAssetBalanceStreambleSource.swift */,
+			);
+			path = ExternalAssetBalance;
+			sourceTree = "<group>";
+		};
+		0C59E8DD2AA60D90001E11F3 /* ExternalAssetBalanceFactory */ = {
+			isa = PBXGroup;
+			children = (
+				0C59E8D92AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift */,
+				0C59E8DE2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift */,
+				0C59E8E02AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift */,
+				0C59E8E22AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift */,
+			);
+			path = ExternalAssetBalanceFactory;
+			sourceTree = "<group>";
+		};
 		0C6610292A73814900E44634 /* StakingSharedState */ = {
 			isa = PBXGroup;
 			children = (
@@ -11394,6 +11429,7 @@
 		8463A70725E2FFE2003B8160 /* DataProvider */ = {
 			isa = PBXGroup;
 			children = (
+				0C59E8DD2AA60D90001E11F3 /* ExternalAssetBalanceFactory */,
 				84EF8D3A288FD60E00265346 /* Base */,
 				84CD82BC263C3A64001A6F01 /* Subscription */,
 				84F98D9425E3E29B0040418E /* Repositories */,
@@ -11427,6 +11463,7 @@
 		8463A70825E30000003B8160 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0C59E8D62AA6047A001E11F3 /* ExternalAssetBalance */,
 				0C7C88622A94DFE000DD96A1 /* NominationPools */,
 				8412219C28F0512B00715C82 /* Governance */,
 				846A682A274693D400D1A47A /* Crowdloan */,
@@ -13024,6 +13061,7 @@
 				0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */,
 				0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */,
 				77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */,
+				0C59E8DB2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -15026,6 +15064,8 @@
 				842E9E952A2A279800759972 /* StakingDashboardLocalStorageHandler.swift */,
 				0CC2E5652A6E64EC004092E7 /* NPoolsLocalStorageSubscriber.swift */,
 				0CC2E5672A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift */,
+				0C59E8E42AA6191E001E11F3 /* ExternalAssetBalanceSubscriber.swift */,
+				0C59E8E62AA61933001E11F3 /* ExternalAssetBalanceSubscriptionHandler.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -19650,6 +19690,7 @@
 				840D92A7278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift in Sources */,
 				84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */,
 				84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */,
+				0C59E8E32AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift in Sources */,
 				84B8AA8729F9115400347A37 /* WalletConnectTransportMessage.swift in Sources */,
 				84F98D9625E3E2B10040418E /* InMemoryDataProviderRepository.swift in Sources */,
 				8446F5FA28192FF500B7A86C /* ListLoadingView.swift in Sources */,
@@ -19774,6 +19815,7 @@
 				F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */,
 				889F7F3B292373560024CB1E /* RemoteAssetModel+Evm.swift in Sources */,
 				849D3227291CE25E00D25839 /* MarkdownViewContainer.swift in Sources */,
+				0C59E8E12AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
@@ -19996,6 +20038,7 @@
 				88C5F07C297EE79C001CCADE /* Release.swift in Sources */,
 				845B89222959620000EE25B0 /* SecurityLayerPresenter.swift in Sources */,
 				849E07F4284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift in Sources */,
+				0C59E8D82AA60490001E11F3 /* ExternalAssetBalanceStreambleSource.swift in Sources */,
 				84BC7047289EFFFA008A9758 /* ChainWalletDisplayAddress.swift in Sources */,
 				843910CC253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld in Sources */,
 				84BB3CF3267D24B000676FFE /* UIStackView+Manage.swift in Sources */,
@@ -20238,6 +20281,7 @@
 				844EFB5F265FCE180090ACB1 /* CrowdloanContributionInteractor.swift in Sources */,
 				8499FE6627BD15C800712589 /* DistributedUrlParser.swift in Sources */,
 				845BB8C025E4508800E5FCDC /* SS58FactoryExtensions.swift in Sources */,
+				0C59E8E72AA61933001E11F3 /* ExternalAssetBalanceSubscriptionHandler.swift in Sources */,
 				F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */,
 				84E25BF027E8EFB500290BF1 /* SubqueryAccumulateReward.swift in Sources */,
 				88AC5ADA2948A8CC0056DD40 /* TransactionSectionModel.swift in Sources */,
@@ -20419,6 +20463,7 @@
 				779C8BE82AA1DD1B001A4A3C /* NominationPoolsBondMoreHintsFactory.swift in Sources */,
 				84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */,
 				84C5ADE628141D21006D7388 /* LinkView.swift in Sources */,
+				0C59E8DF2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift in Sources */,
 				84C2064028D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift in Sources */,
 				8469D5A628F5E8F20074FEE3 /* Staking.swift in Sources */,
 				848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */,
@@ -20726,6 +20771,7 @@
 				843910B2253ED4D100E3C217 /* CDChainStorageItem+CoreDataDecodable.swift in Sources */,
 				844DBC64274D2BD6009F8351 /* ModalPickerClosureContext.swift in Sources */,
 				8451720D298C473500489EF1 /* GovernanceSelectableTrackView.swift in Sources */,
+				0C59E8DC2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift in Sources */,
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
 				8499FE7B27BE58A000712589 /* IdentityMapper.swift in Sources */,
 				845B89262959627A00EE25B0 /* SecurityLayerWireframe.swift in Sources */,
@@ -22240,6 +22286,7 @@
 				E6D05825C7512E3CD560B39F /* AssetReceiveViewController.swift in Sources */,
 				9ACF0A5CCB50CEDD97671EDE /* AssetReceiveViewLayout.swift in Sources */,
 				0CAC44AC2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift in Sources */,
+				0C59E8E52AA6191E001E11F3 /* ExternalAssetBalanceSubscriber.swift in Sources */,
 				BE966FC878B738FC9DE1D296 /* AssetReceiveViewFactory.swift in Sources */,
 				BDAD1DD6A88406F606E2A70D /* TransactionHistoryProtocols.swift in Sources */,
 				42AF4E3B592AF7E40CAC13E0 /* TransactionHistoryWireframe.swift in Sources */,
@@ -22400,6 +22447,7 @@
 				37CF597ACB2A32ABCEEFEE67 /* StakingRebagConfirmViewController.swift in Sources */,
 				09AB6DE2D19F1FA36BF08288 /* StakingRebagConfirmViewLayout.swift in Sources */,
 				4A24646D497B26E51926BA52 /* StakingRebagConfirmViewFactory.swift in Sources */,
+				0C59E8DA2AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift in Sources */,
 				F5AADF461ED043EAF04A50DE /* ReferendumsFiltersProtocols.swift in Sources */,
 				A44CA3E6BB506841948AB2D1 /* ReferendumsFiltersWireframe.swift in Sources */,
 				32428875321BF68F5DC47D52 /* ReferendumsFiltersPresenter.swift in Sources */,
