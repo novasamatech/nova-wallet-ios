@@ -266,10 +266,19 @@ extension NSPredicate {
     }
 
     static func crowdloanContribution(chainIds: Set<ChainModel.Id>) -> NSPredicate {
-        let predicates = chainIds.map {
-            NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainId), $0)
+        let crowdloanTypePredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDExternalBalance.type),
+            ExternalAssetBalance.BalanceType.crowdloan.rawValue
+        )
+
+        let chainIdPredicates = chainIds.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDExternalBalance.chainId), $0)
         }
-        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
+
+        let chainIdPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: Array(chainIdPredicates))
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [crowdloanTypePredicate, chainIdPredicate])
     }
 
     static func crowdloanContribution(
@@ -279,10 +288,17 @@ extension NSPredicate {
     ) -> NSPredicate {
         let accountChainPredicate = crowdloanContribution(for: chainId, accountId: accountId)
         let sourcePredicate = source.map {
-            NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.source), $0)
-        } ?? NSPredicate(format: "%K = nil", #keyPath(CDCrowdloanContribution.source))
+            NSPredicate(format: "%K == %@", #keyPath(CDExternalBalance.subtype), $0)
+        } ?? NSPredicate(format: "%K = nil", #keyPath(CDExternalBalance.subtype))
 
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [accountChainPredicate, sourcePredicate])
+        let typePredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDExternalBalance.type),
+            ExternalAssetBalance.BalanceType.crowdloan.rawValue
+        )
+
+        let predicates = [typePredicate, accountChainPredicate, sourcePredicate]
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
     }
 
     static func crowdloanContribution(
@@ -291,16 +307,22 @@ extension NSPredicate {
     ) -> NSPredicate {
         let chainPredicate = NSPredicate(
             format: "%K == %@",
-            #keyPath(CDCrowdloanContribution.chainId),
+            #keyPath(CDExternalBalance.chainId),
             chainId
         )
         let accountPredicate = NSPredicate(
             format: "%K == %@",
-            #keyPath(CDCrowdloanContribution.chainAccountId),
+            #keyPath(CDExternalBalance.chainAccountId),
             accountId.toHex()
         )
 
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, accountPredicate])
+        let typePredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDExternalBalance.type),
+            ExternalAssetBalance.BalanceType.crowdloan.rawValue
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [typePredicate, chainPredicate, accountPredicate])
     }
 
     static func referendums(for chainId: ChainModel.Id) -> NSPredicate {

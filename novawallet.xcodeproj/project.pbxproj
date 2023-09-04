@@ -113,6 +113,7 @@
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
 		0C56B4FB2A4B0C320030F9C9 /* AssetListBaseBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */; };
 		0C56B4FD2A4B0CA90030F9C9 /* AssetListBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */; };
+		0C59E8C92AA5C7EC001E11F3 /* ExternalAssetBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C59E8C82AA5C7EC001E11F3 /* ExternalAssetBalance.swift */; };
 		0C626D1B2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */; };
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
@@ -4030,6 +4031,8 @@
 		0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilder.swift; sourceTree = "<group>"; };
 		0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBaseBuilder.swift; sourceTree = "<group>"; };
 		0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilderResult.swift; sourceTree = "<group>"; };
+		0C59E8C72AA5C3F4001E11F3 /* SubstrateDataModel19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel19.xcdatamodel; sourceTree = "<group>"; };
+		0C59E8C82AA5C7EC001E11F3 /* ExternalAssetBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalAssetBalance.swift; sourceTree = "<group>"; };
 		0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainPresenterFactory+NominationPools.swift"; sourceTree = "<group>"; };
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
@@ -12677,6 +12680,7 @@
 				849A4EF3279A7AC600AB6709 /* AssetType.swift */,
 				849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */,
 				849A4EF7279ABBDD00AB6709 /* AssetBalance.swift */,
+				0C59E8C82AA5C7EC001E11F3 /* ExternalAssetBalance.swift */,
 				84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */,
 				84EBA4EF27AD26A5000AEEAD /* AssetBalanceId.swift */,
 				8499FE7427BE490700712589 /* UniquesAccountKey.swift */,
@@ -19536,6 +19540,7 @@
 				8443045C2A28734B00DE36DE /* ParachainMultistakingUpdateService.swift in Sources */,
 				84893C0524DA8663008F6A3F /* AccountCreationError.swift in Sources */,
 				84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */,
+				0C59E8C92AA5C7EC001E11F3 /* ExternalAssetBalance.swift in Sources */,
 				842EBB3B2890B06500B952D8 /* WalletSelectionPresenter.swift in Sources */,
 				88D1F1B22981212700316A1A /* InAppUpdatesServiceWireframeProtocol.swift in Sources */,
 				84C1DBC329C27A6600F295A5 /* Paras.swift in Sources */,
@@ -23336,6 +23341,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C59E8C72AA5C3F4001E11F3 /* SubstrateDataModel19.xcdatamodel */,
 				0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */,
 				0C04290B2A67A42A00C3583A /* SubstrateDataModel17.xcdatamodel */,
 				8473B4742A206E0A003DE213 /* SubstrateDataModel16.xcdatamodel */,
@@ -23355,7 +23361,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */;
+			currentVersion = 0C59E8C72AA5C3F4001E11F3 /* SubstrateDataModel19.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
