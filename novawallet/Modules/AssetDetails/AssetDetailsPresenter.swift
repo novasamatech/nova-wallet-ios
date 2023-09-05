@@ -182,11 +182,16 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             return
         }
         let precision = chainAsset.asset.precision
+
+        let groupedExternalBalances = externalAssetBalances
+            .groupByAssetType()
+            .mapValues { $0.decimal(precision: precision) }
+
         let balanceContext = BalanceContext(
             free: balance.freeInPlank.decimal(precision: precision),
             reserved: balance.reservedInPlank.decimal(precision: precision),
             frozen: balance.frozenInPlank.decimal(precision: precision),
-            crowdloans: calculateTotalExternalBalances(for: externalAssetBalances).decimal(precision: precision), // TODO: Fix breakdown
+            external: groupedExternalBalances,
             price: priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0,
             priceChange: priceData?.dayChange ?? 0,
             priceId: priceData?.currencyId,

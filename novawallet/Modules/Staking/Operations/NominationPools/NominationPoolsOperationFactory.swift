@@ -225,8 +225,8 @@ final class NominationPoolsOperationFactory {
             filter: filter
         )
 
-        let dependencies = pollIdsOperationWrapper.allOperations + bondedWrapper.allOperations + bondedAccountWrapper.allOperations +
-            metadataWrapper.allOperations
+        let dependencies = pollIdsOperationWrapper.allOperations + bondedWrapper.allOperations +
+            bondedAccountWrapper.allOperations + metadataWrapper.allOperations
 
         dependencies.forEach { mergeOperation.addDependency($0) }
 

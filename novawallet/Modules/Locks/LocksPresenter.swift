@@ -104,15 +104,19 @@ final class LocksPresenter {
             )
         }
 
-        // TODO: Fix breakdown
-        let externalBalanceCells: [LocksViewSectionModel.CellViewModel] = input.externalBalances.compactMap {
-            createCell(
-                amountInPlank: $0.value.reduce(0) { $0 + $1.amount },
-                chainAssetId: $0.key,
-                title: R.string.localizable.tabbarCrowdloanTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                identifier: $0.key.stringValue
+        let groupedExternalBalances = input.externalBalances
+            .values.flatMap { $0 }
+            .groupByAssetType()
+
+        let externalBalanceCells: [LocksViewSectionModel.CellViewModel] = groupedExternalBalances.compactMap {
+            let group = $0.key
+            let amount = $0.value
+
+            return createCell(
+                amountInPlank: amount,
+                chainAssetId: group.chainAssetId,
+                title: group.type.lockTitle.value(for: selectedLocale),
+                identifier: group.stringValue
             )
         }
 
@@ -162,12 +166,14 @@ final class LocksPresenter {
         let locksCellsCount = input.locks.filter {
             $0.amount > 0
         }.count
-        let externalBalancesCellsCount = input.externalBalances.filter { externalBalance in
-            externalBalance.value.first(where: { $0.amount > 0 }) != nil
-        }.count
+
+        let externalBalancesCellsCount = input.externalBalances
+            .values.flatMap { $0 }
+            .count
+
         return view?.calculateEstimatedHeight(
             sections: 2,
-            items: locksCellsCount + reservedCellsCount + externalBalancesCellsCount // TODO: fix height
+            items: locksCellsCount + reservedCellsCount + externalBalancesCellsCount
         ) ?? 0
     }
 }

@@ -45,8 +45,12 @@ final class StakingSelectPoolViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = R.string.localizable.stakingSelectPoolTitle(preferredLanguages: selectedLocale.rLanguages)
-        rootView.recommendedButton.imageWithTitleView?.title =
-            R.string.localizable.stakingSelectValidatorsRecommendedButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+
+        let buttonTitle = R.string.localizable.stakingSelectValidatorsRecommendedButtonTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.recommendedButton.imageWithTitleView?.title = buttonTitle
     }
 
     private func setupHandlers() {
@@ -70,7 +74,7 @@ extension StakingSelectPoolViewController: StakingSelectPoolViewProtocol {
         case .loading:
             rootView.loadingView.isHidden = false
             rootView.loadingView.start()
-        case let .cached, let .loaded:
+        case .cached, .loaded:
             rootView.loadingView.stop()
             rootView.loadingView.isHidden = true
             rootView.tableView.reloadData()

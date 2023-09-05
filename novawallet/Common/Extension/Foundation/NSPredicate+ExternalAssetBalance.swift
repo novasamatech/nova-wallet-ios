@@ -13,7 +13,7 @@ extension NSPredicate {
 
         let assetPredicate = NSPredicate(
             format: "%K == %d",
-            #keyPath(CDExternalBalance.chainId),
+            #keyPath(CDExternalBalance.assetId),
             chainAssetId.assetId
         )
 

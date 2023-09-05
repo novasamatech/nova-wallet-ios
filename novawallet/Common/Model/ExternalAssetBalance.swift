@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import RobinHood
+import SoraFoundation
 
 struct ExternalAssetBalance: Equatable, Identifiable {
     enum BalanceType: String {
@@ -24,4 +25,37 @@ struct ExternalAssetBalance: Equatable, Identifiable {
     let type: BalanceType
     let subtype: String?
     let param: String?
+}
+
+struct ExternalBalanceAssetGroupId: Equatable, Hashable {
+    let chainAssetId: ChainAssetId
+    let type: ExternalAssetBalance.BalanceType
+
+    var stringValue: String {
+        chainAssetId.stringValue + "-" + type.rawValue
+    }
+}
+
+extension Array where Element == ExternalAssetBalance {
+    func groupByAssetType() -> [ExternalBalanceAssetGroupId: BigUInt] {
+        reduce(into: [ExternalBalanceAssetGroupId: BigUInt]()) { accum, balance in
+            let group = ExternalBalanceAssetGroupId(chainAssetId: balance.chainAssetId, type: balance.type)
+
+            let previousAmount = accum[group] ?? 0
+            accum[group] = previousAmount + balance.amount
+        }
+    }
+}
+
+extension ExternalAssetBalance.BalanceType {
+    var lockTitle: LocalizableResource<String> {
+        switch self {
+        case .crowdloan:
+            return LocalizableResource { R.string.localizable.tabbarCrowdloanTitle(preferredLanguages: $0.rLanguages) }
+        case .nominationPools:
+            return LocalizableResource { R.string.localizable.stakingPoolStaking(preferredLanguages: $0.rLanguages) }
+        case .unknown:
+            return LocalizableResource { R.string.localizable.commonUnknown(preferredLanguages: $0.rLanguages) }
+        }
+    }
 }
