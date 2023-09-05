@@ -156,12 +156,30 @@ extension NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreSetupPrese
     }
 
     func proceed() {
-        let validators = getValidations()
+        let baseValidators = getValidations()
+
+        var currentInputAmount = getInputAmount()
+
+        let setupValidators: [DataValidating] = [
+            dataValidatorFactory.poolStakingNotViolatingExistentialDeposit(
+                for: .init(
+                    stakingAmount: getInputAmount(),
+                    assetBalance: assetBalance,
+                    fee: fee,
+                    existentialDeposit: assetBalanceExistance?.minBalance,
+                    amountUpdateClosure: { newAmount in
+                        currentInputAmount = newAmount
+                    }
+                ),
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            )
+        ]
 
         DataValidationRunner(
-            validators: validators
+            validators: baseValidators + setupValidators
         ).runValidation { [weak self] in
-            guard let amount = self?.getInputAmount() else {
+            guard let amount = currentInputAmount else {
                 return
             }
             self?.wireframe?.showConfirm(from: self?.view, amount: amount)

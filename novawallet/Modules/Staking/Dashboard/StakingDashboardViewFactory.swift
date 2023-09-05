@@ -46,7 +46,7 @@ struct StakingDashboardViewFactory {
     ) -> StakingDashboardInteractor? {
         let walletSettings = SelectedWalletSettings.shared
 
-        guard let wallet = walletSettings.value, let currencyManager = CurrencyManager.shared else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 

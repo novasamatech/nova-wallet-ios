@@ -89,7 +89,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
                 }
                 return CrowdloanContributionData(
                     accountId: accountId,
-                    chainId: chainId,
+                    chainAssetId: ChainAssetId(chainId: chainId, assetId: AssetModel.utilityAssetId),
                     paraId: $0.crowdloan.paraId,
                     source: nil,
                     amount: contribution.balance

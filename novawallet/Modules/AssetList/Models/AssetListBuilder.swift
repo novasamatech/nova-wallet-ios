@@ -32,7 +32,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
             balanceResults: balanceResults,
             allChains: allChains,
             balances: balances,
-            crowdloansResult: crowdloansResult,
+            externalBalanceResult: externalBalancesResult,
             nfts: nftList.allItems,
             locksResult: locksResult
         )

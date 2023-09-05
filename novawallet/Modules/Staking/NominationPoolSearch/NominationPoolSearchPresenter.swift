@@ -12,12 +12,17 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
     let operationQueue: OperationQueue
+    let dataValidatingFactory: NominationPoolDataValidatorFactoryProtocol
+    let selectedPoolId: NominationPools.PoolId?
 
     private var poolStats: LoadableViewModelState<[NominationPools.PoolStats]> = .loaded(value: [])
+    private var maxMembersPerPool: UInt32?
 
     init(
         interactor: NominationPoolSearchInteractorInputProtocol,
         wireframe: NominationPoolSearchWireframeProtocol,
+        selectedPoolId: NominationPools.PoolId?,
+        dataValidatingFactory: NominationPoolDataValidatorFactoryProtocol,
         viewModelFactory: StakingSelectPoolViewModelFactoryProtocol,
         chainAsset: ChainAsset,
         delegate: StakingSelectPoolDelegate,
@@ -27,6 +32,8 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.selectedPoolId = selectedPoolId
+        self.dataValidatingFactory = dataValidatingFactory
         self.viewModelFactory = viewModelFactory
         self.chainAsset = chainAsset
         self.operationQueue = operationQueue
@@ -42,20 +49,12 @@ final class NominationPoolSearchPresenter: AnyCancellableCleaning {
         case let .cached(stats), let .loaded(stats):
             let viewModel = viewModelFactory.createStakingSelectPoolViewModels(
                 from: stats,
-                selectedPoolId: nil,
+                selectedPoolId: selectedPoolId,
                 chainAsset: chainAsset,
                 locale: selectedLocale
             )
             view?.didReceivePools(state: .loaded(viewModel: viewModel))
         }
-    }
-
-    private func showUnsupportedPoolStateAlert() {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: selectedLocale.rLanguages)
-        let message = R.string.localizable.stakingSearchPoolSelectionErrorMessage(
-            preferredLanguages: selectedLocale.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
-        wireframe.present(message: message, title: title, closeAction: closeAction, from: view)
     }
 }
 
@@ -70,19 +69,22 @@ extension NominationPoolSearchPresenter: NominationPoolSearchPresenterProtocol {
     }
 
     func selectPool(poolId: NominationPools.PoolId) {
-        guard let pool = poolStats.value?.first(where: { $0.poolId == poolId }) else {
-            return
-        }
+        let optPool = poolStats.value?.first(where: { $0.poolId == poolId })
 
-        switch pool.state {
-        case .blocked, .destroying, .unsuppored, .none:
-            showUnsupportedPoolStateAlert()
-        case .open:
-            delegate?.changePoolSelection(
+        DataValidationRunner(validators: [
+            dataValidatingFactory.selectedPoolIsOpen(for: optPool, locale: selectedLocale),
+            dataValidatingFactory.selectedPoolIsNotFull(for: optPool, maxMembers: nil, locale: selectedLocale)
+        ]).runValidation { [weak self] in
+            guard let pool = optPool else {
+                return
+            }
+
+            self?.delegate?.changePoolSelection(
                 selectedPool: .init(poolStats: pool),
                 isRecommended: false
             )
-            wireframe.complete(from: view)
+
+            self?.wireframe.complete(from: self?.view)
         }
     }
 
@@ -112,6 +114,12 @@ extension NominationPoolSearchPresenter: NominationPoolSearchInteractorOutputPro
         poolStats = .loading
 
         provideVidewModel()
+    }
+
+    func didReceive(maxMembersPerPool: UInt32?) {
+        logger.debug("Max members per pool: \(String(describing: maxMembersPerPool))")
+
+        self.maxMembersPerPool = maxMembersPerPool
     }
 
     func didReceive(error: NominationPoolSearchError) {

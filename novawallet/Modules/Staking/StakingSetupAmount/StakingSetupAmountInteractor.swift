@@ -15,6 +15,8 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
     let extrinsicFeeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicSubmissionProxy: StartStakingExtrinsicProxyProtocol
     let recommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol
+    let runtimeService: RuntimeCodingServiceProtocol
+    let operationQueue: OperationQueue
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -30,6 +32,8 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         extrinsicFeeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicSubmissionProxy: StartStakingExtrinsicProxyProtocol,
         recommendationMediatorFactory: StakingRecommendationMediatorFactoryProtocol,
+        runtimeService: RuntimeCodingServiceProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.state = state
@@ -40,6 +44,8 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         self.extrinsicFeeProxy = extrinsicFeeProxy
         self.extrinsicSubmissionProxy = extrinsicSubmissionProxy
         self.recommendationMediatorFactory = recommendationMediatorFactory
+        self.runtimeService = runtimeService
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -104,6 +110,21 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
             assetId: chainAssetId.assetId
         )
     }
+
+    private func provideExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(existentialDeposit):
+                self?.presenter?.didReceive(existentialDeposit: existentialDeposit)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .existentialDeposit(error))
+            }
+        }
+    }
 }
 
 extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtocol, RuntimeConstantFetching {
@@ -113,6 +134,7 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
         performAssetBalanceSubscription()
         performPriceSubscription()
         performAssetLocksSubscription()
+        provideExistentialDeposit()
 
         setupRecommendationMediator(for: state.stakingType)
     }
@@ -127,6 +149,10 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
         recommendationMediator?.stopRecommending()
 
         setupRecommendationMediator(for: state.stakingType)
+    }
+
+    func retryExistentialDeposit() {
+        provideExistentialDeposit()
     }
 
     func estimateFee(for staking: SelectedStakingOption, amount: BigUInt, feeId: TransactionFeeId) {

@@ -171,10 +171,16 @@ final class NominationPoolsOperationFactory {
             }
 
             return poolStats.sorted { stat1, stat2 in
-                let apy1 = stat1.maxApy ?? 0
-                let apy2 = stat2.maxApy ?? 0
+                if stat1.maxApy != stat2.maxApy {
+                    let apy1 = stat1.maxApy ?? 0
+                    let apy2 = stat2.maxApy ?? 0
 
-                return apy1 > apy2
+                    return apy1 > apy2
+                } else if stat1.membersCount != stat2.membersCount {
+                    return stat1.membersCount > stat2.membersCount
+                } else {
+                    return stat1.poolId > stat2.poolId
+                }
             }
         }
     }
@@ -219,8 +225,8 @@ final class NominationPoolsOperationFactory {
             filter: filter
         )
 
-        let dependencies = pollIdsOperationWrapper.allOperations + bondedWrapper.allOperations + bondedAccountWrapper.allOperations +
-            metadataWrapper.allOperations
+        let dependencies = pollIdsOperationWrapper.allOperations + bondedWrapper.allOperations +
+            bondedAccountWrapper.allOperations + metadataWrapper.allOperations
 
         dependencies.forEach { mergeOperation.addDependency($0) }
 

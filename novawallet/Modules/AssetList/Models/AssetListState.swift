@@ -5,25 +5,25 @@ struct AssetListState {
     let priceResult: Result<[ChainAssetId: PriceData], Error>?
     let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
     let allChains: [ChainModel.Id: ChainModel]
-    let crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
+    let externalBalances: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
 
     init(
         priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
         balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
         allChains: [ChainModel.Id: ChainModel] = [:],
-        crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>? = nil
+        externalBalances: Result<[ChainAssetId: [ExternalAssetBalance]], Error>? = nil
     ) {
         self.priceResult = priceResult
         self.balanceResults = balanceResults
         self.allChains = allChains
-        self.crowdloansResult = crowdloansResult
+        self.externalBalances = externalBalances
     }
 
     init(model: AssetListBuilderResult.Model) {
         priceResult = model.priceResult
         balanceResults = model.balanceResults
         allChains = model.allChains
-        crowdloansResult = model.crowdloansResult
+        externalBalances = model.externalBalanceResult
     }
 
     func chainAsset(for chainAssetId: ChainAssetId) -> ChainAsset? {

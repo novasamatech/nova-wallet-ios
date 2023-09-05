@@ -43,7 +43,7 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
             let remoteModels: [CrowdloanContributionData] = contributions.compactMap {
                 CrowdloanContributionData(
                     accountId: accountId,
-                    chainId: chainId,
+                    chainAssetId: ChainAssetId(chainId: chainId, assetId: AssetModel.utilityAssetId),
                     paraId: $0.paraId,
                     source: $0.source,
                     amount: $0.amount

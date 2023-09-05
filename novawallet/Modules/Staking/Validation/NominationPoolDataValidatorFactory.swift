@@ -1,9 +1,28 @@
 import SoraFoundation
 import BigInt
 
+struct ExistentialDepositValidationParams {
+    let stakingAmount: Decimal?
+    let assetBalance: AssetBalance?
+    let fee: BigUInt?
+    let existentialDeposit: BigUInt?
+    let amountUpdateClosure: (Decimal) -> Void
+}
+
 protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func nominationPoolHasApy(
-        method: StakingSelectionMethod,
+        pool: NominationPools.SelectedPool,
+        locale: Locale
+    ) -> DataValidating
+
+    func selectedPoolIsOpen(
+        for pool: NominationPools.PoolStats?,
+        locale: Locale
+    ) -> DataValidating
+
+    func selectedPoolIsNotFull(
+        for pool: NominationPools.PoolStats?,
+        maxMembers: UInt32?,
         locale: Locale
     ) -> DataValidating
 
@@ -43,6 +62,12 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         locale: Locale
     ) -> DataValidating
 
+    func poolStakingNotViolatingExistentialDeposit(
+        for params: ExistentialDepositValidationParams,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> DataValidating
+
     func nominationPoolIsNotDestroing(
         pool: NominationPools.BondedPool?,
         locale: Locale
@@ -69,7 +94,7 @@ final class NominationPoolDataValidatorFactory {
 
 extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactoryProtocol {
     func nominationPoolHasApy(
-        method: StakingSelectionMethod,
+        pool: NominationPools.SelectedPool,
         locale: Locale
     ) -> DataValidating {
         WarningConditionViolation(onWarning: { [weak self] delegate in
@@ -84,15 +109,27 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 locale: locale
             )
         }, preservesCondition: {
-            guard case let .pool(selectedPool) = method.selectedStakingOption else {
-                return true
-            }
-
-            if let apy = selectedPool.maxApy, apy > 0 {
+            if let apy = pool.maxApy, apy > 0 {
                 return true
             } else {
                 return false
             }
+        })
+    }
+
+    func selectedPoolIsOpen(
+        for pool: NominationPools.PoolStats?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentPoolIsNotOpen(from: view, locale: locale)
+
+        }, preservesCondition: {
+            pool?.state == .open
         })
     }
 
@@ -104,15 +141,42 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             guard let view = self?.view else {
                 return
             }
+
             self?.presentable.presentNominationPoolIsDestroing(
                 from: view,
                 locale: locale
             )
+
         }, preservesCondition: {
             guard let pool = pool else {
                 return false
             }
+
             return pool.state != .destroying
+        })
+    }
+
+    func selectedPoolIsNotFull(
+        for pool: NominationPools.PoolStats?,
+        maxMembers: UInt32?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentPoolIsFull(from: view, locale: locale)
+        }, preservesCondition: {
+            guard let pool = pool else {
+                return false
+            }
+
+            guard let maxMembers = maxMembers else {
+                return true
+            }
+
+            return pool.membersCount < maxMembers
         })
     }
 
@@ -130,34 +194,6 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return false
             }
             return poolMember.points > 0
-        })
-    }
-
-    func exsitentialDepositIsNotViolated(
-        spendingAmount: BigUInt?,
-        totalAmount: BigUInt?,
-        minimumBalance: BigUInt?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.presentable.presentExistentialDeposit(
-                from: view,
-                locale: locale
-            )
-
-        }, preservesCondition: {
-            if
-                let spendingAmount = spendingAmount,
-                let totalAmount = totalAmount,
-                let minimumBalance = minimumBalance {
-                return totalAmount - spendingAmount >= minimumBalance
-            } else {
-                return false
-            }
         })
     }
 
@@ -329,6 +365,83 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             }
 
             return rewards > fee
+        })
+    }
+
+    // swiftlint:disable:next function_body_length
+    func poolStakingNotViolatingExistentialDeposit(
+        for params: ExistentialDepositValidationParams,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> DataValidating {
+        let fee = params.fee ?? 0
+        let minBalance = params.existentialDeposit ?? 0
+        let feeAndMinBalance = fee + minBalance
+
+        let precision = chainAsset.asset.precision
+
+        return WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard
+                let view = self?.view,
+                let assetBalance = params.assetBalance,
+                let balanceFactory = self?.balanceFactory else {
+                return
+            }
+
+            let maxStake = assetBalance.totalInPlank > feeAndMinBalance ?
+                assetBalance.totalInPlank - feeAndMinBalance : 0
+            let maxStakeDecimal = maxStake.decimal(precision: precision)
+            let maxStakeString = balanceFactory.amountFromValue(
+                maxStakeDecimal
+            ).value(for: locale)
+
+            let availableBalanceString = balanceFactory.amountFromValue(
+                assetBalance.transferable.decimal(precision: precision)
+            ).value(for: locale)
+
+            let feeString = balanceFactory.amountFromValue(
+                fee.decimal(precision: precision)
+            ).value(for: locale)
+
+            let minBalanceString = balanceFactory.amountFromValue(
+                minBalance.decimal(precision: precision)
+            ).value(for: locale)
+
+            let errorParams = NPoolsEDViolationErrorParams(
+                availableBalance: availableBalanceString,
+                minimumBalance: minBalanceString,
+                fee: feeString,
+                maxStake: maxStakeString
+            )
+
+            let action: (() -> Void)?
+
+            if maxStakeDecimal > 0 {
+                action = {
+                    params.amountUpdateClosure(maxStakeDecimal)
+                    delegate.didCompleteWarningHandling()
+                }
+            } else {
+                action = nil
+            }
+
+            self?.presentable.presentExistentialDepositViolation(
+                from: view,
+                params: errorParams,
+                action: action,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            guard
+                let assetBalance = params.assetBalance,
+                let stakingAmountInPlank = params.stakingAmount?.toSubstrateAmount(
+                    precision: Int16(bitPattern: precision)
+                ) else {
+                return true
+            }
+
+            return stakingAmountInPlank + fee + minBalance <= assetBalance.totalInPlank
         })
     }
 }

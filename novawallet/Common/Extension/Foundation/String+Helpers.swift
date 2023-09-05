@@ -3,6 +3,7 @@ import Foundation
 extension String {
     static var returnKey: String { "\n" }
     static var readMore: String { "..." }
+    static var empty: String = ""
 
     func firstLetterCapitalized() -> String {
         prefix(1).capitalized + dropFirst()

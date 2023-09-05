@@ -62,7 +62,11 @@ extension NominationPools {
         }
 
         func title(for chainFormat: ChainFormat) -> String? {
-            name ?? bondedAddress(for: chainFormat)
+            if let poolName = name, !poolName.isEmpty {
+                return poolName
+            } else {
+                return bondedAddress(for: chainFormat)
+            }
         }
     }
 }

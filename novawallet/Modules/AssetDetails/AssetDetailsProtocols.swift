@@ -23,7 +23,7 @@ protocol AssetDetailsInteractorInputProtocol: AnyObject {
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?)
     func didReceive(lockChanges: [DataProviderChange<AssetLock>])
-    func didReceive(crowdloanChanges: [DataProviderChange<CrowdloanContributionData>])
+    func didReceive(externalBalanceChanges: [DataProviderChange<ExternalAssetBalance>])
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)
@@ -57,5 +57,5 @@ enum AssetDetailsError: Error {
     case accountBalance(Error)
     case price(Error)
     case locks(Error)
-    case crowdloans(Error)
+    case externalBalances(Error)
 }

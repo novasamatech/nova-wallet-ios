@@ -75,7 +75,6 @@ final class StakingSharedStateFactory {
         self.logger = logger
     }
 
-    // swiftlint:disable:next function_body_length
     private func createRelaychainGlobalCommonServices(
         for consensus: ConsensusType,
         chainAsset: ChainAsset
@@ -140,8 +139,6 @@ final class StakingSharedStateFactory {
         let globalServices = try createRelaychainGlobalCommonServices(for: consensus, chainAsset: chainAsset)
 
         let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-
-        let substrateRepository = substrateRepositoryFactory.createChainStorageItemRepository()
 
         let substrateDataProviderFactory = SubstrateDataProviderFactory(
             facade: storageFacade,

@@ -1349,7 +1349,6 @@
 "staking.search.pool.empty" = "No pool with entered name or pool\nID were found. Make sure\nyou entered correct data";
 "staking.search.pool.placeholder" = "Search by name or pool ID";
 "common.every.day" = "everyday";
-"staking.search.pool.selection.error.message" = "This pool currently unavailable to staking";
 "staking.pool.network.info" = "Pool staking info";
 "token.add.remote.exist.message" = "The entered contract address is present in Nova as a %@ token. Are you sure you want to modify it?";
 "send.system.account.message" = "Recipient is a system account. It is not controlled by any company or individual.\nAre you sure you still want to perform this transfer?";
@@ -1378,3 +1377,9 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.unstake.crossed.min.message" = "When unstaking partially, you should leave at least %@ in stake. Do you want to perform full unstake by unstaking remaining %@ as well?";
 "staking.unstake.all" = "Unstake all";
 "staking.restake.message" = "Your tokens will be added back to the stake";
+"staking.pool.ed.error.message" = "Your available balance is %@, you need to leave %@ as minimal balance and pay network fee %@. You can stake not more than %@.";
+"staking.maximum.action" = "Stake max";
+"staking.pool.is.full.title" = "Selected pool is full";
+"staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
+"staking.pool.is.not.open.title" = "Pool is not open";
+"staking.pool.is.not.open.message" = "You cannot join pool that is not open. Please, contact the pool owner.";

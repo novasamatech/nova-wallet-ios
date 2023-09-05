@@ -34,6 +34,10 @@ struct AssetModel: Equatable, Codable, Hashable {
         stakings?.contains { $0 != .unsupported } ?? false
     }
 
+    var hasPoolStaking: Bool {
+        stakings?.contains { $0 == .nominationPools } ?? false
+    }
+
     init(
         assetId: Id,
         icon: URL?,

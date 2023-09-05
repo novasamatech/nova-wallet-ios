@@ -3,10 +3,14 @@ import RobinHood
 
 struct CrowdloanContributionData: Equatable {
     let accountId: AccountId
-    let chainId: ChainModel.Id
+    let chainAssetId: ChainAssetId
     let paraId: ParaId
     let source: String?
     let amount: BigUInt
+
+    var chainId: ChainModel.Id {
+        chainAssetId.chainId
+    }
 
     var type: SourceType {
         if let source = source, !source.isEmpty {
@@ -24,17 +28,17 @@ struct CrowdloanContributionData: Equatable {
 
 extension CrowdloanContributionData: Identifiable {
     var identifier: String {
-        Self.createIdentifier(for: chainId, accountId: accountId, paraId: paraId, source: source)
+        Self.createIdentifier(for: chainAssetId, accountId: accountId, paraId: paraId, source: source)
     }
 
     static func createIdentifier(
-        for chainId: ChainModel.Id,
+        for chainAssetId: ChainAssetId,
         accountId: AccountId,
         paraId: ParaId,
         source: String?
     ) -> String {
         let data = [
-            chainId,
+            chainAssetId.stringValue,
             accountId.toHex(),
             paraId.toHex(),
             source
