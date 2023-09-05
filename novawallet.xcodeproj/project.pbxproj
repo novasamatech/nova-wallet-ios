@@ -3004,10 +3004,7 @@
 		880855F028D099F2004255E7 /* CrowdloanOnChainSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855EF28D099F2004255E7 /* CrowdloanOnChainSyncService.swift */; };
 		880855F228D09A0B004255E7 /* CrowdloanContributionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855F128D09A0B004255E7 /* CrowdloanContributionData.swift */; };
 		880855F428D09A26004255E7 /* RemoteCrowdloanContribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855F328D09A26004255E7 /* RemoteCrowdloanContribution.swift */; };
-		880855F628D09A3C004255E7 /* CrowdloanContributionStreamableSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855F528D09A3C004255E7 /* CrowdloanContributionStreamableSource.swift */; };
 		880855F828D09DA8004255E7 /* CrowdloanContributionDataMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855F728D09DA8004255E7 /* CrowdloanContributionDataMapper.swift */; };
-		880855FA28D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855F928D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift */; };
-		880855FC28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */; };
 		880CC0A829E7F13B008C7F65 /* EquilibriumAccountBalancesSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880CC0A729E7F13B008C7F65 /* EquilibriumAccountBalancesSubscription.swift */; };
 		880CC0AA29E7F151008C7F65 /* EquilibriumLocksSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880CC0A929E7F151008C7F65 /* EquilibriumLocksSubscription.swift */; };
 		880CC0AC29E7F168008C7F65 /* EquilibriumReservedSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880CC0AB29E7F168008C7F65 /* EquilibriumReservedSubscription.swift */; };
@@ -3211,7 +3208,7 @@
 		88C7165628C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */; };
 		88C7165828C8D3280015D1E9 /* LockCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165728C8D3270015D1E9 /* LockCollectionViewCell.swift */; };
 		88C7165A28C8D3450015D1E9 /* LocksHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165928C8D3450015D1E9 /* LocksHeaderView.swift */; };
-		88CD321028E2137300542F0D /* CrowdloanContributionId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CD320F28E2137200542F0D /* CrowdloanContributionId.swift */; };
+		88CD321028E2137300542F0D /* ExternalBalanceContribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CD320F28E2137200542F0D /* ExternalBalanceContribution.swift */; };
 		88D02FE32942EA2200E26390 /* PayButtonsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D02FE22942EA2200E26390 /* PayButtonsRow.swift */; };
 		88D02FE52942EA7800E26390 /* AssetDetailsStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D02FE42942EA7800E26390 /* AssetDetailsStyles.swift */; };
 		88D02FE82942EB1A00E26390 /* AssetDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D02FE72942EB1A00E26390 /* AssetDetailsModel.swift */; };
@@ -6978,10 +6975,7 @@
 		880855EF28D099F2004255E7 /* CrowdloanOnChainSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOnChainSyncService.swift; sourceTree = "<group>"; };
 		880855F128D09A0B004255E7 /* CrowdloanContributionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionData.swift; sourceTree = "<group>"; };
 		880855F328D09A26004255E7 /* RemoteCrowdloanContribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCrowdloanContribution.swift; sourceTree = "<group>"; };
-		880855F528D09A3C004255E7 /* CrowdloanContributionStreamableSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionStreamableSource.swift; sourceTree = "<group>"; };
 		880855F728D09DA8004255E7 /* CrowdloanContributionDataMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionDataMapper.swift; sourceTree = "<group>"; };
-		880855F928D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
-		880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		880CC0A729E7F13B008C7F65 /* EquilibriumAccountBalancesSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquilibriumAccountBalancesSubscription.swift; sourceTree = "<group>"; };
 		880CC0A929E7F151008C7F65 /* EquilibriumLocksSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquilibriumLocksSubscription.swift; sourceTree = "<group>"; };
 		880CC0AB29E7F168008C7F65 /* EquilibriumReservedSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquilibriumReservedSubscription.swift; sourceTree = "<group>"; };
@@ -7191,7 +7185,7 @@
 		88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewDiffableDataSource+apply.swift"; sourceTree = "<group>"; };
 		88C7165728C8D3270015D1E9 /* LockCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockCollectionViewCell.swift; sourceTree = "<group>"; };
 		88C7165928C8D3450015D1E9 /* LocksHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksHeaderView.swift; sourceTree = "<group>"; };
-		88CD320F28E2137200542F0D /* CrowdloanContributionId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionId.swift; sourceTree = "<group>"; };
+		88CD320F28E2137200542F0D /* ExternalBalanceContribution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExternalBalanceContribution.swift; sourceTree = "<group>"; };
 		88D02FE22942EA2200E26390 /* PayButtonsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayButtonsRow.swift; sourceTree = "<group>"; };
 		88D02FE42942EA7800E26390 /* AssetDetailsStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsStyles.swift; sourceTree = "<group>"; };
 		88D02FE72942EB1A00E26390 /* AssetDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsModel.swift; sourceTree = "<group>"; };
@@ -10341,7 +10335,7 @@
 		842EBB2C289096D300B952D8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				88CD320F28E2137200542F0D /* CrowdloanContributionId.swift */,
+				88CD320F28E2137200542F0D /* ExternalBalanceContribution.swift */,
 				A8FC21B4670E7B22B787357D /* WalletsListProtocols.swift */,
 				6F404EE82BC45BFE0F42E0A4 /* WalletsListWireframe.swift */,
 				0D6E67AD564867E121601F18 /* WalletsListPresenter.swift */,
@@ -11452,7 +11446,6 @@
 				848CCB432832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift */,
 				842643BC28785A940031B5B5 /* TuringStakingLocalSubscriptionFactory.swift */,
 				84EF8D38288FCE8100265346 /* WalletListLocalSubscriptionFactory.swift */,
-				880855F928D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift */,
 				8412219A28F04EA600715C82 /* GovMetadataLocalSubscriptionFactory.swift */,
 				842E9E972A2A28A700759972 /* StakingDashboardProviderFactory.swift */,
 				0CC2E5632A6E5C72004092E7 /* NPoolsLocalSubscriptionFactory.swift */,
@@ -15055,7 +15048,6 @@
 				848CCB472832EF4400A1FD00 /* GeneralLocalStorageHandler.swift */,
 				84EF8D3D288FDA2100265346 /* WalletListLocalStorageSubscriber.swift */,
 				84EF8D3F288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift */,
-				880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */,
 				8412219F28F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift */,
 				841221A128F0520300715C82 /* GovMetadataLocalStorageHandler.swift */,
 				847A258D29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift */,
@@ -16205,7 +16197,6 @@
 				880855EF28D099F2004255E7 /* CrowdloanOnChainSyncService.swift */,
 				880855F128D09A0B004255E7 /* CrowdloanContributionData.swift */,
 				880855F328D09A26004255E7 /* RemoteCrowdloanContribution.swift */,
-				880855F528D09A3C004255E7 /* CrowdloanContributionStreamableSource.swift */,
 				88A0C52028D49A090083A524 /* CrowdloanOffChainSyncService.swift */,
 			);
 			path = CrowdloanService;
@@ -19711,7 +19702,6 @@
 				845870A829B1D76A0017281A /* TableSearchResultViewModel.swift in Sources */,
 				2A84E87825D425750006FE9C /* AlertControllerFactory.swift in Sources */,
 				840DFF5128940D0C001B11EA /* ChainAddressDetailsViewModel.swift in Sources */,
-				880855FA28D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift in Sources */,
 				84CFF1F226526FBC00DB7CF7 /* StakingBondMoreConfirmationVC.swift in Sources */,
 				8446F5F82819235B00B7A86C /* AssetIconView+Style.swift in Sources */,
 				840882B02514024800177E20 /* SelectedConnectionChanged.swift in Sources */,
@@ -20098,7 +20088,6 @@
 				8424308D265B1814003E07EC /* CrowdloanOperationFactory.swift in Sources */,
 				77EFFC8D2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift in Sources */,
 				0C7C88682A95563100DD96A1 /* StakingClaimableRewardView.swift in Sources */,
-				880855F628D09A3C004255E7 /* CrowdloanContributionStreamableSource.swift in Sources */,
 				0C9C642D2A8CE30A004DC078 /* SystemAccountValidating.swift in Sources */,
 				88D02FF42943207400E26390 /* BigInt+Decimal.swift in Sources */,
 				847999B82889510C00D1BAD2 /* TextInputViewDelegate.swift in Sources */,
@@ -20421,7 +20410,7 @@
 				84720730277C335000F593DD /* DAppListFlowLayout.swift in Sources */,
 				AE2C84DF25EF98BA00986716 /* AnyValidatorInfoInteractor.swift in Sources */,
 				8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */,
-				88CD321028E2137300542F0D /* CrowdloanContributionId.swift in Sources */,
+				88CD321028E2137300542F0D /* ExternalBalanceContribution.swift in Sources */,
 				84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */,
 				88D841D429436572008A5A0C /* RoundedButton+Styles.swift in Sources */,
 				84E25BF627E9A51D00290BF1 /* LeaseParam.swift in Sources */,
@@ -20700,7 +20689,6 @@
 				AEA0C8BC2681140700F9666F /* YourValidatorList+CustomList.swift in Sources */,
 				88840D8C29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift in Sources */,
 				84E83AA428632AF50000B418 /* XcmPalletTransfer.swift in Sources */,
-				880855FC28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift in Sources */,
 				8455F1982A1DD74D003F072D /* SubqueryFilter.swift in Sources */,
 				8499FE6827BD1EA600712589 /* DistributedStorageFactory.swift in Sources */,
 				8428228A289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift in Sources */,

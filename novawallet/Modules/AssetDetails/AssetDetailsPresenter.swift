@@ -15,7 +15,7 @@ final class AssetDetailsPresenter {
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
-    private var crowdloans: [CrowdloanContributionData] = []
+    private var externalAssetBalances: [ExternalAssetBalance] = []
     private var purchaseActions: [PurchaseAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
@@ -37,12 +37,12 @@ final class AssetDetailsPresenter {
         localizationManager = localizableManager
     }
 
-    private func hasLocks(for balance: AssetBalance, crowdloans: [CrowdloanContributionData]) -> Bool {
-        balance.locked > 0 || !crowdloans.isEmpty
+    private func hasLocks(for balance: AssetBalance, externalBalances: [ExternalAssetBalance]) -> Bool {
+        balance.locked > 0 || !externalBalances.isEmpty
     }
 
-    private func calculateTotalCrowdloans(for crowdloans: [CrowdloanContributionData]) -> BigUInt {
-        crowdloans.reduce(0) { $0 + $1.amount }
+    private func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
+        externalBalances.reduce(0) { $0 + $1.amount }
     }
 
     private func updateView() {
@@ -62,10 +62,10 @@ final class AssetDetailsPresenter {
         )
         view.didReceive(assetModel: assetDetailsModel)
 
-        let totalCrowdloans = calculateTotalCrowdloans(for: crowdloans)
+        let totalExternalBalances = calculateTotalExternalBalances(for: externalAssetBalances)
 
         let totalBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.totalInPlank + totalCrowdloans,
+            value: balance.totalInPlank + totalExternalBalances,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
@@ -79,7 +79,7 @@ final class AssetDetailsPresenter {
         )
 
         let lockedBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.locked + totalCrowdloans,
+            value: balance.locked + totalExternalBalances,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
@@ -88,7 +88,7 @@ final class AssetDetailsPresenter {
         view.didReceive(totalBalance: totalBalance)
         view.didReceive(transferableBalance: transferableBalance)
 
-        let isSelectable = hasLocks(for: balance, crowdloans: crowdloans)
+        let isSelectable = hasLocks(for: balance, externalBalances: externalAssetBalances)
         view.didReceive(lockedBalance: lockedBalance, isSelectable: isSelectable)
 
         view.didReceive(availableOperations: availableOperations)
@@ -186,7 +186,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             free: balance.freeInPlank.decimal(precision: precision),
             reserved: balance.reservedInPlank.decimal(precision: precision),
             frozen: balance.frozenInPlank.decimal(precision: precision),
-            crowdloans: calculateTotalCrowdloans(for: crowdloans).decimal(precision: precision),
+            crowdloans: calculateTotalExternalBalances(for: externalAssetBalances).decimal(precision: precision), // TODO: Fix breakdown
             price: priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0,
             priceChange: priceData?.dayChange ?? 0,
             priceId: priceData?.currencyId,
@@ -228,8 +228,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(crowdloanChanges: [DataProviderChange<CrowdloanContributionData>]) {
-        crowdloans = crowdloans.applying(changes: crowdloanChanges)
+    func didReceive(externalBalanceChanges: [DataProviderChange<ExternalAssetBalance>]) {
+        externalAssetBalances = externalAssetBalances.applying(changes: externalBalanceChanges)
         updateView()
     }
 

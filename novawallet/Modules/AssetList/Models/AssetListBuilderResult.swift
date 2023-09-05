@@ -9,7 +9,7 @@ struct AssetListBuilderResult {
         let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
         let allChains: [ChainModel.Id: ChainModel]
         let balances: [ChainAssetId: Result<AssetBalance, Error>]
-        let crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
+        let externalBalanceResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
         let nfts: [NftModel]
         let locksResult: Result<[AssetLock], Error>?
 
@@ -20,7 +20,7 @@ struct AssetListBuilderResult {
             balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
             allChains: [ChainModel.Id: ChainModel] = [:],
             balances: [ChainAssetId: Result<AssetBalance, Error>] = [:],
-            crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>? = nil,
+            externalBalanceResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>? = nil,
             nfts: [NftModel] = [],
             locksResult: Result<[AssetLock], Error>? = nil
         ) {
@@ -30,7 +30,7 @@ struct AssetListBuilderResult {
             self.balanceResults = balanceResults
             self.allChains = allChains
             self.balances = balances
-            self.crowdloansResult = crowdloansResult
+            self.externalBalanceResult = externalBalanceResult
             self.nfts = nfts
             self.locksResult = locksResult
         }
@@ -43,7 +43,7 @@ struct AssetListBuilderResult {
                 balanceResults: balanceResults,
                 allChains: allChains,
                 balances: balances,
-                crowdloansResult: crowdloansResult,
+                externalBalanceResult: externalBalanceResult,
                 nfts: nfts,
                 locksResult: locksResult
             )

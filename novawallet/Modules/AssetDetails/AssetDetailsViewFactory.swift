@@ -16,7 +16,7 @@ struct AssetDetailsViewFactory {
             purchaseProvider: PurchaseAggregator.defaultAggregator(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             currencyManager: currencyManager
         )
         let wireframe = AssetDetailsWireframe()
