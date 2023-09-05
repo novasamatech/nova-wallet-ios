@@ -47,6 +47,8 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
     override func stopSyncUp() {
         state = nil
         clearSubscriptions()
+
+        logger?.debug("Stop pool external sync for: \(chainAsset.chain.name) \(accountId.toHexString())")
     }
 
     private func clearSubscriptions() {
