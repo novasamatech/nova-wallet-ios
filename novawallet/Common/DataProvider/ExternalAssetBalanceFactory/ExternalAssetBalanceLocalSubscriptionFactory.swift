@@ -48,13 +48,14 @@ final class ExternalBalanceLocalSubscriptionFactory: SubstrateLocalSubscriptionF
     }
 }
 
-extension ExternalBalanceLocalSubscriptionFactory {
-    static let shared: ExternalBalanceLocalSubscriptionFactory = {
+enum ExternalBalanceLocalSubscriptionFacade {
+    static func createDefaultFactory(
+        for storageFacade: StorageFacadeProtocol,
+        chainRegistry: ChainRegistryProtocol
+    ) -> ExternalBalanceLocalSubscriptionFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
         let workingQueue = DispatchQueue.global(qos: .userInitiated)
-        let storageFacade = SubstrateDataStorageFacade.shared
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
         let logger = Logger.shared
 
         let crowdloanServiceFactory = CrowdloanExternalServiceFactory(
@@ -87,6 +88,18 @@ extension ExternalBalanceLocalSubscriptionFactory {
             eventCenter: EventCenter.shared,
             operationQueue: operationQueue,
             logger: logger
+        )
+    }
+}
+
+extension ExternalBalanceLocalSubscriptionFactory {
+    static let shared: ExternalBalanceLocalSubscriptionFactory = {
+        let storageFacade = SubstrateDataStorageFacade.shared
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        return ExternalBalanceLocalSubscriptionFacade.createDefaultFactory(
+            for: storageFacade,
+            chainRegistry: chainRegistry
         )
     }()
 }
