@@ -31,6 +31,12 @@ final class ExternalAssetBalanceStreambleSource: StreamableSourceProtocol {
         }
     }
 
+    deinit {
+        (automaticSyncServices + pollingSyncServices).forEach {
+            $0.stopSyncUp()
+        }
+    }
+
     func fetchHistory(
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: CommitNotificationBlock?
