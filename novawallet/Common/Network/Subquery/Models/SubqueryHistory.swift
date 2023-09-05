@@ -40,7 +40,7 @@ struct SubqueryExtrinsic: Decodable {
     let success: Bool
 }
 
-struct SubqueryPoolReward: Codable {
+struct SubqueryPoolRewardOrSlash: Codable {
     let eventIdx: Int
     let amount: String
     let isReward: Bool
@@ -72,7 +72,7 @@ struct SubqueryHistoryElement: Decodable {
     let extrinsic: SubqueryExtrinsic?
     let transfer: SubqueryTransfer?
     let assetTransfer: SubqueryTransfer?
-    let poolReward: SubqueryPoolReward?
+    let poolReward: SubqueryPoolRewardOrSlash?
 }
 
 struct SubqueryHistoryData: Decodable {

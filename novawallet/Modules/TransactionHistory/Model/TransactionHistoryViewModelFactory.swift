@@ -167,13 +167,15 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createPoolRewardFromData(
+    private func createPoolRewardOrSlashFromData(
         _ data: TransactionHistoryItem,
         priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let title = R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages)
+        let title = txType == .poolReward ?
+            R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
+            R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
         let subtitle = R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
 
         return createCommonRewardItemFromData(
@@ -335,8 +337,8 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
                 locale: locale,
                 txType: transactionType
             )
-        case .poolReward:
-            return createPoolRewardFromData(
+        case .poolReward, .poolSlash:
+            return createPoolRewardOrSlashFromData(
                 data,
                 priceCalculator: priceCalculator,
                 locale: locale,
@@ -362,6 +364,8 @@ extension TransactionHistoryItem {
             return .reward
         case .poolReward:
             return .poolReward
+        case .poolSlash:
+            return .poolSlash
         default:
             if callPath.isSubstrateOrEvmTransfer {
                 return sender == address ? .outgoing : .incoming

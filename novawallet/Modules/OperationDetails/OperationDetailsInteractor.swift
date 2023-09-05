@@ -1,5 +1,4 @@
-import UIKit
-
+import Foundation
 import BigInt
 import RobinHood
 
@@ -15,16 +14,9 @@ final class OperationDetailsInteractor: AccountFetching, AnyCancellableCleaning 
 
     var chain: ChainModel { chainAsset.chain }
 
-    let walletRepository: AnyDataProviderRepository<MetaAccountModel>
     let transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol
-    let operationQueue: OperationQueue
-    let wallet: MetaAccountModel
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let poolRewardsOperationFactory: OperationDetailsDataFactoryProtocol
-
-    private var accountAddress: AccountAddress? {
-        wallet.fetch(for: chain.accountRequest())?.toAddress()
-    }
+    let operationDataProvider: OperationDetailsDataProviderProtocol
 
     private var transactionProvider: StreamableProvider<TransactionHistoryItem>?
     private var priceProvider: AnySingleValueProvider<PriceHistory>?
@@ -33,27 +25,19 @@ final class OperationDetailsInteractor: AccountFetching, AnyCancellableCleaning 
     private var priceCalculator: TokenPriceCalculatorProtocol?
     private var feePriceCalculator: TokenPriceCalculatorProtocol?
 
-    private var poolRewardsCall: CancellableCall?
-
     init(
         transaction: TransactionHistoryItem,
         chainAsset: ChainAsset,
-        wallet: MetaAccountModel,
-        walletRepository: AnyDataProviderRepository<MetaAccountModel>,
         transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        poolRewardsOperationFactory: OperationDetailsDataFactoryProtocol
+        operationDataProvider: OperationDetailsDataProviderProtocol
     ) {
         self.transaction = transaction
         self.chainAsset = chainAsset
-        self.wallet = wallet
-        self.walletRepository = walletRepository
         self.transactionLocalSubscriptionFactory = transactionLocalSubscriptionFactory
-        self.operationQueue = operationQueue
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.poolRewardsOperationFactory = poolRewardsOperationFactory
+        self.operationDataProvider = operationDataProvider
         self.currencyManager = currencyManager
     }
 
@@ -74,301 +58,16 @@ final class OperationDetailsInteractor: AccountFetching, AnyCancellableCleaning 
         }
     }
 
-    private func extractSlashOperationData(
-        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
-    ) {
-        let context = try? transaction.call.map {
-            try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
-        }
-
-        let eventId = getEventId(from: context) ?? transaction.txHash
-
-        let amount = transaction.amountInPlankIntOrZero
-        let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
-            PriceData.amount($0)
-        }
-
-        if let validatorId = try? transaction.sender.toAccountId() {
-            _ = fetchDisplayAddress(
-                for: [validatorId],
-                chain: chain,
-                repository: walletRepository,
-                operationQueue: operationQueue
-            ) { result in
-                switch result {
-                case let .success(addresses):
-                    let model = OperationSlashModel(
-                        eventId: eventId,
-                        amount: amount,
-                        priceData: priceData,
-                        validator: addresses.first,
-                        era: context?.era
-                    )
-
-                    completion(.slash(model))
-                case .failure:
-                    completion(nil)
-                }
-            }
-        } else {
-            let model = OperationSlashModel(
-                eventId: eventId,
-                amount: amount,
-                priceData: priceData,
-                validator: nil,
-                era: context?.era
-            )
-
-            completion(.slash(model))
-        }
-    }
-
-    private func extractRewardOperationData(
-        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
-    ) {
-        let context = try? transaction.call.map {
-            try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
-        }
-
-        let eventId = getEventId(from: context) ?? transaction.txHash
-
-        let amount = transaction.amountInPlankIntOrZero
-        let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
-            PriceData.amount($0)
-        }
-
-        if let validatorId = try? transaction.sender.toAccountId() {
-            _ = fetchDisplayAddress(
-                for: [validatorId],
-                chain: chain,
-                repository: walletRepository,
-                operationQueue: operationQueue
-            ) { result in
-                switch result {
-                case let .success(addresses):
-                    let model = OperationRewardModel(
-                        eventId: eventId,
-                        amount: amount,
-                        priceData: priceData,
-                        validator: addresses.first,
-                        era: context?.era
-                    )
-
-                    completion(.reward(model))
-                case .failure:
-                    completion(nil)
-                }
-            }
-        } else {
-            let model = OperationRewardModel(
-                eventId: eventId,
-                amount: amount,
-                priceData: priceData,
-                validator: nil,
-                era: context?.era
-            )
-
-            completion(.reward(model))
-        }
-    }
-
-    private func extractPoolRewardOperationData(
-        newFee: BigUInt?,
-        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
-    ) {
-        clear(cancellable: &poolRewardsCall)
-
-        let wrapper = poolRewardsOperationFactory.extractOperationData(
-            transaction: transaction,
-            newFee: newFee,
-            priceCalculator: priceCalculator,
-            feePriceCalculator: feePriceCalculator
-        )
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            self?.poolRewardsCall = nil
-
-            DispatchQueue.main.async {
-                do {
-                    let data = try wrapper.targetOperation.extractNoCancellableResultData()
-                    completion(data)
-                } catch {
-                    completion(nil)
-                }
-            }
-        }
-        poolRewardsCall = wrapper
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func getEventId(from context: HistoryRewardContext?) -> String? {
-        guard let eventId = context?.eventId else {
-            return nil
-        }
-        return !eventId.isEmpty ? eventId : nil
-    }
-
-    private func extractExtrinsicOperationData(
-        newFee: BigUInt?,
-        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
-    ) {
-        guard let accountAddress = accountAddress else {
-            completion(nil)
-            return
-        }
-
-        let fee = newFee ?? transaction.feeInPlankIntOrZero
-        let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
-            PriceData.amount($0)
-        }
-
-        let currentDisplayAddress = DisplayAddress(
-            address: accountAddress,
-            username: wallet.name
-        )
-
-        let model = OperationExtrinsicModel(
-            txHash: transaction.txHash,
-            call: transaction.callPath.callName,
-            module: transaction.callPath.moduleName,
-            sender: currentDisplayAddress,
-            fee: fee,
-            feePriceData: feePriceData
-        )
-
-        completion(.extrinsic(model))
-    }
-
-    private func extractContractOperationData(
-        newFee: BigUInt?,
-        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
-    ) {
-        let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
-        let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
-            PriceData.amount($0)
-        }
-
-        guard
-            let accountResponse = wallet.fetch(for: chain.accountRequest()),
-            let currentAccountAddress = try? accountResponse.accountId.toAddress(
-                using: chain.chainFormat
-            ) else {
-            completion(nil)
-            return
-        }
-
-        let currentDisplayAddress = DisplayAddress(
-            address: currentAccountAddress,
-            username: wallet.name
-        )
-
-        let contractAddress = transaction.receiver.flatMap { try? Data(hex: $0).toAddress(using: chain.chainFormat) }
-        let contractDisplayAddress = DisplayAddress(address: contractAddress ?? "", username: "")
-
-        let model = OperationContractCallModel(
-            txHash: transaction.txHash,
-            fee: fee,
-            feePriceData: feePriceData,
-            sender: currentDisplayAddress,
-            contract: contractDisplayAddress,
-            functionName: transaction.evmContractFunctionName
-        )
-
-        completion(.contract(model))
-    }
-
-    private func extractTransferOperationData(
-        newFee: BigUInt?,
-        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
-    ) {
-        guard let accountAddress = accountAddress else {
-            completion(nil)
-            return
-        }
-        let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
-            ?? transaction.sender
-        let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
-        let peerId = accountId?.toHex() ?? peerAddress
-
-        guard let peerId = try? Data(hexString: peerId) else {
-            completion(nil)
-            return
-        }
-
-        let isOutgoing = transaction.type(for: accountAddress) == .outgoing
-        let amount = transaction.amountInPlankIntOrZero
-        let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
-            PriceData.amount($0)
-        }
-
-        let fee = newFee ?? transaction.feeInPlankIntOrZero
-        let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
-            PriceData.amount($0)
-        }
-
-        let currentDisplayAddress = DisplayAddress(
-            address: accountAddress,
-            username: wallet.name
-        )
-
-        let txId = transaction.txHash
-
-        _ = fetchDisplayAddress(
-            for: [peerId],
-            chain: chain,
-            repository: walletRepository,
-            operationQueue: operationQueue
-        ) { result in
-            switch result {
-            case let .success(otherDisplayAddresses):
-                if let otherDisplayAddress = otherDisplayAddresses.first {
-                    let model = OperationTransferModel(
-                        txHash: txId,
-                        amount: amount,
-                        amountPriceData: priceData,
-                        fee: fee,
-                        feePriceData: feePriceData,
-                        sender: isOutgoing ? currentDisplayAddress : otherDisplayAddress,
-                        receiver: isOutgoing ? otherDisplayAddress : currentDisplayAddress,
-                        outgoing: isOutgoing
-                    )
-
-                    completion(.transfer(model))
-                } else {
-                    completion(nil)
-                }
-
-            case .failure:
-                completion(nil)
-            }
-        }
-    }
-
     private func extractOperationData(
         replacingIfExists newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        guard let accountAddress = accountAddress else {
-            completion(nil)
-            return
-        }
-        switch transaction.type(for: accountAddress) {
-        case .incoming, .outgoing:
-            extractTransferOperationData(newFee: newFee, completion)
-        case .reward:
-            extractRewardOperationData(completion)
-        case .slash:
-            extractSlashOperationData(completion)
-        case .extrinsic:
-            if chainAsset.asset.isEvmNative {
-                extractContractOperationData(newFee: newFee, completion)
-            } else {
-                extractExtrinsicOperationData(newFee: newFee, completion)
-            }
-        case .poolReward:
-            extractPoolRewardOperationData(newFee: newFee, completion)
-        case .none:
-            completion(nil)
-        }
+        operationDataProvider.extractOperationData(
+            replacingWith: newFee,
+            priceCalculator: priceCalculator,
+            feePriceCalculator: feePriceCalculator,
+            completion: completion
+        )
     }
 
     private func provideModel(

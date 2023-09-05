@@ -14,11 +14,13 @@ final class SubqueryHistoryOperationFactory {
     let url: URL
     let filter: WalletHistoryFilter
     let assetId: String?
+    let hasPoolStaking: Bool
 
-    init(url: URL, filter: WalletHistoryFilter, assetId: String?) {
+    init(url: URL, filter: WalletHistoryFilter, assetId: String?, hasPoolStaking: Bool) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
+        self.hasPoolStaking = hasPoolStaking
     }
 
     private func prepareExtrinsicInclusionFilter() -> String {
@@ -65,11 +67,14 @@ final class SubqueryHistoryOperationFactory {
         }
 
         if filter.contains(.rewardsAndSlashes) {
+            var childFilters: [SubqueryFilter] = [SubqueryIsNotNullFilter(fieldName: "reward")]
+
+            if hasPoolStaking {
+                childFilters.append(SubqueryIsNotNullFilter(fieldName: "poolReward"))
+            }
+
             let filter = SubqueryInnerFilter(inner:
-                SubqueryCompoundFilter.or([
-                    SubqueryIsNotNullFilter(fieldName: "reward"),
-                    SubqueryIsNotNullFilter(fieldName: "poolReward")
-                ])
+                SubqueryCompoundFilter.or(childFilters)
             )
             filterStrings.append(filter.rawSubqueryFilter())
         }
@@ -93,6 +98,7 @@ final class SubqueryHistoryOperationFactory {
         let after = cursor.map { "\"\($0)\"" } ?? "null"
         let transferField = assetId != nil ? "assetTransfer" : "transfer"
         let filterString = prepareFilter()
+        let poolRewardField = hasPoolStaking ? "poolReward" : ""
         return """
         {
             historyElements(
@@ -120,7 +126,7 @@ final class SubqueryHistoryOperationFactory {
                      reward
                      extrinsic
                      \(transferField)
-                     poolReward
+                     \(poolRewardField)
                  }
              }
         }

@@ -1,14 +1,14 @@
 import UIKit
 
 final class OperationDetailsPoolRewardView: LocalizableView {
-    let stakingTableView = StackTableView()
-    let eventTableView = StackTableView()
     let poolTableView = StackTableView()
+    let eventTableView = StackTableView()
 
-    let networkView = StackNetworkCell()
-    let networkFeeView = StackNetworkFeeCell()
     let poolView = StackInfoTableCell()
+    let networkView = StackNetworkCell()
+
     let eventIdView = StackInfoTableCell()
+    let typeView = StackTableCell()
 
     var locale = Locale.current {
         didSet {
@@ -32,23 +32,39 @@ final class OperationDetailsPoolRewardView: LocalizableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bindReward(viewModel: OperationPoolRewardViewModel, networkViewModel: NetworkViewModel) {
+    func bindReward(viewModel: OperationPoolRewardOrSlashViewModel, networkViewModel: NetworkViewModel) {
+        let type = R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages)
+        bindCommon(viewModel: viewModel, networkViewModel: networkViewModel, type: type)
+    }
+
+    func bindSlash(viewModel: OperationPoolRewardOrSlashViewModel, networkViewModel: NetworkViewModel) {
+        let type = R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
+        bindCommon(viewModel: viewModel, networkViewModel: networkViewModel, type: type)
+    }
+
+    private func bindCommon(
+        viewModel: OperationPoolRewardOrSlashViewModel,
+        networkViewModel: NetworkViewModel,
+        type: String
+    ) {
+        bindPool(for: viewModel.pool)
         networkView.bind(viewModel: networkViewModel)
-        networkFeeView.rowContentView.bind(viewModel: viewModel.fee)
-        if let poolViewModel = viewModel.pool {
+        eventIdView.bind(details: viewModel.eventId)
+        typeView.bind(details: type)
+    }
+
+    private func bindPool(for poolViewModel: DisplayAddressViewModel?) {
+        if let poolViewModel = poolViewModel {
             poolView.isHidden = false
             poolView.detailsLabel.lineBreakMode = poolViewModel.lineBreakMode
             poolView.bind(viewModel: poolViewModel.cellViewModel)
         } else {
             poolView.isHidden = true
         }
-        eventIdView.bind(details: viewModel.eventId)
     }
 
     private func setupLocalization() {
-        networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
-        )
-        networkFeeView.rowContentView.locale = locale
+        networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
 
         eventIdView.titleLabel.text = R.string.localizable.commonTxId(
             preferredLanguages: locale.rLanguages
@@ -58,19 +74,13 @@ final class OperationDetailsPoolRewardView: LocalizableView {
     }
 
     private func setupLayout() {
-        addSubview(stakingTableView)
-        stakingTableView.snp.makeConstraints { make in
-            make.top.trailing.leading.equalToSuperview()
-        }
-        stakingTableView.addArrangedSubview(networkView)
-        stakingTableView.addArrangedSubview(networkFeeView)
-
         addSubview(poolTableView)
         poolTableView.snp.makeConstraints { make in
-            make.top.equalTo(stakingTableView.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview()
+            make.top.trailing.leading.equalToSuperview()
         }
+
         poolTableView.addArrangedSubview(poolView)
+        poolTableView.addArrangedSubview(networkView)
 
         addSubview(eventTableView)
         eventTableView.snp.makeConstraints { make in
@@ -78,6 +88,8 @@ final class OperationDetailsPoolRewardView: LocalizableView {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
+
         eventTableView.addArrangedSubview(eventIdView)
+        eventTableView.addArrangedSubview(typeView)
     }
 }

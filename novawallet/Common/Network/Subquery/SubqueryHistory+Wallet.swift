@@ -134,10 +134,15 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
     }
 
     private func createTransactionFromPoolReward(
-        _ reward: SubqueryPoolReward,
+        _ reward: SubqueryPoolRewardOrSlash,
         chainAssetId: ChainAssetId,
         chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
+        let context = HistoryPoolRewardContext(
+            poolId: NominationPools.PoolId(reward.poolId),
+            eventId: identifier
+        )
+
         let source = TransactionHistoryItemSource.substrate
         let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
 
@@ -155,8 +160,8 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             fee: nil,
             blockNumber: blockNumber,
             txIndex: nil,
-            callPath: .poolReward,
-            call: nil
+            callPath: reward.isReward ? .poolReward : .poolSlash,
+            call: try? JSONEncoder().encode(context)
         )
     }
 

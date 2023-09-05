@@ -1,7 +1,6 @@
 import Foundation
 
-struct OperationPoolRewardViewModel {
+struct OperationPoolRewardOrSlashViewModel {
     let eventId: String
     let pool: DisplayAddressViewModel?
-    let fee: BalanceViewModelProtocol?
 }

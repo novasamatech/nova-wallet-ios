@@ -156,7 +156,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func applyReward(
-        viewModel: OperationRewardViewModel,
+        viewModel: OperationRewardOrSlashViewModel,
         networkViewModel: NetworkViewModel
     ) {
         let rewardView: OperationDetailsRewardView = rootView.setupLocalizableView()
@@ -179,7 +179,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func applySlash(
-        viewModel: OperationSlashViewModel,
+        viewModel: OperationRewardOrSlashViewModel,
         networkViewModel: NetworkViewModel
     ) {
         let rewardView: OperationDetailsRewardView = rootView.setupLocalizableView()
@@ -228,26 +228,40 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func applyPoolReward(
-        viewModel: OperationPoolRewardViewModel,
+        viewModel: OperationPoolRewardOrSlashViewModel,
         networkViewModel: NetworkViewModel
     ) {
-        let rewardView: OperationDetailsPoolRewardView = rootView.setupLocalizableView()
-        rewardView.locale = selectedLocale
+        let rewardView = applyCommonPoolRewardOrSlash()
         rewardView.bindReward(viewModel: viewModel, networkViewModel: networkViewModel)
+    }
+
+    private func applyPoolSlash(
+        viewModel: OperationPoolRewardOrSlashViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let slashView = applyCommonPoolRewardOrSlash()
+        slashView.bindSlash(viewModel: viewModel, networkViewModel: networkViewModel)
+    }
+
+    private func applyCommonPoolRewardOrSlash() -> OperationDetailsPoolRewardView {
+        let view: OperationDetailsPoolRewardView = rootView.setupLocalizableView()
+        view.locale = selectedLocale
 
         rootView.removeActionButton()
 
-        rewardView.poolView.addTarget(
+        view.poolView.addTarget(
             self,
             action: #selector(actionSender),
             for: .touchUpInside
         )
 
-        rewardView.eventIdView.addTarget(
+        view.eventIdView.addTarget(
             self,
             action: #selector(actionOperationId),
             for: .touchUpInside
         )
+
+        return view
     }
 
     @objc func actionSender() {
@@ -289,6 +303,8 @@ extension OperationDetailsViewController: OperationDetailsViewProtocol {
             applyContract(viewModel: contractViewModel, networkViewModel: networkViewModel)
         case let .poolReward(poolRewardViewModel):
             applyPoolReward(viewModel: poolRewardViewModel, networkViewModel: networkViewModel)
+        case let .poolSlash(poolSlashViewModel):
+            applyPoolSlash(viewModel: poolSlashViewModel, networkViewModel: networkViewModel)
         }
     }
 }

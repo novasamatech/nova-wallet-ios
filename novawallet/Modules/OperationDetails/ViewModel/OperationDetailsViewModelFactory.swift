@@ -48,7 +48,7 @@ final class OperationDetailsViewModelFactory {
                 R.image.iconIncomingTransfer()!
 
             return StaticImageViewModel(image: image)
-        case .reward, .slash, .poolReward:
+        case .reward, .slash, .poolReward, .poolSlash:
             let image = R.image.iconRewardOperation()!
             return StaticImageViewModel(image: image)
         case .extrinsic, .contract:
@@ -94,6 +94,10 @@ final class OperationDetailsViewModelFactory {
             amount = model.amount
             priceData = model.priceData
             prefix = "+"
+        case let .poolSlash(model):
+            amount = model.amount
+            priceData = model.priceData
+            prefix = "-"
         }
 
         return Decimal.fromSubstrateAmount(
@@ -163,10 +167,10 @@ final class OperationDetailsViewModelFactory {
         )
     }
 
-    private func createRewardViewModel(
-        from model: OperationRewardModel,
+    private func createRewardOrSlashViewModel(
+        from model: OperationRewardOrSlashModel,
         locale: Locale
-    ) -> OperationRewardViewModel {
+    ) -> OperationRewardOrSlashViewModel {
         let validatorViewModel = model.validator.map { model in
             displayAddressViewModelFactory.createViewModel(from: model)
         }
@@ -183,38 +187,28 @@ final class OperationDetailsViewModelFactory {
             }
         }
 
-        return OperationRewardViewModel(
+        return OperationRewardOrSlashViewModel(
             eventId: model.eventId,
             validator: validatorViewModel,
             era: eraString
         )
     }
 
-    private func createSlashViewModel(
-        from model: OperationSlashModel,
-        locale: Locale
-    ) -> OperationSlashViewModel {
-        let validatorViewModel = model.validator.map { model in
-            displayAddressViewModelFactory.createViewModel(from: model)
+    private func createPoolRewardOrSlashViewModel(
+        from model: OperationPoolRewardOrSlashModel,
+        chainAsset: ChainAsset,
+        locale _: Locale
+    ) -> OperationPoolRewardOrSlashViewModel {
+        guard let pool = model.pool else {
+            return .init(eventId: model.eventId, pool: nil)
         }
 
-        let eraString: String? = model.era.map { era in
-            if let eraString = quantityFormatter.value(for: locale)
-                .string(from: NSNumber(value: era)) {
-                return R.string.localizable.commonEraFormat(
-                    eraString,
-                    preferredLanguages: locale.rLanguages
-                )
-            } else {
-                return ""
-            }
-        }
-
-        return OperationSlashViewModel(
-            eventId: model.eventId,
-            validator: validatorViewModel,
-            era: eraString
+        let poolViewModel = displayAddressViewModelFactory.createViewModel(
+            from: pool,
+            chainAsset: chainAsset
         )
+
+        return OperationPoolRewardOrSlashViewModel(eventId: model.eventId, pool: poolViewModel)
     }
 
     private func createContentViewModel(
@@ -236,14 +230,14 @@ final class OperationDetailsViewModelFactory {
             let viewModel = createExtrinsicViewModel(from: model)
             return .extrinsic(viewModel)
         case let .reward(model):
-            let viewModel = createRewardViewModel(
+            let viewModel = createRewardOrSlashViewModel(
                 from: model,
                 locale: locale
             )
 
             return .reward(viewModel)
         case let .slash(model):
-            let viewModel = createSlashViewModel(
+            let viewModel = createRewardOrSlashViewModel(
                 from: model,
                 locale: locale
             )
@@ -253,47 +247,20 @@ final class OperationDetailsViewModelFactory {
             let viewModel = createContractViewModel(from: model)
             return .contract(viewModel)
         case let .poolReward(model):
-            let viewModel = createPoolRewardViewModel(
+            let viewModel = createPoolRewardOrSlashViewModel(
+                from: model,
+                chainAsset: chainAsset,
+                locale: locale
+            )
+            return .poolReward(viewModel)
+        case let .poolSlash(model):
+            let viewModel = createPoolRewardOrSlashViewModel(
                 from: model,
                 chainAsset: chainAsset,
                 locale: locale
             )
             return .poolReward(viewModel)
         }
-    }
-
-    private func createPoolRewardViewModel(
-        from model: OperationPoolRewardModel,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> OperationPoolRewardViewModel {
-        let name = model.pool.name?.isEmpty == true ? nil : model.pool.name
-        let imageViewModel = poolIconFactory.createIconViewModel(
-            for: chainAsset,
-            poolId: model.pool.poolId,
-            bondedAccountId: model.pool.bondedAccountId
-        )
-
-        let pool = DisplayAddressViewModel(
-            address: model.pool.bondedAddress(for: chainAsset.chain.chainFormat) ?? "",
-            name: name,
-            imageViewModel: imageViewModel
-        )
-        let fee = Decimal.fromSubstrateAmount(
-            model.fee,
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        ).map { amount in
-            let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
-            return viewModelFactory.balanceFromPrice(
-                amount,
-                priceData: model.feePriceData
-            ).value(for: locale)
-        }
-        return OperationPoolRewardViewModel(
-            eventId: model.eventId,
-            pool: pool,
-            fee: fee
-        )
     }
 }
 
@@ -307,7 +274,6 @@ extension OperationDetailsViewModelFactory: OperationDetailsViewModelFactoryProt
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let feeAssetInfo = chainAsset.chain.utilityAsset()?.displayInfo(with: chainAsset.chain.icon) ?? assetInfo
 
         let contentViewModel = createContentViewModel(
             from: model.operation,
