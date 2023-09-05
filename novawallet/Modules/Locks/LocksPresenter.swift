@@ -105,7 +105,7 @@ final class LocksPresenter {
         }
 
         let groupedExternalBalances = input.externalBalances
-            .values.flatMap { $0 }
+            .values.flatMap { $0.filter { $0.amount > 0 } }
             .groupByAssetType()
 
         let externalBalanceCells: [LocksViewSectionModel.CellViewModel] = groupedExternalBalances.compactMap {
@@ -168,7 +168,7 @@ final class LocksPresenter {
         }.count
 
         let externalBalancesCellsCount = input.externalBalances
-            .values.flatMap { $0 }
+            .values.flatMap { $0.filter { $0.amount > 0 } }
             .count
 
         return view?.calculateEstimatedHeight(
