@@ -29,8 +29,14 @@ extension StakingDashboardNominationPoolMapper: CoreDataMapperProtocol {
 
         entity.stakingType = model.stakingOption.option.type.rawValue
 
-        entity.stake = model.state.poolMemberStake.map { String($0) }
-        entity.onchainState = Multistaking.DashboardItemOnchainState.from(nominationPoolState: model.state)?.rawValue
+        if let state = model.state {
+            entity.stake = state.poolMemberStake.map { String($0) }
+
+            entity.onchainState = Multistaking.DashboardItemOnchainState.from(nominationPoolState: state)?.rawValue
+        } else {
+            entity.stake = nil
+            entity.onchainState = nil
+        }
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {

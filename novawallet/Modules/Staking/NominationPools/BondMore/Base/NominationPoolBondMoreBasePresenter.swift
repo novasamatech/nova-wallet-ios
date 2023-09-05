@@ -105,12 +105,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
                 spendingAmount: getInputAmount(),
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
-            ),
-            dataValidatorFactory.exsitentialDepositIsNotViolated(
-                spendingAmount: getSpendingAmountInPlank(),
-                totalAmount: assetBalance?.totalInPlank,
-                minimumBalance: assetBalanceExistance?.minBalance,
-                locale: selectedLocale
             )
         ]
 

@@ -49,3 +49,14 @@ enum Multistaking {
 
     typealias OffchainResponse = Set<OffchainStaking>
 }
+
+extension Set where Element == Multistaking.OffchainFilter {
+    func groupByNetworkStaking() -> [Multistaking.Option: Multistaking.OffchainFilter] {
+        reduce(into: [:]) { accumulator, filter in
+            filter.stakingTypes.forEach { stakingType in
+                let key = Multistaking.Option(chainAssetId: filter.chainAsset.chainAssetId, type: stakingType)
+                accumulator[key] = filter
+            }
+        }
+    }
+}

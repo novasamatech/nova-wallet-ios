@@ -26,7 +26,12 @@ protocol StakingSelectPoolInteractorOutputProtocol: AnyObject {
 
 protocol StakingSelectPoolWireframeProtocol: AnyObject, AddressOptionsPresentable, CommonRetryable, AlertPresentable {
     func complete(from view: ControllerBackedProtocol?)
-    func showSearch(from view: ControllerBackedProtocol?, delegate: StakingSelectPoolDelegate)
+
+    func showSearch(
+        from view: ControllerBackedProtocol?,
+        delegate: StakingSelectPoolDelegate,
+        selectedPoolId: NominationPools.PoolId?
+    )
 }
 
 enum StakingSelectPoolError: Error {

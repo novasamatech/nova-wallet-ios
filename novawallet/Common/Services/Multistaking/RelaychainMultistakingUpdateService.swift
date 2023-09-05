@@ -131,7 +131,11 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 saveResolvedAccounts(stash ?? accountId)
 
                 if stash != nil || controller != nil {
-                    saveStashItem(stash: stash ?? accountId, controller: controller ?? accountId, chain: chainAsset.chain)
+                    saveStashItem(
+                        stash: stash ?? accountId,
+                        controller: controller ?? accountId,
+                        chain: chainAsset.chain
+                    )
                 } else {
                     saveStashItem(stash: nil, controller: nil, chain: chainAsset.chain)
                 }

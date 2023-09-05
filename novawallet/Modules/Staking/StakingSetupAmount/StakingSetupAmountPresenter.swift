@@ -10,16 +10,16 @@ final class StakingSetupAmountPresenter {
     let stakingTypeViewModelFactory: SelectedStakingViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let dataValidatingFactory: RelaychainStakingValidatorFacadeProtocol
     let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
     let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
-    let poolValidatingFactory: NominationPoolDataValidatorFactoryProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
 
     private var assetBalance: AssetBalance?
+    private var existentialDeposit: BigUInt?
     private var buttonState: ButtonState = .startState
     private var inputResult: AmountInputResult? {
         didSet {
@@ -47,8 +47,7 @@ final class StakingSetupAmountPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
-        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        poolValidatingFactory: NominationPoolDataValidatorFactoryProtocol,
+        dataValidatingFactory: RelaychainStakingValidatorFacadeProtocol,
         chainAsset: ChainAsset,
         recommendsMultipleStakings: Bool,
         localizationManager: LocalizationManagerProtocol,
@@ -62,7 +61,6 @@ final class StakingSetupAmountPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.poolValidatingFactory = poolValidatingFactory
         self.chainAsset = chainAsset
         self.recommendsMultipleStakings = recommendsMultipleStakings
         self.logger = logger
@@ -129,20 +127,20 @@ final class StakingSetupAmountPresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
-    private func balanceMinusFee() -> Decimal {
+    private func stakeableBalanceMinusFee() -> Decimal {
         let feeValue = fee ?? 0
         guard
             let precision = chainAsset.chain.utilityAsset()?.displayInfo.assetPrecision,
-            let balance = availableBalance(),
+            let balance = stakeableBalance(),
             let feeDecimal = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
             return 0
         }
 
-        return balance - feeDecimal
+        return balance >= feeDecimal ? balance - feeDecimal : 0
     }
 
     private func inputAmount() -> Decimal {
-        inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        inputResult?.absoluteValue(from: stakeableBalanceMinusFee()) ?? 0
     }
 
     private func inputAmountInPlank() -> BigUInt {
@@ -153,9 +151,21 @@ final class StakingSetupAmountPresenter {
         availableBalanceInPlank().flatMap { $0.decimal(precision: chainAsset.asset.precision) }
     }
 
+    private func stakeableBalance() -> Decimal? {
+        stakeableBalanceInPlank().flatMap { $0.decimal(precision: chainAsset.asset.precision) }
+    }
+
     private func availableBalanceInPlank() -> BigUInt? {
         balanceDerivationFactory.getAvailableBalance(
             from: assetBalance,
+            stakingMethod: setupMethod
+        )
+    }
+
+    private func stakeableBalanceInPlank() -> BigUInt? {
+        balanceDerivationFactory.getStakeableBalance(
+            from: assetBalance,
+            existentialDeposit: existentialDeposit,
             stakingMethod: setupMethod
         )
     }
@@ -317,54 +327,36 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 
     // swiftlint:disable:next function_body_length
     func proceed() {
-        let currentInputAmount = inputAmount()
+        var currentInputAmount = inputAmount()
 
-        let defaultValidations: [DataValidating] = [
-            dataValidatingFactory.hasInPlank(
+        let defaultValidations: [DataValidating] = dataValidatingFactory.createValidations(
+            from: setupMethod,
+            params: .init(
+                chainAsset: chainAsset,
+                stakingAmount: currentInputAmount,
+                availableBalance: availableBalanceInPlank(),
+                assetBalance: assetBalance,
                 fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) { [weak self] in
-                self?.refreshFee()
-            },
-            dataValidatingFactory.canSpendAmountInPlank(
-                balance: availableBalanceInPlank(),
-                spendingAmount: currentInputAmount,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
+                existentialDeposit: existentialDeposit,
+                feeRefreshClosure: { [weak self] in
+                    self?.refreshFee()
+                }, stakeUpdateClosure: { newAmount in
+                    currentInputAmount = newAmount
+                }
             ),
-            dataValidatingFactory.canPayFeeInPlank(
-                balance: assetBalance?.transferable,
-                fee: fee,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
-                balance: availableBalanceInPlank(),
-                fee: fee,
-                spendingAmount: currentInputAmount,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.allowsNewNominators(
-                flag: setupMethod.restrictions?.allowsNewStakers ?? false,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canNominateInPlank(
-                amount: currentInputAmount,
-                minimalBalance: setupMethod.restrictions?.minJoinStake,
-                minNominatorBond: setupMethod.restrictions?.minJoinStake,
-                precision: chainAsset.asset.precision,
-                locale: selectedLocale
-            )
-        ]
+            locale: selectedLocale
+        )
 
         let recommendedValidations = setupMethod.recommendation?.validationFactory?.createValidations(
             for: .init(
                 stakingAmount: currentInputAmount,
                 assetBalance: assetBalance,
                 assetLocks: assetLocks,
-                fee: fee
+                fee: fee,
+                existentialDeposit: existentialDeposit,
+                stakeUpdateClosure: { newStake in
+                    currentInputAmount = newStake
+                }
             ),
             controller: view,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -372,14 +364,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
             locale: selectedLocale
         ) ?? []
 
-        let poolValidations: [DataValidating] = [
-            poolValidatingFactory.nominationPoolHasApy(
-                method: setupMethod,
-                locale: selectedLocale
-            )
-        ]
-
-        let validators = defaultValidations + recommendedValidations + poolValidations
+        let validators = defaultValidations + recommendedValidations
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let stakingOption = self?.setupMethod.selectedStakingOption else {
                 return
@@ -410,6 +395,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
             updateRecommendationIfNeeded()
             refreshFee()
         }
+    }
+
+    func didReceive(existentialDeposit: BigUInt) {
+        self.existentialDeposit = existentialDeposit
     }
 
     func didReceive(fee: BigUInt?, feeId: TransactionFeeId) {
@@ -474,6 +463,10 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
 
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeRecommendationSetup()
+            }
+        case .existentialDeposit:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryExistentialDeposit()
             }
         }
     }

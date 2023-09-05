@@ -16,6 +16,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
     let searchOperationFactory: NominationPoolSearchOperationFactoryProtocol
 
     private var lastPoolIdProvider: AnyDataProvider<DecodedPoolId>?
+    private var maxPoolMembersIdProvider: AnyDataProvider<DecodedU32>?
     private var lastPoolId: NominationPools.PoolId?
     private var currentSearchOperation: CancellableCall?
     private var searchOperationClosure: NominationPoolSearchOperationClosure?
@@ -58,6 +59,11 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
     private func performLastPoolIdSubscription() {
         clear(dataProvider: &lastPoolIdProvider)
         lastPoolIdProvider = subscribeLastPoolId(for: chainAsset.chain.chainId)
+    }
+
+    private func performMaxPoolMembersSubscription() {
+        clear(dataProvider: &maxPoolMembersIdProvider)
+        maxPoolMembersIdProvider = subscribeMaxPoolMembersPerPool(for: chainAsset.chain.chainId)
     }
 
     private func fetchAllPoolsInfo() {
@@ -151,6 +157,7 @@ final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderA
 extension NominationPoolSearchInteractor: NominationPoolSearchInteractorInputProtocol {
     func setup() {
         performLastPoolIdSubscription()
+        performMaxPoolMembersSubscription()
         fetchAllPoolsInfo()
     }
 
@@ -160,6 +167,7 @@ extension NominationPoolSearchInteractor: NominationPoolSearchInteractorInputPro
 
     func remakeSubscriptions() {
         performLastPoolIdSubscription()
+        performMaxPoolMembersSubscription()
     }
 
     func search(for text: String) {
@@ -182,6 +190,15 @@ extension NominationPoolSearchInteractor: NPoolsLocalStorageSubscriber, NPoolsLo
             fetchAllPoolsInfo()
         case let .failure(error):
             presenter?.didReceive(error: .pools(error))
+        }
+    }
+
+    func handleMaxPoolMembersPerPool(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(maxPoolMembersPerPool):
+            presenter?.didReceive(maxMembersPerPool: maxPoolMembersPerPool)
+        case let .failure(error):
+            presenter?.didReceive(error: .subscription(error))
         }
     }
 }

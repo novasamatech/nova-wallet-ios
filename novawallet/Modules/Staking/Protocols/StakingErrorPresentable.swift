@@ -1,5 +1,12 @@
 import Foundation
 
+struct NPoolsEDViolationErrorParams {
+    let availableBalance: String
+    let minimumBalance: String
+    let fee: String
+    let maxStake: String
+}
+
 protocol StakingErrorPresentable: BaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 

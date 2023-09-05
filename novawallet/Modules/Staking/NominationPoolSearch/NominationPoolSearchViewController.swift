@@ -5,7 +5,10 @@ import SoraFoundation
 final class NominationPoolSearchViewController: BaseTableSearchViewController {
     typealias RootViewType = NominationPoolSearchViewLayout
 
-    let presenter: NominationPoolSearchPresenterProtocol
+    var presenter: NominationPoolSearchPresenterProtocol? {
+        basePresenter as? NominationPoolSearchPresenterProtocol
+    }
+
     let keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol
     private var state: GenericViewState<[StakingSelectPoolViewModel]> = .loaded(viewModel: [])
 
@@ -14,7 +17,6 @@ final class NominationPoolSearchViewController: BaseTableSearchViewController {
         localizationManager: LocalizationManagerProtocol,
         keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol
     ) {
-        self.presenter = presenter
         self.keyboardAppearanceStrategy = keyboardAppearanceStrategy
         super.init(basePresenter: presenter)
         self.localizationManager = localizationManager
@@ -34,7 +36,6 @@ final class NominationPoolSearchViewController: BaseTableSearchViewController {
 
         setupTableView()
         setupLocalization()
-        presenter.setup()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -108,7 +109,7 @@ extension NominationPoolSearchViewController: UITableViewDataSource {
         if let model = state.viewModel?[safe: indexPath.row] {
             cell.bind(viewModel: model)
             cell.infoAction = { [weak self] viewModel in
-                self?.presenter.showPoolInfo(poolId: viewModel.id)
+                self?.presenter?.showPoolInfo(poolId: viewModel.id)
             }
         }
         return cell
@@ -121,7 +122,7 @@ extension NominationPoolSearchViewController: UITableViewDelegate {
         guard let model = state.viewModel?[safe: indexPath.row] else {
             return
         }
-        presenter.selectPool(poolId: model.id)
+        presenter?.selectPool(poolId: model.id)
     }
 
     func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {

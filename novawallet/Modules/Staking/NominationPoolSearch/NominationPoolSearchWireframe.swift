@@ -2,9 +2,9 @@ import Foundation
 
 final class NominationPoolSearchWireframe: NominationPoolSearchWireframeProtocol {
     func complete(from view: ControllerBackedProtocol?) {
-        if let setupAmountView: StakingSetupAmountViewProtocol = view?.controller.navigationController?.findTopView() {
+        if let amountView: StakingSetupAmountViewProtocol = view?.controller.navigationController?.findTopView() {
             view?.controller.navigationController?.popToViewController(
-                setupAmountView.controller,
+                amountView.controller,
                 animated: true
             )
         }

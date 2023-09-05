@@ -6,6 +6,8 @@ struct StakingRecommendationValidationParams {
     let assetBalance: AssetBalance?
     let assetLocks: AssetLocks?
     let fee: BigUInt?
+    let existentialDeposit: BigUInt?
+    let stakeUpdateClosure: (Decimal) -> Void
 }
 
 protocol StakingRecommendationValidationFactoryProtocol: AnyObject {
@@ -104,5 +106,33 @@ extension HybridStakingValidationFactory: StakingRecommendationValidationFactory
         )
 
         return [validation]
+    }
+}
+
+final class CombinedStakingValidationFactory: StakingRecommendationValidationFactoryProtocol {
+    let factories: [StakingRecommendationValidationFactoryProtocol]
+
+    init(factories: [StakingRecommendationValidationFactoryProtocol]) {
+        self.factories = factories
+    }
+
+    func createValidations(
+        for params: StakingRecommendationValidationParams,
+        controller: ControllerBackedProtocol?,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        presentable: StakingErrorPresentable,
+        locale: Locale
+    ) -> [DataValidating] {
+        let validations = factories
+            .map { $0.createValidations(
+                for: params,
+                controller: controller,
+                balanceViewModelFactory: balanceViewModelFactory,
+                presentable: presentable,
+                locale: locale
+            ) }
+            .flatMap { $0 }
+
+        return validations
     }
 }
