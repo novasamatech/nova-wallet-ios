@@ -3,6 +3,18 @@ import SubstrateSdk
 import BigInt
 
 extension NominationPools {
+    static func derivedAccountPrefix(for palletId: Data) throws -> Data {
+        guard let prefix = "modl".data(using: .utf8) else {
+            throw CommonError.dataCorruption
+        }
+
+        let scaleEncoder = ScaleEncoder()
+        scaleEncoder.appendRaw(data: prefix)
+        scaleEncoder.appendRaw(data: palletId)
+
+        return scaleEncoder.encode()
+    }
+
     static func derivedAccount(for poolId: PoolId, accountType: AccountType, palletId: Data) throws -> AccountId {
         guard let prefix = "modl".data(using: .utf8) else {
             throw CommonError.dataCorruption

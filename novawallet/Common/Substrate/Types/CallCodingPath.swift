@@ -160,7 +160,7 @@ extension CallCodingPath {
         CallCodingPath(moduleName: "Substrate", callName: "poolSlash")
     }
 
-    var isRewardOrSlash: Bool {
+    var isAnyStakingRewardOrSlash: Bool {
         [.slash, .reward, .poolReward, .poolSlash].contains(self)
     }
 }
@@ -173,11 +173,11 @@ extension CallCodingPath {
             return false
         }
 
-        if !filter.contains(.rewardsAndSlashes), isRewardOrSlash {
+        if !filter.contains(.rewardsAndSlashes), isAnyStakingRewardOrSlash {
             return false
         }
 
-        if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isRewardOrSlash {
+        if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isAnyStakingRewardOrSlash {
             return false
         }
 
