@@ -87,6 +87,7 @@ struct StartStakingInfoViewFactory {
         )
 
         let presenter = StartStakingInfoRelaychainPresenter(
+            selectedStakingType: state.stakingType,
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
