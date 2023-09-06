@@ -8,7 +8,7 @@ extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol
         replacingWith newFee: BigUInt?,
         priceCalculator _: TokenPriceCalculatorProtocol?,
         feePriceCalculator: TokenPriceCalculatorProtocol?,
-        completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+        progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
         let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
@@ -16,7 +16,7 @@ extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol
         }
 
         guard let currentAccountAddress = accountAddress else {
-            completion(nil)
+            progressClosure(nil)
             return
         }
 
@@ -37,6 +37,6 @@ extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol
             functionName: transaction.evmContractFunctionName
         )
 
-        completion(.contract(model))
+        progressClosure(.contract(model))
     }
 }

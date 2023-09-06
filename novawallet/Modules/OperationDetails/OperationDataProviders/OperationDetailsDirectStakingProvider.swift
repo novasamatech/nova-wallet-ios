@@ -54,7 +54,7 @@ extension OperationDetailsDirectStakingProvider: OperationDetailsDataProviderPro
         replacingWith _: BigUInt?,
         priceCalculator: TokenPriceCalculatorProtocol?,
         feePriceCalculator _: TokenPriceCalculatorProtocol?,
-        completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+        progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let context = try? transaction.call.map {
             try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
@@ -84,9 +84,9 @@ extension OperationDetailsDirectStakingProvider: OperationDetailsDataProviderPro
                         era: context?.era
                     )
 
-                    self?.complete(for: model, completion: completion)
+                    self?.complete(for: model, completion: progressClosure)
                 case .failure:
-                    completion(nil)
+                    progressClosure(nil)
                 }
             }
         } else {
@@ -98,7 +98,7 @@ extension OperationDetailsDirectStakingProvider: OperationDetailsDataProviderPro
                 era: context?.era
             )
 
-            complete(for: model, completion: completion)
+            complete(for: model, completion: progressClosure)
         }
     }
 }

@@ -66,7 +66,7 @@ final class OperationDetailsInteractor: AccountFetching, AnyCancellableCleaning 
             replacingWith: newFee,
             priceCalculator: priceCalculator,
             feePriceCalculator: feePriceCalculator,
-            completion: completion
+            progressClosure: completion
         )
     }
 

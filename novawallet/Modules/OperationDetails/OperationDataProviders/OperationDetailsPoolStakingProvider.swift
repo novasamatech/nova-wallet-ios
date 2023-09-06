@@ -38,23 +38,23 @@ final class OperationDetailsPoolStakingProvider: OperationDetailsBaseProvider, A
         clear(cancellable: &cancellableCall)
     }
 
-    private func complete(
+    private func reportProgress(
         for model: OperationPoolRewardOrSlashModel,
-        completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+        progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         selectedPool = model.pool
 
         guard let accountAddress = accountAddress else {
-            completion(.poolReward(model))
+            progressClosure(.poolReward(model))
             return
         }
 
         let isReward = transaction.type(for: accountAddress) == .poolReward
 
         if isReward {
-            completion(.poolReward(model))
+            progressClosure(.poolReward(model))
         } else {
-            completion(.poolSlash(model))
+            progressClosure(.poolSlash(model))
         }
     }
 
@@ -117,7 +117,7 @@ final class OperationDetailsPoolStakingProvider: OperationDetailsBaseProvider, A
 
                 do {
                     let model = try mergeOperation.extractNoCancellableResultData()
-                    self?.complete(for: model, completion: completion)
+                    self?.reportProgress(for: model, progressClosure: completion)
                 } catch {
                     completion(nil)
                 }
@@ -135,7 +135,7 @@ extension OperationDetailsPoolStakingProvider: OperationDetailsDataProviderProto
         replacingWith _: BigUInt?,
         priceCalculator: TokenPriceCalculatorProtocol?,
         feePriceCalculator _: TokenPriceCalculatorProtocol?,
-        completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+        progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let optContext = try? transaction.call.map {
             try JSONDecoder().decode(HistoryPoolRewardContext.self, from: $0)
@@ -155,11 +155,14 @@ extension OperationDetailsPoolStakingProvider: OperationDetailsDataProviderProto
         )
 
         if let selectedPool = selectedPool {
-            complete(for: model.byReplacingPool(selectedPool), completion: completion)
+            reportProgress(for: model.byReplacingPool(selectedPool), progressClosure: progressClosure)
         } else if let poolId = optContext?.poolId {
-            fetchPool(for: poolId, waitingModel: model, completion: completion)
+            // send partial model to display while loading pool's metadata
+            reportProgress(for: model, progressClosure: progressClosure)
+
+            fetchPool(for: poolId, waitingModel: model, completion: progressClosure)
         } else {
-            complete(for: model, completion: completion)
+            reportProgress(for: model, progressClosure: progressClosure)
         }
     }
 }

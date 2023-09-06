@@ -8,10 +8,10 @@ extension OperationDetailsExtrinsicProvider: OperationDetailsDataProviderProtoco
         replacingWith newFee: BigUInt?,
         priceCalculator _: TokenPriceCalculatorProtocol?,
         feePriceCalculator: TokenPriceCalculatorProtocol?,
-        completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+        progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
-            completion(nil)
+            progressClosure(nil)
             return
         }
 
@@ -34,6 +34,6 @@ extension OperationDetailsExtrinsicProvider: OperationDetailsDataProviderProtoco
             feePriceData: feePriceData
         )
 
-        completion(.extrinsic(model))
+        progressClosure(.extrinsic(model))
     }
 }

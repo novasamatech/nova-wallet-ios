@@ -29,10 +29,10 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
         replacingWith newFee: BigUInt?,
         priceCalculator: TokenPriceCalculatorProtocol?,
         feePriceCalculator: TokenPriceCalculatorProtocol?,
-        completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+        progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
-            completion(nil)
+            progressClosure(nil)
             return
         }
         let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
@@ -41,7 +41,7 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
         let peerId = accountId?.toHex() ?? peerAddress
 
         guard let peerId = try? Data(hexString: peerId) else {
-            completion(nil)
+            progressClosure(nil)
             return
         }
 
@@ -83,13 +83,13 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
                         outgoing: isOutgoing
                     )
 
-                    completion(.transfer(model))
+                    progressClosure(.transfer(model))
                 } else {
-                    completion(nil)
+                    progressClosure(nil)
                 }
 
             case .failure:
-                completion(nil)
+                progressClosure(nil)
             }
         }
     }
