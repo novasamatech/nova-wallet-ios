@@ -17,6 +17,7 @@ final class StartStakingInfoParachainPresenter: StartStakingInfoBasePresenter {
         interactor: StartStakingInfoParachainInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
+        balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
@@ -28,6 +29,7 @@ final class StartStakingInfoParachainPresenter: StartStakingInfoBasePresenter {
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
+            balanceDerivationFactory: balanceDerivationFactory,
             localizationManager: localizationManager,
             applicationConfig: applicationConfig,
             logger: logger

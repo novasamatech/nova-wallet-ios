@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 final class StakingDashboardBuilder {
     let workingQueue: DispatchQueue
@@ -23,6 +24,13 @@ final class StakingDashboardBuilder {
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.resultClosure = resultClosure
+    }
+
+    private func getAvailableBalance(for stakingType: StakingType?, chainAssetId: ChainAssetId) -> BigUInt? {
+        let optAssetBalance = balances[chainAssetId]
+        return optAssetBalance.flatMap { assetBalance in
+            StakingTypeBalanceFactory(stakingType: stakingType).getAvailableBalance(from: assetBalance)
+        }
     }
 
     private func reindexChainAssetSyncState() {
@@ -70,11 +78,16 @@ final class StakingDashboardBuilder {
         let isOnchainSyncing = deriveOnchainSync(for: stakingOption)
         let isOffchainSyncing = deriveOffchainSync()
 
+        let availableBalance = getAvailableBalance(
+            for: stakingOption.type,
+            chainAssetId: stakingOption.chainAsset.chainAssetId
+        )
+
         return .init(
             stakingOption: stakingOption,
             dashboardItem: dashboardItems[stakingOption.option],
             accountId: account?.accountId,
-            balance: balances[stakingOption.chainAsset.chainAssetId],
+            availableBalance: availableBalance,
             price: priceData,
             isOnchainSync: isOnchainSyncing,
             isOffchainSync: isOffchainSyncing
@@ -87,7 +100,14 @@ final class StakingDashboardBuilder {
     ) {
         let chainAssetId = item.stakingOption.chainAsset.chainAssetId
 
-        var currentValue = store[chainAssetId] ?? StakingDashboardItemModel.Combined(concrete: item)
+        var currentValue = store[chainAssetId] ??
+            StakingDashboardItemModel.Combined(
+                concrete: item,
+                availableBalance: getAvailableBalance(
+                    for: nil,
+                    chainAssetId: item.stakingOption.chainAsset.chainAssetId
+                )
+            )
 
         currentValue = currentValue
             .byChangingSyncState(

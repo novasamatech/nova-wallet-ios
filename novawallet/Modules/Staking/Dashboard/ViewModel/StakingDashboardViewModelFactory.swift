@@ -221,7 +221,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         )
 
         let balance = createAmount(
-            for: model.balance?.freeInPlank,
+            for: model.availableBalance,
             priceData: model.price,
             assetDisplayInfo: assetDisplayInfo,
             isSyncing: false,

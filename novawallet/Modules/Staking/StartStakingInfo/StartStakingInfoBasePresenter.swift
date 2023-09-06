@@ -7,6 +7,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let wireframe: StartStakingInfoWireframeProtocol
     let baseInteractor: StartStakingInfoInteractorInputProtocol
     let startStakingViewModelFactory: StartStakingViewModelFactoryProtocol
+    let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
@@ -21,6 +22,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         interactor: StartStakingInfoInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
+        balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
@@ -29,6 +31,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         baseInteractor = interactor
         self.wireframe = wireframe
         self.startStakingViewModelFactory = startStakingViewModelFactory
+        self.balanceDerivationFactory = balanceDerivationFactory
         self.applicationConfig = applicationConfig
         self.logger = logger
         self.localizationManager = localizationManager
@@ -41,8 +44,12 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
         switch accountExistense {
         case let .assetBalance(balance):
+            guard let availableBalance = balanceDerivationFactory.getAvailableBalance(from: balance) else {
+                return
+            }
+
             let viewModel = startStakingViewModelFactory.balance(
-                amount: balance.freeInPlank,
+                amount: availableBalance,
                 priceData: price,
                 chainAsset: chainAsset,
                 locale: selectedLocale
