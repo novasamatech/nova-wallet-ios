@@ -22,7 +22,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
-        state = .init(stakingType: selectedStakingType)
+        state = .init(stakingType: selectedStakingType, chainAsset: chainAsset)
         self.interactor = interactor
 
         super.init(
@@ -101,6 +101,7 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
 extension StartStakingInfoRelaychainPresenter {
     struct State: StartStakingStateProtocol {
         let stakingType: StakingType?
+        let chainAsset: ChainAsset
 
         var networkInfo: NetworkStakingInfo?
         var eraCountdown: EraCountdown?
@@ -153,6 +154,7 @@ extension StartStakingInfoRelaychainPresenter {
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? {
             guard
+                stakingType == nil,
                 nominationPoolMinimumStake != nil,
                 let directStakingMinimumStake = directStakingMinimumStake,
                 let minStake = minStake else {
@@ -164,6 +166,15 @@ extension StartStakingInfoRelaychainPresenter {
 
         var govThresholdAmount: BigUInt? {
             rewardsAutoPayoutThresholdAmount
+        }
+
+        var shouldHaveGovInfo: Bool {
+            switch stakingType {
+            case .nominationPools:
+                return false
+            default:
+                return chainAsset.chain.hasGovernance
+            }
         }
 
         var unstakingTime: TimeInterval? {

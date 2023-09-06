@@ -109,7 +109,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             locale: selectedLocale
         ) : nil
 
-        let govModel = chainAsset.chain.hasGovernance ? startStakingViewModelFactory.govModel(
+        let govModel = state.shouldHaveGovInfo ? startStakingViewModelFactory.govModel(
             amount: state.govThresholdAmount,
             chainAsset: chainAsset,
             locale: selectedLocale

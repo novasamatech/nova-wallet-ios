@@ -4,7 +4,7 @@ import BigInt
 final class StartStakingInfoParachainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoParachainInteractorInputProtocol
 
-    private var state: State = .init() {
+    private var state: State {
         didSet {
             if state != oldValue {
                 provideViewModel(state: state)
@@ -22,6 +22,7 @@ final class StartStakingInfoParachainPresenter: StartStakingInfoBasePresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
+        state = .init(chainAsset: chainAsset)
         self.interactor = interactor
 
         super.init(
@@ -104,6 +105,8 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
 
 extension StartStakingInfoParachainPresenter {
     struct State: StartStakingStateProtocol, Equatable {
+        let chainAsset: ChainAsset
+
         var networkInfo: ParachainStaking.NetworkInfo?
         var roundInfo: ParachainStaking.RoundInfo?
         var maxApy: Decimal?
@@ -121,6 +124,10 @@ extension StartStakingInfoParachainPresenter {
         }
 
         var govThresholdAmount: BigUInt? { nil }
+
+        var shouldHaveGovInfo: Bool {
+            chainAsset.chain.hasGovernance
+        }
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
 

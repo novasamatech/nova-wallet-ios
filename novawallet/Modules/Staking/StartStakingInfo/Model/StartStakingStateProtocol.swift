@@ -8,5 +8,6 @@ protocol StartStakingStateProtocol {
     var maxApy: Decimal? { get }
     var rewardsAutoPayoutThresholdAmount: BigUInt? { get }
     var govThresholdAmount: BigUInt? { get }
+    var shouldHaveGovInfo: Bool { get }
     var rewardsDestination: DefaultStakingRewardDestination { get }
 }
