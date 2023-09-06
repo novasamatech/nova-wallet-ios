@@ -134,7 +134,7 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
         case let .contract(contractModel):
             presentTransactionHashOptions(contractModel.txHash)
         case let .poolReward(poolRewardOrSlashModel), let .poolSlash(poolRewardOrSlashModel):
-            presentTransactionHashOptions(poolRewardOrSlashModel.eventId)
+            presentEventIdOptions(poolRewardOrSlashModel.eventId)
         case .none:
             break
         }

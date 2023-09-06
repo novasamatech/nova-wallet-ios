@@ -16,8 +16,7 @@ struct OperationDetailsViewFactory {
         }
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let storageFacade = UserDataStorageFacade.shared
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
         let operationDetailsDataProviderFactory = OperationDetailsDataProviderFactory(
             selectedAccount: selectedAccount,
@@ -35,7 +34,7 @@ struct OperationDetailsViewFactory {
         }
 
         let transactionLocalSubscriptionFactory = TransactionLocalSubscriptionFactory(
-            storageFacade: storageFacade,
+            storageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

@@ -66,7 +66,11 @@ final class OperationDetailsPoolRewardView: LocalizableView {
     private func setupLocalization() {
         networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
 
-        eventIdView.titleLabel.text = R.string.localizable.commonTxId(
+        eventIdView.titleLabel.text = R.string.localizable.stakingCommonEventId(
+            preferredLanguages: locale.rLanguages
+        )
+
+        typeView.titleLabel.text = R.string.localizable.stakingAnalyticsDetailsType(
             preferredLanguages: locale.rLanguages
         )
 
