@@ -4,7 +4,10 @@ final class OperationDetailsPoolRewardView: LocalizableView {
     let poolTableView = StackTableView()
     let eventTableView = StackTableView()
 
-    let poolView = StackInfoTableCell()
+    let poolView: StackInfoTableCell = .create { view in
+        view.iconImageView.contentMode = .scaleAspectFit
+    }
+
     let networkView = StackNetworkCell()
 
     let eventIdView = StackInfoTableCell()
