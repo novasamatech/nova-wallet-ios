@@ -40,11 +40,39 @@ extension NominationPools {
         return (poolBalance * targetPoints) / totalPoints
     }
 
-    static func balanceToPoints(for targetBalance: BigUInt, totalPoints: BigUInt, poolBalance: BigUInt) -> BigUInt {
+    static func balanceToPoints(
+        for targetBalance: BigUInt,
+        totalPoints: BigUInt,
+        poolBalance: BigUInt,
+        roundingUp: Bool
+    ) -> BigUInt {
         guard poolBalance != 0, totalPoints != 0, targetBalance != 0 else {
             return 0
         }
 
-        return (targetBalance * totalPoints) / poolBalance
+        let multBalancePoints = targetBalance * totalPoints
+        let (quotient, reminder) = multBalancePoints.quotientAndRemainder(dividingBy: poolBalance)
+
+        if roundingUp, reminder > 0 {
+            return quotient + 1
+        } else {
+            return quotient
+        }
+    }
+
+    static func unstakingBalanceToPoints(
+        for targetBalance: BigUInt,
+        totalPoints: BigUInt,
+        poolBalance: BigUInt,
+        memberStakedPoints: BigUInt
+    ) -> BigUInt {
+        let unstakingPoints = balanceToPoints(
+            for: targetBalance,
+            totalPoints: totalPoints,
+            poolBalance: poolBalance,
+            roundingUp: true
+        )
+
+        return min(unstakingPoints, memberStakedPoints)
     }
 }

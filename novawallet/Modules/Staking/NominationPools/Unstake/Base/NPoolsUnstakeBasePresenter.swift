@@ -123,16 +123,18 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     func getUnstakingPoints() -> BigUInt? {
         guard
             let stakingLedger = stakingLedger,
-            let bondedPool = bondedPool else {
+            let bondedPool = bondedPool,
+            let poolMember = poolMember else {
             return nil
         }
 
         let inputAmount = getInputAmountInPlank() ?? 0
 
-        return NominationPools.balanceToPoints(
+        return NominationPools.unstakingBalanceToPoints(
             for: inputAmount,
             totalPoints: bondedPool.points,
-            poolBalance: stakingLedger.active
+            poolBalance: stakingLedger.active,
+            memberStakedPoints: poolMember.points
         )
     }
 
