@@ -120,6 +120,10 @@ extension Multistaking {
             stake != nil
         }
 
+        var stakeOrZero: BigUInt {
+            stake ?? 0
+        }
+
         var state: State? {
             switch onchainState {
             case .none:
@@ -127,12 +131,20 @@ extension Multistaking {
             case .bonded:
                 return .inactive
             case .waiting:
+                guard stakeOrZero > 0 else {
+                    return .inactive
+                }
+
                 if hasAssignedStake {
                     return .active
                 } else {
                     return .waiting
                 }
             case .active:
+                guard stakeOrZero > 0 else {
+                    return .inactive
+                }
+
                 if hasAssignedStake {
                     return .active
                 } else {

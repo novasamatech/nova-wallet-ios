@@ -59,6 +59,10 @@ final class StakingNPoolsViewModelFactory {
             return .undefined
         }
 
+        guard poolMember.points > 0 else {
+            return .inactive
+        }
+
         guard !activePools.contains(poolMember.poolId) else {
             return .active
         }

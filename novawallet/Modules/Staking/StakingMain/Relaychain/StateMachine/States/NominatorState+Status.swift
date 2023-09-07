@@ -9,6 +9,10 @@ extension NominatorState {
         }
 
         do {
+            guard ledgerInfo.active > 0 else {
+                return .inactive
+            }
+
             let accountId = try stashItem.stash.toAccountId()
 
             let allNominators = eraStakers.validators.map(\.exposure.others)
