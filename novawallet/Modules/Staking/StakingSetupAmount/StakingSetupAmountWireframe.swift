@@ -49,7 +49,37 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
         )
     }
 
-    func showSelectValidators(from _: ControllerBackedProtocol?, selectedValidators _: PreparedValidators) {
-        // TODO: Add validators flow adopted
+    func showSelectValidators(
+        from view: ControllerBackedProtocol?,
+        selectedValidators: PreparedValidators,
+        delegate: StakingSetupTypeEntityFacade
+    ) {
+        let selectionValidatorGroups = SelectionValidatorGroups(
+            fullValidatorList: selectedValidators.electedValidators.map { $0.toSelected(for: nil) },
+            recommendedValidatorList: selectedValidators.recommendedValidators
+        )
+
+        let hasIdentity = selectedValidators.electedValidators.contains { $0.hasIdentity }
+        let validatorsSelectionParams = ValidatorsSelectionParams(
+            maxNominations: selectedValidators.maxTargets,
+            hasIdentity: hasIdentity
+        )
+
+        guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
+            for: state,
+            selectionValidatorGroups: selectionValidatorGroups,
+            selectedValidatorList: SharedList(items: selectedValidators.targets),
+            validatorsSelectionParams: validatorsSelectionParams,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        delegate.bindToFlow(controller: validatorsView.controller)
+
+        view?.controller.navigationController?.pushViewController(
+            validatorsView.controller,
+            animated: true
+        )
     }
 }

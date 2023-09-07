@@ -33,7 +33,7 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
     func showNominationPoolsList(
         from view: ControllerBackedProtocol?,
         amount: BigUInt,
-        delegate: StakingSelectPoolDelegate?,
+        delegate: StakingSetupTypeEntityFacade,
         selectedPool: NominationPools.SelectedPool?
     )
     func showValidators(
@@ -41,7 +41,7 @@ protocol StakingTypeWireframeProtocol: AlertPresentable, CommonRetryable {
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
-        delegate: StakingSelectValidatorsDelegateProtocol?
+        delegate: StakingSetupTypeEntityFacade
     )
 }
 

@@ -321,11 +321,19 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
                 delegate: self
             )
         } else if case let .direct(validators) = setupMethod.selectedStakingOption {
-            wireframe.showSelectValidators(from: view, selectedValidators: validators)
+            let delegateFacade = StakingSetupTypeEntityFacade(
+                selectedMethod: setupMethod,
+                delegate: self
+            )
+
+            wireframe.showSelectValidators(
+                from: view,
+                selectedValidators: validators,
+                delegate: delegateFacade
+            )
         }
     }
 
-    // swiftlint:disable:next function_body_length
     func proceed() {
         var currentInputAmount = inputAmount()
 
