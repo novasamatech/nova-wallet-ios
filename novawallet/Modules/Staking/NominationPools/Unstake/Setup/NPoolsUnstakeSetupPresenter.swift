@@ -184,12 +184,28 @@ extension NPoolsUnstakeSetupPresenter: NPoolsUnstakeSetupPresenterProtocol {
     }
 
     func proceed() {
-        let validators = getValidations()
+        let baseValidations = getValidations()
+
+        var optUnstakingAmount = getInputAmount()
+
+        let minStakeValidationParams = MinStakeCrossedParams(
+            stakedAmountInPlank: getStakedAmountInPlank(),
+            minStake: minStake
+        ) { [weak self] in
+            optUnstakingAmount = self?.getStakedAmount()
+        }
+
+        let minStakeValidation = dataValidatorFactory.minStakeNotCrossed(
+            for: getInputAmount() ?? 0,
+            params: minStakeValidationParams,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
 
         DataValidationRunner(
-            validators: validators
+            validators: baseValidations + [minStakeValidation]
         ).runValidation { [weak self] in
-            guard let unstakingAmount = self?.getInputAmount() else {
+            guard let unstakingAmount = optUnstakingAmount else {
                 return
             }
 

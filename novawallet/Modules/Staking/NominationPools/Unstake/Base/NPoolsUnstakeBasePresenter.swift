@@ -116,13 +116,6 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
                 limits: unstakingLimits,
                 eraCountdown: eraCountdown,
                 locale: selectedLocale
-            ),
-            dataValidatorFactory.minStakeNotCrossed(
-                for: getInputAmount() ?? 0,
-                stakedAmountInPlank: getStakedAmountInPlank(),
-                minStake: minStake,
-                chainAsset: chainAsset,
-                locale: selectedLocale
             )
         ]
     }

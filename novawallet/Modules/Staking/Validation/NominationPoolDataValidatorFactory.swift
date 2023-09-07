@@ -9,6 +9,12 @@ struct ExistentialDepositValidationParams {
     let amountUpdateClosure: (Decimal) -> Void
 }
 
+struct MinStakeCrossedParams {
+    let stakedAmountInPlank: BigUInt?
+    let minStake: BigUInt?
+    let unstakeAllHandler: () -> Void
+}
+
 protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func nominationPoolHasApy(
         pool: NominationPools.SelectedPool,
@@ -42,8 +48,7 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
 
     func minStakeNotCrossed(
         for inputAmount: Decimal,
-        stakedAmountInPlank: BigUInt?,
-        minStake: BigUInt?,
+        params: MinStakeCrossedParams,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
@@ -272,14 +277,16 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
 
     func minStakeNotCrossed(
         for inputAmount: Decimal,
-        stakedAmountInPlank: BigUInt?,
-        minStake: BigUInt?,
+        params: MinStakeCrossedParams,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating {
         let inputAmountInPlank = inputAmount.toSubstrateAmount(
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? 0
+
+        let stakedAmountInPlank = params.stakedAmountInPlank
+        let minStake = params.minStake
 
         return WarningConditionViolation(onWarning: { [weak self] delegate in
             guard let balanceFactory = self?.balanceFactory else {
@@ -300,6 +307,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 minStake: minStakeString,
                 remaining: diffString,
                 action: {
+                    params.unstakeAllHandler()
                     delegate.didCompleteWarningHandling()
                 },
                 locale: locale
