@@ -25,6 +25,7 @@ struct SubqueryTransfer: Codable {
 }
 
 struct SubqueryRewardOrSlash: Codable {
+    let eventIdx: Int
     let amount: String
     let isReward: Bool
     let era: Int?

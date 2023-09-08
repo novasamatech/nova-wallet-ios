@@ -26,9 +26,14 @@ final class BlockTimeOperationFactory {
 
     private func createExpectedBlockTimeWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        chainDefaultTime: BlockTime?,
         fallbackTime: BlockTime,
         fallbackThreshold: BlockTime
     ) -> CompoundOperationWrapper<BlockTime> {
+        if let chainDefaultTime = chainDefaultTime {
+            return CompoundOperationWrapper.createWithResult(chainDefaultTime)
+        }
+
         let babeTimeOperation: BaseOperation<BlockTime> = PrimitiveConstantOperation.operation(
             for: .babeBlockTime,
             dependingOn: codingFactoryOperation
@@ -67,6 +72,7 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
         let estimatedOperation = blockTimeEstimationService.createEstimatedBlockTimeOperation()
         let expectedWrapper = createExpectedBlockTimeWrapper(
             dependingOn: codingFactoryOperation,
+            chainDefaultTime: chain.defaultBlockTimeMillis,
             fallbackTime: fallbackBlockTime,
             fallbackThreshold: Self.fallbackThreshold
         )

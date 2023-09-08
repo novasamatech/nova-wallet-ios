@@ -108,7 +108,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         let context = HistoryRewardContext(
             validator: reward.validator,
             era: reward.era,
-            eventId: identifier
+            eventId: createEventId(from: reward.eventIdx)
         )
 
         let source = TransactionHistoryItemSource.substrate
@@ -140,7 +140,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
     ) -> TransactionHistoryItem {
         let context = HistoryPoolRewardContext(
             poolId: NominationPools.PoolId(reward.poolId),
-            eventId: identifier
+            eventId: createEventId(from: reward.eventIdx)
         )
 
         let source = TransactionHistoryItemSource.substrate
@@ -190,5 +190,9 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             callPath: CallCodingPath(moduleName: extrinsic.module, callName: extrinsic.call),
             call: extrinsic.call.data(using: .utf8)
         )
+    }
+
+    private func createEventId(from remoteId: Int) -> String {
+        String(blockNumber) + "-" + String(remoteId)
     }
 }

@@ -199,6 +199,10 @@ struct ChainModel: Equatable, Codable, Hashable {
             return nil
         }
     }
+
+    var defaultBlockTimeMillis: BlockTime? {
+        additional?.defaultBlockTime?.unsignedIntValue
+    }
 }
 
 extension ChainModel: Identifiable {

@@ -259,7 +259,7 @@ final class OperationDetailsViewModelFactory {
                 chainAsset: chainAsset,
                 locale: locale
             )
-            return .poolReward(viewModel)
+            return .poolSlash(viewModel)
         }
     }
 }

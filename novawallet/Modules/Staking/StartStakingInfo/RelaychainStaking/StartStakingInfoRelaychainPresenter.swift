@@ -5,21 +5,24 @@ import BigInt
 final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
     let interactor: StartStakingInfoRelaychainInteractorInputProtocol
 
-    private var state: State = .init() {
+    private var state: State {
         didSet {
             provideViewModel(state: state)
         }
     }
 
     init(
+        selectedStakingType: StakingType?,
         chainAsset: ChainAsset,
         interactor: StartStakingInfoRelaychainInteractorInputProtocol,
         wireframe: StartStakingInfoWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
+        balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
+        state = .init(stakingType: selectedStakingType, chainAsset: chainAsset)
         self.interactor = interactor
 
         super.init(
@@ -27,6 +30,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
+            balanceDerivationFactory: balanceDerivationFactory,
             localizationManager: localizationManager,
             applicationConfig: applicationConfig,
             logger: logger
@@ -96,19 +100,39 @@ extension StartStakingInfoRelaychainPresenter: StartStakingInfoRelaychainInterac
 
 extension StartStakingInfoRelaychainPresenter {
     struct State: StartStakingStateProtocol {
+        let stakingType: StakingType?
+        let chainAsset: ChainAsset
+
         var networkInfo: NetworkStakingInfo?
         var eraCountdown: EraCountdown?
         var maxApy: Decimal?
-        var rewardsDestination: DefaultStakingRewardDestination { .stake }
         var nominationPoolMinimumStake: BigUInt?
         var directStakingMinimumStake: BigUInt?
 
+        var rewardsDestination: DefaultStakingRewardDestination {
+            switch stakingType {
+            case .nominationPools:
+                return .manual
+            default:
+                return .stake
+            }
+        }
+
         var minStake: BigUInt? {
-            if let nominationPoolMinimumStake = nominationPoolMinimumStake,
-               let directStakingMinimumStake = directStakingMinimumStake {
-                return min(nominationPoolMinimumStake, directStakingMinimumStake)
-            } else {
+            let stakingClass = stakingType.map { StakingClass(stakingType: $0) }
+
+            switch stakingClass {
+            case .relaychain:
                 return directStakingMinimumStake
+            case .nominationPools:
+                return nominationPoolMinimumStake
+            default:
+                if let nominationPoolMinimumStake = nominationPoolMinimumStake,
+                   let directStakingMinimumStake = directStakingMinimumStake {
+                    return min(nominationPoolMinimumStake, directStakingMinimumStake)
+                } else {
+                    return directStakingMinimumStake
+                }
             }
         }
 
@@ -130,6 +154,7 @@ extension StartStakingInfoRelaychainPresenter {
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? {
             guard
+                stakingType == nil,
                 nominationPoolMinimumStake != nil,
                 let directStakingMinimumStake = directStakingMinimumStake,
                 let minStake = minStake else {
@@ -141,6 +166,15 @@ extension StartStakingInfoRelaychainPresenter {
 
         var govThresholdAmount: BigUInt? {
             rewardsAutoPayoutThresholdAmount
+        }
+
+        var shouldHaveGovInfo: Bool {
+            switch stakingType {
+            case .nominationPools:
+                return false
+            default:
+                return chainAsset.chain.hasGovernance
+            }
         }
 
         var unstakingTime: TimeInterval? {

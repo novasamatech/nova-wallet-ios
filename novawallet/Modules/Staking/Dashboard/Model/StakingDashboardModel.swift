@@ -1,10 +1,11 @@
 import Foundation
 import RobinHood
+import BigInt
 
 protocol StakingDashboardItemModelCommonProtocol {
     var chainAsset: ChainAsset { get }
     var accountId: AccountId? { get }
-    var balance: AssetBalance? { get }
+    var availableBalance: BigUInt? { get }
     var price: PriceData? { get }
     var maxApy: Decimal? { get }
     var isOnchainSync: Bool { get }
@@ -18,7 +19,7 @@ extension StakingDashboardItemModelCommonProtocol {
 
     func balanceValue() -> Decimal {
         Decimal.fiatValue(
-            from: balance?.freeInPlank,
+            from: availableBalance,
             price: price,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         )
@@ -30,7 +31,7 @@ enum StakingDashboardItemModel: Equatable {
         let stakingOption: Multistaking.ChainAssetOption
         let dashboardItem: Multistaking.DashboardItem?
         let accountId: AccountId?
-        let balance: AssetBalance?
+        let availableBalance: BigUInt?
         let price: PriceData?
         let isOnchainSync: Bool
         let isOffchainSync: Bool
@@ -60,7 +61,7 @@ enum StakingDashboardItemModel: Equatable {
         let chainAsset: ChainAsset
         let maxApy: Decimal?
         let accountId: AccountId?
-        let balance: AssetBalance?
+        let availableBalance: BigUInt?
         let price: PriceData?
         let isOnchainSync: Bool
         let isOffchainSync: Bool
@@ -69,7 +70,7 @@ enum StakingDashboardItemModel: Equatable {
             chainAsset: ChainAsset,
             maxApy: Decimal?,
             accountId: AccountId?,
-            balance: AssetBalance?,
+            availableBalance: BigUInt?,
             price: PriceData?,
             isOnchainSync: Bool,
             isOffchainSync: Bool
@@ -77,18 +78,18 @@ enum StakingDashboardItemModel: Equatable {
             self.chainAsset = chainAsset
             self.maxApy = maxApy
             self.accountId = accountId
-            self.balance = balance
+            self.availableBalance = availableBalance
             self.price = price
             self.isOnchainSync = isOnchainSync
             self.isOffchainSync = isOffchainSync
         }
 
-        init(concrete: Concrete) {
+        init(concrete: Concrete, availableBalance: BigUInt?) {
             self.init(
                 chainAsset: concrete.chainAsset,
                 maxApy: concrete.dashboardItem?.maxApy,
                 accountId: concrete.accountId,
-                balance: concrete.balance,
+                availableBalance: availableBalance,
                 price: concrete.price,
                 isOnchainSync: concrete.isOnchainSync,
                 isOffchainSync: concrete.isOffchainSync
@@ -108,7 +109,7 @@ enum StakingDashboardItemModel: Equatable {
                 chainAsset: chainAsset,
                 maxApy: updatedApy,
                 accountId: accountId,
-                balance: balance,
+                availableBalance: availableBalance,
                 price: price,
                 isOnchainSync: isOnchainSync,
                 isOffchainSync: isOffchainSync
@@ -191,8 +192,8 @@ extension Array where Element: StakingDashboardItemModelCommonProtocol {
 
                 return CompoundComparator.compare(item1: balance1, item2: balance2, isAsc: false)
             }, {
-                let hasBalance1 = item1.balance != nil ? 0 : 1
-                let hasBalance2 = item2.balance != nil ? 0 : 1
+                let hasBalance1 = item1.availableBalance != nil ? 0 : 1
+                let hasBalance2 = item2.availableBalance != nil ? 0 : 1
 
                 return CompoundComparator.compare(item1: hasBalance1, item2: hasBalance2, isAsc: true)
             }, {
@@ -247,7 +248,7 @@ extension StakingDashboardItemModel.Combined {
             chainAsset: chainAsset,
             maxApy: maxApy,
             accountId: accountId,
-            balance: balance,
+            availableBalance: availableBalance,
             price: price,
             isOnchainSync: isOnchainSync,
             isOffchainSync: isOffchainSync
@@ -261,7 +262,7 @@ extension StakingDashboardItemModel.Concrete {
             stakingOption: stakingOption,
             dashboardItem: dashboardItem,
             accountId: accountId,
-            balance: balance,
+            availableBalance: availableBalance,
             price: price,
             isOnchainSync: isOnchainSync,
             isOffchainSync: isOffchainSync
@@ -301,12 +302,12 @@ extension StakingDashboardItemModel: StakingDashboardItemModelCommonProtocol {
         }
     }
 
-    var balance: AssetBalance? {
+    var availableBalance: BigUInt? {
         switch self {
         case let .combined(value):
-            return value.balance
+            return value.availableBalance
         case let .concrete(value):
-            return value.balance
+            return value.availableBalance
         }
     }
 
