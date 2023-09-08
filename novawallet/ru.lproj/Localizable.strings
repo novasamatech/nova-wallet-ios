@@ -655,7 +655,6 @@
 "dapp.sign.operation.details.subtitle" = "Убедитесь, что операция правильная";
 "common.all" = "Все";
 "dapp.list.search" = "Введите имя или URL";
-"dapp.browser.close.confirmation" = "Вы уверены, что хотите закрыть этот экран?\nВсе изменения не будут применены.";
 "common.wallet" = "Кошелек";
 "common.reload" = "Перезагрузить";
 "dapp.confirmation.address.mismatch" = "Адрес в транзакции (%@) не совпадает с адресом в кошельке (%@)";
@@ -1339,8 +1338,6 @@
 "staking.min.required.stake.error" = "Вы не можете стейкать меньше минимального значения (%@)";
 "staking.locked.pool.violation.error" = "Ваши токены заблокированы из - за %@. Для продолжения необходим ввести не больше чем %@ или %@ и больше. Для стейкинга другой суммы разблокируйте токены.";
 "staking.type.title" = "Тип стейкинга";
-"staking.type.alert.unsaved.changes.title" = "Несохраненные изменения";
-"staking.type.alert.unsaved.changes.message" = "Хотите сохранить изменения?";
 "staking.validators" = "Валидаторы";
 "staking.select.pool.count" = "активные пулы: %@";
 "staking.select.pool.members" = "участники";
@@ -1382,3 +1379,4 @@
 "staking.pool.is.full.message" = "Вы не можете присоединиться к выбранному пулу так как в нём не осталось места";
 "staking.pool.is.not.open.title" = "Пул не открыт";
 "staking.pool.is.not.open.message" = "Вы не можете присоединиться к не открытому пулу. Пожалуйста, свяжитесь с владельцем пула.";
+"common.close.when.changes.confirmation" = "Вы уверены, что хотите закрыть этот экран?\nВсе изменения не будут применены.";

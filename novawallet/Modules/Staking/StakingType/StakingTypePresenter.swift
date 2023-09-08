@@ -135,22 +135,20 @@ final class StakingTypePresenter {
 
     private func showSaveChangesAlert() {
         let languages = selectedLocale.rLanguages
-        let saveActionTitle = R.string.localizable.commonSave(preferredLanguages: languages)
+        let closeActionTitle = R.string.localizable.commonClose(preferredLanguages: languages)
         let cancelActionTitle = R.string.localizable.commonCancel(preferredLanguages: languages)
-        let saveAction = AlertPresentableAction(title: saveActionTitle) { [weak self] in
-            self?.save()
-        }
-        let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
+        let closeAction = AlertPresentableAction(title: closeActionTitle, style: .destructive) { [weak self] in
             self?.wireframe.complete(from: self?.view)
         }
+
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.stakingTypeAlertUnsavedChangesTitle(preferredLanguages: languages),
-            message: R.string.localizable.stakingTypeAlertUnsavedChangesMessage(preferredLanguages: languages),
-            actions: [saveAction, cancelAction],
-            closeAction: nil
+            title: nil,
+            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
+            actions: [closeAction],
+            closeAction: cancelActionTitle
         )
 
-        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
 }
 

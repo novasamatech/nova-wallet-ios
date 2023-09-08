@@ -110,7 +110,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
         let viewModel = AlertPresentableViewModel(
             title: nil,
-            message: R.string.localizable.dappBrowserCloseConfirmation(preferredLanguages: languages),
+            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
             actions: [closeViewModel],
             closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
         )

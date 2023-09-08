@@ -655,7 +655,6 @@
 "dapp.sign.operation.details.subtitle" = "Make sure the operation is correct";
 "common.all" = "All";
 "dapp.list.search" = "Search by name or enter URL";
-"dapp.browser.close.confirmation" = "Are you sure you want to close this screen?\nYour changes will not be applied.";
 "common.wallet" = "Wallet";
 "common.reload" = "Reload";
 "dapp.confirmation.address.mismatch" = "Address in transaction (%@) doesn't match the address in the wallet (%@)";
@@ -1339,8 +1338,6 @@
 "staking.min.required.stake.error" = "You can't stake less than the minimal value (%@)";
 "staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter up to %@ or %@ and more. To stake another amount you should remove your locks.";
 "staking.type.title" = "Staking Type";
-"staking.type.alert.unsaved.changes.title" = "Unsaved changes";
-"staking.type.alert.unsaved.changes.message" = "Do you want to save the changes?";
 "staking.validators" = "Validators";
 "staking.select.pool.count" = "active pools: %@";
 "staking.select.pool.members" = "members";
@@ -1382,3 +1379,4 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
 "staking.pool.is.not.open.title" = "Pool is not open";
 "staking.pool.is.not.open.message" = "You cannot join pool that is not open. Please, contact the pool owner.";
+"common.close.when.changes.confirmation" = "Are you sure you want to close this screen?\nYour changes will not be applied.";
