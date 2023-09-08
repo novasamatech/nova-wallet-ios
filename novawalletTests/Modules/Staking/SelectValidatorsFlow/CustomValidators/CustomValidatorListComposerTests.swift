@@ -18,7 +18,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -45,7 +45,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -66,7 +66,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -90,7 +90,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -118,7 +118,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -151,7 +151,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 

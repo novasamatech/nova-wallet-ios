@@ -88,7 +88,7 @@ class RecommendationsComposerTests: XCTestCase {
     func testClusterRemovalAndFilters() {
         // given
 
-        let expectedValidators: [ElectedValidatorInfo] = [
+        let expectedValidators: [SelectedValidatorInfo] = [
             ElectedValidatorInfo(
                 address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr7",
                 nominators: [],
@@ -113,13 +113,13 @@ class RecommendationsComposerTests: XCTestCase {
                 maxNominatorsRewarded: 128,
                 blocked: false
             )
-        ]
+        ].map({ $0.toSelected(for: nil) })
 
         let composer = RecommendationsComposer(resultSize: 10, clusterSizeLimit: 1)
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators.map({ $0.toSelected(for: nil) }), preferrences: [])
 
         // then
 
@@ -129,7 +129,7 @@ class RecommendationsComposerTests: XCTestCase {
     func testMaxSizeApplied() {
         // given
 
-        let expectedValidators: [ElectedValidatorInfo] = [
+        let expectedValidators: [SelectedValidatorInfo] = [
             ElectedValidatorInfo(
                 address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr7",
                 nominators: [],
@@ -142,13 +142,13 @@ class RecommendationsComposerTests: XCTestCase {
                 maxNominatorsRewarded: 128,
                 blocked: false
             )
-        ]
+        ].map({ $0.toSelected(for: nil) })
 
         let composer = RecommendationsComposer(resultSize: 1, clusterSizeLimit: 1)
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators.map({ $0.toSelected(for: nil) }), preferrences: [])
 
         // then
 

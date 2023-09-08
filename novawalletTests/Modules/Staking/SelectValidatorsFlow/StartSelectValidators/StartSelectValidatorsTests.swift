@@ -54,7 +54,8 @@ class SelectValidatorsStartTests: XCTestCase {
         let interactor = SelectValidatorsStartInteractor(
             runtimeService: runtimeService,
             operationFactory: operationFactory,
-            operationManager: OperationManager()
+            operationManager: OperationManager(),
+            preferredValidators: []
         )
 
         let presenter = SelectValidatorsStartPresenter(
@@ -71,8 +72,8 @@ class SelectValidatorsStartTests: XCTestCase {
         // when
 
         stub(operationFactory) { stub in
-            when(stub).allElectedOperation().then { _ in
-                CompoundOperationWrapper.createWithResult(allValidators)
+            when(stub).allPreferred(for: any()).then { _ in
+                CompoundOperationWrapper.createWithResult(.init(electedValidators: allValidators, preferredValidators: []))
             }
         }
 
@@ -100,7 +101,7 @@ class SelectValidatorsStartTests: XCTestCase {
                         expectedCustomValidators.sorted {
                             $0.address.lexicographicallyPrecedes($1.address)
                         },
-                        selectionValidatorGroups.fullValidatorList.sorted {
+                        selectionValidatorGroups.fullValidatorList.distinctAll().sorted {
                             $0.address.lexicographicallyPrecedes($1.address)
                         })
             }

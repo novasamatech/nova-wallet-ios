@@ -60,7 +60,7 @@ class CustomValidatorListTests: XCTestCase {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            fullValidatorList: fullValidatorList,
+            fullValidatorList: .init(allValidators: fullValidatorList, preferredValidators: []),
             recommendedValidatorList: recommendedValidatorList,
             selectedValidatorList: SharedList<SelectedValidatorInfo>(items: []),
             validatorsSelectionParams: validatorsSelectionParams
