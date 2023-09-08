@@ -1,6 +1,6 @@
 import Foundation
 
 struct SelectionValidatorGroups {
-    let fullValidatorList: [SelectedValidatorInfo]
+    let fullValidatorList: CustomValidatorsFullList
     let recommendedValidatorList: [SelectedValidatorInfo]
 }

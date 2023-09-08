@@ -165,15 +165,19 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             return
         }
 
-        let electedValidatorList = validators.electedValidators.map { $0.toSelected(for: nil) }
+        let fullValidatorList = CustomValidatorsFullList(
+            allValidators: validators.electedAndPrefValidators.electedToSelectedValidators(),
+            preferredValidators: validators.electedAndPrefValidators.preferredValidators
+        )
+
         let recommendedValidatorList = validators.recommendedValidators
 
         let groups = SelectionValidatorGroups(
-            fullValidatorList: electedValidatorList,
+            fullValidatorList: fullValidatorList,
             recommendedValidatorList: recommendedValidatorList
         )
 
-        let hasIdentity = validators.electedValidators.contains { $0.hasIdentity }
+        let hasIdentity = fullValidatorList.allValidators.contains { $0.hasIdentity }
         let selectionParams = ValidatorsSelectionParams(
             maxNominations: validators.maxTargets,
             hasIdentity: hasIdentity

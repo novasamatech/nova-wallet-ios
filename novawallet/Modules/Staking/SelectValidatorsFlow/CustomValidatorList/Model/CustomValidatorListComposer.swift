@@ -13,8 +13,12 @@ class CustomValidatorListComposer {
 extension CustomValidatorListComposer: RecommendationsComposing {
     typealias RecommendableType = SelectedValidatorInfo
 
-    func compose(from validators: [RecommendableType]) -> [RecommendableType] {
-        var filtered = validators
+    func compose(
+        from recommendables: [RecommendableType],
+        preferrences: [RecommendableType]
+    ) -> [RecommendableType] {
+        let preferredAddresses = Set(preferrences.map(\.address))
+        var filtered = preferrences + recommendables.filter { !preferredAddresses.contains($0.address) }
 
         if !filter.allowsNoIdentity {
             filtered = filtered.filter {

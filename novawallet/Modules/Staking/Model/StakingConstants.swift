@@ -16,4 +16,11 @@ struct StakingConstants {
         KnowChainId.kusama: "DhK6qU2U5kDWeJKvPRtmnWRs8ETUGZ9S9QmNmQFuzrNoKm4",
         KnowChainId.alephZero: "5DBhSX89qijHkzUt9gcqsq9RiXxDfbjxyma1z78JSCdt4SoU"
     ]
+
+    static func preferredValidatorIds(for chain: ChainModel) -> [AccountId] {
+        StakingConstants
+            .recommendedValidators[chain.chainId]
+            .flatMap { try? $0.toAccountId(using: chain.chainFormat) }
+            .map { [$0] } ?? []
+    }
 }
