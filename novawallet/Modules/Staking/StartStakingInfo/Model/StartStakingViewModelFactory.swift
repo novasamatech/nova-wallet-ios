@@ -173,21 +173,13 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         } else {
             switch destination {
             case .balance:
-                let destinationString = R.string.localizable.stakingStartRewardsDestinationBalance(
-                    preferredLanguages: locale.rLanguages)
-
-                text = R.string.localizable.stakingStartRewardsCommon(
+                text = R.string.localizable.stakingStartRewardsBalance(
                     rewardIntervals,
-                    destinationString,
                     preferredLanguages: locale.rLanguages
                 )
             case .stake:
-                let destinationString = R.string.localizable.stakingStartRewardsDestinationStake(
-                    preferredLanguages: locale.rLanguages)
-
-                text = R.string.localizable.stakingStartRewardsCommon(
+                text = R.string.localizable.stakingStartRewardsRestake(
                     rewardIntervals,
-                    destinationString,
                     preferredLanguages: locale.rLanguages
                 )
             case .manual:

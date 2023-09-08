@@ -1285,9 +1285,8 @@
 "staking.start.stake.without.minimum.stake" = "Стейкайте в любое время. Ваш стейк активно будет зарабатывать вознаграждения %@";
 "staking.start.unstake" = "Отмените стейк в любое время, и верните свои средства %@. Вознаграждения не начисляются пока производится отмена";
 "staking.start.rewards.manual.claim" = "Награды начисляются %@. Вам нужно запросить награды вручную";
-"staking.start.rewards.common" = "Награды начисляются %@ и добавляются в %@";
-"staking.start.rewards.destination.stake" = "стейк";
-"staking.start.rewards.destination.balance" = "доступный баланс";
+"staking.start.rewards.restake" = "Награды начисляются %@ и добавляются в стейк";
+"staking.start.rewards.balance" = "Награды начисляются %@ и добавляются в доступный баланс";
 "staking.start.rewards.direct.staking" = "Награды начисляются %@. Застейкайте более %@ для автоматической выплаты вознаграждения, иначе нужно будет запрашивать награды вручную";
 "staking.start.gov.nomination.pool" = "%@ с вашими застейканными токенами";
 "staking.start.gov.direct.staking" = "Застейкайте более %@ и %@ с вашими застейканными токенами";
