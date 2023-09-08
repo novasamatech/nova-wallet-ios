@@ -14,10 +14,6 @@ class StakingTypeBaseBannerView: UIView {
 
     let imageView = UIImageView()
 
-    let backgroundImageView: UIImageView = .create {
-        $0.image = R.image.iconStakingTypeBackground()!
-    }
-
     var imageOffsets = Constants.imageOffsets {
         didSet {
             updateImageConstraints()
@@ -27,18 +23,6 @@ class StakingTypeBaseBannerView: UIView {
     var imageSize = Constants.imageSize {
         didSet {
             updateImageConstraints()
-        }
-    }
-
-    var backgroundImageOffsets = Constants.backgroundImageOffsets {
-        didSet {
-            updateBackgroundImageConstraints()
-        }
-    }
-
-    var backgroundImageSize = Constants.backgroundImageSize {
-        didSet {
-            updateBackgroundImageConstraints()
         }
     }
 
@@ -64,12 +48,6 @@ class StakingTypeBaseBannerView: UIView {
             $0.top.equalToSuperview().offset(imageOffsets.top)
             $0.size.equalTo(imageSize)
         }
-        addSubview(backgroundImageView)
-        backgroundImageView.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(backgroundImageOffsets.right)
-            $0.top.equalToSuperview().offset(backgroundImageOffsets.top)
-            $0.size.equalTo(backgroundImageSize)
-        }
 
         layer.cornerRadius = 12
     }
@@ -81,21 +59,11 @@ class StakingTypeBaseBannerView: UIView {
             $0.size.equalTo(imageSize)
         }
     }
-
-    private func updateBackgroundImageConstraints() {
-        backgroundImageView.snp.updateConstraints {
-            $0.trailing.equalToSuperview().offset(backgroundImageOffsets.right)
-            $0.top.equalToSuperview().offset(backgroundImageOffsets.top)
-            $0.size.equalTo(backgroundImageSize)
-        }
-    }
 }
 
 extension StakingTypeBaseBannerView {
     private enum Constants {
         static let imageOffsets: (top: CGFloat, right: CGFloat) = (top: -18, right: 26)
-        static let backgroundImageOffsets: (top: CGFloat, right: CGFloat) = (top: 0, right: 0)
-        static let backgroundImageSize: CGSize = .init(width: 240, height: 184)
         static let imageSize: CGSize = .init(width: 125, height: 111)
         static let borderWidth: CGFloat = 1
     }
