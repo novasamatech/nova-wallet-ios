@@ -152,6 +152,50 @@ final class TransactionHistoryViewModelFactory {
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
+        let title = txType == .reward ?
+            R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
+            R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
+        let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
+
+        return createCommonRewardItemFromData(
+            data,
+            title: title,
+            subtitle: subtitle,
+            priceCalculator: priceCalculator,
+            locale: locale,
+            txType: txType
+        )
+    }
+
+    private func createPoolRewardOrSlashFromData(
+        _ data: TransactionHistoryItem,
+        priceCalculator: TokenPriceCalculatorProtocol?,
+        locale: Locale,
+        txType: TransactionType
+    ) -> TransactionItemViewModel {
+        let title = txType == .poolReward ?
+            R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
+            R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
+        let subtitle = R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
+
+        return createCommonRewardItemFromData(
+            data,
+            title: title,
+            subtitle: subtitle,
+            priceCalculator: priceCalculator,
+            locale: locale,
+            txType: txType
+        )
+    }
+
+    private func createCommonRewardItemFromData(
+        _ data: TransactionHistoryItem,
+        title: String,
+        subtitle: String,
+        priceCalculator: TokenPriceCalculatorProtocol?,
+        locale: Locale,
+        txType: TransactionType
+    ) -> TransactionItemViewModel {
         let amountInPlank = data.amountInPlank.map { BigUInt($0) ?? 0 } ?? 0
         let amount = Decimal.fromSubstrateAmount(
             amountInPlank,
@@ -169,10 +213,6 @@ final class TransactionHistoryViewModelFactory {
 
         let icon = R.image.iconRewardOperation()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
-        let title = txType == .reward ?
-            R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
-        let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
 
         return TransactionItemViewModel(
@@ -297,6 +337,13 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
                 locale: locale,
                 txType: transactionType
             )
+        case .poolReward, .poolSlash:
+            return createPoolRewardOrSlashFromData(
+                data,
+                priceCalculator: priceCalculator,
+                locale: locale,
+                txType: transactionType
+            )
         case .extrinsic:
             return createExtrinsicItemFromData(
                 data,
@@ -315,6 +362,10 @@ extension TransactionHistoryItem {
             return .slash
         case .reward:
             return .reward
+        case .poolReward:
+            return .poolReward
+        case .poolSlash:
+            return .poolSlash
         default:
             if callPath.isSubstrateOrEvmTransfer {
                 return sender == address ? .outgoing : .incoming

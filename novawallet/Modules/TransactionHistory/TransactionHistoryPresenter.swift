@@ -8,27 +8,25 @@ final class TransactionHistoryPresenter {
     let wireframe: TransactionHistoryWireframeProtocol
     let interactor: TransactionHistoryInteractorInputProtocol
     let viewModelFactory: TransactionHistoryViewModelFactoryProtocol
-    let phishingFilter: TransactionHistoryPhishingFilterProtocol
     let logger: LoggerProtocol?
     let address: AccountAddress
 
     private var items: [String: TransactionHistoryItem] = [:]
     private var filter: WalletHistoryFilter = .all
     private var priceCalculator: TokenPriceCalculatorProtocol?
+    private var localFilter: TransactionHistoryLocalFilterProtocol?
 
     init(
         address: AccountAddress,
         interactor: TransactionHistoryInteractorInputProtocol,
         wireframe: TransactionHistoryWireframeProtocol,
         viewModelFactory: TransactionHistoryViewModelFactoryProtocol,
-        phishingFilter: TransactionHistoryPhishingFilterProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
         self.address = address
         self.interactor = interactor
         self.wireframe = wireframe
-        self.phishingFilter = phishingFilter
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -39,7 +37,12 @@ final class TransactionHistoryPresenter {
             return
         }
 
-        let models = Array(items.values).filter { !phishingFilter.isPhishing(transaction: $0) }
+        guard let localFilter = localFilter else {
+            view.didReceive(viewModel: [])
+            return
+        }
+
+        let models = Array(items.values).filter { localFilter.shouldDisplayOperation(model: $0) }
 
         let viewModel = viewModelFactory.createGroupModel(
             models,
@@ -105,10 +108,17 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
         switch error {
         case .fetchFailed:
             view?.stopLoading()
+
         case .setupFailed:
             break
         case .priceFailed:
-            break
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscriptions()
+            }
+        case .localFilter:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryLocalFilter()
+            }
         }
     }
 
@@ -121,6 +131,12 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
 
     func didReceive(priceCalculator: TokenPriceCalculatorProtocol) {
         self.priceCalculator = priceCalculator
+
+        reloadView()
+    }
+
+    func didReceive(localFilter: TransactionHistoryLocalFilterProtocol) {
+        self.localFilter = localFilter
 
         reloadView()
     }

@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct OperationSlashModel {
+struct OperationRewardOrSlashModel {
     let eventId: String
     let amount: BigUInt
     let priceData: PriceData?

@@ -6,6 +6,7 @@ enum WalletRemoteHistorySourceLabel: Int, CaseIterable {
     case transfers
     case rewards
     case extrinsics
+    case poolRewards
 }
 
 protocol WalletRemoteHistoryItemProtocol {

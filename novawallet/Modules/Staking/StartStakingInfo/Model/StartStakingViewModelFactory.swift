@@ -171,21 +171,31 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 preferredLanguages: locale.rLanguages
             )
         } else {
-            let destinationString: String
             switch destination {
             case .balance:
-                destinationString = R.string.localizable.stakingStartRewardsDestinationBalance(
+                let destinationString = R.string.localizable.stakingStartRewardsDestinationBalance(
                     preferredLanguages: locale.rLanguages)
-            case .stake:
-                destinationString = R.string.localizable.stakingStartRewardsDestinationStake(
-                    preferredLanguages: locale.rLanguages)
-            }
 
-            text = R.string.localizable.stakingStartRewardsCommon(
-                rewardIntervals,
-                destinationString,
-                preferredLanguages: locale.rLanguages
-            )
+                text = R.string.localizable.stakingStartRewardsCommon(
+                    rewardIntervals,
+                    destinationString,
+                    preferredLanguages: locale.rLanguages
+                )
+            case .stake:
+                let destinationString = R.string.localizable.stakingStartRewardsDestinationStake(
+                    preferredLanguages: locale.rLanguages)
+
+                text = R.string.localizable.stakingStartRewardsCommon(
+                    rewardIntervals,
+                    destinationString,
+                    preferredLanguages: locale.rLanguages
+                )
+            case .manual:
+                text = R.string.localizable.stakingStartRewardsManualClaim(
+                    rewardIntervals,
+                    preferredLanguages: locale.rLanguages
+                )
+            }
         }
 
         let textWithAccents = AccentTextModel(

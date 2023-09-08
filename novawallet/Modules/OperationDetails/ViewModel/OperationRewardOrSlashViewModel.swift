@@ -1,6 +1,6 @@
 import Foundation
 
-struct OperationSlashViewModel {
+struct OperationRewardOrSlashViewModel {
     let eventId: String
     let validator: DisplayAddressViewModel?
     let era: String?

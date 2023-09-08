@@ -87,10 +87,12 @@ struct StartStakingInfoViewFactory {
         )
 
         let presenter = StartStakingInfoRelaychainPresenter(
+            selectedStakingType: state.stakingType,
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
+            balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: state.stakingType),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
@@ -171,6 +173,7 @@ struct StartStakingInfoViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
+            balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: stakingOption.type),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared

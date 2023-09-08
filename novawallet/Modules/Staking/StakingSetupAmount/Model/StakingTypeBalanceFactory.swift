@@ -14,6 +14,12 @@ protocol StakingTypeBalanceFactoryProtocol: AnyObject {
     ) -> BigUInt?
 }
 
+extension StakingTypeBalanceFactoryProtocol {
+    func getAvailableBalance(from assetBalance: AssetBalance?) -> BigUInt? {
+        getAvailableBalance(from: assetBalance, stakingMethod: .recommendation(nil))
+    }
+}
+
 final class StakingTypeBalanceFactory: StakingTypeBalanceFactoryProtocol {
     let stakingType: StakingType?
 
