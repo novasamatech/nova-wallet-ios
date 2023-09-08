@@ -154,4 +154,73 @@ class RecommendationsComposerTests: XCTestCase {
 
         XCTAssertEqual(expectedValidators, result)
     }
+    
+    func testRecommendedAndPreferredValidators() {
+        // given
+        
+        let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
+        
+        let generator = CustomValidatorListTestDataGenerator.self
+        
+        let preferred = generator.poorGoodValidator.toSelected(for: nil)
+        let recommended1 = generator.goodValidator.toSelected(for: nil)
+        let recommended2 = generator.greedyGoodValidator.toSelected(for: nil)
+        
+        let recommendations = composer.compose(from: [recommended1, recommended2], preferrences: [preferred])
+        
+        XCTAssertEqual(recommendations.count, composer.resultSize)
+        XCTAssertTrue(recommendations.contains(where: { $0.address == preferred.address }))
+    }
+    
+    func testPreferredOversubscribedNotIncludedValidators() {
+        // given
+        
+        let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
+        
+        let generator = CustomValidatorListTestDataGenerator.self
+        
+        let preferred = generator.oversubscribedValidator.toSelected(for: nil)
+        let recommended1 = generator.goodValidator.toSelected(for: nil)
+        let recommended2 = generator.greedyGoodValidator.toSelected(for: nil)
+        
+        let recommendations = composer.compose(from: [recommended1, recommended2], preferrences: [preferred])
+        
+        let expectedResult = [recommended1, recommended2].sorted { $0.stakeReturn > $1.stakeReturn }
+        
+        XCTAssertEqual(recommendations, expectedResult)
+    }
+    
+    func testOnlyPreferredValidators() {
+        // given
+        
+        let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
+        
+        let generator = CustomValidatorListTestDataGenerator.self
+        
+        let preferred = generator.clusterValidatorChild1.toSelected(for: nil)
+        
+        let recommendations = composer.compose(from: [], preferrences: [preferred])
+        
+        XCTAssertEqual(recommendations, [preferred])
+    }
+    
+    func testOnlyPreferredWithAvailableRecommendedValidators() {
+        // given
+        
+        let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
+        
+        let generator = CustomValidatorListTestDataGenerator.self
+        
+        let recommended1 = generator.goodValidator.toSelected(for: nil)
+        let preferred1 = generator.clusterValidatorChild1.toSelected(for: nil)
+        let preferred2 = generator.clusterValidatorChild1.toSelected(for: nil)
+        let preferred3 = generator.clusterValidatorChild1.toSelected(for: nil)
+        
+        let preferredList = [preferred1, preferred2, preferred3]
+        let recommendations = composer.compose(from: [recommended1], preferrences: preferredList)
+        
+        let expectedList = [preferred1, preferred2]
+        
+        XCTAssertEqual(recommendations, expectedList)
+    }
 }
