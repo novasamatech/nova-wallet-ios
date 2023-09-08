@@ -113,6 +113,25 @@ enum NominationPools {
                 return redeemable + newAmount
             }
         }
+
+        func unbondingBalance(for member: NominationPools.PoolMember) -> BigUInt {
+            let poolsByEra = getPoolsByEra()
+
+            return member.unbondingEras.reduce(BigUInt(0)) { total, unbondingKeyValue in
+                let unbondingEra = unbondingKeyValue.key.value
+                let unbondingPoints = unbondingKeyValue.value.value
+
+                let subPool = poolsByEra[unbondingEra] ?? noEra
+
+                let newAmount = NominationPools.pointsToBalance(
+                    for: unbondingPoints,
+                    totalPoints: subPool.points,
+                    poolBalance: subPool.balance
+                )
+
+                return total + newAmount
+            }
+        }
     }
 
     enum AccountType: UInt8 {

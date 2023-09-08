@@ -4,7 +4,7 @@ import RobinHood
 enum BalancesStoreError: Error {
     case priceFailed(Error)
     case balancesFailed(Error)
-    case crowdloansFailed(Error)
+    case externalBalancesFailed(Error)
 }
 
 protocol BalancesStoreDelegate: AnyObject {
@@ -22,14 +22,14 @@ final class BalancesStore {
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
+    let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
 
     weak var delegate: BalancesStoreDelegate?
 
     private(set) var priceSubscription: StreamableProvider<PriceData>?
     private(set) var assetsSubscription: StreamableProvider<AssetBalance>?
     private(set) var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
-    private(set) var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
+    private(set) var externalBalancesSubscription: StreamableProvider<ExternalAssetBalance>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
 
     private var calculator: BalancesCalculator?
@@ -39,12 +39,12 @@ final class BalancesStore {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
+        externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
+        self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.currencyManager = currencyManager
     }
 
@@ -52,8 +52,8 @@ final class BalancesStore {
         assetsSubscription = subscribeAllBalancesProvider()
     }
 
-    private func subscribeToCrowdloans() {
-        crowdloansSubscription = subscribeToAllCrowdloansProvider()
+    private func subscribeToExternalBalances() {
+        externalBalancesSubscription = subscribeToAllExternalAssetBalancesProvider()
     }
 
     private func subscribeChains() {
@@ -166,7 +166,7 @@ extension BalancesStore: BalancesStoreProtocol {
 
         subscribeChains()
         subscribeAssets()
-        subscribeToCrowdloans()
+        subscribeToExternalBalances()
     }
 }
 
@@ -182,14 +182,16 @@ extension BalancesStore: WalletLocalStorageSubscriber, WalletLocalSubscriptionHa
     }
 }
 
-extension BalancesStore: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
-    func handleAllCrowdloans(result: Result<[DataProviderChange<CrowdloanContributionData>], Error>) {
+extension BalancesStore: ExternalAssetBalanceSubscriptionHandler, ExternalAssetBalanceSubscriber {
+    func handleAllExternalAssetBalances(
+        result: Result<[DataProviderChange<ExternalAssetBalance>], Error>
+    ) {
         switch result {
         case let .success(changes):
-            calculator?.didReceiveCrowdloanContributionChanges(changes)
+            calculator?.didReceiveExternalBalanceChanges(changes)
             notifyCalculatorChanges()
         case let .failure(error):
-            notify(error: .crowdloansFailed(error))
+            notify(error: .externalBalancesFailed(error))
         }
     }
 }

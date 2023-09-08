@@ -124,22 +124,8 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
     }
 
-    func showBalanceBreakdown(
-        from view: AssetListViewProtocol?,
-        prices: [ChainAssetId: PriceData],
-        balances: [AssetBalance],
-        chains: [ChainModel.Id: ChainModel],
-        locks: [AssetLock],
-        crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
-    ) {
-        guard let viewController = LocksViewFactory.createView(input:
-            .init(
-                prices: prices,
-                balances: balances,
-                chains: chains,
-                locks: locks,
-                crowdloans: crowdloans
-            )) else {
+    func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput) {
+        guard let viewController = LocksViewFactory.createView(input: params) else {
             return
         }
 

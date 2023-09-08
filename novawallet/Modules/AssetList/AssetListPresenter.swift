@@ -124,9 +124,9 @@ final class AssetListPresenter {
         walletType: MetaAccountModelType,
         name: String
     ) {
-        let crowdloans = crowdloansModel(prices: priceMapping)
-        let totalValue = createHeaderPriceState(from: priceMapping, crowdloans: crowdloans)
-        let totalLocks = createHeaderLockState(from: priceMapping, crowdloans: crowdloans)
+        let externalBalances = externalBalanceModel(prices: priceMapping)
+        let totalValue = createHeaderPriceState(from: priceMapping, externalBalances: externalBalances)
+        let totalLocks = createHeaderLockState(from: priceMapping, externalBalances: externalBalances)
 
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
@@ -143,7 +143,7 @@ final class AssetListPresenter {
 
     private func createHeaderPriceState(
         from priceMapping: [ChainAssetId: PriceData],
-        crowdloans: [AssetListAssetAccountPrice]
+        externalBalances: [AssetListAssetAccountPrice]
     ) -> LoadableViewModelState<[AssetListAssetAccountPrice]> {
         var priceState: LoadableViewModelState<[AssetListAssetAccountPrice]> = .loaded(value: [])
 
@@ -178,12 +178,12 @@ final class AssetListPresenter {
             }
         }
 
-        return priceState + crowdloans
+        return priceState + externalBalances
     }
 
     private func createHeaderLockState(
         from priceMapping: [ChainAssetId: PriceData],
-        crowdloans: [AssetListAssetAccountPrice]
+        externalBalances: [AssetListAssetAccountPrice]
     ) -> [AssetListAssetAccountPrice]? {
         guard checkNonZeroLocks() else {
             return nil
@@ -195,7 +195,7 @@ final class AssetListPresenter {
             }
         }
 
-        return locks + crowdloans
+        return locks + externalBalances
     }
 
     private func checkNonZeroLocks() -> Bool {
@@ -205,9 +205,9 @@ final class AssetListPresenter {
             return true
         }
 
-        let crowdloanContributions = (try? model.crowdloansResult?.get()) ?? [:]
+        let externalBalances = (try? model.externalBalanceResult?.get()) ?? [:]
 
-        if crowdloanContributions.contains(where: { $0.value.contains(where: { $0.amount > 0 }) }) {
+        if externalBalances.contains(where: { $0.value.contains(where: { $0.amount > 0 }) }) {
             return true
         }
 
@@ -235,22 +235,22 @@ final class AssetListPresenter {
         }
     }
 
-    private func crowdloansModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
-        switch model.crowdloansResult {
+    private func externalBalanceModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
+        switch model.externalBalanceResult {
         case .failure, .none:
             return []
-        case let .success(crowdloans):
-            return crowdloans.compactMap { chainId, chainCrowdloans in
-                guard let chain = model.allChains[chainId] else {
+        case let .success(externalBalance):
+            return externalBalance.compactMap { chainAssetId, externalAssetBalances in
+                guard let chain = model.allChains[chainAssetId.chainId] else {
                     return nil
                 }
-                guard let asset = chain.utilityAsset() else {
+                guard let asset = chain.asset(for: chainAssetId.assetId) else {
                     return nil
                 }
-                let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
+
                 let price = prices[chainAssetId] ?? .zero()
 
-                let contributedAmount = chainCrowdloans.reduce(0) { $0 + $1.amount }
+                let contributedAmount = externalAssetBalances.reduce(0) { $0 + $1.amount }
 
                 guard contributedAmount > 0 else {
                     return nil
@@ -381,18 +381,19 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             let priceResult = model.priceResult,
             let prices = try? priceResult.get(),
             let locks = try? model.locksResult?.get(),
-            let crowdloans = try? model.crowdloansResult?.get() else {
+            let externalBalances = try? model.externalBalanceResult?.get() else {
             return
         }
 
-        wireframe.showBalanceBreakdown(
-            from: view,
+        let params = LocksViewInput(
             prices: prices,
             balances: model.balances.values.compactMap { try? $0.get() },
             chains: model.allChains,
             locks: locks,
-            crowdloans: crowdloans
+            externalBalances: externalBalances
         )
+
+        wireframe.showBalanceBreakdown(from: view, params: params)
     }
 
     func send() {

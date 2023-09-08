@@ -35,7 +35,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         assetListObservable: AssetListStateObservable,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
-        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
+        externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
@@ -53,7 +53,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
             selectedWalletSettings: selectedWalletSettings,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            crowdloansLocalSubscriptionFactory: crowdloansLocalSubscriptionFactory,
+            externalBalancesSubscriptionFactory: externalBalancesSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
             logger: logger

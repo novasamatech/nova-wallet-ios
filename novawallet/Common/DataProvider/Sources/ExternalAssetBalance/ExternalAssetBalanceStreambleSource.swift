@@ -1,30 +1,39 @@
 import Foundation
 import RobinHood
 
-final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
-    typealias Model = CrowdloanContributionData
+final class ExternalAssetBalanceStreambleSource: StreamableSourceProtocol {
+    typealias Model = ExternalAssetBalance
     typealias CommitNotificationBlock = ((Result<Int, Error>?) -> Void)
 
-    let syncServices: [SyncServiceProtocol]
-    let chainId: ChainModel.Id
+    let automaticSyncServices: [SyncServiceProtocol]
+    let pollingSyncServices: [SyncServiceProtocol]
+    let chainAssetId: ChainAssetId
     let accountId: AccountId
     let eventCenter: EventCenterProtocol
 
     init(
-        syncServices: [SyncServiceProtocol],
-        chainId: ChainModel.Id,
+        automaticSyncServices: [SyncServiceProtocol],
+        pollingSyncServices: [SyncServiceProtocol],
+        chainAssetId: ChainAssetId,
         accountId: AccountId,
         eventCenter: EventCenterProtocol
     ) {
-        self.syncServices = syncServices
-        self.eventCenter = eventCenter
-        self.chainId = chainId
+        self.automaticSyncServices = automaticSyncServices
+        self.pollingSyncServices = pollingSyncServices
+        self.chainAssetId = chainAssetId
         self.accountId = accountId
+        self.eventCenter = eventCenter
 
-        self.eventCenter.add(observer: self)
+        eventCenter.add(observer: self)
 
-        syncServices.forEach {
+        (automaticSyncServices + pollingSyncServices).forEach {
             $0.setup()
+        }
+    }
+
+    deinit {
+        (automaticSyncServices + pollingSyncServices).forEach {
+            $0.stopSyncUp()
         }
     }
 
@@ -47,7 +56,7 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: CommitNotificationBlock?
     ) {
-        syncServices.forEach {
+        pollingSyncServices.forEach {
             $0.syncUp()
         }
 
@@ -62,11 +71,12 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
     }
 }
 
-extension CrowdloanContributionStreamableSource: EventVisitorProtocol {
+extension ExternalAssetBalanceStreambleSource: EventVisitorProtocol {
     func processAssetBalanceChanged(event: AssetBalanceChanged) {
-        guard event.accountId == accountId, event.chainAssetId.chainId == chainId else {
+        guard event.accountId == accountId, event.chainAssetId == chainAssetId else {
             return
         }
+
         refresh(runningIn: nil, commitNotificationBlock: nil)
     }
 }
