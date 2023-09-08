@@ -79,7 +79,7 @@ extension StackAddressCell: SkeletonableView {
                 on: self,
                 containerView: self,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0, y: 10),
+                offset: CGPoint(x: contentInsets.left, y: 10),
                 size: CGSize(width: 24, height: 24)
             ),
 
@@ -87,7 +87,7 @@ extension StackAddressCell: SkeletonableView {
                 on: self,
                 containerView: self,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 36, y: 17),
+                offset: CGPoint(x: contentInsets.left + 36, y: 17),
                 size: CGSize(width: 135, height: 10)
             )
         ]
