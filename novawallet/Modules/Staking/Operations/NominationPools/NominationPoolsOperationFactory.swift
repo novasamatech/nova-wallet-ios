@@ -3,6 +3,11 @@ import SubstrateSdk
 import RobinHood
 import BigInt
 
+struct RecommendedNominationPoolsParams {
+    let maxMembersPerPool: () throws -> UInt32?
+    let preferrablePool: () throws -> NominationPools.PoolId?
+}
+
 protocol NominationPoolsOperationFactoryProtocol {
     func createSparePoolsInfoWrapper(
         for poolService: EraNominationPoolsServiceProtocol,
@@ -84,6 +89,46 @@ extension NominationPoolsOperationFactoryProtocol {
         mapOperation.addDependency(wrapper.targetOperation)
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+    }
+
+    func createPoolRecommendationsInfoWrapper(
+        for poolService: EraNominationPoolsServiceProtocol,
+        rewardEngine: @escaping () throws -> NominationPoolsRewardEngineProtocol,
+        params: RecommendedNominationPoolsParams,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[NominationPools.PoolStats]> {
+        let sparePoolsWrapper = createSparePoolsInfoWrapper(
+            for: poolService,
+            rewardEngine: rewardEngine,
+            maxMembersPerPool: params.maxMembersPerPool,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        let recommendationOperation = ClosureOperation<[NominationPools.PoolStats]> {
+            var recommendationList = try sparePoolsWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard
+                let preferrablePoolId = try params.preferrablePool(),
+                let currentIndex = recommendationList.firstIndex(where: { $0.poolId == preferrablePoolId }),
+                currentIndex > 0 else {
+                return recommendationList
+            }
+
+            // move preferrable pool to the first place
+            let preferrablePool = recommendationList.remove(at: currentIndex)
+            recommendationList.insert(preferrablePool, at: 0)
+
+            return recommendationList
+        }
+
+        recommendationOperation.addDependency(sparePoolsWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: recommendationOperation,
+            dependencies: sparePoolsWrapper.allOperations
+        )
     }
 }
 

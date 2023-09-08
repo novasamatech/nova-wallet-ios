@@ -63,12 +63,19 @@ final class StakingSelectPoolInteractor: AnyCancellableCleaning, AnyProviderAuto
             runtimeService: runtimeService
         )
 
-        let poolStatsWrapper = poolsOperationFactory.createSparePoolsInfoWrapper(
+        let maxPoolMembers = maxPoolMembersPerPool.value ?? nil
+        let preferrablePool = StakingConstants.recommendedPoolIds[chainAsset.chain.chainId]
+        let params = RecommendedNominationPoolsParams(
+            maxMembersPerPool: { maxPoolMembers },
+            preferrablePool: { preferrablePool }
+        )
+
+        let poolStatsWrapper = poolsOperationFactory.createPoolRecommendationsInfoWrapper(
             for: eraNominationPoolsService,
             rewardEngine: {
                 try maxApyWrapper.targetOperation.extractNoCancellableResultData()
             },
-            maxMembersPerPool: { self.maxPoolMembersPerPool.value ?? nil },
+            params: params,
             connection: connection,
             runtimeService: runtimeService
         )
