@@ -1,18 +1,29 @@
 import SoraUI
 
 class StakingTypeBaseBannerView: UIView {
-    let backgroundView: RoundedView = .create {
-        $0.cornerRadius = 12
-        $0.roundingCorners = .allCorners
-        $0.fillColor = R.color.colorSecondaryScreenBackground()!
-        $0.highlightedFillColor = R.color.colorSecondaryScreenBackground()!
-        $0.strokeWidth = Constants.borderWidth
-        $0.shadowOpacity = 0
-        $0.strokeColor = R.color.colorStakingTypeCardBorder()!
-        $0.highlightedStrokeColor = R.color.colorActiveBorder()!
+    let backgroundView: RoundedView = .create { view in
+        view.applyFilledBackgroundStyle()
+
+        view.cornerRadius = 12
+        view.roundingCorners = .allCorners
+        view.fillColor = R.color.colorSecondaryScreenBackground()!
+        view.highlightedFillColor = R.color.colorSecondaryScreenBackground()!
+
+        view.layer.cornerRadius = 12
+        view.clipsToBounds = true
     }
 
     let imageView = UIImageView()
+
+    let borderView: RoundedView = .create { view in
+        view.applyStrokedBackgroundStyle()
+        view.cornerRadius = 12
+        view.roundingCorners = .allCorners
+
+        view.strokeWidth = Constants.borderWidth
+        view.strokeColor = R.color.colorStakingTypeCardBorder()!
+        view.highlightedStrokeColor = R.color.colorActiveBorder()!
+    }
 
     var imageOffsets = Constants.imageOffsets {
         didSet {
@@ -42,14 +53,18 @@ class StakingTypeBaseBannerView: UIView {
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        addSubview(imageView)
+
+        backgroundView.addSubview(imageView)
         imageView.snp.makeConstraints {
             $0.trailing.equalToSuperview().offset(imageOffsets.right)
             $0.top.equalToSuperview().offset(imageOffsets.top)
             $0.size.equalTo(imageSize)
         }
 
-        layer.cornerRadius = 12
+        addSubview(borderView)
+        borderView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
     }
 
     private func updateImageConstraints() {

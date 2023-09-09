@@ -57,8 +57,6 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         stackView.addArrangedSubview(descriptionStack)
         stackView.setCustomSpacing(20, after: descriptionStack)
         stackView.addArrangedSubview(accountView)
-
-        clipsToBounds = true
     }
 
     func setAction(viewModel: ActionView.TModel) {

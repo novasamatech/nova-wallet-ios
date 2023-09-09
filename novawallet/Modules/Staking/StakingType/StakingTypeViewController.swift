@@ -117,11 +117,11 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
         activeBanner: StakingTypeBannerView<T1>,
         inactiveBanner: StakingTypeBannerView<T2>
     ) {
-        activeBanner.backgroundView.isHighlighted = true
+        activeBanner.borderView.isHighlighted = true
         activeBanner.radioSelectorView.selected = true
         activeBanner.accountView.isHidden = false
 
-        inactiveBanner.backgroundView.isHighlighted = false
+        inactiveBanner.borderView.isHighlighted = false
         inactiveBanner.radioSelectorView.selected = false
         inactiveBanner.accountView.isHidden = true
     }

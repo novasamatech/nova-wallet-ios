@@ -2,13 +2,8 @@ import UIKit
 import SoraUI
 
 final class StakingClaimableRewardView: UIView {
-    let backgroundView: OverlayBlurBackgroundView = .create { view in
-        view.sideLength = 12
-        view.borderType = .none
-        view.overlayView.fillColor = R.color.colorBlockBackground()!
-        view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
-        view.overlayView.strokeWidth = 1
-        view.blurView?.alpha = 0.75
+    let backgroundView: BlockBackgroundView = .create { view in
+        view.sideLength = 10
     }
 
     let contentView: GenericTitleValueView<MultiValueView, TriangularedButton> = .create { view in
