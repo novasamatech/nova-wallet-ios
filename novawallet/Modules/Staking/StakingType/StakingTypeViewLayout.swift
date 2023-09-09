@@ -6,12 +6,14 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
         $0.accountView.genericViewSkeletonSize = CGSize(width: 24, height: 24)
         $0.imageSize = .init(width: 241, height: 185)
         $0.imageOffsets = (top: 0, right: 0)
+        $0.accountView.roundedBackgroundView.fillColor = R.color.colorChipsBackground()!
     }
 
     let directStakingBannerView: StakingTypeBannerView<StakingTypeValidatorView> = .create {
         $0.imageView.image = R.image.imageStakingTypeDirect()!
         $0.imageSize = .init(width: 241, height: 185)
         $0.imageOffsets = (top: 0, right: 0)
+        $0.accountView.roundedBackgroundView.fillColor = R.color.colorChipsBackground()!
     }
 
     override func setupLayout() {

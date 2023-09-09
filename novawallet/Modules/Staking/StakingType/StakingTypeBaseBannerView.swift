@@ -6,8 +6,8 @@ class StakingTypeBaseBannerView: UIView {
 
         view.cornerRadius = 12
         view.roundingCorners = .allCorners
-        view.fillColor = R.color.colorSecondaryScreenBackground()!
-        view.highlightedFillColor = R.color.colorSecondaryScreenBackground()!
+        view.fillColor = .black
+        view.highlightedFillColor = .black
 
         view.layer.cornerRadius = 12
         view.clipsToBounds = true
