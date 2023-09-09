@@ -1380,3 +1380,6 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.pool.is.not.open.title" = "Pool is not open";
 "staking.pool.is.not.open.message" = "You cannot join pool that is not open. Please, contact the pool owner.";
 "common.close.when.changes.confirmation" = "Are you sure you want to close this screen?\nYour changes will not be applied.";
+"staking.start.already.staking.title" = "Staking type cannot be changed";
+"staking.start.already.staking.pool" = "You are already staking in a pool";
+"staking.start.already.staking.direct" = "You are already have Direct staking";

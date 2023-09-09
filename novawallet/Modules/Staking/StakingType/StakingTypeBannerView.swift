@@ -25,6 +25,14 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         }
     }
 
+    func setEnabledStyle(_ isEnabled: Bool) {
+        if isEnabled {
+            stackView.alpha = 1.0
+        } else {
+            stackView.alpha = 0.5
+        }
+    }
+
     override func setupLayout() {
         super.setupLayout()
 

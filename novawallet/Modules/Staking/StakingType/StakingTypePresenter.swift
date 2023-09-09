@@ -150,6 +150,37 @@ final class StakingTypePresenter {
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
+
+    private func presentAlreadyStakingAlert(for type: StakingTypeSelection) {
+        let backAction = AlertPresentableAction(
+            title: R.string.localizable.commonBack(preferredLanguages: selectedLocale.rLanguages),
+            style: .normal
+        ) { [weak self] in
+            self?.wireframe.complete(from: self?.view)
+        }
+
+        let message: String
+
+        switch type {
+        case .direct:
+            message = R.string.localizable.stakingStartAlreadyStakingDirect(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .nominationPool:
+            message = R.string.localizable.stakingStartAlreadyStakingPool(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.stakingStartAlreadyStakingTitle(preferredLanguages: selectedLocale.rLanguages),
+            message: message,
+            actions: [backAction],
+            closeAction: nil
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+    }
 }
 
 extension StakingTypePresenter: StakingTypePresenterProtocol {
@@ -214,7 +245,12 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
-        guard canChangeType, let restrictions = directStakingRestrictions else {
+        guard canChangeType else {
+            presentAlreadyStakingAlert(for: stakingTypeSelection)
+            return
+        }
+
+        guard let restrictions = directStakingRestrictions else {
             return
         }
 
