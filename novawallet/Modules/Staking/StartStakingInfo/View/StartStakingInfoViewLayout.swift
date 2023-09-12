@@ -158,7 +158,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
 extension StartStakingInfoViewLayout: SkeletonableView {
     var skeletonSuperview: UIView {
-        self
+        containerView
     }
 
     var hidingViews: [UIView] {
@@ -190,8 +190,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
         )
 
         let headerFirstLineSkeleton = SingleSkeleton.createRow(
-            on: self,
-            containerView: self,
+            on: containerView,
+            containerView: containerView,
             spaceSize: spaceSize,
             offset: headerFirstLineOffset,
             size: headerFirstLineSize
@@ -201,8 +201,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             y: headerFirstLineOffset.y + headerFirstLineSize.height + 17
         )
         let headerSecondLineSkeleton = SingleSkeleton.createRow(
-            on: self,
-            containerView: self,
+            on: containerView,
+            containerView: containerView,
             spaceSize: spaceSize,
             offset: headerSecondLineOffset,
             size: headerSecondLineSize
@@ -213,8 +213,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             y: headerSecondLineOffset.y + headerSecondLineSize.height + 17
         )
         let headerThirdLineSkeleton = SingleSkeleton.createRow(
-            on: self,
-            containerView: self,
+            on: containerView,
+            containerView: containerView,
             spaceSize: spaceSize,
             offset: headerThirdLineOffset,
             size: headerThirdLineSize
@@ -227,8 +227,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             )
 
             let iconSkeleton = SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
+                on: containerView,
+                containerView: containerView,
                 spaceSize: spaceSize,
                 offset: iconOffset,
                 size: iconSize
@@ -240,8 +240,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             )
 
             let titleSkeleton = SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
+                on: containerView,
+                containerView: containerView,
                 spaceSize: spaceSize,
                 offset: titleOffset,
                 size: titleSize
@@ -253,8 +253,8 @@ extension StartStakingInfoViewLayout: SkeletonableView {
             )
 
             let subtitleSkeleton = SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
+                on: containerView,
+                containerView: containerView,
                 spaceSize: spaceSize,
                 offset: subtitleOffset,
                 size: subtitleSize
