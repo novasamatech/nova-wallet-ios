@@ -116,13 +116,6 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
                 limits: unstakingLimits,
                 eraCountdown: eraCountdown,
                 locale: selectedLocale
-            ),
-            dataValidatorFactory.minStakeNotCrossed(
-                for: getInputAmount() ?? 0,
-                stakedAmountInPlank: getStakedAmountInPlank(),
-                minStake: minStake,
-                chainAsset: chainAsset,
-                locale: selectedLocale
             )
         ]
     }
@@ -130,16 +123,18 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     func getUnstakingPoints() -> BigUInt? {
         guard
             let stakingLedger = stakingLedger,
-            let bondedPool = bondedPool else {
+            let bondedPool = bondedPool,
+            let poolMember = poolMember else {
             return nil
         }
 
         let inputAmount = getInputAmountInPlank() ?? 0
 
-        return NominationPools.balanceToPoints(
+        return NominationPools.unstakingBalanceToPoints(
             for: inputAmount,
             totalPoints: bondedPool.points,
-            poolBalance: stakingLedger.active
+            poolBalance: stakingLedger.active,
+            memberStakedPoints: poolMember.points
         )
     }
 

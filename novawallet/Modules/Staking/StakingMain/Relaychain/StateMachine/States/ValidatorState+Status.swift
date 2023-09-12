@@ -9,6 +9,10 @@ extension ValidatorState {
         }
 
         do {
+            guard ledgerInfo.active > 0 else {
+                return .inactive(era: eraStakers.activeEra)
+            }
+
             let accountId = try stashItem.stash.toAccountId()
 
             if eraStakers.validators

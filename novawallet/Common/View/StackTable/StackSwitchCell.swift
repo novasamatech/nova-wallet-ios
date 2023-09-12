@@ -35,6 +35,8 @@ final class StackSwitchCell: RowView<GenericTitleValueView<MultiValueView, UISwi
         switchControl.onTintColor = R.color.colorIconAccent()
 
         rowContentView.titleView.spacing = 2
+
+        rowContentView.titleView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 }
 

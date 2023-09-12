@@ -15,7 +15,7 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
     func showNominationPoolsList(
         from view: ControllerBackedProtocol?,
         amount: BigUInt,
-        delegate: StakingSelectPoolDelegate?,
+        delegate: StakingSetupTypeEntityFacade,
         selectedPool: NominationPools.SelectedPool?
     ) {
         guard let poolListView = StakingSelectPoolViewFactory.createView(
@@ -26,6 +26,8 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
         ) else {
             return
         }
+
+        delegate.bindToFlow(controller: poolListView.controller)
 
         view?.controller.navigationController?.pushViewController(
             poolListView.controller,
@@ -38,7 +40,7 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
         selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
-        delegate: StakingSelectValidatorsDelegateProtocol?
+        delegate: StakingSetupTypeEntityFacade
     ) {
         guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
             for: state,
@@ -49,6 +51,8 @@ final class StakingTypeWireframe: StakingTypeWireframeProtocol {
         ) else {
             return
         }
+
+        delegate.bindToFlow(controller: validatorsView.controller)
 
         view?.controller.navigationController?.pushViewController(
             validatorsView.controller,

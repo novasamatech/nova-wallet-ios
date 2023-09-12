@@ -45,4 +45,10 @@ extension RoundedView {
         shadowOpacity = 0.0
         strokeWidth = 0.0
     }
+
+    func applyStrokedBackgroundStyle() {
+        shadowOpacity = 0.0
+        fillColor = .clear
+        highlightedFillColor = .clear
+    }
 }

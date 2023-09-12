@@ -59,6 +59,10 @@ final class StakingNPoolsViewModelFactory {
             return .undefined
         }
 
+        guard poolMember.points > 0 else {
+            return .inactive
+        }
+
         guard !activePools.contains(poolMember.poolId) else {
             return .active
         }
@@ -182,6 +186,7 @@ final class StakingNPoolsViewModelFactory {
             return StakingRewardViewModel(
                 totalRewards: totalRewards.map { .loaded(value: $0) } ?? .loading,
                 claimableRewards: claimableRewardViewModel.map { .loaded(value: $0) } ?? .loading,
+                graphics: R.image.imageStakingTypePool(),
                 filter: filter,
                 hasPrice: chainAsset.asset.hasPrice
             )

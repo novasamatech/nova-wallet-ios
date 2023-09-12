@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 protocol ParaStkStateViewModelFactoryProtocol {
     func createViewModel(from state: ParaStkStateProtocol) -> StakingViewState
@@ -15,11 +16,16 @@ final class ParaStkStateViewModelFactory {
     }
 
     private func createDelegationStatus(
-        for collatorStatuses: [ParaStkDelegationStatus]?,
+        for activeStake: BigUInt,
+        collatorStatuses: [ParaStkDelegationStatus]?,
         commonData: ParachainStaking.CommonData
     ) -> NominationViewStatus {
         guard let statuses = collatorStatuses, let roundInfo = commonData.roundInfo else {
             return .undefined
+        }
+
+        guard activeStake > 0 else {
+            return .inactive
         }
 
         if statuses.contains(where: { $0 == .rewarded }) {
@@ -123,6 +129,7 @@ final class ParaStkStateViewModelFactory {
                 return StakingRewardViewModel(
                     totalRewards: .loaded(value: reward),
                     claimableRewards: nil,
+                    graphics: R.image.imageStakingTypeDirect(),
                     filter: filter,
                     hasPrice: chainAsset.asset.hasPrice
                 )
@@ -132,6 +139,7 @@ final class ParaStkStateViewModelFactory {
                 StakingRewardViewModel(
                     totalRewards: .loading,
                     claimableRewards: nil,
+                    graphics: R.image.imageStakingTypeDirect(),
                     filter: nil,
                     hasPrice: chainAsset.asset.hasPrice
                 )
@@ -204,7 +212,8 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
         }
 
         let delegationStatus = createDelegationStatus(
-            for: collatorsStatuses,
+            for: state.delegatorState.staked,
+            collatorStatuses: collatorsStatuses,
             commonData: state.commonData
         )
 

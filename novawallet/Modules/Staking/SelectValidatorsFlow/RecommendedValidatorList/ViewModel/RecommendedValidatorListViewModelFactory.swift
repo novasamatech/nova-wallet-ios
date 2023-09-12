@@ -20,7 +20,7 @@ final class RecommendedValidatorListViewModelFactory {
 
     private func createStakeReturnString(from stakeReturn: Decimal?) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            guard let stakeReturn = stakeReturn else { return "" }
+            guard let stakeReturn = stakeReturn, stakeReturn > 0 else { return "" }
 
             let percentageFormatter = NumberFormatter.percent.localizableResource().value(for: locale)
 

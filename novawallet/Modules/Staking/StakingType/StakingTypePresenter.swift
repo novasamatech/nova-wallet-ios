@@ -135,18 +135,47 @@ final class StakingTypePresenter {
 
     private func showSaveChangesAlert() {
         let languages = selectedLocale.rLanguages
-        let saveActionTitle = R.string.localizable.commonSave(preferredLanguages: languages)
+        let closeActionTitle = R.string.localizable.commonClose(preferredLanguages: languages)
         let cancelActionTitle = R.string.localizable.commonCancel(preferredLanguages: languages)
-        let saveAction = AlertPresentableAction(title: saveActionTitle) { [weak self] in
-            self?.save()
-        }
-        let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
+        let closeAction = AlertPresentableAction(title: closeActionTitle, style: .destructive) { [weak self] in
             self?.wireframe.complete(from: self?.view)
         }
+
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.stakingTypeAlertUnsavedChangesTitle(preferredLanguages: languages),
-            message: R.string.localizable.stakingTypeAlertUnsavedChangesMessage(preferredLanguages: languages),
-            actions: [saveAction, cancelAction],
+            title: nil,
+            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
+            actions: [closeAction],
+            closeAction: cancelActionTitle
+        )
+
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
+
+    private func presentAlreadyStakingAlert(for type: StakingTypeSelection) {
+        let backAction = AlertPresentableAction(
+            title: R.string.localizable.commonBack(preferredLanguages: selectedLocale.rLanguages),
+            style: .normal
+        ) { [weak self] in
+            self?.wireframe.complete(from: self?.view)
+        }
+
+        let message: String
+
+        switch type {
+        case .direct:
+            message = R.string.localizable.stakingStartAlreadyStakingDirect(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .nominationPool:
+            message = R.string.localizable.stakingStartAlreadyStakingPool(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.stakingStartAlreadyStakingTitle(preferredLanguages: selectedLocale.rLanguages),
+            message: message,
+            actions: [backAction],
             closeAction: nil
         )
 
@@ -165,18 +194,27 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             return
         }
 
-        let electedValidatorList = validators.electedValidators.map { $0.toSelected(for: nil) }
+        let fullValidatorList = CustomValidatorsFullList(
+            allValidators: validators.electedAndPrefValidators.electedToSelectedValidators(),
+            preferredValidators: validators.electedAndPrefValidators.preferredValidators
+        )
+
         let recommendedValidatorList = validators.recommendedValidators
 
         let groups = SelectionValidatorGroups(
-            fullValidatorList: electedValidatorList,
+            fullValidatorList: fullValidatorList,
             recommendedValidatorList: recommendedValidatorList
         )
 
-        let hasIdentity = validators.targets.contains { $0.hasIdentity }
+        let hasIdentity = fullValidatorList.allValidators.contains { $0.hasIdentity }
         let selectionParams = ValidatorsSelectionParams(
             maxNominations: validators.maxTargets,
             hasIdentity: hasIdentity
+        )
+
+        let delegateFacade = StakingSetupTypeEntityFacade(
+            selectedMethod: method,
+            delegate: delegate
         )
 
         wireframe.showValidators(
@@ -184,24 +222,35 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             selectionValidatorGroups: groups,
             selectedValidatorList: SharedList(items: validators.targets),
             validatorsSelectionParams: selectionParams,
-            delegate: self
+            delegate: delegateFacade
         )
     }
 
     func selectNominationPool() {
-        guard case let .pool(selectedPool) = method?.selectedStakingOption else {
+        guard let method = method, case let .pool(selectedPool) = method.selectedStakingOption else {
             return
         }
+
+        let delegateFacade = StakingSetupTypeEntityFacade(
+            selectedMethod: method,
+            delegate: delegate
+        )
+
         wireframe.showNominationPoolsList(
             from: view,
             amount: amount,
-            delegate: self,
+            delegate: delegateFacade,
             selectedPool: selectedPool
         )
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
-        guard canChangeType, let restrictions = directStakingRestrictions else {
+        guard canChangeType else {
+            presentAlreadyStakingAlert(for: stakingTypeSelection)
+            return
+        }
+
+        guard let restrictions = directStakingRestrictions else {
             return
         }
 
@@ -291,55 +340,5 @@ extension StakingTypePresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
-    }
-}
-
-extension StakingTypePresenter: StakingSelectPoolDelegate {
-    func changePoolSelection(selectedPool: NominationPools.SelectedPool, isRecommended: Bool) {
-        guard let restrictions = nominationPoolRestrictions else {
-            return
-        }
-        let method = StakingSelectionMethod.manual(.init(
-            staking: .pool(selectedPool),
-            restrictions: restrictions,
-            usedRecommendation: isRecommended
-        ))
-
-        hasChanges = true
-        self.method = method
-        delegate?.changeStakingType(method: method)
-    }
-}
-
-extension StakingTypePresenter: StakingSelectValidatorsDelegateProtocol {
-    func changeValidatorsSelection(validatorList: [SelectedValidatorInfo], maxTargets: Int) {
-        guard let method = convert(validatorList: validatorList, maxTargets: maxTargets) else {
-            return
-        }
-
-        hasChanges = true
-        self.method = method
-        delegate?.changeStakingType(method: method)
-    }
-
-    private func convert(validatorList: [SelectedValidatorInfo], maxTargets: Int) -> StakingSelectionMethod? {
-        guard case let .direct(validators) = method?.selectedStakingOption,
-              let restrictions = method?.restrictions else {
-            return nil
-        }
-
-        let selectedAddresses = validatorList.map(\.address)
-
-        let usedRecommendation = Set(selectedAddresses) == Set(validators.recommendedValidators.map(\.address))
-        return .manual(.init(
-            staking: .direct(.init(
-                targets: validatorList,
-                maxTargets: maxTargets,
-                electedValidators: validators.electedValidators,
-                recommendedValidators: validators.recommendedValidators
-            )),
-            restrictions: restrictions,
-            usedRecommendation: usedRecommendation
-        ))
     }
 }

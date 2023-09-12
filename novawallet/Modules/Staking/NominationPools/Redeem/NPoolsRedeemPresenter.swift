@@ -208,7 +208,8 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         switch submissionResult {
         case .success:
             let totalPoints = poolMember?.points ?? 0
-            let action: ExtrinsicSubmissionPresentingAction = totalPoints > 0 ? .dismiss : .popBaseAndDismiss
+            let willHaveStaking = totalPoints > 0 || (poolMember?.unbondingEras ?? []).count > 1
+            let action: ExtrinsicSubmissionPresentingAction = willHaveStaking ? .dismiss : .popBaseAndDismiss
 
             wireframe.presentExtrinsicSubmission(
                 from: view,

@@ -54,7 +54,11 @@ protocol StakingSetupAmountWireframeProtocol: AlertPresentable, ErrorPresentable
         amount: Decimal
     )
 
-    func showSelectValidators(from view: ControllerBackedProtocol?, selectedValidators: PreparedValidators)
+    func showSelectValidators(
+        from view: ControllerBackedProtocol?,
+        selectedValidators: PreparedValidators,
+        delegate: StakingSetupTypeEntityFacade
+    )
 }
 
 enum StakingSetupAmountError: Error {

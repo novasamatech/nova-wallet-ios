@@ -10,40 +10,44 @@ final class DirectStakingRecommendationFactory {
     let operationFactory: ValidatorOperationFactoryProtocol
     let defaultMaxNominations: Int
     let clusterLimit: Int
+    let preferredValidators: [AccountId]
 
     init(
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationFactory: ValidatorOperationFactoryProtocol,
         defaultMaxNominations: Int = SubstrateConstants.maxNominations,
-        clusterLimit: Int = StakingConstants.targetsClusterLimit
+        clusterLimit: Int = StakingConstants.targetsClusterLimit,
+        preferredValidators: [AccountId]
     ) {
         self.runtimeProvider = runtimeProvider
         self.operationFactory = operationFactory
         self.defaultMaxNominations = defaultMaxNominations
         self.clusterLimit = clusterLimit
+        self.preferredValidators = preferredValidators
     }
 
     private func createRecommendationOperation(
-        dependingOn allElectedWrapper: CompoundOperationWrapper<[ElectedValidatorInfo]>,
+        dependingOn validatorsWrapper: CompoundOperationWrapper<ElectedAndPrefValidators>,
         maxNominationsOperation: BaseOperation<Int>,
         clusterLimit: Int
     ) -> BaseOperation<PreparedValidators> {
         ClosureOperation {
-            let electedValidators = try allElectedWrapper.targetOperation.extractNoCancellableResultData()
+            let validators = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
             let maxNominations = try maxNominationsOperation.extractNoCancellableResultData()
 
-            let resultLimit = min(electedValidators.count, maxNominations)
+            let resultLimit = min(validators.electedValidators.count, maxNominations)
             let recommendedValidators = RecommendationsComposer(
                 resultSize: resultLimit,
                 clusterSizeLimit: clusterLimit
+            ).compose(
+                from: validators.electedToSelectedValidators(),
+                preferrences: validators.preferredValidators
             )
-            .compose(from: electedValidators)
-            .map { $0.toSelected(for: nil) }
 
             return PreparedValidators(
                 targets: recommendedValidators,
                 maxTargets: resultLimit,
-                electedValidators: electedValidators,
+                electedAndPrefValidators: validators,
                 recommendedValidators: recommendedValidators
             )
         }
@@ -52,7 +56,7 @@ final class DirectStakingRecommendationFactory {
 
 extension DirectStakingRecommendationFactory: DirectStakingRecommendationFactoryProtocol {
     func createValidatorsRecommendationWrapper() -> CompoundOperationWrapper<PreparedValidators> {
-        let allElectedWrapper = operationFactory.allElectedOperation()
+        let validatorsWrapper = operationFactory.allPreferred(for: preferredValidators)
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let maxNominationsOperation = PrimitiveConstantOperation(
@@ -71,15 +75,15 @@ extension DirectStakingRecommendationFactory: DirectStakingRecommendationFactory
         maxNominationsOperation.addDependency(codingFactoryOperation)
 
         let recommendationOperation = createRecommendationOperation(
-            dependingOn: allElectedWrapper,
+            dependingOn: validatorsWrapper,
             maxNominationsOperation: maxNominationsOperation,
             clusterLimit: clusterLimit
         )
 
         recommendationOperation.addDependency(maxNominationsOperation)
-        recommendationOperation.addDependency(allElectedWrapper.targetOperation)
+        recommendationOperation.addDependency(validatorsWrapper.targetOperation)
 
-        let dependecies = allElectedWrapper.allOperations + [codingFactoryOperation, maxNominationsOperation]
+        let dependecies = validatorsWrapper.allOperations + [codingFactoryOperation, maxNominationsOperation]
 
         return CompoundOperationWrapper(targetOperation: recommendationOperation, dependencies: dependecies)
     }

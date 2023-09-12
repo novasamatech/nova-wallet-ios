@@ -343,4 +343,32 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             slashingsWrapper.allOperations + stakeInfoWrapper.allOperations
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
+
+    func allPreferred(
+        for preferredAccountIds: [AccountId]
+    ) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
+        let allElectedWrapper = allElectedOperation()
+        let wannabeWrapper = !preferredAccountIds.isEmpty ?
+            wannabeValidatorsOperation(for: preferredAccountIds) : nil
+
+        let mergeOperation = ClosureOperation<ElectedAndPrefValidators> {
+            let electedValidators = try allElectedWrapper.targetOperation.extractNoCancellableResultData()
+            let prefValidators = try wannabeWrapper?.targetOperation.extractNoCancellableResultData()
+
+            return ElectedAndPrefValidators(
+                electedValidators: electedValidators,
+                preferredValidators: prefValidators ?? []
+            )
+        }
+
+        mergeOperation.addDependency(allElectedWrapper.targetOperation)
+
+        if let wrapper = wannabeWrapper {
+            mergeOperation.addDependency(wrapper.targetOperation)
+        }
+
+        let dependencies = allElectedWrapper.allOperations + (wannabeWrapper?.allOperations ?? [])
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+    }
 }

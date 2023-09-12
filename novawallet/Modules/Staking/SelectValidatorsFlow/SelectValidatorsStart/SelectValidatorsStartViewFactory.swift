@@ -86,7 +86,10 @@ final class SelectValidatorsStartViewFactory {
         let interactor = SelectValidatorsStartInteractor(
             runtimeService: runtimeService,
             operationFactory: operationFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            preferredValidators: StakingConstants.preferredValidatorIds(
+                for: chainAsset.chain
+            )
         )
 
         let presenter = SelectValidatorsStartPresenter(

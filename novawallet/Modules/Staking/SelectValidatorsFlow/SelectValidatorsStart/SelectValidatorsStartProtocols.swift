@@ -19,7 +19,7 @@ protocol SelectValidatorsStartInteractorInputProtocol: AnyObject {
 }
 
 protocol SelectValidatorsStartInteractorOutputProtocol: AnyObject {
-    func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)
+    func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)
     func didReceiveMaxNominations(result: Result<Int, Error>)
 }
 

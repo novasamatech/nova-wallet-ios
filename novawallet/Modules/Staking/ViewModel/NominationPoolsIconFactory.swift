@@ -13,11 +13,10 @@ final class NominationPoolsIconFactory {
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     private func getKnownPoolIcon(for chainAsset: ChainAsset, poolId: NominationPools.PoolId) -> UIImage? {
-        if chainAsset.chain.chainId == KnowChainId.polkadot, poolId == 54 {
-            return R.image.iconNova()
-        }
+        let chainId = chainAsset.chain.chainId
+        let isKnownPool = StakingConstants.recommendedPoolIds[chainId] == poolId
 
-        return nil
+        return isKnownPool ? R.image.iconNova() : nil
     }
 }
 
