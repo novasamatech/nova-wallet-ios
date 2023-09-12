@@ -39,7 +39,8 @@ final class StakingRecommendationMediatorFactory {
     private func createDirectStakingRecommendationFactory(
         for state: RelaychainStartStakingStateProtocol
     ) -> DirectStakingRecommendationFactoryProtocol? {
-        let chainId = state.chainAsset.chain.chainId
+        let chain = state.chainAsset.chain
+        let chainId = chain.chainId
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
@@ -70,7 +71,8 @@ final class StakingRecommendationMediatorFactory {
             runtimeProvider: runtimeService,
             operationFactory: validatorOperationFactory,
             defaultMaxNominations: SubstrateConstants.maxNominations,
-            clusterLimit: StakingConstants.targetsClusterLimit
+            clusterLimit: StakingConstants.targetsClusterLimit,
+            preferredValidators: StakingConstants.preferredValidatorIds(for: chain)
         )
     }
 }

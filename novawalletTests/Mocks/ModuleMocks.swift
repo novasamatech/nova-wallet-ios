@@ -22898,6 +22898,21 @@ import RobinHood
         
     }
     
+    
+    
+     func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
+        
+    return cuckoo_manager.call("allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>",
+            parameters: (preferredAccountIds),
+            escapingParameters: (preferredAccountIds),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.allPreferred(for: preferredAccountIds))
+        
+    }
+    
 
 	 struct __StubbingProxy_ValidatorOperationFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -22930,6 +22945,11 @@ import RobinHood
 	    func wannabeValidatorsOperation<M1: Cuckoo.Matchable>(for accountIdList: M1) -> Cuckoo.ProtocolStubFunction<([AccountId]), CompoundOperationWrapper<[SelectedValidatorInfo]>> where M1.MatchedType == [AccountId] {
 	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: accountIdList) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "wannabeValidatorsOperation(for: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>", parameterMatchers: matchers))
+	    }
+	    
+	    func allPreferred<M1: Cuckoo.Matchable>(for preferredAccountIds: M1) -> Cuckoo.ProtocolStubFunction<([AccountId]), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.MatchedType == [AccountId] {
+	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: preferredAccountIds) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -22978,6 +22998,12 @@ import RobinHood
 	        return cuckoo_manager.verify("wannabeValidatorsOperation(for: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func allPreferred<M1: Cuckoo.Matchable>(for preferredAccountIds: M1) -> Cuckoo.__DoNotUse<([AccountId]), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.MatchedType == [AccountId] {
+	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: preferredAccountIds) { $0 }]
+	        return cuckoo_manager.verify("allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -23015,6 +23041,12 @@ import RobinHood
     
      func wannabeValidatorsOperation(for accountIdList: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[SelectedValidatorInfo]>).self)
+    }
+    
+    
+    
+     func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<ElectedAndPrefValidators>).self)
     }
     
 }
@@ -26728,9 +26760,9 @@ import SoraFoundation
     
     
     
-     func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)  {
+     func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)  {
         
-    return cuckoo_manager.call("didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)",
+    return cuckoo_manager.call("didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -26765,9 +26797,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ElectedValidatorInfo], Error>)> where M1.MatchedType == Result<[ElectedValidatorInfo], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ElectedValidatorInfo], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsStartInteractorOutputProtocol.self, method: "didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)", parameterMatchers: matchers))
+	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ElectedAndPrefValidators, Error>)> where M1.MatchedType == Result<ElectedAndPrefValidators, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ElectedAndPrefValidators, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsStartInteractorOutputProtocol.self, method: "didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveMaxNominations<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Int, Error>)> where M1.MatchedType == Result<Int, Error> {
@@ -26792,9 +26824,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<[ElectedValidatorInfo], Error>), Void> where M1.MatchedType == Result<[ElectedValidatorInfo], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ElectedValidatorInfo], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ElectedAndPrefValidators, Error>), Void> where M1.MatchedType == Result<ElectedAndPrefValidators, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ElectedAndPrefValidators, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -26814,7 +26846,7 @@ import SoraFoundation
     
     
     
-     func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)   {
+     func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

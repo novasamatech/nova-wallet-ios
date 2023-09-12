@@ -4,7 +4,8 @@ import SubstrateSdk
 
 protocol NominationPoolRecommendationFactoryProtocol: AnyObject {
     func createPoolRecommendationWrapper(
-        for maxMembersPerPool: UInt32?
+        for maxMembersPerPool: UInt32?,
+        preferrablePool: NominationPools.PoolId?
     ) -> CompoundOperationWrapper<NominationPools.SelectedPool>
 }
 
@@ -39,7 +40,8 @@ final class NominationPoolRecommendationFactory {
 
 extension NominationPoolRecommendationFactory: NominationPoolRecommendationFactoryProtocol {
     func createPoolRecommendationWrapper(
-        for maxMembersPerPool: UInt32?
+        for maxMembersPerPool: UInt32?,
+        preferrablePool: NominationPools.PoolId?
     ) -> CompoundOperationWrapper<NominationPools.SelectedPool> {
         let maxApyWrapper = rewardEngineOperationFactory.createEngineWrapper(
             for: eraPoolsService,
@@ -48,12 +50,17 @@ extension NominationPoolRecommendationFactory: NominationPoolRecommendationFacto
             runtimeService: runtimeService
         )
 
-        let poolStatsWrapper = storageOperationFactory.createSparePoolsInfoWrapper(
+        let params = RecommendedNominationPoolsParams(
+            maxMembersPerPool: { maxMembersPerPool },
+            preferrablePool: { preferrablePool }
+        )
+
+        let poolStatsWrapper = storageOperationFactory.createPoolRecommendationsInfoWrapper(
             for: eraPoolsService,
             rewardEngine: {
                 try maxApyWrapper.targetOperation.extractNoCancellableResultData()
             },
-            maxMembersPerPool: { maxMembersPerPool },
+            params: params,
             connection: connection,
             runtimeService: runtimeService
         )

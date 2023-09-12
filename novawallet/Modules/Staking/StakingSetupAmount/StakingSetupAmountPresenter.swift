@@ -426,7 +426,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
     }
 
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt) {
-        logger.debug("Did receive recommendation: \(recommendation)")
+        logger.debug("Did receive recommendation for amount: \(amount)")
 
         // check that we are waiting recommendation for particular amount
         guard pendingRecommendationAmount == amount, setupMethod.isRecommendation else {

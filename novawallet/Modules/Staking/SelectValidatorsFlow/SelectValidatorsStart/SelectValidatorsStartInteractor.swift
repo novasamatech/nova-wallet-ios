@@ -9,19 +9,22 @@ final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
     let operationFactory: ValidatorOperationFactoryProtocol
     let operationManager: OperationManagerProtocol
     let runtimeService: RuntimeCodingServiceProtocol
+    let preferredValidators: [AccountId]
 
     init(
         runtimeService: RuntimeCodingServiceProtocol,
         operationFactory: ValidatorOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        preferredValidators: [AccountId]
     ) {
         self.runtimeService = runtimeService
         self.operationFactory = operationFactory
         self.operationManager = operationManager
+        self.preferredValidators = preferredValidators
     }
 
     private func prepareRecommendedValidatorList() {
-        let wrapper = operationFactory.allElectedOperation()
+        let wrapper = operationFactory.allPreferred(for: preferredValidators)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

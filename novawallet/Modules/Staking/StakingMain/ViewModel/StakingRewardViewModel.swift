@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 struct StakingRewardViewModel {
     struct ClaimableRewards {
@@ -8,6 +8,7 @@ struct StakingRewardViewModel {
 
     let totalRewards: LoadableViewModelState<BalanceViewModelProtocol>
     let claimableRewards: LoadableViewModelState<ClaimableRewards>?
+    let graphics: UIImage?
     let filter: String?
     let hasPrice: Bool
 }

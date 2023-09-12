@@ -32,4 +32,13 @@ class ValidatorOperationFactoryStub: ValidatorOperationFactoryProtocol {
     func wannabeValidatorsOperation(for accountIdList: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
+    
+    func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
+        let electedAndPrefValidators = ElectedAndPrefValidators(
+            electedValidators: electedValidatorList,
+            preferredValidators: selectedValidatorList
+        )
+        
+        return .createWithResult(electedAndPrefValidators)
+    }
 }

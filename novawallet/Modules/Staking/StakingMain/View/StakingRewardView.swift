@@ -3,14 +3,21 @@ import SoraUI
 import SoraFoundation
 
 final class StakingRewardView: UIView {
-    let backgroundView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .scaleAspectFill
-        view.layer.cornerRadius = 12.0
+    let backgroundView: UIView = .create { view in
+        view.backgroundColor = R.color.colorRewardsBackground()
+        view.layer.cornerRadius = 12
         view.clipsToBounds = true
-        view.image = R.image.imageStakingReward()
-        return view
-    }()
+    }
+
+    let borderView: RoundedView = .create { view in
+        view.applyStrokedBackgroundStyle()
+
+        view.cornerRadius = 12
+        view.strokeColor = R.color.colorContainerBorder()!
+        view.strokeWidth = 1
+    }
+
+    let graphicsView = UIImageView()
 
     let totalRewardView = StakingTotalRewardView()
     private var claimableRewardView: StakingClaimableRewardView?
@@ -55,8 +62,11 @@ final class StakingRewardView: UIView {
         guard let viewModel = viewModel?.value(for: locale) else {
             totalRewardView.bind(totalRewards: .loading, filter: nil, hasPrice: true)
             clearClaimableRewardsView()
+            graphicsView.image = nil
             return
         }
+
+        graphicsView.image = viewModel.graphics
 
         totalRewardView.bind(
             totalRewards: viewModel.totalRewards,
@@ -109,6 +119,16 @@ final class StakingRewardView: UIView {
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        backgroundView.addSubview(graphicsView)
+        graphicsView.snp.makeConstraints { make in
+            make.top.right.equalToSuperview()
+        }
+
+        addSubview(borderView)
+        borderView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 

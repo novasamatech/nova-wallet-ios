@@ -33,7 +33,7 @@ final class StakingSetupTypeEntityFacade {
             staking: .direct(.init(
                 targets: validatorList,
                 maxTargets: maxTargets,
-                electedValidators: validators.electedValidators,
+                electedAndPrefValidators: validators.electedAndPrefValidators,
                 recommendedValidators: validators.recommendedValidators
             )),
             restrictions: restrictions,

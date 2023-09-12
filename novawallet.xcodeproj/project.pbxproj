@@ -110,6 +110,7 @@
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
 		0C5364A02A4D6EB700990478 /* AssetListBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */; };
+		0C543E972AAB1B350035F45F /* ElectedAndPrefValidators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */; };
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
 		0C56B4FB2A4B0C320030F9C9 /* AssetListBaseBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */; };
 		0C56B4FD2A4B0CA90030F9C9 /* AssetListBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */; };
@@ -221,6 +222,7 @@
 		0CC2E5682A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5672A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift */; };
 		0CC2E56A2A6E6EBB004092E7 /* LocalStorageProviderObserving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5692A6E6EBB004092E7 /* LocalStorageProviderObserving.swift */; };
 		0CC4CCF42A67C9C400F63041 /* Multistaking+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC4CCF32A67C9C400F63041 /* Multistaking+NominationPools.swift */; };
+		0CC6C8D82AAB401200AD8D9B /* CustomValidatorsFullList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */; };
 		0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */; };
 		0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F1EEBF48485F02BF690A4 /* ParaStkStakeSetupViewController.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
@@ -4046,6 +4048,7 @@
 		0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+MotionEffect.swift"; sourceTree = "<group>"; };
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
 		0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilder.swift; sourceTree = "<group>"; };
+		0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectedAndPrefValidators.swift; sourceTree = "<group>"; };
 		0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBaseBuilder.swift; sourceTree = "<group>"; };
 		0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilderResult.swift; sourceTree = "<group>"; };
 		0C59E8C72AA5C3F4001E11F3 /* SubstrateDataModel19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel19.xcdatamodel; sourceTree = "<group>"; };
@@ -4159,6 +4162,7 @@
 		0CC2E5692A6E6EBB004092E7 /* LocalStorageProviderObserving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageProviderObserving.swift; sourceTree = "<group>"; };
 		0CC41A9A168AF0F1FBE5F799 /* Pods_novawalletAll_novawallet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawallet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CC4CCF32A67C9C400F63041 /* Multistaking+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+NominationPools.swift"; sourceTree = "<group>"; };
+		0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomValidatorsFullList.swift; sourceTree = "<group>"; };
 		0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryPhishingFilter.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
@@ -13866,6 +13870,8 @@
 				849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */,
 				8436C7A029ACDCA50024B409 /* VotersStakingInfo.swift */,
 				0C79C8912A7BD9BB00B171E3 /* SelectedStakingOption.swift */,
+				0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */,
+				0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */,
 			);
 			path = Relaychain;
 			sourceTree = "<group>";
@@ -20180,6 +20186,7 @@
 				8849C5ED29806F4500DE35CC /* VersionTableViewCell.swift in Sources */,
 				84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift in Sources */,
 				84F5105B263AB9F2005D15AE /* NetworkFeeView.swift in Sources */,
+				0CC6C8D82AAB401200AD8D9B /* CustomValidatorsFullList.swift in Sources */,
 				84786E2425FBA2A50089DFF7 /* StakingAccountSubscription.swift in Sources */,
 				0CB261E22A9B215B00287305 /* NominationPoolUnstake.swift in Sources */,
 				84754C852510A1A400854599 /* ModalAlertPresenting.swift in Sources */,
@@ -21398,6 +21405,7 @@
 				84C5ADEA28147BC2006D7388 /* InlineAlertView.swift in Sources */,
 				BE3F6213B26F35EB6324DBD8 /* ControllerAccountWireframe.swift in Sources */,
 				77A6F5AE2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift in Sources */,
+				0C543E972AAB1B350035F45F /* ElectedAndPrefValidators.swift in Sources */,
 				8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */,
 				8455F19E2A1E4956003F072D /* RelaychainMultistakingUpdateService.swift in Sources */,
 				8455F1A42A1F606B003F072D /* OnchainStorage.swift in Sources */,

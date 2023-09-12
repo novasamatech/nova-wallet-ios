@@ -186,6 +186,7 @@ final class StakingNPoolsViewModelFactory {
             return StakingRewardViewModel(
                 totalRewards: totalRewards.map { .loaded(value: $0) } ?? .loading,
                 claimableRewards: claimableRewardViewModel.map { .loaded(value: $0) } ?? .loading,
+                graphics: R.image.imageStakingTypePool(),
                 filter: filter,
                 hasPrice: chainAsset.asset.hasPrice
             )

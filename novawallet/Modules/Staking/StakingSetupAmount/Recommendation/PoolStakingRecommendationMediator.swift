@@ -57,7 +57,11 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
             return
         }
 
-        let wrapper = operationFactory.createPoolRecommendationWrapper(for: maxMembersPerPool)
+        let preferrablePool = StakingConstants.recommendedPoolIds[chainAsset.chain.chainId]
+        let wrapper = operationFactory.createPoolRecommendationWrapper(
+            for: maxMembersPerPool,
+            preferrablePool: preferrablePool
+        )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

@@ -129,6 +129,7 @@ final class ParaStkStateViewModelFactory {
                 return StakingRewardViewModel(
                     totalRewards: .loaded(value: reward),
                     claimableRewards: nil,
+                    graphics: R.image.imageStakingTypeDirect(),
                     filter: filter,
                     hasPrice: chainAsset.asset.hasPrice
                 )
@@ -138,6 +139,7 @@ final class ParaStkStateViewModelFactory {
                 StakingRewardViewModel(
                     totalRewards: .loading,
                     claimableRewards: nil,
+                    graphics: R.image.imageStakingTypeDirect(),
                     filter: nil,
                     hasPrice: chainAsset.asset.hasPrice
                 )
