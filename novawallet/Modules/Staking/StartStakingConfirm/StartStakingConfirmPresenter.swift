@@ -211,7 +211,7 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
     func didReceiveConfirmation(hash _: String) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(from: view, completionAction: .popBaseAndDismiss, locale: selectedLocale)
     }
 
     func didReceive(restrictions: RelaychainStakingRestrictions) {

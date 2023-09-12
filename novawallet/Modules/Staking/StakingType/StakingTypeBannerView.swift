@@ -25,6 +25,14 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         }
     }
 
+    func setEnabledStyle(_ isEnabled: Bool) {
+        if isEnabled {
+            stackView.alpha = 1.0
+        } else {
+            stackView.alpha = 0.5
+        }
+    }
+
     override func setupLayout() {
         super.setupLayout()
 
@@ -57,8 +65,6 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         stackView.addArrangedSubview(descriptionStack)
         stackView.setCustomSpacing(20, after: descriptionStack)
         stackView.addArrangedSubview(accountView)
-
-        clipsToBounds = true
     }
 
     func setAction(viewModel: ActionView.TModel) {

@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class EraNominationPoolsService: BaseSyncService {
+final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning {
     private struct PendingRequest {
         let resultClosure: (NominationPools.ActivePools) -> Void
         let queue: DispatchQueue?
@@ -69,7 +69,7 @@ final class EraNominationPoolsService: BaseSyncService {
     }
 
     private func clearSubscriptions() {
-        lastPoolIdProvider = nil
+        clear(dataProvider: &lastPoolIdProvider)
     }
 
     private func clearUpdateOperation() {

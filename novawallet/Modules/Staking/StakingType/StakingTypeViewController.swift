@@ -117,11 +117,11 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
         activeBanner: StakingTypeBannerView<T1>,
         inactiveBanner: StakingTypeBannerView<T2>
     ) {
-        activeBanner.backgroundView.isHighlighted = true
+        activeBanner.borderView.isHighlighted = true
         activeBanner.radioSelectorView.selected = true
         activeBanner.accountView.isHidden = false
 
-        inactiveBanner.backgroundView.isHighlighted = false
+        inactiveBanner.borderView.isHighlighted = false
         inactiveBanner.radioSelectorView.selected = false
         inactiveBanner.accountView.isHidden = true
     }
@@ -130,12 +130,12 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 extension StakingTypeViewController: StakingTypeViewProtocol {
     func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool) {
         rootView.bind(poolStakingTypeViewModel: viewModel)
-        rootView.poolStakingBannerView.alpha = available ? 1 : 0.5
+        rootView.poolStakingBannerView.setEnabledStyle(available)
     }
 
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool) {
         rootView.bind(directStakingTypeViewModel: viewModel)
-        rootView.directStakingBannerView.alpha = available ? 1 : 0.5
+        rootView.directStakingBannerView.setEnabledStyle(available)
     }
 
     func didReceive(stakingTypeSelection: StakingTypeSelection) {

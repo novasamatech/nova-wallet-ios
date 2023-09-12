@@ -135,18 +135,47 @@ final class StakingTypePresenter {
 
     private func showSaveChangesAlert() {
         let languages = selectedLocale.rLanguages
-        let saveActionTitle = R.string.localizable.commonSave(preferredLanguages: languages)
+        let closeActionTitle = R.string.localizable.commonClose(preferredLanguages: languages)
         let cancelActionTitle = R.string.localizable.commonCancel(preferredLanguages: languages)
-        let saveAction = AlertPresentableAction(title: saveActionTitle) { [weak self] in
-            self?.save()
-        }
-        let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
+        let closeAction = AlertPresentableAction(title: closeActionTitle, style: .destructive) { [weak self] in
             self?.wireframe.complete(from: self?.view)
         }
+
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.stakingTypeAlertUnsavedChangesTitle(preferredLanguages: languages),
-            message: R.string.localizable.stakingTypeAlertUnsavedChangesMessage(preferredLanguages: languages),
-            actions: [saveAction, cancelAction],
+            title: nil,
+            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
+            actions: [closeAction],
+            closeAction: cancelActionTitle
+        )
+
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
+
+    private func presentAlreadyStakingAlert(for type: StakingTypeSelection) {
+        let backAction = AlertPresentableAction(
+            title: R.string.localizable.commonBack(preferredLanguages: selectedLocale.rLanguages),
+            style: .normal
+        ) { [weak self] in
+            self?.wireframe.complete(from: self?.view)
+        }
+
+        let message: String
+
+        switch type {
+        case .direct:
+            message = R.string.localizable.stakingStartAlreadyStakingDirect(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .nominationPool:
+            message = R.string.localizable.stakingStartAlreadyStakingPool(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.stakingStartAlreadyStakingTitle(preferredLanguages: selectedLocale.rLanguages),
+            message: message,
+            actions: [backAction],
             closeAction: nil
         )
 
@@ -216,7 +245,12 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func change(stakingTypeSelection: StakingTypeSelection) {
-        guard canChangeType, let restrictions = directStakingRestrictions else {
+        guard canChangeType else {
+            presentAlreadyStakingAlert(for: stakingTypeSelection)
+            return
+        }
+
+        guard let restrictions = directStakingRestrictions else {
             return
         }
 
