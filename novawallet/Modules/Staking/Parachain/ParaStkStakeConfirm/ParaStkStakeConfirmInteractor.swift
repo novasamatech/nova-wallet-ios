@@ -18,6 +18,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let stakingDurationFactory: ParaStkDurationOperationFactoryProtocol
     let blockEstimationService: BlockTimeEstimationServiceProtocol
+    let sharedOperation: SharedOperationProtocol?
     let signer: SigningWrapperProtocol
     let operationQueue: OperationQueue
 
@@ -42,6 +43,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         runtimeProvider: RuntimeCodingServiceProtocol,
         stakingDurationFactory: ParaStkDurationOperationFactoryProtocol,
         blockEstimationService: BlockTimeEstimationServiceProtocol,
+        sharedOperation: SharedOperationProtocol?,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -59,6 +61,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         self.operationQueue = operationQueue
         self.stakingDurationFactory = stakingDurationFactory
         self.blockEstimationService = blockEstimationService
+        self.sharedOperation = sharedOperation
         self.currencyManager = currencyManager
     }
 
@@ -220,6 +223,8 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
             return self != nil
         }
 
+        sharedOperation?.markSent()
+
         let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
             switch result {
             case let .success(status):
@@ -228,6 +233,7 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
                     self?.presenter?.didCompleteExtrinsicSubmission(for: .success(extrinsicHash))
                 }
             case let .failure(error):
+                self?.sharedOperation?.markComposing()
                 self?.cancelExtrinsicSubscriptionIfNeeded()
                 self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
             }

@@ -135,6 +135,7 @@ struct ParaStkStakeConfirmViewFactory {
             runtimeProvider: runtimeProvider,
             stakingDurationFactory: stakingDurationFactory,
             blockEstimationService: blockEstimationService,
+            sharedOperation: state.sharedOperation,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

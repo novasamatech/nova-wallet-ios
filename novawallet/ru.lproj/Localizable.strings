@@ -1383,3 +1383,4 @@
 "staking.start.already.staking.title" = "Тип стейкинга не может быть изменён";
 "staking.start.already.staking.pool" = "Вы уже стейкаете в пуле";
 "staking.start.already.staking.direct" = "У вас уже есть прямой стейкинг";
+"staking.start.already.have.any.staking" = "Вы уже начали стейкинг в %@";

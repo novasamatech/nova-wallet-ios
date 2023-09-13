@@ -1383,3 +1383,4 @@ Are you sure you want to proceed with the selected Pool?";
 "staking.start.already.staking.title" = "Staking type cannot be changed";
 "staking.start.already.staking.pool" = "You are already staking in a pool";
 "staking.start.already.staking.direct" = "You are already have Direct staking";
+"staking.start.already.have.any.staking" = "You are already have staking in %@";

@@ -42,19 +42,7 @@ extension ExtrinsicSubmissionPresenting where Self: ModalAlertPresenting {
 
             presentSuccessNotification(title, from: presenter, completion: nil)
         case .popBaseAndDismiss:
-            var rootNavigationController: UINavigationController?
-
-            let presenter = view?.controller.navigationController?.presentingViewController
-
-            if let tabBar = presenter as? UITabBarController {
-                rootNavigationController = tabBar.selectedViewController as? UINavigationController
-            } else {
-                rootNavigationController = presenter as? UINavigationController
-            }
-
-            rootNavigationController?.popToRootViewController(animated: false)
-
-            presenter?.dismiss(animated: true) { [weak self] in
+            MainTransitionHelper.dismissAndPopBack(from: view) { [weak self] presenter in
                 self?.presentSuccessNotification(title, from: presenter, completion: nil)
             }
         }

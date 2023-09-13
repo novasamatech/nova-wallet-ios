@@ -19,6 +19,8 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     var activePoolsService: EraNominationPoolsServiceProtocol? { get }
     var npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol { get }
 
+    var sharedOperation: SharedOperationProtocol? { get }
+
     func setup(for accountId: AccountId?) throws
     func throttle()
     func supportsPoolStaking() -> Bool
@@ -32,6 +34,8 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     ) -> EraCountdownOperationFactoryProtocol
 
     func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol
+
+    func startSharedOperation() -> SharedOperationProtocol
 }
 
 final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
@@ -51,6 +55,8 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     let npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?
     let npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let activePoolsService: EraNominationPoolsServiceProtocol?
+
+    weak var sharedOperation: SharedOperationProtocol?
 
     private var relaychainGlobalSubscriptionId: UUID?
     private var npGlobalSubscriptionId: UUID?
@@ -225,5 +231,11 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
             for: chainAsset.chain,
             timeModel: timeModel
         )
+    }
+
+    func startSharedOperation() -> SharedOperationProtocol {
+        let operation = SharedOperation()
+        sharedOperation = operation
+        return operation
     }
 }

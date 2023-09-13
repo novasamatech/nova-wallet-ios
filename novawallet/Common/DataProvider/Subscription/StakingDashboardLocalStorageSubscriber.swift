@@ -1,13 +1,18 @@
 import Foundation
 import RobinHood
 
-protocol StakingDashboardLocalStorageSubscriber: AnyObject {
+protocol StakingDashboardLocalStorageSubscriber: AnyObject, LocalStorageProviderObserving {
     var stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol { get }
 
     var stakingDashboardLocalStorageHandler: StakingDashboardLocalStorageHandler { get }
 
     func subscribeDashboardItems(
         for walletId: MetaAccountModel.Id
+    ) -> StreamableProvider<Multistaking.DashboardItem>?
+
+    func subscribeDashboardItems(
+        for walletId: MetaAccountModel.Id,
+        chainAssetId: ChainAssetId
     ) -> StreamableProvider<Multistaking.DashboardItem>?
 }
 
@@ -48,6 +53,39 @@ extension StakingDashboardLocalStorageSubscriber where Self: StakingDashboardLoc
             executing: updateClosure,
             failing: failureClosure,
             options: options
+        )
+
+        return provider
+    }
+
+    func subscribeDashboardItems(
+        for walletId: MetaAccountModel.Id,
+        chainAssetId: ChainAssetId
+    ) -> StreamableProvider<Multistaking.DashboardItem>? {
+        guard
+            let provider = stakingDashboardProviderFactory.getDashboardItemsProvider(
+                for: walletId,
+                chainAssetId: chainAssetId
+            ) else {
+            return nil
+        }
+
+        addStreamableProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] changes in
+                self?.stakingDashboardLocalStorageHandler.handleDashboardItems(
+                    .success(changes),
+                    walletId: walletId,
+                    chainAssetId: chainAssetId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingDashboardLocalStorageHandler.handleDashboardItems(
+                    .failure(error),
+                    walletId: walletId,
+                    chainAssetId: chainAssetId
+                )
+            }
         )
 
         return provider
