@@ -113,7 +113,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
 
     private func provideMinTechStake() {
         fetchConstant(
-            for: ParachainStaking.minDelegatorStk,
+            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
             runtimeCodingService: runtimeProvider,
             operationManager: OperationManager(operationQueue: operationQueue)
         ) { [weak self] (result: Result<BigUInt, Error>) in

@@ -13,11 +13,16 @@ protocol RuntimeCoderFactoryProtocol {
     func hasType(for name: String) -> Bool
     func getTypeNode(for name: String) -> Node?
     func getCall(for codingPath: CallCodingPath) -> CallMetadata?
+    func getConstant(for codingPath: ConstantCodingPath) -> ModuleConstantMetadata?
 }
 
 extension RuntimeCoderFactoryProtocol {
     func hasCall(for codingPath: CallCodingPath) -> Bool {
         getCall(for: codingPath) != nil
+    }
+
+    func hasConstant(for codingPath: ConstantCodingPath) -> Bool {
+        getConstant(for: codingPath) != nil
     }
 }
 
@@ -81,5 +86,9 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
 
     func getCall(for codingPath: CallCodingPath) -> CallMetadata? {
         metadata.getCall(from: codingPath.moduleName, with: codingPath.callName)
+    }
+
+    func getConstant(for codingPath: ConstantCodingPath) -> ModuleConstantMetadata? {
+        metadata.getConstant(in: codingPath.moduleName, constantName: codingPath.constantName)
     }
 }
