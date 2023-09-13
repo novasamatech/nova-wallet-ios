@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 class SubstrateLocalSubscriptionFactory {
     private var providers: [String: WeakWrapper] = [:]
@@ -146,5 +147,57 @@ class SubstrateLocalSubscriptionFactory {
         saveProvider(dataProvider, for: localKey)
 
         return AnyDataProvider(dataProvider)
+    }
+
+    func getNoFallbackPathProvider<T: Decodable & Equatable>(
+        for storagePath: StorageCodingPath,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(storagePath, chainId: chainId)
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storagePath,
+            shouldUseFallback: false
+        )
+    }
+
+    func getNoFallbackAccountProvider<T: Decodable & Equatable>(
+        for storagePath: StorageCodingPath,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            storagePath,
+            accountId: accountId,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storagePath,
+            shouldUseFallback: false
+        )
+    }
+
+    func getNoFallbackScalingElementProvider<T: Decodable & Equatable, E: ScaleEncodable>(
+        for storagePath: StorageCodingPath,
+        encodableElement: E,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            storagePath,
+            encodableElement: encodableElement,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storagePath,
+            shouldUseFallback: false
+        )
     }
 }

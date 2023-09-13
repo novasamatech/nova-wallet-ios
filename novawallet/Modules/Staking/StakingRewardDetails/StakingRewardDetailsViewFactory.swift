@@ -5,7 +5,7 @@ import SubstrateSdk
 
 final class StakingRewardDetailsViewFactory {
     static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         input: StakingRewardDetailsInput
     ) -> StakingRewardDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {

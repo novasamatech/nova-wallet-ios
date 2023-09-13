@@ -8,15 +8,30 @@ struct OperationDetailsViewFactory {
         for transaction: TransactionHistoryItem,
         chainAsset: ChainAsset
     ) -> OperationDetailsViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let wallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
-        let storageFacade = UserDataStorageFacade.shared
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
-        let walletRepository = accountRepositoryFactory.createMetaAccountRepository(
-            for: nil,
-            sortDescriptors: []
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+
+        let operationDetailsDataProviderFactory = OperationDetailsDataProviderFactory(
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
+            accountRepositoryFactory: accountRepositoryFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
+        guard
+            let operationDetailsDataProvider = operationDetailsDataProviderFactory.createProvider(
+                for: transaction
+            ) else {
+            return nil
+        }
 
         let transactionLocalSubscriptionFactory = TransactionLocalSubscriptionFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
@@ -26,12 +41,10 @@ struct OperationDetailsViewFactory {
         let interactor = OperationDetailsInteractor(
             transaction: transaction,
             chainAsset: chainAsset,
-            wallet: SelectedWalletSettings.shared.value,
-            walletRepository: AnyDataProviderRepository(walletRepository),
             transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            operationDataProvider: operationDetailsDataProvider
         )
 
         let wireframe = OperationDetailsWireframe()

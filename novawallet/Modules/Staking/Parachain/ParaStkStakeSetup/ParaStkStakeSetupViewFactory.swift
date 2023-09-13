@@ -4,7 +4,7 @@ import SubstrateSdk
 
 struct ParaStkStakeSetupViewFactory {
     static func createView(
-        with state: ParachainStakingSharedState,
+        with state: ParachainStakingSharedStateProtocol,
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
@@ -88,23 +88,24 @@ struct ParaStkStakeSetupViewFactory {
     }
 
     private static func createInteractor(
-        from state: ParachainStakingSharedState
+        from state: ParachainStakingSharedStateProtocol
     ) -> ParaStkStakeSetupInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chainRegistry = state.chainRegistry
 
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
-            let collatorService = state.collatorService,
-            let rewardService = state.rewardCalculationService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
+
+        let collatorService = state.collatorService
+        let rewardService = state.rewardCalculationService
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,

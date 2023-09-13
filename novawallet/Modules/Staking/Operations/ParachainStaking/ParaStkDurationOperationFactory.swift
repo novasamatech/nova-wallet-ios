@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-struct ParachainStakingDuration {
+struct ParachainStakingDuration: Equatable {
     let block: TimeInterval
     let round: TimeInterval
     let unstaking: TimeInterval

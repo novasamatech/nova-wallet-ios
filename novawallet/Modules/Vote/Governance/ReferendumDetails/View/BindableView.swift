@@ -16,10 +16,8 @@ extension BindableView {
     }
 }
 
-extension RowView: BindableView where T: BindableView {
-    typealias TModel = T.TModel
-
-    func bind(viewModel: TModel) {
+extension StackTitleValueDiffCell: BindableView {
+    func bind(viewModel: ReferendumLockTransitionViewModel) {
         rowContentView.bind(viewModel: viewModel)
     }
 }

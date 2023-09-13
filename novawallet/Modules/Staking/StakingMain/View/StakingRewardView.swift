@@ -2,52 +2,35 @@ import UIKit
 import SoraUI
 import SoraFoundation
 
-struct StakingRewardSkeletonOptions: OptionSet {
-    typealias RawValue = UInt8
-
-    static let reward = StakingRewardSkeletonOptions(rawValue: 1 << 0)
-    static let price = StakingRewardSkeletonOptions(rawValue: 1 << 1)
-
-    let rawValue: UInt8
-
-    init(rawValue: RawValue) {
-        self.rawValue = rawValue
-    }
-}
-
 final class StakingRewardView: UIView {
-    let backgroundView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .scaleAspectFill
-        view.layer.cornerRadius = 12.0
+    let backgroundView: UIView = .create { view in
+        view.backgroundColor = R.color.colorRewardsBackground()
+        view.layer.cornerRadius = 12
         view.clipsToBounds = true
-        view.image = R.image.imageStakingReward()
-        return view
-    }()
+    }
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .regularSubheadline
-        return label
-    }()
+    let borderView: RoundedView = .create { view in
+        view.applyStrokedBackgroundStyle()
 
-    let filterView = BorderedActionControlView()
+        view.cornerRadius = 12
+        view.strokeColor = R.color.colorContainerBorder()!
+        view.strokeWidth = 1
+    }
 
-    let rewardView: MultiValueView = {
-        let view = MultiValueView()
-        view.valueTop.textColor = R.color.colorTextPrimary()
-        view.valueTop.textAlignment = .left
-        view.valueTop.font = .boldTitle2
-        view.valueBottom.textColor = R.color.colorTextSecondary()
-        view.valueBottom.textAlignment = .left
-        view.valueBottom.font = .regularSubheadline
-        view.spacing = 4.0
-        return view
-    }()
+    let graphicsView = UIImageView()
 
-    private var skeletonView: SkrullableView?
-    private var skeletonOptions: StakingRewardSkeletonOptions?
+    let totalRewardView = StakingTotalRewardView()
+    private var claimableRewardView: StakingClaimableRewardView?
+
+    var claimButton: TriangularedButton? { claimableRewardView?.actionButton }
+    var filterView: BorderedActionControlView { totalRewardView.filterView }
+
+    let stackView: UIStackView = .create { view in
+        view.axis = .vertical
+        view.spacing = 16
+        view.isLayoutMarginsRelativeArrangement = true
+        view.layoutMargins = UIEdgeInsets(top: 20, left: 16, bottom: 12, right: 16)
+    }
 
     private var viewModel: LocalizableResource<StakingRewardViewModel>?
 
@@ -65,21 +48,9 @@ final class StakingRewardView: UIView {
         setupLocalization()
     }
 
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 116.0)
-    }
-
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        if let options = skeletonOptions {
-            setupSkeleton(for: options)
-        }
     }
 
     func bind(viewModel: LocalizableResource<StakingRewardViewModel>) {
@@ -89,40 +60,60 @@ final class StakingRewardView: UIView {
 
     private func applyViewModel() {
         guard let viewModel = viewModel?.value(for: locale) else {
-            rewardView.bind(topValue: "", bottomValue: nil)
-            setupSkeleton(for: [.reward, .price])
+            totalRewardView.bind(totalRewards: .loading, filter: nil, hasPrice: true)
+            clearClaimableRewardsView()
+            graphicsView.image = nil
             return
         }
 
-        let title = viewModel.amount.value ?? ""
-        let price: String? = viewModel.price?.value
-        rewardView.bind(topValue: title, bottomValue: price)
+        graphicsView.image = viewModel.graphics
 
-        var newSkeletonOptions: StakingRewardSkeletonOptions = []
+        totalRewardView.bind(
+            totalRewards: viewModel.totalRewards,
+            filter: viewModel.filter,
+            hasPrice: viewModel.hasPrice
+        )
 
-        if title.isEmpty {
-            newSkeletonOptions.insert(.reward)
-            newSkeletonOptions.insert(.price)
-        }
-
-        if let price = price, price.isEmpty {
-            newSkeletonOptions.insert(.price)
-        }
-
-        if let filter = viewModel.filter {
-            filterView.isHidden = false
-            filterView.bind(title: filter)
+        if let claimableRewards = viewModel.claimableRewards {
+            setupClaimableRewardsViewIfNeeded()
+            claimableRewardView?.bind(viewModel: claimableRewards)
         } else {
-            filterView.isHidden = true
+            clearClaimableRewardsView()
         }
 
-        setupSkeleton(for: newSkeletonOptions)
+        invalidateIntrinsicContentSize()
+        setNeedsLayout()
+    }
+
+    func setupClaimableRewardsViewIfNeeded() {
+        guard claimableRewardView == nil else {
+            return
+        }
+
+        let view = StakingClaimableRewardView()
+        stackView.addArrangedSubview(view)
+        claimableRewardView = view
+
+        setupClaimButtonLocalization()
+    }
+
+    func clearClaimableRewardsView() {
+        claimableRewardView?.removeFromSuperview()
+        claimableRewardView = nil
     }
 
     private func setupLocalization() {
         let languages = locale.rLanguages
 
-        titleLabel.text = R.string.localizable.stakingRewardsTitle(preferredLanguages: languages)
+        totalRewardView.titleLabel.text = R.string.localizable.stakingRewardsTitle(preferredLanguages: languages)
+        setupClaimButtonLocalization()
+    }
+
+    private func setupClaimButtonLocalization() {
+        claimButton?.imageWithTitleView?.title = R.string.localizable.stakingClaimRewards(
+            preferredLanguages: locale.rLanguages
+        )
+        claimButton?.invalidateLayout()
     }
 
     private func setupLayout() {
@@ -131,124 +122,38 @@ final class StakingRewardView: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(20.0)
+        backgroundView.addSubview(graphicsView)
+        graphicsView.snp.makeConstraints { make in
+            make.top.right.equalToSuperview()
         }
 
-        addSubview(filterView)
-        filterView.snp.makeConstraints { make in
-            make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
-            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(titleLabel.snp.centerY)
+        addSubview(borderView)
+        borderView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
-        addSubview(rewardView)
-        rewardView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
-        }
-    }
-
-    private func setupSkeleton(for options: StakingRewardSkeletonOptions) {
-        skeletonOptions = nil
-
-        guard !options.isEmpty else {
-            skeletonView?.removeFromSuperview()
-            skeletonView = nil
-            return
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
-        skeletonOptions = options
-
-        let spaceSize = frame.size
-
-        guard spaceSize.width > 0.0, spaceSize.height > 0.0 else {
-            return
-        }
-
-        let skeletons = createSkeletons(for: spaceSize, options: options)
-
-        let builder = Skrull(
-            size: spaceSize,
-            decorations: [],
-            skeletons: skeletons
-        )
-
-        let currentSkeletonView: SkrullableView?
-
-        if let skeletonView = skeletonView {
-            currentSkeletonView = skeletonView
-            builder.updateSkeletons(in: skeletonView)
-        } else {
-            let view = builder
-                .fillSkeletonStart(R.color.colorSkeletonStart()!)
-                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
-                .build()
-            view.autoresizingMask = []
-            insertSubview(view, aboveSubview: backgroundView)
-
-            currentSkeletonView = view
-            skeletonView = view
-
-            view.startSkrulling()
-        }
-
-        currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
-    }
-
-    private func createSkeletons(
-        for spaceSize: CGSize,
-        options: StakingRewardSkeletonOptions
-    ) -> [Skeletonable] {
-        var skeletons: [Skeletonable] = []
-
-        if options.contains(StakingRewardSkeletonOptions.reward) {
-            let offset = CGPoint(x: 0.0, y: 12.0)
-            skeletons.append(
-                SingleSkeleton.createRow(
-                    under: titleLabel,
-                    containerView: backgroundView,
-                    spaceSize: spaceSize,
-                    offset: offset,
-                    size: UIConstants.skeletonBigRowSize
-                )
-            )
-        }
-
-        if options.contains(StakingRewardSkeletonOptions.price) {
-            let offset = CGPoint(x: 0.0, y: 41.0)
-            skeletons.append(
-                SingleSkeleton.createRow(
-                    under: titleLabel,
-                    containerView: backgroundView,
-                    spaceSize: spaceSize,
-                    offset: offset,
-                    size: UIConstants.skeletonSmallRowSize
-                )
-            )
-        }
-
-        return skeletons
+        stackView.addArrangedSubview(totalRewardView)
     }
 }
 
 extension StakingRewardView: SkeletonLoadable {
     func didDisappearSkeleton() {
-        skeletonView?.stopSkrulling()
+        totalRewardView.didDisappearSkeleton()
+        claimableRewardView?.didDisappearSkeleton()
     }
 
     func didAppearSkeleton() {
-        skeletonView?.stopSkrulling()
-        skeletonView?.startSkrulling()
+        totalRewardView.didAppearSkeleton()
+        claimableRewardView?.didAppearSkeleton()
     }
 
     func didUpdateSkeletonLayout() {
-        guard let skeletonOptions = skeletonOptions else {
-            return
-        }
-
-        setupSkeleton(for: skeletonOptions)
+        totalRewardView.didUpdateSkeletonLayout()
+        claimableRewardView?.didUpdateSkeletonLayout()
     }
 }

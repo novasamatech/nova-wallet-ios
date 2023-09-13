@@ -16,7 +16,7 @@ class AssetListBaseBuilder {
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var balances: [ChainAssetId: Result<AssetBalance, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
-    private(set) var crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
+    private(set) var externalBalancesResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
 
     private(set) var scheduler: Scheduler?
 
@@ -65,7 +65,7 @@ class AssetListBaseBuilder {
         balances = [:]
         groups = AssetListModelHelpers.createGroupsDiffCalculator(from: [])
         groupLists = [:]
-        crowdloansResult = nil
+        externalBalancesResult = nil
     }
 
     private func updateAssetModels() {
@@ -73,7 +73,7 @@ class AssetListBaseBuilder {
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,
-            crowdloansResult: crowdloansResult
+            externalBalances: externalBalancesResult
         )
 
         for chain in allChains.values {
@@ -110,7 +110,7 @@ class AssetListBaseBuilder {
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,
-            crowdloansResult: crowdloansResult
+            externalBalances: externalBalancesResult
         )
 
         var groupChanges: [DataProviderChange<AssetListGroupModel>] = []
@@ -176,7 +176,7 @@ class AssetListBaseBuilder {
                 priceResult: priceResult,
                 balanceResults: balanceResults,
                 allChains: allChains,
-                crowdloansResult: crowdloansResult
+                externalBalances: externalBalancesResult
             )
 
             let assetListModel = AssetListModelHelpers.createAssetModel(
@@ -243,8 +243,8 @@ class AssetListBaseBuilder {
         updateAssetModels()
     }
 
-    private func processCrowdloans(_ result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
-        crowdloansResult = result
+    private func processExternalBalances(_ result: Result<[ChainAssetId: [ExternalAssetBalance]], Error>) {
+        externalBalancesResult = result
         updateAssetModels()
     }
 }
@@ -272,9 +272,9 @@ extension AssetListBaseBuilder {
         }
     }
 
-    func applyCrowdloans(_ result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+    func applyExternalBalances(_ result: Result<[ChainAssetId: [ExternalAssetBalance]], Error>) {
         workingQueue.async { [weak self] in
-            self?.processCrowdloans(result)
+            self?.processExternalBalances(result)
 
             self?.scheduleRebuildModel()
         }

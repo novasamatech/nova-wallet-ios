@@ -35,6 +35,14 @@ struct SubqueryLessThanOrEqualToFilter<T: SubqueryFilterValue>: SubqueryFilter {
     }
 }
 
+struct SubqueryIsNotNullFilter: SubqueryFilter {
+    let fieldName: String
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): { isNull: false }"
+    }
+}
+
 extension String: SubqueryFilterValue {
     func rawSubqueryFilter() -> String {
         "\"\(self)\""

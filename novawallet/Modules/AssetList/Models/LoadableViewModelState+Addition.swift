@@ -23,3 +23,20 @@ extension LoadableViewModelState {
         }
     }
 }
+
+extension LoadableViewModelState where T: RandomAccessCollection & MutableCollection {
+    mutating func insert(newElement element: T.Element, at index: T.Index) {
+        switch self {
+        case .loading:
+            return
+        case let .cached(value):
+            var updatingValue = value
+            updatingValue[index] = element
+            self = .cached(value: updatingValue)
+        case let .loaded(value):
+            var updatingValue = value
+            updatingValue[index] = element
+            self = .loaded(value: updatingValue)
+        }
+    }
+}

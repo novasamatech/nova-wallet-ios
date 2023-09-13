@@ -5,7 +5,7 @@ import SoraFoundation
 
 struct StakingRewardDestConfirmViewFactory {
     static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         rewardDestination: RewardDestination<MetaChainAccountResponse>
     ) -> StakingRewardDestConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -53,17 +53,18 @@ struct StakingRewardDestConfirmViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingRewardDestConfirmInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-            let rewardCalculationService = state.rewardCalculationService,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let rewardCalculationService = state.rewardCalculatorService
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -87,7 +88,7 @@ struct StakingRewardDestConfirmViewFactory {
         return StakingRewardDestConfirmInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicServiceFactory: extrinsicServiceFactory,

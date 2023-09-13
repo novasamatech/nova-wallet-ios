@@ -156,7 +156,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func applyReward(
-        viewModel: OperationRewardViewModel,
+        viewModel: OperationRewardOrSlashViewModel,
         networkViewModel: NetworkViewModel
     ) {
         let rewardView: OperationDetailsRewardView = rootView.setupLocalizableView()
@@ -179,7 +179,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func applySlash(
-        viewModel: OperationSlashViewModel,
+        viewModel: OperationRewardOrSlashViewModel,
         networkViewModel: NetworkViewModel
     ) {
         let rewardView: OperationDetailsRewardView = rootView.setupLocalizableView()
@@ -227,6 +227,43 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         )
     }
 
+    private func applyPoolReward(
+        viewModel: OperationPoolRewardOrSlashViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let rewardView = applyCommonPoolRewardOrSlash()
+        rewardView.bindReward(viewModel: viewModel, networkViewModel: networkViewModel)
+    }
+
+    private func applyPoolSlash(
+        viewModel: OperationPoolRewardOrSlashViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let slashView = applyCommonPoolRewardOrSlash()
+        slashView.bindSlash(viewModel: viewModel, networkViewModel: networkViewModel)
+    }
+
+    private func applyCommonPoolRewardOrSlash() -> OperationDetailsPoolRewardView {
+        let view: OperationDetailsPoolRewardView = rootView.setupLocalizableView()
+        view.locale = selectedLocale
+
+        rootView.removeActionButton()
+
+        view.poolView.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        view.eventIdView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
+
+        return view
+    }
+
     @objc func actionSender() {
         presenter.showSenderActions()
     }
@@ -264,6 +301,10 @@ extension OperationDetailsViewController: OperationDetailsViewProtocol {
             applySlash(viewModel: slashViewModel, networkViewModel: networkViewModel)
         case let .contract(contractViewModel):
             applyContract(viewModel: contractViewModel, networkViewModel: networkViewModel)
+        case let .poolReward(poolRewardViewModel):
+            applyPoolReward(viewModel: poolRewardViewModel, networkViewModel: networkViewModel)
+        case let .poolSlash(poolSlashViewModel):
+            applyPoolSlash(viewModel: poolSlashViewModel, networkViewModel: networkViewModel)
         }
     }
 }

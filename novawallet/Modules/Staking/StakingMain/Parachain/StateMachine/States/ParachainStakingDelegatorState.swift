@@ -30,7 +30,7 @@ extension ParachainStaking {
 
                 stateMachine?.transit(to: self)
             } else {
-                let noStakingState = ParachainStaking.NoStakingState(
+                let noStakingState = ParachainStaking.InitState(
                     stateMachine: stateMachine,
                     commonData: commonData
                 )

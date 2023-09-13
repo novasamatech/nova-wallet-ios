@@ -11,7 +11,7 @@ extension BalancesStore {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared
         )
     }
 }

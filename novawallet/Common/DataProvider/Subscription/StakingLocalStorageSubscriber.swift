@@ -52,7 +52,8 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
     ) -> AnySingleValueProvider<TotalRewardItem>?
 
     func subscribeStashItemProvider(
-        for address: AccountAddress
+        for address: AccountAddress,
+        chainId: ChainModel.Id
     ) -> StreamableProvider<StashItem>?
 }
 
@@ -621,9 +622,10 @@ extension StakingLocalStorageSubscriber {
     }
 
     func subscribeStashItemProvider(
-        for address: AccountAddress
+        for address: AccountAddress,
+        chainId: ChainModel.Id
     ) -> StreamableProvider<StashItem>? {
-        let provider = stakingLocalSubscriptionFactory.getStashItemProvider(for: address)
+        let provider = stakingLocalSubscriptionFactory.getStashItemProvider(for: address, chainId: chainId)
 
         let changesClosure: ([DataProviderChange<StashItem>]) -> Void = { [weak self] changes in
             let stashItem = changes.reduceToLastChange()

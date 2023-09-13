@@ -1,5 +1,12 @@
 import Foundation
 
+struct NPoolsEDViolationErrorParams {
+    let availableBalance: String
+    let minimumBalance: String
+    let fee: String
+    let maxStake: String
+}
+
 protocol StakingErrorPresentable: BaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 
@@ -48,10 +55,18 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
 
     func presentMaxNumberOfNominatorsReached(from view: ControllerBackedProtocol?, locale: Locale?)
 
-    func presentMinStakeViolated(
+    func presentMinRewardableStakeViolated(
         from view: ControllerBackedProtocol,
         action: @escaping () -> Void,
         minStake: String,
+        locale: Locale?
+    )
+
+    func presentLockedTokensInPoolStaking(
+        from view: ControllerBackedProtocol?,
+        lockReason: String,
+        availableToStake: String,
+        directRewardableToStake: String,
         locale: Locale?
     )
 }
@@ -219,7 +234,7 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
-    func presentMinStakeViolated(
+    func presentMinRewardableStakeViolated(
         from view: ControllerBackedProtocol,
         action: @escaping () -> Void,
         minStake: String,
@@ -238,5 +253,27 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
             view: view,
             locale: locale
         )
+    }
+
+    func presentLockedTokensInPoolStaking(
+        from view: ControllerBackedProtocol?,
+        lockReason: String,
+        availableToStake: String,
+        directRewardableToStake: String,
+        locale: Locale?
+    ) {
+        let message = R.string.localizable.stakingLockedPoolViolationError(
+            lockReason,
+            availableToStake,
+            directRewardableToStake,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let title = R.string.localizable.stakingLockedPoolViolationTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
     }
 }

@@ -28,12 +28,14 @@ struct StakingDashboardEnabledViewModel {
     let status: LoadableViewModelState<Status>
     let yourStake: LoadableViewModelState<BalanceViewModelProtocol>
     let estimatedEarnings: LoadableViewModelState<String?>
+    let stakingType: TitleIconViewModel?
 }
 
 struct StakingDashboardDisabledViewModel {
     let networkViewModel: LoadableViewModelState<NetworkViewModel>
     let estimatedEarnings: LoadableViewModelState<String?>
     let balance: String?
+    let stakingType: TitleIconViewModel?
 }
 
 struct StakingDashboardViewModel {

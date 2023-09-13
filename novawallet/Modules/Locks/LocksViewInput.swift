@@ -3,5 +3,5 @@ struct LocksViewInput {
     let balances: [AssetBalance]
     let chains: [ChainModel.Id: ChainModel]
     let locks: [AssetLock]
-    let crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
+    let externalBalances: [ChainAssetId: [ExternalAssetBalance]]
 }

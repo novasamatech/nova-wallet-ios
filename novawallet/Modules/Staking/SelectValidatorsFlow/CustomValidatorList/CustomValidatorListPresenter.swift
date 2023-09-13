@@ -12,7 +12,7 @@ final class CustomValidatorListPresenter {
     let logger: LoggerProtocol?
 
     private let recommendedValidatorList: [SelectedValidatorInfo]
-    private var fullValidatorList: [SelectedValidatorInfo]
+    private var fullValidatorList: CustomValidatorsFullList
 
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
@@ -24,7 +24,7 @@ final class CustomValidatorListPresenter {
         wireframe: CustomValidatorListWireframeProtocol,
         viewModelFactory: CustomValidatorListViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
-        fullValidatorList: [SelectedValidatorInfo],
+        fullValidatorList: CustomValidatorsFullList,
         recommendedValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         validatorsSelectionParams: ValidatorsSelectionParams,
@@ -48,7 +48,10 @@ final class CustomValidatorListPresenter {
 
     private func composeFilteredValidatorList() -> [SelectedValidatorInfo] {
         let composer = CustomValidatorListComposer(filter: filter)
-        return composer.compose(from: fullValidatorList)
+        return composer.compose(
+            from: fullValidatorList.allValidators,
+            preferrences: fullValidatorList.preferredValidators
+        )
     }
 
     private func updateFilteredValidatorsList() {
@@ -59,7 +62,7 @@ final class CustomValidatorListPresenter {
         let viewModel = viewModelFactory.createViewModel(
             from: filteredValidatorList,
             selectedValidatorList: selectedValidatorList.items,
-            totalValidatorsCount: fullValidatorList.count,
+            totalValidatorsCount: fullValidatorList.distinctCount(),
             filter: filter,
             priceData: priceData,
             locale: selectedLocale
@@ -200,7 +203,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
     func presentSearch() {
         wireframe.presentSearch(
             from: view,
-            fullValidatorList: fullValidatorList,
+            fullValidatorList: fullValidatorList.distinctAll(),
             selectedValidatorList: selectedValidatorList.items,
             delegate: self
         )

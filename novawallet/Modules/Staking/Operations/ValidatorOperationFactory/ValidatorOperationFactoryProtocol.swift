@@ -19,4 +19,8 @@ protocol ValidatorOperationFactoryProtocol {
     func wannabeValidatorsOperation(
         for accountIdList: [AccountId]
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]>
+
+    func allPreferred(
+        for preferredAccountIds: [AccountId]
+    ) -> CompoundOperationWrapper<ElectedAndPrefValidators>
 }

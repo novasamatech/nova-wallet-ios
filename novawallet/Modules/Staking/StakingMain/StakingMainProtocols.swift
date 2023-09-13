@@ -5,25 +5,23 @@ import BigInt
 
 protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceive(viewModel: StakingMainViewModel)
-    func didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)
+    func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)
     func didReceiveStakingState(viewModel: StakingViewState)
     func expandNetworkInfoView(_ isExpanded: Bool)
     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)
+    func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)
     func didEditRewardFilters()
 }
 
 protocol StakingMainPresenterProtocol: AnyObject {
     func setup()
-    func performMainAction()
-    func performRewardInfoAction()
-    func performChangeValidatorsAction()
-    func performSetupValidatorsForBondedAction()
-    func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
-    func performRebag()
+    func performClaimRewards()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
+    func performAlertAction(_ alert: StakingAlert)
+    func performSelectedEntityAction()
     func selectPeriod()
 }
 
@@ -50,14 +48,11 @@ protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresent
 
 protocol StakingMainChildPresenterProtocol: AnyObject {
     func setup()
-    func performMainAction()
-    func performRewardInfoAction()
-    func performChangeValidatorsAction()
-    func performSetupValidatorsForBondedAction()
-    func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
-    func performRebag()
+    func performClaimRewards()
     func performManageAction(_ action: StakingManageOption)
+    func performAlertAction(_ alert: StakingAlert)
+    func performSelectedEntityAction()
     func selectPeriod(_ period: StakingRewardFiltersPeriod)
 }

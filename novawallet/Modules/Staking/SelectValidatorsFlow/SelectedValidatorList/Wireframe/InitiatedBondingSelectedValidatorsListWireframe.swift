@@ -1,7 +1,7 @@
 final class InitiatedBondingSelectedValidatorListWireframe: SelectedValidatorListWireframe {
     let state: InitiatedBonding
 
-    init(state: InitiatedBonding, stakingState: StakingSharedState) {
+    init(state: InitiatedBonding, stakingState: RelaychainStakingSharedStateProtocol) {
         self.state = state
 
         super.init(stakingState: stakingState)

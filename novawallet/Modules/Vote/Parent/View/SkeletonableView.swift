@@ -14,6 +14,8 @@ protocol SkeletonableView: UIView {
     var hidingViews: [UIView] { get }
     func startLoadingIfNeeded()
     func stopLoadingIfNeeded()
+    func didStartSkeleton()
+    func didStopSkeleton()
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable]
     func createDecorations(for spaceSize: CGSize) -> [Decorable]
     func updateLoadingState()
@@ -26,6 +28,8 @@ protocol SkeletonableViewCell {
 extension SkeletonableView {
     func startLoadingIfNeeded() {
         hidingViews.forEach { $0.alpha = 0 }
+
+        didStartSkeleton()
 
         guard skeletonView == nil else {
             return
@@ -40,6 +44,8 @@ extension SkeletonableView {
 
     func stopLoadingIfNeeded() {
         hidingViews.forEach { $0.alpha = 1 }
+
+        didStopSkeleton()
 
         guard skeletonView != nil else {
             return
@@ -97,6 +103,9 @@ extension SkeletonableView {
     }
 
     func createDecorations(for _: CGSize) -> [Decorable] { [] }
+
+    func didStartSkeleton() {}
+    func didStopSkeleton() {}
 }
 
 extension BlurredTableViewCell: SkeletonableViewCell where TContentView: SkeletonableView {

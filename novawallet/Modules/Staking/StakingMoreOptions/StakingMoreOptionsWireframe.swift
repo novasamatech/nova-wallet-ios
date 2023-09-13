@@ -10,17 +10,20 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
         view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
     }
 
-    func showStakingDetails(
+    func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
-        option: Multistaking.ChainAssetOption
+        chainAsset: ChainAsset,
+        stakingType: StakingType?
     ) {
-        guard let detailsView = StakingMainViewFactory.createView(for: option) else {
+        guard let startStakingView = StartStakingInfoViewFactory.createView(
+            chainAsset: chainAsset,
+            selectedStakingType: stakingType
+        ) else {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            detailsView.controller,
-            animated: true
-        )
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

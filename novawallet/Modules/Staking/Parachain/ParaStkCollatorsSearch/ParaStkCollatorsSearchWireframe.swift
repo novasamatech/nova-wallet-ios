@@ -1,14 +1,21 @@
 import Foundation
 
 final class ParaStkCollatorsSearchWireframe: ParaStkCollatorsSearchWireframeProtocol {
-    let sharedState: ParachainStakingSharedState
+    let sharedState: ParachainStakingSharedStateProtocol
 
-    init(sharedState: ParachainStakingSharedState) {
+    init(sharedState: ParachainStakingSharedStateProtocol) {
         self.sharedState = sharedState
     }
 
     func complete(on view: ParaStkCollatorsSearchViewProtocol?) {
-        view?.controller.navigationController?.popToRootViewController(animated: true)
+        let navigationController = view?.controller.navigationController
+        let viewControllers = navigationController?.viewControllers ?? []
+
+        if let setupScreenController = viewControllers.first(where: { $0 is ParaStkStakeSetupViewProtocol }) {
+            navigationController?.popToViewController(setupScreenController, animated: true)
+        } else {
+            view?.controller.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     func showCollatorInfo(

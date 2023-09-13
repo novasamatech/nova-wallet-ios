@@ -14,7 +14,12 @@ protocol Recommendable {
 
 protocol RecommendationsComposing {
     associatedtype RecommendableType: Recommendable
-    func compose(from validators: [RecommendableType]) -> [RecommendableType]
+
+    func compose(
+        from recommendables: [RecommendableType],
+        preferrences: [RecommendableType]
+    ) -> [RecommendableType]
+
     func processClusters(
         items: [RecommendableType],
         clusterSizeLimit: Int,
@@ -53,7 +58,7 @@ extension RecommendationsComposing {
 }
 
 final class RecommendationsComposer {
-    typealias RecommendableType = ElectedValidatorInfo
+    typealias RecommendableType = SelectedValidatorInfo
 
     let resultSize: Int
     let clusterSizeLimit: Int
@@ -81,11 +86,34 @@ final class RecommendationsComposer {
 }
 
 extension RecommendationsComposer: RecommendationsComposing {
-    func compose(from validators: [RecommendableType]) -> [RecommendableType] {
-        if validators.contains(where: { $0.hasIdentity }) {
-            return composeWithIdentities(from: validators)
+    func compose(
+        from recommendables: [RecommendableType],
+        preferrences: [RecommendableType]
+    ) -> [RecommendableType] {
+        let recommendationList: [RecommendableType]
+
+        if recommendables.contains(where: { $0.hasIdentity }) {
+            recommendationList = composeWithIdentities(from: recommendables)
         } else {
-            return composeWithoutIdentities(from: validators)
+            recommendationList = composeWithoutIdentities(from: recommendables)
         }
+
+        let allIncludedAddresses = Set(recommendationList.map(\.address))
+        let validPreferences = preferrences
+            .filter { !allIncludedAddresses.contains($0.address) && !$0.oversubscribed && !$0.blocked }
+
+        let finalSize = recommendationList.count + validPreferences.count
+
+        let recommendationsWithPrefs: [RecommendableType]
+
+        if finalSize > resultSize {
+            let dropSize = finalSize - resultSize
+            recommendationsWithPrefs = recommendationList.dropLast(dropSize) + validPreferences
+        } else {
+            recommendationsWithPrefs = recommendationList + validPreferences
+        }
+
+        // make sure we don't overload the result with prefs
+        return Array(recommendationsWithPrefs.prefix(resultSize))
     }
 }

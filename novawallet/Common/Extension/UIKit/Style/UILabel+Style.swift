@@ -56,6 +56,16 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
+    static let semiboldFootnoteButtonInactive = UILabel.Style(
+        textColor: R.color.colorButtonTextInactive(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnoteButtonText = UILabel.Style(
+        textColor: R.color.colorButtonText(),
+        font: .semiBoldFootnote
+    )
+
     static let semiboldCalloutPositive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .semiBoldCallout
@@ -73,6 +83,16 @@ extension UILabel.Style {
 
     static let caption1Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
+        font: .caption1
+    )
+
+    static let caption1Tertiary = UILabel.Style(
+        textColor: R.color.colorTextTertiary(),
+        font: .caption1
+    )
+
+    static let caption1Positive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
         font: .caption1
     )
 

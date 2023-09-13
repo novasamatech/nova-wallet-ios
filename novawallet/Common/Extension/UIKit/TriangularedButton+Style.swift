@@ -31,10 +31,10 @@ extension TriangularedButton {
         changesContentOpacityWhenHighlighted = true
     }
 
-    func applyEnabledStyle() {
+    func applyEnabledStyle(colored color: UIColor = R.color.colorButtonBackgroundPrimary()!) {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorButtonBackgroundPrimary()!
-        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundPrimary()!
+        triangularedView?.fillColor = color
+        triangularedView?.highlightedFillColor = color
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 

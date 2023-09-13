@@ -1,24 +1,14 @@
 import Foundation
 
 final class StakingRelaychainWireframe {
-    let state: StakingSharedState
+    let state: RelaychainStakingSharedStateProtocol
 
-    init(state: StakingSharedState) {
+    init(state: RelaychainStakingSharedStateProtocol) {
         self.state = state
     }
 }
 
 extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
-    func showSetupAmount(from view: StakingMainViewProtocol?) {
-        guard let amountView = StakingAmountViewFactory.createView(with: nil, stakingState: state) else {
-            return
-        }
-
-        let navigationController = ImportantFlowViewFactory.createNavigation(from: amountView.controller)
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
     func proceedToSelectValidatorsStart(
         from view: StakingMainViewProtocol?,
         existingBonding: ExistingBonding
@@ -35,12 +25,6 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
-    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal) {
-        let infoVew = ModalInfoFactory.createRewardDetails(for: maxReward, avgReward: avgReward)
-
-        view?.controller.present(infoVew, animated: true, completion: nil)
     }
 
     func showRewardPayoutsForNominator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress) {

@@ -5,7 +5,7 @@ import SoraFoundation
 
 struct ParaStkRebondViewFactory {
     static func createView(
-        for state: ParachainStakingSharedState,
+        for state: ParachainStakingSharedStateProtocol,
         selectedCollator: AccountId,
         collatorIdentity: AccountIdentity?
     ) -> ParaStkRebondViewProtocol? {
@@ -64,7 +64,7 @@ struct ParaStkRebondViewFactory {
     }
 
     private static func createInteractor(
-        from state: ParachainStakingSharedState
+        from state: ParachainStakingSharedStateProtocol
     ) -> ParaStkRebondInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = ChainRegistryFacade.sharedRegistry

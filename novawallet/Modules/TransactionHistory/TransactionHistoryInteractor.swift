@@ -2,32 +2,44 @@ import UIKit
 import SoraUI
 import RobinHood
 
-final class TransactionHistoryInteractor {
+final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning {
     weak var presenter: TransactionHistoryInteractorOutputProtocol?
 
     let fetcherFactory: TransactionHistoryFetcherFactoryProtocol
     let chainAsset: ChainAsset
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol
     let accountId: AccountId
     let pageSize: Int
+    let operationQueue: OperationQueue
 
     private var fetcher: TransactionHistoryFetching?
     private var priceProvider: AnySingleValueProvider<PriceHistory>?
+
+    private var localFilterCancellable: CancellableCall?
 
     init(
         accountId: AccountId,
         chainAsset: ChainAsset,
         fetcherFactory: TransactionHistoryFetcherFactoryProtocol,
+        localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
+        operationQueue: OperationQueue,
         pageSize: Int
     ) {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.fetcherFactory = fetcherFactory
+        self.localFilterFactory = localFilterFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.pageSize = pageSize
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
+    }
+
+    deinit {
+        clear(cancellable: &localFilterCancellable)
     }
 
     private func setupFetcher(for filter: WalletHistoryFilter) {
@@ -54,7 +66,36 @@ final class TransactionHistoryInteractor {
             return
         }
 
+        clear(singleValueProvider: &priceProvider)
+
         priceProvider = subscribeToPriceHistory(for: priceId, currency: selectedCurrency)
+    }
+
+    private func provideLocalFilter() {
+        clear(cancellable: &localFilterCancellable)
+
+        let wrapper = localFilterFactory.createWrapper()
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.localFilterCancellable === wrapper else {
+                    return
+                }
+
+                self?.localFilterCancellable = nil
+
+                do {
+                    let localFilter = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(localFilter: localFilter)
+                } catch {
+                    self?.presenter?.didReceive(error: .localFilter(error))
+                }
+            }
+        }
+
+        localFilterCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
@@ -69,8 +110,17 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
     }
 
     func setup() {
+        provideLocalFilter()
         setupPriceHistorySubscription()
         setupFetcher(for: .all)
+    }
+
+    func remakeSubscriptions() {
+        setupPriceHistorySubscription()
+    }
+
+    func retryLocalFilter() {
+        provideLocalFilter()
     }
 
     func set(filter: WalletHistoryFilter) {

@@ -22,10 +22,7 @@ final class InitialStakingState: BaseStakingState {
                 bagListNode: nil
             )
         } else {
-            newState = NoStashState(
-                stateMachine: stateMachine,
-                commonData: commonData
-            )
+            newState = self
         }
 
         stateMachine.transit(to: newState)

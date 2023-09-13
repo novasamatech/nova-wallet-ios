@@ -61,7 +61,7 @@ final class StakingDashboardPresenter {
 
     private func updateStakingView(
         using model: StakingDashboardModel,
-        syncChange: Set<Multistaking.ChainAssetOption>
+        syncChange: StakingDashboardBuilderResult.SyncChange
     ) {
         let updateViewModel = viewModelFactory.createUpdateViewModel(
             from: model,
@@ -87,11 +87,11 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectInactiveStaking(at index: Int) {
-        guard let option = lastResult?.model.inactive[index].stakingOption else {
+        guard let item = lastResult?.model.inactive[index] else {
             return
         }
 
-        wireframe.showStakingDetails(from: view, option: option)
+        wireframe.showStartStaking(from: view, chainAsset: item.chainAsset)
     }
 
     func selectMoreOptions() {

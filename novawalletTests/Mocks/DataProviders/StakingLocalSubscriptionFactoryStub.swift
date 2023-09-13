@@ -314,14 +314,18 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         AnySingleValueProvider(SingleValueProviderStub(item: totalReward))
     }
 
-    func getStashItemProvider(for address: AccountAddress) -> StreamableProvider<StashItem> {
+    func getStashItemProvider(for address: AccountAddress, chainId: ChainModel.Id) -> StreamableProvider<StashItem> {
         let provider = SubstrateDataProviderFactory(
             facade: storageFacade,
             operationManager: OperationManager()
-        ).createStashItemProvider(for: address)
+        ).createStashItemProvider(for: address, chainId: chainId)
 
         if let stashItem = stashItem {
-            let repository: CoreDataRepository<StashItem, CDStashItem> = storageFacade.createRepository()
+            let repository = SubstrateRepositoryFactory(storageFacade: storageFacade).createStashItemRepository(
+                for: address,
+                chainId: chainId
+            )
+            
             let saveOperation = repository.saveOperation({ [stashItem] }, { [] })
             OperationQueue().addOperations([saveOperation], waitUntilFinished: true)
         }

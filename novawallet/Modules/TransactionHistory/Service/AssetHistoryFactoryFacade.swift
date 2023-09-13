@@ -36,7 +36,8 @@ final class AssetHistoryFacade {
             return SubqueryHistoryOperationFactory(
                 url: url,
                 filter: mappedFilter,
-                assetId: historyAssetId
+                assetId: historyAssetId,
+                hasPoolStaking: asset.hasPoolStaking
             )
         } catch {
             return nil

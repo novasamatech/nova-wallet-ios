@@ -70,11 +70,13 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     private func performSyncUpInternal() {
         logger?.debug("Will start syncing...")
 
-        let resolvedAccountIds = resolvedAccounts.mapValues { $0.resolvedAccountId }
+        let bondedAccountIds = resolvedAccounts.mapValues { $0.resolvedAccountId }
+        let rewardAccountIds = resolvedAccounts.compactMapValues { $0.rewardsAccountId }
 
         let wrapper = operationFactory.createWrapper(
             from: wallet,
-            resolvedAccounts: resolvedAccountIds,
+            bondedAccounts: bondedAccountIds,
+            rewardAccounts: rewardAccountIds,
             chainAssets: chainAssets
         )
 

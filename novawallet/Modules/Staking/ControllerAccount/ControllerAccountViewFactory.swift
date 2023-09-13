@@ -5,7 +5,7 @@ import SubstrateSdk
 import RobinHood
 
 struct ControllerAccountViewFactory {
-    static func createView(for state: StakingSharedState) -> ControllerAccountViewProtocol? {
+    static func createView(for state: RelaychainStakingSharedStateProtocol) -> ControllerAccountViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -43,7 +43,7 @@ struct ControllerAccountViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> ControllerAccountInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
@@ -80,7 +80,7 @@ struct ControllerAccountViewFactory {
         return ControllerAccountInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             runtimeService: runtimeService,

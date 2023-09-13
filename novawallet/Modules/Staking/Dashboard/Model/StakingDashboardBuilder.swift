@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 final class StakingDashboardBuilder {
     let workingQueue: DispatchQueue
@@ -12,6 +13,7 @@ final class StakingDashboardBuilder {
     private var prices: [AssetModel.PriceId: PriceData] = [:]
     private var wallet: MetaAccountModel?
     private var syncState: MultistakingSyncState?
+    private var chainAssetSyncState: [ChainAssetId: Bool]?
     private var currentModel: StakingDashboardModel?
 
     init(
@@ -22,6 +24,22 @@ final class StakingDashboardBuilder {
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.resultClosure = resultClosure
+    }
+
+    private func getAvailableBalance(for stakingType: StakingType?, chainAssetId: ChainAssetId) -> BigUInt? {
+        let optAssetBalance = balances[chainAssetId]
+        return optAssetBalance.flatMap { assetBalance in
+            StakingTypeBalanceFactory(stakingType: stakingType).getAvailableBalance(from: assetBalance)
+        }
+    }
+
+    private func reindexChainAssetSyncState() {
+        chainAssetSyncState = syncState?.isOnchainSyncing.reduce(into: [ChainAssetId: Bool]()) { accum, keyValue in
+            let option = keyValue.key
+            let isSyncing = keyValue.value
+
+            accum[option.chainAssetId] = (accum[option.chainAssetId] ?? false) || isSyncing
+        }
     }
 
     private func deriveOnchainSync(for stakingOption: Multistaking.ChainAssetOption) -> Bool {
@@ -35,11 +53,24 @@ final class StakingDashboardBuilder {
         }
     }
 
+    private func deriveOnchainSync(for chainAsset: ChainAsset) -> Bool {
+        let account = wallet?.fetch(for: chainAsset.chain.accountRequest())
+
+        if account == nil {
+            // don't need onchain sync if no account
+            return false
+        } else {
+            return chainAssetSyncState?[chainAsset.chainAssetId] ?? true
+        }
+    }
+
     private func deriveOffchainSync() -> Bool {
         syncState?.isOffchainSyncing ?? true
     }
 
-    private func buildDashboardItem(for stakingOption: Multistaking.ChainAssetOption) -> StakingDashboardItemModel {
+    private func buildDashboardItem(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) -> StakingDashboardItemModel.Concrete {
         let account = wallet?.fetch(for: stakingOption.chainAsset.chain.accountRequest())
 
         let priceData = stakingOption.chainAsset.asset.priceId.flatMap { prices[$0] }
@@ -47,22 +78,52 @@ final class StakingDashboardBuilder {
         let isOnchainSyncing = deriveOnchainSync(for: stakingOption)
         let isOffchainSyncing = deriveOffchainSync()
 
-        return StakingDashboardItemModel(
+        let availableBalance = getAvailableBalance(
+            for: stakingOption.type,
+            chainAssetId: stakingOption.chainAsset.chainAssetId
+        )
+
+        return .init(
             stakingOption: stakingOption,
             dashboardItem: dashboardItems[stakingOption.option],
             accountId: account?.accountId,
-            balance: balances[stakingOption.chainAsset.chainAssetId],
+            availableBalance: availableBalance,
             price: priceData,
             isOnchainSync: isOnchainSyncing,
             isOffchainSync: isOffchainSyncing
         )
     }
 
+    private func updateCombined(
+        store: inout [ChainAssetId: StakingDashboardItemModel.Combined],
+        item: StakingDashboardItemModel.Concrete
+    ) {
+        let chainAssetId = item.stakingOption.chainAsset.chainAssetId
+
+        var currentValue = store[chainAssetId] ??
+            StakingDashboardItemModel.Combined(
+                concrete: item,
+                availableBalance: getAvailableBalance(
+                    for: nil,
+                    chainAssetId: item.stakingOption.chainAsset.chainAssetId
+                )
+            )
+
+        currentValue = currentValue
+            .byChangingSyncState(
+                isOnchainSync: currentValue.isOnchainSync || item.isOnchainSync,
+                isOffchainSync: currentValue.isOffchainSync || item.isOffchainSync
+            )
+            .replacingWithGreatestApy(for: item.maxApy)
+
+        store[chainAssetId] = currentValue
+    }
+
     private func rebuildModel() {
         let dashboardItems = chainAssets.flatMap { chainAsset in
             let chainStakings = chainAsset.asset.supportedStakings ?? []
 
-            let dashboardItems: [StakingDashboardItemModel] = chainStakings.map { staking in
+            let dashboardItems: [StakingDashboardItemModel.Concrete] = chainStakings.map { staking in
                 let stakingOption = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: staking)
                 return buildDashboardItem(for: stakingOption)
             }
@@ -73,35 +134,41 @@ final class StakingDashboardBuilder {
         // separate active stakings
 
         let activeStakings = dashboardItems.filter { $0.hasStaking }
-        let activeAssets = Set(activeStakings.map(\.stakingOption.chainAsset.chainAssetId))
+        let activeStakingAssets = Set(activeStakings.map(\.stakingOption.chainAsset.chainAssetId))
 
-        let allInactiveStakings = dashboardItems.filter { !$0.hasStaking }
+        let allInactiveStakings = dashboardItems
+            .filter { !$0.hasStaking }
+            .sorted { item1, item2 in
+                item1.stakingOption.type.isMorePreferred(than: item2.stakingOption.type)
+            }
 
         /**
          * We allow staking to be in inactive set if:
          * - there is no active staking for the asset
-         * - there is no inactive staking for the asset
          * - the asset is not in the testnet
          *
          * Otherwise staking goes to the More Options
          */
 
-        var inactiveStakings: [ChainAssetId: StakingDashboardItemModel] = [:]
-        var moreOptions: [StakingDashboardItemModel] = []
+        var inactiveStakings: [ChainAssetId: StakingDashboardItemModel.Combined] = [:]
+        var moreOptionsConcrete: [StakingDashboardItemModel.Concrete] = []
+        var moreOptionsCombined: [ChainAssetId: StakingDashboardItemModel.Combined] = [:]
 
         allInactiveStakings.forEach { dashboardItem in
-            let chainAsset = dashboardItem.stakingOption.chainAsset
-            let chainAssetId = chainAsset.chainAssetId
+            let stakingOption = dashboardItem.stakingOption.option
+            let chain = dashboardItem.stakingOption.chainAsset.chain
 
-            if
-                activeAssets.contains(chainAssetId) ||
-                inactiveStakings[chainAssetId] != nil ||
-                chainAsset.chain.isTestnet {
-                moreOptions.append(dashboardItem)
+            if activeStakingAssets.contains(stakingOption.chainAssetId) {
+                moreOptionsConcrete.append(dashboardItem)
+            } else if chain.isTestnet {
+                updateCombined(store: &moreOptionsCombined, item: dashboardItem)
             } else {
-                inactiveStakings[chainAssetId] = dashboardItem
+                updateCombined(store: &inactiveStakings, item: dashboardItem)
             }
         }
+
+        let moreOptions = moreOptionsConcrete.map { StakingDashboardItemModel.concrete($0) } +
+            moreOptionsCombined.values.map { StakingDashboardItemModel.combined($0) }
 
         let model = StakingDashboardModel(
             active: activeStakings.sortedByStake(),
@@ -122,21 +189,39 @@ final class StakingDashboardBuilder {
         }
     }
 
-    private func updateSync(
-        for items: [StakingDashboardItemModel],
-        syncChange: Set<Multistaking.ChainAssetOption>
-    ) -> [StakingDashboardItemModel] {
-        let newOffchainSync = deriveOffchainSync()
+    private func createSyncChange(
+        for currentModel: StakingDashboardModel,
+        newOffchainSync: Bool
+    ) -> StakingDashboardBuilderResult.SyncChange {
+        let changeByChainAsset = currentModel.all.reduce(into: Set<ChainAsset>()) { accum, item in
+            if newOffchainSync != item.isOffchainSync {
+                accum.insert(item.chainAsset)
+                return
+            }
 
-        return items.map { item in
-            guard syncChange.contains(item.stakingOption) else {
-                return item
+            let newOnchainSync = deriveOnchainSync(for: item.chainAsset)
+
+            if newOnchainSync != item.isOnchainSync {
+                accum.insert(item.chainAsset)
+            }
+        }
+
+        let changeByChainOption = currentModel.allConcrete.reduce(
+            into: Set<Multistaking.ChainAssetOption>()
+        ) { accum, item in
+            if newOffchainSync != item.isOffchainSync {
+                accum.insert(item.stakingOption)
+                return
             }
 
             let newOnchainSync = deriveOnchainSync(for: item.stakingOption)
 
-            return item.byChangingSyncState(isOnchainSync: newOnchainSync, isOffchainSync: newOffchainSync)
+            if newOnchainSync != item.isOnchainSync {
+                accum.insert(item.stakingOption)
+            }
         }
+
+        return .init(byStakingOption: changeByChainOption, byStakingChainAsset: changeByChainAsset)
     }
 
     private func updateModelAfterSyncChange() {
@@ -146,22 +231,40 @@ final class StakingDashboardBuilder {
 
         let newOffchainSync = deriveOffchainSync()
 
-        let syncChange: Set<Multistaking.ChainAssetOption> = currentModel.all.reduce(into: Set()) { state, item in
-            if item.isOffchainSync != newOffchainSync {
-                state.insert(item.stakingOption)
-                return
-            }
+        let syncChange = createSyncChange(for: currentModel, newOffchainSync: newOffchainSync)
 
-            let newOnchainSync = deriveOnchainSync(for: item.stakingOption)
-
-            if item.isOnchainSync != newOnchainSync {
-                state.insert(item.stakingOption)
-            }
+        let newActive = currentModel.active.map { item in
+            item.byChangingSyncState(
+                isOnchainSync: newOffchainSync,
+                isOffchainSync: deriveOnchainSync(for: item.stakingOption)
+            )
         }
 
-        let newActive = updateSync(for: currentModel.active, syncChange: syncChange)
-        let newInactive = updateSync(for: currentModel.inactive, syncChange: syncChange)
-        let newMoreOptions = updateSync(for: currentModel.more, syncChange: syncChange)
+        let newInactive = currentModel.inactive.map { item in
+            item.byChangingSyncState(
+                isOnchainSync: newOffchainSync,
+                isOffchainSync: deriveOnchainSync(for: item.chainAsset)
+            )
+        }
+
+        let newMoreOptions = currentModel.more.map { item in
+            switch item {
+            case let .concrete(concrete):
+                let newConcrete = concrete.byChangingSyncState(
+                    isOnchainSync: newOffchainSync,
+                    isOffchainSync: deriveOnchainSync(for: concrete.stakingOption)
+                )
+
+                return StakingDashboardItemModel.concrete(newConcrete)
+            case let .combined(combined):
+                let newCombined = combined.byChangingSyncState(
+                    isOnchainSync: newOffchainSync,
+                    isOffchainSync: deriveOnchainSync(for: combined.chainAsset)
+                )
+
+                return StakingDashboardItemModel.combined(newCombined)
+            }
+        }
 
         let newModel = StakingDashboardModel(
             active: newActive,
@@ -190,7 +293,6 @@ extension StakingDashboardBuilder: StakingDashboardBuilderProtocol {
             self?.balances = [:]
             self?.syncState = nil
             self?.currentModel = nil
-
             self?.rebuildModel()
         }
     }
@@ -250,6 +352,7 @@ extension StakingDashboardBuilder: StakingDashboardBuilderProtocol {
         workingQueue.async { [weak self] in
             if self?.syncState != state {
                 self?.syncState = state
+                self?.reindexChainAssetSyncState()
                 self?.updateModelAfterSyncChange()
             }
         }

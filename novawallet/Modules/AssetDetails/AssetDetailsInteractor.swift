@@ -7,14 +7,14 @@ final class AssetDetailsInteractor {
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
+    let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let purchaseProvider: PurchaseProviderProtocol
     let assetMapper: CustomAssetMapper
 
     private var assetLocksSubscription: StreamableProvider<AssetLock>?
     private var priceSubscription: StreamableProvider<PriceData>?
     private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
-    private var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
+    private var externalBalanceSubscription: StreamableProvider<ExternalAssetBalance>?
 
     private var accountId: AccountId? {
         selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
@@ -26,12 +26,12 @@ final class AssetDetailsInteractor {
         purchaseProvider: PurchaseProviderProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
+        externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
+        self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
         self.purchaseProvider = purchaseProvider
@@ -92,14 +92,16 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
-        if chainAsset.chain.hasCrowdloans {
-            crowdloansSubscription = subscribeToCrowdloansProvider(
+
+        if chainAsset.chain.chainAssetIdsWithExternalBalances().contains(chainAsset.chainAssetId) {
+            externalBalanceSubscription = subscribeToExternalAssetBalancesProvider(
                 for: accountId,
-                chain: chainAsset.chain
+                chainAsset: chainAsset
             )
         } else {
-            crowdloansSubscription = nil
+            externalBalanceSubscription = nil
         }
+
         setAvailableOperations()
     }
 }
@@ -168,22 +170,17 @@ extension AssetDetailsInteractor: SelectedCurrencyDepending {
     }
 }
 
-extension AssetDetailsInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
-    func handleCrowdloans(
-        result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
-        accountId: AccountId,
-        chain: ChainModel
+extension AssetDetailsInteractor: ExternalAssetBalanceSubscriber, ExternalAssetBalanceSubscriptionHandler {
+    func handleExternalAssetBalances(
+        result: Result<[DataProviderChange<ExternalAssetBalance>], Error>,
+        accountId _: AccountId,
+        chainAsset _: ChainAsset
     ) {
-        guard self.accountId == accountId,
-              chainAsset.chain.chainId == chain.chainId else {
-            return
-        }
-
         switch result {
+        case let .success(externalBalanceChanges):
+            presenter.didReceive(externalBalanceChanges: externalBalanceChanges)
         case let .failure(error):
-            presenter.didReceive(error: .crowdloans(error))
-        case let .success(changes):
-            presenter.didReceive(crowdloanChanges: changes)
+            presenter.didReceive(error: .externalBalances(error))
         }
     }
 }

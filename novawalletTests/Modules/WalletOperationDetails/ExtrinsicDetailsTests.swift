@@ -14,6 +14,7 @@ class OperationDetailsTests: XCTestCase {
         let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42)
         let chainAsset = ChainAsset(chain: chain, asset: chain.utilityAssets().first!)
         let wallet = AccountGenerator.generateMetaAccount()
+        let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest())!
         let txData = AssetTransactionGenerator.generateExtrinsic(
             for: wallet,
             chainAsset: chainAsset
@@ -22,11 +23,8 @@ class OperationDetailsTests: XCTestCase {
         let userDataStorageFacade = UserDataStorageTestFacade()
         let substrateDataStorageFacade = SubstrateStorageTestFacade()
 
-        let walletRepository = AccountRepositoryFactory(
+        let accountRepositoryFactory = AccountRepositoryFactory(
             storageFacade: userDataStorageFacade
-        ).createMetaAccountRepository(
-            for: nil,
-            sortDescriptors: []
         )
 
         let operationQueue = OperationQueue()
@@ -44,16 +42,24 @@ class OperationDetailsTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
+        
+        let operationDetailsProviderFactory = OperationDetailsDataProviderFactory(
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            chainRegistry: MockChainRegistryProtocol(),
+            accountRepositoryFactory: accountRepositoryFactory,
+            operationQueue: operationQueue
+        )
+        
+        let operationDataProvider = operationDetailsProviderFactory.createProvider(for: txData)!
 
         let interactor = OperationDetailsInteractor(
             transaction: txData,
             chainAsset: chainAsset,
-            wallet: wallet,
-            walletRepository: walletRepository,
             transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
-            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub(),
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            operationDataProvider: operationDataProvider
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(

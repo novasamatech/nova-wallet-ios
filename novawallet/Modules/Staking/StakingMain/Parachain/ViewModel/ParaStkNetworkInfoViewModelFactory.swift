@@ -7,8 +7,9 @@ protocol ParaStkNetworkInfoViewModelFactoryProtocol {
         from model: ParachainStaking.NetworkInfo,
         duration: ParachainStakingDuration?,
         chainAsset: ChainAsset,
-        price: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModel>
+        price: PriceData?,
+        locale: Locale
+    ) -> NetworkStakingInfoViewModel
 }
 
 extension ParachainStaking {
@@ -98,47 +99,46 @@ extension ParachainStaking {
             from model: ParachainStaking.NetworkInfo,
             duration: ParachainStakingDuration?,
             chainAsset: ChainAsset,
-            price: PriceData?
-        ) -> LocalizableResource<NetworkStakingInfoViewModel> {
+            price: PriceData?,
+            locale: Locale
+        ) -> NetworkStakingInfoViewModel {
             let assetDisplayInfo = chainAsset.assetDisplayInfo
             let balanceViewModelFactory = BalanceViewModelFactory(
                 targetAssetInfo: assetDisplayInfo,
                 priceAssetInfoFactory: priceAssetInfoFactory
             )
 
-            let localizedTotalStake = createTotalStakeViewModel(
+            let totalStake = createTotalStakeViewModel(
                 with: model,
                 displayInfo: assetDisplayInfo,
                 priceData: price,
                 balanceViewModelFactory: balanceViewModelFactory
-            )
+            ).value(for: locale)
 
-            let localizedMinimalStake = createMinimalStakeViewModel(
+            let minimalStake = createMinimalStakeViewModel(
                 with: model,
                 displayInfo: assetDisplayInfo,
                 priceData: price,
                 balanceViewModelFactory: balanceViewModelFactory
-            )
+            ).value(for: locale)
 
-            let nominatorsCount = createActiveNominatorsViewModel(with: model)
+            let nominatorsCount = createActiveNominatorsViewModel(with: model).value(for: locale)
 
-            let localizedUnstakingPeriod = createUnstakingPeriodViewModel(
+            let unstakingPeriod = createUnstakingPeriodViewModel(
                 duration: duration
+            ).value(for: locale)
+
+            let stakingPeriod = R.string.localizable.stakingNetworkInfoStakingPeriodValue(
+                preferredLanguages: locale.rLanguages
             )
 
-            return LocalizableResource { locale in
-                let stakingPeriod = R.string.localizable.stakingNetworkInfoStakingPeriodValue(
-                    preferredLanguages: locale.rLanguages
-                )
-
-                return NetworkStakingInfoViewModel(
-                    totalStake: localizedTotalStake.value(for: locale),
-                    minimalStake: localizedMinimalStake.value(for: locale),
-                    activeNominators: nominatorsCount.value(for: locale),
-                    stakingPeriod: stakingPeriod,
-                    lockUpPeriod: localizedUnstakingPeriod.value(for: locale)
-                )
-            }
+            return .init(
+                totalStake: .loaded(value: totalStake),
+                minimalStake: .loaded(value: minimalStake),
+                activeNominators: .loaded(value: nominatorsCount),
+                stakingPeriod: .loaded(value: stakingPeriod),
+                lockUpPeriod: .loaded(value: unstakingPeriod)
+            )
         }
     }
 }

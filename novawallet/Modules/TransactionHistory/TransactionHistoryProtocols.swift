@@ -16,6 +16,8 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
     func setup()
     func set(filter: WalletHistoryFilter)
+    func retryLocalFilter()
+    func remakeSubscriptions()
     func loadNext()
 }
 
@@ -23,10 +25,11 @@ protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
     func didReceive(error: TransactionHistoryError)
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
     func didReceive(priceCalculator: TokenPriceCalculatorProtocol)
+    func didReceive(localFilter: TransactionHistoryLocalFilterProtocol)
     func didReceiveFetchingState(isComplete: Bool)
 }
 
-protocol TransactionHistoryWireframeProtocol: AnyObject {
+protocol TransactionHistoryWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {
     func showFilter(
         from view: TransactionHistoryViewProtocol,
         filter: WalletHistoryFilter,
@@ -43,4 +46,5 @@ enum TransactionHistoryError: Error {
     case fetchFailed(Error)
     case setupFailed(Error)
     case priceFailed(Error)
+    case localFilter(Error)
 }

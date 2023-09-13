@@ -22898,6 +22898,21 @@ import RobinHood
         
     }
     
+    
+    
+     func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
+        
+    return cuckoo_manager.call("allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>",
+            parameters: (preferredAccountIds),
+            escapingParameters: (preferredAccountIds),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.allPreferred(for: preferredAccountIds))
+        
+    }
+    
 
 	 struct __StubbingProxy_ValidatorOperationFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -22930,6 +22945,11 @@ import RobinHood
 	    func wannabeValidatorsOperation<M1: Cuckoo.Matchable>(for accountIdList: M1) -> Cuckoo.ProtocolStubFunction<([AccountId]), CompoundOperationWrapper<[SelectedValidatorInfo]>> where M1.MatchedType == [AccountId] {
 	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: accountIdList) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "wannabeValidatorsOperation(for: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>", parameterMatchers: matchers))
+	    }
+	    
+	    func allPreferred<M1: Cuckoo.Matchable>(for preferredAccountIds: M1) -> Cuckoo.ProtocolStubFunction<([AccountId]), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.MatchedType == [AccountId] {
+	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: preferredAccountIds) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -22978,6 +22998,12 @@ import RobinHood
 	        return cuckoo_manager.verify("wannabeValidatorsOperation(for: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func allPreferred<M1: Cuckoo.Matchable>(for preferredAccountIds: M1) -> Cuckoo.__DoNotUse<([AccountId]), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.MatchedType == [AccountId] {
+	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: preferredAccountIds) { $0 }]
+	        return cuckoo_manager.verify("allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -23015,6 +23041,12 @@ import RobinHood
     
      func wannabeValidatorsOperation(for accountIdList: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[SelectedValidatorInfo]>).self)
+    }
+    
+    
+    
+     func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<ElectedAndPrefValidators>).self)
     }
     
 }
@@ -26728,9 +26760,9 @@ import SoraFoundation
     
     
     
-     func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)  {
+     func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)  {
         
-    return cuckoo_manager.call("didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)",
+    return cuckoo_manager.call("didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -26765,9 +26797,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ElectedValidatorInfo], Error>)> where M1.MatchedType == Result<[ElectedValidatorInfo], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ElectedValidatorInfo], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsStartInteractorOutputProtocol.self, method: "didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)", parameterMatchers: matchers))
+	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ElectedAndPrefValidators, Error>)> where M1.MatchedType == Result<ElectedAndPrefValidators, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ElectedAndPrefValidators, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsStartInteractorOutputProtocol.self, method: "didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveMaxNominations<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Int, Error>)> where M1.MatchedType == Result<Int, Error> {
@@ -26792,9 +26824,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<[ElectedValidatorInfo], Error>), Void> where M1.MatchedType == Result<[ElectedValidatorInfo], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ElectedValidatorInfo], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveValidators<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ElectedAndPrefValidators, Error>), Void> where M1.MatchedType == Result<ElectedAndPrefValidators, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ElectedAndPrefValidators, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -26814,7 +26846,7 @@ import SoraFoundation
     
     
     
-     func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)   {
+     func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -35798,21 +35830,6 @@ import Foundation
     
     
     
-     func showSetupAmount(from view: StakingMainViewProtocol?)  {
-        
-    return cuckoo_manager.call("showSetupAmount(from: StakingMainViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showSetupAmount(from: view))
-        
-    }
-    
-    
-    
      func proceedToSelectValidatorsStart(from view: StakingMainViewProtocol?, existingBonding: ExistingBonding)  {
         
     return cuckoo_manager.call("proceedToSelectValidatorsStart(from: StakingMainViewProtocol?, existingBonding: ExistingBonding)",
@@ -35823,21 +35840,6 @@ import Foundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.proceedToSelectValidatorsStart(from: view, existingBonding: existingBonding))
-        
-    }
-    
-    
-    
-     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)  {
-        
-    return cuckoo_manager.call("showRewardDetails(from: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)",
-            parameters: (view, maxReward, avgReward),
-            escapingParameters: (view, maxReward, avgReward),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward))
         
     }
     
@@ -36045,19 +36047,9 @@ import Foundation
 	    }
 	    
 	    
-	    func showSetupAmount<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainViewProtocol?)> where M1.OptionalMatchedType == StakingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showSetupAmount(from: StakingMainViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
 	    func proceedToSelectValidatorsStart<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, existingBonding: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainViewProtocol?, ExistingBonding)> where M1.OptionalMatchedType == StakingMainViewProtocol, M2.MatchedType == ExistingBonding {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?, ExistingBonding)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: existingBonding) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "proceedToSelectValidatorsStart(from: StakingMainViewProtocol?, existingBonding: ExistingBonding)", parameterMatchers: matchers))
-	    }
-	    
-	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, maxReward: M2, avgReward: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, Decimal, Decimal)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == Decimal, M3.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, Decimal, Decimal)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: maxReward) { $0.1 }, wrap(matchable: avgReward) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showRewardDetails(from: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)", parameterMatchers: matchers))
 	    }
 	    
 	    func showRewardPayoutsForNominator<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, stashAddress: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, AccountAddress)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == AccountAddress {
@@ -36142,21 +36134,9 @@ import Foundation
 	
 	    
 	    @discardableResult
-	    func showSetupAmount<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingMainViewProtocol?), Void> where M1.OptionalMatchedType == StakingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("showSetupAmount(from: StakingMainViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func proceedToSelectValidatorsStart<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, existingBonding: M2) -> Cuckoo.__DoNotUse<(StakingMainViewProtocol?, ExistingBonding), Void> where M1.OptionalMatchedType == StakingMainViewProtocol, M2.MatchedType == ExistingBonding {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?, ExistingBonding)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: existingBonding) { $0.1 }]
 	        return cuckoo_manager.verify("proceedToSelectValidatorsStart(from: StakingMainViewProtocol?, existingBonding: ExistingBonding)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, maxReward: M2, avgReward: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, Decimal, Decimal), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == Decimal, M3.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, Decimal, Decimal)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: maxReward) { $0.1 }, wrap(matchable: avgReward) { $0.2 }]
-	        return cuckoo_manager.verify("showRewardDetails(from: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -36248,19 +36228,7 @@ import Foundation
     
     
     
-     func showSetupAmount(from view: StakingMainViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
      func proceedToSelectValidatorsStart(from view: StakingMainViewProtocol?, existingBonding: ExistingBonding)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36445,9 +36413,9 @@ import SoraFoundation
     
     
     
-     func didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)  {
+     func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)  {
         
-    return cuckoo_manager.call("didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)",
+    return cuckoo_manager.call("didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)",
             parameters: (viewModel),
             escapingParameters: (viewModel),
             superclassCall:
@@ -36500,6 +36468,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.didReceiveStatics(viewModel: viewModel))
+        
+    }
+    
+    
+    
+     func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)  {
+        
+    return cuckoo_manager.call("didReceiveSelectedEntity(_: StakingSelectedEntityViewModel)",
+            parameters: (entity),
+            escapingParameters: (entity),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveSelectedEntity(entity))
         
     }
     
@@ -36562,9 +36545,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceive(viewModel: StakingMainViewModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didRecieveNetworkStakingInfo<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LocalizableResource<NetworkStakingInfoViewModel>?)> where M1.OptionalMatchedType == LocalizableResource<NetworkStakingInfoViewModel> {
-	        let matchers: [Cuckoo.ParameterMatcher<(LocalizableResource<NetworkStakingInfoViewModel>?)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)", parameterMatchers: matchers))
+	    func didRecieveNetworkStakingInfo<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(NetworkStakingInfoViewModel)> where M1.MatchedType == NetworkStakingInfoViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(NetworkStakingInfoViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveStakingState<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingViewState)> where M1.MatchedType == StakingViewState {
@@ -36580,6 +36563,11 @@ import SoraFoundation
 	    func didReceiveStatics<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainStaticViewModelProtocol)> where M1.MatchedType == StakingMainStaticViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainStaticViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveSelectedEntity<M1: Cuckoo.Matchable>(_ entity: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingSelectedEntityViewModel)> where M1.MatchedType == StakingSelectedEntityViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingSelectedEntityViewModel)>] = [wrap(matchable: entity) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceiveSelectedEntity(_: StakingSelectedEntityViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didEditRewardFilters() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -36630,9 +36618,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didRecieveNetworkStakingInfo<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(LocalizableResource<NetworkStakingInfoViewModel>?), Void> where M1.OptionalMatchedType == LocalizableResource<NetworkStakingInfoViewModel> {
-	        let matchers: [Cuckoo.ParameterMatcher<(LocalizableResource<NetworkStakingInfoViewModel>?)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didRecieveNetworkStakingInfo<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(NetworkStakingInfoViewModel), Void> where M1.MatchedType == NetworkStakingInfoViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(NetworkStakingInfoViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -36651,6 +36639,12 @@ import SoraFoundation
 	    func didReceiveStatics<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(StakingMainStaticViewModelProtocol), Void> where M1.MatchedType == StakingMainStaticViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainStaticViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
 	        return cuckoo_manager.verify("didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveSelectedEntity<M1: Cuckoo.Matchable>(_ entity: M1) -> Cuckoo.__DoNotUse<(StakingSelectedEntityViewModel), Void> where M1.MatchedType == StakingSelectedEntityViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingSelectedEntityViewModel)>] = [wrap(matchable: entity) { $0 }]
+	        return cuckoo_manager.verify("didReceiveSelectedEntity(_: StakingSelectedEntityViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -36711,7 +36705,7 @@ import SoraFoundation
     
     
     
-     func didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)   {
+     func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36730,6 +36724,12 @@ import SoraFoundation
     
     
      func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36789,81 +36789,6 @@ import SoraFoundation
     
     
     
-     func performMainAction()  {
-        
-    return cuckoo_manager.call("performMainAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performMainAction())
-        
-    }
-    
-    
-    
-     func performRewardInfoAction()  {
-        
-    return cuckoo_manager.call("performRewardInfoAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performRewardInfoAction())
-        
-    }
-    
-    
-    
-     func performChangeValidatorsAction()  {
-        
-    return cuckoo_manager.call("performChangeValidatorsAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performChangeValidatorsAction())
-        
-    }
-    
-    
-    
-     func performSetupValidatorsForBondedAction()  {
-        
-    return cuckoo_manager.call("performSetupValidatorsForBondedAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performSetupValidatorsForBondedAction())
-        
-    }
-    
-    
-    
-     func performStakeMoreAction()  {
-        
-    return cuckoo_manager.call("performStakeMoreAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performStakeMoreAction())
-        
-    }
-    
-    
-    
      func performRedeemAction()  {
         
     return cuckoo_manager.call("performRedeemAction()",
@@ -36894,16 +36819,16 @@ import SoraFoundation
     
     
     
-     func performRebag()  {
+     func performClaimRewards()  {
         
-    return cuckoo_manager.call("performRebag()",
+    return cuckoo_manager.call("performClaimRewards()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.performRebag())
+            defaultCall: __defaultImplStub!.performClaimRewards())
         
     }
     
@@ -36939,6 +36864,36 @@ import SoraFoundation
     
     
     
+     func performAlertAction(_ alert: StakingAlert)  {
+        
+    return cuckoo_manager.call("performAlertAction(_: StakingAlert)",
+            parameters: (alert),
+            escapingParameters: (alert),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performAlertAction(alert))
+        
+    }
+    
+    
+    
+     func performSelectedEntityAction()  {
+        
+    return cuckoo_manager.call("performSelectedEntityAction()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performSelectedEntityAction())
+        
+    }
+    
+    
+    
      func selectPeriod()  {
         
     return cuckoo_manager.call("selectPeriod()",
@@ -36966,31 +36921,6 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func performMainAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performMainAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performRewardInfoAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRewardInfoAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performChangeValidatorsAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performChangeValidatorsAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performSetupValidatorsForBondedAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performSetupValidatorsForBondedAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performStakeMoreAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performStakeMoreAction()", parameterMatchers: matchers))
-	    }
-	    
 	    func performRedeemAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRedeemAction()", parameterMatchers: matchers))
@@ -37001,9 +36931,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRebondAction()", parameterMatchers: matchers))
 	    }
 	    
-	    func performRebag() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func performClaimRewards() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRebag()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performClaimRewards()", parameterMatchers: matchers))
 	    }
 	    
 	    func networkInfoViewDidChangeExpansion<M1: Cuckoo.Matchable>(isExpanded: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
@@ -37014,6 +36944,16 @@ import SoraFoundation
 	    func performManageAction<M1: Cuckoo.Matchable>(_ action: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingManageOption)> where M1.MatchedType == StakingManageOption {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingManageOption)>] = [wrap(matchable: action) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performManageAction(_: StakingManageOption)", parameterMatchers: matchers))
+	    }
+	    
+	    func performAlertAction<M1: Cuckoo.Matchable>(_ alert: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingAlert)> where M1.MatchedType == StakingAlert {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingAlert)>] = [wrap(matchable: alert) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performAlertAction(_: StakingAlert)", parameterMatchers: matchers))
+	    }
+	    
+	    func performSelectedEntityAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performSelectedEntityAction()", parameterMatchers: matchers))
 	    }
 	    
 	    func selectPeriod() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -37044,36 +36984,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func performMainAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performMainAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performRewardInfoAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performRewardInfoAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performChangeValidatorsAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performChangeValidatorsAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performSetupValidatorsForBondedAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performSetupValidatorsForBondedAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performStakeMoreAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performStakeMoreAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func performRedeemAction() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("performRedeemAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -37086,9 +36996,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func performRebag() -> Cuckoo.__DoNotUse<(), Void> {
+	    func performClaimRewards() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performRebag()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("performClaimRewards()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -37101,6 +37011,18 @@ import SoraFoundation
 	    func performManageAction<M1: Cuckoo.Matchable>(_ action: M1) -> Cuckoo.__DoNotUse<(StakingManageOption), Void> where M1.MatchedType == StakingManageOption {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingManageOption)>] = [wrap(matchable: action) { $0 }]
 	        return cuckoo_manager.verify("performManageAction(_: StakingManageOption)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performAlertAction<M1: Cuckoo.Matchable>(_ alert: M1) -> Cuckoo.__DoNotUse<(StakingAlert), Void> where M1.MatchedType == StakingAlert {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingAlert)>] = [wrap(matchable: alert) { $0 }]
+	        return cuckoo_manager.verify("performAlertAction(_: StakingAlert)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performSelectedEntityAction() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performSelectedEntityAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -37126,36 +37048,6 @@ import SoraFoundation
     
     
     
-     func performMainAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performRewardInfoAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performChangeValidatorsAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performSetupValidatorsForBondedAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performStakeMoreAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
      func performRedeemAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -37168,7 +37060,7 @@ import SoraFoundation
     
     
     
-     func performRebag()   {
+     func performClaimRewards()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -37181,6 +37073,18 @@ import SoraFoundation
     
     
      func performManageAction(_ action: StakingManageOption)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performAlertAction(_ alert: StakingAlert)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performSelectedEntityAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -37705,81 +37609,6 @@ import SoraFoundation
     
     
     
-     func performMainAction()  {
-        
-    return cuckoo_manager.call("performMainAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performMainAction())
-        
-    }
-    
-    
-    
-     func performRewardInfoAction()  {
-        
-    return cuckoo_manager.call("performRewardInfoAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performRewardInfoAction())
-        
-    }
-    
-    
-    
-     func performChangeValidatorsAction()  {
-        
-    return cuckoo_manager.call("performChangeValidatorsAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performChangeValidatorsAction())
-        
-    }
-    
-    
-    
-     func performSetupValidatorsForBondedAction()  {
-        
-    return cuckoo_manager.call("performSetupValidatorsForBondedAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performSetupValidatorsForBondedAction())
-        
-    }
-    
-    
-    
-     func performStakeMoreAction()  {
-        
-    return cuckoo_manager.call("performStakeMoreAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performStakeMoreAction())
-        
-    }
-    
-    
-    
      func performRedeemAction()  {
         
     return cuckoo_manager.call("performRedeemAction()",
@@ -37810,16 +37639,16 @@ import SoraFoundation
     
     
     
-     func performRebag()  {
+     func performClaimRewards()  {
         
-    return cuckoo_manager.call("performRebag()",
+    return cuckoo_manager.call("performClaimRewards()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.performRebag())
+            defaultCall: __defaultImplStub!.performClaimRewards())
         
     }
     
@@ -37835,6 +37664,36 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.performManageAction(action))
+        
+    }
+    
+    
+    
+     func performAlertAction(_ alert: StakingAlert)  {
+        
+    return cuckoo_manager.call("performAlertAction(_: StakingAlert)",
+            parameters: (alert),
+            escapingParameters: (alert),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performAlertAction(alert))
+        
+    }
+    
+    
+    
+     func performSelectedEntityAction()  {
+        
+    return cuckoo_manager.call("performSelectedEntityAction()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performSelectedEntityAction())
         
     }
     
@@ -37867,31 +37726,6 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func performMainAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performMainAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performRewardInfoAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRewardInfoAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performChangeValidatorsAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performChangeValidatorsAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performSetupValidatorsForBondedAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performSetupValidatorsForBondedAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performStakeMoreAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performStakeMoreAction()", parameterMatchers: matchers))
-	    }
-	    
 	    func performRedeemAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRedeemAction()", parameterMatchers: matchers))
@@ -37902,14 +37736,24 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRebondAction()", parameterMatchers: matchers))
 	    }
 	    
-	    func performRebag() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func performClaimRewards() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRebag()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performClaimRewards()", parameterMatchers: matchers))
 	    }
 	    
 	    func performManageAction<M1: Cuckoo.Matchable>(_ action: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingManageOption)> where M1.MatchedType == StakingManageOption {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingManageOption)>] = [wrap(matchable: action) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performManageAction(_: StakingManageOption)", parameterMatchers: matchers))
+	    }
+	    
+	    func performAlertAction<M1: Cuckoo.Matchable>(_ alert: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingAlert)> where M1.MatchedType == StakingAlert {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingAlert)>] = [wrap(matchable: alert) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performAlertAction(_: StakingAlert)", parameterMatchers: matchers))
+	    }
+	    
+	    func performSelectedEntityAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performSelectedEntityAction()", parameterMatchers: matchers))
 	    }
 	    
 	    func selectPeriod<M1: Cuckoo.Matchable>(_ period: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardFiltersPeriod)> where M1.MatchedType == StakingRewardFiltersPeriod {
@@ -37940,36 +37784,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func performMainAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performMainAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performRewardInfoAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performRewardInfoAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performChangeValidatorsAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performChangeValidatorsAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performSetupValidatorsForBondedAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performSetupValidatorsForBondedAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performStakeMoreAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performStakeMoreAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func performRedeemAction() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("performRedeemAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -37982,15 +37796,27 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func performRebag() -> Cuckoo.__DoNotUse<(), Void> {
+	    func performClaimRewards() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performRebag()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("performClaimRewards()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
 	    func performManageAction<M1: Cuckoo.Matchable>(_ action: M1) -> Cuckoo.__DoNotUse<(StakingManageOption), Void> where M1.MatchedType == StakingManageOption {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingManageOption)>] = [wrap(matchable: action) { $0 }]
 	        return cuckoo_manager.verify("performManageAction(_: StakingManageOption)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performAlertAction<M1: Cuckoo.Matchable>(_ alert: M1) -> Cuckoo.__DoNotUse<(StakingAlert), Void> where M1.MatchedType == StakingAlert {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingAlert)>] = [wrap(matchable: alert) { $0 }]
+	        return cuckoo_manager.verify("performAlertAction(_: StakingAlert)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performSelectedEntityAction() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performSelectedEntityAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -38016,36 +37842,6 @@ import SoraFoundation
     
     
     
-     func performMainAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performRewardInfoAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performChangeValidatorsAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performSetupValidatorsForBondedAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performStakeMoreAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
      func performRedeemAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -38058,13 +37854,25 @@ import SoraFoundation
     
     
     
-     func performRebag()   {
+     func performClaimRewards()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
      func performManageAction(_ action: StakingManageOption)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performAlertAction(_ alert: StakingAlert)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performSelectedEntityAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -7,7 +7,12 @@ protocol SubstrateRepositoryFactoryProtocol {
 
     func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
     func createAssetBalanceRepository(for chainAssetIds: Set<ChainAssetId>) -> AnyDataProviderRepository<AssetBalance>
-    func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
+
+    func createStashItemRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<StashItem>
+
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
 
@@ -81,20 +86,6 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     ) -> AnyDataProviderRepository<ChainStorageItem> {
         let repository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
             storageFacade.createRepository(filter: filter)
-
-        return AnyDataProviderRepository(repository)
-    }
-
-    func createStashItemRepository() -> AnyDataProviderRepository<StashItem> {
-        let mapper: CodableCoreDataMapper<StashItem, CDStashItem> =
-            CodableCoreDataMapper(entityIdentifierFieldName: #keyPath(CDStashItem.stash))
-
-        let repository: CoreDataRepository<StashItem, CDStashItem> =
-            storageFacade.createRepository(
-                filter: nil,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(mapper)
-            )
 
         return AnyDataProviderRepository(repository)
     }
@@ -289,6 +280,23 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createStashItemRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<StashItem> {
+        let filter = NSPredicate.filterByStashOrController(address, chainId: chainId)
+
+        let mapper = StashItemMapper()
+
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         return AnyDataProviderRepository(repository)
     }
 }

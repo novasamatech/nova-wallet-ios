@@ -11,10 +11,7 @@ protocol StakingServiceFactoryProtocol {
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol
 
-    func createBlockTimeService(
-        for chainId: ChainModel.Id,
-        consensus: ConsensusType
-    ) throws -> BlockTimeEstimationServiceProtocol?
+    func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel
 }
 
 final class StakingServiceFactory: StakingServiceFactoryProtocol {
@@ -107,35 +104,40 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         )
     }
 
-    func createBlockTimeService(
-        for chainId: ChainModel.Id,
-        consensus: ConsensusType
-    ) throws -> BlockTimeEstimationServiceProtocol? {
+    func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel {
         switch consensus {
         case .babe:
-            return nil
-        case .auraGeneral, .auraAzero:
-            guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-                throw ChainRegistryError.runtimeMetadaUnavailable
-            }
-
-            guard let connection = chainRegisty.getConnection(for: chainId) else {
-                throw ChainRegistryError.connectionUnavailable
-            }
-
-            let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-
-            let repository = repositoryFactory.createChainStorageItemRepository()
-
-            return BlockTimeEstimationService(
-                chainId: chainId,
-                connection: connection,
-                runtimeService: runtimeService,
-                repository: repository,
-                eventCenter: eventCenter,
-                operationQueue: operationQueue,
-                logger: logger
-            )
+            return .babe
+        case .auraGeneral:
+            let blockTimeService = try createBlockTimeService(for: chainId)
+            return .auraGeneral(blockTimeService)
+        case .auraAzero:
+            let blockTimeService = try createBlockTimeService(for: chainId)
+            return .azero(blockTimeService)
         }
+    }
+
+    private func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
+        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
+        guard let connection = chainRegisty.getConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
+
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        return BlockTimeEstimationService(
+            chainId: chainId,
+            connection: connection,
+            runtimeService: runtimeService,
+            repository: repository,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 }

@@ -13,16 +13,16 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         sharedState.generalLocalSubscriptionFactory
     }
 
+    var chainRegistry: ChainRegistryProtocol {
+        sharedState.chainRegistry
+    }
+
     let selectedWalletSettings: SelectedWalletSettings
-    let sharedState: ParachainStakingSharedState
-    let chainRegistry: ChainRegistryProtocol
-    let stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol
-    let stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
+    let sharedState: ParachainStakingSharedStateProtocol
     let scheduledRequestsFactory: ParaStkScheduledRequestsQueryFactoryProtocol
     let collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let stakingServiceFactory: ParachainStakingServiceFactoryProtocol
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
     let durationOperationFactory: ParaStkDurationOperationFactoryProtocol
     let yieldBoostSupport: ParaStkYieldBoostSupportProtocol
@@ -32,8 +32,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     let applicationHandler: ApplicationHandlerProtocol
     let logger: LoggerProtocol?
 
-    var chainSubscriptionId: UUID?
-    var accountSubscriptionId: UUID?
     var collatorsInfoCancellable: CancellableCall?
     var rewardCalculatorCancellable: CancellableCall?
     var networkInfoCancellable: CancellableCall?
@@ -55,13 +53,9 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
-        sharedState: ParachainStakingSharedState,
-        chainRegistry: ChainRegistryProtocol,
-        stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol,
+        sharedState: ParachainStakingSharedStateProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        stakingServiceFactory: ParachainStakingServiceFactoryProtocol,
         networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
         durationOperationFactory: ParaStkDurationOperationFactoryProtocol,
         scheduledRequestsFactory: ParaStkScheduledRequestsQueryFactoryProtocol,
@@ -76,12 +70,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.sharedState = sharedState
-        self.chainRegistry = chainRegistry
-        self.stakingAssetSubscriptionService = stakingAssetSubscriptionService
-        self.stakingAccountSubscriptionService = stakingAccountSubscriptionService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.stakingServiceFactory = stakingServiceFactory
         self.networkInfoFactory = networkInfoFactory
         self.durationOperationFactory = durationOperationFactory
         self.scheduledRequestsFactory = scheduledRequestsFactory
@@ -96,14 +86,9 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     }
 
     deinit {
-        clearChainRemoteSubscription(for: selectedChainAsset.chain.chainId)
-
-        clearAccountRemoteSubscription()
         clearCancellable()
 
-        sharedState.collatorService?.throttle()
-        sharedState.rewardCalculationService?.throttle()
-        sharedState.blockTimeService?.throttle()
+        sharedState.throttle()
     }
 
     func clearCancellable() {
@@ -122,69 +107,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         )
     }
 
-    func createInitialServices() {
-        let chainAsset = sharedState.stakingOption.chainAsset
-
-        do {
-            let chainId = chainAsset.chain.chainId
-            let collatorsService = try stakingServiceFactory.createSelectedCollatorsService(
-                for: chainId
-            )
-
-            let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
-                for: chainId,
-                stakingType: chainAsset.asset.stakings?.first ?? .unsupported,
-                assetPrecision: Int16(chainAsset.asset.precision),
-                collatorService: collatorsService
-            )
-
-            let blockTimeService = try stakingServiceFactory.createBlockTimeService(
-                for: chainId
-            )
-
-            sharedState.replaceCollatorService(collatorsService)
-            sharedState.replaceRewardCalculatorService(rewardCalculatorService)
-            sharedState.replaceBlockTimeService(blockTimeService)
-        } catch {
-            logger?.error("Couldn't create shared state")
-            presenter?.didReceiveError(error)
-        }
-    }
-
-    func continueSetup() {
-        setupSelectedAccount()
-        setupChainRemoteSubscription()
-        setupAccountRemoteSubscription()
-
-        sharedState.collatorService?.setup()
-        sharedState.rewardCalculationService?.setup()
-        sharedState.blockTimeService?.setup()
-
-        provideSelectedChainAsset()
-        provideSelectedAccount()
-
-        guard
-            let collatorService = sharedState.collatorService,
-            let rewardCalculationService = sharedState.rewardCalculationService,
-            let blockTimeService = sharedState.blockTimeService else {
-            return
-        }
-
-        performBlockNumberSubscription()
-        performRoundInfoSubscription()
-        performPriceSubscription()
-        performAssetBalanceSubscription()
-        performDelegatorSubscription()
-        performTotalRewardSubscription()
-        performYieldBoostTasksSubscription()
-
-        provideRewardCalculator(from: rewardCalculationService)
-        provideSelectedCollatorsInfo(from: collatorService)
-        provideNetworkInfo(for: collatorService, rewardService: rewardCalculationService)
-        provideDurationInfo(for: blockTimeService)
-
-        eventCenter.add(observer: self, dispatchIn: .main)
-
-        applicationHandler.delegate = self
+    func setupSharedState() {
+        let accountId = selectedAccount?.chainAccount.accountId
+        sharedState.setup(for: accountId)
     }
 }

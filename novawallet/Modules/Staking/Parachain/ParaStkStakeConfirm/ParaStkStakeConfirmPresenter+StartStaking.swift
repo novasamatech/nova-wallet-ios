@@ -3,31 +3,7 @@ import BigInt
 
 extension ParaStkStakeConfirmPresenter {
     func provideStartStakingHintsViewModel() {
-        var hints: [String] = []
-        let languages = selectedLocale.rLanguages
-
-        if let stakingDuration = stakingDuration {
-            let roundDuration = stakingDuration.round.localizedDaysHours(for: selectedLocale)
-            let unstakingPeriod = stakingDuration.unstaking.localizedDaysHours(for: selectedLocale)
-
-            hints.append(contentsOf: [
-                R.string.localizable.parachainStakingHintRewardsFormat(
-                    "~\(roundDuration)",
-                    preferredLanguages: languages
-                ),
-                R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-                    "~\(unstakingPeriod)",
-                    preferredLanguages: languages
-                )
-            ])
-        }
-
-        hints.append(contentsOf: [
-            R.string.localizable.stakingHintNoRewards_V2_2_0(preferredLanguages: languages),
-            R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: languages)
-        ])
-
-        view?.didReceiveHints(viewModel: hints)
+        view?.didReceiveHints(viewModel: [])
     }
 
     private func createStartStakingValidationRunner(

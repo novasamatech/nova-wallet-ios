@@ -3,10 +3,12 @@ import Foundation
 struct OperationDetailsViewModel {
     enum ContentViewModel {
         case transfer(_ viewModel: OperationTransferViewModel)
-        case reward(_ viewModel: OperationRewardViewModel)
-        case slash(_ viewModel: OperationSlashViewModel)
+        case reward(_ viewModel: OperationRewardOrSlashViewModel)
+        case slash(_ viewModel: OperationRewardOrSlashViewModel)
         case extrinsic(_ viewModel: OperationExtrinsicViewModel)
         case contract(_ viewModel: OperationContractCallViewModel)
+        case poolReward(_ viewModel: OperationPoolRewardOrSlashViewModel)
+        case poolSlash(_ viewModel: OperationPoolRewardOrSlashViewModel)
     }
 
     let time: String

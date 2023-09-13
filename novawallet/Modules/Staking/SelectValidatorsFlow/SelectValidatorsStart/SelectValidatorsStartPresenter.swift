@@ -11,8 +11,9 @@ final class SelectValidatorsStartPresenter {
     let existingStashAddress: AccountAddress?
     let logger: LoggerProtocol?
 
+    private var electedAndPrefValidators: ElectedAndPrefValidators?
     private var electedValidators: [AccountAddress: ElectedValidatorInfo]?
-    private var recommendedValidators: [ElectedValidatorInfo]?
+    private var recommendedValidators: [SelectedValidatorInfo]?
     private var selectedValidators: SharedList<SelectedValidatorInfo>?
     private var maxNominations: Int?
     private var hasIdentity: Bool?
@@ -52,16 +53,19 @@ final class SelectValidatorsStartPresenter {
 
     private func updateRecommendedValidators() {
         guard
-            let electedValidators = electedValidators,
+            let electedAndPrefValidators = electedAndPrefValidators,
             let maxNominations = maxNominations else {
             return
         }
 
-        let resultLimit = min(electedValidators.count, maxNominations)
+        let resultLimit = min(electedAndPrefValidators.electedValidators.count, maxNominations)
         let recomendedValidators = RecommendationsComposer(
             resultSize: resultLimit,
             clusterSizeLimit: StakingConstants.targetsClusterLimit
-        ).compose(from: Array(electedValidators.values))
+        ).compose(
+            from: electedAndPrefValidators.electedToSelectedValidators(for: existingStashAddress),
+            preferrences: electedAndPrefValidators.preferredValidators
+        )
 
         recommendedValidators = recomendedValidators
     }
@@ -111,31 +115,31 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
             return
         }
 
-        let recommendedValidatorList = recommendedValidators.map { $0.toSelected(for: existingStashAddress) }
-
         wireframe.proceedToRecommendedList(
             from: view,
-            validatorList: recommendedValidatorList,
+            validatorList: recommendedValidators,
             maxTargets: maxNominations
         )
     }
 
     func selectCustomValidators() {
         guard
-            let electedValidators = electedValidators,
+            let electedAndPrefValidators = electedAndPrefValidators,
             let maxNominations = maxNominations,
             let hasIdentity = hasIdentity,
             let selectedValidators = selectedValidators else {
             return
         }
 
-        let electedValidatorList = electedValidators.values.map { $0.toSelected(for: existingStashAddress) }
-        let recommendedValidatorList = recommendedValidators?.map {
-            $0.toSelected(for: existingStashAddress)
-        } ?? []
+        let customValidatorList = CustomValidatorsFullList(
+            allValidators: electedAndPrefValidators.electedToSelectedValidators(for: existingStashAddress),
+            preferredValidators: electedAndPrefValidators.preferredValidators
+        )
+
+        let recommendedValidatorList = recommendedValidators ?? []
 
         let groups = SelectionValidatorGroups(
-            fullValidatorList: electedValidatorList,
+            fullValidatorList: customValidatorList,
             recommendedValidatorList: recommendedValidatorList
         )
 
@@ -166,16 +170,18 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
 }
 
 extension SelectValidatorsStartPresenter: SelectValidatorsStartInteractorOutputProtocol {
-    func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>) {
+    func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>) {
         switch result {
         case let .success(validators):
-            electedValidators = validators.reduce(
+            electedAndPrefValidators = validators
+
+            electedValidators = validators.electedValidators.reduce(
                 into: [AccountAddress: ElectedValidatorInfo]()
             ) { dict, validator in
                 dict[validator.address] = validator
             }
 
-            hasIdentity = validators.contains { $0.hasIdentity }
+            hasIdentity = validators.electedValidators.contains { $0.hasIdentity }
 
             updateRecommendedValidators()
             updateSelectedValidatorsIfNeeded()
