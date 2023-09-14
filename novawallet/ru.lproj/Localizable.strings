@@ -1,7 +1,3 @@
-"NSCameraUsageDescription" = "Камера используется для сканирования QR кода.";
-"NSFaceIDUsageDescription" = "Face ID используется для авторизации в приложении";
-"NSPhotoLibraryUsageDescription" = "Доступ к библиотеке используется для выбора QR кода с данными об открытом адресе или транзакции";
-"NSPhotoLibraryAddUsageDescription" = "Вы можете сохранить запрос на перевод в виде QR кода";
 "common.close" = "Закрыть";
 "common.next" = "Далее";
 "common.cancel" = "Отмена";
@@ -946,7 +942,6 @@
 "common.ledger.not.supported.message" = "Ledger не поддерживает подтверждение произвольных сообщений — только транзакции";
 "ledger.not.support.token.title" = "Ledger не поддерживает этот токен";
 "ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет будет недоступен для перевода на этом аккаунте";
-"NSBluetoothAlwaysUsageDescription" = "Bluetooth будет использоваться для взаимодействия с устройством Ledger Nano X";
 "crowdloan.you.contributions.total" = "Всего";
 "common.yield.boost" = "Yield Boost";
 "common.off" = "Выкл";
