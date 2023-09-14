@@ -152,9 +152,8 @@ extension StakingSelectPoolViewController: UITableViewDelegate {
             return nil
         }
         let header: StakingSelectPoolListHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let count = numberFormatter.value(for: selectedLocale).string(from: NSNumber(value: viewModels.count))
         let title = R.string.localizable.stakingSelectPoolCount(
-            count ?? "",
+            viewModels.count,
             preferredLanguages: selectedLocale.rLanguages
         )
         let details = R.string.localizable.stakingSelectPoolMembers(preferredLanguages: selectedLocale.rLanguages)

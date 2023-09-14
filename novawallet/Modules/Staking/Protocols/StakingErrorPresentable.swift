@@ -273,6 +273,7 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
             lockReason,
             availableToStake,
             directRewardableToStake,
+            lockReason,
             preferredLanguages: locale?.rLanguages
         )
 
