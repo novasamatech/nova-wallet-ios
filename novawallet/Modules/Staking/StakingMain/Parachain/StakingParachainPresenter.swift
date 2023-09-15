@@ -140,10 +140,6 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         interactor.setup()
     }
 
-    func performStakeMoreAction() {
-        wireframe.showYourCollators(from: view)
-    }
-
     func performRedeemAction() {
         wireframe.showRedeemTokens(from: view)
     }
@@ -212,10 +208,12 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     func performAlertAction(_ alert: StakingAlert) {
         switch alert {
         case .nominatorLowStake:
-            performStakeMoreAction()
+            handleStakeMoreAction()
         case .redeemUnbonded:
             performRedeemAction()
-        case .rebag, .waitingNextEra, .bondedSetValidators, .nominatorChangeValidators, .nominatorAllOversubscribed:
+        case .nominatorChangeValidators:
+            wireframe.showYourCollators(from: view)
+        case .rebag, .waitingNextEra, .bondedSetValidators, .nominatorAllOversubscribed:
             break
         }
     }

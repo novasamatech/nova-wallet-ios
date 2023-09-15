@@ -15,7 +15,7 @@ extension Array where Element == CollatorSelectionInfo {
         case .rewards:
             return sorted { ($0.apr ?? 0) > ($1.apr ?? 0) }
         case .minStake:
-            return sorted { $0.minRewardableStake > $1.minRewardableStake }
+            return sorted { $0.minRewardableStake < $1.minRewardableStake }
         case .totalStake:
             return sorted { $0.totalStake > $1.totalStake }
         case .ownStake:
