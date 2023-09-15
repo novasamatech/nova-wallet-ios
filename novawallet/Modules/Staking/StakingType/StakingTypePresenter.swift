@@ -120,10 +120,13 @@ final class StakingTypePresenter {
             self?.wireframe.complete(from: self?.view)
         }
 
+        let directStaking = R.string.localizable.stakingTypeDirect(preferredLanguages: languages)
+
         let viewModel = AlertPresentableViewModel(
             title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
             message: R.string.localizable.stakingTypeDirectStakingAlertMessage(
                 minStake,
+                directStaking,
                 preferredLanguages: languages
             ),
             actions: [cancelAction],

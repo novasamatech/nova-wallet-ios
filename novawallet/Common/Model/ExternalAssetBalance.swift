@@ -53,7 +53,11 @@ extension ExternalAssetBalance.BalanceType {
         case .crowdloan:
             return LocalizableResource { R.string.localizable.tabbarCrowdloanTitle(preferredLanguages: $0.rLanguages) }
         case .nominationPools:
-            return LocalizableResource { R.string.localizable.stakingPoolStaking(preferredLanguages: $0.rLanguages) }
+            return LocalizableResource {
+                R.string.localizable.stakingTypeNominationPool(
+                    preferredLanguages: $0.rLanguages
+                )
+            }
         case .unknown:
             return LocalizableResource { R.string.localizable.commonUnknown(preferredLanguages: $0.rLanguages) }
         }
