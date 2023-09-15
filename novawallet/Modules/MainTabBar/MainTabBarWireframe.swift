@@ -22,7 +22,36 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         presentingController.present(navigationController, animated: true, completion: nil)
     }
 
+    func presentScreenIfNeeded(on view: MainTabBarViewProtocol?, screen: UrlHandlingScreen) {
+        guard
+            let controller = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: controller) else {
+            return
+        }
+
+        switch screen {
+        case .staking:
+            controller.selectedIndex = MainTabBarIndex.staking
+        }
+    }
+
     // MARK: Private
+
+    private func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
+        guard let tabBarController = view.topModalViewController as? UITabBarController else {
+            // some flow is currently presented modally
+            return false
+        }
+
+        if
+            let navigationController = tabBarController.selectedViewController as? UINavigationController,
+            navigationController.viewControllers.count > 1 {
+            // some flow is in progress in the navigation
+            return false
+        }
+
+        return true
+    }
 
     private func canPresentImport(on view: UIViewController) -> Bool {
         if isAuthorizing || isAlreadyImporting(on: view) {

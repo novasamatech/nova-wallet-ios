@@ -7,8 +7,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static let crowdloanIndex: Int = 1
 
     static func createView() -> MainTabBarViewProtocol? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
-            .findService()
+        guard
+            let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
+            .findService(),
+            let screenOpenService: ScreenOpenServiceProtocol = URLHandlingService.shared.findService()
         else {
             Logger.shared.error("Can't find required keystore import service")
             return nil
@@ -24,6 +26,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
             keystoreImportService: keystoreImportService,
+            screenOpenService: screenOpenService,
             securedLayer: securedLayer,
             inAppUpdatesService: inAppUpdatesService
         )
@@ -54,14 +57,18 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
+        let indexedControllers: [(Int, UIViewController)] = [
+            (MainTabBarIndex.wallet, walletController),
+            (MainTabBarIndex.vote, voteController),
+            (MainTabBarIndex.dapps, dappsController),
+            (MainTabBarIndex.staking, stakingController),
+            (MainTabBarIndex.settings, settingsController)
+        ].sorted { cont1, cont2 in
+            cont1.0 < cont2.0
+        }
+
         let view = MainTabBarViewController()
-        view.viewControllers = [
-            walletController,
-            voteController,
-            dappsController,
-            stakingController,
-            settingsController
-        ]
+        view.viewControllers = indexedControllers.map(\.1)
 
         let presenter = MainTabBarPresenter()
 

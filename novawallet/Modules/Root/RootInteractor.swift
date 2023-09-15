@@ -44,7 +44,9 @@ final class RootInteractor {
             eventCenter: eventCenter
         )
 
-        URLHandlingService.shared.setup(children: [purchaseHandler, keystoreImportService])
+        let screenOpenService = ScreenOpenService(logger: Logger.shared)
+
+        URLHandlingService.shared.setup(children: [screenOpenService, purchaseHandler, keystoreImportService])
     }
 
     private func runMigrators() {
