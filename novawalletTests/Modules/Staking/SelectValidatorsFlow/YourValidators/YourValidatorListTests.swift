@@ -39,7 +39,7 @@ class YourValidatorListTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
+        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
         let stakingLedger = StakingLedger(
             stash: selectedAccount.accountId,
             total: BigUInt(16e+12),

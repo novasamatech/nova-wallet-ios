@@ -146,6 +146,22 @@ struct ChainModel: Equatable, Codable, Hashable {
         !noSubstrateRuntime
     }
 
+    func chainAssetsWithExternalBalances() -> [ChainAsset] {
+        assets.compactMap { asset in
+            guard asset.hasPoolStaking || asset.isUtility && hasCrowdloans else {
+                return nil
+            }
+
+            return ChainAsset(chain: self, asset: asset)
+        }
+    }
+
+    func chainAssetIdsWithExternalBalances() -> Set<ChainAssetId> {
+        let chainAssets = chainAssetsWithExternalBalances()
+
+        return Set(chainAssets.map(\.chainAssetId))
+    }
+
     var isRelaychain: Bool { parentId == nil }
 
     func utilityAssets() -> Set<AssetModel> {
@@ -182,6 +198,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         } else {
             return nil
         }
+    }
+
+    var defaultBlockTimeMillis: BlockTime? {
+        additional?.defaultBlockTime?.unsignedIntValue
     }
 }
 

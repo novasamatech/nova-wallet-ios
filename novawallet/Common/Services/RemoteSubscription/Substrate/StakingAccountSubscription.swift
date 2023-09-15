@@ -72,14 +72,7 @@ final class StakingAccountSubscription: WebSocketSubscribing {
 
     private func subscribeLocal() {
         let changesClosure: ([DataProviderChange<StashItem>]) -> Void = { [weak self] changes in
-            let stashItem: StashItem? = changes.reduce(nil) { _, item in
-                switch item {
-                case let .insert(newItem), let .update(newItem):
-                    return newItem
-                case .delete:
-                    return nil
-                }
-            }
+            let stashItem: StashItem? = changes.reduceToLastChange()
 
             self?.unsubscribeRemote()
 
@@ -119,19 +112,15 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         let stashId = try stashItem.stash.toAccountId(using: chainFormat)
 
         if stashId != accountId {
-            requests.append(.init(storagePath: .controller, accountId: stashId))
             requests.append(.init(storagePath: .account, accountId: stashId))
         }
 
         let controllerId = try stashItem.controller.toAccountId(using: chainFormat)
 
         if controllerId != accountId {
-            requests.append(.init(storagePath: .stakingLedger, accountId: controllerId))
             requests.append(.init(storagePath: .account, accountId: controllerId))
         }
 
-        requests.append(.init(storagePath: .nominators, accountId: stashId))
-        requests.append(.init(storagePath: .validatorPrefs, accountId: stashId))
         requests.append(.init(storagePath: .payee, accountId: stashId))
 
         BagList.possibleModuleNames.forEach { moduleName in

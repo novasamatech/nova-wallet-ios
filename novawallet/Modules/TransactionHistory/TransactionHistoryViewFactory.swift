@@ -38,7 +38,6 @@ struct TransactionHistoryViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            phishingFilter: TransactionHistoryPhishingFilter(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -60,6 +59,9 @@ struct TransactionHistoryViewFactory {
         chainAsset: ChainAsset,
         currencyManager: CurrencyManagerProtocol
     ) -> TransactionHistoryInteractor {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared)
 
@@ -75,12 +77,20 @@ struct TransactionHistoryViewFactory {
             operationQueue: operationQueue
         )
 
+        let localFilterFactory = TransactionHistoryLocalFilterFactory(
+            runtimeProvider: runtimeProvider,
+            chainAsset: chainAsset,
+            logger: Logger.shared
+        )
+
         return .init(
             accountId: accountId,
             chainAsset: chainAsset,
             fetcherFactory: fetcherFactory,
+            localFilterFactory: localFilterFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             pageSize: 100
         )
     }

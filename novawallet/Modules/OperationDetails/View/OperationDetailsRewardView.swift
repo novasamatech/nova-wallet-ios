@@ -38,7 +38,7 @@ final class OperationDetailsRewardView: LocalizableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bindReward(viewModel: OperationRewardViewModel, networkViewModel: NetworkViewModel) {
+    func bindReward(viewModel: OperationRewardOrSlashViewModel, networkViewModel: NetworkViewModel) {
         let type = R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages)
         bindCommon(
             networkViewModel: networkViewModel,
@@ -50,7 +50,7 @@ final class OperationDetailsRewardView: LocalizableView {
         updateEraView(for: viewModel.era)
     }
 
-    func bindSlash(viewModel: OperationSlashViewModel, networkViewModel: NetworkViewModel) {
+    func bindSlash(viewModel: OperationRewardOrSlashViewModel, networkViewModel: NetworkViewModel) {
         let type = R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
         bindCommon(
             networkViewModel: networkViewModel,

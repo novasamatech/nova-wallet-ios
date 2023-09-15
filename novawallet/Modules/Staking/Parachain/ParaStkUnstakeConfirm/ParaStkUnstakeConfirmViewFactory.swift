@@ -5,7 +5,7 @@ import SoraKeystore
 
 struct ParaStkUnstakeConfirmViewFactory {
     static func createView(
-        for state: ParachainStakingSharedState,
+        for state: ParachainStakingSharedStateProtocol,
         callWrapper: UnstakeCallWrapper,
         collator: DisplayAddress
     ) -> ParaStkUnstakeConfirmViewProtocol? {
@@ -66,22 +66,23 @@ struct ParaStkUnstakeConfirmViewFactory {
     }
 
     private static func createInteractor(
-        from state: ParachainStakingSharedState
+        from state: ParachainStakingSharedStateProtocol
     ) -> ParaStkUnstakeConfirmInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chainRegistry = state.chainRegistry
 
         let chainAsset = state.stakingOption.chainAsset
 
         guard
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
-            let blocktimeService = state.blockTimeService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
+
+        let blocktimeService = state.blockTimeService
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,

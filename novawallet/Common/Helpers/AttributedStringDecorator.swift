@@ -7,10 +7,12 @@ protocol AttributedStringDecoratorProtocol: AnyObject {
 final class HighlightingAttributedStringDecorator: AttributedStringDecoratorProtocol {
     let pattern: String
     let attributes: [NSAttributedString.Key: Any]
+    let includeSeparator: Bool
 
-    init(pattern: String, attributes: [NSAttributedString.Key: Any]) {
+    init(pattern: String, attributes: [NSAttributedString.Key: Any], includeSeparator: Bool = false) {
         self.pattern = pattern
         self.attributes = attributes
+        self.includeSeparator = includeSeparator
     }
 
     func decorate(attributedString: NSAttributedString) -> NSAttributedString {
@@ -25,6 +27,19 @@ final class HighlightingAttributedStringDecorator: AttributedStringDecoratorProt
         }
 
         resultAttributedString.addAttributes(attributes, range: range)
+
+        if includeSeparator, range.upperBound < string.length {
+            let punctuationSet = CharacterSet.punctuationCharacters
+            let remainingRange = NSRange(location: range.upperBound, length: string.length - range.upperBound)
+            let rangeOfPunctuation = string.rangeOfCharacter(
+                from: punctuationSet,
+                options: [],
+                range: remainingRange
+            )
+            if rangeOfPunctuation.location != NSNotFound {
+                resultAttributedString.addAttributes(attributes, range: rangeOfPunctuation)
+            }
+        }
 
         return resultAttributedString
     }

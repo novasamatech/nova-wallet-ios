@@ -10,16 +10,16 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     let selectedWalletSettings: SelectedWalletSettings
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
+    let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let logger: LoggerProtocol?
 
     private(set) var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
     private(set) var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
 
-    private var crowdloansSubscriptions: [ChainModel.Id: StreamableProvider<CrowdloanContributionData>] = [:]
-    private var crowdloans: [ChainModel.Id: [CrowdloanContributionData]] = [:]
-    private var crowdloanChainIds = Set<ChainModel.Id>()
+    private var externalBalancesSubscriptions: [ChainAssetId: StreamableProvider<ExternalAssetBalance>] = [:]
+    private var externalBalances: [ChainAssetId: [ExternalAssetBalance]] = [:]
+    private var externalBalancesChainAssetIds = Set<ChainAssetId>()
 
     private(set) var priceSubscription: StreamableProvider<PriceData>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
@@ -30,7 +30,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
+        externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
@@ -38,7 +38,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         self.selectedWalletSettings = selectedWalletSettings
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
+        self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
@@ -51,11 +51,11 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         assetBalanceIdMapping = [:]
     }
 
-    func clearCrowdloansSubscription() {
-        crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
-        crowdloansSubscriptions = [:]
-        crowdloans = [:]
-        crowdloanChainIds = .init()
+    func clearExternalBalancesSubscription() {
+        externalBalancesSubscriptions.values.forEach { $0.removeObserver(self) }
+        externalBalancesSubscriptions = [:]
+        externalBalances = [:]
+        externalBalancesChainAssetIds = .init()
     }
 
     private func convertToAccountDependentChanges(
@@ -131,12 +131,12 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
 
         updateAssetBalanceSubscription(from: enabledChainChanges)
         updatePriceSubscription(from: allChanges)
-        updateCrowdloansSubscription(from: Array(enabledChains.values))
+        updateExternalBalancesSubscription(from: Array(enabledChains.values))
     }
 
     func resetWallet() {
         clearAccountSubscriptions()
-        clearCrowdloansSubscription()
+        clearExternalBalancesSubscription()
 
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -166,7 +166,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         enabledChains = enabledChainChanges.mergeToDict(enabledChains)
 
         updateAssetBalanceSubscription(from: enabledChainChanges)
-        updateCrowdloansSubscription(from: Array(enabledChains.values))
+        updateExternalBalancesSubscription(from: Array(enabledChains.values))
     }
 
     func updateAssetBalanceSubscription(from changes: [DataProviderChange<ChainModel>]) {
@@ -310,29 +310,32 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         priceSubscription?.refresh()
     }
 
-    func updateCrowdloansSubscription(from allChains: [ChainModel]) {
+    func updateExternalBalancesSubscription(from allChains: [ChainModel]) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
 
-        let crowdloanChains = allChains.filter { $0.hasCrowdloans }
-        let newCrowdloanChainIds = Set(crowdloanChains.map(\.chainId))
+        let chainAssets = allChains.flatMap { $0.chainAssetsWithExternalBalances() }
+        let newChainAssetIds = Set(chainAssets.map(\.chainAssetId))
 
-        guard !crowdloanChains.isEmpty, crowdloanChainIds != newCrowdloanChainIds else {
+        guard !chainAssets.isEmpty, externalBalancesChainAssetIds != newChainAssetIds else {
             return
         }
 
-        clearCrowdloansSubscription()
-        crowdloanChainIds = newCrowdloanChainIds
+        clearExternalBalancesSubscription()
+        externalBalancesChainAssetIds = newChainAssetIds
 
-        crowdloanChains.forEach { chain in
-            let request = chain.accountRequest()
+        chainAssets.forEach { chainAsset in
+            let request = chainAsset.chain.accountRequest()
 
             guard let accountId = selectedMetaAccount.fetch(for: request)?.accountId else {
                 return
             }
 
-            crowdloansSubscriptions[chain.identifier] = subscribeToCrowdloansProvider(for: accountId, chain: chain)
+            externalBalancesSubscriptions[chainAsset.chainAssetId] = subscribeToExternalAssetBalancesProvider(
+                for: accountId,
+                chainAsset: chainAsset
+            )
         }
     }
 
@@ -440,42 +443,42 @@ extension AssetListBaseInteractor {
     }
 }
 
-extension AssetListBaseInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
-    func handleCrowdloans(
-        result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
+extension AssetListBaseInteractor: ExternalAssetBalanceSubscriptionHandler, ExternalAssetBalanceSubscriber {
+    func handleExternalAssetBalances(
+        result: Result<[DataProviderChange<ExternalAssetBalance>], Error>,
         accountId: AccountId,
-        chain: ChainModel
+        chainAsset: ChainAsset
     ) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
         guard let chainAccountId = selectedMetaAccount.fetch(
-            for: chain.accountRequest()
+            for: chainAsset.chain.accountRequest()
         )?.accountId, chainAccountId == accountId else {
             logger?.warning(
-                "Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different"
+                "Missing account for chain: \(chainAsset.chain.name)"
             )
             return
         }
 
         switch result {
         case let .failure(error):
-            baseBuilder?.applyCrowdloans(.failure(error))
+            baseBuilder?.applyExternalBalances(.failure(error))
         case let .success(changes):
-            crowdloans = changes.reduce(
-                into: crowdloans
+            externalBalances = changes.reduce(
+                into: externalBalances
             ) { result, change in
                 switch change {
-                case let .insert(crowdloan), let .update(crowdloan):
-                    var items = result[chain.chainId] ?? []
-                    items.addOrReplaceSingle(crowdloan)
-                    result[chain.chainId] = items
+                case let .insert(externalBalance), let .update(externalBalance):
+                    var items = result[chainAsset.chainAssetId] ?? []
+                    items.addOrReplaceSingle(externalBalance)
+                    result[chainAsset.chainAssetId] = items
                 case let .delete(deletedIdentifier):
-                    result[chain.chainId]?.removeAll(where: { $0.identifier == deletedIdentifier })
+                    result[chainAsset.chainAssetId]?.removeAll(where: { $0.identifier == deletedIdentifier })
                 }
             }
 
-            baseBuilder?.applyCrowdloans(.success(crowdloans))
+            baseBuilder?.applyExternalBalances(.success(externalBalances))
         }
     }
 }

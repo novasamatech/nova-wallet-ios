@@ -35,4 +35,16 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
             animated: true
         )
     }
+
+    func showStartStaking(from view: StakingDashboardViewProtocol?, chainAsset: ChainAsset) {
+        guard let startStakingView = StartStakingInfoViewFactory.createView(
+            chainAsset: chainAsset,
+            selectedStakingType: nil
+        ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }

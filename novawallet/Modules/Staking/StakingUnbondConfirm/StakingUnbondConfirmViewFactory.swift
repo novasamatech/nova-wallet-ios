@@ -6,7 +6,7 @@ import RobinHood
 struct StakingUnbondConfirmViewFactory {
     static func createView(
         from amount: Decimal,
-        state: StakingSharedState
+        state: RelaychainStakingSharedStateProtocol
     ) -> StakingUnbondConfirmViewProtocol? {
         guard let interactor = createInteractor(state: state),
               let currencyManager = CurrencyManager.shared else {
@@ -64,7 +64,9 @@ struct StakingUnbondConfirmViewFactory {
         )
     }
 
-    private static func createInteractor(state: StakingSharedState) -> StakingUnbondConfirmInteractor? {
+    private static func createInteractor(
+        state: RelaychainStakingSharedStateProtocol
+    ) -> StakingUnbondConfirmInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -81,12 +83,11 @@ struct StakingUnbondConfirmViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(
                 for: chainAsset.chain.chainId
-            ),
-            let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
-                for: chainAsset.chain
             ) else {
             return nil
         }
+
+        let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
@@ -100,7 +101,7 @@ struct StakingUnbondConfirmViewFactory {
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             chainRegistry: chainRegistry,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingDurationOperationFactory: stakingDurationFactory,

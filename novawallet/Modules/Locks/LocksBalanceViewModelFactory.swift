@@ -6,9 +6,10 @@ protocol LocksBalanceViewModelFactoryProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
-        crowdloans: [ChainModel.Id: [CrowdloanContributionData]],
+        externalBalances: [ChainAssetId: [ExternalAssetBalance]],
         locale: Locale
     ) -> FormattedBalance
+
     func formatPlankValue(
         plank: BigUInt,
         chainAssetId: ChainAssetId,
@@ -53,7 +54,7 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
-        crowdloans: [ChainModel.Id: [CrowdloanContributionData]],
+        externalBalances: [ChainAssetId: [ExternalAssetBalance]],
         locale: Locale
     ) -> FormattedBalance {
         var totalPrice: Decimal = 0
@@ -91,27 +92,27 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
             lastPriceData = priceData
         }
 
-        let crowdloansTotalPrice: Decimal = crowdloans.reduce(0) { result, crowdloan in
-            guard let asset = chains[crowdloan.key]?.utilityAsset() else {
+        let externalBalanceTotalPrice: Decimal = externalBalances.reduce(0) { result, externalBalance in
+            guard let asset = chains[externalBalance.key.chainId]?.asset(for: externalBalance.key.assetId) else {
                 return result
             }
-            let priceData = prices[.init(chainId: crowdloan.key, assetId: asset.assetId)]
+            let priceData = prices[externalBalance.key]
             let rate = priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0
             return result + calculateAmount(
-                from: crowdloan.value.reduce(0) { $0 + $1.amount },
+                from: externalBalance.value.reduce(0) { $0 + $1.amount },
                 precision: asset.precision,
                 rate: rate
             )
         }
 
-        let total = totalPrice + crowdloansTotalPrice
+        let total = totalPrice + externalBalanceTotalPrice
         let formattedTotal = formatPrice(
             amount: total,
             priceData: lastPriceData,
             locale: locale
         )
         let formattedTransferrable = formatPrice(amount: transferrablePrice, priceData: lastPriceData, locale: locale)
-        let totalLocks = locksPrice + crowdloansTotalPrice
+        let totalLocks = locksPrice + externalBalanceTotalPrice
         let formattedLocks = formatPrice(
             amount: totalLocks,
             priceData: lastPriceData,

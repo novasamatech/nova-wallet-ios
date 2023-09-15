@@ -1,62 +1,6 @@
 import Foundation
 
 extension StakingParachainInteractor {
-    func clearChainRemoteSubscription(for chainId: ChainModel.Id) {
-        if let chainSubscriptionId = chainSubscriptionId {
-            stakingAssetSubscriptionService.detachFromGlobalData(
-                for: chainSubscriptionId,
-                chainId: chainId,
-                queue: nil,
-                closure: nil
-            )
-
-            self.chainSubscriptionId = nil
-        }
-    }
-
-    func setupChainRemoteSubscription() {
-        let chainId = selectedChainAsset.chain.chainId
-
-        chainSubscriptionId = stakingAssetSubscriptionService.attachToGlobalData(
-            for: chainId,
-            queue: nil,
-            closure: nil
-        )
-    }
-
-    func clearAccountRemoteSubscription() {
-        let chainId = selectedChainAsset.chain.chainId
-
-        if
-            let accountSubscriptionId = accountSubscriptionId,
-            let accountId = selectedAccount?.chainAccount.accountId {
-            stakingAccountSubscriptionService.detachFromAccountData(
-                for: accountSubscriptionId,
-                chainId: chainId,
-                accountId: accountId,
-                queue: nil,
-                closure: nil
-            )
-
-            self.accountSubscriptionId = nil
-        }
-    }
-
-    func setupAccountRemoteSubscription() {
-        let chainId = selectedChainAsset.chain.chainId
-
-        guard let accountId = selectedAccount?.chainAccount.accountId else {
-            return
-        }
-
-        accountSubscriptionId = stakingAccountSubscriptionService.attachToAccountData(
-            for: chainId,
-            accountId: accountId,
-            queue: nil,
-            closure: nil
-        )
-    }
-
     func performPriceSubscription() {
         guard let priceId = selectedChainAsset.asset.priceId else {
             presenter?.didReceivePrice(nil)

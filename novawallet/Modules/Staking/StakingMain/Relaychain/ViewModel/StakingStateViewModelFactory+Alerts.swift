@@ -26,10 +26,6 @@ extension StakingStateViewModelFactory {
         ].compactMap { $0 }
     }
 
-    func stakingAlertsNoStashState(_: NoStashState) -> [StakingAlert] {
-        []
-    }
-
     private func findRedeemUnbondedAlert(
         commonData: StakingStateCommonData,
         ledgerInfo: StakingLedger

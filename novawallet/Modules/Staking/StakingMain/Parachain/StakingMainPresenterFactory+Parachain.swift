@@ -8,7 +8,9 @@ extension StakingMainPresenterFactory {
         for stakingOption: Multistaking.ChainAssetOption,
         view: StakingMainViewProtocol
     ) -> StakingParachainPresenter? {
-        let sharedState = createParachainSharedState(for: stakingOption)
+        guard let sharedState = try? sharedStateFactory.createParachain(for: stakingOption) else {
+            return nil
+        }
 
         // MARK: - Interactor
 
@@ -44,44 +46,16 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
-    func createParachainInteractor(state: ParachainStakingSharedState) -> StakingParachainInteractor? {
+    func createParachainInteractor(state: ParachainStakingSharedStateProtocol) -> StakingParachainInteractor? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let storageFacade = SubstrateDataStorageFacade.shared
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
+
         let eventCenter = EventCenter.shared
         let logger = Logger.shared
-
-        let repositoryFactory = SubstrateRepositoryFactory()
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        let stakingAccountService = ParachainStaking.AccountSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            syncOperationManager: operationManager,
-            repositoryOperationManager: operationManager,
-            logger: logger
-        )
-
-        let stakingAssetService = ParachainStaking.StakingRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            syncOperationManager: operationManager,
-            repositoryOperationManager: operationManager,
-            logger: logger
-        )
-
-        let serviceFactory = ParachainStakingServiceFactory(
-            stakingProviderFactory: state.stakingLocalSubscriptionFactory,
-            chainRegisty: chainRegistry,
-            storageFacade: storageFacade,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
-        )
 
         let networkInfoFactory = ParaStkNetworkInfoOperationFactory()
 
@@ -104,15 +78,13 @@ extension StakingMainPresenterFactory {
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
         )
 
+        let applicationHandler = ApplicationHandler()
+
         return StakingParachainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             sharedState: state,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            stakingAssetSubscriptionService: stakingAssetService,
-            stakingAccountSubscriptionService: stakingAccountService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            stakingServiceFactory: serviceFactory,
             networkInfoFactory: networkInfoFactory,
             durationOperationFactory: durationFactory,
             scheduledRequestsFactory: ParachainStaking.ScheduledRequestsQueryFactory(operationQueue: operationQueue),
@@ -124,35 +96,6 @@ extension StakingMainPresenterFactory {
             currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: logger
-        )
-    }
-
-    func createParachainSharedState(
-        for stakingOption: Multistaking.ChainAssetOption
-    ) -> ParachainStakingSharedState {
-        let storageFacade = SubstrateDataStorageFacade.shared
-
-        let stakingLocalSubscriptionFactory = ParachainStakingLocalSubscriptionFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            storageFacade: storageFacade,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
-        )
-
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            storageFacade: storageFacade,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
-        )
-
-        return ParachainStakingSharedState(
-            stakingOption: stakingOption,
-            collatorService: nil,
-            rewardCalculationService: nil,
-            blockTimeService: nil,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory
         )
     }
 }

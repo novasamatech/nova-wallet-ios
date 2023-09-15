@@ -135,7 +135,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
 extension StakingRewardDestSetupInteractor: StakingRewardDestSetupInteractorInputProtocol {
     func setup() {
         if let address = try? selectedAccount.accountId.toAddress(using: chainAsset.chain.chainFormat) {
-            stashItemProvider = subscribeStashItemProvider(for: address)
+            stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
             presenter?.didReceiveStashItem(result: .failure(CommonError.undefined))
         }

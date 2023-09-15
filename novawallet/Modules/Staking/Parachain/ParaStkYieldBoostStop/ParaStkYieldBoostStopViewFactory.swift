@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct ParaStkYieldBoostStopViewFactory {
     static func createView(
-        with state: ParachainStakingSharedState,
+        with state: ParachainStakingSharedStateProtocol,
         collatorId: AccountId,
         collatorIdentity: AccountIdentity?
     ) -> ParaStkYieldBoostStopViewProtocol? {

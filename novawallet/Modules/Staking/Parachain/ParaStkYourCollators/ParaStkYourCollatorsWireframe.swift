@@ -1,9 +1,9 @@
 import Foundation
 
 final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol {
-    let state: ParachainStakingSharedState
+    let state: ParachainStakingSharedStateProtocol
 
-    init(state: ParachainStakingSharedState) {
+    init(state: ParachainStakingSharedStateProtocol) {
         self.state = state
     }
 

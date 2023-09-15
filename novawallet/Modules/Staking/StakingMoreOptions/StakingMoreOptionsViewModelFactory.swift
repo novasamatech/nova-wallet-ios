@@ -20,12 +20,16 @@ extension StakingDashboardViewModelFactory: StakingMoreOptionsViewModelFactoryPr
     }
 
     func createDAppModel(for dApp: DApp) -> LoadableViewModelState<DAppView.Model> {
-        .loaded(value:
+        let icon: ImageViewModelProtocol = dApp.icon.map { RemoteImageViewModel(url: $0) } ??
+            StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+
+        return .loaded(value:
             DAppView.Model(
-                icon: dApp.icon.map { RemoteImageViewModel(url: $0) } ?? StaticImageViewModel(image: R.image.iconDefaultDapp()!),
+                icon: icon,
                 title: dApp.name,
                 subtitle: ""
-            ))
+            )
+        )
     }
 
     func createLoadingDAppModel() -> [LoadableViewModelState<DAppView.Model>] {

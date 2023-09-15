@@ -60,14 +60,7 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 
     func showNfts(from view: AssetListViewProtocol?)
 
-    func showBalanceBreakdown(
-        from view: AssetListViewProtocol?,
-        prices: [ChainAssetId: PriceData],
-        balances: [AssetBalance],
-        chains: [ChainModel.Id: ChainModel],
-        locks: [AssetLock],
-        crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
-    )
+    func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput)
 
     func showWalletConnect(from view: AssetListViewProtocol?)
 

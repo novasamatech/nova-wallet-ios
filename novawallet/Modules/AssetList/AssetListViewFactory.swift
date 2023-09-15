@@ -19,7 +19,7 @@ struct AssetListViewFactory {
             assetListObservable: assetListObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
-            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
             settingsManager: SettingsManager.shared,

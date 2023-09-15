@@ -20,7 +20,8 @@ final class MultistakingSyncService {
     typealias OnchainSyncServiceProtocol = ObservableSyncServiceProtocol & ApplicationServiceProtocol
 
     let chainRegistry: ChainRegistryProtocol
-    let repositoryFactory: MultistakingRepositoryFactoryProtocol
+    let multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol
+    let substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol
     let providerFactory: MultistakingProviderFactoryProtocol
     let offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -43,7 +44,8 @@ final class MultistakingSyncService {
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         providerFactory: MultistakingProviderFactoryProtocol,
-        repositoryFactory: MultistakingRepositoryFactoryProtocol,
+        multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol,
+        substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
@@ -56,7 +58,8 @@ final class MultistakingSyncService {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.providerFactory = providerFactory
-        self.repositoryFactory = repositoryFactory
+        self.multistakingRepositoryFactory = multistakingRepositoryFactory
+        self.substrateRepositoryFactory = substrateRepositoryFactory
         self.offchainOperationFactory = offchainOperationFactory
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
@@ -110,7 +113,7 @@ final class MultistakingSyncService {
 
     private func setupOffchainService() {
         let accountProvider = providerFactory.createResolvedAccountsProvider()
-        let dashboardRepository = repositoryFactory.createOffchainRepository()
+        let dashboardRepository = multistakingRepositoryFactory.createOffchainRepository()
 
         offchainUpdater = OffchainMultistakingUpdateService(
             wallet: wallet,
@@ -210,6 +213,19 @@ final class MultistakingSyncService {
                     service.setup()
                 }
             }
+        case .nominationPools:
+            if let service = createPoolsStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            ) {
+                onchainUpdaters[stakingOption] = service
+
+                addSyncHandler(for: service, stakingOption: stakingOption)
+
+                if isActive {
+                    service.setup()
+                }
+            }
         case .unsupported:
             logger.warning("Trying to create service for unsupported staking")
         }
@@ -228,17 +244,51 @@ final class MultistakingSyncService {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let accountAddress = try? account.accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }
+
+        let stashItemRepository = substrateRepositoryFactory.createStashItemRepository(
+            for: accountAddress, chainId: chainAsset.chain.chainId
+        )
 
         return RelaychainMultistakingUpdateService(
             walletId: wallet.metaId,
             accountId: account.accountId,
             chainAsset: chainAsset,
             stakingType: stakingType,
-            dashboardRepository: repositoryFactory.createRelaychainRepository(),
-            accountRepository: repositoryFactory.createResolvedAccountRepository(),
+            dashboardRepository: multistakingRepositoryFactory.createRelaychainRepository(),
+            accountRepository: multistakingRepositoryFactory.createResolvedAccountRepository(),
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
+            stashItemRepository: stashItemRepository,
+            connection: connection,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger
+        )
+    }
+
+    private func createPoolsStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        guard
+            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        return PoolsMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: multistakingRepositoryFactory.createNominationPoolsRepository(),
+            accountRepository: multistakingRepositoryFactory.createResolvedAccountRepository(),
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
             connection: connection,
             runtimeService: runtimeService,
             operationQueue: operationQueue,
@@ -278,7 +328,8 @@ final class MultistakingSyncService {
             accountId: account.accountId,
             chainAsset: chainAsset,
             stakingType: stakingType,
-            dashboardRepository: repositoryFactory.createParachainRepository(),
+            dashboardRepository: multistakingRepositoryFactory.createParachainRepository(),
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
             connection: connection,
             runtimeService: runtimeService,
             operationFactory: operationFactory,

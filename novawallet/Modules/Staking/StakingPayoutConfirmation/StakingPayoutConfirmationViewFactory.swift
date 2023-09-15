@@ -6,7 +6,7 @@ import RobinHood
 
 final class StakingPayoutConfirmationViewFactory {
     static func createView(
-        for state: StakingSharedState,
+        for state: RelaychainStakingSharedStateProtocol,
         payouts: [PayoutInfo]
     ) -> StakingPayoutConfirmationViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -61,7 +61,7 @@ final class StakingPayoutConfirmationViewFactory {
     }
 
     private static func createInteractor(
-        state: StakingSharedState,
+        state: RelaychainStakingSharedStateProtocol,
         keystore: KeystoreProtocol,
         payouts: [PayoutInfo]
     ) -> StakingPayoutConfirmationInteractor? {

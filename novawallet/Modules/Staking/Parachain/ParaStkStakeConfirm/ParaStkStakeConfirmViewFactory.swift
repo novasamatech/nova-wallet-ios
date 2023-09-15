@@ -5,7 +5,7 @@ import SoraKeystore
 
 struct ParaStkStakeConfirmViewFactory {
     static func createView(
-        for state: ParachainStakingSharedState,
+        for state: ParachainStakingSharedStateProtocol,
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?
@@ -81,7 +81,7 @@ struct ParaStkStakeConfirmViewFactory {
     }
 
     private static func createInteractor(
-        from state: ParachainStakingSharedState,
+        from state: ParachainStakingSharedStateProtocol,
         collator: DisplayAddress
     ) -> ParaStkStakeConfirmInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
@@ -93,11 +93,12 @@ struct ParaStkStakeConfirmViewFactory {
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let blockEstimationService = state.blockTimeService,
             let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
+
+        let blockEstimationService = state.blockTimeService
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,

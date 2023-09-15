@@ -4,7 +4,7 @@ import SoraFoundation
 
 struct ParaStkYieldBoostStartViewFactory {
     static func createView(
-        with state: ParachainStakingSharedState,
+        with state: ParachainStakingSharedStateProtocol,
         confirmModel: ParaStkYieldBoostConfirmModel
     ) -> ParaStkYieldBoostStartViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset

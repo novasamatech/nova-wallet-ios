@@ -10,19 +10,22 @@ final class SubqueryTotalRewardSource {
     let endTimestamp: Int64?
     let assetPrecision: Int16
     let operationFactory: SubqueryRewardOperationFactoryProtocol
+    let stakingType: SubqueryStakingType
 
     init(
         address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
         assetPrecision: Int16,
-        operationFactory: SubqueryRewardOperationFactoryProtocol
+        operationFactory: SubqueryRewardOperationFactoryProtocol,
+        stakingType: SubqueryStakingType
     ) {
         self.address = address
         self.startTimestamp = startTimestamp
         self.endTimestamp = endTimestamp
         self.assetPrecision = assetPrecision
         self.operationFactory = operationFactory
+        self.stakingType = stakingType
     }
 
     private func createMapOperation(
@@ -43,7 +46,8 @@ extension SubqueryTotalRewardSource: SingleValueProviderSourceProtocol {
         let rewardOperation = operationFactory.createTotalRewardOperation(
             for: address,
             startTimestamp: startTimestamp,
-            endTimestamp: endTimestamp
+            endTimestamp: endTimestamp,
+            stakingType: stakingType
         )
 
         let mapOperation = createMapOperation(

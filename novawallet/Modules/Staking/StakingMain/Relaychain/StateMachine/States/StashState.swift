@@ -37,7 +37,7 @@ final class StashState: BaseStakingState {
                 return
             }
 
-            let newState = NoStashState(
+            let newState = InitialStakingState(
                 stateMachine: stateMachine,
                 commonData: commonData
             )

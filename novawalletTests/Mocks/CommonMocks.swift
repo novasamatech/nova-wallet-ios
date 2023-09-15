@@ -6888,16 +6888,16 @@ import RobinHood
     
     
     
-     func createBlockTimeService(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol? {
+     func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel {
         
-    return try cuckoo_manager.callThrows("createBlockTimeService(for: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?",
+    return try cuckoo_manager.callThrows("createTimeModel(for: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel",
             parameters: (chainId, consensus),
             escapingParameters: (chainId, consensus),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createBlockTimeService(for: chainId, consensus: consensus))
+            defaultCall: __defaultImplStub!.createTimeModel(for: chainId, consensus: consensus))
         
     }
     
@@ -6920,9 +6920,9 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createRewardCalculatorService(for: ChainAsset, stakingType: StakingType, stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol, stakingDurationFactory: StakingDurationOperationFactoryProtocol, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol", parameterMatchers: matchers))
 	    }
 	    
-	    func createBlockTimeService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, ConsensusType), BlockTimeEstimationServiceProtocol?> where M1.MatchedType == ChainModel.Id, M2.MatchedType == ConsensusType {
+	    func createTimeModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, ConsensusType), StakingTimeModel> where M1.MatchedType == ChainModel.Id, M2.MatchedType == ConsensusType {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, ConsensusType)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: consensus) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createBlockTimeService(for: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createTimeModel(for: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6954,9 +6954,9 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func createBlockTimeService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, ConsensusType), BlockTimeEstimationServiceProtocol?> where M1.MatchedType == ChainModel.Id, M2.MatchedType == ConsensusType {
+	    func createTimeModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, ConsensusType), StakingTimeModel> where M1.MatchedType == ChainModel.Id, M2.MatchedType == ConsensusType {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, ConsensusType)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: consensus) { $0.1 }]
-	        return cuckoo_manager.verify("createBlockTimeService(for: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("createTimeModel(for: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -6982,8 +6982,8 @@ import RobinHood
     
     
     
-     func createBlockTimeService(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?  {
-        return DefaultValueRegistry.defaultValue(for: (BlockTimeEstimationServiceProtocol?).self)
+     func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel  {
+        return DefaultValueRegistry.defaultValue(for: (StakingTimeModel).self)
     }
     
 }

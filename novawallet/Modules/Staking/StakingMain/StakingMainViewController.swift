@@ -26,6 +26,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private var actionsView: StakingActionsView?
     private var unbondingsView: StakingUnbondingsView?
 
+    private var selectedEntityView: StackTableView?
+    private var selectedEntityCell: StackAddressCell?
+
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
 
@@ -60,8 +63,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNetworkInfoView()
         setupAlertsView()
+        setupNetworkInfoView()
         setupScrollView()
         setupLocalization()
         presenter.setup()
@@ -77,6 +80,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didAppearSkeleton()
+
+        selectedEntityCell?.didAppearSkeleton()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -89,6 +94,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didDisappearSkeleton()
+
+        selectedEntityCell?.didDisappearSkeleton()
     }
 
     override func viewDidLayoutSubviews() {
@@ -101,17 +108,76 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         }
 
         rewardView?.didUpdateSkeletonLayout()
+
+        selectedEntityCell?.didUpdateSkeletonLayout()
     }
 
     // MARK: - Private functions
 
-    @objc
-    private func rewardPeriodAction() {
+    @objc private func rewardPeriodAction() {
         presenter.selectPeriod()
+    }
+
+    @objc private func claimRewardsAction() {
+        presenter.performClaimRewards()
+    }
+
+    @objc private func selectedEntityAction() {
+        presenter.performSelectedEntityAction()
     }
 
     private func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    }
+
+    private func setupEntityView(for viewModel: StakingSelectedEntityViewModel) {
+        let entityView: StackTableView
+
+        if let selectedEntityView = selectedEntityView {
+            entityView = selectedEntityView
+        } else {
+            let containerView = UIView()
+
+            entityView = StackTableView()
+
+            if let beforeView = networkInfoContainerView {
+                stackView.insertArranged(view: containerView, before: beforeView)
+            } else {
+                stackView.addArrangedSubview(containerView)
+            }
+
+            stackView.setCustomSpacing(8, after: containerView)
+
+            containerView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            containerView.addSubview(entityView)
+            entityView.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            }
+
+            selectedEntityView = entityView
+        }
+
+        entityView.clear()
+
+        entityView.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 8.0, right: 16.0)
+
+        let tableHeader = StackTableHeaderCell()
+        tableHeader.titleLabel.text = viewModel.title
+        tableHeader.titleLabel.apply(style: .regularSubhedlineSecondary)
+        entityView.addArrangedSubview(tableHeader)
+
+        let addressCell = StackAddressCell()
+        entityView.addArrangedSubview(addressCell)
+
+        selectedEntityCell = addressCell
+
+        addressCell.bind(viewModel: viewModel.loadingAddress)
+
+        addressCell.addTarget(self, action: #selector(selectedEntityAction), for: .touchUpInside)
     }
 
     private func setupNetworkInfoView() {
@@ -130,7 +196,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: networkInfoContainerView, innerView: networkInfoView)
 
-        stackView.insertArrangedSubview(networkInfoContainerView, at: 0)
+        stackView.addArrangedSubview(networkInfoContainerView)
     }
 
     private func setupAlertsView() {
@@ -139,7 +205,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
         applyConstraints(for: alertsContainerView, innerView: alertsView)
 
-        stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
+        stackView.insertArrangedSubview(alertsContainerView, at: 0)
 
         alertsView.delegate = self
     }
@@ -149,11 +215,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             return
         }
 
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 116.0))
-        let containerView = UIView(frame: defaultFrame)
-        containerView.translatesAutoresizingMaskIntoConstraints = false
+        let containerView = UIView()
 
-        let rewardView = StakingRewardView(frame: defaultFrame)
+        let rewardView = StakingRewardView()
         rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
         rewardView.filterView.control.addTarget(
             self,
@@ -189,10 +253,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             newActionsView.locale = selectedLocale
             newActionsView.delegate = self
             newActionsView.statics = staticsViewModel
-            stackView.addArrangedSubview(newActionsView)
+            stackView.insertArranged(view: newActionsView, before: networkInfoContainerView)
             newActionsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
             }
+
+            stackView.setCustomSpacing(8.0, after: newActionsView)
 
             actionsView = newActionsView
         }
@@ -213,10 +279,14 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             newUnbondingsView.locale = selectedLocale
             newUnbondingsView.delegate = self
 
+            if let canCancel = staticsViewModel?.canCancelUnbonding {
+                newUnbondingsView.canCancel = canCancel
+            }
+
             if let stateView = stateContainerView {
                 stackView.insertArranged(view: newUnbondingsView, after: stateView)
             } else {
-                stackView.addArrangedSubview(newUnbondingsView)
+                stackView.insertArranged(view: newUnbondingsView, before: networkInfoContainerView)
             }
 
             newUnbondingsView.snp.makeConstraints { make in
@@ -289,20 +359,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         return stateView
     }
 
-    private func setupRewardEstimationViewIfNeeded() -> RewardEstimationView? {
-        if let rewardView = stateView as? RewardEstimationView {
-            return rewardView
-        }
-
-        let size = CGSize(width: 343, height: 202.0)
-        let stateView = setupView { RewardEstimationView(frame: CGRect(origin: .zero, size: size)) }
-
-        stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
-        stateView?.delegate = self
-
-        return stateView
-    }
-
     private func setupNominatorViewIfNeeded() -> NominatorStateView? {
         if let nominatorView = stateView as? NominatorStateView {
             return nominatorView
@@ -334,17 +390,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         nominatorView?.bind(viewModel: viewModel)
     }
 
-    private func applyBonded(viewModel: StakingEstimationViewModel) {
-        let rewardView = setupRewardEstimationViewIfNeeded()
-        rewardView?.bind(viewModel: viewModel)
-    }
-
-    private func applyNoStash(viewModel: StakingEstimationViewModel) {
-        let rewardView = setupRewardEstimationViewIfNeeded()
-        rewardView?.bind(viewModel: viewModel)
-        scrollView.layoutIfNeeded()
-    }
-
     private func applyValidator(viewModel: LocalizableResource<ValidationViewModel>) {
         let validatorView = setupValidatorViewIfNeeded()
         validatorView?.bind(viewModel: viewModel)
@@ -359,6 +404,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private func applyStakingReward(viewModel: LocalizableResource<StakingRewardViewModel>) {
         setupStakingRewardViewIfNeeded()
         rewardView?.bind(viewModel: viewModel)
+
+        rewardView?.claimButton?.addTarget(
+            self,
+            action: #selector(claimRewardsAction),
+            for: .touchUpInside
+        )
     }
 }
 
@@ -382,20 +433,12 @@ extension StakingMainViewController: Localizable {
     }
 }
 
-extension StakingMainViewController: RewardEstimationViewDelegate {
-    func rewardEstimationDidStartAction(_: RewardEstimationView) {
-        presenter.performMainAction()
-    }
-
-    func rewardEstimationDidRequestInfo(_: RewardEstimationView) {
-        presenter.performRewardInfoAction()
-    }
-}
-
 extension StakingMainViewController: StakingMainViewProtocol {
-    func didRecieveNetworkStakingInfo(
-        viewModel: LocalizableResource<NetworkStakingInfoViewModel>?
-    ) {
+    func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel) {
+        setupEntityView(for: entity)
+    }
+
+    func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel) {
         networkInfoView.bind(viewModel: viewModel)
     }
 
@@ -413,17 +456,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
         switch viewModel {
         case .undefined:
             clearStateView()
-            clearStakingRewardViewIfNeeded()
-            updateActionsView(for: nil)
-            updateUnbondingsView(for: nil)
-        case let .noStash(viewModel, alerts):
-            applyNoStash(viewModel: viewModel)
-            applyAlerts(alerts)
-
-            if !hasSameTypes {
-                expandNetworkInfoView(true)
-            }
-
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
@@ -471,6 +503,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
 
         networkInfoView.statics = viewModel
         actionsView?.statics = viewModel
+        unbondingsView?.canCancel = viewModel.canCancelUnbonding
 
         if let stateView = stateView as? StakingStateView {
             stateView.statics = viewModel
@@ -494,20 +527,7 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
 
 extension StakingMainViewController: AlertsViewDelegate {
     func didSelectStakingAlert(_ alert: StakingAlert) {
-        switch alert {
-        case .nominatorChangeValidators, .nominatorAllOversubscribed:
-            presenter.performChangeValidatorsAction()
-        case .bondedSetValidators:
-            presenter.performSetupValidatorsForBondedAction()
-        case .nominatorLowStake:
-            presenter.performStakeMoreAction()
-        case .redeemUnbonded:
-            presenter.performRedeemAction()
-        case .rebag:
-            presenter.performRebag()
-        case .waitingNextEra:
-            break
-        }
+        presenter.performAlertAction(alert)
     }
 }
 

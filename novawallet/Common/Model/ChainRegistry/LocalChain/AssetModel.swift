@@ -34,6 +34,10 @@ struct AssetModel: Equatable, Codable, Hashable {
         stakings?.contains { $0 != .unsupported } ?? false
     }
 
+    var hasPoolStaking: Bool {
+        stakings?.contains { $0 == .nominationPools } ?? false
+    }
+
     init(
         assetId: Id,
         icon: URL?,
@@ -75,6 +79,10 @@ struct AssetModel: Equatable, Codable, Hashable {
         buyProviders = remoteModel.buyProviders
         self.enabled = enabled
         source = .remote
+    }
+
+    var hasPrice: Bool {
+        priceId != nil
     }
 }
 

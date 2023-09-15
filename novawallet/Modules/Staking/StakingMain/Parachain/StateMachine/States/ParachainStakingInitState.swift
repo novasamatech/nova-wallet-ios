@@ -18,10 +18,7 @@ extension ParachainStaking {
 
                 stateMachine?.transit(to: delegatorState)
             } else {
-                let noStakingState = ParachainStaking.NoStakingState(
-                    stateMachine: stateMachine,
-                    commonData: commonData
-                )
+                let noStakingState = self
 
                 stateMachine?.transit(to: noStakingState)
             }

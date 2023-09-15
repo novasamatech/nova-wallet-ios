@@ -12,7 +12,6 @@ protocol StakingAccountUpdatingServiceProtocol {
 }
 
 class StakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol {
-    private var accountResolver: StakingAccountResolver?
     private var accountSubscription: StakingAccountSubscription?
 
     let chainRegistry: ChainRegistryProtocol
@@ -43,21 +42,8 @@ class StakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol {
         chainId: ChainModel.Id,
         chainFormat: ChainFormat
     ) throws {
-        let stashItemRepository = substrateRepositoryFactory.createStashItemRepository()
-
         let address = try accountId.toAddress(using: chainFormat)
-        let stashItemProvider = substrateDataProviderFactory.createStashItemProvider(for: address)
-
-        accountResolver = StakingAccountResolver(
-            accountId: accountId,
-            chainId: chainId,
-            chainFormat: chainFormat,
-            chainRegistry: chainRegistry,
-            childSubscriptionFactory: childSubscriptionFactory,
-            operationQueue: operationQueue,
-            repository: stashItemRepository,
-            logger: logger
-        )
+        let stashItemProvider = substrateDataProviderFactory.createStashItemProvider(for: address, chainId: chainId)
 
         accountSubscription = StakingAccountSubscription(
             accountId: accountId,
@@ -72,7 +58,6 @@ class StakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol {
     }
 
     func clearSubscription() {
-        accountResolver = nil
         accountSubscription = nil
     }
 }

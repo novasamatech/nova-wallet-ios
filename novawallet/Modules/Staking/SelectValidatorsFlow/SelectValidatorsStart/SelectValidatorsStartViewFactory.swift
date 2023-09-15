@@ -6,7 +6,7 @@ import SoraFoundation
 final class SelectValidatorsStartViewFactory {
     static func createInitiatedBondingView(
         with state: InitiatedBonding,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsStartViewProtocol? {
         let wireframe = InitBondSelectValidatorsStartWireframe(state: state, stakingState: stakingState)
         return createView(
@@ -19,7 +19,7 @@ final class SelectValidatorsStartViewFactory {
 
     static func createChangeTargetsView(
         with state: ExistingBonding,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsStartViewProtocol? {
         let wireframe = ChangeTargetsSelectValidatorsStartWireframe(
             state: state,
@@ -36,7 +36,7 @@ final class SelectValidatorsStartViewFactory {
 
     static func createChangeYourValidatorsView(
         with state: ExistingBonding,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsStartViewProtocol? {
         let wireframe = YourValidatorList.SelectionStartWireframe(state: state, stakingState: stakingState)
         return createView(
@@ -51,7 +51,7 @@ final class SelectValidatorsStartViewFactory {
         with wireframe: SelectValidatorsStartWireframeProtocol,
         existingStashAddress: AccountAddress?,
         selectedValidators: [SelectedValidatorInfo]?,
-        stakingState: StakingSharedState
+        stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsStartViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -59,11 +59,12 @@ final class SelectValidatorsStartViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let eraValidatorService = stakingState.eraValidatorService,
-            let rewardCalculationService = stakingState.rewardCalculationService else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
+
+        let eraValidatorService = stakingState.eraValidatorService
+        let rewardCalculationService = stakingState.rewardCalculatorService
 
         let operationManager = OperationManagerFacade.sharedManager
         let storageOperationFactory = StorageRequestFactory(
@@ -85,7 +86,10 @@ final class SelectValidatorsStartViewFactory {
         let interactor = SelectValidatorsStartInteractor(
             runtimeService: runtimeService,
             operationFactory: operationFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            preferredValidators: StakingConstants.preferredValidatorIds(
+                for: chainAsset.chain
+            )
         )
 
         let presenter = SelectValidatorsStartPresenter(

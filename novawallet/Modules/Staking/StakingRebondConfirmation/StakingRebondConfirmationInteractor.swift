@@ -73,7 +73,7 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
 extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteractorInputProtocol {
     func setup() {
         if let address = selectedAccount.toAddress() {
-            stashItemProvider = subscribeStashItemProvider(for: address)
+            stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
             presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }

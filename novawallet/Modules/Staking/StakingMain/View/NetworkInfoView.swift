@@ -38,8 +38,7 @@ final class NetworkInfoView: UIView {
         control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorIconSecondary()!)
         control.identityIconAngle = CGFloat.pi
         control.activationIconAngle = 0.0
-        control.titleLabel.textColor = R.color.colorTextPrimary()
-        control.titleLabel.font = .regularSubheadline
+        control.titleLabel.apply(style: .regularSubhedlineSecondary)
         control.layoutType = .flexible
         control.contentInsets = Constants.contentMargins
         control.horizontalSpacing = 0.0
@@ -97,7 +96,7 @@ final class NetworkInfoView: UIView {
 
     var expanded: Bool { titleControl.isActivated }
 
-    private var skeletonView: SkrullableView?
+    var skeletonView: SkrullableView?
 
     var locale = Locale.current {
         didSet {
@@ -112,7 +111,7 @@ final class NetworkInfoView: UIView {
         }
     }
 
-    private var localizableViewModel: LocalizableResource<NetworkStakingInfoViewModel>?
+    private var viewModel: NetworkStakingInfoViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -129,8 +128,9 @@ final class NetworkInfoView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if skeletonView != nil {
-            setupSkeleton()
+        if viewModel?.hasLoadingData == true {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
         }
     }
 
@@ -148,15 +148,15 @@ final class NetworkInfoView: UIView {
         applyExpansion(animated: animated)
     }
 
-    func bind(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?) {
-        localizableViewModel = viewModel
+    func bind(viewModel: NetworkStakingInfoViewModel) {
+        stopLoadingIfNeeded()
 
-        if viewModel != nil {
-            stopLoadingIfNeeded()
+        self.viewModel = viewModel
 
-            applyViewModel()
-        } else {
-            startLoading()
+        applyViewModel()
+
+        if viewModel.hasLoadingData {
+            startLoadingIfNeeded()
         }
     }
 
@@ -211,42 +211,39 @@ final class NetworkInfoView: UIView {
         }
     }
 
+    private func applyCell(viewModel: LoadableViewModelState<(String?, String?)>?, to cell: TitleMultiValueView) {
+        if let loadableViewModel = viewModel {
+            cell.isHidden = false
+
+            let title = loadableViewModel.value?.0
+            let optSubtitle = loadableViewModel.value?.1
+
+            cell.valueTop.text = title
+
+            if let subtitle = optSubtitle, !subtitle.isEmpty {
+                cell.valueBottom.text = subtitle
+            } else {
+                cell.resetToSingleValue()
+            }
+        } else {
+            cell.isHidden = true
+        }
+    }
+
     private func applyViewModel() {
-        guard let viewModel = localizableViewModel else {
+        guard let viewModel = viewModel else {
             return
         }
 
-        let localizedViewModel = viewModel.value(for: locale)
-
-        totalStakedView.valueTop.text = localizedViewModel.totalStake?.amount
-
-        if let price = localizedViewModel.totalStake?.price, !price.isEmpty {
-            totalStakedView.valueBottom.text = price
-        } else {
-            totalStakedView.resetToSingleValue()
-        }
-
-        minimumStakedView.valueTop.text = localizedViewModel.minimalStake?.amount
-
-        if let price = localizedViewModel.minimalStake?.price, !price.isEmpty {
-            minimumStakedView.valueBottom.text = price
-        } else {
-            minimumStakedView.resetToSingleValue()
-        }
-
-        activeNominatorsView.valueTop.text = localizedViewModel.activeNominators
-        stakingPeriodView.valueTop.text = localizedViewModel.stakingPeriod
-        unstakingPeriodView.valueTop.text = localizedViewModel.lockUpPeriod
+        applyCell(viewModel: viewModel.totalStake?.map(with: { ($0.amount, $0.price) }), to: totalStakedView)
+        applyCell(viewModel: viewModel.minimalStake?.map(with: { ($0.amount, $0.price) }), to: minimumStakedView)
+        applyCell(viewModel: viewModel.activeNominators?.map(with: { ($0, nil) }), to: activeNominatorsView)
+        applyCell(viewModel: viewModel.stakingPeriod?.map(with: { ($0, nil) }), to: stakingPeriodView)
+        applyCell(viewModel: viewModel.lockUpPeriod?.map(with: { ($0, nil) }), to: unstakingPeriodView)
     }
 
     private func applyLocalization() {
         let languages = locale.rLanguages
-
-        titleControl.titleLabel.text = R.string.localizable.stakingNetworkInfoTitle(
-            preferredLanguages: languages
-        )
-
-        titleControl.invalidateLayout()
 
         totalStakedView.titleLabel.text = R.string.localizable
             .stakingMainTotalStakedTitle(preferredLanguages: languages)
@@ -255,10 +252,18 @@ final class NetworkInfoView: UIView {
 
         if let statics = statics {
             activeNominatorsView.titleLabel.text = statics.networkInfoActiveNominators(for: locale)
+
+            titleControl.titleLabel.text = statics.networkInfoTitle(for: locale)
         } else {
             activeNominatorsView.titleLabel.text = R.string.localizable
                 .stakingMainActiveNominatorsTitle(preferredLanguages: languages)
+
+            titleControl.titleLabel.text = R.string.localizable.stakingNetworkInfoTitle(
+                preferredLanguages: languages
+            )
         }
+
+        titleControl.invalidateLayout()
 
         stakingPeriodView.titleLabel.text = R.string.localizable.stakingNetworkInfoStakingPeriodTitle(
             preferredLanguages: languages
@@ -311,80 +316,55 @@ final class NetworkInfoView: UIView {
         }
     }
 
-    func startLoading() {
-        guard skeletonView == nil else {
-            return
-        }
+    // MARK: Action
 
-        totalStakedView.valueTop.alpha = 0.0
-        totalStakedView.valueBottom.alpha = 0.0
-        minimumStakedView.valueTop.alpha = 0.0
-        minimumStakedView.valueBottom.alpha = 0.0
-        activeNominatorsView.valueTop.alpha = 0.0
-        stakingPeriodView.valueTop.alpha = 0.0
-        unstakingPeriodView.valueTop.alpha = 0.0
+    @objc func actionToggleExpansion() {
+        applyExpansion(animated: true)
+    }
+}
 
-        setupSkeleton()
+extension NetworkInfoView: SkeletonableView {
+    var skeletonSuperview: UIView {
+        contentView
     }
 
-    func stopLoadingIfNeeded() {
-        guard skeletonView != nil else {
-            return
+    var hidingViews: [UIView] {
+        guard let viewModel = viewModel, viewModel.hasLoadingData else {
+            return []
         }
 
-        skeletonView?.stopSkrulling()
-        skeletonView?.removeFromSuperview()
-        skeletonView = nil
+        var views: [UIView] = []
 
-        totalStakedView.valueTop.alpha = 1.0
-        totalStakedView.valueBottom.alpha = 1.0
-        minimumStakedView.valueTop.alpha = 1.0
-        minimumStakedView.valueBottom.alpha = 1.0
-        activeNominatorsView.valueTop.alpha = 1.0
-        stakingPeriodView.valueTop.alpha = 1.0
-        unstakingPeriodView.valueTop.alpha = 1.0
+        if viewModel.totalStake?.isLoading == true {
+            views.append(totalStakedView.valueTop)
+            views.append(totalStakedView.valueBottom)
+        }
+
+        if viewModel.minimalStake?.isLoading == true {
+            views.append(minimumStakedView.valueTop)
+            views.append(minimumStakedView.valueBottom)
+        }
+
+        if viewModel.activeNominators?.isLoading == true {
+            views.append(activeNominatorsView.valueTop)
+            views.append(activeNominatorsView.valueBottom)
+        }
+
+        if viewModel.stakingPeriod?.isLoading == true {
+            views.append(stakingPeriodView.valueTop)
+            views.append(stakingPeriodView.valueBottom)
+        }
+
+        if viewModel.lockUpPeriod?.isLoading == true {
+            views.append(unstakingPeriodView.valueTop)
+            views.append(unstakingPeriodView.valueBottom)
+        }
+
+        return views
     }
 
-    private func setupSkeleton() {
-        let spaceSize = CGSize(
-            width: frame.width,
-            height: 5 * Constants.rowHeight + Constants.stackViewBottomInset
-        )
-
-        guard spaceSize.width > 0, spaceSize.height > 0 else {
-            return
-        }
-
-        let builder = Skrull(
-            size: spaceSize,
-            decorations: [],
-            skeletons: createSkeletons(for: spaceSize)
-        )
-
-        let currentSkeletonView: SkrullableView?
-
-        if let skeletonView = skeletonView {
-            currentSkeletonView = skeletonView
-            builder.updateSkeletons(in: skeletonView)
-        } else {
-            let view = builder
-                .fillSkeletonStart(R.color.colorSkeletonStart()!)
-                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
-                .build()
-            view.autoresizingMask = []
-            contentView.insertSubview(view, at: 0)
-
-            skeletonView = view
-
-            view.startSkrulling()
-
-            currentSkeletonView = view
-        }
-
-        currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
-    }
-
-    private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+    // swiftlint:disable:next function_body_length
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 72.0, height: 12.0)
         let smallRowSize = CGSize(width: 57.0, height: 6.0)
 
@@ -405,69 +385,85 @@ final class NetworkInfoView: UIView {
             y: Constants.rowHeight / 2.0 - bigRowSize.height / 2.0
         )
 
-        return [
-            SingleSkeleton.createRow(
-                on: totalStakedView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: doubleValueBigOffset,
-                size: bigRowSize
-            ),
+        var skeletons: [Skeletonable] = []
 
-            SingleSkeleton.createRow(
-                on: totalStakedView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: doubleValueSmallOffset,
-                size: smallRowSize
-            ),
+        if viewModel?.totalStake?.isLoading == true {
+            skeletons.append(contentsOf: [
+                SingleSkeleton.createRow(
+                    on: totalStakedView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: doubleValueBigOffset,
+                    size: bigRowSize
+                ),
 
-            SingleSkeleton.createRow(
-                on: minimumStakedView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: doubleValueBigOffset,
-                size: bigRowSize
-            ),
+                SingleSkeleton.createRow(
+                    on: totalStakedView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: doubleValueSmallOffset,
+                    size: smallRowSize
+                )
+            ])
+        }
 
-            SingleSkeleton.createRow(
-                on: minimumStakedView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: doubleValueSmallOffset,
-                size: smallRowSize
-            ),
+        if viewModel?.minimalStake?.isLoading == true {
+            skeletons.append(contentsOf: [
+                SingleSkeleton.createRow(
+                    on: minimumStakedView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: doubleValueBigOffset,
+                    size: bigRowSize
+                ),
 
-            SingleSkeleton.createRow(
-                on: activeNominatorsView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: singleValueOffset,
-                size: bigRowSize
-            ),
+                SingleSkeleton.createRow(
+                    on: minimumStakedView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: doubleValueSmallOffset,
+                    size: smallRowSize
+                )
+            ])
+        }
 
-            SingleSkeleton.createRow(
-                on: stakingPeriodView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: singleValueOffset,
-                size: bigRowSize
-            ),
-
-            SingleSkeleton.createRow(
-                on: unstakingPeriodView,
-                containerView: contentView,
-                spaceSize: spaceSize,
-                offset: singleValueOffset,
-                size: bigRowSize
+        if viewModel?.activeNominators?.isLoading == true {
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    on: activeNominatorsView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: singleValueOffset,
+                    size: bigRowSize
+                )
             )
-        ]
-    }
+        }
 
-    // MARK: Action
+        if viewModel?.stakingPeriod?.isLoading == true {
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    on: stakingPeriodView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: singleValueOffset,
+                    size: bigRowSize
+                )
+            )
+        }
 
-    @objc func actionToggleExpansion() {
-        applyExpansion(animated: true)
+        if viewModel?.lockUpPeriod?.isLoading == true {
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    on: unstakingPeriodView,
+                    containerView: contentView,
+                    spaceSize: spaceSize,
+                    offset: singleValueOffset,
+                    size: bigRowSize
+                )
+            )
+        }
+
+        return skeletons
     }
 }
 
@@ -477,8 +473,7 @@ extension NetworkInfoView: SkeletonLoadable {
     }
 
     func didAppearSkeleton() {
-        skeletonView?.stopSkrulling()
-        skeletonView?.startSkrulling()
+        skeletonView?.restartSkrulling()
     }
 
     func didUpdateSkeletonLayout() {
@@ -486,6 +481,7 @@ extension NetworkInfoView: SkeletonLoadable {
             return
         }
 
-        setupSkeleton()
+        updateLoadingState()
+        skeletonView?.restartSkrulling()
     }
 }

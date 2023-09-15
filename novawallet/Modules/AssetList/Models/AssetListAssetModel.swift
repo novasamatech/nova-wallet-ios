@@ -9,24 +9,24 @@ struct AssetListAssetModel: Identifiable {
     let balanceResult: Result<BigUInt, Error>?
     let balanceValue: Decimal?
 
-    let crowdloanResult: Result<BigUInt, Error>?
-    let crowdloanValue: Decimal?
+    let externalBalancesResult: Result<BigUInt, Error>?
+    let externalBalancesValue: Decimal?
 
     var totalAmount: BigUInt? {
         let maybeBalanceAmount = try? balanceResult?.get()
-        let maybeCrowdloanContribution = try? crowdloanResult?.get()
-        if let balanceAmount = maybeBalanceAmount, let crowdloanAmount = maybeCrowdloanContribution {
-            return balanceAmount + crowdloanAmount
+        let maybeExternalBalances = try? externalBalancesResult?.get()
+        if let balanceAmount = maybeBalanceAmount, let externalBalancesAmount = maybeExternalBalances {
+            return balanceAmount + externalBalancesAmount
         } else {
-            return maybeBalanceAmount ?? maybeCrowdloanContribution
+            return maybeBalanceAmount ?? maybeExternalBalances
         }
     }
 
     var totalValue: Decimal? {
-        if let balanceValue = balanceValue, let crowdloanValue = crowdloanValue {
-            return balanceValue + crowdloanValue
+        if let balanceValue = balanceValue, let externalBalancesValue = externalBalancesValue {
+            return balanceValue + externalBalancesValue
         } else {
-            return balanceValue ?? crowdloanValue
+            return balanceValue ?? externalBalancesValue
         }
     }
 }

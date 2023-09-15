@@ -98,7 +98,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
         }
 
         let wrapper = slashesOperationFactory.createSlashingSpansOperationForStash(
-            stash,
+            { try stash.toAccountId() },
             engine: connection,
             runtimeService: registryService
         )
@@ -173,7 +173,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
 extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
     func setup() {
         if let address = selectedAccount.toAddress() {
-            stashItemProvider = subscribeStashItemProvider(for: address)
+            stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
             presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
@@ -207,8 +207,8 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
         fetchSlashingSpansForStash(stashAddress) { [weak self] result in
             switch result {
             case let .success(slashingSpans):
-                let numberOfSlashes = slashingSpans.map { $0.prior.count + 1 } ?? 0
-                self?.estimateFee(with: UInt32(numberOfSlashes))
+                let numberOfSlashes = slashingSpans?.numOfSlashingSpans ?? 0
+                self?.estimateFee(with: numberOfSlashes)
             case let .failure(error):
                 self?.presenter.didSubmitRedeeming(result: .failure(error))
             }
@@ -219,8 +219,8 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
         fetchSlashingSpansForStash(stashAddress) { [weak self] result in
             switch result {
             case let .success(slashingSpans):
-                let numberOfSlashes = slashingSpans.map { $0.prior.count + 1 } ?? 0
-                self?.submit(with: UInt32(numberOfSlashes))
+                let numberOfSlashes = slashingSpans?.numOfSlashingSpans ?? 0
+                self?.submit(with: numberOfSlashes)
             case let .failure(error):
                 self?.presenter.didSubmitRedeeming(result: .failure(error))
             }

@@ -94,7 +94,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         provideDeprecationFlag()
 
         if let accountAddress = selectedAccount.toAddress() {
-            stashItemProvider = subscribeStashItemProvider(for: accountAddress)
+            stashItemProvider = subscribeStashItemProvider(for: accountAddress, chainId: chainAsset.chain.chainId)
         } else {
             presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }

@@ -45,14 +45,10 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRelaychainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
-    func showSetupAmount(from view: StakingMainViewProtocol?)
-
     func proceedToSelectValidatorsStart(
         from view: StakingMainViewProtocol?,
         existingBonding: ExistingBonding
     )
-
-    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
 
     func showRewardPayoutsForNominator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress)
     func showRewardPayoutsForValidator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress)

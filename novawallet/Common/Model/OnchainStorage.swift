@@ -4,6 +4,15 @@ enum UncertainStorage<T> {
     case undefined
     case defined(T)
 
+    var isDefined: Bool {
+        switch self {
+        case .defined:
+            return true
+        case .undefined:
+            return false
+        }
+    }
+
     var value: T? {
         switch self {
         case let .defined(value):
@@ -36,10 +45,10 @@ enum UncertainStorage<T> {
 extension UncertainStorage where T: Decodable {
     init(
         values: [BatchStorageSubscriptionResultValue],
-        localKey: String,
+        mappingKey: String,
         context: [CodingUserInfoKey: Any]?
     ) throws {
-        if let wrappedValue = values.first(where: { $0.localKey == localKey }) {
+        if let wrappedValue = values.first(where: { $0.mappingKey == mappingKey }) {
             let value = try wrappedValue.value.map(to: T.self, with: context)
             self = .defined(value)
         } else {

@@ -170,7 +170,7 @@ struct ModalInfoFactory {
             priceFormatter: priceFormatter
         )
 
-        let crowdloans = createCrowdloansViewModel(
+        let externalBalances = createExternalBalancesViewModel(
             balanceContext: balanceContext,
             amountFormatter: amountFormatter,
             priceFormatter: priceFormatter
@@ -192,7 +192,7 @@ struct ModalInfoFactory {
             precision: precision
         )
 
-        return (balanceLockKnownModels + balanceLockUnknownModels + crowdloans + reserved)
+        return (balanceLockKnownModels + balanceLockUnknownModels + externalBalances + reserved)
             .sorted { viewModel1, viewModel2 in
                 viewModel1.value >= viewModel2.value
             }.map(\.viewModel)
@@ -239,26 +239,29 @@ struct ModalInfoFactory {
         }
     }
 
-    private static func createCrowdloansViewModel(
+    private static func createExternalBalancesViewModel(
         balanceContext: BalanceContext,
         amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>
     ) -> LocksSortingViewModel {
-        guard balanceContext.crowdloans > 0 else {
-            return []
-        }
+        balanceContext.external.flatMap { keyValue in
+            let group = keyValue.key
+            let amount = keyValue.value
 
-        let title = LocalizableResource { locale in
-            R.string.localizable.walletAccountLocksCrowdloans(preferredLanguages: locale.rLanguages)
-        }
+            guard amount > 0 else {
+                return LocksSortingViewModel()
+            }
 
-        return createLockFieldViewModel(
-            amount: balanceContext.crowdloans,
-            price: balanceContext.price,
-            localizedTitle: title,
-            amountFormatter: amountFormatter,
-            priceFormatter: priceFormatter
-        )
+            let title = group.type.lockTitle
+
+            return createLockFieldViewModel(
+                amount: amount,
+                price: balanceContext.price,
+                localizedTitle: title,
+                amountFormatter: amountFormatter,
+                priceFormatter: priceFormatter
+            )
+        }
     }
 
     private static func createReservedViewModel(

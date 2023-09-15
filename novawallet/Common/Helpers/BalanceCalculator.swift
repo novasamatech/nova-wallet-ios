@@ -9,8 +9,8 @@ protocol BalancesCalculating: AnyObject {
 final class BalancesCalculator {
     private var identifierMapping: [String: AssetBalanceId] = [:]
     private var balances: [AccountId: [ChainAssetId: BigUInt]] = [:]
-    private var crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]] = [:]
-    private var crowdloanContributionsMapping: [String: CrowdloanContributionId] = [:]
+    private var externalBalances: [AccountId: [ChainAssetId: BigUInt]] = [:]
+    private var externalBalancesMapping: [String: ExternalBalanceContribution] = [:]
     private var prices: [ChainAssetId: PriceData] = [:]
     private var chains: [ChainModel.Id: ChainModel] = [:]
 
@@ -49,34 +49,34 @@ final class BalancesCalculator {
         }
     }
 
-    func didReceiveCrowdloanContributionChanges(_ changes: [DataProviderChange<CrowdloanContributionData>]) {
+    func didReceiveExternalBalanceChanges(_ changes: [DataProviderChange<ExternalAssetBalance>]) {
         for change in changes {
             switch change {
             case let .insert(item), let .update(item):
-                let previousAmount = crowdloanContributionsMapping[item.identifier]?.amount ?? 0
-                var accountCrowdloan = crowdloanContributions[item.accountId] ?? [:]
-                let value: BigUInt = accountCrowdloan[item.chainId] ?? 0
-                accountCrowdloan[item.chainId] = value - previousAmount + item.amount
-                crowdloanContributions[item.accountId] = accountCrowdloan
-                crowdloanContributionsMapping[item.identifier] = CrowdloanContributionId(
-                    chainId: item.chainId,
+                let previousAmount = externalBalancesMapping[item.identifier]?.amount ?? 0
+                var accountBalances = externalBalances[item.accountId] ?? [:]
+                let value: BigUInt = accountBalances[item.chainAssetId] ?? 0
+                accountBalances[item.chainAssetId] = value - previousAmount + item.amount
+                externalBalances[item.accountId] = accountBalances
+                externalBalancesMapping[item.identifier] = .init(
+                    chainAssetId: item.chainAssetId,
                     accountId: item.accountId,
                     amount: item.amount
                 )
             case let .delete(deletedIdentifier):
-                if let accountContributionId = crowdloanContributionsMapping[deletedIdentifier] {
-                    var accountContributions = crowdloanContributions[accountContributionId.accountId]
-                    if let contribution = accountContributions?[accountContributionId.chainId],
+                if let accountContributionId = externalBalancesMapping[deletedIdentifier] {
+                    var accountContributions = externalBalances[accountContributionId.accountId]
+                    if let contribution = accountContributions?[accountContributionId.chainAssetId],
                        contribution > accountContributionId.amount {
                         let newAmount = contribution - accountContributionId.amount
-                        accountContributions?[accountContributionId.chainId] = newAmount
+                        accountContributions?[accountContributionId.chainAssetId] = newAmount
                     } else {
-                        accountContributions?[accountContributionId.chainId] = nil
+                        accountContributions?[accountContributionId.chainAssetId] = nil
                     }
-                    crowdloanContributions[accountContributionId.accountId] = accountContributions
+                    externalBalances[accountContributionId.accountId] = accountContributions
                 }
 
-                crowdloanContributionsMapping[deletedIdentifier] = nil
+                externalBalancesMapping[deletedIdentifier] = nil
             }
         }
     }
@@ -108,19 +108,19 @@ final class BalancesCalculator {
         }
     }
 
-    private func calculateCrowdloanContribution(
-        _ contributions: [ChainModel.Id: BigUInt],
+    private func calculateExternalBalances(
+        _ externalBalances: [ChainAssetId: BigUInt],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData]
     ) -> Decimal {
-        contributions.reduce(0) { result, contribution in
-            guard let asset = chains[contribution.key]?.utilityAsset(),
-                  let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
+        externalBalances.reduce(0) { result, externalBalance in
+            guard let asset = chains[externalBalance.key.chainId]?.asset(for: externalBalance.key.assetId),
+                  let priceData = prices[externalBalance.key],
                   let price = Decimal(string: priceData.price) else {
                 return result
             }
             guard let decimalAmount = Decimal.fromSubstrateAmount(
-                contribution.value,
+                externalBalance.value,
                 precision: Int16(bitPattern: asset.precision)
             ) else {
                 return result
@@ -139,11 +139,11 @@ final class BalancesCalculator {
             excludingChainIds: excludingChainIds
         )
 
-        let contributions = crowdloanContributions[accountId]?
-            .filter { !excludingChainIds.contains($0.key) } ?? [:]
+        let externalBalances = externalBalances[accountId]?
+            .filter { !excludingChainIds.contains($0.key.chainId) } ?? [:]
 
-        let crowdloans = calculateCrowdloanContribution(
-            contributions,
+        let crowdloans = calculateExternalBalances(
+            externalBalances,
             chains: chains,
             prices: prices
         )
@@ -180,9 +180,9 @@ extension BalancesCalculator: BalancesCalculating {
                 includingChainIds: [chainAccount.chainId],
                 excludingChainIds: Set()
             )
-            let contributions = crowdloanContributions[chainAccount.accountId] ?? [:]
-            totalValue += calculateCrowdloanContribution(
-                contributions,
+            let externalBalances = externalBalances[chainAccount.accountId] ?? [:]
+            totalValue += calculateExternalBalances(
+                externalBalances,
                 chains: chains,
                 prices: prices
             )

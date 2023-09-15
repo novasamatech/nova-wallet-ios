@@ -18,7 +18,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -45,7 +45,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -66,7 +66,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -90,7 +90,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -118,7 +118,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
 
         //then
 
@@ -151,7 +151,62 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // when
 
-        let result = composer.compose(from: allValidators)
+        let result = composer.compose(from: allValidators, preferrences: [])
+
+        //then
+
+        XCTAssertEqual(result, expectedResult)
+    }
+    
+    func testDefaultFilterWithPreferrences() {
+        // given
+        let generator = CustomValidatorListTestDataGenerator.self
+        let allValidators = generator.createSelectedValidators(
+            from: generator.goodValidators +
+                generator.badValidators
+        )
+        
+        let preferences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+        
+        let expectedResult = (allValidators + preferences).sorted {
+            $0.stakeReturn >= $1.stakeReturn
+        }
+
+        let filter = CustomValidatorListFilter.defaultFilter()
+        let composer = CustomValidatorListComposer(filter: filter)
+
+        // when
+
+        let result = composer.compose(from: allValidators, preferrences: preferences)
+
+        //then
+
+        XCTAssertEqual(result, expectedResult)
+    }
+    
+    func testRecommendedFilterWithPreferrences() {
+        // given
+        let generator = CustomValidatorListTestDataGenerator.self
+
+        let allValidators = generator.createSelectedValidators(
+            from: generator.goodValidators +
+                generator.badValidators
+        )
+
+        let goodValidators = generator.createSelectedValidators(from: generator.goodValidators)
+
+        let preferrences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+        
+        let expectedResult = (goodValidators + preferrences).sorted {
+            $0.stakeReturn >= $1.stakeReturn
+        }
+
+        let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: true)
+        let composer = CustomValidatorListComposer(filter: filter)
+
+        // when
+
+        let result = composer.compose(from: allValidators, preferrences: preferrences)
 
         //then
 

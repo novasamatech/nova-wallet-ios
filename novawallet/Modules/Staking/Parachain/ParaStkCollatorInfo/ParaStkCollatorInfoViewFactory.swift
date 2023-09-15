@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct ParaStkCollatorInfoViewFactory {
     static func createView(
-        for state: ParachainStakingSharedState,
+        for state: ParachainStakingSharedStateProtocol,
         collatorInfo: CollatorSelectionInfo
     ) -> ParaStkCollatorInfoViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset

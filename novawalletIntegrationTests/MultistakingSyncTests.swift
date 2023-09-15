@@ -12,6 +12,15 @@ final class MultistakingSyncTests: XCTestCase {
 
         Logger.shared.info("Result: \(result)")
     }
+    
+    func testAllStakableChainsForPoolSync() throws {
+        let result = try performAllStakableOptionsSync(
+            for: "1SohJrC8gHwHeJT1nkSonEbMd6yrkJgw8PwGsXUrKw3YrEK",
+            ethereumAddress: "0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00"
+        )
+
+        Logger.shared.info("Result: \(result)")
+    }
 
     private func performAllStakableOptionsSync(
         for substrateAddress: AccountAddress,
@@ -40,9 +49,10 @@ final class MultistakingSyncTests: XCTestCase {
             type: .watchOnly
         )
 
-        let repositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
+        let multistakingRepositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
+        let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
         let providerFactory = MultistakingProviderFactory(
-            repositoryFactory: repositoryFactory,
+            repositoryFactory: multistakingRepositoryFactory,
             operationQueue: operationQueue
         )
 
@@ -50,7 +60,8 @@ final class MultistakingSyncTests: XCTestCase {
             wallet: wallet,
             chainRegistry: chainRegistry,
             providerFactory: providerFactory,
-            repositoryFactory: repositoryFactory,
+            multistakingRepositoryFactory: multistakingRepositoryFactory,
+            substrateRepositoryFactory: substrateRepositoryFactory,
             offchainOperationFactory: SubqueryMultistakingOperationFactory(url: ApplicationConfig.shared.multistakingURL)
         )
 
@@ -81,7 +92,7 @@ final class MultistakingSyncTests: XCTestCase {
 
         // then
 
-        let dashboardRepository = repositoryFactory.createDashboardRepository(for: wallet.metaId)
+        let dashboardRepository = multistakingRepositoryFactory.createDashboardRepository(for: wallet.metaId)
 
         let fetchOperation = dashboardRepository.fetchAllOperation(with: RepositoryFetchOptions())
 

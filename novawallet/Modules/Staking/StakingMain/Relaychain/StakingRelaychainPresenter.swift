@@ -82,11 +82,12 @@ final class StakingRelaychainPresenter {
                     with: networkStakingInfo,
                     chainAsset: chainAsset,
                     params: params,
-                    priceData: commonData?.price
+                    priceData: commonData?.price,
+                    locale: view?.selectedLocale ?? Locale.current
                 )
             view?.didRecieveNetworkStakingInfo(viewModel: networkStakingInfoViewModel)
         } else {
-            view?.didRecieveNetworkStakingInfo(viewModel: nil)
+            view?.didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel.allLoading)
         }
     }
 
@@ -241,42 +242,6 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
         interactor.setup()
     }
 
-    func performMainAction() {
-        guard let commonData = stateMachine
-            .viewState(using: { (state: BaseStakingState) in state })?.commonData else {
-            return
-        }
-
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
-
-        let nomination = stateMachine.viewState(
-            using: { (state: NominatorState) in state }
-        )?.nomination
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.maxNominatorsCountNotApplied(
-                counterForNominators: commonData.counterForNominators,
-                maxNominatorsCount: commonData.maxNominatorsCount,
-                hasExistingNomination: nomination != nil,
-                locale: locale
-            )
-        ]).runValidation { [weak self] in
-            self?.wireframe.showSetupAmount(from: self?.view)
-        }
-    }
-
-    func performRewardInfoAction() {
-        guard let rewardCalculator = stateMachine
-            .viewState(using: { (state: BaseStakingState) in state })?.commonData.calculatorEngine else {
-            return
-        }
-
-        let maxReward = rewardCalculator.calculateMaxReturn(isCompound: true, period: .year)
-        let avgReward = rewardCalculator.calculateAvgReturn(isCompound: true, period: .year)
-
-        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
-    }
-
     func performChangeValidatorsAction() {
         wireframe.showNominatorValidators(from: view)
     }
@@ -291,6 +256,10 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
 
     func performStakeMoreAction() {
         handleStakeMore()
+    }
+
+    func performClaimRewards() {
+        // not needed action for relaychain staking
     }
 
     func performRedeemAction() {
@@ -373,10 +342,31 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 let stashAddress = validatorState.stashItem.stash
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
-        case .yieldBoost:
-            // not supported yet for relaychain staking
+        default:
+            logger?.warning("Unsupported action: \(action)")
+        }
+    }
+
+    func performAlertAction(_ alert: StakingAlert) {
+        switch alert {
+        case .bondedSetValidators:
+            performSetupValidatorsForBondedAction()
+        case .nominatorChangeValidators, .nominatorAllOversubscribed:
+            performChangeValidatorsAction()
+        case .nominatorLowStake:
+            performStakeMoreAction()
+        case .redeemUnbonded:
+            performRedeemAction()
+        case .rebag:
+            performRebag()
+        case .waitingNextEra:
+            // no action
             break
         }
+    }
+
+    func performSelectedEntityAction() {
+        // no support for selected entity
     }
 
     func selectPeriod(_ filter: StakingRewardFiltersPeriod) {

@@ -10,6 +10,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemParachainPart>
+    let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let operationFactory: ParaStkCollatorsOperationFactoryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
@@ -23,6 +24,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
         chainAsset: ChainAsset,
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemParachainPart>,
+        cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationFactory: ParaStkCollatorsOperationFactoryProtocol,
@@ -35,6 +37,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
         self.chainAsset = chainAsset
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
+        self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.operationFactory = operationFactory
@@ -59,24 +62,36 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
     }
 
     private func subscribeDelegatorState(for accountId: AccountId) {
-        let request = MapSubscriptionRequest(
-            storagePath: ParachainStaking.delegatorStatePath,
-            localKey: ""
-        ) { BytesCodable(wrappedValue: accountId) }
+        do {
+            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+                ParachainStaking.delegatorStatePath,
+                accountId: accountId,
+                chainId: chainAsset.chain.chainId
+            )
 
-        subscription = CallbackStorageSubscription<ParachainStaking.Delegator>(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
+            let request = MapSubscriptionRequest(
+                storagePath: ParachainStaking.delegatorStatePath,
+                localKey: localKey
+            ) { BytesCodable(wrappedValue: accountId) }
 
-            self?.handleDelegatorState(result: result)
+            subscription = CallbackStorageSubscription<ParachainStaking.Delegator>(
+                request: request,
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: cacheRepository,
+                operationQueue: operationQueue,
+                callbackQueue: workingQueue
+            ) { [weak self] result in
+                self?.mutex.lock()
 
-            self?.mutex.unlock()
+                self?.handleDelegatorState(result: result)
+
+                self?.mutex.unlock()
+            }
+        } catch {
+            logger?.error("Subscription error: \(error)")
+
+            completeImmediate(error)
         }
     }
 

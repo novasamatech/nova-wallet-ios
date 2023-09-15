@@ -70,7 +70,7 @@ final class StakingBondMoreConfirmationInteractor: AccountFetching {
 extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInteractorInputProtocol {
     func setup() {
         if let address = selectedAccount.toAddress() {
-            stashItemProvider = subscribeStashItemProvider(for: address)
+            stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         }
 
         if let priceId = chainAsset.asset.priceId {

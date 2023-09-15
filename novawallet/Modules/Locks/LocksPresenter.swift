@@ -30,7 +30,7 @@ final class LocksPresenter {
             balances: input.balances,
             chains: input.chains,
             prices: input.prices,
-            crowdloans: input.crowdloans,
+            externalBalances: input.externalBalances,
             locale: selectedLocale
         )
 
@@ -104,21 +104,23 @@ final class LocksPresenter {
             )
         }
 
-        let crowdloanCells: [LocksViewSectionModel.CellViewModel] = input.crowdloans.compactMap {
-            guard let utilityAsset = input.chains[$0.key]?.utilityAsset() else {
-                return nil
-            }
+        let groupedExternalBalances = input.externalBalances
+            .values.flatMap { $0.filter { $0.amount > 0 } }
+            .groupByAssetType()
+
+        let externalBalanceCells: [LocksViewSectionModel.CellViewModel] = groupedExternalBalances.compactMap {
+            let group = $0.key
+            let amount = $0.value
+
             return createCell(
-                amountInPlank: $0.value.reduce(0) { $0 + $1.amount },
-                chainAssetId: ChainAssetId(chainId: $0.key, assetId: utilityAsset.assetId),
-                title: R.string.localizable.tabbarCrowdloanTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                identifier: $0.key
+                amountInPlank: amount,
+                chainAssetId: group.chainAssetId,
+                title: group.type.lockTitle.value(for: selectedLocale),
+                identifier: group.stringValue
             )
         }
 
-        return locksCells + reservedCells + crowdloanCells
+        return locksCells + reservedCells + externalBalanceCells
     }
 
     private func createCell(
@@ -164,12 +166,14 @@ final class LocksPresenter {
         let locksCellsCount = input.locks.filter {
             $0.amount > 0
         }.count
-        let crowdloanCellsCount = input.crowdloans.filter { crowdloan in
-            crowdloan.value.first(where: { $0.amount > 0 }) != nil
-        }.count
+
+        let externalBalancesCellsCount = input.externalBalances
+            .values.flatMap { $0.filter { $0.amount > 0 } }
+            .count
+
         return view?.calculateEstimatedHeight(
             sections: 2,
-            items: locksCellsCount + reservedCellsCount + crowdloanCellsCount
+            items: locksCellsCount + reservedCellsCount + externalBalancesCellsCount
         ) ?? 0
     }
 }

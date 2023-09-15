@@ -1,8 +1,8 @@
 final class ValidatorSearchWireframe: ValidatorSearchWireframeProtocol {
-    let state: StakingSharedState
+    let chainAsset: ChainAsset
 
-    init(state: StakingSharedState) {
-        self.state = state
+    init(chainAsset: ChainAsset) {
+        self.chainAsset = chainAsset
     }
 
     func present(
@@ -11,7 +11,7 @@ final class ValidatorSearchWireframe: ValidatorSearchWireframeProtocol {
     ) {
         guard let validatorInfoView = ValidatorInfoViewFactory.createView(
             with: validatorInfo,
-            state: state
+            chainAsset: chainAsset
         ) else {
             return
         }

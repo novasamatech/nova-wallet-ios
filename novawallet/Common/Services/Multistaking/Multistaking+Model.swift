@@ -42,6 +42,11 @@ extension Multistaking {
         let state: Multistaking.ParachainState
     }
 
+    struct DashboardItemNominationPoolPart {
+        let stakingOption: OptionWithWallet
+        let state: Multistaking.NominationPoolState?
+    }
+
     struct DashboardItemOffchainPart {
         let stakingOption: OptionWithWallet
         let maxApy: Decimal
@@ -79,6 +84,22 @@ extension Multistaking {
                 return .bonded
             }
         }
+
+        static func from(nominationPoolState: Multistaking.NominationPoolState) -> DashboardItemOnchainState? {
+            guard nominationPoolState.bondedPool?.state == .open else {
+                return nil
+            }
+
+            guard nominationPoolState.ledger != nil else {
+                return nil
+            }
+
+            if let nomination = nominationPoolState.nomination, let stateEra = nominationPoolState.era {
+                return nomination.submittedIn >= stateEra.index ? .waiting : .active
+            } else {
+                return .bonded
+            }
+        }
     }
 
     struct DashboardItem: Equatable {
@@ -95,6 +116,14 @@ extension Multistaking {
         let totalRewards: BigUInt?
         let maxApy: Decimal?
 
+        var hasStaking: Bool {
+            stake != nil
+        }
+
+        var stakeOrZero: BigUInt {
+            stake ?? 0
+        }
+
         var state: State? {
             switch onchainState {
             case .none:
@@ -102,12 +131,20 @@ extension Multistaking {
             case .bonded:
                 return .inactive
             case .waiting:
+                guard stakeOrZero > 0 else {
+                    return .inactive
+                }
+
                 if hasAssignedStake {
                     return .active
                 } else {
                     return .waiting
                 }
             case .active:
+                guard stakeOrZero > 0 else {
+                    return .inactive
+                }
+
                 if hasAssignedStake {
                     return .active
                 } else {
@@ -121,6 +158,7 @@ extension Multistaking {
         let stakingOption: Option
         let walletAccountId: AccountId
         let resolvedAccountId: AccountId
+        let rewardsAccountId: AccountId?
     }
 }
 

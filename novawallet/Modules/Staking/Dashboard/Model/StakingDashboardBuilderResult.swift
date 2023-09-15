@@ -1,9 +1,14 @@
 import Foundation
 
 struct StakingDashboardBuilderResult {
+    struct SyncChange {
+        let byStakingOption: Set<Multistaking.ChainAssetOption>
+        let byStakingChainAsset: Set<ChainAsset>
+    }
+
     enum ChangeKind {
         case reload
-        case sync(Set<Multistaking.ChainAssetOption>)
+        case sync(SyncChange)
     }
 
     let walletId: MetaAccountModel.Id?

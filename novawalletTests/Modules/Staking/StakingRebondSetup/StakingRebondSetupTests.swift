@@ -80,7 +80,7 @@ class StakingRebondSetupTests: XCTestCase {
             extrinsicService: ExtrinsicServiceStub.dummy()
         )
 
-        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
+        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
         let stakingLedger = StakingLedger(
             stash: selectedAccount.accountId,
             total: BigUInt(3e+12),

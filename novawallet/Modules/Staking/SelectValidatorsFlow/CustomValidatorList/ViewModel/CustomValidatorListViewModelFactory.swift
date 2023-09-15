@@ -59,8 +59,8 @@ final class CustomValidatorListViewModelFactory {
 
             switch filter.sortedBy {
             case .estimatedReward:
-                detailsText =
-                    apyFormatter.string(from: validator.stakeReturn as NSNumber)
+                detailsText = validator.stakeReturn > 0 ?
+                    apyFormatter.string(from: validator.stakeReturn as NSNumber) : ""
                 auxDetailsText = nil
 
             case .ownStake:

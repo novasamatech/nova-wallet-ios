@@ -47,23 +47,6 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
         return bagListSizeRequests
     }
 
-    private static func createDataParamsCacheKey(
-        for chainId: ChainModel.Id,
-        paths: [StorageCodingPath]
-    ) throws -> String {
-        let storageKeyFactory = StorageKeyFactory()
-        let cacheKeyData = try paths.reduce(Data()) { result, storagePath in
-            let storageKeyData = try storageKeyFactory.createStorageKey(
-                moduleName: storagePath.moduleName,
-                storageName: storagePath.itemName
-            )
-
-            return result + storageKeyData
-        }
-
-        return try LocalStorageKeyFactory().createKey(from: cacheKeyData, chainId: chainId)
-    }
-
     func attachToGlobalData(
         for chainId: ChainModel.Id,
         queue: DispatchQueue?,
@@ -83,7 +66,7 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
             let bagListRequests = try Self.createBagsListRequests(for: localKeyFactory, chainId: chainId)
 
             let bagListPaths = bagListRequests.map(\.storagePath)
-            let cacheKey = try Self.createDataParamsCacheKey(for: chainId, paths: globalPaths + bagListPaths)
+            let cacheKey = try localKeyFactory.createCacheKey(from: globalPaths + bagListPaths, chainId: chainId)
 
             let globalRequests = zip(globalPaths, globalLocalKeys).map {
                 UnkeyedSubscriptionRequest(storagePath: $0.0, localKey: $0.1)
@@ -114,9 +97,9 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
             let bagListRequests = try Self.createBagsListRequests(for: LocalStorageKeyFactory(), chainId: chainId)
             let bagListPaths = bagListRequests.map(\.storagePath)
 
-            let cacheKey = try Self.createDataParamsCacheKey(
-                for: chainId,
-                paths: Self.globalDataStoragePaths + bagListPaths
+            let cacheKey = try LocalStorageKeyFactory().createCacheKey(
+                from: Self.globalDataStoragePaths + bagListPaths,
+                chainId: chainId
             )
 
             detachFromSubscription(

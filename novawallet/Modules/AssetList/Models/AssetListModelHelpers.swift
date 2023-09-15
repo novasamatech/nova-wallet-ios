@@ -103,11 +103,11 @@ enum AssetListModelHelpers {
             }
         }()
 
-        let crowdloanContributionsResult: Result<BigUInt, Error>? = {
+        let externalBalancesContributionResult: Result<BigUInt, Error>? = {
             do {
-                let allContributions = try state.crowdloansResult?.get()
+                let allContributions = try state.externalBalances?.get()
 
-                let contribution = allContributions?[chainModel.chainId]?.reduce(BigUInt(0)) { accum, contribution in
+                let contribution = allContributions?[chainAssetId]?.reduce(BigUInt(0)) { accum, contribution in
                     accum + contribution.amount
                 }
 
@@ -117,8 +117,8 @@ enum AssetListModelHelpers {
             }
         }()
 
-        let maybeCrowdloanContributions: Decimal? = {
-            if let contributions = try? crowdloanContributionsResult?.get() {
+        let maybeExternalBalanceContributions: Decimal? = {
+            if let contributions = try? externalBalancesContributionResult?.get() {
                 return Decimal.fromSubstrateAmount(
                     contributions,
                     precision: Int16(bitPattern: assetModel.precision)
@@ -144,9 +144,9 @@ enum AssetListModelHelpers {
             }
         }()
 
-        let crowdloanContributionsValue: Decimal? = {
-            if let crowdloanContributions = maybeCrowdloanContributions, let price = maybePrice {
-                return crowdloanContributions * price
+        let externalBalanceContributionsValue: Decimal? = {
+            if let externalBalanceContributions = maybeExternalBalanceContributions, let price = maybePrice {
+                return externalBalanceContributions * price
             } else {
                 return nil
             }
@@ -156,8 +156,8 @@ enum AssetListModelHelpers {
             assetModel: assetModel,
             balanceResult: balanceResult,
             balanceValue: balanceValue,
-            crowdloanResult: crowdloanContributionsResult,
-            crowdloanValue: crowdloanContributionsValue
+            externalBalancesResult: externalBalancesContributionResult,
+            externalBalancesValue: externalBalanceContributionsValue
         )
     }
 }

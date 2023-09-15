@@ -2,79 +2,43 @@ import Foundation
 import SoraFoundation
 
 extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol {
-    private func continueSetup() {
-        setupSelectedAccountAndChainAsset()
-        setupChainRemoteSubscription()
-        setupAccountRemoteSubscription()
-
-        sharedState.eraValidatorService?.setup()
-        sharedState.rewardCalculationService?.setup()
-        sharedState.blockTimeService?.setup()
-
-        provideNewChain()
-        provideSelectedAccount()
-
-        guard
-            let chainId = selectedChainAsset?.chain.chainId,
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-            let eraValidatorService = sharedState.eraValidatorService,
-            let rewardCalculationService = sharedState.rewardCalculationService else {
-            return
-        }
-
-        provideMaxNominatorsPerValidator(from: runtimeService)
-
-        performPriceSubscription()
-        performAccountInfoSubscription()
-        performStashControllerSubscription()
-        performNominatorLimitsSubscription()
-        performBagListParamsSubscription()
-
-        provideRewardCalculator(from: rewardCalculationService)
-        provideEraStakersInfo(from: eraValidatorService)
-
-        provideNetworkStakingInfo()
-
-        eventCenter.add(observer: self, dispatchIn: .main)
-
-        applicationHandler.delegate = self
-    }
-
-    private func createInitialServices() {
-        let chainAsset = stakingOption.chainAsset
-
-        do {
-            let blockTimeService = try stakingServiceFactory.createBlockTimeService(
-                for: chainAsset.chain.chainId,
-                consensus: sharedState.consensus
-            )
-
-            sharedState.replaceBlockTimeService(blockTimeService)
-
-            let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
-                for: chainAsset.chain.chainId
-            )
-
-            let stakingDurationFactory = try sharedState.createStakingDurationOperationFactory(for: chainAsset.chain)
-
-            let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
-                for: chainAsset,
-                stakingType: chainAsset.asset.stakings?.first ?? .unsupported,
-                stakingLocalSubscriptionFactory: sharedState.stakingLocalSubscriptionFactory,
-                stakingDurationFactory: stakingDurationFactory,
-                validatorService: eraValidatorService
-            )
-
-            sharedState.replaceEraValidatorService(eraValidatorService)
-            sharedState.replaceRewardCalculatorService(rewardCalculatorService)
-        } catch {
-            logger?.error("Couldn't create shared state")
-        }
-    }
-
     func setup() {
-        createInitialServices()
-        continueSetup()
+        do {
+            setupSelectedAccountAndChainAsset()
+
+            try sharedState.setup(for: selectedAccount?.accountId)
+
+            provideNewChain()
+            provideSelectedAccount()
+
+            guard
+                let chainId = selectedChainAsset?.chain.chainId,
+                let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+                return
+            }
+
+            let eraValidatorService = sharedState.eraValidatorService
+            let rewardCalculationService = sharedState.rewardCalculatorService
+
+            provideMaxNominatorsPerValidator(from: runtimeService)
+
+            performPriceSubscription()
+            performAccountInfoSubscription()
+            performStashControllerSubscription()
+            performNominatorLimitsSubscription()
+            performBagListParamsSubscription()
+
+            provideRewardCalculator(from: rewardCalculationService)
+            provideEraStakersInfo(from: eraValidatorService)
+
+            provideNetworkStakingInfo()
+
+            eventCenter.add(observer: self, dispatchIn: .main)
+
+            applicationHandler.delegate = self
+        } catch {
+            logger?.error("Can't setup state: \(error)")
+        }
     }
 
     func update(totalRewardFilter: StakingRewardFiltersPeriod) {
@@ -85,11 +49,8 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
 
 extension StakingRelaychainInteractor: EventVisitorProtocol {
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
-        guard
-            let eraValidatorService = sharedState.eraValidatorService,
-            let rewardCalculationService = sharedState.rewardCalculationService else {
-            return
-        }
+        let eraValidatorService = sharedState.eraValidatorService
+        let rewardCalculationService = sharedState.rewardCalculatorService
 
         provideNetworkStakingInfo()
         provideEraStakersInfo(from: eraValidatorService)
