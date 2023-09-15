@@ -37,6 +37,7 @@ final class StackSwitchCell: RowView<GenericTitleValueView<MultiValueView, UISwi
         rowContentView.titleView.spacing = 2
 
         rowContentView.titleView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        rowContentView.valueView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 

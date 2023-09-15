@@ -69,6 +69,13 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
         directRewardableToStake: String,
         locale: Locale?
     )
+
+    func presentAlreadyHaveStaking(
+        from view: ControllerBackedProtocol?,
+        networkName: String,
+        onClose: @escaping () -> Void,
+        locale: Locale?
+    )
 }
 
 extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -266,6 +273,7 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
             lockReason,
             availableToStake,
             directRewardableToStake,
+            lockReason,
             preferredLanguages: locale?.rLanguages
         )
 
@@ -275,5 +283,31 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentAlreadyHaveStaking(
+        from view: ControllerBackedProtocol?,
+        networkName: String,
+        onClose: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let message = R.string.localizable.stakingStartAlreadyHaveAnyStaking(
+            networkName,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = AlertPresentableAction(
+            title: R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages),
+            handler: onClose
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: nil,
+            message: message,
+            actions: [closeAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 }

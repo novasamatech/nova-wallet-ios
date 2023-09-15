@@ -10,4 +10,13 @@ extension StreamableProviderObserverOptions {
             refreshWhenEmpty: false
         )
     }
+
+    static func allNonblocking() -> StreamableProviderObserverOptions {
+        StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: true
+        )
+    }
 }

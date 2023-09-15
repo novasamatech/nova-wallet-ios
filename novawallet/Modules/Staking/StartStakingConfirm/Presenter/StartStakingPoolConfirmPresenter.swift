@@ -34,7 +34,7 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
     }
 
     override func provideStakingType() {
-        let stakingType = R.string.localizable.stakingPoolStaking(
+        let stakingType = R.string.localizable.stakingTypeNominationPool(
             preferredLanguages: selectedLocale.rLanguages
         )
 

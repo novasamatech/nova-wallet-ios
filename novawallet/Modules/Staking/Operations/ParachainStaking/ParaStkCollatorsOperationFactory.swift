@@ -186,7 +186,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         identityWrapper.addDependency(operations: [selectedCollatorsOperation])
 
         let minTechStakeOperation: BaseOperation<BigUInt> = PrimitiveConstantOperation.operation(
-            for: ParachainStaking.minDelegatorStk,
+            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
             dependingOn: codingFactoryOperation
         )
 
@@ -250,7 +250,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         )
 
         let minTechStakeOperation: BaseOperation<BigUInt> = PrimitiveConstantOperation.operation(
-            for: ParachainStaking.minDelegatorStk,
+            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
             dependingOn: codingFactoryOperation
         )
 

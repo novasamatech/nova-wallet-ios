@@ -17,6 +17,14 @@ protocol LocalStorageProviderObserving where Self: AnyObject {
         callbackQueue: DispatchQueue,
         options: DataProviderObserverOptions
     )
+
+    func addStreamableProviderObserver<T: Identifiable>(
+        for provider: StreamableProvider<T>,
+        updateClosure: @escaping ([DataProviderChange<T>]) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        callbackQueue: DispatchQueue,
+        options: StreamableProviderObserverOptions
+    )
 }
 
 extension LocalStorageProviderObserving {
@@ -96,6 +104,37 @@ extension LocalStorageProviderObserving {
             deliverOn: callbackQueue,
             executing: update,
             failing: failure,
+            options: options
+        )
+    }
+
+    func addStreamableProviderObserver<T: Identifiable>(
+        for provider: StreamableProvider<T>,
+        updateClosure: @escaping ([DataProviderChange<T>]) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        callbackQueue: DispatchQueue,
+        options: StreamableProviderObserverOptions
+    ) {
+        provider.addObserver(
+            self,
+            deliverOn: callbackQueue,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+    }
+
+    func addStreamableProviderObserver<T: Identifiable>(
+        for provider: StreamableProvider<T>,
+        updateClosure: @escaping ([DataProviderChange<T>]) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        options: StreamableProviderObserverOptions = .allNonblocking()
+    ) {
+        addStreamableProviderObserver(
+            for: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure,
+            callbackQueue: .main,
             options: options
         )
     }

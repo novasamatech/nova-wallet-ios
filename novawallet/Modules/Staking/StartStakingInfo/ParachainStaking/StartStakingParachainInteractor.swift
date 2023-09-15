@@ -36,9 +36,11 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         selectedWalletSettings: SelectedWalletSettings,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
         durationOperationFactory: ParaStkDurationOperationFactoryProtocol,
+        sharedOperation: SharedOperationProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol
     ) {
@@ -50,8 +52,11 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         super.init(
             selectedWalletSettings: selectedWalletSettings,
             selectedChainAsset: state.stakingOption.chainAsset,
+            selectedStakingType: state.stakingOption.type,
+            sharedOperation: sharedOperation,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

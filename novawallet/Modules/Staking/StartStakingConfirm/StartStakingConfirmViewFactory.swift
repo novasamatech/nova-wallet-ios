@@ -202,6 +202,7 @@ struct StartStakingConfirmViewFactory {
             restrictionsBuilder: restrictionsBuilder,
             extrinsicSubmissionProxy: extrinsicProxy,
             signingWrapper: signer,
+            sharedOperation: state.sharedOperation,
             currencyManager: currencyManager
         )
     }

@@ -32,12 +32,12 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
         switch stakingType {
         case .direct:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingDirectStaking(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages),
                 subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
             )
         case .pool:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingPoolStaking(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages),
                 subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
             )
         }
@@ -53,7 +53,7 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
         if displaysRecommended {
             return .init(
                 title: strings.stakingTypeDirect(preferredLanguages: locale.rLanguages),
-                subtitle: strings.stakingTypeRecommendedValidatorsSubtitle(preferredLanguages: locale.rLanguages),
+                subtitle: strings.commonRecommended(preferredLanguages: locale.rLanguages),
                 isRecommended: true,
                 count: nil
             )
@@ -80,7 +80,7 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
         locale: Locale
     ) -> PoolStakingTypeViewModel.PoolAccountModel {
         let poolName = pool.title(for: chainAsset.chain.chainFormat) ?? ""
-        let title = R.string.localizable.stakingPoolStaking(preferredLanguages: locale.rLanguages)
+        let title = R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
         let subtitle = displaysRecommended ? R.string.localizable.commonRecommended(
             preferredLanguages: locale.rLanguages
         ) : poolName

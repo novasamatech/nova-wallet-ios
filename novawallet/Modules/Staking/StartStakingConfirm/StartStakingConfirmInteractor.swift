@@ -16,6 +16,7 @@ class StartStakingConfirmInteractor: AnyProviderAutoCleaning {
     let signingWrapper: SigningWrapperProtocol
     let extrinsicSubmissionProxy: StartStakingExtrinsicProxyProtocol
     let restrictionsBuilder: RelaychainStakingRestrictionsBuilding
+    let sharedOperation: SharedOperationProtocol?
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -32,6 +33,7 @@ class StartStakingConfirmInteractor: AnyProviderAutoCleaning {
         restrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         extrinsicSubmissionProxy: StartStakingExtrinsicProxyProtocol,
         signingWrapper: SigningWrapperProtocol,
+        sharedOperation: SharedOperationProtocol?,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.stakingAmount = stakingAmount
@@ -45,6 +47,7 @@ class StartStakingConfirmInteractor: AnyProviderAutoCleaning {
         self.extrinsicFeeProxy = extrinsicFeeProxy
         self.restrictionsBuilder = restrictionsBuilder
         self.signingWrapper = signingWrapper
+        self.sharedOperation = sharedOperation
         self.currencyManager = currencyManager
     }
 
@@ -105,6 +108,8 @@ extension StartStakingConfirmInteractor: StartStakingConfirmInteractorInputProto
     }
 
     func submit() {
+        sharedOperation?.markSent()
+
         extrinsicSubmissionProxy.submit(
             using: extrinsicService,
             signer: signingWrapper,
@@ -115,6 +120,7 @@ extension StartStakingConfirmInteractor: StartStakingConfirmInteractorInputProto
             case let .success(hash):
                 self?.presenter?.didReceiveConfirmation(hash: hash)
             case let .failure(error):
+                self?.sharedOperation?.markComposing()
                 self?.presenter?.didReceive(error: .confirmation(error))
             }
         }

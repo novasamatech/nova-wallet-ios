@@ -315,12 +315,19 @@ final class StorageConstantOperation<T: Decodable>: BaseOperation<T>, ConstantDe
 final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>: BaseOperation<T>, ConstantDecodable {
     var codingFactory: RuntimeCoderFactoryProtocol?
 
-    let path: ConstantCodingPath
+    let oneOfPaths: [ConstantCodingPath]
 
     let fallbackValue: T?
 
     init(path: ConstantCodingPath, fallbackValue: T? = nil) {
-        self.path = path
+        oneOfPaths = [path]
+        self.fallbackValue = fallbackValue
+
+        super.init()
+    }
+
+    init(oneOfPaths: [ConstantCodingPath], fallbackValue: T? = nil) {
+        self.oneOfPaths = oneOfPaths
         self.fallbackValue = fallbackValue
 
         super.init()
@@ -338,9 +345,11 @@ final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>
         }
 
         do {
-            guard let factory = codingFactory else {
+            guard let factory = codingFactory, !oneOfPaths.isEmpty else {
                 throw StorageDecodingOperationError.missingRequiredParams
             }
+
+            let path = oneOfPaths.first { factory.hasConstant(for: $0) } ?? oneOfPaths[0]
 
             let item: StringScaleMapper<T> = try decode(at: path, codingFactory: factory)
                 .map(to: StringScaleMapper<T>.self)

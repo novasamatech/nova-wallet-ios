@@ -14,12 +14,12 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
         switch stakingType {
         case .direct:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingDirectStaking(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages),
                 subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
             )
         case .pool:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingPoolStaking(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages),
                 subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
             )
         }
@@ -34,8 +34,8 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
 
         if displaysRecommended {
             return .init(
-                title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
-                subtitle: strings.stakingTypeRecommendedValidatorsSubtitle(preferredLanguages: locale.rLanguages),
+                title: strings.stakingRecommendedTitle(preferredLanguages: locale.rLanguages),
+                subtitle: strings.commonRecommended(preferredLanguages: locale.rLanguages),
                 isRecommended: true,
                 count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
             )
@@ -47,7 +47,7 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
             )
 
             return .init(
-                title: strings.stakingTypeValidatorsTitle(preferredLanguages: locale.rLanguages),
+                title: strings.stakingRecommendedTitle(preferredLanguages: locale.rLanguages),
                 subtitle: validatorsString,
                 isRecommended: false,
                 count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""

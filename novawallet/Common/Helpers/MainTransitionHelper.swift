@@ -32,4 +32,25 @@ struct MainTransitionHelper {
             TransitionAnimator(type: .reveal).animate(view: tabBarController.view, completionBlock: nil)
         }
     }
+
+    static func dismissAndPopBack(
+        from view: ControllerBackedProtocol?,
+        completion: ((UIViewController?) -> Void)? = nil
+    ) {
+        var rootNavigationController: UINavigationController?
+
+        let presenter = view?.controller.navigationController?.presentingViewController
+
+        if let tabBar = presenter as? UITabBarController {
+            rootNavigationController = tabBar.selectedViewController as? UINavigationController
+        } else {
+            rootNavigationController = presenter as? UINavigationController
+        }
+
+        rootNavigationController?.popToRootViewController(animated: false)
+
+        presenter?.dismiss(animated: true) {
+            completion?(presenter)
+        }
+    }
 }
