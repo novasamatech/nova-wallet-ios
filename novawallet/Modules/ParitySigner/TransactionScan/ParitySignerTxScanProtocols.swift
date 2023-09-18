@@ -19,5 +19,5 @@ protocol ParitySignerTxScanInteractorOutputProtocol: AnyObject {
 }
 
 protocol ParitySignerTxScanWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
-    func complete(on view: ParitySignerTxScanViewProtocol?)
+    func complete(on view: ParitySignerTxScanViewProtocol?, completionClosure: @escaping () -> Void)
 }

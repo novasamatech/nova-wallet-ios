@@ -29,11 +29,11 @@ final class MultipartQrOperationFactory {
             var frame = UInt16(chunks.count)
             let frameBytes = Data(bytes: &frame, count: MemoryLayout<UInt16>.size).reversed()
 
-            return chunks.enumerated().map { index, _ in
+            return chunks.enumerated().map { index, chunk in
                 var mapedIndex = UInt16(index)
                 let indexBytes = Data(bytes: &mapedIndex, count: MemoryLayout<UInt16>.size).reversed()
 
-                return Self.multipartPrefix + frameBytes + indexBytes + payload
+                return Self.multipartPrefix + frameBytes + indexBytes + chunk
             }
         }
 

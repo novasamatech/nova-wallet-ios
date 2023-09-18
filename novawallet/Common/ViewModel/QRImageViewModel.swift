@@ -19,6 +19,8 @@ extension UIImageView {
             animationImages = viewModel.images
             animationDuration = TimeInterval(viewModel.images.count) * viewModel.durationPerFrame
             animationRepeatCount = 0
+
+            startAnimating()
         }
     }
 }
