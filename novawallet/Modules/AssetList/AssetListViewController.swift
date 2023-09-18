@@ -11,7 +11,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     private var headerViewModel: AssetListHeaderViewModel?
-    private var groupsState: AssetListGroupState = .list(groups: [])
+    private var groupsState: AssetListGroupState = .init(isFiltered: false, listState: .list(groups: []))
     private var nftViewModel: AssetListNftsViewModel?
 
     init(presenter: AssetListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -290,6 +290,7 @@ extension AssetListViewController: UICollectionViewDataSource {
             action: #selector(actionSettings),
             for: .touchUpInside
         )
+        settingsCell.settingsButton.bind(isFilterOn: groupsState.isFiltered)
 
         settingsCell.manageButton.addTarget(
             self,

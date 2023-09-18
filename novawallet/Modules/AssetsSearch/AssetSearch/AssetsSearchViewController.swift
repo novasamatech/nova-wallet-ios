@@ -10,7 +10,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
 
-    private var groupsState: AssetListGroupState = .list(groups: [])
+    private var groupsState: AssetListGroupState = .init(isFiltered: false, listState: .list(groups: []))
     private let createViewClosure: () -> BaseAssetsSearchViewLayout
     private let localizableTitle: LocalizableResource<String>?
 

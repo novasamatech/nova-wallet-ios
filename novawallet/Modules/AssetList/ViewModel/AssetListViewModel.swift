@@ -66,12 +66,12 @@ struct AssetPriceViewModel {
     let change: ValueDirection<String>
 }
 
-enum AssetListGroupState {
-    case empty
-    case list(groups: [AssetListGroupViewModel])
+struct AssetListGroupState {
+    let isFiltered: Bool
+    let listState: State
 
     var isEmpty: Bool {
-        switch self {
+        switch listState {
         case .empty:
             return true
         case .list:
@@ -80,12 +80,17 @@ enum AssetListGroupState {
     }
 
     var groups: [AssetListGroupViewModel] {
-        switch self {
+        switch listState {
         case .empty:
             return []
         case let .list(groups):
             return groups
         }
+    }
+
+    enum State {
+        case empty
+        case list(groups: [AssetListGroupViewModel])
     }
 }
 
