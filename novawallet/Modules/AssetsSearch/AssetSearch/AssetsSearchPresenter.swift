@@ -3,7 +3,7 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-typealias ChainAssetsFilter = (ChainAsset) -> Bool
+typealias ChainAssetsFilter = (ChainAsset, AssetListState) -> Bool
 
 class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     weak var view: AssetsSearchViewProtocol?

@@ -73,7 +73,8 @@ class AssetListBaseBuilder {
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,
-            externalBalances: externalBalancesResult
+            externalBalances: externalBalancesResult,
+            balances: balances
         )
 
         for chain in allChains.values {
@@ -110,7 +111,8 @@ class AssetListBaseBuilder {
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,
-            externalBalances: externalBalancesResult
+            externalBalances: externalBalancesResult,
+            balances: balances
         )
 
         var groupChanges: [DataProviderChange<AssetListGroupModel>] = []
@@ -176,7 +178,8 @@ class AssetListBaseBuilder {
                 priceResult: priceResult,
                 balanceResults: balanceResults,
                 allChains: allChains,
-                externalBalances: externalBalancesResult
+                externalBalances: externalBalancesResult,
+                balances: balances
             )
 
             let assetListModel = AssetListModelHelpers.createAssetModel(
