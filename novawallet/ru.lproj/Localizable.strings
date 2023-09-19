@@ -365,7 +365,7 @@
 "crowdloan.leasing.period" = "Период лизинга";
 "common.till.date" = "до %@";
 "crowdloan.reward" = "Примерное вознаграждение";
-"staking.bonded.inactive" = "Вы не номинируете и не в��лидируете";
+"staking.bonded.inactive" = "Вы не номинируете и не валидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.submit.agreement" = "Подтвердить согласие";
@@ -667,7 +667,7 @@
 "common.fee.retry.failed" = "Загрузка комиссии завершилась с ошибкой. Хотите повторить?";
 "dapp.search.query.section" = "Поиск";
 "dapp.search.app.section" = "DApps";
-"wallet.list.empty.message" = "Здесь появятся ваши активы.\nУбедитесь, что фильтр\n\"Скрыть нулевой баланс\"отключен.";
+"wallet.list.empty.message" = "Здесь появятся ваши активы.\nУбедитесь, что фильтр\n\"Скрыть активы с нулевым балансом\"\nотключен.";
 "wallet.list.empty.action.title" = "Купить токены";
 "assets.manage.hide.zero.balances" = "Скрыть активы с нулевым балансом";
 "wallet.send.dead.recipient.commission.asset.title" = "Получатель не может принять перевод";
@@ -835,7 +835,7 @@
 "account.management.watch.only.hint" = "Это watch-only кошелек, Nova может показать вам баланс и другую информацию, но вы не можете выполнять какие-либо транзакции с этим кошельком.";
 "common.select.wallet" = "Выберите кошелек";
 "welcome.import.subtitle" = "Nova совместима со всеми приложениями";
-"welcome.watch.only.subtitle" = "Отследить л��бой кошелек по его адресу";
+"welcome.watch.only.subtitle" = "Отследить любой кошелек по его адресу";
 "common.ok.back" = "Хорошо, назад";
 "no.key.title" = "Упс! Ключ отсутствует";
 "no.key.message" = "Ваш кошелек доступен только для просмотра, то есть вы не можете выполнять с ним никаких операций";
@@ -1187,7 +1187,7 @@
 "gov.remove.votes.ask.details" = "Вы ранее голосовали в референдумах в %@. Для того, чтобы сделать эти треки доступными для делегирования, вам необходимо удалить голоса.";
 "delegations.list.empty" = "Список делегаций появится здесь";
 "gov.add.delegate.voting.error.title" = "Вы уже голосовали";
-"gov.add.delegate.voting.error.message" = "Пожалуйста, удалите голоса в выбра��ных треках для начала делегирования";
+"gov.add.delegate.voting.error.message" = "Пожалуйста, удалите голоса в выбранных треках для начала делегирования";
 "gov.revoke.delegate.missing.error.title" = "Делегация уже отменена";
 "gov.revoke.delegate.missing.error.message" = "Вы уже отменили делегацию в одном из треков";
 "common.multi.tx.error.no.details.message" = "При отправке транзакций возникла ошибка (%@). Вы хотите повторить?";
@@ -1336,7 +1336,7 @@
 "staking.setup.amount.direct.type.subtitle" = "Выбрано: %d (макс. %d)";
 "staking.locked.pool.violation.error" = "Вы заблокировали токены на своем балансе используя %@. Чтобы продолжить, вам следует ввести меньше %@ или больше %@. Чтобы поставить еще одну сумму, вам следует разблокировать токены из %@.";
 "staking.locked.pool.violation.title" = "Вы не можете застейкать указанную сумму";
-"staking.pool.has.no.apy.message" = "Выбранный вами пул неактивен, поскольку у него не выбраны валидаторы или его стейк меньше минимальной.\nВы уверены, что хотите про��олжить с выбранным пулом?";
+"staking.pool.has.no.apy.message" = "Выбранный вами пул неактивен, поскольку у него не выбраны валидаторы или его стейк меньше минимальной.\nВы уверены, что хотите продолжить с выбранным пулом?";
 "staking.pool.ed.error.message" = "Ваш доступный баланс составляет %@, вам необходимо оставить %@ в качестве минимального баланса и оплатить комиссию сети в размере %@. Таким образом, вы можете застейкать не более %@.";
 "staking.maximum.action" = "Застейкать всё";
 "staking.pool.rewards.bond.more.pool.unbonding.error.message" = "Вы выводите из стейкинга все свои токены и не можете добавить токены в стейкинг.";
