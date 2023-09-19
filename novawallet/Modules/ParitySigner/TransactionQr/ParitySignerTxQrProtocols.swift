@@ -3,7 +3,7 @@ import SoraFoundation
 
 protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletAccountViewModel)
-    func didReceiveCode(viewModel: UIImage)
+    func didReceiveCode(viewModel: QRImageViewModel)
     func didReceiveExpiration(viewModel: ExpirationTimeViewModel)
 }
 

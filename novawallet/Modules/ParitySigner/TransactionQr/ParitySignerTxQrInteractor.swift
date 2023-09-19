@@ -1,5 +1,6 @@
 import UIKit
 import RobinHood
+import Kingfisher
 
 final class ParitySignerTxQrInteractor {
     weak var presenter: ParitySignerTxQrInteractorOutputProtocol?
@@ -50,13 +51,16 @@ final class ParitySignerTxQrInteractor {
 
         qrPayloadWrapper.addDependency(wrapper: messageWrapper)
 
-        let qrCreationOperation = QRCreationOperation(qrSize: size) {
-            if let payload = try qrPayloadWrapper.targetOperation.extractNoCancellableResultData().first {
-                return payload
-            } else {
-                throw CommonError.dataCorruption
+        let qrCreationOperation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let paylods = try qrPayloadWrapper.targetOperation.extractNoCancellableResultData()
+
+            return paylods.map { payload in
+                let operation = QRCreationOperation(payload: payload, qrSize: size)
+                return CompoundOperationWrapper(targetOperation: operation)
             }
-        }
+        }.longrunOperation()
 
         qrCreationOperation.addDependency(qrPayloadWrapper.targetOperation)
 
@@ -65,8 +69,8 @@ final class ParitySignerTxQrInteractor {
         qrCreationOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let qrCode = try qrCreationOperation.extractNoCancellableResultData()
-                    let txCode = TransactionDisplayCode(image: qrCode, expirationTime: expirationTime)
+                    let qrCodes = try qrCreationOperation.extractNoCancellableResultData()
+                    let txCode = TransactionDisplayCode(images: qrCodes, expirationTime: expirationTime)
                     self?.presenter?.didReceive(transactionCode: txCode)
                 } catch {
                     self?.presenter?.didReceive(error: error)
