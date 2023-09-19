@@ -86,7 +86,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
 
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(AssetListAssetCell.self)
-        rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
+        rootView.collectionView.registerCellClass(AssetListSearchEmptyCell.self)
         rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -207,9 +207,9 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
     private func provideEmptyStateCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
-    ) -> AssetListEmptyCell {
+    ) -> AssetListSearchEmptyCell {
         let cell = collectionView.dequeueReusableCellWithType(
-            AssetListEmptyCell.self,
+            AssetListSearchEmptyCell.self,
             for: indexPath
         )!
 

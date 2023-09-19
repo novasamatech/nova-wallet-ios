@@ -337,7 +337,12 @@ extension AssetListViewController: UICollectionViewDataSource {
         )!
 
         let text = R.string.localizable.walletListEmptyMessage(preferredLanguages: selectedLocale.rLanguages)
-        cell.bind(text: text)
+        let actionTitle = R.string.localizable.walletListEmptyActionTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        cell.bind(text: text, actionTitle: actionTitle)
+        cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
 
         return cell
     }

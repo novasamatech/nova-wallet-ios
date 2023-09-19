@@ -668,6 +668,7 @@
 "dapp.search.query.section" = "Поиск";
 "dapp.search.app.section" = "DApps";
 "wallet.list.empty.message" = "Здесь появятся ваши активы.\nУбедитесь, что фильтр \"Скрыть нулевой баланс\" отключен.";
+"wallet.list.empty.action.title" = "Купить токены";
 "assets.manage.hide.zero.balances" = "Скрыть активы с нулевым балансом";
 "wallet.send.dead.recipient.commission.asset.title" = "Получатель не может принять перевод";
 "wallet.send.dead.recipient.commission.asset.message" = "Ваш перевод завершится ошибкой, так как у получателя недостаточно %@ для приема переводов в других токенах.";
