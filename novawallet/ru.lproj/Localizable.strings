@@ -1373,3 +1373,4 @@
 "staking.pool.is.full.title" = "Выбранный пул заполнен";
 "staking.pool.is.full.message" = "Вы не можете присоединиться к выбранному пулу так как в нём не осталось места";
 "common.back" = "Назад";
+"governance.referendums.status.deciding" = "На рассмотрении";

@@ -1,6 +1,5 @@
 import UIKit
 import RobinHood
-import Kingfisher
 
 final class ParitySignerTxQrInteractor {
     weak var presenter: ParitySignerTxQrInteractorOutputProtocol?
