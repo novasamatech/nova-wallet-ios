@@ -1373,3 +1373,4 @@
 "staking.pool.is.full.title" = "Selected pool is full";
 "staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
 "common.back" = "Back";
+"governance.referendums.status.deciding" = "Deciding";
