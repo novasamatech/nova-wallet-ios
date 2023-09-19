@@ -3,13 +3,13 @@ import SoraUI
 
 final class SendAssetOperationWireframe: SendAssetOperationWireframeProtocol {
     private let transferCompletion: TransferCompletionClosure?
-    private let stateObservable: AssetListStateObservable
+    private let buyTokensClosure: BuyTokensClosure?
 
     init(
-        stateObservable: AssetListStateObservable,
+        buyTokensClosure: BuyTokensClosure?,
         transferCompletion: TransferCompletionClosure?
     ) {
-        self.stateObservable = stateObservable
+        self.buyTokensClosure = buyTokensClosure
         self.transferCompletion = transferCompletion
     }
 
@@ -27,15 +27,9 @@ final class SendAssetOperationWireframe: SendAssetOperationWireframeProtocol {
     func showBuyTokens(
         from view: ControllerBackedProtocol?
     ) {
-        guard let assetsSearchView = AssetOperationViewFactory.createView(
-            for: stateObservable,
-            operation: .buy,
-            transferCompletion: nil
-        ) else {
-            return
+        view?.controller.presentingViewController?.dismiss(animated: true) {
+            self.buyTokensClosure?()
         }
-
-        view?.controller.navigationController?.pushViewController(assetsSearchView.controller, animated: true)
     }
 }
 

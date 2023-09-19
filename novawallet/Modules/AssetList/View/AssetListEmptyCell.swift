@@ -16,6 +16,7 @@ extension AssetListEmptyCell {
 final class AssetListEmptyView: EmptyCellContentView {
     let actionButton: UIButton = .create {
         $0.setTitleColor(R.color.colorIconAccent(), for: .normal)
+        $0.titleLabel?.font = .semiBoldSubheadline
     }
 
     override func setupLayout() {

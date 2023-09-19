@@ -66,10 +66,15 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 
     func showRecieveTokens(from view: AssetListViewProtocol?)
 
-    func showSendTokens(from view: AssetListViewProtocol?, transferCompletion: @escaping TransferCompletionClosure)
+    func showSendTokens(
+        from view: AssetListViewProtocol?,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    )
 
     func showBuyTokens(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError
 typealias TransferCompletionClosure = (ChainAsset) -> Void
+typealias BuyTokensClosure = () -> Void

@@ -404,9 +404,21 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func send() {
-        wireframe.showSendTokens(from: view) { [weak self] chainAsset in
-            self?.wireframe.showAssetDetails(from: self?.view, chain: chainAsset.chain, asset: chainAsset.asset)
+        let transferCompletionClosure: TransferCompletionClosure = { [weak self] chainAsset in
+            self?.wireframe.showAssetDetails(
+                from: self?.view,
+                chain: chainAsset.chain,
+                asset: chainAsset.asset
+            )
         }
+        let buyTokensClosure: BuyTokensClosure = { [weak self] in
+            self?.buy()
+        }
+        wireframe.showSendTokens(
+            from: view,
+            transferCompletion: transferCompletionClosure,
+            buyTokensClosure: buyTokensClosure
+        )
     }
 
     func receive() {
