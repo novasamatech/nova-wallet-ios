@@ -173,9 +173,9 @@ extension ReferendumsModelFactory {
 
         let statusName = isPassing ?
             Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
-            Strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
+            Strings.governanceReferendumsStatusDeciding(preferredLanguages: locale.rLanguages)
 
-        let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .negative
+        let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .neutral
         let yourVotesModel = createVotesViewModel(
             from: params.onchainVotes,
             offchainVotes: params.offchainVotes,

@@ -1375,3 +1375,4 @@
 "staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
 "common.back" = "Back";
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
+"governance.referendums.status.deciding" = "Deciding";

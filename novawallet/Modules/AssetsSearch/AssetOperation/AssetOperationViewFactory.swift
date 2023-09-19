@@ -134,7 +134,6 @@ enum AssetOperationViewFactory {
         buyTokensClosure: BuyTokensClosure?
     ) -> SendAssetOperationPresenter {
         let filter: ChainAssetsFilter = { chainAsset in
-            return false
             let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
 
             guard let transfersEnabled = try? assetMapper.transfersEnabled() else {

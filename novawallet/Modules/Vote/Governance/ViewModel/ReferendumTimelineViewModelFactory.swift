@@ -157,7 +157,7 @@ final class ReferendumTimelineViewModelFactory {
 
         let votingTitle = isPassing ?
             R.string.localizable.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
+            R.string.localizable.governanceReferendumsStatusDeciding(preferredLanguages: locale.rLanguages)
 
         let title = R.string.localizable.govTimelineVotingFormat(
             votingTitle.lowercased().firstLetterCapitalized(),

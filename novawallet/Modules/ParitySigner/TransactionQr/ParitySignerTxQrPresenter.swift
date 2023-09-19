@@ -17,6 +17,7 @@ final class ParitySignerTxQrPresenter {
     private var timer = CountdownTimerMediator()
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
+    private lazy var qrImageViewModelFactory = QRImageViewModelFactory()
 
     init(
         type: ParitySignerType,
@@ -57,11 +58,13 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func provideCodeViewModel() {
-        guard let transactionCode = transactionCode else {
+        guard
+            let transactionCode = transactionCode,
+            let viewModel = qrImageViewModelFactory.createViewModel(from: transactionCode.images) else {
             return
         }
 
-        view?.didReceiveCode(viewModel: transactionCode.image)
+        view?.didReceiveCode(viewModel: viewModel)
     }
 
     private func updateExpirationViewModel() {
