@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
 
-final class AssetsSearchViewController: UIViewController, ViewHolder {
+class AssetsSearchViewController: UIViewController, ViewHolder {
     typealias RootViewType = BaseAssetsSearchViewLayout
 
     let presenter: AssetsSearchPresenterProtocol
@@ -86,7 +86,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
 
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(AssetListAssetCell.self)
-        rootView.collectionView.registerCellClass(AssetListSearchEmptyCell.self)
+        rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -122,6 +122,25 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
         let query = rootView.searchBar.textField.text
         presenter.updateSearch(query: query ?? "")
     }
+
+    func provideEmptyStateCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListEmptyCell.self,
+            for: indexPath
+        )!
+
+        let text = R.string.localizable.assetsSearchEmpty(preferredLanguages: selectedLocale.rLanguages)
+        cell.view.bind(text: text)
+        cell.actionButton.isHidden = true
+        return cell
+    }
+
+    func emptyStateCellHeight(indexPath: IndexPath) -> CGFloat {
+        AssetsSearchFlowLayout.CellType(indexPath: indexPath).height
+    }
 }
 
 extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
@@ -130,8 +149,8 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let cellType = AssetsSearchFlowLayout.CellType(indexPath: indexPath)
-        return CGSize(width: collectionView.frame.width, height: cellType.height)
+        let height = emptyStateCellHeight(indexPath: indexPath)
+        return CGSize(width: collectionView.frame.width, height: height)
     }
 
     func collectionView(
@@ -202,21 +221,6 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
                 return 0
             }
         }
-    }
-
-    private func provideEmptyStateCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListSearchEmptyCell {
-        let cell = collectionView.dequeueReusableCellWithType(
-            AssetListSearchEmptyCell.self,
-            for: indexPath
-        )!
-
-        let text = R.string.localizable.assetsSearchEmpty(preferredLanguages: selectedLocale.rLanguages)
-        cell.bind(text: text)
-
-        return cell
     }
 
     private func provideAssetCell(

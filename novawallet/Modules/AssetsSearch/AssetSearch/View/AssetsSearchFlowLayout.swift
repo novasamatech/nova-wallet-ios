@@ -2,6 +2,7 @@ import UIKit
 
 enum AssetsSearchMeasurement {
     static let emptyStateCellHeight: CGFloat = 168
+    static let emptySearchCellWithActionHeight: CGFloat = 230
 }
 
 final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {

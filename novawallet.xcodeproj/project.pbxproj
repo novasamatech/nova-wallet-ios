@@ -689,6 +689,8 @@
 		779107662AB85D39000A4B17 /* FilterBlurButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 779107652AB85D39000A4B17 /* FilterBlurButton.swift */; };
 		779107682AB8CA71000A4B17 /* AssetListSearchEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 779107672AB8CA71000A4B17 /* AssetListSearchEmptyCell.swift */; };
 		7791076A2AB8CAF8000A4B17 /* CollectionViewContainerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 779107692AB8CAF8000A4B17 /* CollectionViewContainerCell.swift */; };
+		7791076C2AB963E8000A4B17 /* SendAssetOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7791076B2AB963E8000A4B17 /* SendAssetOperationViewController.swift */; };
+		7791076E2AB96425000A4B17 /* SendAssetOperationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7791076D2AB96425000A4B17 /* SendAssetOperationProtocols.swift */; };
 		7796C6FD2A174E6300D56094 /* StakingRewardFiltersPeriod+title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C6FC2A174E6300D56094 /* StakingRewardFiltersPeriod+title.swift */; };
 		7796C6FF2A177D7300D56094 /* GenericLens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C6FE2A177D7300D56094 /* GenericLens.swift */; };
 		7796C7012A177D9000D56094 /* ReferendumsSection+Lens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796C7002A177D9000D56094 /* ReferendumsSection+Lens.swift */; };
@@ -4635,6 +4637,8 @@
 		779107652AB85D39000A4B17 /* FilterBlurButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterBlurButton.swift; sourceTree = "<group>"; };
 		779107672AB8CA71000A4B17 /* AssetListSearchEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListSearchEmptyCell.swift; sourceTree = "<group>"; };
 		779107692AB8CAF8000A4B17 /* CollectionViewContainerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewContainerCell.swift; sourceTree = "<group>"; };
+		7791076B2AB963E8000A4B17 /* SendAssetOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetOperationViewController.swift; sourceTree = "<group>"; };
+		7791076D2AB96425000A4B17 /* SendAssetOperationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetOperationProtocols.swift; sourceTree = "<group>"; };
 		7796C6FC2A174E6300D56094 /* StakingRewardFiltersPeriod+title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingRewardFiltersPeriod+title.swift"; sourceTree = "<group>"; };
 		7796C6FE2A177D7300D56094 /* GenericLens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericLens.swift; sourceTree = "<group>"; };
 		7796C7002A177D9000D56094 /* ReferendumsSection+Lens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsSection+Lens.swift"; sourceTree = "<group>"; };
@@ -9441,6 +9445,8 @@
 			children = (
 				77A6F5C42A2F17BE004AFD1A /* SendAssetOperationPresenter.swift */,
 				77A6F5C32A2F17BE004AFD1A /* SendAssetOperationWireframe.swift */,
+				7791076B2AB963E8000A4B17 /* SendAssetOperationViewController.swift */,
+				7791076D2AB96425000A4B17 /* SendAssetOperationProtocols.swift */,
 			);
 			path = Send;
 			sourceTree = "<group>";
@@ -20985,6 +20991,7 @@
 				84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */,
 				841E5563282E9EF400C8438F /* ParachainStakingCommonData.swift in Sources */,
 				0CBC29C62A421B5000F7B1F7 /* StakingMainWireframe.swift in Sources */,
+				7791076C2AB963E8000A4B17 /* SendAssetOperationViewController.swift in Sources */,
 				8401AEC62642A71D000B03E3 /* StakingRebondConfirmationLayout.swift in Sources */,
 				8487584327F08F9600495306 /* AddressScanPresenter.swift in Sources */,
 				847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */,
@@ -21945,6 +21952,7 @@
 				0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */,
 				8425D0E628FE82CB003B782A /* ReferendumVoteInteractor.swift in Sources */,
 				766FE2FAB8509BF0F56EA3C0 /* ParaStkCollatorInfoProtocols.swift in Sources */,
+				7791076E2AB96425000A4B17 /* SendAssetOperationProtocols.swift in Sources */,
 				4097A50CF5E5794092354758 /* ParaStkCollatorInfoWireframe.swift in Sources */,
 				840E59BB2A18826600BA6ADD /* CGRect+Transform.swift in Sources */,
 				A8115BE0BFA6558B46CEA101 /* ParaStkCollatorInfoPresenter.swift in Sources */,

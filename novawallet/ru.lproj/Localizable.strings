@@ -1374,3 +1374,4 @@
 "staking.pool.is.full.title" = "Выбранный пул заполнен";
 "staking.pool.is.full.message" = "Вы не можете присоединиться к выбранному пулу так как в нём не осталось места";
 "common.back" = "Назад";
+"asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";

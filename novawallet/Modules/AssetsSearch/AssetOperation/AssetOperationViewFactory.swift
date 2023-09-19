@@ -40,17 +40,39 @@ enum AssetOperationViewFactory {
             }
         }
 
-        let view = AssetsSearchViewController(
+        let view = createViewController(
+            for: operation,
             presenter: presenter,
-            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
-            createViewClosure: { AssetsOperationViewLayout() },
-            localizableTitle: title,
-            localizationManager: LocalizationManager.shared
+            title: title
         )
-
         presenter.view = view
 
         return view
+    }
+
+    private static func createViewController(
+        for operation: TokenOperation,
+        presenter: AssetsSearchPresenter,
+        title: LocalizableResource<String>
+    ) -> AssetsSearchViewController {
+        switch operation {
+        case .send:
+            return SendAssetOperationViewController(
+                presenter: presenter,
+                keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(events: Set()),
+                createViewClosure: { AssetsOperationViewLayout() },
+                localizableTitle: title,
+                localizationManager: LocalizationManager.shared
+            )
+        case .receive, .buy:
+            return AssetsSearchViewController(
+                presenter: presenter,
+                keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(events: Set()),
+                createViewClosure: { AssetsOperationViewLayout() },
+                localizableTitle: title,
+                localizationManager: LocalizationManager.shared
+            )
+        }
     }
 
     private static func createPresenter(
@@ -114,7 +136,10 @@ enum AssetOperationViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            wireframe: SendAssetOperationWireframe(transferCompletion: transferCompletion)
+            wireframe: SendAssetOperationWireframe(
+                stateObservable: stateObservable,
+                transferCompletion: transferCompletion
+            )
         )
 
         interactor.presenter = presenter
