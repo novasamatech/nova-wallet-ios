@@ -94,23 +94,8 @@ enum AssetOperationViewFactory {
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         transferCompletion: TransferCompletionClosure?
     ) -> SendAssetOperationPresenter? {
-        let filter: ChainAssetsFilter = { chainAsset, assetListState in
-            let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
-
-            guard let transfersEnabled = try? assetMapper.transfersEnabled(), transfersEnabled else {
-                return false
-            }
-
-            guard let balance = try? assetListState.balances[chainAsset.chainAssetId]?.get() else {
-                return false
-            }
-
-            return balance.transferable > 0
-        }
-
-        let interactor = AssetsSearchInteractor(
+        let interactor = SendAssetsOperationInteractor(
             stateObservable: stateObservable,
-            filter: filter,
             logger: Logger.shared
         )
 
@@ -157,7 +142,7 @@ enum AssetOperationViewFactory {
     ) -> BuyAssetOperationPresenter? {
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
 
-        let filter: ChainAssetsFilter = { chainAsset, _ in
+        let filter: ChainAssetsFilter = { chainAsset in
             guard let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
                 return false
             }

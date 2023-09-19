@@ -115,7 +115,7 @@ final class AssetSearchBuilder: AnyCancellableCleaning {
         }
 
         if let filter = filter {
-            chainAssets = chainAssets.filter { filter($0, state) }
+            chainAssets = chainAssets.filter(filter)
         }
 
         guard !query.isEmpty else {
@@ -156,7 +156,7 @@ final class AssetSearchBuilder: AnyCancellableCleaning {
         }
 
         if let filter = filter {
-            allMatchedChains = allMatchedChains.filter { filter($0, state) }
+            allMatchedChains = allMatchedChains.filter(filter)
         }
 
         return allMatchedAssets + allMatchedChains
