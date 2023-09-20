@@ -29,4 +29,29 @@ class XcmBaseMetadataQueryFactory {
 
         return CompoundOperationWrapper(targetOperation: searchOperation, dependencies: [codingFactoryOperation])
     }
+
+    func createModuleNameResolutionWrapper(
+        for runtimeProvider: RuntimeProviderProtocol,
+        possibleNames: [String]
+    ) -> CompoundOperationWrapper<String> {
+        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let moduleResolutionOperation = ClosureOperation<String> {
+            let metadata = try coderFactoryOperation.extractNoCancellableResultData().metadata
+            guard let moduleName = possibleNames.first(
+                where: { metadata.getModuleIndex($0) != nil }
+            ) else {
+                throw XcmTransferServiceError.noXcmPalletFound(possibleNames)
+            }
+
+            return moduleName
+        }
+
+        moduleResolutionOperation.addDependency(coderFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: moduleResolutionOperation,
+            dependencies: [coderFactoryOperation]
+        )
+    }
 }

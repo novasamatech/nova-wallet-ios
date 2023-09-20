@@ -12,7 +12,8 @@ extension XcmTransferService {
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
         switch type {
         case .xtokens:
-            let multiassetVersionWrapper = metadataQueryFactory.createLowestMultiassetVersionWrapper(
+            // we make an assumption that xtokens pallet maintains the same versions as xcm pallet
+            let multiassetVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetVersionWrapper(
                 for: runtimeProvider
             )
 
@@ -23,7 +24,7 @@ extension XcmTransferService {
                 runtimeProvider: runtimeProvider
             )
         case .xcmpallet, .teleport:
-            let multiassetsVersionWrapper = metadataQueryFactory.createLowestMultiassetsVersionWrapper(
+            let multiassetsVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetsVersionWrapper(
                 for: runtimeProvider
             )
 
@@ -125,7 +126,7 @@ extension XcmTransferService {
         xcmTransfers: XcmTransfers,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        let multilocationVersionWrapper = metadataQueryFactory.createLowestMultilocationVersionWrapper(
+        let multilocationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
             for: runtimeProvider
         )
 
@@ -202,7 +203,7 @@ extension XcmTransferService {
             let asset = destinationAsset.asset
             let location = destinationAsset.location
 
-            return try Xcm.appendOrmlTransferCall(
+            return try XTokens.appendTransferCall(
                 asset: asset,
                 destination: location,
                 weight: maxWeight,
