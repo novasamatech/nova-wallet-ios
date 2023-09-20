@@ -12,11 +12,13 @@ struct AssetListViewFactory {
         }
 
         let assetListObservable = AssetListStateObservable(state: .init(value: .init()))
+        let assetListModelObservable = AssetListModelObservable(state: .init(value: .init()))
 
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetListObservable: assetListObservable,
+            assetListModelObservable: assetListModelObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
@@ -30,7 +32,8 @@ struct AssetListViewFactory {
 
         let wireframe = AssetListWireframe(
             dappMediator: dappMediator,
-            assetListObservable: assetListObservable
+            assetListObservable: assetListObservable,
+            assetListModelObservable: assetListModelObservable
         )
 
         let nftDownloadService = NftFileDownloadService(

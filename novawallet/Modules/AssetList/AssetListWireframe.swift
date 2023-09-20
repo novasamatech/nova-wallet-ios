@@ -5,13 +5,16 @@ import SoraUI
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
     let assetListObservable: AssetListStateObservable
+    let assetListModelObservable: AssetListModelObservable
 
     init(
         dappMediator: DAppInteractionMediating,
-        assetListObservable: AssetListStateObservable
+        assetListObservable: AssetListStateObservable,
+        assetListModelObservable: AssetListModelObservable
     ) {
         self.dappMediator = dappMediator
         self.assetListObservable = assetListObservable
+        self.assetListModelObservable = assetListModelObservable
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
@@ -84,32 +87,39 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showSendTokens(from view: AssetListViewProtocol?, transferCompletion: @escaping TransferCompletionClosure) {
-        showAssetsSelection(for: .send, from: view, transferCompletion: transferCompletion)
-    }
-
-    func showRecieveTokens(from view: AssetListViewProtocol?) {
-        showAssetsSelection(for: .receive, from: view, transferCompletion: nil)
-    }
-
-    func showBuyTokens(from view: AssetListViewProtocol?) {
-        showAssetsSelection(for: .buy, from: view, transferCompletion: nil)
-    }
-
-    private func showAssetsSelection(
-        for operation: TokenOperation,
-        from view: AssetListViewProtocol?,
-        transferCompletion: TransferCompletionClosure?
-    ) {
-        guard let assetsSearchView = AssetOperationViewFactory.createView(
-            for: assetListObservable,
-            operation: operation,
+        guard let sendTokensView = AssetOperationViewFactory.createSendView(
+            for: assetListModelObservable,
             transferCompletion: transferCompletion
         ) else {
             return
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: sendTokensView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showRecieveTokens(from view: AssetListViewProtocol?) {
+        guard let recieveTokensView = AssetOperationViewFactory.createReceiveView(for: assetListObservable) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: recieveTokensView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showBuyTokens(from view: AssetListViewProtocol?) {
+        guard let buyTokensView = AssetOperationViewFactory.createBuyView(for: assetListObservable) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: buyTokensView.controller
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
