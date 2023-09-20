@@ -5,7 +5,7 @@ import BigInt
 
 protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
-    func didReceiveGroups(state: AssetListGroupState)
+    func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveNft(viewModel: AssetListNftsViewModel?)
     func didCompleteRefreshing()
 }

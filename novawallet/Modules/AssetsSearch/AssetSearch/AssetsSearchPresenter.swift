@@ -44,9 +44,9 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             viewModels.isEmpty,
             !result.state.balanceResults.isEmpty,
             result.state.balanceResults.count >= result.state.allChains.count {
-            view?.didReceiveGroups(state: .init(isFiltered: false, listState: .empty))
+            view?.didReceiveGroups(state: .empty)
         } else {
-            view?.didReceiveGroups(state: .init(isFiltered: false, listState: .list(groups: viewModels)))
+            view?.didReceiveGroups(state: .list(groups: viewModels))
         }
     }
 

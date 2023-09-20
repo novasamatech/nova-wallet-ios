@@ -11,7 +11,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     private var headerViewModel: AssetListHeaderViewModel?
-    private var groupsState: AssetListGroupState = .init(isFiltered: false, listState: .list(groups: []))
+    private var groupsViewModel: AssetListViewModel = .init(isFiltered: false, listState: .list(groups: []))
     private var nftViewModel: AssetListNftsViewModel?
 
     init(presenter: AssetListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -164,7 +164,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
                 indexPath.section
             ) {
-                let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
+                let viewModel = groupsViewModel.listState.groups[groupIndex].assets[indexPath.row]
                 presenter.selectAsset(for: viewModel.chainAssetId)
             }
         case .yourNfts:
@@ -191,7 +191,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
 
 extension AssetListViewController: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        AssetListFlowLayout.SectionType.assetsStartingSection + groupsState.groups.count
+        AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -201,10 +201,10 @@ extension AssetListViewController: UICollectionViewDataSource {
         case .nfts:
             return nftViewModel != nil ? 1 : 0
         case .settings:
-            return groupsState.isEmpty ? 2 : 1
+            return groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                return groupsState.groups[groupIndex].assets.count
+                return groupsViewModel.listState.groups[groupIndex].assets.count
             } else {
                 return 0
             }
@@ -290,7 +290,7 @@ extension AssetListViewController: UICollectionViewDataSource {
             action: #selector(actionSettings),
             for: .touchUpInside
         )
-        settingsCell.settingsButton.bind(isFilterOn: groupsState.isFiltered)
+        settingsCell.settingsButton.bind(isFilterOn: groupsViewModel.isFiltered)
 
         settingsCell.manageButton.addTarget(
             self,
@@ -320,7 +320,7 @@ extension AssetListViewController: UICollectionViewDataSource {
         if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            let viewModel = groupsState.groups[groupIndex].assets[assetIndex]
+            let viewModel = groupsViewModel.listState.groups[groupIndex].assets[assetIndex]
             assetCell.bind(viewModel: viewModel)
         }
 
@@ -399,7 +399,7 @@ extension AssetListViewController: UICollectionViewDataSource {
         if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            let viewModel = groupsState.groups[groupIndex]
+            let viewModel = groupsViewModel.listState.groups[groupIndex]
             view.bind(viewModel: viewModel)
         }
 
@@ -429,8 +429,8 @@ extension AssetListViewController: AssetListViewProtocol {
         rootView.collectionViewLayout.updateTotalBalanceHeight(cellHeight)
     }
 
-    func didReceiveGroups(state: AssetListGroupState) {
-        groupsState = state
+    func didReceiveGroups(viewModel: AssetListViewModel) {
+        groupsViewModel = viewModel
 
         rootView.collectionView.reloadData()
     }

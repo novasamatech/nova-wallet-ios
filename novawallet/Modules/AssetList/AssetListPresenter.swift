@@ -230,12 +230,12 @@ final class AssetListPresenter {
 
         let isFilterOn = hidesZeroBalances == true
         if viewModels.isEmpty, !model.balanceResults.isEmpty, model.balanceResults.count >= model.allChains.count {
-            view?.didReceiveGroups(state: .init(
+            view?.didReceiveGroups(viewModel: .init(
                 isFiltered: isFilterOn,
                 listState: .empty
             ))
         } else {
-            view?.didReceiveGroups(state: .init(
+            view?.didReceiveGroups(viewModel: .init(
                 isFiltered: isFilterOn,
                 listState: .list(groups: viewModels)
             ))
