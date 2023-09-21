@@ -38,7 +38,6 @@ extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
-            model: stateObservable.state.value,
             workingQueue: .main,
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
@@ -48,7 +47,7 @@ extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
             logger: logger
         )
 
-        builder?.apply(query: "")
+        builder?.apply(model: stateObservable.state.value)
 
         stateObservable.addObserver(with: self) { [weak self] _, newState in
             guard let self = self else {

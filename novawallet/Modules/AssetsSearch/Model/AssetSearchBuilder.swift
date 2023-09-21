@@ -10,7 +10,6 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     let filter: ChainAssetsFilter?
     let logger: LoggerProtocol
 
-    private var model: AssetListModel
     private var state: AssetListState?
 
     private var query: String = ""
@@ -18,7 +17,6 @@ class AssetSearchBuilder: AnyCancellableCleaning {
 
     init(
         filter: ChainAssetsFilter?,
-        model: AssetListModel,
         workingQueue: DispatchQueue,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping (AssetSearchBuilderResult) -> Void,
@@ -26,7 +24,6 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         logger: LoggerProtocol
     ) {
         self.filter = filter
-        self.model = model
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
@@ -35,10 +32,10 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     }
 
     private func rebuildResult(for query: String, filter: ChainAssetsFilter?) {
-        rebuildResult(for: query, state: state ?? assetListState(from: model), filter: filter)
-    }
+        guard let state = state else {
+            return
+        }
 
-    private func rebuildResult(for query: String, state: AssetListState, filter: ChainAssetsFilter?) {
         clear(cancellable: &currentOperation)
 
         let searchOperation = ClosureOperation<AssetSearchBuilderResult> {
@@ -212,8 +209,7 @@ extension AssetSearchBuilder {
                 return
             }
 
-            self.model = model
-            self.state = assetListState(from: model)
+            self.state = self.assetListState(from: model)
             self.rebuildResult(for: self.query, filter: self.filter)
         }
     }

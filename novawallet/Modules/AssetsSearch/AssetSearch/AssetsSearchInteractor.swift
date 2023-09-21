@@ -27,7 +27,6 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
-            model: stateObservable.state.value,
             workingQueue: .main,
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
@@ -37,7 +36,7 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
             logger: logger
         )
 
-        builder?.apply(query: "")
+        builder?.apply(model: stateObservable.state.value)
 
         stateObservable.addObserver(with: self) { [weak self] _, newState in
             self?.builder?.apply(model: newState.value)
