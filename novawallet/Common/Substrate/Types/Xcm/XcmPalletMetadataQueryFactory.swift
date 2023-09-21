@@ -51,24 +51,9 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
     func createModuleNameResolutionWrapper(
         for runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<String> {
-        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let moduleResolutionOperation = ClosureOperation<String> {
-            let metadata = try coderFactoryOperation.extractNoCancellableResultData().metadata
-            guard let moduleName = Xcm.possibleModuleNames.first(
-                where: { metadata.getModuleIndex($0) != nil }
-            ) else {
-                throw XcmTransferServiceError.noXcmPalletFound
-            }
-
-            return moduleName
-        }
-
-        moduleResolutionOperation.addDependency(coderFactoryOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: moduleResolutionOperation,
-            dependencies: [coderFactoryOperation]
+        createModuleNameResolutionWrapper(
+            for: runtimeProvider,
+            possibleNames: Xcm.possibleModuleNames
         )
     }
 }

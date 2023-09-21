@@ -103,8 +103,9 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
 
 extension ParitySignerTxScanPresenter: ParitySignerTxScanInteractorOutputProtocol {
     func didReceiveSignature(_ signature: IRSignatureProtocol) {
-        scanWireframe.complete(on: scanView)
-        completion(.success(signature))
+        scanWireframe.complete(on: scanView) {
+            self.completion(.success(signature))
+        }
     }
 
     func didReceiveError(_: Error) {

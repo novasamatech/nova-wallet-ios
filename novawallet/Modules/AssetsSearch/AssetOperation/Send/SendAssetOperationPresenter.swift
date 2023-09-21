@@ -36,3 +36,9 @@ final class SendAssetOperationPresenter: AssetsSearchPresenter {
         }
     }
 }
+
+extension SendAssetOperationPresenter: SendAssetOperationPresenterProtocol {
+    func buy() {
+        sendAssetWireframe?.showBuyTokens(from: view)
+    }
+}

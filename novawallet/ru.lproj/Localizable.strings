@@ -667,7 +667,8 @@
 "common.fee.retry.failed" = "Загрузка комиссии завершилась с ошибкой. Хотите повторить?";
 "dapp.search.query.section" = "Поиск";
 "dapp.search.app.section" = "DApps";
-"wallet.list.empty.message" = "Здесь появятся ваши активы.\nУбедитесь, что фильтр \"Скрыть нулевой баланс\" отключен.";
+"wallet.list.empty.message" = "Здесь появятся ваши активы.\nУбедитесь, что фильтр\n\"Скрыть активы с нулевым балансом\"\nотключен.";
+"wallet.list.empty.action.title" = "Купить токены";
 "assets.manage.hide.zero.balances" = "Скрыть активы с нулевым балансом";
 "wallet.send.dead.recipient.commission.asset.title" = "Получатель не может принять перевод";
 "wallet.send.dead.recipient.commission.asset.message" = "Ваш перевод завершится ошибкой, так как у получателя недостаточно %@ для приема переводов в других токенах.";
@@ -1373,3 +1374,5 @@
 "staking.pool.is.full.title" = "Выбранный пул заполнен";
 "staking.pool.is.full.message" = "Вы не можете присоединиться к выбранному пулу так как в нём не осталось места";
 "common.back" = "Назад";
+"asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
+"governance.referendums.status.deciding" = "На рассмотрении";

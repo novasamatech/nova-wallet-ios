@@ -38,5 +38,3 @@ struct AssetListState {
         return .init(chain: chain, asset: asset)
     }
 }
-
-typealias AssetListStateObservable = Observable<NotEqualWrapper<AssetListState>>

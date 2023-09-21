@@ -3,14 +3,14 @@ import UIKit
 final class AssetsSearchInteractor {
     weak var presenter: AssetsSearchInteractorOutputProtocol?
 
-    let stateObservable: AssetListStateObservable
+    let stateObservable: AssetListModelObservable
     let filter: ChainAssetsFilter?
     let logger: LoggerProtocol
 
     private var builder: AssetSearchBuilder?
 
     init(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         filter: ChainAssetsFilter?,
         logger: LoggerProtocol
     ) {
@@ -27,7 +27,7 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
-            state: stateObservable.state.value,
+            model: stateObservable.state.value,
             workingQueue: .main,
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
@@ -40,7 +40,7 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
         builder?.apply(query: "")
 
         stateObservable.addObserver(with: self) { [weak self] _, newState in
-            self?.builder?.apply(state: newState.value)
+            self?.builder?.apply(model: newState.value)
         }
     }
 

@@ -667,7 +667,8 @@
 "common.fee.retry.failed" = "Fee loading failed. Would you like to retry?";
 "dapp.search.query.section" = "Search";
 "dapp.search.app.section" = "DApps";
-"wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\" filter is turned off";
+"wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\"\nfilter is turned off";
+"wallet.list.empty.action.title" = "Buy tokens";
 "assets.manage.hide.zero.balances" = "Hide assets with zero balances";
 "wallet.send.dead.recipient.commission.asset.title" = "Recipient is not able to accept transfer";
 "wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
@@ -1373,3 +1374,5 @@
 "staking.pool.is.full.title" = "Selected pool is full";
 "staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
 "common.back" = "Back";
+"asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
+"governance.referendums.status.deciding" = "Deciding";

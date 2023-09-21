@@ -89,6 +89,11 @@ enum AssetListGroupState {
     }
 }
 
+struct AssetListViewModel {
+    let isFiltered: Bool
+    let listState: AssetListGroupState
+}
+
 struct AssetListGroupViewModel {
     let networkName: String
     let amount: LoadableViewModelState<String>

@@ -7,7 +7,7 @@ final class SendAssetsOperationInteractor {
     let filter: ChainAssetsFilter
     let logger: LoggerProtocol
 
-    private var builder: AssetSearchBuilder?
+    private var builder: SendAssetSearchBuilder?
 
     init(
         stateObservable: AssetListModelObservable,
@@ -38,7 +38,7 @@ extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
-            state: stateObservable.state.value.assetListState(balancePart: \.transferable),
+            model: stateObservable.state.value,
             workingQueue: .main,
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
@@ -54,7 +54,7 @@ extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
             guard let self = self else {
                 return
             }
-            self.builder?.apply(state: newState.value.assetListState(balancePart: \.transferable))
+            self.builder?.apply(model: newState.value)
         }
     }
 

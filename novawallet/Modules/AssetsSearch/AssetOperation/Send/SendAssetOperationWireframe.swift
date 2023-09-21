@@ -1,14 +1,15 @@
 import UIKit
 import SoraUI
 
-protocol SendAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol {
-    func showSendTokens(from view: ControllerBackedProtocol?, chainAsset: ChainAsset)
-}
-
 final class SendAssetOperationWireframe: SendAssetOperationWireframeProtocol {
     private let transferCompletion: TransferCompletionClosure?
+    private let buyTokensClosure: BuyTokensClosure?
 
-    init(transferCompletion: TransferCompletionClosure?) {
+    init(
+        buyTokensClosure: BuyTokensClosure?,
+        transferCompletion: TransferCompletionClosure?
+    ) {
+        self.buyTokensClosure = buyTokensClosure
         self.transferCompletion = transferCompletion
     }
 
@@ -21,6 +22,14 @@ final class SendAssetOperationWireframe: SendAssetOperationWireframeProtocol {
             return
         }
         view?.controller.navigationController?.pushViewController(transferSetupView.controller, animated: true)
+    }
+
+    func showBuyTokens(
+        from view: ControllerBackedProtocol?
+    ) {
+        view?.controller.presentingViewController?.dismiss(animated: true) {
+            self.buyTokensClosure?()
+        }
     }
 }
 

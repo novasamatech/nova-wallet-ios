@@ -1,7 +1,8 @@
 import Foundation
 import RobinHood
+import BigInt
 
-final class AssetSearchBuilder: AnyCancellableCleaning {
+class AssetSearchBuilder: AnyCancellableCleaning {
     let workingQueue: DispatchQueue
     let callbackQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -9,13 +10,15 @@ final class AssetSearchBuilder: AnyCancellableCleaning {
     let filter: ChainAssetsFilter?
     let logger: LoggerProtocol
 
-    private var state: AssetListState
+    private var model: AssetListModel
+    private var state: AssetListState?
+
     private var query: String = ""
     private var currentOperation: CancellableCall?
 
     init(
         filter: ChainAssetsFilter?,
-        state: AssetListState,
+        model: AssetListModel,
         workingQueue: DispatchQueue,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping (AssetSearchBuilderResult) -> Void,
@@ -23,12 +26,16 @@ final class AssetSearchBuilder: AnyCancellableCleaning {
         logger: LoggerProtocol
     ) {
         self.filter = filter
-        self.state = state
+        self.model = model
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
         self.operationQueue = operationQueue
         self.logger = logger
+    }
+
+    private func rebuildResult(for query: String, filter: ChainAssetsFilter?) {
+        rebuildResult(for: query, state: state ?? assetState(from: model), filter: filter)
     }
 
     private func rebuildResult(for query: String, state: AssetListState, filter: ChainAssetsFilter?) {
@@ -161,6 +168,30 @@ final class AssetSearchBuilder: AnyCancellableCleaning {
 
         return allMatchedAssets + allMatchedChains
     }
+
+    func assetState(from model: AssetListModel) -> AssetListState {
+        let chainAssets = model.allChains.flatMap { _, chain in
+            chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
+        }
+
+        let balanceResults = chainAssets.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
+            switch model.balances[$1] {
+            case let .success(amount):
+                $0[$1] = .success(amount.totalInPlank)
+            case let .failure(error):
+                $0[$1] = .failure(error)
+            case .none:
+                $0[$1] = .success(0)
+            }
+        }
+
+        return AssetListState(
+            priceResult: model.priceResult,
+            balanceResults: balanceResults,
+            allChains: model.allChains,
+            externalBalances: model.externalBalances
+        )
+    }
 }
 
 extension AssetSearchBuilder {
@@ -171,18 +202,18 @@ extension AssetSearchBuilder {
             }
 
             self.query = query
-            self.rebuildResult(for: self.query, state: self.state, filter: self.filter)
+            self.rebuildResult(for: self.query, filter: self.filter)
         }
     }
 
-    func apply(state: AssetListState) {
+    func apply(model: AssetListModel) {
         workingQueue.async { [weak self] in
             guard let self = self else {
                 return
             }
 
-            self.state = state
-            self.rebuildResult(for: self.query, state: self.state, filter: self.filter)
+            self.model = model
+            self.rebuildResult(for: self.query, filter: self.filter)
         }
     }
 }
