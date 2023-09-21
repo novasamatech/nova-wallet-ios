@@ -8,7 +8,7 @@ enum AssetListMeasurement {
     static let nftsHeight = 56.0
     static let assetHeight: CGFloat = 56.0
     static let assetHeaderHeight: CGFloat = 45.0
-    static let emptyStateCellHeight: CGFloat = 198
+    static let emptyStateCellHeight: CGFloat = 230
     static let decorationInset: CGFloat = 8.0
 }
 

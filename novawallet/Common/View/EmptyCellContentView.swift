@@ -1,6 +1,6 @@
 import UIKit
 
-final class EmptyCellContentView: UIView {
+class EmptyCellContentView: UIView {
     let backgroundBlurView: BlockBackgroundView = .create {
         $0.sideLength = 12
     }
@@ -32,7 +32,7 @@ final class EmptyCellContentView: UIView {
         .init(width: UIView.noIntrinsicMetric, height: 180)
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(backgroundBlurView)
         backgroundBlurView.snp.makeConstraints { make in
             make.bottom.top.equalToSuperview()

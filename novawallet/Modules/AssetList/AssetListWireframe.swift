@@ -83,28 +83,40 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
     }
 
-    func showSendTokens(from view: AssetListViewProtocol?, transferCompletion: @escaping TransferCompletionClosure) {
-        showAssetsSelection(for: .send, from: view, transferCompletion: transferCompletion)
+    func showSendTokens(
+        from view: AssetListViewProtocol?,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    ) {
+        guard let assetsSearchView = AssetOperationViewFactory.createSendView(
+            for: assetListObservable,
+            transferCompletion: transferCompletion,
+            buyTokensClosure: buyTokensClosure
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: assetsSearchView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showRecieveTokens(from view: AssetListViewProtocol?) {
-        showAssetsSelection(for: .receive, from: view, transferCompletion: nil)
+        guard let assetsSearchView = AssetOperationViewFactory.createReceiveView(for: assetListObservable) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: assetsSearchView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showBuyTokens(from view: AssetListViewProtocol?) {
-        showAssetsSelection(for: .buy, from: view, transferCompletion: nil)
-    }
-
-    private func showAssetsSelection(
-        for operation: TokenOperation,
-        from view: AssetListViewProtocol?,
-        transferCompletion: TransferCompletionClosure?
-    ) {
-        guard let assetsSearchView = AssetOperationViewFactory.createView(
-            for: assetListObservable,
-            operation: operation,
-            transferCompletion: transferCompletion
-        ) else {
+        guard let assetsSearchView = AssetOperationViewFactory.createBuyView(for: assetListObservable) else {
             return
         }
 
