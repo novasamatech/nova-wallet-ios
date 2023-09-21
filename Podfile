@@ -25,7 +25,8 @@ abstract_target 'novawalletAll' do
   pod 'WalletConnectSwiftV2', :git => 'https://github.com/WalletConnect/WalletConnectSwiftV2.git', :tag => '1.5.14'
   pod 'EthereumSignTypedDataUtil', :git => 'https://github.com/ERussel/EthereumSignTypedDataUtil.git', :tag => '0.1.3'
   pod 'SwiftAlgorithms', '~> 1.0.0'
-
+  pod 'ZMarkupParser'
+  
   target 'novawalletTests' do
     inherit! :search_paths
 
