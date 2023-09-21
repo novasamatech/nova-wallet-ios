@@ -4,14 +4,14 @@ import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
-    let assetListObservable: AssetListStateObservable
+    let assetListModelObservable: AssetListModelObservable
 
     init(
         dappMediator: DAppInteractionMediating,
-        assetListObservable: AssetListStateObservable
+        assetListModelObservable: AssetListModelObservable
     ) {
         self.dappMediator = dappMediator
-        self.assetListObservable = assetListObservable
+        self.assetListModelObservable = assetListModelObservable
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
@@ -71,7 +71,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate) {
         guard
             let assetsSearchView = AssetsSearchViewFactory.createView(
-                for: assetListObservable,
+                for: assetListModelObservable,
                 delegate: delegate
             ) else {
             return
@@ -89,7 +89,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         buyTokensClosure: @escaping BuyTokensClosure
     ) {
         guard let assetsSearchView = AssetOperationViewFactory.createSendView(
-            for: assetListObservable,
+            for: assetListModelObservable,
             transferCompletion: transferCompletion,
             buyTokensClosure: buyTokensClosure
         ) else {
@@ -104,7 +104,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showRecieveTokens(from view: AssetListViewProtocol?) {
-        guard let assetsSearchView = AssetOperationViewFactory.createReceiveView(for: assetListObservable) else {
+        guard let assetsSearchView = AssetOperationViewFactory.createReceiveView(for: assetListModelObservable) else {
             return
         }
 
@@ -116,7 +116,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showBuyTokens(from view: AssetListViewProtocol?) {
-        guard let assetsSearchView = AssetOperationViewFactory.createBuyView(for: assetListObservable) else {
+        guard let assetsSearchView = AssetOperationViewFactory.createBuyView(for: assetListModelObservable) else {
             return
         }
 

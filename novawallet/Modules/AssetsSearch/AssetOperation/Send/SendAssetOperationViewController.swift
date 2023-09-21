@@ -26,6 +26,7 @@ final class SendAssetOperationViewController: AssetsSearchViewController {
 
         cell.bind(text: text, actionTitle: actionTitle)
         cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
+        cell.actionButton.isHidden = false
 
         return cell
     }

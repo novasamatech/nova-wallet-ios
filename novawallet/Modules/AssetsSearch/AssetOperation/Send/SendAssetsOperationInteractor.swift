@@ -1,26 +1,37 @@
-import UIKit
+import BigInt
 
-final class AssetsSearchInteractor {
+final class SendAssetsOperationInteractor {
     weak var presenter: AssetsSearchInteractorOutputProtocol?
 
     let stateObservable: AssetListModelObservable
-    let filter: ChainAssetsFilter?
+    let filter: ChainAssetsFilter
     let logger: LoggerProtocol
 
-    private var builder: AssetSearchBuilder?
+    private var builder: SendAssetSearchBuilder?
 
     init(
         stateObservable: AssetListModelObservable,
-        filter: ChainAssetsFilter?,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
-        self.filter = filter
         self.logger = logger
+
+        filter = { chainAsset in
+            let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
+
+            guard let transfersEnabled = try? assetMapper.transfersEnabled(), transfersEnabled else {
+                return false
+            }
+            guard let balance = try? stateObservable.state.value.balances[chainAsset.chainAssetId]?.get() else {
+                return false
+            }
+
+            return balance.transferable > 0
+        }
     }
 }
 
-extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
+extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
     func setup() {
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 1
@@ -39,7 +50,10 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
         builder?.apply(model: stateObservable.state.value)
 
         stateObservable.addObserver(with: self) { [weak self] _, newState in
-            self?.builder?.apply(model: newState.value)
+            guard let self = self else {
+                return
+            }
+            self.builder?.apply(model: newState.value)
         }
     }
 

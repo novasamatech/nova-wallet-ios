@@ -40,10 +40,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             createGroupViewModel(from: groupModel, groupLists: result.groupLists, maybePrices: maybePrices)
         }
 
-        if
-            viewModels.isEmpty,
-            !result.state.balanceResults.isEmpty,
-            result.state.balanceResults.count >= result.state.allChains.count {
+        if viewModels.isEmpty {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))

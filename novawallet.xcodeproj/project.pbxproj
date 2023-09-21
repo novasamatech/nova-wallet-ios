@@ -730,6 +730,9 @@
 		77CB33CE2A38780700B6709A /* structures_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77CB33CD2A38780700B6709A /* structures_output.json */; };
 		77CB33D22A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */; };
 		77CB33D72A3998FD00B6709A /* Array+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CB33D62A3998FC00B6709A /* Array+Sort.swift */; };
+		77CBD39C2ABBA98900D646D6 /* AssetListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CBD39B2ABBA98900D646D6 /* AssetListModel.swift */; };
+		77CBD39E2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CBD39D2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift */; };
+		77CBD3A02ABC35D900D646D6 /* SendAssetSearchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CBD39F2ABC35D900D646D6 /* SendAssetSearchBuilder.swift */; };
 		77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */; };
 		77CC82A52A984EDA002D022F /* UINavigaionController+Pop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */; };
 		77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */; };
@@ -4683,6 +4686,9 @@
 		77CB33CD2A38780700B6709A /* structures_output.json */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; path = structures_output.json; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 0; };
 		77CB33D12A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifierWithCanonicalizationData.swift; sourceTree = "<group>"; };
 		77CB33D62A3998FC00B6709A /* Array+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Sort.swift"; sourceTree = "<group>"; };
+		77CBD39B2ABBA98900D646D6 /* AssetListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListModel.swift; sourceTree = "<group>"; };
+		77CBD39D2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAssetsOperationInteractor.swift; sourceTree = "<group>"; };
+		77CBD39F2ABC35D900D646D6 /* SendAssetSearchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetSearchBuilder.swift; sourceTree = "<group>"; };
 		77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingSelectedValidatorsListWireframe.swift; sourceTree = "<group>"; };
 		77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigaionController+Pop.swift"; sourceTree = "<group>"; };
 		77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectValidatorsDelegate.swift; sourceTree = "<group>"; };
@@ -8162,6 +8168,7 @@
 			isa = PBXGroup;
 			children = (
 				0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */,
+				77CBD39F2ABC35D900D646D6 /* SendAssetSearchBuilder.swift */,
 				0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */,
 			);
 			path = Model;
@@ -9470,6 +9477,7 @@
 		77A6F5C72A2F17C3004AFD1A /* Send */ = {
 			isa = PBXGroup;
 			children = (
+				77CBD39D2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift */,
 				77A6F5C42A2F17BE004AFD1A /* SendAssetOperationPresenter.swift */,
 				77A6F5C32A2F17BE004AFD1A /* SendAssetOperationWireframe.swift */,
 				7791076B2AB963E8000A4B17 /* SendAssetOperationViewController.swift */,
@@ -12267,6 +12275,7 @@
 				0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */,
 				0C83775C2A4EEB380072102D /* AssetListState.swift */,
 				0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */,
+				77CBD39B2ABBA98900D646D6 /* AssetListModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -19161,6 +19170,7 @@
 				88FB7DC829505DC300784E08 /* AssetDetailsContainerViewFactory.swift in Sources */,
 				846B749528B422C800C39B93 /* ChainAccountAddViewModel.swift in Sources */,
 				84EBFCE4285E734C0006327E /* XcmTransferDestination.swift in Sources */,
+				77CBD3A02ABC35D900D646D6 /* SendAssetSearchBuilder.swift in Sources */,
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
 				844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */,
 				84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */,
@@ -20322,6 +20332,7 @@
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
 				849014BF24AA87E4008F705E /* ScreenAuthorizationProtocol.swift in Sources */,
 				84CB2250270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift in Sources */,
+				77CBD39E2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift in Sources */,
 				84F96FA52A136E1B00EB70E2 /* GladingCardView.swift in Sources */,
 				8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */,
 				8490145624A9404E008F705E /* AttributedStringDecorator.swift in Sources */,
@@ -21322,6 +21333,7 @@
 				845B08102918D65E005785D3 /* GovernanceExtrinsicFactory.swift in Sources */,
 				77895CA32A8F8CFD006870FB /* NominationPoolsFilters.swift in Sources */,
 				7E1A03082260E0D31AD394CA /* StakingRewardDetailsProtocols.swift in Sources */,
+				77CBD39C2ABBA98900D646D6 /* AssetListModel.swift in Sources */,
 				65909D701527D99837B439D9 /* StakingRewardDetailsWireframe.swift in Sources */,
 				84350ACC284569560031EF24 /* ParaStkCollatorInfoViewController.swift in Sources */,
 				775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */,

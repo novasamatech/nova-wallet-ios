@@ -3,7 +3,7 @@ import SoraFoundation
 
 enum AssetOperationViewFactory {
     static func createBuyView(
-        for stateObservable: AssetListStateObservable
+        for stateObservable: AssetListModelObservable
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -45,7 +45,7 @@ enum AssetOperationViewFactory {
     }
 
     static func createReceiveView(
-        for stateObservable: AssetListStateObservable
+        for stateObservable: AssetListModelObservable
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -87,7 +87,7 @@ enum AssetOperationViewFactory {
     }
 
     static func createSendView(
-        for stateObservable: AssetListStateObservable,
+        for stateObservable: AssetListModelObservable,
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     ) -> AssetsSearchViewProtocol? {
@@ -128,24 +128,13 @@ enum AssetOperationViewFactory {
     }
 
     private static func createSendPresenter(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         transferCompletion: TransferCompletionClosure?,
         buyTokensClosure: BuyTokensClosure?
     ) -> SendAssetOperationPresenter {
-        let filter: ChainAssetsFilter = { chainAsset in
-            let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
-
-            guard let transfersEnabled = try? assetMapper.transfersEnabled() else {
-                return false
-            }
-
-            return transfersEnabled
-        }
-
-        let interactor = AssetsSearchInteractor(
+        let interactor = SendAssetsOperationInteractor(
             stateObservable: stateObservable,
-            filter: filter,
             logger: Logger.shared
         )
 
@@ -165,7 +154,7 @@ enum AssetOperationViewFactory {
     }
 
     private static func createReceivePresenter(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         wallet: MetaAccountModel
     ) -> ReceiveAssetOperationPresenter {
@@ -189,7 +178,7 @@ enum AssetOperationViewFactory {
     }
 
     private static func createBuyPresenter(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         wallet: MetaAccountModel
     ) -> BuyAssetOperationPresenter {
