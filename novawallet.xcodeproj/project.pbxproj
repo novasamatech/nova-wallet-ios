@@ -8168,6 +8168,7 @@
 			isa = PBXGroup;
 			children = (
 				0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */,
+				77CBD39F2ABC35D900D646D6 /* SendAssetSearchBuilder.swift */,
 				0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */,
 			);
 			path = Model;
@@ -9481,7 +9482,6 @@
 				77A6F5C32A2F17BE004AFD1A /* SendAssetOperationWireframe.swift */,
 				7791076B2AB963E8000A4B17 /* SendAssetOperationViewController.swift */,
 				7791076D2AB96425000A4B17 /* SendAssetOperationProtocols.swift */,
-				77CBD39F2ABC35D900D646D6 /* SendAssetSearchBuilder.swift */,
 			);
 			path = Send;
 			sourceTree = "<group>";
