@@ -213,6 +213,7 @@ extension AssetSearchBuilder {
             }
 
             self.model = model
+            self.state = assetState(from: model)
             self.rebuildResult(for: self.query, filter: self.filter)
         }
     }
