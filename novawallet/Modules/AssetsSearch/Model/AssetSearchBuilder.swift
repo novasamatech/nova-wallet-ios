@@ -35,7 +35,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     }
 
     private func rebuildResult(for query: String, filter: ChainAssetsFilter?) {
-        rebuildResult(for: query, state: state ?? assetState(from: model), filter: filter)
+        rebuildResult(for: query, state: state ?? assetListState(from: model), filter: filter)
     }
 
     private func rebuildResult(for query: String, state: AssetListState, filter: ChainAssetsFilter?) {
@@ -169,7 +169,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         return allMatchedAssets + allMatchedChains
     }
 
-    func assetState(from model: AssetListModel) -> AssetListState {
+    func assetListState(from model: AssetListModel) -> AssetListState {
         let chainAssets = model.allChains.flatMap { _, chain in
             chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
         }
@@ -213,7 +213,7 @@ extension AssetSearchBuilder {
             }
 
             self.model = model
-            self.state = assetState(from: model)
+            self.state = assetListState(from: model)
             self.rebuildResult(for: self.query, filter: self.filter)
         }
     }

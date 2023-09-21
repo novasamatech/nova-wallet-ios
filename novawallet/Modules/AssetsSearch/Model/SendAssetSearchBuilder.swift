@@ -1,7 +1,7 @@
 import BigInt
 
 final class SendAssetSearchBuilder: AssetSearchBuilder {
-    override func assetState(from model: AssetListModel) -> AssetListState {
+    override func assetListState(from model: AssetListModel) -> AssetListState {
         let balanceResults = model.balances.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
             switch $1.value {
             case let .success(balance):
