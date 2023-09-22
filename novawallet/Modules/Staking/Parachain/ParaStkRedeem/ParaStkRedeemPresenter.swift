@@ -46,7 +46,7 @@ final class ParaStkRedeemPresenter {
     func isRedeemAll() -> Bool {
         let staked = delegator?.staked ?? 0
         let unstakingCollators = scheduledRequests?.map(\.collatorId) ?? []
-        let redeemableCollators = redeemableCollators()
+        let redeemableCollators = redeemableCollators() ?? []
 
         let unstakedAll = Set(unstakingCollators) == redeemableCollators
 
