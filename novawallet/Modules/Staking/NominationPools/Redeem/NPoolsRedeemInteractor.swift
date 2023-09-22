@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-final class NPoolsRedeemInteractor {
+final class NPoolsRedeemInteractor: RuntimeConstantFetching {
     weak var presenter: NPoolsRedeemInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -169,6 +169,21 @@ final class NPoolsRedeemInteractor {
             self?.presenter?.didReceive(submissionResult: result)
         }
     }
+
+    func provideExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(existentialDeposit):
+                self?.presenter?.didReceive(existentialDeposit: existentialDeposit)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .existentialDeposit(error))
+            }
+        }
+    }
 }
 
 extension NPoolsRedeemInteractor: NPoolsRedeemInteractorInputProtocol {
@@ -176,10 +191,15 @@ extension NPoolsRedeemInteractor: NPoolsRedeemInteractorInputProtocol {
         feeProxy.delegate = self
 
         setupBaseProviders()
+        provideExistentialDeposit()
     }
 
     func remakeSubscriptions() {
         setupBaseProviders()
+    }
+
+    func retryExistentialDeposit() {
+        provideExistentialDeposit()
     }
 
     func estimateFee() {

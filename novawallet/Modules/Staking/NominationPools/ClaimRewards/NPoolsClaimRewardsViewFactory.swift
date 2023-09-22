@@ -76,12 +76,14 @@ struct NPoolsClaimRewardsViewFactory {
         return NPoolsClaimRewardsInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
+            runtimeService: runtimeService,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             signingWrapper: signingWrapper,
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }
