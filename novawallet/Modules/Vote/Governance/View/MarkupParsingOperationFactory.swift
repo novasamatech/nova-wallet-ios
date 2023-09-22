@@ -29,21 +29,22 @@ final class MarkupParsingOperationFactory: MarkupParsingOperationFactoryProtocol
         let wrapper: CompoundOperationWrapper<MarkdownText?> = OperationCombiningService.compoundWrapper(
             operationManager: operationManager
         ) { [weak self] in
-            let markdownResult = try markdownOperation.extractNoCancellableResultData()
+            let markdownText = try markdownOperation.extractNoCancellableResultData()
 
             guard let self = self else {
-                return CompoundOperationWrapper.createWithResult(markdownResult)
+                return CompoundOperationWrapper.createWithResult(markdownText)
             }
 
-            let htmlParseOperation = self.htmlParsingOperationFactory.createParseOperation(for: markdownResult.attributedString)
+            let htmlParseOperation = self.htmlParsingOperationFactory
+                .createParseOperation(for: markdownText.attributedString)
 
             let mergeOperation = ClosureOperation<MarkdownText> {
-                let htmlResult = try htmlParseOperation.extractNoCancellableResultData()
+                let htmlText = try htmlParseOperation.extractNoCancellableResultData()
                 return MarkdownText(
-                    originalString: markdownResult.originalString,
-                    attributedString: htmlResult,
-                    preferredSize: markdownResult.preferredSize,
-                    isFull: markdownResult.isFull
+                    originalString: markdownText.originalString,
+                    attributedString: htmlText,
+                    preferredSize: markdownText.preferredSize,
+                    isFull: markdownText.isFull
                 )
             }
 

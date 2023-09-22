@@ -1,13 +1,13 @@
 import XCTest
 @testable import novawallet
 
-class MarkupParsingOperationFactoryTests: XCTestCase {
+final class MarkupParsingOperationFactoryTests: XCTestCase {
 
-    func testMarkupParse() throws {
+    func testMarkupParsing() throws {
         let queue = OperationQueue()
         let factory = MarkupParsingOperationFactory(
             markdownParsingOperationFactory: MarkdownParsingOperationFactory(maxSize: nil),
-            htmlParsingOperationFactory: HtmlParsingOperationFactory(imageDetectionEnabled: true),
+            htmlParsingOperationFactory: HtmlParsingOperationFactory(),
             operationQueue: queue)
         let wrapper = factory.createParseOperation(for: TestData.markupTextInput,
                                                    preferredWidth: 350)
@@ -17,11 +17,11 @@ class MarkupParsingOperationFactoryTests: XCTestCase {
         XCTAssertEqual(result?.attributedString.string, TestData.markupTextOutput)
     }
     
-    func testMarkdownParse() throws {
+    func testMarkdownParsing() throws {
         let queue = OperationQueue()
         let factory = MarkupParsingOperationFactory(
             markdownParsingOperationFactory: MarkdownParsingOperationFactory(maxSize: nil),
-            htmlParsingOperationFactory: HtmlParsingOperationFactory(imageDetectionEnabled: true),
+            htmlParsingOperationFactory: HtmlParsingOperationFactory(),
             operationQueue: queue)
         let wrapper = factory.createParseOperation(for: TestData.markdownTextInput,
                                                    preferredWidth: 350)
@@ -32,11 +32,11 @@ class MarkupParsingOperationFactoryTests: XCTestCase {
         
     }
     
-    func testHtmlMarkdownParse() throws {
+    func testHtmlMarkdownParsing() throws {
         let queue = OperationQueue()
         let factory = MarkupParsingOperationFactory(
             markdownParsingOperationFactory: MarkdownParsingOperationFactory(maxSize: nil),
-            htmlParsingOperationFactory: HtmlParsingOperationFactory(imageDetectionEnabled: true),
+            htmlParsingOperationFactory: HtmlParsingOperationFactory(),
             operationQueue: queue)
         let wrapper = factory.createParseOperation(for: TestData.htmlWithMarkdownInput,
                                                    preferredWidth: 350)
@@ -52,24 +52,24 @@ class MarkupParsingOperationFactoryTests: XCTestCase {
 
 enum TestData {
     static var markupTextInput: String = """
-Этот текст содержит пример использования **Markdown** форматирования, а также фрагмент HTML кода.
+This text contains an example of **Markdown** formatting usage, as well as a fragment of HTML code.
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Пример HTML</title>
+    <title>Sample HTML</title>
 </head>
 <body>
-    <h1>Это заголовок в HTML</h1>
-    <p>Это абзац текста в HTML.</p>
+    <h1>This is a HTML heading</h1>
+    <p>This is a paragraph of text in HTML.</p>
 </body>
 </html>
 """
     static var markupTextOutput: String = """
-Этот текст содержит пример использования Markdown форматирования, а также фрагмент HTML кода.
-Пример HTML
-Это заголовок в HTML
+This text contains an example of Markdown formatting usage, as well as a fragment of HTML code.
+Sample HTML
+This is a HTML heading
 
-Это абзац текста в HTML.
+This is a paragraph of text in HTML.
 
 """
     
@@ -113,7 +113,7 @@ Here's some bold and italic text in Markdown, within an HTML div element:
 This is a Markdown paragraph inside an HTML div.
   • You can create lists in Markdown.
   • Like this one.
-  m• And you can use HTML elements as well.
+  • And you can use HTML elements as well.
 
 """
 }

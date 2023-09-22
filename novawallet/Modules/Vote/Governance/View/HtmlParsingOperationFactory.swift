@@ -7,10 +7,10 @@ protocol HtmlParsingOperationFactoryProtocol {
 }
 
 final class HtmlParsingOperationFactory: HtmlParsingOperationFactoryProtocol {
-    let maxSize: Int?
+    let includeImages: Bool
 
-    init(maxSize: Int? = nil) {
-        self.maxSize = maxSize
+    init(includeImages: Bool = true) {
+        self.includeImages = includeImages
     }
 
     private func style() -> MarkupStyle {
@@ -29,7 +29,7 @@ final class HtmlParsingOperationFactory: HtmlParsingOperationFactoryProtocol {
     private func createParser() -> ZHTMLParser {
         var builder = ZHTMLParserBuilder()
         var tags = Self.htmlTags
-        if maxSize == nil {
+        if includeImages {
             tags.append(Self.imageTag(handler: nil))
         }
         for htmlTagName in tags {

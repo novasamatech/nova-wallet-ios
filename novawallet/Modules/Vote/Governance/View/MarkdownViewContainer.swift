@@ -29,8 +29,8 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
         operationQueue: OperationQueue = OperationQueue()
     ) {
         self.preferredWidth = preferredWidth
-        let markdownParsingOperationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength.map { $0 * 2 })
-        let htmlParsingOperationFactory = HtmlParsingOperationFactory(maxSize: maxTextLength)
+        let markdownParsingOperationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength)
+        let htmlParsingOperationFactory = HtmlParsingOperationFactory(includeImages: maxTextLength == nil)
 
         operationFactory = MarkupParsingOperationFactory(
             markdownParsingOperationFactory: markdownParsingOperationFactory,
