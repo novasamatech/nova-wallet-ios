@@ -30,6 +30,13 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
     ) -> DataValidating
 
     func accountIsNotSystem(for accountId: AccountId?, locale: Locale) -> DataValidating
+
+    func notViolatingMinBalancePaying(
+        fee: BigUInt?,
+        total: BigUInt?,
+        minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating
 }
 
 extension BaseDataValidatingFactoryProtocol {
@@ -230,6 +237,31 @@ extension BaseDataValidatingFactoryProtocol {
             let validation = CompoundSystemAccountValidation.substrateAccounts()
 
             return !validation.isSystem(accountId: accountId)
+        })
+    }
+
+    func notViolatingMinBalancePaying(
+        fee: BigUInt?,
+        total: BigUInt?,
+        minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.basePresentable.presentMinBalanceViolated(from: view, locale: locale)
+
+        }, preservesCondition: {
+            if
+                let total = total,
+                let fee = fee,
+                let minBalance = minBalance {
+                return fee + minBalance <= total
+            } else {
+                return false
+            }
         })
     }
 }

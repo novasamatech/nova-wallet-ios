@@ -13,7 +13,7 @@ final class MultipartQrOperationFactory {
 
     let bytesPerCode: Int
 
-    init(bytesPerCode: Int = 1000) {
+    init(bytesPerCode: Int = 512) {
         self.bytesPerCode = bytesPerCode
     }
 

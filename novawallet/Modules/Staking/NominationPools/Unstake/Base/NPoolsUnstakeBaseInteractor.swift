@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataProviding {
+class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataProviding, RuntimeConstantFetching {
     weak var basePresenter: NPoolsUnstakeBaseInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -280,6 +280,21 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
             return try builder.adding(call: call.runtimeCall())
         }
     }
+
+    func provideExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(existentialDeposit):
+                self?.basePresenter?.didReceive(existentialDeposit: existentialDeposit)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(error: .existentialDeposit(error))
+            }
+        }
+    }
 }
 
 extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol {
@@ -288,6 +303,7 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
         provideEraCountdown()
         provideStakingDuration()
         provideUnstakingLimits()
+        provideExistentialDeposit()
 
         feeProxy.delegate = self
         eventCenter.add(observer: self, dispatchIn: .main)
@@ -311,6 +327,10 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
 
     func retryUnstakeLimits() {
         provideUnstakingLimits()
+    }
+
+    func retryExistentialDeposit() {
+        provideExistentialDeposit()
     }
 
     func estimateFee(for points: BigUInt) {
@@ -432,12 +452,18 @@ extension NPoolsUnstakeBaseInteractor: StakingLocalStorageSubscriber, StakingLoc
 extension NPoolsUnstakeBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
-        accountId _: AccountId, chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
     ) {
         switch result {
         case let .success(assetBalance):
-            basePresenter?.didReceive(assetBalance: assetBalance)
+            // we can have case when user have np staking but no native balance
+            let balanceOrZero = assetBalance ?? .createZero(
+                for: .init(chainId: chainId, assetId: assetId),
+                accountId: accountId
+            )
+            basePresenter?.didReceive(assetBalance: balanceOrZero)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "balance"))
         }

@@ -18,6 +18,7 @@ final class ParaStkRedeemInteractor {
     private var priceProvider: StreamableProvider<PriceData>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
     private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
+    private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
 
     private(set) var extrinsicSubscriptionId: UInt16?
 
@@ -68,6 +69,11 @@ extension ParaStkRedeemInteractor: ParaStkRedeemInteractorInputProtocol {
         } else {
             presenter?.didReceivePrice(nil)
         }
+
+        delegatorProvider = subscribeToDelegatorState(
+            for: chainAsset.chain.chainId,
+            accountId: selectedAccount.chainAccount.accountId
+        )
 
         scheduledRequestsProvider = subscribeToScheduledRequests(
             for: chainAsset.chain.chainId,
@@ -196,6 +202,19 @@ extension ParaStkRedeemInteractor: ParastakingLocalStorageSubscriber, Parastakin
         switch result {
         case let .success(scheduledRequests):
             presenter?.didReceiveScheduledRequests(scheduledRequests)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
+    func handleParastakingDelegatorState(
+        result: Result<ParachainStaking.Delegator?, Error>,
+        for _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(delegator):
+            presenter?.didReceiveDelegator(delegator)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

@@ -7,4 +7,5 @@ enum NPoolsUnstakeBaseError: Error {
     case claimableRewards(Error)
     case unstakeLimits(Error)
     case fee(Error)
+    case existentialDeposit(Error)
 }

@@ -113,7 +113,7 @@ extension StakingTotalRewardView: SkeletonableView {
             containerView: self,
             spaceSize: spaceSize,
             offset: CGPoint(x: 0.0, y: 35.0),
-            size: UIConstants.skeletonBigRowSize
+            size: CGSize(width: 129, height: 16)
         )
 
         if hasPrice {
@@ -122,7 +122,7 @@ extension StakingTotalRewardView: SkeletonableView {
                 containerView: self,
                 spaceSize: spaceSize,
                 offset: CGPoint(x: 0.0, y: 65.0),
-                size: UIConstants.skeletonSmallRowSize
+                size: CGSize(width: 56, height: 10)
             )
 
             return [titleSkeleton, priceSkeleton]
