@@ -17,7 +17,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
 
     let operationQueue: OperationQueue
 
-    private let operationFactory: MarkdownParsingOperationFactoryProtocol
+    private let operationFactory: MarkupParsingOperationFactoryProtocol
 
     private var operation: CancellableCall?
 
@@ -29,7 +29,15 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
         operationQueue: OperationQueue = OperationQueue()
     ) {
         self.preferredWidth = preferredWidth
-        operationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength)
+        let markdownParsingOperationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength.map { $0 * 2 })
+        let htmlParsingOperationFactory = HtmlParsingOperationFactory(maxSize: maxTextLength)
+
+        operationFactory = MarkupParsingOperationFactory(
+            markdownParsingOperationFactory: markdownParsingOperationFactory,
+            htmlParsingOperationFactory: htmlParsingOperationFactory,
+            operationQueue: operationQueue
+        )
+
         self.operationQueue = operationQueue
 
         super.init(frame: .zero)
@@ -105,17 +113,19 @@ extension MarkdownViewContainer {
         clear(cancellable: &operation)
         clearTextView()
 
-        let parsingOperation = operationFactory.createParseOperation(for: string, preferredWidth: preferredWidth)
+        let wrapper = operationFactory.createParseOperation(for: string, preferredWidth: preferredWidth)
 
-        parsingOperation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard self?.operation === parsingOperation else {
+                guard self?.operation === wrapper else {
                     completion?(nil)
                     return
                 }
 
                 do {
-                    let model = try parsingOperation.extractNoCancellableResultData()
+                    guard let model = try wrapper.targetOperation.extractNoCancellableResultData() else {
+                        return
+                    }
                     self?.bind(model: model)
                     completion?(model)
                 } catch {
@@ -124,9 +134,9 @@ extension MarkdownViewContainer {
             }
         }
 
-        operation = parsingOperation
+        operation = wrapper
 
-        operationQueue.addOperation(parsingOperation)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
