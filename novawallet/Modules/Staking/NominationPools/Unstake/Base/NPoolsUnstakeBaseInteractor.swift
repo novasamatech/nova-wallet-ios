@@ -452,12 +452,18 @@ extension NPoolsUnstakeBaseInteractor: StakingLocalStorageSubscriber, StakingLoc
 extension NPoolsUnstakeBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
-        accountId _: AccountId, chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
     ) {
         switch result {
         case let .success(assetBalance):
-            basePresenter?.didReceive(assetBalance: assetBalance)
+            // we can have case when user have np staking but no native balance
+            let balanceOrZero = assetBalance ?? .createZero(
+                for: .init(chainId: chainId, assetId: assetId),
+                accountId: accountId
+            )
+            basePresenter?.didReceive(assetBalance: balanceOrZero)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "balance"))
         }
