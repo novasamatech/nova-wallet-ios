@@ -414,8 +414,8 @@
 "staking.custom.header.validators.title" = "Validators: %li of %li";
 "staking.set.validators.title" = "Select validators to start staking";
 "staking.set.validators.message" = "Validators are not selected";
-"staking.is.not.available.title" = "%@ is currently unavailable";
-"staking.max.nominators.reached.message" = "The maximum number of nominators has been reached. Try again later";
+"staking.is.not.available.title" = "%@ is currently\nunavailable";
+"staking.max.nominators.reached.message" = "The maximum number of nominators\nhas been reached. Try again later";
 "staking.custom.blocked.warning" = "This validator is not accepting nominations at this moment. Please, try again in the next era.";
 "staking.alert.start.next.era.message" = "Please wait for the next era to start.";
 "staking.custom.proceed.button.disabled.title" = "Select validators (max %li)";
