@@ -1360,7 +1360,7 @@
 "staking.select.pool.members" = "members";
 "staking.select.pool.count" = "active pools: %d";
 "staking.select.pool.title" = "Select pool";
-"staking.search.pool.empty" = "No pool with entered name or pool ID were found. Make sure you entered correct data";
+"staking.search.pool.empty" = "No pool with entered name or pool\nID were found. Make sure you\nentered correct data";
 "staking.start.balance.with.fiat" = "Available balance: %1$@ (%2$@)";
 "staking.pool.is.not.open.message" = "You cannot join pool that is not open. Please, contact the pool owner.";
 "staking.pool.is.not.open.title" = "Pool is not open";
