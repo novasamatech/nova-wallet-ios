@@ -76,7 +76,11 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
+    func allowsNewNominators(
+        flag: Bool,
+        staking: SelectedStakingOption?,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class StakingDataValidatingFactory {
@@ -321,7 +325,12 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 return
             }
 
-            self?.presentable.presentMaxNumberOfNominatorsReached(from: view, locale: locale)
+            let stakingType = R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages)
+            self?.presentable.presentMaxNumberOfNominatorsReached(
+                from: view,
+                stakingType: stakingType,
+                locale: locale
+            )
         }, preservesCondition: {
             if
                 !hasExistingNomination,
@@ -422,13 +431,33 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating {
+    func allowsNewNominators(
+        flag: Bool,
+        staking: SelectedStakingOption?,
+        locale: Locale
+    ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
             }
 
-            self?.presentable.presentMaxNumberOfNominatorsReached(from: view, locale: locale)
+            let stakingType: String
+            switch staking {
+            case .direct:
+                stakingType = R.string.localizable.stakingDirect(
+                    preferredLanguages: locale.rLanguages)
+            case .pool:
+                stakingType = R.string.localizable.stakingPool(
+                    preferredLanguages: locale.rLanguages)
+            case .none:
+                stakingType = ""
+            }
+
+            self?.presentable.presentMaxNumberOfNominatorsReached(
+                from: view,
+                stakingType: stakingType,
+                locale: locale
+            )
         }, preservesCondition: {
             flag
         })
