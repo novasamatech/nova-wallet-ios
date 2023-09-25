@@ -1,7 +1,10 @@
 import RobinHood
 
 protocol MarkupParsingOperationFactoryProtocol {
-    func createParseOperation(for string: String, preferredWidth: CGFloat) -> CompoundOperationWrapper<MarkdownText?>
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat
+    ) -> CompoundOperationWrapper<MarkupAttributedText?>
 }
 
 final class MarkupParsingOperationFactory: MarkupParsingOperationFactoryProtocol {
@@ -20,47 +23,47 @@ final class MarkupParsingOperationFactory: MarkupParsingOperationFactoryProtocol
         self.htmlParsingOperationFactory = htmlParsingOperationFactory
     }
 
-    func createParseOperation(for string: String, preferredWidth: CGFloat) -> CompoundOperationWrapper<MarkdownText?> {
-        let markdownOperation = markdownParsingOperationFactory.createParseOperation(
-            for: string,
-            preferredWidth: preferredWidth
-        )
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat
+    ) -> CompoundOperationWrapper<MarkupAttributedText?> {
+        let detectionOperation = ClosureOperation<Bool> {
+            string.isHtml()
+        }
 
-        let wrapper: CompoundOperationWrapper<MarkdownText?> = OperationCombiningService.compoundWrapper(
-            operationManager: operationManager
-        ) { [weak self] in
-            let markdownText = try markdownOperation.extractNoCancellableResultData()
+        let markupOperation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let isHtml = try detectionOperation.extractNoCancellableResultData()
 
-            guard let self = self else {
-                return CompoundOperationWrapper.createWithResult(markdownText)
-            }
+            let operation: BaseOperation<MarkupAttributedText>
 
-            let htmlParseOperation = self.htmlParsingOperationFactory
-                .createParseOperation(for: markdownText.attributedString)
-
-            let mergeOperation = ClosureOperation<MarkdownText> {
-                let htmlText = try htmlParseOperation.extractNoCancellableResultData()
-                return MarkdownText(
-                    originalString: markdownText.originalString,
-                    attributedString: htmlText,
-                    preferredSize: markdownText.preferredSize,
-                    isFull: markdownText.isFull
+            if isHtml {
+                operation = self.htmlParsingOperationFactory.createParseOperation(
+                    for: string,
+                    preferredWidth: preferredWidth
+                )
+            } else {
+                operation = self.markdownParsingOperationFactory.createParseOperation(
+                    for: string,
+                    preferredWidth: preferredWidth
                 )
             }
 
-            mergeOperation.addDependency(htmlParseOperation)
+            return [CompoundOperationWrapper(targetOperation: operation)]
+        }.longrunOperation()
 
-            return CompoundOperationWrapper<MarkdownText>(
-                targetOperation: mergeOperation,
-                dependencies: [htmlParseOperation]
-            )
+        markupOperation.addDependency(detectionOperation)
+
+        let mergeOperation = ClosureOperation<MarkupAttributedText?> {
+            try markupOperation.extractNoCancellableResultData().first
         }
 
-        wrapper.addDependency(operations: [markdownOperation])
+        mergeOperation.addDependency(markupOperation)
 
-        return CompoundOperationWrapper<MarkdownText?>(
-            targetOperation: wrapper.targetOperation,
-            dependencies: [markdownOperation] + wrapper.dependencies
+        return CompoundOperationWrapper<MarkupAttributedText?>(
+            targetOperation: mergeOperation,
+            dependencies: [detectionOperation, markupOperation]
         )
     }
 }

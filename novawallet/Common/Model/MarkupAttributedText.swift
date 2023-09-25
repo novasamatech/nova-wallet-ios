@@ -1,6 +1,6 @@
 import UIKit
 
-struct MarkdownText {
+struct MarkupAttributedText {
     static let readMoreThreshold = 180
 
     let originalString: String

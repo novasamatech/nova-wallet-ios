@@ -3,57 +3,84 @@ import ZNSTextAttachment
 import RobinHood
 
 protocol HtmlParsingOperationFactoryProtocol {
-    func createParseOperation(for string: NSAttributedString) -> BaseOperation<NSAttributedString>
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat
+    ) -> BaseOperation<MarkupAttributedText>
 }
 
 final class HtmlParsingOperationFactory: HtmlParsingOperationFactoryProtocol {
-    let includeImages: Bool
+    let maxSize: Int?
 
-    init(includeImages: Bool = true) {
-        self.includeImages = includeImages
+    init(maxSize: Int?) {
+        self.maxSize = maxSize
     }
 
-    private func style() -> MarkupStyle {
-        let textParagraphStyle = NSMutableParagraphStyle()
-        textParagraphStyle.paragraphSpacing = 8
-        textParagraphStyle.paragraphSpacingBefore = 8
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat,
+        maxSize: Int?
+    ) -> BaseOperation<MarkupAttributedText> {
+        ClosureOperation<MarkupAttributedText> {
+            var builder = ZHTMLParserBuilder()
+            var tags = Self.htmlTags
 
-        var style = MarkupStyle()
-        style.font = MarkupStyleFont(UIFont.systemFont(ofSize: 15))
-        style.paragraphStyle = MarkupStyleParagraphStyle(textParagraphStyle)
-        style.foregroundColor = MarkupStyleColor(color: R.color.colorTextSecondary()!)
+            if maxSize == nil {
+                tags.append(Self.imageTag(handler: nil))
+            }
+            for htmlTagName in tags {
+                builder = builder.add(htmlTagName)
+            }
+            for styleAttribute in ZHTMLParserBuilder.styleAttributes {
+                builder = builder.add(styleAttribute)
+            }
 
-        return style
+            var style = MarkupStyle()
+            style.font = MarkupStyleFont(UIFont.systemFont(ofSize: 15))
+            style.foregroundColor = MarkupStyleColor(color: R.color.colorTextSecondary()!)
+
+            builder = builder.set(rootStyle: style)
+
+            let attributedString: NSAttributedString
+            let isFull: Bool
+
+            let parser = builder.build()
+
+            if let maxSize = maxSize {
+                isFull = string.count <= maxSize
+                let preprocessed = string.convertToReadMore(after: 4 * maxSize)
+                let resultString = parser.render(preprocessed)
+                let maxLength = maxSize > resultString.length ? resultString.length : maxSize
+                attributedString = resultString.attributedSubstring(
+                    from: NSRange(location: 0, length: maxLength)
+                )
+            } else {
+                isFull = true
+                attributedString = parser.render(string)
+            }
+
+            let preferredHeight = attributedString.boundingRect(
+                with: CGSize(width: preferredWidth, height: 0),
+                options: .usesLineFragmentOrigin,
+                context: nil
+            ).height
+
+            let preferredSize = CGSize(width: preferredWidth, height: preferredHeight)
+
+            return .init(
+                originalString: string,
+                attributedString: attributedString,
+                preferredSize: preferredSize,
+                isFull: isFull
+            )
+        }
     }
 
-    private func createParser() -> ZHTMLParser {
-        var builder = ZHTMLParserBuilder()
-        var tags = Self.htmlTags
-        if includeImages {
-            tags.append(Self.imageTag(handler: nil))
-        }
-        for htmlTagName in tags {
-            builder = builder.add(htmlTagName)
-        }
-        for styleAttribute in ZHTMLParserBuilder.styleAttributes {
-            builder = builder.add(styleAttribute)
-        }
-        builder = builder.set(rootStyle: style())
-
-        return builder.build()
-    }
-
-    private func createOperation(
-        for string: NSAttributedString
-    ) -> BaseOperation<NSAttributedString> {
-        ClosureOperation<NSAttributedString> {
-            let parser: ZHTMLParser = self.createParser()
-            return parser.render(string)
-        }
-    }
-
-    func createParseOperation(for string: NSAttributedString) -> BaseOperation<NSAttributedString> {
-        createOperation(for: string)
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat
+    ) -> BaseOperation<MarkupAttributedText> {
+        createParseOperation(for: string, preferredWidth: preferredWidth, maxSize: maxSize)
     }
 }
 

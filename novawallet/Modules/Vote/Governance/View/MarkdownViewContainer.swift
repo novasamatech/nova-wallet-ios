@@ -8,7 +8,7 @@ protocol MarkdownViewContainerDelegate: AnyObject {
 
 final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
     private var textView: UITextView?
-    private var model: MarkdownText?
+    private var model: MarkupAttributedText?
     let preferredWidth: CGFloat
 
     override var intrinsicContentSize: CGSize {
@@ -30,7 +30,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
     ) {
         self.preferredWidth = preferredWidth
         let markdownParsingOperationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength)
-        let htmlParsingOperationFactory = HtmlParsingOperationFactory(includeImages: maxTextLength == nil)
+        let htmlParsingOperationFactory = HtmlParsingOperationFactory(maxSize: maxTextLength)
 
         operationFactory = MarkupParsingOperationFactory(
             markdownParsingOperationFactory: markdownParsingOperationFactory,
@@ -92,7 +92,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
         self.textView = textView
     }
 
-    private func bind(model: MarkdownText) {
+    private func bind(model: MarkupAttributedText) {
         self.model = model
 
         setupTextView(for: model.preferredSize, text: model.attributedString)
@@ -102,7 +102,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
 }
 
 extension MarkdownViewContainer {
-    func load(from string: String, completion: ((MarkdownText?) -> Void)?) {
+    func load(from string: String, completion: ((MarkupAttributedText?) -> Void)?) {
         guard model?.originalString != string else {
             completion?(model)
             return

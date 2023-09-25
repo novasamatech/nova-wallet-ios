@@ -4,7 +4,10 @@ import CDMarkdownKit
 import UIKit
 
 protocol MarkdownParsingOperationFactoryProtocol {
-    func createParseOperation(for string: String, preferredWidth: CGFloat) -> BaseOperation<MarkdownText>
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat
+    ) -> BaseOperation<MarkupAttributedText>
 }
 
 final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProtocol {
@@ -65,24 +68,24 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
         for string: String,
         preferredWidth: CGFloat,
         maxSize: Int?
-    ) -> BaseOperation<MarkdownText> {
-        ClosureOperation<MarkdownText> {
-            let preprocessed: String
+    ) -> BaseOperation<MarkupAttributedText> {
+        ClosureOperation<MarkupAttributedText> {
+            let attributedString: NSAttributedString
             let isFull: Bool
-
-            let parser: CDMarkdownParser
 
             if let maxSize = maxSize {
                 isFull = string.count <= maxSize
-                preprocessed = string.convertToReadMore(after: maxSize)
-                parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: false)
+                let preprocessed = string.convertToReadMore(after: 4 * maxSize)
+                let parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: false)
+                let resultString = parser.parse(preprocessed)
+
+                let maxLenth = maxSize > resultString.length ? resultString.length : maxSize
+                attributedString = resultString.attributedSubstring(from: NSRange(location: 0, length: maxLenth))
             } else {
                 isFull = true
-                preprocessed = string
-                parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: true)
+                let parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: true)
+                attributedString = parser.parse(string)
             }
-
-            let attributedString = parser.parse(preprocessed)
 
             let preferredHeight = attributedString.boundingRect(
                 with: CGSize(width: preferredWidth, height: 0),
@@ -101,7 +104,10 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
         }
     }
 
-    func createParseOperation(for string: String, preferredWidth: CGFloat) -> BaseOperation<MarkdownText> {
+    func createParseOperation(
+        for string: String,
+        preferredWidth: CGFloat
+    ) -> BaseOperation<MarkupAttributedText> {
         createOperation(for: string, preferredWidth: preferredWidth, maxSize: maxSize)
     }
 }
