@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 
 final class AssetDetailsInteractor {
-    weak var presenter: AssetDetailsInteractorOutputProtocol!
+    weak var presenter: AssetDetailsInteractorOutputProtocol?
     let chainAsset: ChainAsset
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -46,7 +46,7 @@ final class AssetDetailsInteractor {
         if let priceId = chainAsset.asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceive(price: nil)
+            presenter?.didReceive(price: nil)
         }
     }
 
@@ -71,8 +71,8 @@ final class AssetDetailsInteractor {
 
         operations.insert(.receive)
 
-        presenter.didReceive(purchaseActions: actions)
-        presenter.didReceive(availableOperations: operations)
+        presenter?.didReceive(purchaseActions: actions)
+        presenter?.didReceive(availableOperations: operations)
     }
 }
 
@@ -121,12 +121,12 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
 
         switch result {
         case let .success(balance):
-            presenter.didReceive(balance: balance ?? AssetBalance.createZero(
+            presenter?.didReceive(balance: balance ?? AssetBalance.createZero(
                 for: chainAsset.chainAssetId,
                 accountId: accountId
             ))
         case let .failure(error):
-            presenter.didReceive(error: .accountBalance(error))
+            presenter?.didReceive(error: .accountBalance(error))
         }
     }
 
@@ -144,9 +144,9 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
 
         switch result {
         case let .failure(error):
-            presenter.didReceive(error: .locks(error))
+            presenter?.didReceive(error: .locks(error))
         case let .success(changes):
-            presenter.didReceive(lockChanges: changes)
+            presenter?.didReceive(lockChanges: changes)
         }
     }
 }
@@ -155,9 +155,9 @@ extension AssetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscri
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
-            presenter.didReceive(price: priceData)
+            presenter?.didReceive(price: priceData)
         case let .failure(error):
-            presenter.didReceive(error: .price(error))
+            presenter?.didReceive(error: .price(error))
         }
     }
 }
@@ -178,9 +178,9 @@ extension AssetDetailsInteractor: ExternalAssetBalanceSubscriber, ExternalAssetB
     ) {
         switch result {
         case let .success(externalBalanceChanges):
-            presenter.didReceive(externalBalanceChanges: externalBalanceChanges)
+            presenter?.didReceive(externalBalanceChanges: externalBalanceChanges)
         case let .failure(error):
-            presenter.didReceive(error: .externalBalances(error))
+            presenter?.didReceive(error: .externalBalances(error))
         }
     }
 }
