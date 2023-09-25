@@ -74,13 +74,12 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
             let isFull: Bool
 
             if let maxSize = maxSize {
-                isFull = string.count <= maxSize
-                let preprocessed = string.convertToReadMore(after: 4 * maxSize)
+                let preprocessed = String(string.prefix(4 * maxSize))
                 let parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: false)
                 let resultString = parser.parse(preprocessed)
 
-                let maxLenth = maxSize > resultString.length ? resultString.length : maxSize
-                attributedString = resultString.attributedSubstring(from: NSRange(location: 0, length: maxLenth))
+                attributedString = resultString.truncate(maxLength: maxSize)
+                isFull = resultString.length <= maxSize
             } else {
                 isFull = true
                 let parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: true)

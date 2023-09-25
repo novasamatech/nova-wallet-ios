@@ -47,13 +47,11 @@ final class HtmlParsingOperationFactory: HtmlParsingOperationFactoryProtocol {
             let parser = builder.build()
 
             if let maxSize = maxSize {
-                isFull = string.count <= maxSize
-                let preprocessed = string.convertToReadMore(after: 4 * maxSize)
+                let preprocessed = String(string.prefix(4 * maxSize))
                 let resultString = parser.render(preprocessed)
-                let maxLength = maxSize > resultString.length ? resultString.length : maxSize
-                attributedString = resultString.attributedSubstring(
-                    from: NSRange(location: 0, length: maxLength)
-                )
+
+                attributedString = resultString.truncate(maxLength: maxSize)
+                isFull = resultString.length <= maxSize
             } else {
                 isFull = true
                 attributedString = parser.render(string)
