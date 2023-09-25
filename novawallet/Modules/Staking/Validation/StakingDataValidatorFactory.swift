@@ -444,10 +444,10 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
             let stakingType: String
             switch staking {
             case .direct:
-                stakingType = R.string.localizable.stakingDirect(
+                stakingType = R.string.localizable.stakingTypeDirect(
                     preferredLanguages: locale.rLanguages)
             case .pool:
-                stakingType = R.string.localizable.stakingPool(
+                stakingType = R.string.localizable.stakingTypeNominationPool(
                     preferredLanguages: locale.rLanguages)
             case .none:
                 stakingType = ""
