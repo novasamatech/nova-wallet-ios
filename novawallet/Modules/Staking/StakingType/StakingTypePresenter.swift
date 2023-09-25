@@ -17,8 +17,8 @@ final class StakingTypePresenter {
     private var directStakingRestrictions: RelaychainStakingRestrictions?
     private var directStakingAvailable: Bool = false
     private var method: StakingSelectionMethod?
+    private var initialMethod: StakingSelectionMethod
     private var selection: StakingTypeSelection
-    private var hasChanges: Bool = false
 
     init(
         interactor: StakingTypeInteractorInputProtocol,
@@ -38,6 +38,7 @@ final class StakingTypePresenter {
         self.delegate = delegate
         self.amount = amount
         self.canChangeType = canChangeType
+        self.initialMethod = initialMethod
         method = initialMethod
 
         switch initialMethod.selectedStakingOption {
@@ -101,7 +102,10 @@ final class StakingTypePresenter {
         provideDirectStakingViewModel()
         provideNominationPoolViewModel()
         provideStakingSelection()
+        provideSaveChangesState()
+    }
 
+    private func provideSaveChangesState() {
         if hasChanges, method != nil {
             view?.didReceiveSaveChangesState(available: true)
         } else {
@@ -184,6 +188,10 @@ final class StakingTypePresenter {
 
         wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
+
+    private var hasChanges: Bool {
+        initialMethod.selectedStakingOption != method?.selectedStakingOption
+    }
 }
 
 extension StakingTypePresenter: StakingTypePresenterProtocol {
@@ -265,6 +273,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
 
                 provideStakingSelection()
                 provideNominationPoolViewModel()
+                provideSaveChangesState()
             } else {
                 let minStake = viewModelFactory.minStake(
                     minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
@@ -280,6 +289,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
 
             provideStakingSelection()
             provideDirectStakingViewModel()
+            provideSaveChangesState()
         }
 
         interactor.change(stakingTypeSelection: selection)
@@ -294,7 +304,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func back() {
-        if hasChanges {
+        if hasChanges, method != nil {
             showSaveChangesAlert()
         } else {
             wireframe.complete(from: view)
@@ -316,7 +326,6 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
 
     func didReceive(method: StakingSelectionMethod) {
         self.method = method
-        hasChanges = true
         updateView()
     }
 
