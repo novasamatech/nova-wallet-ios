@@ -7,13 +7,6 @@ typealias CrossChainValidationFee = (origin: BigUInt?, crossChain: BigUInt?)
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 
-    func notViolatingMinBalancePaying(
-        fee: BigUInt?,
-        total: BigUInt?,
-        minBalance: BigUInt?,
-        locale: Locale
-    ) -> DataValidating
-
     func willBeReaped(
         amount: Decimal?,
         fee: BigUInt?,
@@ -94,31 +87,6 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
             self?.basePresentable.presentFeeNotReceived(from: view, locale: locale)
         }, preservesCondition: { fee != nil })
-    }
-
-    func notViolatingMinBalancePaying(
-        fee: BigUInt?,
-        total: BigUInt?,
-        minBalance: BigUInt?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.presentable.presentCantPayFee(from: view, locale: locale)
-
-        }, preservesCondition: {
-            if
-                let total = total,
-                let fee = fee,
-                let minBalance = minBalance {
-                return fee + minBalance <= total
-            } else {
-                return false
-            }
-        })
     }
 
     func willBeReaped(

@@ -20,6 +20,7 @@ final class NPoolsClaimRewardsPresenter {
     var assetBalance: AssetBalance?
     var claimableRewards: BigUInt?
     var price: PriceData?
+    var existentialDeposit: BigUInt?
     var fee: BigUInt?
 
     init(
@@ -135,6 +136,12 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
+            dataValidatorFactory.notViolatingMinBalancePaying(
+                fee: fee,
+                total: assetBalance?.totalInPlank,
+                minBalance: existentialDeposit,
+                locale: selectedLocale
+            ),
             dataValidatorFactory.hasProfitAfterClaim(
                 rewards: claimableRewards,
                 fee: fee,
@@ -211,6 +218,12 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         provideFee()
     }
 
+    func didReceive(existentialDeposit: BigUInt?) {
+        logger.debug("Existential deposit: \(String(existentialDeposit ?? 0))")
+
+        self.existentialDeposit = existentialDeposit
+    }
+
     func didReceive(submissionResult: Result<String, Error>) {
         view?.didStopLoading()
 
@@ -241,6 +254,10 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         case .fee:
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
+            }
+        case .existentialDeposit:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryExistentialDeposit()
             }
         }
     }

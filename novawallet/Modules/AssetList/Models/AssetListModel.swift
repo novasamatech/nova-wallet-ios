@@ -1,40 +1,29 @@
-import Foundation
 import BigInt
 
-struct AssetListState {
+typealias AssetListModelObservable = Observable<NotEqualWrapper<AssetListModel>>
+
+struct AssetListModel {
     let priceResult: Result<[ChainAssetId: PriceData], Error>?
-    let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
     let allChains: [ChainModel.Id: ChainModel]
+    let balances: [ChainAssetId: Result<AssetBalance, Error>]
     let externalBalances: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
 
     init(
         priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
-        balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
+        balances: [ChainAssetId: Result<AssetBalance, Error>] = [:],
         allChains: [ChainModel.Id: ChainModel] = [:],
         externalBalances: Result<[ChainAssetId: [ExternalAssetBalance]], Error>? = nil
     ) {
         self.priceResult = priceResult
-        self.balanceResults = balanceResults
+        self.balances = balances
         self.allChains = allChains
         self.externalBalances = externalBalances
     }
 
     init(model: AssetListBuilderResult.Model) {
         priceResult = model.priceResult
-        balanceResults = model.balanceResults
         allChains = model.allChains
+        balances = model.balances
         externalBalances = model.externalBalanceResult
-    }
-
-    func chainAsset(for chainAssetId: ChainAssetId) -> ChainAsset? {
-        let chainId = chainAssetId.chainId
-        let assetId = chainAssetId.assetId
-
-        guard let chain = allChains[chainId],
-              let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-            return nil
-        }
-
-        return .init(chain: chain, asset: asset)
     }
 }

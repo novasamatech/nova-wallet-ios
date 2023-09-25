@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-final class NPoolsClaimRewardsInteractor {
+final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching {
     weak var presenter: NPoolsClaimRewardsInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -11,6 +11,8 @@ final class NPoolsClaimRewardsInteractor {
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let signingWrapper: SigningWrapperProtocol
+    let runtimeService: RuntimeCodingServiceProtocol
+    let operationQueue: OperationQueue
 
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -34,22 +36,26 @@ final class NPoolsClaimRewardsInteractor {
     init(
         selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
+        runtimeService: RuntimeCodingServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         signingWrapper: SigningWrapperProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
+        self.runtimeService = runtimeService
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
         self.signingWrapper = signingWrapper
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -112,6 +118,21 @@ final class NPoolsClaimRewardsInteractor {
             }
         }
     }
+
+    func provideExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(existentialDeposit):
+                self?.presenter?.didReceive(existentialDeposit: existentialDeposit)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .existentialDeposit(error))
+            }
+        }
+    }
 }
 
 extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtocol {
@@ -119,10 +140,15 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
         feeProxy.delegate = self
 
         setupBaseProviders()
+        provideExistentialDeposit()
     }
 
     func remakeSubscriptions() {
         setupBaseProviders()
+    }
+
+    func retryExistentialDeposit() {
+        provideExistentialDeposit()
     }
 
     func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy) {
@@ -212,12 +238,19 @@ extension NPoolsClaimRewardsInteractor: NPoolsLocalStorageSubscriber, NPoolsLoca
 extension NPoolsClaimRewardsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
-        accountId _: AccountId, chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
     ) {
         switch result {
         case let .success(assetBalance):
-            presenter?.didReceive(assetBalance: assetBalance)
+            // we can have case when user have np staking but no native balance
+            let balanceOrZero = assetBalance ?? .createZero(
+                for: .init(chainId: chainId, assetId: assetId),
+                accountId: accountId
+            )
+
+            presenter?.didReceive(assetBalance: balanceOrZero)
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "balance"))
         }

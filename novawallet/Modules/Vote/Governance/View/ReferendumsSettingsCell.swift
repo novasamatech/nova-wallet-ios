@@ -14,20 +14,7 @@ final class ReferendumsSettingsCell: UITableViewCell {
             R.color.colorCellBackgroundPressed()!
     }
 
-    let filterButton: TriangularedBlurButton = .create {
-        $0.imageWithTitleView?.iconImage = R.image.iconFilterAssets()
-        $0.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
-        $0.changesContentOpacityWhenHighlighted = true
-        $0.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
-    }
-
-    let badgeView: UIView = .create {
-        $0.backgroundColor = R.color.colorIconAccent()
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 3
-        $0.isHidden = true
-    }
+    let filterButton = FilterBlurButton()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -49,14 +36,6 @@ final class ReferendumsSettingsCell: UITableViewCell {
             make.centerY.equalToSuperview()
         }
 
-        contentView.addSubview(badgeView)
-
-        badgeView.snp.makeConstraints { make in
-            make.trailing.equalTo(filterButton.snp.trailing).offset(-12)
-            make.top.equalTo(filterButton.snp.top).offset(6)
-            make.size.equalTo(6)
-        }
-
         contentView.addSubview(searchButton)
 
         searchButton.snp.makeConstraints { make in
@@ -75,6 +54,6 @@ final class ReferendumsSettingsCell: UITableViewCell {
 
     func bind(title: String?, isFilterOn: Bool) {
         titleLabel.text = title
-        badgeView.isHidden = !isFilterOn
+        filterButton.bind(isFilterOn: isFilterOn)
     }
 }

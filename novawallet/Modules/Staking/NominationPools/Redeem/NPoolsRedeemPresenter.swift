@@ -19,6 +19,7 @@ final class NPoolsRedeemPresenter {
     var poolMember: NominationPools.PoolMember?
     var subPools: NominationPools.SubPools?
     var activeEra: ActiveEraInfo?
+    var existentialDeposit: BigUInt?
     var price: PriceData?
     var fee: BigUInt?
 
@@ -131,6 +132,12 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
                 fee: fee,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
+            ),
+            dataValidatorFactory.notViolatingMinBalancePaying(
+                fee: fee,
+                total: assetBalance?.totalInPlank,
+                minBalance: existentialDeposit,
+                locale: selectedLocale
             )
         ]).runValidation { [weak self] in
             self?.view?.didStartLoading()
@@ -194,6 +201,12 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         provideFee()
     }
 
+    func didReceive(existentialDeposit: BigUInt?) {
+        logger.debug("Existential deposit: \(String(existentialDeposit ?? 0))")
+
+        self.existentialDeposit = existentialDeposit
+    }
+
     func didReceive(fee: BigUInt?) {
         logger.debug("Fee: \(String(describing: assetBalance))")
 
@@ -236,6 +249,10 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         case .fee:
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.estimateFee()
+            }
+        case .existentialDeposit:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryExistentialDeposit()
             }
         }
     }

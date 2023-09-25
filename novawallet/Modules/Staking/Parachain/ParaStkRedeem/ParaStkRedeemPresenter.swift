@@ -17,6 +17,7 @@ final class ParaStkRedeemPresenter {
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
     private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
+    private(set) var delegator: ParachainStaking.Delegator?
     private(set) var roundInfo: ParachainStaking.RoundInfo?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -40,6 +41,16 @@ final class ParaStkRedeemPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    func isRedeemAll() -> Bool {
+        let staked = delegator?.staked ?? 0
+        let unstakingCollators = scheduledRequests?.map(\.collatorId) ?? []
+        let redeemableCollators = redeemableCollators() ?? []
+
+        let unstakedAll = Set(unstakingCollators) == redeemableCollators
+
+        return staked == 0 && unstakedAll
     }
 
     func redeemableCollators() -> Set<AccountId>? {
@@ -236,6 +247,12 @@ extension ParaStkRedeemPresenter: ParaStkRedeemInteractorOutputProtocol {
         }
     }
 
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
+        logger.debug("Delegator: \(String(describing: delegator))")
+
+        self.delegator = delegator
+    }
+
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?) {
         self.roundInfo = roundInfo
 
@@ -250,7 +267,19 @@ extension ParaStkRedeemPresenter: ParaStkRedeemInteractorOutputProtocol {
 
         switch result {
         case .success:
-            wireframe.complete(on: view, locale: selectedLocale)
+            if isRedeemAll() {
+                wireframe.presentExtrinsicSubmission(
+                    from: view,
+                    completionAction: .popBaseAndDismiss,
+                    locale: selectedLocale
+                )
+            } else {
+                wireframe.presentExtrinsicSubmission(
+                    from: view,
+                    completionAction: .dismiss,
+                    locale: selectedLocale
+                )
+            }
         case let .failure(error):
             applyCurrentState()
             refreshFee()

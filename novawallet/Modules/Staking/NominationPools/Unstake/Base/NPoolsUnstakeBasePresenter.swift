@@ -14,6 +14,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
+    var existentialDeposit: BigUInt?
     var poolMember: NominationPools.PoolMember?
     var bondedPool: NominationPools.BondedPool?
     var stakingLedger: StakingLedger?
@@ -105,6 +106,12 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
+            dataValidatorFactory.notViolatingMinBalancePaying(
+                fee: fee,
+                total: assetBalance?.totalInPlank,
+                minBalance: existentialDeposit,
+                locale: selectedLocale
+            ),
             dataValidatorFactory.hasLedgerUnstakeSpace(
                 for: stakingLedger,
                 limits: unstakingLimits,
@@ -156,6 +163,12 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         logger.debug("Asset balance: \(String(describing: assetBalance))")
 
         self.assetBalance = assetBalance
+    }
+
+    func didReceive(existentialDeposit: BigUInt?) {
+        logger.debug("Existential deposit: \(String(existentialDeposit ?? 0))")
+
+        self.existentialDeposit = existentialDeposit
     }
 
     func didReceive(poolMember: NominationPools.PoolMember?) {
@@ -270,6 +283,10 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         case .fee:
             baseWireframe.presentFeeStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
+            }
+        case .existentialDeposit:
+            baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
+                self?.baseInteractor.retryExistentialDeposit()
             }
         }
     }
