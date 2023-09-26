@@ -740,6 +740,8 @@
 		77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */; };
 		77CC82A52A984EDA002D022F /* UINavigaionController+Pop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */; };
 		77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */; };
+		77D5876E2AC2F72F001542B1 /* NovaImageTextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D5876D2AC2F72F001542B1 /* NovaImageTextAttachment.swift */; };
+		77D587732AC316E6001542B1 /* NovaTextAttachmentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D587722AC316E6001542B1 /* NovaTextAttachmentable.swift */; };
 		77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */; };
 		77E255672A16145500B644C3 /* StakingRewardsFilterMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */; };
 		77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255682A16148000B644C3 /* StakingRewardsFilter.swift */; };
@@ -4700,6 +4702,8 @@
 		77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingSelectedValidatorsListWireframe.swift; sourceTree = "<group>"; };
 		77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigaionController+Pop.swift"; sourceTree = "<group>"; };
 		77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectValidatorsDelegate.swift; sourceTree = "<group>"; };
+		77D5876D2AC2F72F001542B1 /* NovaImageTextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaImageTextAttachment.swift; sourceTree = "<group>"; };
+		77D587722AC316E6001542B1 /* NovaTextAttachmentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaTextAttachmentable.swift; sourceTree = "<group>"; };
 		77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Helpers.swift"; sourceTree = "<group>"; };
 		77E255652A16059A00B644C3 /* MultiassetUserDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilterMapper.swift; sourceTree = "<group>"; };
@@ -9519,6 +9523,16 @@
 				881BA30429DBCB8100EB8C48 /* Web3NameIntegrityVerifier.swift */,
 			);
 			path = Integrity;
+			sourceTree = "<group>";
+		};
+		77D5876F2AC3142A001542B1 /* Html */ = {
+			isa = PBXGroup;
+			children = (
+				777AE2AA2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift */,
+				77D5876D2AC2F72F001542B1 /* NovaImageTextAttachment.swift */,
+				77D587722AC316E6001542B1 /* NovaTextAttachmentable.swift */,
+			);
+			path = Html;
 			sourceTree = "<group>";
 		};
 		77D9A8552D1961A00A3683BE /* SelectValidatorsConfirm */ = {
@@ -16257,6 +16271,7 @@
 		880059D628EEA55500E87B9B /* View */ = {
 			isa = PBXGroup;
 			children = (
+				77D5876F2AC3142A001542B1 /* Html */,
 				880059DD28EF093400E87B9B /* Slider */,
 				880059E028EF0A5C00E87B9B /* VotingProgressView.swift */,
 				880059E228EF128000E87B9B /* ReferendumInfoView.swift */,
@@ -16268,7 +16283,6 @@
 				849D3224291CC4A500D25839 /* MarkdownParsingOperationFactory.swift */,
 				8451720E298C495500489EF1 /* BorderedIconLabelView+TrackStyle.swift */,
 				777BD86729FA3376004969A2 /* ReferendumsSettingsCell.swift */,
-				777AE2AA2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift */,
 				777AE2AC2ABCB4BD004989C0 /* MarkupParsingOperationFactory.swift */,
 			);
 			path = View;
@@ -21437,6 +21451,7 @@
 				7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */,
 				84466B3528B6731B00FA1E0D /* LedgerSigningWrapper.swift in Sources */,
 				F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */,
+				77D5876E2AC2F72F001542B1 /* NovaImageTextAttachment.swift in Sources */,
 				8473F4B8282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift in Sources */,
 				841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */,
 				88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */,
@@ -22556,6 +22571,7 @@
 				E6AB0111B3E1297242D5DBDE /* DelegationReferendumVotersViewFactory.swift in Sources */,
 				1B3E22DE61BAC810106A7D1A /* GovernanceDelegateSearchProtocols.swift in Sources */,
 				8F97A52ED6D3703A90373387 /* GovernanceDelegateSearchWireframe.swift in Sources */,
+				77D587732AC316E6001542B1 /* NovaTextAttachmentable.swift in Sources */,
 				C6DA3ABD47E72ED1661830A9 /* GovernanceDelegateSearchPresenter.swift in Sources */,
 				0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */,
 				7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */,

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 extension NSAttributedString {
     func truncate(maxLength: Int) -> NSAttributedString {
@@ -15,5 +16,26 @@ extension NSAttributedString {
         } else {
             return self
         }
+    }
+}
+
+extension NSAttributedString {
+    func replacingAttachment<TAttachment, TNewAttachment>(
+        mapClosure: (TAttachment) -> TNewAttachment?
+    ) -> NSAttributedString where TNewAttachment: NSTextAttachment {
+        let mutableAttributedString = NSMutableAttributedString(attributedString: self)
+        let range = NSRange(location: 0, length: mutableAttributedString.string.utf16.count)
+        mutableAttributedString.enumerateAttribute(
+            .attachment,
+            in: range,
+            options: []
+        ) { value, effectiveRange, _ in
+            if let attachment = value as? TAttachment, let newAttachment = mapClosure(attachment) {
+                mutableAttributedString.deleteCharacters(in: effectiveRange)
+                mutableAttributedString.insert(.init(attachment: newAttachment), at: effectiveRange.location)
+            }
+        }
+
+        return mutableAttributedString
     }
 }

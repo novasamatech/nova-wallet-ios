@@ -65,9 +65,16 @@ final class HtmlParsingOperationFactory: HtmlParsingOperationFactoryProtocol {
 
             let preferredSize = CGSize(width: preferredWidth, height: preferredHeight)
 
+            let result = attributedString.replacingAttachment { (input: ZNSTextAttachment) -> NovaImageTextAttachment? in
+                guard input.imageURL.pathExtension.isEmpty else {
+                    return nil
+                }
+                return NovaImageTextAttachment(imageURL: input.imageURL)
+            }
+
             return .init(
                 originalString: string,
-                attributedString: attributedString,
+                attributedString: result,
                 preferredSize: preferredSize,
                 isFull: isFull
             )
