@@ -143,6 +143,9 @@ PODS:
     - Starscream (~> 4.0.4)
     - Web3Core (~> 3.0.6)
   - xxHash-Swift (1.0.13)
+  - ZMarkupParser (1.6.1):
+    - ZNSTextAttachment (~> 1.1.6)
+  - ZNSTextAttachment (1.1.6)
 
 DEPENDENCIES:
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
@@ -168,6 +171,7 @@ DEPENDENCIES:
   - SwiftyBeaver
   - WalletConnectSwiftV2 (from `https://github.com/WalletConnect/WalletConnectSwiftV2.git`, tag `1.5.14`)
   - web3swift (from `https://github.com/web3swift-team/web3swift.git`, tag `3.0.6`)
+  - ZMarkupParser
 
 SPEC REPOS:
   trunk:
@@ -195,6 +199,8 @@ SPEC REPOS:
     - TweetNacl
     - Web3Core
     - xxHash-Swift
+    - ZMarkupParser
+    - ZNSTextAttachment
 
 EXTERNAL SOURCES:
   CDMarkdownKit:
@@ -294,7 +300,9 @@ SPEC CHECKSUMS:
   Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
+  ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
+  ZNSTextAttachment: 4a9b4e8ee1ed087fc893ae6657dfb678f1a00340
 
-PODFILE CHECKSUM: b9535fb877c890660e9ff1754c3d7881113d1030
+PODFILE CHECKSUM: 9da63967acbaf0ea90ab5cf6e0cef78c59d3668f
 
 COCOAPODS: 1.12.1

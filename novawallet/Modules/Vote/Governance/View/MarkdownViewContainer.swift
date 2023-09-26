@@ -8,7 +8,7 @@ protocol MarkdownViewContainerDelegate: AnyObject {
 
 final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
     private var textView: UITextView?
-    private var model: MarkdownText?
+    private var model: MarkupAttributedText?
     let preferredWidth: CGFloat
 
     override var intrinsicContentSize: CGSize {
@@ -17,7 +17,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
 
     let operationQueue: OperationQueue
 
-    private let operationFactory: MarkdownParsingOperationFactoryProtocol
+    private let operationFactory: MarkupParsingOperationFactoryProtocol
 
     private var operation: CancellableCall?
 
@@ -29,7 +29,15 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
         operationQueue: OperationQueue = OperationQueue()
     ) {
         self.preferredWidth = preferredWidth
-        operationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength)
+        let markdownParsingOperationFactory = MarkdownParsingOperationFactory(maxSize: maxTextLength)
+        let htmlParsingOperationFactory = HtmlParsingOperationFactory(maxSize: maxTextLength)
+
+        operationFactory = MarkupParsingOperationFactory(
+            markdownParsingOperationFactory: markdownParsingOperationFactory,
+            htmlParsingOperationFactory: htmlParsingOperationFactory,
+            operationQueue: operationQueue
+        )
+
         self.operationQueue = operationQueue
 
         super.init(frame: .zero)
@@ -84,7 +92,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
         self.textView = textView
     }
 
-    private func bind(model: MarkdownText) {
+    private func bind(model: MarkupAttributedText) {
         self.model = model
 
         setupTextView(for: model.preferredSize, text: model.attributedString)
@@ -94,7 +102,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
 }
 
 extension MarkdownViewContainer {
-    func load(from string: String, completion: ((MarkdownText?) -> Void)?) {
+    func load(from string: String, completion: ((MarkupAttributedText?) -> Void)?) {
         guard model?.originalString != string else {
             completion?(model)
             return
@@ -105,17 +113,19 @@ extension MarkdownViewContainer {
         clear(cancellable: &operation)
         clearTextView()
 
-        let parsingOperation = operationFactory.createParseOperation(for: string, preferredWidth: preferredWidth)
+        let wrapper = operationFactory.createParseOperation(for: string, preferredWidth: preferredWidth)
 
-        parsingOperation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard self?.operation === parsingOperation else {
+                guard self?.operation === wrapper else {
                     completion?(nil)
                     return
                 }
 
                 do {
-                    let model = try parsingOperation.extractNoCancellableResultData()
+                    guard let model = try wrapper.targetOperation.extractNoCancellableResultData() else {
+                        return
+                    }
                     self?.bind(model: model)
                     completion?(model)
                 } catch {
@@ -124,9 +134,9 @@ extension MarkdownViewContainer {
             }
         }
 
-        operation = parsingOperation
+        operation = wrapper
 
-        operationQueue.addOperation(parsingOperation)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
