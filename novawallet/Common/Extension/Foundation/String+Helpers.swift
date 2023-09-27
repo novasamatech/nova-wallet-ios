@@ -37,6 +37,15 @@ extension String {
             return self
         }
     }
+
+    func without(prefix: String) -> String {
+        if hasPrefix(prefix) {
+            let indexStart = index(startIndex, offsetBy: prefix.count)
+            return String(self[indexStart...])
+        } else {
+            return self
+        }
+    }
 }
 
 extension Optional where Wrapped == String {
