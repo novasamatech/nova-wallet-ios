@@ -60,7 +60,8 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter & BuyPresentable {
                     self.buyTokens(
                         from: self.view,
                         purchaseActions: self.purchaseActions,
-                        wireframe: self.buyAssetWireframe
+                        wireframe: self.buyAssetWireframe,
+                        locale: selectedLocale
                     )
                 }
             )
@@ -72,10 +73,11 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter & BuyPresentable {
 
 extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        buyAssetWireframe?.showPurchaseTokens(
+        buyTokens(
             from: view,
-            action: purchaseActions[index],
-            delegate: self
+            purchaseAction: purchaseActions[index],
+            wireframe: buyAssetWireframe,
+            locale: selectedLocale
         )
     }
 }

@@ -95,7 +95,12 @@ final class AssetDetailsPresenter: BuyPresentable {
     }
 
     private func showPurchase() {
-        buyTokens(from: view, purchaseActions: purchaseActions, wireframe: wireframe)
+        buyTokens(
+            from: view,
+            purchaseActions: purchaseActions,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
     }
 
     private func showReceiveTokens() {
@@ -238,11 +243,7 @@ extension AssetDetailsPresenter: Localizable {
 
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        wireframe.showPurchaseTokens(
-            from: view,
-            action: purchaseActions[index],
-            delegate: self
-        )
+        buyTokens(from: view, purchaseAction: purchaseActions[index], wireframe: wireframe, locale: selectedLocale)
     }
 }
 
