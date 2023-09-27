@@ -5,7 +5,7 @@ import SubstrateSdk
 
 enum XcmTransferServiceError: Error {
     case reserveFeeNotAvailable
-    case noXcmPalletFound
+    case noXcmPalletFound([String])
     case noArgumentFound(String)
 }
 
@@ -17,7 +17,8 @@ final class XcmTransferService {
     let operationQueue: OperationQueue
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
-    private(set) lazy var metadataQueryFactory = XcmPalletMetadataQueryFactory()
+    private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
+    private(set) lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
 
     init(
         wallet: MetaAccountModel,
@@ -35,9 +36,9 @@ final class XcmTransferService {
     ) -> CompoundOperationWrapper<String> {
         switch transferType {
         case .xtokens:
-            return CompoundOperationWrapper.createWithResult("XTokens")
+            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
         case .xcmpallet, .teleport:
-            return metadataQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
         case .unknown:
             return CompoundOperationWrapper.createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
         }

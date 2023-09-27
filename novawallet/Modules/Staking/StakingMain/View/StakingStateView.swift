@@ -6,7 +6,6 @@ struct StakingStateSkeletonOptions: OptionSet {
 
     static let stake = StakingStateSkeletonOptions(rawValue: 1 << 0)
     static let status = StakingStateSkeletonOptions(rawValue: 1 << 1)
-    static let price = StakingStateSkeletonOptions(rawValue: 1 << 2)
 
     let rawValue: UInt8
 
@@ -154,8 +153,7 @@ extension StakingStateView {
             let stakeSkeletons = createMultilineSkeleton(
                 under: titleLabel,
                 containerView: backgroundView,
-                spaceSize: spaceSize,
-                hasAuxRow: options.contains(.price)
+                spaceSize: spaceSize
             )
 
             skeletons.append(contentsOf: stakeSkeletons)
@@ -189,13 +187,11 @@ extension StakingStateView {
     private func createMultilineSkeleton(
         under view: UIView,
         containerView: UIView,
-        spaceSize: CGSize,
-        hasAuxRow: Bool
+        spaceSize: CGSize
     ) -> [Skeletonable] {
         let topInset: CGFloat = 7.0
-        let verticalSpacing: CGFloat = 10.0
 
-        var skeletons: [Skeletonable] = [
+        return [
             SingleSkeleton.createRow(
                 under: view,
                 containerView: containerView,
@@ -204,21 +200,6 @@ extension StakingStateView {
                 size: UIConstants.skeletonBigRowSize
             )
         ]
-
-        if hasAuxRow {
-            let yOffset = topInset + UIConstants.skeletonBigRowSize.height + verticalSpacing
-            skeletons.append(
-                SingleSkeleton.createRow(
-                    under: view,
-                    containerView: containerView,
-                    spaceSize: spaceSize,
-                    offset: CGPoint(x: 0.0, y: yOffset),
-                    size: UIConstants.skeletonSmallRowSize
-                )
-            )
-        }
-
-        return skeletons
     }
 }
 

@@ -122,15 +122,24 @@ struct StartStakingInfoViewFactory {
         let networkOperationFactory = state.createNetworkInfoOperationFactory(for: operationQueue)
         let eraCountdownFactory = state.createEraCountdownOperationFactory(for: operationQueue)
 
+        let stakingDashboardProviderFactory = StakingDashboardProviderFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            storageFacade: SubstrateDataStorageFacade.shared,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+
         return StartStakingRelaychainInteractor(
             state: state,
             selectedWalletSettings: selectedWalletSettings,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
             networkInfoOperationFactory: networkOperationFactory,
             eraCoundownOperationFactory: eraCountdownFactory,
+            sharedOperation: state.startSharedOperation(),
             eventCenter: EventCenter.shared,
             operationQueue: operationQueue
         )
@@ -211,14 +220,23 @@ struct StartStakingInfoViewFactory {
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: state.stakingOption.chainAsset.chain)
         )
 
+        let stakingDashboardProviderFactory = StakingDashboardProviderFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            storageFacade: SubstrateDataStorageFacade.shared,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+
         return StartStakingParachainInteractor(
             state: state,
             selectedWalletSettings: selectedWalletSettings,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
             networkInfoFactory: ParaStkNetworkInfoOperationFactory(),
             durationOperationFactory: stakingDurationFactory,
+            sharedOperation: state.startSharedOperation(),
             operationQueue: operationQueue,
             eventCenter: EventCenter.shared
         )

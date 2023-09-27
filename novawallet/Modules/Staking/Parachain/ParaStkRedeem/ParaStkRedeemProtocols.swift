@@ -25,6 +25,7 @@ protocol ParaStkRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?)
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
     func didReceiveError(_ error: Error)
 }
@@ -33,6 +34,4 @@ protocol ParaStkRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable {
-    func complete(on view: ParaStkRedeemViewProtocol?, locale: Locale)
-}
+    MessageSheetPresentable, ExtrinsicSubmissionPresenting {}

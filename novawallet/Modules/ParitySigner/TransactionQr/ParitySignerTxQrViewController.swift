@@ -115,8 +115,8 @@ extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {
         rootView.accountDetailsView.bind(viewModel: viewModel)
     }
 
-    func didReceiveCode(viewModel: UIImage) {
-        rootView.qrView.imageView.image = viewModel
+    func didReceiveCode(viewModel: QRImageViewModel) {
+        rootView.qrView.imageView.bindQr(viewModel: viewModel)
     }
 
     func didReceiveExpiration(viewModel: ExpirationTimeViewModel) {

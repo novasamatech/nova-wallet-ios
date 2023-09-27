@@ -7,7 +7,22 @@ extension PrimitiveConstantOperation {
         dependingOn factoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         fallbackValue: T? = nil
     ) -> BaseOperation<T> {
-        let operation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
+        operation(
+            oneOfPaths: [path],
+            dependingOn: factoryOperation,
+            fallbackValue: fallbackValue
+        )
+    }
+
+    static func operation(
+        oneOfPaths: [ConstantCodingPath],
+        dependingOn factoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        fallbackValue: T? = nil
+    ) -> BaseOperation<T> {
+        let operation = PrimitiveConstantOperation<T>(
+            oneOfPaths: oneOfPaths,
+            fallbackValue: fallbackValue
+        )
 
         operation.configurationBlock = {
             do {

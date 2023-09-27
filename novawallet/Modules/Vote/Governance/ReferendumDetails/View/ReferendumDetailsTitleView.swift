@@ -40,7 +40,7 @@ final class ReferendumDetailsTitleView: UIView {
 
     let descriptionView = MarkdownViewContainer(
         preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset,
-        maxTextLength: MarkdownText.readMoreThreshold
+        maxTextLength: MarkupAttributedText.readMoreThreshold
     )
 
     let moreButton: RoundedButton = .create { button in
@@ -132,7 +132,7 @@ extension ReferendumDetailsTitleView {
         moreButton.isHidden = true
 
         descriptionView.isHidden = false
-        descriptionView.load(from: details.description) { [weak self] (model: MarkdownText?) in
+        descriptionView.load(from: details.description) { [weak self] (model: MarkupAttributedText?) in
             if let shouldReadMore = model?.isFull {
                 self?.moreButton.isHidden = shouldReadMore
             }

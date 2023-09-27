@@ -12,8 +12,11 @@ protocol ParachainStakingSharedStateProtocol: AnyObject {
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var logger: LoggerProtocol { get }
 
+    var sharedOperation: SharedOperationProtocol? { get }
+
     func setup(for accountId: AccountId?)
     func throttle()
+    func startSharedOperation() -> SharedOperationProtocol
 }
 
 final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
@@ -30,6 +33,8 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
 
     private var globalRemoteSubscription: UUID?
     private var accountRemoteSubscription: UUID?
+
+    weak var sharedOperation: SharedOperationProtocol?
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
@@ -114,5 +119,11 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         collatorService.throttle()
         rewardCalculationService.throttle()
         blockTimeService.throttle()
+    }
+
+    func startSharedOperation() -> SharedOperationProtocol {
+        let operation = SharedOperation()
+        sharedOperation = operation
+        return operation
     }
 }

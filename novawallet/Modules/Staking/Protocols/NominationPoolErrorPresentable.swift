@@ -61,7 +61,7 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.stakingPoolHasNoApyTitle(preferredLanguages: locale?.rLanguages)
+        let title = R.string.localizable.commonNoRewardsTitle(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable.stakingPoolHasNoApyMessage(preferredLanguages: locale?.rLanguages)
 
         presentWarning(

@@ -1,27 +1,33 @@
 import UIKit
 
-final class AssetListEmptyCell: UICollectionViewCell {
-    let view = EmptyCellContentView()
+typealias AssetListEmptyCell = CollectionViewContainerCell<AssetListEmptyView>
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
+extension AssetListEmptyCell {
+    var actionButton: UIButton {
+        view.actionButton
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupLayout() {
-        contentView.addSubview(view)
-        view.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-    }
-
-    func bind(text: String) {
+    func bind(text: String, actionTitle: String) {
         view.bind(text: text)
+        actionButton.setTitle(actionTitle, for: .normal)
+    }
+}
+
+final class AssetListEmptyView: EmptyCellContentView {
+    let actionButton: UIButton = .create {
+        $0.setTitleColor(R.color.colorIconAccent(), for: .normal)
+        $0.titleLabel?.font = .semiBoldSubheadline
+    }
+
+    override func setupLayout() {
+        super.setupLayout()
+
+        addSubview(actionButton)
+
+        actionButton.snp.makeConstraints { make in
+            make.top.equalTo(detailsLabel.snp.bottom)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(32)
+        }
     }
 }

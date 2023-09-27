@@ -8,6 +8,11 @@ protocol MultistakingRepositoryFactoryProtocol {
         for walletId: MetaAccountModel.Id
     ) -> AnyDataProviderRepository<Multistaking.DashboardItem>
 
+    func createDashboardRepository(
+        for walletId: MetaAccountModel.Id,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItem>
+
     func createResolvedAccountRepository(
     ) -> AnyDataProviderRepository<Multistaking.ResolvedAccount>
 
@@ -29,6 +34,20 @@ final class MultistakingRepositoryFactory {
 
     init(storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared) {
         self.storageFacade = storageFacade
+    }
+
+    private func createStakingDashboardRepository(
+        for filter: NSPredicate
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItem> {
+        let mapper = StakingDashboardItemMapper()
+
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        return AnyDataProviderRepository(repository)
     }
 }
 
@@ -71,15 +90,15 @@ extension MultistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol {
     func createDashboardRepository(
         for walletId: MetaAccountModel.Id
     ) -> AnyDataProviderRepository<Multistaking.DashboardItem> {
-        let mapper = StakingDashboardItemMapper()
-
         let filter = NSPredicate(format: "%K == %@", #keyPath(CDStakingDashboardItem.walletId), walletId)
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
+        return createStakingDashboardRepository(for: filter)
+    }
 
-        return AnyDataProviderRepository(repository)
+    func createDashboardRepository(
+        for walletId: MetaAccountModel.Id,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItem> {
+        let filter = NSPredicate.stakingDashboardItem(for: chainAssetId, walletId: walletId)
+        return createStakingDashboardRepository(for: filter)
     }
 }

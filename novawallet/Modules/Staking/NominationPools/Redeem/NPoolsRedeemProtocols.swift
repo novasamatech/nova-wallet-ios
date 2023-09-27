@@ -16,6 +16,7 @@ protocol NPoolsRedeemPresenterProtocol: AnyObject {
 protocol NPoolsRedeemInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
+    func retryExistentialDeposit()
     func estimateFee()
     func submit()
 }
@@ -26,6 +27,7 @@ protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
     func didReceive(subPools: NominationPools.SubPools?)
     func didReceive(activeEra: ActiveEraInfo?)
     func didReceive(price: PriceData?)
+    func didReceive(existentialDeposit: BigUInt?)
     func didReceive(fee: BigUInt?)
     func didReceive(submissionResult: Result<String, Error>)
     func didReceive(error: NPoolsRedeemError)

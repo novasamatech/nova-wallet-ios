@@ -18,15 +18,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
         return button
     }()
 
-    let settingsButton: TriangularedBlurButton = {
-        let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconFilterAssets()
-        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
-        button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
-        return button
-    }()
+    let settingsButton = FilterBlurButton()
 
     let searchButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()

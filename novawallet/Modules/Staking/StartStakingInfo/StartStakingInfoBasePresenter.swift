@@ -169,11 +169,21 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .assetBalance, .price:
+        case .assetBalance, .price, .stakingState:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.remakeSubscriptions()
             }
         }
+    }
+
+    func didReceiveStakingEnabled() {
+        wireframe.presentAlreadyHaveStaking(
+            from: view,
+            networkName: chainAsset.chain.name,
+            onClose: { [weak self] in
+                self?.wireframe.complete(from: self?.view)
+            }, locale: selectedLocale
+        )
     }
 
     // MARK: - StartStakingInfoPresenterProtocol

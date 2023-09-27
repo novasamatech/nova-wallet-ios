@@ -39,7 +39,7 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
     }
 
     override func provideStakingType() {
-        let stakingType = R.string.localizable.stakingDirectStaking(
+        let stakingType = R.string.localizable.stakingTypeDirect(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -47,7 +47,7 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
     }
 
     override func provideStakingDetails() {
-        let title = R.string.localizable.stakingValidators(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string.localizable.stakingRecommendedTitle(preferredLanguages: selectedLocale.rLanguages)
 
         let selectedString = quantityFormatter.value(
             for: selectedLocale

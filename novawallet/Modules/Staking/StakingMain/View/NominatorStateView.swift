@@ -72,10 +72,6 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
             presentWaitingStatus(remainingTime: remainingTime)
         }
 
-        if !skeletonOptions.isEmpty, viewModel.hasPrice {
-            skeletonOptions.insert(.price)
-        }
-
         setupSkeleton(options: skeletonOptions)
     }
 

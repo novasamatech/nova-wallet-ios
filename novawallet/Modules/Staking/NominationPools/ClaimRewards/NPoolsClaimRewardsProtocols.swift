@@ -18,6 +18,7 @@ protocol NPoolsClaimRewardsPresenterProtocol: AnyObject {
 protocol NPoolsClaimRewardsInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
+    func retryExistentialDeposit()
     func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy)
     func submit(for strategy: NominationPools.ClaimRewardsStrategy)
 }
@@ -25,6 +26,7 @@ protocol NPoolsClaimRewardsInteractorInputProtocol: AnyObject {
 protocol NPoolsClaimRewardsInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(claimableRewards: BigUInt?)
+    func didReceive(existentialDeposit: BigUInt?)
     func didReceive(price: PriceData?)
     func didReceive(fee: BigUInt?)
     func didReceive(submissionResult: Result<String, Error>)

@@ -8,24 +8,43 @@ protocol MultipartQrOperationFactoryProtocol {
 /**
  *  Note: Current implementation adapts single frame to multipart format
  */
-final class MultipartQrOperationFactory: MultipartQrOperationFactoryProtocol {
+final class MultipartQrOperationFactory {
     static let multipartPrefix = Data([0])
 
-    func createFromPayloadClosure(_ payloadClosure: @escaping () throws -> Data) -> CompoundOperationWrapper<[Data]> {
+    let bytesPerCode: Int
+
+    init(bytesPerCode: Int = 512) {
+        self.bytesPerCode = bytesPerCode
+    }
+
+    private func createFromPayloadClosure(
+        for bytesPerCode: Int,
+        payloadClosure: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<[Data]> {
         let operation = ClosureOperation<[Data]> {
             let payload = try payloadClosure()
 
-            var frame: UInt16 = 1
-            var index: UInt16 = 0
+            let chunks = payload.chunked(by: bytesPerCode)
 
+            var frame = UInt16(chunks.count)
             let frameBytes = Data(bytes: &frame, count: MemoryLayout<UInt16>.size).reversed()
-            let indexBytes = Data(bytes: &index, count: MemoryLayout<UInt16>.size).reversed()
 
-            let frameRepresentation = Self.multipartPrefix + frameBytes + indexBytes + payload
+            return chunks.enumerated().map { index, chunk in
+                var mapedIndex = UInt16(index)
+                let indexBytes = Data(bytes: &mapedIndex, count: MemoryLayout<UInt16>.size).reversed()
 
-            return [frameRepresentation]
+                return Self.multipartPrefix + frameBytes + indexBytes + chunk
+            }
         }
 
         return CompoundOperationWrapper(targetOperation: operation)
+    }
+}
+
+extension MultipartQrOperationFactory: MultipartQrOperationFactoryProtocol {
+    func createFromPayloadClosure(
+        _ payloadClosure: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<[Data]> {
+        createFromPayloadClosure(for: bytesPerCode, payloadClosure: payloadClosure)
     }
 }

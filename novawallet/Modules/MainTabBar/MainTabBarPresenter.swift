@@ -18,4 +18,8 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
     func didRequestImportAccount() {
         wireframe.presentAccountImport(on: view)
     }
+
+    func didRequestScreenOpen(_ screen: UrlHandlingScreen) {
+        wireframe.presentScreenIfNeeded(on: view, screen: screen)
+    }
 }

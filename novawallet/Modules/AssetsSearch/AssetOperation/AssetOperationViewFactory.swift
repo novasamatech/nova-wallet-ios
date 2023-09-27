@@ -2,10 +2,8 @@ import Foundation
 import SoraFoundation
 
 enum AssetOperationViewFactory {
-    static func createView(
-        for stateObservable: AssetListStateObservable,
-        operation: TokenOperation,
-        transferCompletion: TransferCompletionClosure?
+    static func createBuyView(
+        for stateObservable: AssetListModelObservable
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -19,25 +17,18 @@ enum AssetOperationViewFactory {
             currencyManager: currencyManager
         )
 
-        guard let presenter = createPresenter(
-            for: operation,
-            stateObservable: stateObservable,
-            viewModelFactory: viewModelFactory,
-            transferCompletion: transferCompletion
-        ) else {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
 
+        let presenter = createBuyPresenter(
+            stateObservable: stateObservable,
+            viewModelFactory: viewModelFactory,
+            wallet: selectedMetaAccount
+        )
+
         let title: LocalizableResource<String> = .init {
-            let languages = $0.rLanguages
-            switch operation {
-            case .send:
-                return R.string.localizable.assetOperationSendTitle(preferredLanguages: languages)
-            case .receive:
-                return R.string.localizable.assetOperationReceiveTitle(preferredLanguages: languages)
-            case .buy:
-                return R.string.localizable.assetOperationBuyTitle(preferredLanguages: languages)
-            }
+            R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages)
         }
 
         let view = AssetsSearchViewController(
@@ -53,60 +44,97 @@ enum AssetOperationViewFactory {
         return view
     }
 
-    private static func createPresenter(
-        for operation: TokenOperation,
-        stateObservable: AssetListStateObservable,
-        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
-        transferCompletion: TransferCompletionClosure?
-    ) -> AssetsSearchPresenter? {
-        switch operation {
-        case .send:
-            return createSendPresenter(
-                stateObservable: stateObservable,
-                viewModelFactory: viewModelFactory,
-                transferCompletion: transferCompletion
-            )
-        case .receive:
-            guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
-                return nil
-            }
-
-            return createReceivePresenter(
-                stateObservable: stateObservable,
-                viewModelFactory: viewModelFactory,
-                wallet: selectedMetaAccount
-            )
-        case .buy:
-            guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
-                return nil
-            }
-
-            return createBuyPresenter(
-                stateObservable: stateObservable,
-                viewModelFactory: viewModelFactory,
-                wallet: selectedMetaAccount
-            )
+    static func createReceiveView(
+        for stateObservable: AssetListModelObservable
+    ) -> AssetsSearchViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
         }
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let viewModelFactory = AssetListAssetViewModelFactory(
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            assetFormatterFactory: AssetBalanceFormatterFactory(),
+            percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            currencyManager: currencyManager
+        )
+
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
+        let presenter = createReceivePresenter(
+            stateObservable: stateObservable,
+            viewModelFactory: viewModelFactory,
+            wallet: selectedMetaAccount
+        )
+
+        let title: LocalizableResource<String> = .init {
+            R.string.localizable.assetOperationReceiveTitle(preferredLanguages: $0.rLanguages)
+        }
+
+        let view = AssetsSearchViewController(
+            presenter: presenter,
+            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
+            createViewClosure: { AssetsOperationViewLayout() },
+            localizableTitle: title,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+
+        return view
+    }
+
+    static func createSendView(
+        for stateObservable: AssetListModelObservable,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    ) -> AssetsSearchViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let viewModelFactory = AssetListAssetViewModelFactory(
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            assetFormatterFactory: AssetBalanceFormatterFactory(),
+            percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            currencyManager: currencyManager
+        )
+
+        let presenter = createSendPresenter(
+            stateObservable: stateObservable,
+            viewModelFactory: viewModelFactory,
+            transferCompletion: transferCompletion,
+            buyTokensClosure: buyTokensClosure
+        )
+
+        let title: LocalizableResource<String> = .init {
+            R.string.localizable.assetOperationSendTitle(preferredLanguages: $0.rLanguages)
+        }
+
+        let view = SendAssetOperationViewController(
+            presenter: presenter,
+            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
+            createViewClosure: { AssetsOperationViewLayout() },
+            localizableTitle: title,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+
+        return view
     }
 
     private static func createSendPresenter(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
-        transferCompletion: TransferCompletionClosure?
-    ) -> SendAssetOperationPresenter? {
-        let filter: ChainAssetsFilter = { chainAsset in
-            let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
-
-            guard let transfersEnabled = try? assetMapper.transfersEnabled() else {
-                return false
-            }
-
-            return transfersEnabled
-        }
-
-        let interactor = AssetsSearchInteractor(
+        transferCompletion: TransferCompletionClosure?,
+        buyTokensClosure: BuyTokensClosure?
+    ) -> SendAssetOperationPresenter {
+        let interactor = SendAssetsOperationInteractor(
             stateObservable: stateObservable,
-            filter: filter,
             logger: Logger.shared
         )
 
@@ -114,7 +142,10 @@ enum AssetOperationViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            wireframe: SendAssetOperationWireframe(transferCompletion: transferCompletion)
+            wireframe: SendAssetOperationWireframe(
+                buyTokensClosure: buyTokensClosure,
+                transferCompletion: transferCompletion
+            )
         )
 
         interactor.presenter = presenter
@@ -123,10 +154,10 @@ enum AssetOperationViewFactory {
     }
 
     private static func createReceivePresenter(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         wallet: MetaAccountModel
-    ) -> ReceiveAssetOperationPresenter? {
+    ) -> ReceiveAssetOperationPresenter {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: nil,
@@ -147,10 +178,10 @@ enum AssetOperationViewFactory {
     }
 
     private static func createBuyPresenter(
-        stateObservable: AssetListStateObservable,
+        stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         wallet: MetaAccountModel
-    ) -> BuyAssetOperationPresenter? {
+    ) -> BuyAssetOperationPresenter {
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
 
         let filter: ChainAssetsFilter = { chainAsset in

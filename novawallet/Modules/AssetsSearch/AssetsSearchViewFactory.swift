@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct AssetsSearchViewFactory {
     static func createView(
-        for stateObservable: AssetListStateObservable,
+        for stateObservable: AssetListModelObservable,
         delegate: AssetsSearchDelegate
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {

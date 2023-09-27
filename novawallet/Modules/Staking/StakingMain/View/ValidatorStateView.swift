@@ -56,10 +56,6 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
             presentInactiveStatus()
         }
 
-        if !skeletonOptions.isEmpty, viewModel.hasPrice {
-            skeletonOptions.insert(.price)
-        }
-
         setupSkeleton(options: skeletonOptions)
     }
 

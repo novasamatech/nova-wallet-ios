@@ -2,6 +2,6 @@ import Foundation
 import UIKit
 
 struct TransactionDisplayCode {
-    let image: UIImage
+    let images: [UIImage]
     let expirationTime: TimeInterval
 }

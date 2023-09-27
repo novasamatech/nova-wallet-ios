@@ -8,6 +8,7 @@ final class MainTabBarInteractor {
 
     let eventCenter: EventCenterProtocol
     let keystoreImportService: KeystoreImportServiceProtocol
+    let screenOpenService: ScreenOpenServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
@@ -20,11 +21,13 @@ final class MainTabBarInteractor {
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
+        screenOpenService: ScreenOpenServiceProtocol,
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
+        self.screenOpenService = screenOpenService
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
@@ -52,6 +55,12 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         if keystoreImportService.definition != nil {
             presenter?.didRequestImportAccount()
         }
+
+        screenOpenService.delegate = self
+
+        if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
+            presenter?.didRequestScreenOpen(pendingScreen)
+        }
     }
 }
 
@@ -69,6 +78,14 @@ extension MainTabBarInteractor: KeystoreImportObserver {
             }
 
             self?.presenter?.didRequestImportAccount()
+        }
+    }
+}
+
+extension MainTabBarInteractor: ScreenOpenDelegate {
+    func didAskScreenOpen(_ screen: UrlHandlingScreen) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didRequestScreenOpen(screen)
         }
     }
 }
