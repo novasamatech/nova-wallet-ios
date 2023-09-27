@@ -139,3 +139,17 @@ extension UIAlertController {
         presenter.present(alertView, animated: true, completion: nil)
     }
 }
+
+extension AlertPresentable {
+    func presentPurchaseDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+        let message = R.string.localizable
+            .buyCompleted(preferredLanguages: languages)
+
+        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
+        view?.controller.present(alertController, animated: true)
+    }
+}

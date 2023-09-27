@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import RobinHood
 
-final class AssetDetailsPresenter {
+final class AssetDetailsPresenter: BuyPresentable {
     weak var view: AssetDetailsViewProtocol?
     let wireframe: AssetDetailsWireframeProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
@@ -95,22 +95,7 @@ final class AssetDetailsPresenter {
     }
 
     private func showPurchase() {
-        guard !purchaseActions.isEmpty else {
-            return
-        }
-        if purchaseActions.count == 1 {
-            wireframe.showPurchaseTokens(
-                from: view,
-                action: purchaseActions[0],
-                delegate: self
-            )
-        } else {
-            wireframe.showPurchaseProviders(
-                from: view,
-                actions: purchaseActions,
-                delegate: self
-            )
-        }
+        buyTokens(from: view, purchaseActions: purchaseActions, wireframe: wireframe)
     }
 
     private func showReceiveTokens() {
@@ -263,9 +248,6 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 
 extension AssetDetailsPresenter: PurchaseDelegate {
     func purchaseDidComplete() {
-        let languages = selectedLocale.rLanguages
-        let message = R.string.localizable
-            .buyCompleted(preferredLanguages: languages)
-        wireframe.presentSuccessAlert(from: view, message: message)
+        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }
