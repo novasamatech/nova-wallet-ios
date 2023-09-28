@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 struct RemoteEvmToken: Codable {
     let symbol: String
@@ -11,5 +12,6 @@ struct RemoteEvmToken: Codable {
     struct Instance: Codable {
         let chainId: String
         let contractAddress: String
+        let buyProviders: JSON?
     }
 }
