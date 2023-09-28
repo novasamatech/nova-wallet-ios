@@ -24,7 +24,7 @@ extension NSAttributedString {
         mapClosure: (TAttachment) -> TNewAttachment?
     ) -> NSAttributedString where TNewAttachment: NSTextAttachment {
         let mutableAttributedString = NSMutableAttributedString(attributedString: self)
-        let range = NSRange(location: 0, length: mutableAttributedString.string.utf16.count)
+        let range = NSRange(location: 0, length: mutableAttributedString.length)
         mutableAttributedString.enumerateAttribute(
             .attachment,
             in: range,

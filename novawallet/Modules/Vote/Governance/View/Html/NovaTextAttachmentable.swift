@@ -12,7 +12,7 @@ extension NSTextStorage: NovaTextAttachmentable {
     ) {
         let attributedString = self
         let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
-        let range = NSRange(location: 0, length: mutableAttributedString.string.utf16.count)
+        let range = NSRange(location: 0, length: mutableAttributedString.length)
         mutableAttributedString.enumerateAttribute(.attachment, in: range, options: []) { value, effectiveRange, _ in
             guard (value as? NovaImageTextAttachment) == attachment else {
                 return
