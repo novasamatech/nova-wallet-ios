@@ -3,7 +3,7 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class BuyAssetOperationPresenter: AssetsSearchPresenter & PurchaseFlowManaging {
+final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManaging {
     var buyAssetWireframe: BuyAssetOperationWireframeProtocol? {
         wireframe as? BuyAssetOperationWireframeProtocol
     }
