@@ -37,7 +37,6 @@ extension String {
             return self
         }
     }
-
 }
 
 extension Optional where Wrapped == String {
