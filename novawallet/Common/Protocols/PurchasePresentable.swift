@@ -1,3 +1,5 @@
+import Foundation
+
 protocol PurchasePresentable {
     func showPurchaseTokens(
         from view: ControllerBackedProtocol?,
@@ -10,9 +12,14 @@ protocol PurchasePresentable {
         actions: [PurchaseAction],
         delegate: ModalPickerViewControllerDelegate
     )
+
+    func presentPurchaseDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    )
 }
 
-extension PurchasePresentable where Self: AlertPresentable {
+extension PurchasePresentable {
     func showPurchaseTokens(
         from view: ControllerBackedProtocol?,
         action: PurchaseAction,
@@ -44,5 +51,17 @@ extension PurchasePresentable where Self: AlertPresentable {
             return
         }
         navigationController.present(pickerView, animated: true)
+    }
+
+    func presentPurchaseDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+        let message = R.string.localizable
+            .buyCompleted(preferredLanguages: languages)
+
+        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
+        view?.controller.present(alertController, animated: true)
     }
 }

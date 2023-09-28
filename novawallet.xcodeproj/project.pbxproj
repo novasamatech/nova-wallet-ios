@@ -657,7 +657,7 @@
 		77204EA62A1E0EAA00BBDE4A /* WalletConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77204EA52A1E0EAA00BBDE4A /* WalletConnectionsView.swift */; };
 		7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */; };
 		772540342AC41FF7002B3FD4 /* BanxaProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540332AC41FF7002B3FD4 /* BanxaProvider.swift */; };
-		772540362AC45CDB002B3FD4 /* PurchaseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540352AC45CDB002B3FD4 /* PurchaseHandler.swift */; };
+		772540362AC45CDB002B3FD4 /* PurchaseFlowManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540352AC45CDB002B3FD4 /* PurchaseFlowManaging.swift */; };
 		772540382AC45D22002B3FD4 /* PurchasePresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540372AC45D22002B3FD4 /* PurchasePresentable.swift */; };
 		7726CD552A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7726CD542A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift */; };
 		7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E58A2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift */; };
@@ -4619,7 +4619,7 @@
 		77204EA52A1E0EAA00BBDE4A /* WalletConnectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectionsView.swift; sourceTree = "<group>"; };
 		7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferendumSearchViewLayout.swift; sourceTree = "<group>"; };
 		772540332AC41FF7002B3FD4 /* BanxaProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanxaProvider.swift; sourceTree = "<group>"; };
-		772540352AC45CDB002B3FD4 /* PurchaseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHandler.swift; sourceTree = "<group>"; };
+		772540352AC45CDB002B3FD4 /* PurchaseFlowManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseFlowManaging.swift; sourceTree = "<group>"; };
 		772540372AC45D22002B3FD4 /* PurchasePresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasePresentable.swift; sourceTree = "<group>"; };
 		7726CD542A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTypeSelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		7728E58A2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsSearchOperationFactory.swift; sourceTree = "<group>"; };
@@ -12984,7 +12984,7 @@
 				8846F71F29D56A0700B8B776 /* Web3NameAddressListPresentable.swift */,
 				844C3E762A09228200C4305F /* WalletChoosePresentable.swift */,
 				0CC2E5692A6E6EBB004092E7 /* LocalStorageProviderObserving.swift */,
-				772540352AC45CDB002B3FD4 /* PurchaseHandler.swift */,
+				772540352AC45CDB002B3FD4 /* PurchaseFlowManaging.swift */,
 				772540372AC45D22002B3FD4 /* PurchasePresentable.swift */,
 			);
 			path = Protocols;
@@ -21629,7 +21629,7 @@
 				77F9FB072A9D96E900820625 /* NominationPoolBondMoreSetupPresenter.swift in Sources */,
 				D1C6EABB48DC3EE254E5A095 /* CrowdloanContributionConfirmPresenter.swift in Sources */,
 				84BCC71C2924B69D00354DE0 /* ERC20SubscriptionManager.swift in Sources */,
-				772540362AC45CDB002B3FD4 /* PurchaseHandler.swift in Sources */,
+				772540362AC45CDB002B3FD4 /* PurchaseFlowManaging.swift in Sources */,
 				843A2C7126A85B5B00266F53 /* GenericTitleValueView.swift in Sources */,
 				847F2D4F27AA695F00AFD476 /* AssetListGroupModel.swift in Sources */,
 				8499FED827BFCABD00712589 /* NftModel+Identifier.swift in Sources */,

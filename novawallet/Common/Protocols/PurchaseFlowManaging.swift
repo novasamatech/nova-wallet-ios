@@ -1,7 +1,7 @@
 import SoraFoundation
 
-protocol PurchaseHandler {
-    func handlePurchase(
+protocol PurchaseFlowManaging {
+    func startPuchaseFlow(
         from view: ControllerBackedProtocol?,
         purchaseActions: [PurchaseAction],
         wireframe: (PurchasePresentable & AlertPresentable)?,
@@ -9,8 +9,8 @@ protocol PurchaseHandler {
     )
 }
 
-extension PurchaseHandler where Self: ModalPickerViewControllerDelegate & PurchaseDelegate {
-    func handlePurchase(
+extension PurchaseFlowManaging where Self: ModalPickerViewControllerDelegate & PurchaseDelegate {
+    func startPuchaseFlow(
         from view: ControllerBackedProtocol?,
         purchaseActions: [PurchaseAction],
         wireframe: (PurchasePresentable & AlertPresentable)?,
@@ -20,7 +20,7 @@ extension PurchaseHandler where Self: ModalPickerViewControllerDelegate & Purcha
             return
         }
         if purchaseActions.count == 1 {
-            handlePurchase(from: view, purchaseAction: purchaseActions[0], wireframe: wireframe, locale: locale)
+            startPuchaseFlow(from: view, purchaseAction: purchaseActions[0], wireframe: wireframe, locale: locale)
         } else {
             wireframe?.showPurchaseProviders(
                 from: view,
@@ -30,7 +30,7 @@ extension PurchaseHandler where Self: ModalPickerViewControllerDelegate & Purcha
         }
     }
 
-    func handlePurchase(
+    func startPuchaseFlow(
         from view: ControllerBackedProtocol?,
         purchaseAction: PurchaseAction,
         wireframe: (PurchasePresentable & AlertPresentable)?,

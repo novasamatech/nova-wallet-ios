@@ -4,6 +4,7 @@ import SubstrateSdk
 
 final class BanxaProvider: PurchaseProviderProtocol {
     #if F_RELEASE
+        // TODO: Add production host
         let host = ""
     #else
         let host = "https://novawallet.banxa-sandbox.com"

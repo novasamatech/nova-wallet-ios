@@ -3,7 +3,7 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class BuyAssetOperationPresenter: AssetsSearchPresenter & PurchaseHandler {
+final class BuyAssetOperationPresenter: AssetsSearchPresenter & PurchaseFlowManaging {
     var buyAssetWireframe: BuyAssetOperationWireframeProtocol? {
         wireframe as? BuyAssetOperationWireframeProtocol
     }
@@ -57,7 +57,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter & PurchaseHandler 
                     guard let self = self else {
                         return
                     }
-                    self.handlePurchase(
+                    self.startPuchaseFlow(
                         from: self.view,
                         purchaseActions: self.purchaseActions,
                         wireframe: self.buyAssetWireframe,
@@ -73,7 +73,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter & PurchaseHandler 
 
 extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        handlePurchase(
+        startPuchaseFlow(
             from: view,
             purchaseAction: purchaseActions[index],
             wireframe: buyAssetWireframe,
