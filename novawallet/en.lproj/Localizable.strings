@@ -1376,3 +1376,5 @@
 "common.back" = "Back";
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
 "governance.referendums.status.deciding" = "Deciding";
+"common.alert.external.link.disclaimer.title" = "You are leaving Nova Wallet";
+"common.alert.external.link.disclaimer.message" = "You will be redirected to %@";

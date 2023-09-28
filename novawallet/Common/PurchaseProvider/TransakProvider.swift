@@ -10,6 +10,7 @@ final class TransakProvider: PurchaseProviderProtocol {
     #endif
 
     private var callbackUrl: URL?
+    private let displayURL = "transak.com"
 
     func with(callbackUrl: URL) -> Self {
         self.callbackUrl = callbackUrl
@@ -30,7 +31,12 @@ final class TransakProvider: PurchaseProviderProtocol {
             return []
         }
 
-        let action = PurchaseAction(title: "Transak", url: url, icon: R.image.iconTransak()!)
+        let action = PurchaseAction(
+            title: "Transak",
+            url: url,
+            icon: R.image.iconTransak()!,
+            displayURL: displayURL
+        )
 
         return [action]
     }

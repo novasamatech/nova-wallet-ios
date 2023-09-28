@@ -1,7 +1,7 @@
 import SoraFoundation
 
-protocol BuyPresentable {
-    func buyTokens(
+protocol PurchaseHandler {
+    func handlePurchase(
         from view: ControllerBackedProtocol?,
         purchaseActions: [PurchaseAction],
         wireframe: (PurchasePresentable & AlertPresentable)?,
@@ -9,8 +9,8 @@ protocol BuyPresentable {
     )
 }
 
-extension BuyPresentable where Self: ModalPickerViewControllerDelegate & PurchaseDelegate {
-    func buyTokens(
+extension PurchaseHandler where Self: ModalPickerViewControllerDelegate & PurchaseDelegate {
+    func handlePurchase(
         from view: ControllerBackedProtocol?,
         purchaseActions: [PurchaseAction],
         wireframe: (PurchasePresentable & AlertPresentable)?,
@@ -20,7 +20,7 @@ extension BuyPresentable where Self: ModalPickerViewControllerDelegate & Purchas
             return
         }
         if purchaseActions.count == 1 {
-            buyTokens(from: view, purchaseAction: purchaseActions[0], wireframe: wireframe, locale: locale)
+            handlePurchase(from: view, purchaseAction: purchaseActions[0], wireframe: wireframe, locale: locale)
         } else {
             wireframe?.showPurchaseProviders(
                 from: view,
@@ -30,20 +30,23 @@ extension BuyPresentable where Self: ModalPickerViewControllerDelegate & Purchas
         }
     }
 
-    func buyTokens(
+    func handlePurchase(
         from view: ControllerBackedProtocol?,
         purchaseAction: PurchaseAction,
         wireframe: (PurchasePresentable & AlertPresentable)?,
         locale: Locale
     ) {
-        let title = "You are leaving Nova Wallet"
-        let message = "You will be redirected to banxa.com"
+        let title = R.string.localizable.commonAlertExternalLinkDisclaimerTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.commonAlertExternalLinkDisclaimerMessage(
+            purchaseAction.displayURL,
+            preferredLanguages: locale.rLanguages
+        )
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: locale.rLanguages)
-        let proceedTitle = R.string.localizable
-            .commonProceed(preferredLanguages: locale.rLanguages)
-        let proceedAction = AlertPresentableAction(title: proceedTitle) {
+        let continueTitle = R.string.localizable
+            .commonContinue(preferredLanguages: locale.rLanguages)
+        let continueAction = AlertPresentableAction(title: continueTitle) {
             wireframe?.showPurchaseTokens(
                 from: view,
                 action: purchaseAction,
@@ -55,7 +58,7 @@ extension BuyPresentable where Self: ModalPickerViewControllerDelegate & Purchas
             viewModel: .init(
                 title: title,
                 message: message,
-                actions: [proceedAction],
+                actions: [continueAction],
                 closeAction: closeTitle
             ),
             style: .alert,

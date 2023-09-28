@@ -11,6 +11,7 @@ final class BanxaProvider: PurchaseProviderProtocol {
 
     private var callbackUrl: URL?
     private var colorCode: String?
+    private let displayURL = "banxa.com"
 
     func with(callbackUrl: URL) -> Self {
         self.callbackUrl = callbackUrl
@@ -37,7 +38,12 @@ final class BanxaProvider: PurchaseProviderProtocol {
         }
 
         return [
-            PurchaseAction(title: "Banxa", url: url, icon: R.image.iconBanxa()!)
+            PurchaseAction(
+                title: "Banxa",
+                url: url,
+                icon: R.image.iconBanxa()!,
+                displayURL: displayURL
+            )
         ]
     }
 

@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import RobinHood
 
-final class AssetDetailsPresenter: BuyPresentable {
+final class AssetDetailsPresenter: PurchaseHandler {
     weak var view: AssetDetailsViewProtocol?
     let wireframe: AssetDetailsWireframeProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
@@ -95,7 +95,7 @@ final class AssetDetailsPresenter: BuyPresentable {
     }
 
     private func showPurchase() {
-        buyTokens(
+        handlePurchase(
             from: view,
             purchaseActions: purchaseActions,
             wireframe: wireframe,
@@ -243,7 +243,7 @@ extension AssetDetailsPresenter: Localizable {
 
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        buyTokens(from: view, purchaseAction: purchaseActions[index], wireframe: wireframe, locale: selectedLocale)
+        handlePurchase(from: view, purchaseAction: purchaseActions[index], wireframe: wireframe, locale: selectedLocale)
     }
 }
 
