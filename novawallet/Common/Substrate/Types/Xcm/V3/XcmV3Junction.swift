@@ -124,6 +124,9 @@ extension XcmV3 {
             case Self.generalKeyField:
                 let key = try container.decode(BytesCodable.self).wrappedValue
                 self = .generalKey(key)
+            case Self.generalIndexField:
+                let index = try container.decode(StringScaleMapper<BigUInt>.self).value
+                self = .generalIndex(index)
             case Self.onlyChildKey:
                 self = .onlyChild
             case Self.globalConsensusField:

@@ -119,6 +119,9 @@ extension Xcm {
             case Self.palletInstanceField:
                 let index = try container.decode(StringScaleMapper<UInt8>.self).value
                 self = .palletInstance(index)
+            case Self.generalIndexField:
+                let index = try container.decode(StringScaleMapper<BigUInt>.self).value
+                self = .generalIndex(index)
             case Self.generalKeyField:
                 let key = try container.decode(BytesCodable.self).wrappedValue
                 self = .generalKey(key)
@@ -189,7 +192,7 @@ extension Xcm {
                 type.count == 2,
                 type.starts(with: JunctionsConstants.junctionPrefix),
                 let itemsCount = Int(type.suffix(1)) {
-                if itemsCount > 1 {
+                if itemsCount == 1 {
                     let item = try container.decode(J.self)
                     items = [item]
                 } else {

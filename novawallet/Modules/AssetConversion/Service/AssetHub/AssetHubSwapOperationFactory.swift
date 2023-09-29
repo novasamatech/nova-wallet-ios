@@ -24,12 +24,27 @@ final class AssetHubSwapOperationFactory {
     private func fetchAllPairsWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[AssetConversionPallet.PoolAssetPair]> {
+        let prefixEncodingOperation = UnkeyedEncodingOperation(
+            path: AssetConversionPallet.poolsPath,
+            storageKeyFactory: StorageKeyFactory()
+        )
+
+        prefixEncodingOperation.configurationBlock = {
+            do {
+                prefixEncodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                prefixEncodingOperation.result = .failure(error)
+            }
+        }
+
         let keysFetchOperation = StorageKeysQueryService(
             connection: connection,
             operationManager: OperationManager(operationQueue: operationQueue),
-            prefixKeyClosure: { Data() },
+            prefixKeyClosure: { try prefixEncodingOperation.extractNoCancellableResultData() },
             mapper: AnyMapper(mapper: IdentityMapper())
         ).longrunOperation()
+
+        keysFetchOperation.addDependency(prefixEncodingOperation)
 
         let decodingOperation = StorageKeyDecodingOperation<AssetConversionPallet.PoolAssetPair>(
             path: AssetConversionPallet.poolsPath
@@ -46,7 +61,10 @@ final class AssetHubSwapOperationFactory {
 
         decodingOperation.addDependency(keysFetchOperation)
 
-        return CompoundOperationWrapper(targetOperation: decodingOperation, dependencies: [keysFetchOperation])
+        return CompoundOperationWrapper(
+            targetOperation: decodingOperation,
+            dependencies: [prefixEncodingOperation, keysFetchOperation]
+        )
     }
 
     private func mapRemotePairsOperation(
@@ -144,7 +162,10 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
 
         mappingOperation.addDependency(allDirectionsWrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: allDirectionsWrapper.allOperations)
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: allDirectionsWrapper.allOperations
+        )
     }
 
     func quote(for _: AssetConversion.Args) -> CompoundOperationWrapper<AssetConversion.Quote> {

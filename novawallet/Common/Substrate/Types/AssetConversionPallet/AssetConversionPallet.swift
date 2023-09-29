@@ -50,7 +50,7 @@ enum AssetConversionPallet {
         let asset2: PoolAsset
 
         init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
-            let expectedFieldsCount = 2
+            let expectedFieldsCount = 1
             let actualFieldsCount = jsonList.count
             guard expectedFieldsCount == actualFieldsCount else {
                 throw JSONListConvertibleError.unexpectedNumberOfItems(
@@ -59,8 +59,12 @@ enum AssetConversionPallet {
                 )
             }
 
-            let multilocation1 = try jsonList[0].map(to: XcmV3.Multilocation.self, with: context)
-            let multilocation2 = try jsonList[1].map(to: XcmV3.Multilocation.self, with: context)
+            guard let poolId = jsonList[0].arrayValue, poolId.count == 2 else {
+                throw JSONListConvertibleError.unexpectedValue(jsonList[0])
+            }
+
+            let multilocation1 = try poolId[0].map(to: XcmV3.Multilocation.self, with: context)
+            let multilocation2 = try poolId[1].map(to: XcmV3.Multilocation.self, with: context)
 
             asset1 = PoolAsset(multilocation: multilocation1)
             asset2 = PoolAsset(multilocation: multilocation2)
