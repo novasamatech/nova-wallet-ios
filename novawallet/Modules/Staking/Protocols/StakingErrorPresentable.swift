@@ -7,7 +7,7 @@ struct NPoolsEDViolationErrorParams {
     let maxStake: String
 }
 
-protocol StakingErrorPresentable: BaseErrorPresentable {
+protocol StakingErrorPresentable: BaseErrorPresentable, StakeBaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 
     func presentMissingController(
@@ -69,14 +69,6 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
         networkName: String,
         onClose: @escaping () -> Void,
         locale: Locale?
-    )
-
-    func presentCrossedMinStake(
-        from view: ControllerBackedProtocol?,
-        minStake: String,
-        remaining: String,
-        action: @escaping () -> Void,
-        locale: Locale
     )
 }
 
@@ -294,39 +286,6 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
             title: nil,
             message: message,
             actions: [closeAction],
-            closeAction: nil
-        )
-
-        present(viewModel: viewModel, style: .alert, from: view)
-    }
-
-    func presentCrossedMinStake(
-        from view: ControllerBackedProtocol?,
-        minStake: String,
-        remaining: String,
-        action: @escaping () -> Void,
-        locale: Locale
-    ) {
-        let title = R.string.localizable.stakingUnstakeCrossedMinTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingUnstakeCrossedMinMessage(
-            minStake,
-            remaining,
-            preferredLanguages: locale.rLanguages
-        )
-
-        let cancelAction = AlertPresentableAction(
-            title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
-        )
-
-        let unstakeAllAction = AlertPresentableAction(
-            title: R.string.localizable.stakingUnstakeAll(preferredLanguages: locale.rLanguages),
-            handler: action
-        )
-
-        let viewModel = AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [cancelAction, unstakeAllAction],
             closeAction: nil
         )
 

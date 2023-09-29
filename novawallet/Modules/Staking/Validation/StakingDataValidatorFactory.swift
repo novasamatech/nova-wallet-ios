@@ -41,13 +41,6 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func minStakeNotCrossed(
-        for inputAmount: Decimal,
-        params: MinStakeCrossedParams,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> DataValidating
-
     func ledgerNotExist(
         stakingLedger: StakingLedger?,
         locale: Locale
@@ -77,6 +70,13 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
     ) -> DataValidating
 
     func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
+    
+    func minStakeNotCrossed(
+        for inputAmount: Decimal,
+        params: MinStakeCrossedParams,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class StakingDataValidatingFactory {

@@ -114,7 +114,8 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
         var unbondAmount = inputAmount
-        let unbondAmountInPlank = unbondAmount?.toSubstrateAmount(
+
+        let bondedAmountInPlank = bonded?.toSubstrateAmount(
             precision: chainAsset.assetDisplayInfo.assetPrecision
         )
         let minStakeInPlank = minimalBalance?.toSubstrateAmount(
@@ -122,7 +123,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
         )
 
         let minStakeValidationParams = MinStakeCrossedParams(
-            stakedAmountInPlank: unbondAmountInPlank,
+            stakedAmountInPlank: bondedAmountInPlank,
             minStake: minStakeInPlank
         ) { [weak self] in
             unbondAmount = self?.bonded
@@ -144,7 +145,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
             ),
 
             dataValidatingFactory.minStakeNotCrossed(
-                for: unbondAmount ?? 0,
+                for: inputAmount ?? 0,
                 params: minStakeValidationParams,
                 chainAsset: chainAsset,
                 locale: locale
