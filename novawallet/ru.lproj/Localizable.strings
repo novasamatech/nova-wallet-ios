@@ -303,8 +303,6 @@
 "staking.your.nominated.format" = "Номинировано: %@";
 "staking.your.validators.changing.title" = "Ваши валидаторы поменяются в следующую эру";
 "staking.validator.info.nominators" = "%@ (макс. %@ )";
-"staking.unbonding.all.title" = "Остановить стейкинг";
-"staking.unbonding.all.message" = "Оставшийся баланс стейка будет меньше минимального значения, поэтому он добавлен к сумме вывода.";
 "staking.unbonding.hint" = "Ваши токены будут доступны после истечения периода вывода.";
 "staking.unbond.payee.reset.message" = "Назначение вознаграждений будет изменено на ваш аккаунт, чтобы избежать остатка в стейке, поскольку стейкинг будет остановлен.";
 "staking.redeemable.format" = "Можно забрать: %@";
