@@ -33,7 +33,7 @@ enum AssetOperationViewFactory {
 
         let view = AssetsSearchViewController(
             presenter: presenter,
-            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
+            keyboardAppearanceStrategy: nil,
             createViewClosure: { AssetsOperationViewLayout() },
             localizableTitle: title,
             localizationManager: LocalizationManager.shared
@@ -75,7 +75,7 @@ enum AssetOperationViewFactory {
 
         let view = AssetsSearchViewController(
             presenter: presenter,
-            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
+            keyboardAppearanceStrategy: nil,
             createViewClosure: { AssetsOperationViewLayout() },
             localizableTitle: title,
             localizationManager: LocalizationManager.shared
@@ -116,7 +116,7 @@ enum AssetOperationViewFactory {
 
         let view = SendAssetOperationViewController(
             presenter: presenter,
-            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
+            keyboardAppearanceStrategy: nil,
             createViewClosure: { AssetsOperationViewLayout() },
             localizableTitle: title,
             localizationManager: LocalizationManager.shared
