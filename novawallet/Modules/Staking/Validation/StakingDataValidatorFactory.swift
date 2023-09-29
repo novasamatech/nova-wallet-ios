@@ -70,7 +70,7 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
     ) -> DataValidating
 
     func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
-    
+
     func minStakeNotCrossed(
         for inputAmount: Decimal,
         params: MinStakeCrossedParams,
