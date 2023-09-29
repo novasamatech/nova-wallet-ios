@@ -41,10 +41,10 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func stashIsNotKilledAfterUnbonding(
-        amount: Decimal?,
-        bonded: Decimal?,
-        minimumAmount: Decimal?,
+    func minStakeNotCrossed(
+        for inputAmount: Decimal,
+        params: MinStakeCrossedParams,
+        chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
 
@@ -219,26 +219,55 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func stashIsNotKilledAfterUnbonding(
-        amount: Decimal?,
-        bonded: Decimal?,
-        minimumAmount: Decimal?,
+    func minStakeNotCrossed(
+        for inputAmount: Decimal,
+        params: MinStakeCrossedParams,
+        chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let view = self?.view else {
+        let inputAmountInPlank = inputAmount.toSubstrateAmount(
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) ?? 0
+
+        let stakedAmountInPlank = params.stakedAmountInPlank
+        let minStake = params.minStake
+
+        return WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard let balanceFactory = self?.balanceFactory else {
                 return
             }
 
-            self?.presentable.presentStashKilledAfterUnbond(from: view, action: {
-                delegate.didCompleteWarningHandling()
-            }, locale: locale)
+            let stakedAmount = stakedAmountInPlank ?? 0
+            let diff = stakedAmount >= inputAmountInPlank ? stakedAmount - inputAmountInPlank : 0
+
+            let minStakeDecimal = (minStake ?? 0).decimal(precision: chainAsset.asset.precision)
+            let diffDecimal = diff.decimal(precision: chainAsset.asset.precision)
+
+            let minStakeString = balanceFactory.amountFromValue(minStakeDecimal).value(for: locale)
+            let diffString = balanceFactory.amountFromValue(diffDecimal).value(for: locale)
+
+            self?.presentable.presentCrossedMinStake(
+                from: self?.view,
+                minStake: minStakeString,
+                remaining: diffString,
+                action: {
+                    params.unstakeAllHandler()
+                    delegate.didCompleteWarningHandling()
+                },
+                locale: locale
+            )
+
         }, preservesCondition: {
-            if let amount = amount, let bonded = bonded, let minimumAmount = minimumAmount {
-                return bonded - amount >= minimumAmount
-            } else {
+            guard
+                let stakedAmountInPlank = stakedAmountInPlank,
+                let minStake = minStake,
+                stakedAmountInPlank >= inputAmountInPlank else {
                 return false
             }
+
+            let diff = stakedAmountInPlank - inputAmountInPlank
+
+            return diff == 0 || diff >= minStake
         })
     }
 

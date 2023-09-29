@@ -9,12 +9,6 @@ struct ExistentialDepositValidationParams {
     let amountUpdateClosure: (Decimal) -> Void
 }
 
-struct MinStakeCrossedParams {
-    let stakedAmountInPlank: BigUInt?
-    let minStake: BigUInt?
-    let unstakeAllHandler: () -> Void
-}
-
 protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func nominationPoolHasApy(
         pool: NominationPools.SelectedPool,
