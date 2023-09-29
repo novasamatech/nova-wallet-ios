@@ -127,7 +127,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         if let details = viewModel.details {
             optDescriptionView = MarkdownViewContainer(
                 preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset,
-                maxTextLength: MarkdownText.readMoreThreshold
+                maxTextLength: MarkupAttributedText.readMoreThreshold
             )
 
             optDescriptionView?.load(from: details, completion: nil)

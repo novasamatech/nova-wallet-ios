@@ -1361,7 +1361,7 @@
 "staking.select.pool.members" = "участники";
 "staking.select.pool.count" = "активные пулы: %d";
 "staking.select.pool.title" = "Выбрать пул";
-"staking.search.pool.empty" = "Пул с введенным именем или номером не найден. Убедитесь, что вы ввели правильные данные";
+"staking.search.pool.empty" = "Пул с введенным именем или\nномером не найден. Убедитесь, что вы\nввели правильные данные";
 "staking.start.balance.with.fiat" = "Доступный баланс: %1$@ (%2$@)";
 "staking.pool.is.not.open.message" = "Вы не можете присоединиться к не открытому пулу. Пожалуйста, свяжитесь с владельцем пула.";
 "staking.pool.is.not.open.title" = "Пул не открыт";
@@ -1377,3 +1377,5 @@
 "common.back" = "Назад";
 "asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
 "governance.referendums.status.deciding" = "На рассмотрении";
+"common.alert.external.link.disclaimer.title" = "Вы покидаете Nova Wallet";
+"common.alert.external.link.disclaimer.message" = "Вы будете перенаправлены на сайт %@";

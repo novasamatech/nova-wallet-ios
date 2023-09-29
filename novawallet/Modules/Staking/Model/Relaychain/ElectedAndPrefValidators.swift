@@ -1,6 +1,6 @@
 import Foundation
 
-struct ElectedAndPrefValidators {
+struct ElectedAndPrefValidators: Equatable {
     let electedValidators: [ElectedValidatorInfo]
     let preferredValidators: [SelectedValidatorInfo]
 
