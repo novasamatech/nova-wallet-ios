@@ -14,11 +14,11 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
     private let createViewClosure: () -> BaseAssetsSearchViewLayout
     private let localizableTitle: LocalizableResource<String>?
 
-    let keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol?
+    let keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol
 
     init(
         presenter: AssetsSearchPresenterProtocol,
-        keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol?,
+        keyboardAppearanceStrategy: KeyboardAppearanceStrategyProtocol,
         createViewClosure: @escaping () -> BaseAssetsSearchViewLayout,
         localizableTitle: LocalizableResource<String>? = nil,
         localizationManager: LocalizationManagerProtocol
@@ -53,13 +53,13 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        keyboardAppearanceStrategy?.onViewWillAppear(for: rootView.searchBar.textField)
+        keyboardAppearanceStrategy.onViewWillAppear(for: rootView.searchBar.textField)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        keyboardAppearanceStrategy?.onViewDidAppear(for: rootView.searchBar.textField)
+        keyboardAppearanceStrategy.onViewDidAppear(for: rootView.searchBar.textField)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -172,6 +172,7 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        keyboardAppearanceStrategy.onCellSelected(for: rootView.searchBar.textField)
 
         let cellType = AssetsSearchFlowLayout.CellType(indexPath: indexPath)
 
