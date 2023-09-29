@@ -1,6 +1,6 @@
 import Foundation
 
-protocol NominationPoolErrorPresentable: StakeBaseErrorPresentable {
+protocol NominationPoolErrorPresentable: StakingBaseErrorPresentable {
     func presentNominationPoolHasNoApy(
         from view: ControllerBackedProtocol,
         action: @escaping () -> Void,

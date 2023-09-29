@@ -1,6 +1,6 @@
 import Foundation
 
-protocol StakeBaseErrorPresentable: BaseErrorPresentable {
+protocol StakingBaseErrorPresentable: BaseErrorPresentable {
     func presentCrossedMinStake(
         from view: ControllerBackedProtocol?,
         minStake: String,
@@ -10,7 +10,7 @@ protocol StakeBaseErrorPresentable: BaseErrorPresentable {
     )
 }
 
-extension StakeBaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
+extension StakingBaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentCrossedMinStake(
         from view: ControllerBackedProtocol?,
         minStake: String,

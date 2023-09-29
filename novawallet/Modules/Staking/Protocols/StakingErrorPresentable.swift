@@ -7,7 +7,7 @@ struct NPoolsEDViolationErrorParams {
     let maxStake: String
 }
 
-protocol StakingErrorPresentable: StakeBaseErrorPresentable {
+protocol StakingErrorPresentable: StakingBaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 
     func presentMissingController(
