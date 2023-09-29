@@ -2,17 +2,17 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-extension Xcm {
+extension XcmV3 {
     enum NetworkId: Codable {
-        static let anyField = "Any"
-        static let namedField = "Named"
+        static let byGenesisField = "ByGenesis"
         static let polkadotField = "Polkadot"
         static let kusamaField = "Kusama"
+        static let westendField = "Westend"
 
-        case any
-        case named(_ data: Data)
+        case byGenesis(Data)
         case polkadot
         case kusama
+        case westend
 
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -20,15 +20,15 @@ extension Xcm {
             let type = try container.decode(String.self)
 
             switch type {
-            case Self.anyField:
-                self = .any
-            case Self.namedField:
-                let data = try container.decode(BytesCodable.self).wrappedValue
-                self = .named(data)
+            case Self.byGenesisField:
+                let hash = try container.decode(BytesCodable.self).wrappedValue
+                self = .byGenesis(hash)
             case Self.polkadotField:
                 self = .polkadot
             case Self.kusamaField:
                 self = .kusama
+            case Self.westendField:
+                self = .westend
             default:
                 throw DecodingError.dataCorrupted(
                     .init(
@@ -43,17 +43,17 @@ extension Xcm {
             var container = encoder.unkeyedContainer()
 
             switch self {
-            case .any:
-                try container.encode(Self.anyField)
-                try container.encode(JSON.null)
-            case let .named(data):
-                try container.encode(Self.namedField)
-                try container.encode(BytesCodable(wrappedValue: data))
+            case let .byGenesis(hash):
+                try container.encode(Self.byGenesisField)
+                try container.encode(BytesCodable(wrappedValue: hash))
             case .polkadot:
                 try container.encode(Self.polkadotField)
                 try container.encode(JSON.null)
             case .kusama:
                 try container.encode(Self.kusamaField)
+                try container.encode(JSON.null)
+            case .westend:
+                try container.encode(Self.westendField)
                 try container.encode(JSON.null)
             }
         }
@@ -65,17 +65,17 @@ extension Xcm {
             case accountId = "id"
         }
 
-        let network: NetworkId
+        let network: NetworkId?
         @BytesCodable var accountId: AccountId
     }
 
     struct AccountId20Value: Codable {
-        let network: NetworkId
+        let network: NetworkId?
         @BytesCodable var key: AccountId
     }
 
     struct AccountIndexValue: Codable {
-        let network: NetworkId
+        let network: NetworkId?
         @StringCodable var index: UInt64
     }
 
@@ -88,6 +88,7 @@ extension Xcm {
         static let generalIndexField = "GeneralIndex"
         static let generalKeyField = "GeneralKey"
         static let onlyChildKey = "OnlyChild"
+        static let globalConsensusField = "GlobalConsensus"
 
         case parachain(_ paraId: ParaId)
         case accountId32(AccountId32Value)
@@ -97,6 +98,7 @@ extension Xcm {
         case generalIndex(_ index: BigUInt)
         case generalKey(_ key: Data)
         case onlyChild
+        case globalConsensus(NetworkId)
 
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -124,6 +126,9 @@ extension Xcm {
                 self = .generalKey(key)
             case Self.onlyChildKey:
                 self = .onlyChild
+            case Self.globalConsensusField:
+                let network = try container.decode(NetworkId.self)
+                self = .globalConsensus(network)
             default:
                 throw DecodingError.dataCorrupted(
                     .init(
@@ -162,107 +167,12 @@ extension Xcm {
             case .onlyChild:
                 try container.encode(Self.onlyChildKey)
                 try container.encode(JSON.null)
+            case let .globalConsensus(network):
+                try container.encode(Self.globalConsensusField)
+                try container.encode(network)
             }
         }
     }
 
-    enum JunctionsConstants {
-        static let hereField = "Here"
-        static let junctionPrefix = "X"
-    }
-
-    struct Junctions<J>: Codable where J: Codable {
-        let items: [J]
-
-        init(items: [J]) {
-            self.items = items
-        }
-
-        init(from decoder: Decoder) throws {
-            var container = try decoder.unkeyedContainer()
-
-            let type = try container.decode(String.self)
-
-            if type == JunctionsConstants.hereField {
-                items = []
-            } else if
-                type.count == 2,
-                type.starts(with: JunctionsConstants.junctionPrefix),
-                let itemsCount = Int(type.suffix(1)) {
-                if itemsCount > 1 {
-                    let item = try container.decode(J.self)
-                    items = [item]
-                } else {
-                    let dict = try container.decode([String: J].self)
-
-                    items = try (0 ..< itemsCount).map { index in
-                        guard let junction = dict[String(index)] else {
-                            throw DecodingError.dataCorrupted(
-                                .init(
-                                    codingPath: container.codingPath,
-                                    debugDescription: "Unsupported junctions: \(dict)"
-                                )
-                            )
-                        }
-
-                        return junction
-                    }
-                }
-            } else {
-                throw DecodingError.dataCorrupted(
-                    .init(
-                        codingPath: container.codingPath,
-                        debugDescription: "Unsupported junctions format"
-                    )
-                )
-            }
-        }
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            if items.isEmpty {
-                try container.encode(JunctionsConstants.hereField)
-            } else {
-                let xLocation = "\(JunctionsConstants.junctionPrefix)\(items.count)"
-                try container.encode(xLocation)
-            }
-
-            if items.isEmpty {
-                try container.encode(JSON.null)
-            } else if items.count == 1 {
-                try container.encode(items[0])
-            } else {
-                var jsonDict: [String: J] = [:]
-                for (index, item) in items.enumerated() {
-                    let key = String(index)
-                    jsonDict[key] = item
-                }
-
-                try container.encode(jsonDict)
-            }
-        }
-    }
-
-    typealias JunctionsV2 = Junctions<Junction>
-}
-
-extension Xcm.Junctions {
-    func appending(components: [J]) -> Xcm.Junctions<J> {
-        Xcm.Junctions(items: items + components)
-    }
-
-    func prepending(components: [J]) -> Xcm.Junctions<J> {
-        Xcm.Junctions(items: components + items)
-    }
-
-    func lastComponent() -> (Xcm.Junctions<J>, Xcm.Junctions<J>) {
-        guard let lastJunction = items.last else {
-            return (self, Xcm.Junctions(items: []))
-        }
-
-        let remaningItems = Array(items.dropLast())
-
-        return (Xcm.Junctions(items: remaningItems), Xcm.Junctions(items: [lastJunction]))
-    }
+    typealias Junctions = Xcm.Junctions<XcmV3.Junction>
 }
