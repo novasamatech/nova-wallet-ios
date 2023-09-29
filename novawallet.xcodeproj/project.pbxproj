@@ -8453,6 +8453,8 @@
 				F4CFBAC4468FAD5728719A7D /* ClaimRewards */,
 				0CB261D62A9893BD00287305 /* Unstake */,
 				D1AABAFE54CA7C8321264E64 /* BondMore */,
+				ADE9FF1DB92333FA89C7F683 /* Selection */,
+				F3286B3F0CD8E7D358AC93EA /* Search */,
 			);
 			path = NominationPools;
 			sourceTree = "<group>";
@@ -16025,9 +16027,7 @@
 				CCD822B8B9ED8FF81C834DD5 /* StartStakingInfo */,
 				7066B343B912F72345D541F2 /* StakingSetupAmount */,
 				17432B4B5D8D9DC5C22CA238 /* StakingType */,
-				ADE9FF1DB92333FA89C7F683 /* StakingSelectPool */,
 				92CDAD21CEED554306CAF5D8 /* StartStakingConfirm */,
-				F3286B3F0CD8E7D358AC93EA /* NominationPoolSearch */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -17150,7 +17150,7 @@
 			path = AddToken;
 			sourceTree = "<group>";
 		};
-		ADE9FF1DB92333FA89C7F683 /* StakingSelectPool */ = {
+		ADE9FF1DB92333FA89C7F683 /* Selection */ = {
 			isa = PBXGroup;
 			children = (
 				770F57892A8A48F7005FD7C1 /* Model */,
@@ -17162,7 +17162,7 @@
 				E7F38FDB907F69A26B93B4E6 /* StakingSelectPoolViewController.swift */,
 				4E553E3D45A7A759C917A4B2 /* StakingSelectPoolViewFactory.swift */,
 			);
-			path = StakingSelectPool;
+			path = Selection;
 			sourceTree = "<group>";
 		};
 		ADEC075C60AA6D00785D2BDF /* AssetList */ = {
@@ -18153,7 +18153,7 @@
 			path = Purchase;
 			sourceTree = "<group>";
 		};
-		F3286B3F0CD8E7D358AC93EA /* NominationPoolSearch */ = {
+		F3286B3F0CD8E7D358AC93EA /* Search */ = {
 			isa = PBXGroup;
 			children = (
 				A31B8F292DA050D1D19B9F5F /* NominationPoolSearchProtocols.swift */,
@@ -18166,7 +18166,7 @@
 				77895C9E2A8F5D40006870FB /* NominationPoolSearchManager.swift */,
 				77895CA02A8F7360006870FB /* NominationPoolSearchOperationFactory.swift */,
 			);
-			path = NominationPoolSearch;
+			path = Search;
 			sourceTree = "<group>";
 		};
 		F3E50DB617DFDE30FE6FA185 /* ParaStkUnstake */ = {
