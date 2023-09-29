@@ -111,6 +111,10 @@ class StartStakingConfirmPresenter {
         fatalError("Must be overriden by subsclass")
     }
 
+    func stakingOption() -> SelectedStakingOption? {
+        fatalError("Must be overriden by subsclass")
+    }
+
     private func updateView() {
         provideAmountViewModel()
         provideWalletViewModel()
@@ -144,6 +148,7 @@ class StartStakingConfirmPresenter {
             ),
             dataValidatingFactory.allowsNewNominators(
                 flag: restrictions?.allowsNewStakers ?? true,
+                staking: stakingOption(),
                 locale: selectedLocale
             )
         ]

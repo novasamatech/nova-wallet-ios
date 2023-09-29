@@ -47,7 +47,11 @@ protocol StakingErrorPresentable: StakingBaseErrorPresentable {
         locale: Locale?
     )
 
-    func presentMaxNumberOfNominatorsReached(from view: ControllerBackedProtocol?, locale: Locale?)
+    func presentMaxNumberOfNominatorsReached(
+        from view: ControllerBackedProtocol?,
+        stakingType: String,
+        locale: Locale?
+    )
 
     func presentMinRewardableStakeViolated(
         from view: ControllerBackedProtocol,
@@ -209,12 +213,17 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         )
     }
 
-    func presentMaxNumberOfNominatorsReached(from view: ControllerBackedProtocol?, locale: Locale?) {
+    func presentMaxNumberOfNominatorsReached(
+        from view: ControllerBackedProtocol?,
+        stakingType: String,
+        locale: Locale?
+    ) {
         let message = R.string.localizable.stakingMaxNominatorsReachedMessage(
             preferredLanguages: locale?.rLanguages
         )
 
-        let title = R.string.localizable.stakingMaxNominatorsReachedTitle(
+        let title = R.string.localizable.stakingIsNotAvailableTitle(
+            stakingType,
             preferredLanguages: locale?.rLanguages
         )
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)

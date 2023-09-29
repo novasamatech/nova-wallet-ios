@@ -56,6 +56,7 @@ final class RelaychainStakingValidatorFacade {
     private func createCommonValidations(
         params: RelaychainStakingValidationParams,
         restrictions: RelaychainStakingRestrictions?,
+        staking: SelectedStakingOption?,
         locale: Locale
     ) -> [DataValidating] {
         let assetDisplayInfo = params.chainAsset.assetDisplayInfo
@@ -89,6 +90,7 @@ final class RelaychainStakingValidatorFacade {
             ),
             directStakingValidatingFactory.allowsNewNominators(
                 flag: restrictions?.allowsNewStakers ?? false,
+                staking: staking,
                 locale: locale
             ),
             directStakingValidatingFactory.canNominateInPlank(
@@ -181,6 +183,7 @@ extension RelaychainStakingValidatorFacade: RelaychainStakingValidatorFacadeProt
         let commonValidations = createCommonValidations(
             params: params,
             restrictions: stakingMethod.restrictions,
+            staking: stakingMethod.selectedStakingOption,
             locale: locale
         )
 
