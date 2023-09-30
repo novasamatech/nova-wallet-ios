@@ -7,7 +7,7 @@ struct NPoolsEDViolationErrorParams {
     let maxStake: String
 }
 
-protocol StakingErrorPresentable: BaseErrorPresentable {
+protocol StakingErrorPresentable: StakingBaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 
     func presentMissingController(
@@ -32,12 +32,6 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
     )
 
     func presentControllerBalanceIsZero(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    )
-
-    func presentStashKilledAfterUnbond(
         from view: ControllerBackedProtocol,
         action: @escaping () -> Void,
         locale: Locale?
@@ -173,19 +167,6 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
             view: view,
             locale: locale
         )
-    }
-
-    func presentStashKilledAfterUnbond(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    ) {
-        let title = R.string.localizable
-            .stakingUnbondingAllTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingUnbondingAllMessage(preferredLanguages: locale?.rLanguages)
-
-        presentWarning(for: title, message: message, action: action, view: view, locale: locale)
     }
 
     func presentUnbondingLimitReached(from view: ControllerBackedProtocol?, locale: Locale?) {

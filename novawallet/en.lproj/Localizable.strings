@@ -303,8 +303,6 @@
 "staking.your.nominated.format" = "Nominated: %@";
 "staking.your.validators.changing.title" = "Your validators will change in the next era.";
 "staking.validator.info.nominators" = "%@ (max %@)";
-"staking.unbonding.all.title" = "Stop staking";
-"staking.unbonding.all.message" = "Remaining staking balance will drop under minimum value and also will be added to unstaking amount";
 "staking.unbonding.hint" = "Your tokens will be available to redeem after the unstaking period.";
 "staking.unbond.payee.reset.message" = "The reward destination will be changed to your account to avoid a bonded remnant since staking will be stopped";
 "staking.redeemable.format" = "Redeemable: %@";
