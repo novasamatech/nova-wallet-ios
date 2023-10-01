@@ -167,8 +167,10 @@ class StakingRebondSetupTests: XCTestCase {
                 inputExpectation.fulfill()
             }
 
-            when(stub).didReceiveTransferable(viewModel: any()).then { _ in
-                transferableExpectation.fulfill()
+            when(stub).didReceiveTransferable(viewModel: any()).then { optViewModel in
+                if optViewModel != nil {
+                    transferableExpectation.fulfill()
+                }
             }
         }
 
