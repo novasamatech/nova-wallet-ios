@@ -142,7 +142,7 @@ class StakingUnbondSetupTests: XCTestCase {
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
-            assetInfo: chainAsset.assetDisplayInfo
+            chainAsset: chainAsset
         )
 
         presenter.view = view

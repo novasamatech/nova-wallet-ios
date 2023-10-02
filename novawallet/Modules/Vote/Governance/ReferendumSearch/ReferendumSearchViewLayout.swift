@@ -9,8 +9,8 @@ final class ReferendumSearchViewLayout: BaseTableSearchViewLayout {
             make.edges.equalToSuperview()
         }
 
-        addSubview(emptyStateContainer)
-        emptyStateContainer.snp.makeConstraints { make in
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalTo(safeAreaLayoutGuide)
             make.top.equalToSuperview()
         }
@@ -43,7 +43,6 @@ final class ReferendumSearchViewLayout: BaseTableSearchViewLayout {
     override func setupStyle() {
         backgroundColor = .clear
         tableView.backgroundColor = .clear
-        emptyStateContainer.backgroundColor = .clear
 
         cancelButton.isHidden = false
         cancelButton.contentInsets = .init(top: 0, left: 16, bottom: 0, right: 16)

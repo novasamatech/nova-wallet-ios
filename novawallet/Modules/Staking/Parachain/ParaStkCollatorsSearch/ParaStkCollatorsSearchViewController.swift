@@ -170,7 +170,7 @@ extension ParaStkCollatorsSearchViewController: EmptyStateDataSource {
     }
 
     var contentViewForEmptyState: UIView {
-        rootView.emptyStateContainer
+        rootView.contentView
     }
 
     var verticalSpacingForEmptyState: CGFloat? {

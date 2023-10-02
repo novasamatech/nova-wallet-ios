@@ -172,6 +172,7 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        keyboardAppearanceStrategy.onCellSelected(for: rootView.searchBar.textField)
 
         let cellType = AssetsSearchFlowLayout.CellType(indexPath: indexPath)
 

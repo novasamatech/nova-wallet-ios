@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import RobinHood
 
-final class AssetDetailsPresenter {
+final class AssetDetailsPresenter: PurchaseFlowManaging {
     weak var view: AssetDetailsViewProtocol?
     let wireframe: AssetDetailsWireframeProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
@@ -95,22 +95,12 @@ final class AssetDetailsPresenter {
     }
 
     private func showPurchase() {
-        guard !purchaseActions.isEmpty else {
-            return
-        }
-        if purchaseActions.count == 1 {
-            wireframe.showPurchaseTokens(
-                from: view,
-                action: purchaseActions[0],
-                delegate: self
-            )
-        } else {
-            wireframe.showPurchaseProviders(
-                from: view,
-                actions: purchaseActions,
-                delegate: self
-            )
-        }
+        startPuchaseFlow(
+            from: view,
+            purchaseActions: purchaseActions,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
     }
 
     private func showReceiveTokens() {
@@ -253,19 +243,17 @@ extension AssetDetailsPresenter: Localizable {
 
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        wireframe.showPurchaseTokens(
+        startPuchaseFlow(
             from: view,
-            action: purchaseActions[index],
-            delegate: self
+            purchaseAction: purchaseActions[index],
+            wireframe: wireframe,
+            locale: selectedLocale
         )
     }
 }
 
 extension AssetDetailsPresenter: PurchaseDelegate {
     func purchaseDidComplete() {
-        let languages = selectedLocale.rLanguages
-        let message = R.string.localizable
-            .buyCompleted(preferredLanguages: languages)
-        wireframe.presentSuccessAlert(from: view, message: message)
+        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }

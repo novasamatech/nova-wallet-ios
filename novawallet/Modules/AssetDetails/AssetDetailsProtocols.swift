@@ -30,26 +30,15 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(purchaseActions: [PurchaseAction])
 }
 
-protocol AssetDetailsWireframeProtocol: AnyObject {
+protocol AssetDetailsWireframeProtocol: AnyObject, PurchasePresentable, AlertPresentable {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
     func showReceiveTokens(
         from view: AssetDetailsViewProtocol?,
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
     )
-    func showPurchaseProviders(
-        from view: AssetDetailsViewProtocol?,
-        actions: [PurchaseAction],
-        delegate: ModalPickerViewControllerDelegate
-    )
-    func showPurchaseTokens(
-        from view: AssetDetailsViewProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
-    )
     func showNoSigning(from view: AssetDetailsViewProtocol?)
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
-    func presentSuccessAlert(from view: AssetDetailsViewProtocol?, message: String)
     func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel)
 }
 

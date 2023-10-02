@@ -3,7 +3,7 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class BuyAssetOperationPresenter: AssetsSearchPresenter {
+final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManaging {
     var buyAssetWireframe: BuyAssetOperationWireframeProtocol? {
         wireframe as? BuyAssetOperationWireframeProtocol
     }
@@ -32,22 +32,6 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
         )
     }
 
-    private func showPurchase() {
-        if purchaseActions.count == 1 {
-            buyAssetWireframe?.showPurchaseTokens(
-                from: view,
-                action: purchaseActions[0],
-                delegate: self
-            )
-        } else {
-            buyAssetWireframe?.showPurchaseProviders(
-                from: view,
-                actions: purchaseActions,
-                delegate: self
-            )
-        }
-    }
-
     override func selectAsset(for chainAssetId: ChainAssetId) {
         guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
@@ -70,7 +54,15 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
                 on: view,
                 by: commonCheckResult,
                 successRouteClosure: { [weak self] in
-                    self?.showPurchase()
+                    guard let self = self else {
+                        return
+                    }
+                    self.startPuchaseFlow(
+                        from: self.view,
+                        purchaseActions: self.purchaseActions,
+                        wireframe: self.buyAssetWireframe,
+                        locale: selectedLocale
+                    )
                 }
             )
         case .noBuyOptions:
@@ -81,19 +73,17 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter {
 
 extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        buyAssetWireframe?.showPurchaseTokens(
+        startPuchaseFlow(
             from: view,
-            action: purchaseActions[index],
-            delegate: self
+            purchaseAction: purchaseActions[index],
+            wireframe: buyAssetWireframe,
+            locale: selectedLocale
         )
     }
 }
 
 extension BuyAssetOperationPresenter: PurchaseDelegate {
     func purchaseDidComplete() {
-        let languages = localizationManager?.selectedLocale.rLanguages
-        let message = R.string.localizable
-            .buyCompleted(preferredLanguages: languages)
-        buyAssetWireframe?.presentSuccessAlert(from: view, message: message)
+        buyAssetWireframe?.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }
