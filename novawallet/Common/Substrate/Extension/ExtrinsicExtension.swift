@@ -8,11 +8,15 @@ enum DefaultExtrinsicExtension {
         ]
     }
 
-    static var coders: [ExtrinsicExtensionCoder] {
-        [
+    static func getCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicExtensionCoder] {
+        let extensionName = ChargeAssetTxPayment.name
+
+        let extraType = metadata.getSignedExtensionType(for: extensionName)
+
+        return [
             DefaultExtrinsicExtensionCoder(
                 name: ChargeAssetTxPayment.name,
-                extraType: "pallet_asset_tx_payment.ChargeAssetTxPayment"
+                extraType: extraType ?? "pallet_asset_tx_payment.ChargeAssetTxPayment"
             )
         ]
     }
