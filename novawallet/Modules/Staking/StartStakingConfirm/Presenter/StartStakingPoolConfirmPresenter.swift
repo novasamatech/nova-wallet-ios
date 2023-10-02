@@ -66,4 +66,8 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
             )
         ]
     }
+
+    override func stakingOption() -> SelectedStakingOption? {
+        .pool(model)
+    }
 }

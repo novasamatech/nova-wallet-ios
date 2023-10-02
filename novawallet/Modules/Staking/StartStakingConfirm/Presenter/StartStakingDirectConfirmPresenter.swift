@@ -84,4 +84,8 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
             )
         ]
     }
+
+    override func stakingOption() -> SelectedStakingOption? {
+        .direct(model)
+    }
 }

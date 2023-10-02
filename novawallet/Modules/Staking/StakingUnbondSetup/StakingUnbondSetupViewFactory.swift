@@ -22,14 +22,17 @@ struct StakingUnbondSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
+        let dataValidatingFactory = StakingDataValidatingFactory(
+            presentable: wireframe,
+            balanceFactory: balanceViewModelFactory
+        )
 
         let presenter = StakingUnbondSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            assetInfo: assetInfo,
+            chainAsset: chainAsset,
             logger: Logger.shared
         )
 

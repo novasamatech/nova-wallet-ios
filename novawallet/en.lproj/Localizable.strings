@@ -303,8 +303,6 @@
 "staking.your.nominated.format" = "Nominated: %@";
 "staking.your.validators.changing.title" = "Your validators will change in the next era.";
 "staking.validator.info.nominators" = "%@ (max %@)";
-"staking.unbonding.all.title" = "Stop staking";
-"staking.unbonding.all.message" = "Remaining staking balance will drop under minimum value and also will be added to unstaking amount";
 "staking.unbonding.hint" = "Your tokens will be available to redeem after the unstaking period.";
 "staking.unbond.payee.reset.message" = "The reward destination will be changed to your account to avoid a bonded remnant since staking will be stopped";
 "staking.redeemable.format" = "Redeemable: %@";
@@ -414,8 +412,8 @@
 "staking.custom.header.validators.title" = "Validators: %li of %li";
 "staking.set.validators.title" = "Select validators to start staking";
 "staking.set.validators.message" = "Validators are not selected";
-"staking.max.nominators.reached.title" = "Cannot start staking";
-"staking.max.nominators.reached.message" = "Maximum number of nominators has been reached";
+"staking.is.not.available.title" = "%@ is currently\nunavailable";
+"staking.max.nominators.reached.message" = "The maximum number of nominators\nhas been reached. Try again later";
 "staking.custom.blocked.warning" = "This validator is not accepting nominations at this moment. Please, try again in the next era.";
 "staking.alert.start.next.era.message" = "Please wait for the next era to start.";
 "staking.custom.proceed.button.disabled.title" = "Select validators (max %li)";
@@ -1360,7 +1358,7 @@
 "staking.select.pool.members" = "members";
 "staking.select.pool.count" = "active pools: %d";
 "staking.select.pool.title" = "Select pool";
-"staking.search.pool.empty" = "No pool with entered name or pool ID were found. Make sure you entered correct data";
+"staking.search.pool.empty" = "No pool with entered name or pool\nID were found. Make sure you\nentered correct data";
 "staking.start.balance.with.fiat" = "Available balance: %1$@ (%2$@)";
 "staking.pool.is.not.open.message" = "You cannot join pool that is not open. Please, contact the pool owner.";
 "staking.pool.is.not.open.title" = "Pool is not open";
@@ -1371,8 +1369,10 @@
 "common.time.period.after" = "after";
 "common.time.period.every" = "every";
 "staking.search.pool.placeholder" = "Search by name or pool ID";
-"staking.pool.is.full.title" = "Selected pool is full";
-"staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
+"staking.pool.is.full.title" = "Pool is full";
+"staking.pool.is.full.message" = "You cannot join pool since it reached maximum number of members";
 "common.back" = "Back";
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
 "governance.referendums.status.deciding" = "Deciding";
+"common.alert.external.link.disclaimer.title" = "You are leaving Nova Wallet";
+"common.alert.external.link.disclaimer.message" = "You will be redirected to %@";

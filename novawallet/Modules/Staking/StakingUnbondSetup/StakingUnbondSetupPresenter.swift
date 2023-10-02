@@ -11,7 +11,8 @@ final class StakingUnbondSetupPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
 
     let logger: LoggerProtocol?
-    let assetInfo: AssetBalanceDisplayInfo
+    var assetInfo: AssetBalanceDisplayInfo { chainAsset.assetDisplayInfo }
+    let chainAsset: ChainAsset
 
     private var bonded: Decimal?
     private var balance: Decimal?
@@ -28,14 +29,14 @@ final class StakingUnbondSetupPresenter {
         wireframe: StakingUnbondSetupWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        assetInfo: AssetBalanceDisplayInfo,
+        chainAsset: ChainAsset,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.assetInfo = assetInfo
+        self.chainAsset = chainAsset
         self.logger = logger
     }
 
@@ -111,6 +112,23 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
 
     func proceed() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+
+        var unbondAmount = inputAmount
+
+        let bondedAmountInPlank = bonded?.toSubstrateAmount(
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        )
+        let minStakeInPlank = minimalBalance?.toSubstrateAmount(
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        )
+
+        let minStakeValidationParams = MinStakeCrossedParams(
+            stakedAmountInPlank: bondedAmountInPlank,
+            minStake: minStakeInPlank
+        ) { [weak self] in
+            unbondAmount = self?.bonded
+        }
+
         DataValidationRunner(validators: [
             dataValidatingFactory.canUnbond(amount: inputAmount, bonded: bonded, locale: locale),
 
@@ -126,14 +144,14 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
                 locale: locale
             ),
 
-            dataValidatingFactory.stashIsNotKilledAfterUnbonding(
-                amount: inputAmount,
-                bonded: bonded,
-                minimumAmount: minimalBalance,
+            dataValidatingFactory.minStakeNotCrossed(
+                for: inputAmount ?? 0,
+                params: minStakeValidationParams,
+                chainAsset: chainAsset,
                 locale: locale
             )
         ]).runValidation { [weak self] in
-            if let amount = self?.inputAmount {
+            if let amount = unbondAmount {
                 self?.wireframe.proceed(view: self?.view, amount: amount)
             } else {
                 self?.logger?.warning("Missing amount after validation")

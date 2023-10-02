@@ -9,13 +9,7 @@ struct ExistentialDepositValidationParams {
     let amountUpdateClosure: (Decimal) -> Void
 }
 
-struct MinStakeCrossedParams {
-    let stakedAmountInPlank: BigUInt?
-    let minStake: BigUInt?
-    let unstakeAllHandler: () -> Void
-}
-
-protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
+protocol NominationPoolDataValidatorFactoryProtocol: StakingBaseDataValidatingFactoryProtocol {
     func nominationPoolHasApy(
         pool: NominationPools.SelectedPool,
         locale: Locale
@@ -43,13 +37,6 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
         for ledger: StakingLedger?,
         limits: NominationPools.UnstakeLimits?,
         eraCountdown: EraCountdownDisplayProtocol?,
-        locale: Locale
-    ) -> DataValidating
-
-    func minStakeNotCrossed(
-        for inputAmount: Decimal,
-        params: MinStakeCrossedParams,
-        chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
 
@@ -84,16 +71,13 @@ protocol NominationPoolDataValidatorFactoryProtocol: BaseDataValidatingFactoryPr
     ) -> DataValidating
 }
 
-final class NominationPoolDataValidatorFactory {
-    weak var view: (ControllerBackedProtocol & Localizable)?
-    let presentable: NominationPoolErrorPresentable
-    var basePresentable: BaseErrorPresentable { presentable }
-
-    let balanceFactory: BalanceViewModelFactoryProtocol
+final class NominationPoolDataValidatorFactory: StakingBaseDataValidatingFactory {
+    private let presentable: NominationPoolErrorPresentable
 
     init(presentable: NominationPoolErrorPresentable, balanceFactory: BalanceViewModelFactoryProtocol) {
         self.presentable = presentable
-        self.balanceFactory = balanceFactory
+
+        super.init(presentable: presentable, balanceFactory: balanceFactory)
     }
 }
 
@@ -272,58 +256,6 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
             let hasRedeemable = stakingLedger.redeemable(inEra: eraCountdown.activeEra) > 0
 
             return hasSpace || hasRedeemable
-        })
-    }
-
-    func minStakeNotCrossed(
-        for inputAmount: Decimal,
-        params: MinStakeCrossedParams,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> DataValidating {
-        let inputAmountInPlank = inputAmount.toSubstrateAmount(
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        ) ?? 0
-
-        let stakedAmountInPlank = params.stakedAmountInPlank
-        let minStake = params.minStake
-
-        return WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let balanceFactory = self?.balanceFactory else {
-                return
-            }
-
-            let stakedAmount = stakedAmountInPlank ?? 0
-            let diff = stakedAmount >= inputAmountInPlank ? stakedAmount - inputAmountInPlank : 0
-
-            let minStakeDecimal = (minStake ?? 0).decimal(precision: chainAsset.asset.precision)
-            let diffDecimal = diff.decimal(precision: chainAsset.asset.precision)
-
-            let minStakeString = balanceFactory.amountFromValue(minStakeDecimal).value(for: locale)
-            let diffString = balanceFactory.amountFromValue(diffDecimal).value(for: locale)
-
-            self?.presentable.presentCrossedMinStake(
-                from: self?.view,
-                minStake: minStakeString,
-                remaining: diffString,
-                action: {
-                    params.unstakeAllHandler()
-                    delegate.didCompleteWarningHandling()
-                },
-                locale: locale
-            )
-
-        }, preservesCondition: {
-            guard
-                let stakedAmountInPlank = stakedAmountInPlank,
-                let minStake = minStake,
-                stakedAmountInPlank >= inputAmountInPlank else {
-                return false
-            }
-
-            let diff = stakedAmountInPlank - inputAmountInPlank
-
-            return diff == 0 || diff >= minStake
         })
     }
 

@@ -133,7 +133,7 @@ extension NominationPoolSearchViewController: UITableViewDelegate {
         guard let viewModels = state.viewModel, !viewModels.isEmpty else {
             return 0
         }
-        return 26
+        return 29
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
@@ -185,7 +185,7 @@ extension NominationPoolSearchViewController: EmptyStateDataSource {
     }
 
     var contentViewForEmptyState: UIView {
-        rootView.emptyStateContainer
+        rootView.contentView
     }
 
     var verticalSpacingForEmptyState: CGFloat? {
