@@ -171,7 +171,7 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
         )
     }
 
-    func quote(for args: AssetConversion.Args) -> CompoundOperationWrapper<AssetConversion.Quote> {
+    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let request = AssetHubSwapRequestBuilder(chain: chain).build(args: args) {

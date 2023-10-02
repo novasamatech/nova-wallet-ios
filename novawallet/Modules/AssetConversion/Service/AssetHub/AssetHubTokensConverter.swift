@@ -8,7 +8,7 @@ struct AssetHubToken {
 }
 
 enum AssetHubTokensConverter {
-    static func converToMultilocation(
+    static func convertToMultilocation(
         chainAssetId: ChainAssetId,
         chain: ChainModel,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -31,7 +31,7 @@ enum AssetHubTokensConverter {
         }
 
         switch storageInfo {
-        case let .native(info):
+        case .native:
             return .init(parents: 0, interior: .init(items: []))
         case let .statemine(extras):
             let palletName = extras.palletName ?? PalletAssets.name

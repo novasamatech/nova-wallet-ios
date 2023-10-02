@@ -2,17 +2,6 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-enum AssetHubSwapRequestBuilderError: Error {
-    case brokenAssetIn(ChainAssetId)
-    case brokenAssetOut(ChainAssetId)
-}
-
-enum AssetHubSwapRequestSerializerError: Error {
-    case undefinedAssetType
-    case undefinedBalanceType
-    case quoteCalcFailed
-}
-
 enum AssetHubSwapRequestSerializer {
     private static func extractAssetType(from codingFactory: RuntimeCoderFactoryProtocol) -> String? {
         guard
@@ -44,7 +33,7 @@ enum AssetHubSwapRequestSerializer {
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws {
         guard let assetType = extractAssetType(from: codingFactory) else {
-            throw AssetHubSwapRequestSerializerError.undefinedAssetType
+            throw AssetConversionOperationError.runtimeError("undefined asset type")
         }
 
         try encoder.append(asset, ofType: assetType, with: codingFactory.createRuntimeJsonContext().toRawContext())
@@ -56,7 +45,7 @@ enum AssetHubSwapRequestSerializer {
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws {
         guard let balanceType = extractBalanceType(from: codingFactory) else {
-            throw AssetHubSwapRequestSerializerError.undefinedBalanceType
+            throw AssetConversionOperationError.runtimeError("undefined balance type")
         }
 
         try encoder.append(
@@ -68,7 +57,7 @@ enum AssetHubSwapRequestSerializer {
 
     static func deserialize(quoteResponse: String, codingFactory: RuntimeCoderFactoryProtocol) throws -> BigUInt {
         guard let balanceType = extractBalanceType(from: codingFactory) else {
-            throw AssetHubSwapRequestSerializerError.undefinedBalanceType
+            throw AssetConversionOperationError.runtimeError("undefined balance type")
         }
 
         let data = try Data(hexString: quoteResponse)
@@ -78,7 +67,7 @@ enum AssetHubSwapRequestSerializer {
         let json: JSON = try decoder.readOption(type: balanceType)
 
         guard json != .null else {
-            throw AssetHubSwapRequestSerializerError.quoteCalcFailed
+            throw AssetConversionOperationError.quoteCalcFailed
         }
 
         return try json.map(
@@ -100,7 +89,7 @@ final class AssetHubSwapRequestBuilder {
 
     private func createRequest(
         for chain: ChainModel,
-        args: AssetConversion.Args,
+        args: AssetConversion.QuoteArgs,
         builtInFunction: String,
         codingClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         includesFee: Bool
@@ -109,21 +98,21 @@ final class AssetHubSwapRequestBuilder {
             let codingFactory = try codingClosure()
 
             guard
-                let remoteAssetIn = AssetHubTokensConverter.converToMultilocation(
+                let remoteAssetIn = AssetHubTokensConverter.convertToMultilocation(
                     chainAssetId: args.assetIn,
                     chain: chain,
                     codingFactory: codingFactory
                 ) else {
-                throw AssetHubSwapRequestBuilderError.brokenAssetIn(args.assetIn)
+                throw AssetConversionOperationError.remoteAssetNotFound(args.assetIn)
             }
 
             guard
-                let remoteAssetOut = AssetHubTokensConverter.converToMultilocation(
+                let remoteAssetOut = AssetHubTokensConverter.convertToMultilocation(
                     chainAssetId: args.assetOut,
                     chain: chain,
                     codingFactory: codingFactory
                 ) else {
-                throw AssetHubSwapRequestBuilderError.brokenAssetIn(args.assetOut)
+                throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
             }
 
             var encoder = codingFactory.createEncoder()
@@ -155,7 +144,7 @@ final class AssetHubSwapRequestBuilder {
     }
 
     func build(
-        args: AssetConversion.Args,
+        args: AssetConversion.QuoteArgs,
         codingClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
     ) -> StateCallRpc.Request {
         let builtInFunction: String

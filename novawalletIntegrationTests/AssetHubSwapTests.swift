@@ -143,12 +143,11 @@ final class AssetHubSwapTests: XCTestCase {
             operationQueue: operationQueue
         )
         
-        let args = AssetConversion.Args(
+        let args = AssetConversion.QuoteArgs(
             assetIn: .init(chainId: chainId, assetId: assetIn),
             assetOut: .init(chainId: chainId, assetId: assetOut),
             amount: amount,
-            direction: direction,
-            slippage: 0
+            direction: direction
         )
         
         let quoteWrapper = operationFactory.quote(for: args)
