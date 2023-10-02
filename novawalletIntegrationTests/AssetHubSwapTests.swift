@@ -1,5 +1,6 @@
 import XCTest
 @testable import novawallet
+import BigInt
 
 final class AssetHubSwapTests: XCTestCase {
     func testWestmintAllDirections() throws {
@@ -27,6 +28,52 @@ final class AssetHubSwapTests: XCTestCase {
         )
         
         Logger.shared.info("Directions: \(directions)")
+    }
+    
+    func testQuoteForWestmintSiriSell() throws {
+        let quote = try fetchQuote(
+            for: KnowChainId.westmint,
+            assetIn: 0,
+            assetOut: 1,
+            direction: .sell
+        )
+        
+        Logger.shared.info("Quote: \(quote)")
+    }
+    
+    func testQuoteForWestmintSiriBuy() throws {
+        let quote = try fetchQuote(
+            for: KnowChainId.westmint,
+            assetIn: 0,
+            assetOut: 1,
+            direction: .buy,
+            amount: 1_000_000
+        )
+        
+        Logger.shared.info("Quote: \(quote)")
+    }
+    
+    func testQuoteForSiriWestmintSell() throws {
+        let quote = try fetchQuote(
+            for: KnowChainId.westmint,
+            assetIn: 1,
+            assetOut: 0,
+            direction: .sell
+        )
+        
+        Logger.shared.info("Quote: \(quote)")
+    }
+    
+    func testQuoteForSiriWestmintBuy() throws {
+        let quote = try fetchQuote(
+            for: KnowChainId.westmint,
+            assetIn: 1,
+            assetOut: 0,
+            direction: .buy,
+            amount: 1_000_000
+        )
+        
+        Logger.shared.info("Quote: \(quote)")
     }
     
     private func performAvailableDirectionsFetch(
@@ -68,5 +115,46 @@ final class AssetHubSwapTests: XCTestCase {
             
             return try wrapper.targetOperation.extractNoCancellableResultData()
         }
+    }
+    
+    private func fetchQuote(
+        for chainId: ChainModel.Id,
+        assetIn: AssetModel.Id,
+        assetOut: AssetModel.Id,
+        direction: AssetConversion.Direction,
+        amount: BigUInt = 1_000_000_000_000
+    ) throws -> AssetConversion.Quote {
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+        
+        let operationQueue = OperationQueue()
+        
+        let operationFactory = AssetHubSwapOperationFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+        
+        let args = AssetConversion.Args(
+            assetIn: .init(chainId: chainId, assetId: assetIn),
+            assetOut: .init(chainId: chainId, assetId: assetOut),
+            amount: amount,
+            direction: direction,
+            slippage: 0
+        )
+        
+        let quoteWrapper = operationFactory.quote(for: args)
+        
+        operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
+        
+        return try quoteWrapper.targetOperation.extractNoCancellableResultData()
     }
 }

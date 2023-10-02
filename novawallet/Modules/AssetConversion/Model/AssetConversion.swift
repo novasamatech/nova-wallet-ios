@@ -20,12 +20,19 @@ enum AssetConversion {
         let assetIn: ChainAssetId
         let amountOut: BigUInt
         let assetOut: ChainAssetId
-        let priceImpact: Decimal
-        let fee: Fee
-    }
 
-    struct Fee {
-        let serviceFee: Decimal
-        let novaFee: Decimal?
+        init(args: Args, amount: BigUInt) {
+            switch args.direction {
+            case .sell:
+                amountIn = args.amount
+                amountOut = amount
+            case .buy:
+                amountIn = amount
+                amountOut = args.amount
+            }
+
+            assetIn = args.assetIn
+            assetOut = args.assetOut
+        }
     }
 }

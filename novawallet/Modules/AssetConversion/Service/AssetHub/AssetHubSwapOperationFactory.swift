@@ -6,7 +6,7 @@ import BigInt
 final class AssetHubSwapOperationFactory {
     static let sellQuoteApi = "AssetConversionApi_quote_price_exact_tokens_for_tokens"
     static let buyQuoteApi = "AssetConversionApi_quote_price_exact_tokens_for_tokens"
-    
+
     let chain: ChainModel
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
@@ -22,18 +22,6 @@ final class AssetHubSwapOperationFactory {
         self.runtimeService = runtimeService
         self.connection = connection
         self.operationQueue = operationQueue
-    }
-    
-    private func convertAssetToMultilocation(_ assetId: AssetModel.Id) -> XcmV3.Multilocation? {
-        guard let asset = chain.asset(for: assetId) else {
-            return nil
-        }
-        
-        guard !asset.isUtility else {
-            return .init(parents: 0, interior: .init(items: []))
-        }
-        
-        
     }
 
     private func fetchAllPairsWrapper(
@@ -184,19 +172,37 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
     }
 
     func quote(for args: AssetConversion.Args) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        let builtInFunction: String
-        
-        switch args.direction {
-        case .sell:
-            builtInFunction = Self.sellQuoteApi
-        case .buy:
-            builtInFunction = Self.buyQuoteApi
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let request = AssetHubSwapRequestBuilder(chain: chain).build(args: args) {
+            try codingFactoryOperation.extractNoCancellableResultData()
         }
-        
-        StateCallRpc.Request(builtInFunction: builtInFunction) { container in
-            
-            container.encode(args.amount.toHexWithPrefix())
-            container.encode(false)
+
+        let quoteOperation = JSONRPCOperation<StateCallRpc.Request, String>(
+            engine: connection,
+            method: StateCallRpc.method
+        )
+
+        quoteOperation.parameters = request
+
+        quoteOperation.addDependency(codingFactoryOperation)
+
+        let mappingOperation = ClosureOperation<AssetConversion.Quote> {
+            let responseString = try quoteOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let amount = try AssetHubSwapRequestSerializer.deserialize(
+                quoteResponse: responseString,
+                codingFactory: codingFactory
+            )
+
+            return .init(args: args, amount: amount)
         }
+
+        mappingOperation.addDependency(quoteOperation)
+
+        let dependencies = [codingFactoryOperation, quoteOperation]
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }

@@ -5,11 +5,13 @@ import BigInt
 enum AssetConversionPallet {
     static let name = "AssetConversion"
 
+    typealias AssetId = XcmV3.Multilocation
+
     enum PoolAsset {
         case native
         case assets(pallet: UInt8, index: BigUInt)
         case foreignNetwork(XcmV3.NetworkId)
-        case undefined(XcmV3.Multilocation)
+        case undefined(AssetId)
 
         init(multilocation: XcmV3.Multilocation) {
             let junctions = multilocation.interior.items
@@ -63,8 +65,8 @@ enum AssetConversionPallet {
                 throw JSONListConvertibleError.unexpectedValue(jsonList[0])
             }
 
-            let multilocation1 = try poolId[0].map(to: XcmV3.Multilocation.self, with: context)
-            let multilocation2 = try poolId[1].map(to: XcmV3.Multilocation.self, with: context)
+            let multilocation1 = try poolId[0].map(to: AssetId.self, with: context)
+            let multilocation2 = try poolId[1].map(to: AssetId.self, with: context)
 
             asset1 = PoolAsset(multilocation: multilocation1)
             asset2 = PoolAsset(multilocation: multilocation2)
