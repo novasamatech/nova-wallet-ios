@@ -22,9 +22,11 @@ final class SwapSetupPresenter {
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
         view?.didReceiveButtonState(title: "Enter amount", enabled: false)
+        view?.didReceiveTitle(payViewModel: .init(title: "You pay", subtitle: "Max:", value: "100 USDT"))
         view?.didReceiveInputChainAsset(payViewModel: dotModel())
         view?.didReceiveAmount(payInputViewModel: amount())
         view?.didReceiveAmountInputPrice(payViewModel: "$0")
+        view?.didReceiveTitle(receiveViewModel: .init(title: "You receive", subtitle: "", value: ""))
         view?.didReceiveInputChainAsset(receiveViewModel: nil)
     }
 

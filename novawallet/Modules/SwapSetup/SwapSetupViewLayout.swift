@@ -1,9 +1,10 @@
 import UIKit
+import SoraUI
 
 final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     let payAmountView: TitleHorizontalMultiValueView = .create {
         $0.titleView.apply(style: .footnoteSecondary)
-        $0.detailsTitleLabel.apply(style: .footnoteSecondary)
+        $0.detailsTitleLabel.apply(style: .footnoteAccentText)
         $0.detailsValueLabel.apply(style: .footnotePrimary)
     }
 
@@ -19,6 +20,11 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
 
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
+    }
+
+    let switchButton: RoundedButton = .create {
+        $0.applyIconStyle()
+        $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
     }
 
     override func setupStyle() {
@@ -52,6 +58,14 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         addArrangedSubview(receiveAmountInputView)
         receiveAmountInputView.snp.makeConstraints {
             $0.height.equalTo(64)
+        }
+
+        addSubview(switchButton)
+        switchButton.snp.makeConstraints {
+            $0.height.equalTo(switchButton.snp.width)
+            $0.top.equalTo(payAmountInputView.snp.bottom).offset(9)
+            $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-9)
+            $0.centerX.equalTo(payAmountInputView.snp.centerX)
         }
     }
 }

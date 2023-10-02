@@ -69,6 +69,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.actionButton.applyState(title: title, enabled: enabled)
     }
 
+    func didReceiveTitle(payViewModel viewModel: TitleHorizontalMultiValueView.Model) {
+        rootView.payAmountView.bind(model: viewModel)
+    }
+
     func didReceiveInputChainAsset(payViewModel viewModel: SwapsAssetViewModel?) {
         if let viewModel = viewModel {
             rootView.payAmountInputView.bind(assetViewModel: viewModel)
@@ -83,6 +87,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveAmountInputPrice(payViewModel viewModel: String?) {
         rootView.payAmountInputView.bind(priceViewModel: viewModel)
+    }
+
+    func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model) {
+        rootView.receiveAmountView.bind(model: viewModel)
     }
 
     func didReceiveInputChainAsset(receiveViewModel viewModel: SwapsAssetViewModel?) {
