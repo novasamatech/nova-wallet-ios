@@ -429,6 +429,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showBuyTokens(from: view)
     }
 
+    func swap() {
+        wireframe.showSwapTokens(from: view)
+    }
+
     func presentWalletConnect() {
         if walletConnectSessionsCount > 0 {
             wireframe.showWalletConnect(from: view)

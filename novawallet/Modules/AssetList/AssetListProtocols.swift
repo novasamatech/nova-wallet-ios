@@ -23,6 +23,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func send()
     func receive()
     func buy()
+    func swap()
     func presentWalletConnect()
 }
 
@@ -73,6 +74,8 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     )
 
     func showBuyTokens(from view: AssetListViewProtocol?)
+
+    func showSwapTokens(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

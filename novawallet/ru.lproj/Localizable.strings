@@ -1376,3 +1376,4 @@
 "common.back" = "Назад";
 "asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
 "governance.referendums.status.deciding" = "На рассмотрении";
+"wallet.assets.swap" = "Обмен";
