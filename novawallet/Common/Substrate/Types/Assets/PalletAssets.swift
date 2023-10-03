@@ -1,3 +1,5 @@
 import Foundation
 
-enum PalletAssets {}
+enum PalletAssets {
+    static let name = "Assets"
+}

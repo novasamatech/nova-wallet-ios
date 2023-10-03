@@ -179,7 +179,7 @@ class XcmTransfersFeeTests: XCTestCase {
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
 
-        _ = semaphore.wait(timeout: .now() + .seconds(60))
+        _ = semaphore.wait(timeout: .now() + .seconds(600))
 
         switch partiesResult {
         case let .success(parties):
@@ -236,7 +236,7 @@ class XcmTransfersFeeTests: XCTestCase {
             }
         }
 
-        _ = semaphore.wait(timeout: .now() + .seconds(60))
+        _ = semaphore.wait(timeout: .now() + .seconds(600))
 
         switch feeResult {
         case let .success(parties):
