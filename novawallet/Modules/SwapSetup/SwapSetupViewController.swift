@@ -27,16 +27,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
-        rootView.payAmountInputView.symbolHubMultiValueView.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(selectPayTokenAction)
-            ))
-        rootView.receiveAmountInputView.symbolHubMultiValueView.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(selectReceiveTokenAction)
-            ))
+        rootView.payAmountInputView.swapAssetControl.addTarget(
+            self,
+            action: #selector(selectPayTokenAction),
+            for: .touchUpInside
+        )
+        rootView.receiveAmountInputView.swapAssetControl.addTarget(
+            self,
+            action: #selector(selectReceiveTokenAction),
+            for: .touchUpInside
+        )
     }
 
     private func emptyPayViewModel() -> EmptySwapsAssetViewModel {
