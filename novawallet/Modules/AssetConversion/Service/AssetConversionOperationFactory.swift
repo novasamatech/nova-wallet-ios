@@ -4,9 +4,11 @@ import RobinHood
 protocol AssetConversionOperationFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
     func availableDirectionsForAsset(_ chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Set<ChainAssetId>>
-    func quote(for args: AssetConversion.Args) -> CompoundOperationWrapper<AssetConversion.Quote>
+    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
 }
 
-protocol AssetConversionServiceProtocol {
-    func fetchExtrinsicBuilderClosure(for args: AssetConversion.Args) -> ExtrinsicBuilderClosure
+enum AssetConversionOperationError: Error {
+    case remoteAssetNotFound(ChainAssetId)
+    case runtimeError(String)
+    case quoteCalcFailed
 }

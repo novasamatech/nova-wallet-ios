@@ -4,6 +4,9 @@ import SubstrateSdk
 import BigInt
 
 final class AssetHubSwapOperationFactory {
+    static let sellQuoteApi = "AssetConversionApi_quote_price_exact_tokens_for_tokens"
+    static let buyQuoteApi = "AssetConversionApi_quote_price_exact_tokens_for_tokens"
+
     let chain: ChainModel
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
@@ -168,7 +171,38 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
         )
     }
 
-    func quote(for _: AssetConversion.Args) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
+    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let request = AssetHubSwapRequestBuilder(chain: chain).build(args: args) {
+            try codingFactoryOperation.extractNoCancellableResultData()
+        }
+
+        let quoteOperation = JSONRPCOperation<StateCallRpc.Request, String>(
+            engine: connection,
+            method: StateCallRpc.method
+        )
+
+        quoteOperation.parameters = request
+
+        quoteOperation.addDependency(codingFactoryOperation)
+
+        let mappingOperation = ClosureOperation<AssetConversion.Quote> {
+            let responseString = try quoteOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let amount = try AssetHubSwapRequestSerializer.deserialize(
+                quoteResponse: responseString,
+                codingFactory: codingFactory
+            )
+
+            return .init(args: args, amount: amount)
+        }
+
+        mappingOperation.addDependency(quoteOperation)
+
+        let dependencies = [codingFactoryOperation, quoteOperation]
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }

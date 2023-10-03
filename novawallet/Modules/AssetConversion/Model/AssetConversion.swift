@@ -7,12 +7,11 @@ enum AssetConversion {
         case buy
     }
 
-    struct Args {
+    struct QuoteArgs {
         let assetIn: ChainAssetId
         let assetOut: ChainAssetId
         let amount: BigUInt
         let direction: Direction
-        let slippage: Decimal
     }
 
     struct Quote {
@@ -20,12 +19,29 @@ enum AssetConversion {
         let assetIn: ChainAssetId
         let amountOut: BigUInt
         let assetOut: ChainAssetId
-        let priceImpact: Decimal
-        let fee: Fee
+
+        init(args: QuoteArgs, amount: BigUInt) {
+            switch args.direction {
+            case .sell:
+                amountIn = args.amount
+                amountOut = amount
+            case .buy:
+                amountIn = amount
+                amountOut = args.amount
+            }
+
+            assetIn = args.assetIn
+            assetOut = args.assetOut
+        }
     }
 
-    struct Fee {
-        let serviceFee: Decimal
-        let novaFee: Decimal?
+    struct CallArgs {
+        let assetIn: ChainAssetId
+        let amountIn: BigUInt
+        let assetOut: ChainAssetId
+        let amountOut: BigUInt
+        let receiver: AccountId
+        let direction: Direction
+        let slippage: BigRational
     }
 }
