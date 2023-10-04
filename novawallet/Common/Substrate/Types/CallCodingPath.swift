@@ -23,16 +23,7 @@ extension CallCodingPath {
     }
 
     var isAssetsTransfer: Bool {
-        [
-            .assetsTransfer(for: nil),
-            .assetsTransferKeepAlive(for: nil),
-            .assetsForceTransfer(for: nil),
-            .assetsTransferAll(for: nil),
-            .localAssetsTransfer,
-            .localAssetsTransferKeepAlive,
-            .localAssetsForceTransfer,
-            .localAssetsTransferAll
-        ].contains(self)
+        PalletAssets.possibleTransferCallPaths().contains(self)
     }
 
     var isTokensTransfer: Bool {
@@ -102,38 +93,6 @@ extension CallCodingPath {
 
     static var currenciesTransferAll: CallCodingPath {
         CallCodingPath(moduleName: "Currencies", callName: "transfer_all")
-    }
-
-    static func assetsTransfer(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? "Assets", callName: "transfer")
-    }
-
-    static func assetsTransferKeepAlive(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? "Assets", callName: "transfer_keep_alive")
-    }
-
-    static func assetsForceTransfer(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? "Assets", callName: "force_transfer")
-    }
-
-    static func assetsTransferAll(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? "Assets", callName: "transfer_all")
-    }
-
-    static var localAssetsTransfer: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "transfer")
-    }
-
-    static var localAssetsTransferKeepAlive: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "transfer_keep_alive")
-    }
-
-    static var localAssetsForceTransfer: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "force_transfer")
-    }
-
-    static var localAssetsTransferAll: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "transfer_all")
     }
 
     static var ethereumTransact: CallCodingPath {

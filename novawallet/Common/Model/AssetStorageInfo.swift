@@ -19,9 +19,15 @@ struct NativeTokenStorageInfo {
     let transferCallPath: CallCodingPath
 }
 
+struct AssetsPalletStorageInfo {
+    let assetId: JSON
+    let assetIdString: String
+    let palletName: String?
+}
+
 enum AssetStorageInfo {
     case native(info: NativeTokenStorageInfo)
-    case statemine(extras: StatemineAssetExtras)
+    case statemine(info: AssetsPalletStorageInfo)
     case orml(info: OrmlTokenStorageInfo)
     case erc20(contractAccount: AccountId)
     case evmNative
@@ -49,7 +55,19 @@ extension AssetStorageInfo {
                 throw AssetStorageInfoError.unexpectedTypeExtras
             }
 
-            return .statemine(extras: extras)
+            let assetId = try StatemineAssetSerializer.decode(
+                assetId: extras.assetId,
+                palletName: extras.palletName,
+                codingFactory: codingFactory
+            )
+
+            let info = AssetsPalletStorageInfo(
+                assetId: assetId,
+                assetIdString: extras.assetId,
+                palletName: extras.palletName
+            )
+
+            return .statemine(info: info)
         case .evmAsset:
             guard let contractAddress = asset.typeExtras?.stringValue else {
                 throw AssetStorageInfoError.unexpectedTypeExtras

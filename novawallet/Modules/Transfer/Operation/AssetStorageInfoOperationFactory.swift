@@ -137,7 +137,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
             }
 
             return createNativeAssetExistenceOperation(for: runtimeService)
-        case let .statemine(extras):
+        case let .statemine(info):
             guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
                 return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
             }
@@ -147,7 +147,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
             }
 
             return createAssetsExistenceOperation(
-                for: extras,
+                for: .init(info: info),
                 connection: connection,
                 runtimeService: runtimeService
             )

@@ -10,7 +10,7 @@ enum AssetConversionPallet {
     enum PoolAsset {
         case native
         case assets(pallet: UInt8, index: BigUInt)
-        case foreignNetwork(XcmV3.NetworkId)
+        case foreign(AssetId)
         case undefined(AssetId)
 
         init(multilocation: XcmV3.Multilocation) {
@@ -34,15 +34,8 @@ enum AssetConversionPallet {
                 default:
                     self = .undefined(multilocation)
                 }
-            } else if multilocation.parents == 2, junctions.count == 1 {
-                switch junctions[0] {
-                case let .globalConsensus(network):
-                    self = .foreignNetwork(network)
-                default:
-                    self = .undefined(multilocation)
-                }
             } else {
-                self = .undefined(multilocation)
+                self = .foreign(multilocation)
             }
         }
     }

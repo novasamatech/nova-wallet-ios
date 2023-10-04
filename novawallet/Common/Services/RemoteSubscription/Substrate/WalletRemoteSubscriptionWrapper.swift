@@ -146,9 +146,9 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 chainFormat: chainAsset.chain.chainFormat,
                 completion: completion
             )
-        case let .statemine(extras):
+        case let .statemine(info):
             return subscribeAssets(
-                using: extras,
+                using: .init(info: info),
                 accountId: accountId,
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
@@ -182,11 +182,11 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case let .statemine(extras):
+        case let .statemine(info):
             remoteSubscriptionService.detachFromAsset(
                 for: subscriptionId,
                 accountId: accountId,
-                extras: extras,
+                extras: .init(info: info),
                 chainId: chainAssetId.chainId,
                 queue: .main,
                 closure: completion
