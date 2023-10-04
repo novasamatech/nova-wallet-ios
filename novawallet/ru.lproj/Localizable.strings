@@ -533,7 +533,7 @@
 "common.today" = "Сегодня";
 "common.yesterday" = "Вчера";
 "common.tx.details" = "Детали транзакции";
-"common.unknown" = "Неизвест��о";
+"common.unknown" = "Неизвестно";
 "staking.month.period.title" = "Eжемесячно";
 "staking.year.period.title" = "Eжегодно";
 "qr.scan.error.no.info" = "Не удается декодировать QR";
@@ -1016,7 +1016,7 @@
 "governance.referendums.time.execute" = "Выполнение через %@";
 "governance.referendums.time.approve" = "Одобрение через %@";
 "governance.referendums.time.reject" = "Отклонение через %@";
-"governance.referendums.time.timeout" = "Тайм-аут ��ерез %@";
+"governance.referendums.time.timeout" = "Тайм-аут через %@";
 "governance.referendums.time.waiting.deposit" = "Ожидание депозита";
 "governance.referendums.time.deciding" = "Начнёт решаться через %@";
 "governance.referendums.status.killed" = "Удалён";
