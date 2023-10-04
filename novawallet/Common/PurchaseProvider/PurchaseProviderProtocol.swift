@@ -5,6 +5,7 @@ struct PurchaseAction {
     let title: String
     let url: URL
     let icon: UIImage
+    let displayURL: String
 }
 
 protocol PurchaseProviderProtocol {

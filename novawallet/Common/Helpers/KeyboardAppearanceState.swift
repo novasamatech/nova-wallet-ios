@@ -3,6 +3,11 @@ import UIKit
 protocol KeyboardAppearanceStrategyProtocol {
     func onViewWillAppear(for target: UIView)
     func onViewDidAppear(for target: UIView)
+    func onCellSelected(for target: UIView)
+}
+
+extension KeyboardAppearanceStrategyProtocol {
+    func onCellSelected(for _: UIView) {}
 }
 
 final class EventDrivenKeyboardStrategy: KeyboardAppearanceStrategyProtocol {
@@ -54,6 +59,12 @@ final class ModalNavigationKeyboardStrategy: KeyboardAppearanceStrategyProtocol 
             target.becomeFirstResponder()
         } else {
             isPresented = true
+        }
+    }
+
+    func onCellSelected(for target: UIView) {
+        if isPresented {
+            target.resignFirstResponder()
         }
     }
 }

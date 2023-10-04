@@ -133,7 +133,7 @@ extension ValidatorSearchViewController: UITableViewDelegate {
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
         guard viewModel?.headerViewModel != nil else { return 0 }
-        return 26.0
+        return 29
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
@@ -173,7 +173,7 @@ extension ValidatorSearchViewController: EmptyStateDataSource {
     }
 
     var contentViewForEmptyState: UIView {
-        rootView.emptyStateContainer
+        rootView.contentView
     }
 
     var verticalSpacingForEmptyState: CGFloat? {

@@ -9,7 +9,7 @@ struct MinStakeIsNotViolatedParams {
     let votersCount: UInt32?
 }
 
-protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol {
+protocol StakingDataValidatingFactoryProtocol: StakingBaseDataValidatingFactoryProtocol {
     func canUnbond(amount: Decimal?, bonded: Decimal?, locale: Locale) -> DataValidating
     func canRebond(amount: Decimal?, unbonding: Decimal?, locale: Locale) -> DataValidating
 
@@ -41,13 +41,6 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func stashIsNotKilledAfterUnbonding(
-        amount: Decimal?,
-        bonded: Decimal?,
-        minimumAmount: Decimal?,
-        locale: Locale
-    ) -> DataValidating
-
     func ledgerNotExist(
         stakingLedger: StakingLedger?,
         locale: Locale
@@ -76,21 +69,22 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating
+    func allowsNewNominators(
+        flag: Bool,
+        staking: SelectedStakingOption?,
+        locale: Locale
+    ) -> DataValidating
 }
 
-final class StakingDataValidatingFactory {
-    weak var view: (ControllerBackedProtocol & Localizable)?
-
-    var basePresentable: BaseErrorPresentable { presentable }
-
-    let presentable: StakingErrorPresentable
-
-    let balanceFactory: BalanceViewModelFactoryProtocol?
+final class StakingDataValidatingFactory: StakingBaseDataValidatingFactory {
+    private let presentable: StakingErrorPresentable
 
     init(presentable: StakingErrorPresentable, balanceFactory: BalanceViewModelFactoryProtocol? = nil) {
         self.presentable = presentable
-        self.balanceFactory = balanceFactory
+        super.init(
+            presentable: presentable,
+            balanceFactory: balanceFactory
+        )
     }
 }
 
@@ -219,29 +213,6 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func stashIsNotKilledAfterUnbonding(
-        amount: Decimal?,
-        bonded: Decimal?,
-        minimumAmount: Decimal?,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.presentable.presentStashKilledAfterUnbond(from: view, action: {
-                delegate.didCompleteWarningHandling()
-            }, locale: locale)
-        }, preservesCondition: {
-            if let amount = amount, let bonded = bonded, let minimumAmount = minimumAmount {
-                return bonded - amount >= minimumAmount
-            } else {
-                return false
-            }
-        })
-    }
-
     func hasRedeemable(stakingLedger: StakingLedger?, in era: UInt32?, locale: Locale) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
@@ -321,7 +292,12 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 return
             }
 
-            self?.presentable.presentMaxNumberOfNominatorsReached(from: view, locale: locale)
+            let stakingType = R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages)
+            self?.presentable.presentMaxNumberOfNominatorsReached(
+                from: view,
+                stakingType: stakingType,
+                locale: locale
+            )
         }, preservesCondition: {
             if
                 !hasExistingNomination,
@@ -422,13 +398,33 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func allowsNewNominators(flag: Bool, locale: Locale) -> DataValidating {
+    func allowsNewNominators(
+        flag: Bool,
+        staking: SelectedStakingOption?,
+        locale: Locale
+    ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
             }
 
-            self?.presentable.presentMaxNumberOfNominatorsReached(from: view, locale: locale)
+            let stakingType: String
+            switch staking {
+            case .direct:
+                stakingType = R.string.localizable.stakingTypeDirect(
+                    preferredLanguages: locale.rLanguages)
+            case .pool:
+                stakingType = R.string.localizable.stakingTypeNominationPool(
+                    preferredLanguages: locale.rLanguages)
+            case .none:
+                stakingType = ""
+            }
+
+            self?.presentable.presentMaxNumberOfNominatorsReached(
+                from: view,
+                stakingType: stakingType,
+                locale: locale
+            )
         }, preservesCondition: {
             flag
         })

@@ -303,8 +303,6 @@
 "staking.your.nominated.format" = "Номинировано: %@";
 "staking.your.validators.changing.title" = "Ваши валидаторы поменяются в следующую эру";
 "staking.validator.info.nominators" = "%@ (макс. %@ )";
-"staking.unbonding.all.title" = "Остановить стейкинг";
-"staking.unbonding.all.message" = "Оставшийся баланс стейка будет меньше минимального значения, поэтому он добавлен к сумме вывода.";
 "staking.unbonding.hint" = "Ваши токены будут доступны после истечения периода вывода.";
 "staking.unbond.payee.reset.message" = "Назначение вознаграждений будет изменено на ваш аккаунт, чтобы избежать остатка в стейке, поскольку стейкинг будет остановлен.";
 "staking.redeemable.format" = "Можно забрать: %@";
@@ -415,7 +413,8 @@
 "staking.set.validators.title" = "Выберите валидаторов для начала стейкинга";
 "staking.set.validators.message" = "Валидаторы не выбраны";
 "staking.max.nominators.reached.title" = "Невозможно начать стейкинг";
-"staking.max.nominators.reached.message" = "Достигнуто максимальное количество номинаторов";
+"staking.is.not.available.title" = "%@ сейчас\nнедоступен";
+"staking.max.nominators.reached.message" = "Достигнуто максимальное количество номинаторов. Пожалуйста, попробуйте позже";
 "staking.custom.blocked.warning" = "Этот валидатор не принимает номинации в данный момент. Пожалуйста, попробуйте снова в следующую эру.";
 "staking.alert.start.next.era.message" = "Пожалуйста, дождитесь начала следующей эры.";
 "staking.custom.proceed.button.disabled.title" = "Выбрать валидаторов (макс. %li)";
@@ -534,7 +533,7 @@
 "common.today" = "Сегодня";
 "common.yesterday" = "Вчера";
 "common.tx.details" = "Детали транзакции";
-"common.unknown" = "Неизвестно";
+"common.unknown" = "Неизвест��о";
 "staking.month.period.title" = "Eжемесячно";
 "staking.year.period.title" = "Eжегодно";
 "qr.scan.error.no.info" = "Не удается декодировать QR";
@@ -1017,7 +1016,7 @@
 "governance.referendums.time.execute" = "Выполнение через %@";
 "governance.referendums.time.approve" = "Одобрение через %@";
 "governance.referendums.time.reject" = "Отклонение через %@";
-"governance.referendums.time.timeout" = "Тайм-аут через %@";
+"governance.referendums.time.timeout" = "Тайм-аут ��ерез %@";
 "governance.referendums.time.waiting.deposit" = "Ожидание депозита";
 "governance.referendums.time.deciding" = "Начнёт решаться через %@";
 "governance.referendums.status.killed" = "Удалён";
@@ -1360,7 +1359,7 @@
 "staking.select.pool.members" = "участники";
 "staking.select.pool.count" = "активные пулы: %d";
 "staking.select.pool.title" = "Выбрать пул";
-"staking.search.pool.empty" = "Пул с введенным именем или номером не найден. Убедитесь, что вы ввели правильные данные";
+"staking.search.pool.empty" = "Пул с введенным именем или\nномером не найден. Убедитесь, что вы\nввели правильные данные";
 "staking.start.balance.with.fiat" = "Доступный баланс: %1$@ (%2$@)";
 "staking.pool.is.not.open.message" = "Вы не можете присоединиться к не открытому пулу. Пожалуйста, свяжитесь с владельцем пула.";
 "staking.pool.is.not.open.title" = "Пул не открыт";
@@ -1371,8 +1370,8 @@
 "common.time.period.after" = "через";
 "common.time.period.every" = "раз в";
 "staking.search.pool.placeholder" = "Поиск по имени или ID";
-"staking.pool.is.full.title" = "Выбранный пул заполнен";
-"staking.pool.is.full.message" = "Вы не можете присоединиться к выбранному пулу так как в нём не осталось места";
+"staking.pool.is.full.title" = "Пул заполнен";
+"staking.pool.is.full.message" = "Вы не можете присоединиться к пулу так как в нём не осталось мест";
 "common.back" = "Назад";
 "asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
 "governance.referendums.status.deciding" = "На рассмотрении";
@@ -1387,3 +1386,5 @@
 "swaps.setup.asset.select.pay.title" = "Вы платите";
 "swaps.setup.asset.select.receive.title" = "Вы получаете";
 "swaps.setup.asset.max" = "Максимум:";
+"common.alert.external.link.disclaimer.title" = "Вы покидаете Nova Wallet";
+"common.alert.external.link.disclaimer.message" = "Вы будете перенаправлены на сайт %@";

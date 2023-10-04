@@ -91,7 +91,7 @@ extension XcmTransferFactoryProtocol {
 }
 
 final class XcmTransferFactory {
-    private func extractRelativeJunctions(from path: JSON) throws -> Xcm.Junctions {
+    private func extractRelativeJunctions(from path: JSON) throws -> Xcm.JunctionsV2 {
         var junctions: [Xcm.Junction] = []
 
         if let palletInstance = path.palletInstance?.unsignedIntValue {
@@ -112,7 +112,7 @@ final class XcmTransferFactory {
         return Xcm.Junctions(items: junctions)
     }
 
-    private func extractAbsoluteJunctions(from path: JSON) throws -> Xcm.Junctions {
+    private func extractAbsoluteJunctions(from path: JSON) throws -> Xcm.JunctionsV2 {
         let commonJunctions = try extractRelativeJunctions(from: path)
 
         if let parachainId = path.parachainId?.unsignedIntValue {
@@ -150,7 +150,7 @@ final class XcmTransferFactory {
         reserve: ChainModel
     ) throws -> Xcm.Multilocation {
         let parents = extractParents(from: path, type: type, origin: origin, reserve: reserve)
-        let junctions: Xcm.Junctions
+        let junctions: Xcm.JunctionsV2
 
         switch type {
         case .absolute, .concrete:
@@ -188,7 +188,7 @@ final class XcmTransferFactory {
             parents = 0
         }
 
-        let junctions: Xcm.Junctions
+        let junctions: Xcm.JunctionsV2
 
         if let parachainId = destination.parachainId {
             let networkJunction = Xcm.Junction.parachain(parachainId)
@@ -212,13 +212,13 @@ final class XcmTransferFactory {
             parents = 0
         }
 
-        let junctions: Xcm.Junctions
+        let junctions: Xcm.JunctionsV2
 
         if let parachainId = reserve.parachainId {
             let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.Junctions(items: [networkJunction])
+            junctions = Xcm.JunctionsV2(items: [networkJunction])
         } else {
-            junctions = Xcm.Junctions(items: [])
+            junctions = Xcm.JunctionsV2(items: [])
         }
 
         return Xcm.Multilocation(parents: parents, interior: junctions)

@@ -7,7 +7,7 @@ struct NPoolsEDViolationErrorParams {
     let maxStake: String
 }
 
-protocol StakingErrorPresentable: BaseErrorPresentable {
+protocol StakingErrorPresentable: StakingBaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 
     func presentMissingController(
@@ -37,12 +37,6 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
         locale: Locale?
     )
 
-    func presentStashKilledAfterUnbond(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    )
-
     func presentUnbondingLimitReached(from view: ControllerBackedProtocol?, locale: Locale?)
     func presentNoRedeemables(from view: ControllerBackedProtocol?, locale: Locale?)
     func presentControllerIsAlreadyUsed(from view: ControllerBackedProtocol?, locale: Locale?)
@@ -53,7 +47,11 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
         locale: Locale?
     )
 
-    func presentMaxNumberOfNominatorsReached(from view: ControllerBackedProtocol?, locale: Locale?)
+    func presentMaxNumberOfNominatorsReached(
+        from view: ControllerBackedProtocol?,
+        stakingType: String,
+        locale: Locale?
+    )
 
     func presentMinRewardableStakeViolated(
         from view: ControllerBackedProtocol,
@@ -171,19 +169,6 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         )
     }
 
-    func presentStashKilledAfterUnbond(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    ) {
-        let title = R.string.localizable
-            .stakingUnbondingAllTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingUnbondingAllMessage(preferredLanguages: locale?.rLanguages)
-
-        presentWarning(for: title, message: message, action: action, view: view, locale: locale)
-    }
-
     func presentUnbondingLimitReached(from view: ControllerBackedProtocol?, locale: Locale?) {
         let message = R.string.localizable.stakingUnbondingLimitReachedTitle(preferredLanguages: locale?.rLanguages)
         let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
@@ -228,12 +213,17 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         )
     }
 
-    func presentMaxNumberOfNominatorsReached(from view: ControllerBackedProtocol?, locale: Locale?) {
+    func presentMaxNumberOfNominatorsReached(
+        from view: ControllerBackedProtocol?,
+        stakingType: String,
+        locale: Locale?
+    ) {
         let message = R.string.localizable.stakingMaxNominatorsReachedMessage(
             preferredLanguages: locale?.rLanguages
         )
 
-        let title = R.string.localizable.stakingMaxNominatorsReachedTitle(
+        let title = R.string.localizable.stakingIsNotAvailableTitle(
+            stakingType,
             preferredLanguages: locale?.rLanguages
         )
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
