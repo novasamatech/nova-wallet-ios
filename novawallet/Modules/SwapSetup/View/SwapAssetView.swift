@@ -1,7 +1,9 @@
 import UIKit
 
-final class SwapSymbolView: GenericPairValueView<GenericPairValueView<IconDetailsView, FlexibleSpaceView>, IconDetailsView> {
-    var symbolLabel: UILabel { fView.fView.detailsLabel }
+typealias SwapIconDetailsView = GenericPairValueView<IconDetailsView, FlexibleSpaceView>
+
+final class SwapAssetView: GenericPairValueView<SwapIconDetailsView, IconDetailsView> {
+    var assetLabel: UILabel { fView.fView.detailsLabel }
     var disclosureImageView: UIImageView { fView.fView.imageView }
     var hubNameView: UILabel { sView.detailsLabel }
     var hubImageView: UIImageView { sView.imageView }
@@ -18,7 +20,7 @@ final class SwapSymbolView: GenericPairValueView<GenericPairValueView<IconDetail
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure() {
+    private func configure() {
         fView.makeHorizontal()
         fView.fView.spacing = 0
         fView.fView.iconWidth = 20
@@ -31,25 +33,33 @@ final class SwapSymbolView: GenericPairValueView<GenericPairValueView<IconDetail
         spacing = 4
         makeVertical()
 
-        symbolLabel.apply(style: .semiboldBodyPrimary)
+        assetLabel.apply(style: .semiboldBodyPrimary)
         hubNameView.apply(style: .footnoteSecondary)
     }
 
     override var intrinsicContentSize: CGSize {
-        let symbolWidth = symbolLabel.intrinsicContentSize.width + fView.fView.iconWidth
-        let hubWidth = sView.iconWidth + sView.spacing + hubNameView.intrinsicContentSize.width
-        let width: CGFloat = max(symbolWidth, hubWidth)
-        let symbolHeight = max(symbolLabel.intrinsicContentSize.height, fView.fView.iconWidth)
-        let hubHeight = max(hubNameView.intrinsicContentSize.height, sView.iconWidth)
-        let height = symbolHeight + spacing + hubHeight
+        let assetViewWidth = assetLabel.intrinsicContentSize.width + iconWidth
+        let hubViewWidth = iconWidth + iconSpacing + hubNameView.intrinsicContentSize.width
+        let width: CGFloat = max(assetViewWidth, hubViewWidth)
+        let assetHeight = max(assetLabel.intrinsicContentSize.height, iconWidth)
+        let hubViewHeight = max(hubNameView.intrinsicContentSize.height, iconWidth)
+        let height = assetHeight + spacing + hubViewHeight
         return .init(
             width: width,
             height: height
         )
     }
 
+    private var iconWidth: CGFloat {
+        imageViewModel == nil ? 0 : fView.fView.iconWidth
+    }
+
+    private var iconSpacing: CGFloat {
+        imageViewModel == nil ? 0 : sView.spacing
+    }
+
     func bind(symbol: String, network: String, icon: ImageViewModelProtocol?) {
-        symbolLabel.text = symbol
+        assetLabel.text = symbol
         imageViewModel?.cancel(on: hubImageView)
         imageViewModel = icon
         icon?.loadImage(

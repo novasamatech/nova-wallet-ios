@@ -1,13 +1,18 @@
 import UIKit
+import SoraFoundation
 
 final class SwapSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwapSetupViewLayout
 
     let presenter: SwapSetupPresenterProtocol
 
-    init(presenter: SwapSetupPresenterProtocol) {
+    init(
+        presenter: SwapSetupPresenterProtocol,
+        localizationManager: LocalizationManager
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -23,44 +28,53 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupHandlers()
+        setupLocalization()
         presenter.setup()
     }
 
     private func setupHandlers() {
-        rootView.payAmountInputView.swapAssetControl.addTarget(
+        rootView.payAmountInputView.assetControl.addTarget(
             self,
             action: #selector(selectPayTokenAction),
             for: .touchUpInside
         )
-        rootView.receiveAmountInputView.swapAssetControl.addTarget(
+        rootView.receiveAmountInputView.assetControl.addTarget(
             self,
             action: #selector(selectReceiveTokenAction),
             for: .touchUpInside
         )
-    }
-
-    private func emptyPayViewModel() -> EmptySwapsAssetViewModel {
-        EmptySwapsAssetViewModel(
-            imageViewModel: StaticImageViewModel(image: R.image.iconAddSwapAmount()!),
-            title: "Pay",
-            subtitle: "Select a token"
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(continueAction),
+            for: .touchUpInside
+        )
+        rootView.switchButton.addTarget(
+            self,
+            action: #selector(swapAction),
+            for: .touchUpInside
         )
     }
 
-    private func emptyReceiveViewModel() -> EmptySwapsAssetViewModel {
-        EmptySwapsAssetViewModel(
-            imageViewModel: StaticImageViewModel(image: R.image.iconAddSwapAmount()!),
-            title: "Receive",
-            subtitle: "Select a token"
-        )
+    private func setupLocalization() {
+        title = R.string.localizable.walletAssetsSwap(preferredLanguages: selectedLocale.rLanguages)
     }
 
     @objc private func selectPayTokenAction() {
+        rootView.receiveAmountInputView.endEditing(true)
         presenter.selectPayToken()
     }
 
     @objc private func selectReceiveTokenAction() {
+        rootView.payAmountInputView.endEditing(true)
         presenter.selectReceiveToken()
+    }
+
+    @objc private func continueAction() {
+        presenter.proceed()
+    }
+
+    @objc private func swapAction() {
+        presenter.swap()
     }
 }
 
@@ -73,11 +87,12 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.payAmountView.bind(model: viewModel)
     }
 
-    func didReceiveInputChainAsset(payViewModel viewModel: SwapsAssetViewModel?) {
-        if let viewModel = viewModel {
-            rootView.payAmountInputView.bind(assetViewModel: viewModel)
-        } else {
-            rootView.payAmountInputView.bind(emptyViewModel: emptyPayViewModel())
+    func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel) {
+        switch viewModel {
+        case let .asset(assetViewModel):
+            rootView.payAmountInputView.bind(assetViewModel: assetViewModel)
+        case let .empty(emptySwapsAssetViewModel):
+            rootView.payAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
         }
     }
 
@@ -93,11 +108,12 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.receiveAmountView.bind(model: viewModel)
     }
 
-    func didReceiveInputChainAsset(receiveViewModel viewModel: SwapsAssetViewModel?) {
-        if let viewModel = viewModel {
-            rootView.receiveAmountInputView.bind(assetViewModel: viewModel)
-        } else {
-            rootView.receiveAmountInputView.bind(emptyViewModel: emptyReceiveViewModel())
+    func didReceiveInputChainAsset(receiveViewModel viewModel: SwapAssetInputViewModel) {
+        switch viewModel {
+        case let .asset(swapsAssetViewModel):
+            rootView.receiveAmountInputView.bind(assetViewModel: swapsAssetViewModel)
+        case let .empty(emptySwapsAssetViewModel):
+            rootView.receiveAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
         }
     }
 
@@ -107,5 +123,13 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveAmountInputPrice(receiveViewModel viewModel: String?) {
         rootView.receiveAmountInputView.bind(priceViewModel: viewModel)
+    }
+}
+
+extension SwapSetupViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }

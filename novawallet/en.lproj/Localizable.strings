@@ -1377,3 +1377,13 @@
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
 "governance.referendums.status.deciding" = "Deciding";
 "wallet.assets.swap" = "Swap";
+"swaps.setup.asset.select.subtitle" = "Select a token";
+"swaps.setup.asset.pay.title" = "Pay";
+"swaps.setup.asset.receive.title" = "Receive";
+"swaps.setup.asset.action.select.tokens" = "Select tokens to swap";
+"swaps.setup.asset.action.select.receive" = "Select a token to receive";
+"swaps.setup.asset.action.select.pay" = "Select a token to pay";
+"swaps.setup.asset.action.enter.amount" = "Enter amount";
+"swaps.setup.asset.select.pay.title" = "You pay";
+"swaps.setup.asset.select.receive.title" = "You receive";
+"swaps.setup.asset.max" = "Max:";

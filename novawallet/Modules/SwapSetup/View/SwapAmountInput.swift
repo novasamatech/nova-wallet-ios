@@ -108,7 +108,7 @@ final class SwapAmountInput: BackgroundedContentControl {
         }
 
         contentView?.addSubview(priceLabel)
-        addSubview(textField)
+        contentView?.addSubview(textField)
     }
 
     @objc private func actionTouchUpInside() {

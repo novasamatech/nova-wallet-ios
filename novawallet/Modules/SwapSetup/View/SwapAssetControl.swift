@@ -5,9 +5,9 @@ final class SwapAssetControl: BackgroundedContentControl {
     var iconView: AssetIconView { lazyIconViewOrCreateIfNeeded() }
     private var lazyIconView: AssetIconView?
 
-    let symbolHubMultiValueView = SwapSymbolView()
+    let assetView = SwapAssetView()
 
-    var iconViewContentInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4) {
+    var iconViewContentInsets = UIEdgeInsets.zero {
         didSet {
             lazyIconView?.contentInsets = iconViewContentInsets
             setNeedsLayout()
@@ -41,10 +41,11 @@ final class SwapAssetControl: BackgroundedContentControl {
     override var intrinsicContentSize: CGSize {
         let contentHeight = max(
             lazyIconView?.intrinsicContentSize.height ?? 0.0,
-            symbolHubMultiValueView.intrinsicContentSize.height
+            assetView.intrinsicContentSize.height
         )
 
-        let contentWidth = (lazyIconView?.intrinsicContentSize.width ?? 0.0) + horizontalSpacing + symbolHubMultiValueView.intrinsicContentSize.width
+        let iconWidth = lazyIconView.map { $0.intrinsicContentSize.width + horizontalSpacing } ?? 0
+        let contentWidth = iconWidth + assetView.intrinsicContentSize.width
 
         let height = contentInsets.top + contentHeight + contentInsets.bottom
         let width = contentInsets.left + contentWidth + contentInsets.right
@@ -62,7 +63,7 @@ final class SwapAssetControl: BackgroundedContentControl {
 
     private func layoutContent() {
         let availableWidth = bounds.width - contentInsets.left - contentInsets.right
-        let symbolSize = symbolHubMultiValueView.intrinsicContentSize
+        let assetViewSize = assetView.intrinsicContentSize
 
         if let iconView = lazyIconView {
             iconView.frame = CGRect(
@@ -72,18 +73,18 @@ final class SwapAssetControl: BackgroundedContentControl {
                 height: 2.0 * iconRadius
             )
 
-            symbolHubMultiValueView.frame = CGRect(
+            assetView.frame = CGRect(
                 x: iconView.frame.maxX + horizontalSpacing,
-                y: bounds.midY - symbolSize.height / 2.0,
-                width: min(availableWidth, symbolSize.width),
-                height: symbolSize.height
+                y: bounds.midY - assetViewSize.height / 2.0,
+                width: min(availableWidth, assetViewSize.width),
+                height: assetViewSize.height
             )
         } else {
-            symbolHubMultiValueView.frame = CGRect(
+            assetView.frame = CGRect(
                 x: contentInsets.left,
-                y: bounds.midY - symbolSize.height / 2.0,
-                width: min(availableWidth, symbolSize.width),
-                height: symbolSize.height
+                y: bounds.midY - assetViewSize.height / 2.0,
+                width: min(availableWidth, assetViewSize.width),
+                height: assetViewSize.height
             )
         }
     }
@@ -98,7 +99,7 @@ final class SwapAssetControl: BackgroundedContentControl {
             self.contentView = contentView
         }
 
-        contentView?.addSubview(symbolHubMultiValueView)
+        contentView?.addSubview(assetView)
     }
 
     private func lazyIconViewOrCreateIfNeeded() -> AssetIconView {
@@ -123,18 +124,6 @@ final class SwapAssetControl: BackgroundedContentControl {
     }
 }
 
-struct SwapsAssetViewModel {
-    let symbol: String
-    let imageViewModel: ImageViewModelProtocol?
-    let hub: NetworkViewModel
-}
-
-struct EmptySwapsAssetViewModel {
-    let imageViewModel: ImageViewModelProtocol?
-    let title: String
-    let subtitle: String
-}
-
 extension SwapAssetControl {
     func bind(assetViewModel: SwapsAssetViewModel) {
         let width = 2 * iconRadius - iconView.contentInsets.left - iconView.contentInsets.right
@@ -143,7 +132,7 @@ extension SwapAssetControl {
         let size = CGSize(width: width, height: height)
         iconView.bind(viewModel: assetViewModel.imageViewModel, size: size)
 
-        symbolHubMultiValueView.bind(
+        assetView.bind(
             symbol: assetViewModel.symbol,
             network: assetViewModel.hub.name,
             icon: assetViewModel.hub.icon
@@ -155,7 +144,7 @@ extension SwapAssetControl {
         let size = CGSize(width: 2 * iconRadius, height: 2 * iconRadius)
         iconView.bind(viewModel: emptyViewModel.imageViewModel, size: size)
         iconViewContentInsets = .zero
-        symbolHubMultiValueView.bind(
+        assetView.bind(
             symbol: emptyViewModel.title,
             network: emptyViewModel.subtitle,
             icon: nil

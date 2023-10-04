@@ -1,7 +1,7 @@
 import SoraUI
 
 final class SwapAmountInputView: RoundedView {
-    let swapAssetControl = SwapAssetControl()
+    let assetControl = SwapAssetControl()
     let textInputView = SwapAmountInput()
 
     var contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 16) {
@@ -27,7 +27,7 @@ final class SwapAmountInputView: RoundedView {
     }
 
     override var intrinsicContentSize: CGSize {
-        let leftContentHeight = swapAssetControl.intrinsicContentSize.height
+        let leftContentHeight = assetControl.intrinsicContentSize.height
         let rightContentHeight = textInputView.intrinsicContentSize.height
 
         let contentHeight = max(leftContentHeight, rightContentHeight)
@@ -42,35 +42,37 @@ final class SwapAmountInputView: RoundedView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        layoutContent()
+        assetControl.frame = swapAssetControlFrame(bounds: bounds)
+        textInputView.frame = inputViewFrame(
+            bounds: bounds,
+            assetControlFrame: assetControl.frame
+        )
     }
 
-    private func layoutContent() {
+    private func swapAssetControlFrame(bounds: CGRect) -> CGRect {
         let availableWidth = bounds.width - contentInsets.left - contentInsets.right
-        let swapAssetControlSize = swapAssetControl.intrinsicContentSize
+        let swapAssetControlSize = assetControl.intrinsicContentSize
 
-        guard !textInputView.isHidden else {
-            swapAssetControl.frame = CGRect(
-                x: contentInsets.left,
-                y: bounds.midY - swapAssetControlSize.height / 2.0,
-                width: availableWidth,
-                height: swapAssetControlSize.height
-            )
-            return
-        }
-        swapAssetControl.frame = CGRect(
+        let width = textInputView.isHidden ? availableWidth :
+            min(min(availableWidth, swapAssetControlSize.width), 0.7 * availableWidth)
+
+        return CGRect(
             x: contentInsets.left,
             y: bounds.midY - swapAssetControlSize.height / 2.0,
-            width: min(min(availableWidth, swapAssetControlSize.width), 0.7 * availableWidth),
+            width: width,
             height: swapAssetControlSize.height
         )
+    }
 
-        let estimatedInputViewWidth = bounds.maxX - contentInsets.right
-            - swapAssetControl.frame.maxX - horizontalSpacing
+    private func inputViewFrame(
+        bounds: CGRect,
+        assetControlFrame: CGRect
+    ) -> CGRect {
+        let estimatedInputViewWidth = bounds.maxX - contentInsets.right - assetControlFrame.maxX - horizontalSpacing
         let inputWidth = max(estimatedInputViewWidth, 0)
         let inputSize = textInputView.intrinsicContentSize
 
-        textInputView.frame = CGRect(
+        return CGRect(
             x: bounds.maxX - contentInsets.right - inputWidth,
             y: bounds.midY - inputSize.height / 2.0,
             width: inputWidth,
@@ -84,21 +86,17 @@ final class SwapAmountInputView: RoundedView {
         super.configure()
 
         backgroundColor = UIColor.clear
+        apply(style: .strokeOnEditing)
 
-        configureBackgroundViewIfNeeded()
-        configureContentViewIfNeeded()
+        configureContent()
         configureInputViewHandlers()
     }
 
-    private func configureBackgroundViewIfNeeded() {
-        apply(style: .strokeOnEditing)
-    }
-
-    private func configureContentViewIfNeeded() {
-        addSubview(swapAssetControl)
+    private func configureContent() {
+        addSubview(assetControl)
         addSubview(textInputView)
 
-        swapAssetControl.contentInsets = .zero
+        assetControl.contentInsets = .zero
         textInputView.contentInsets = .zero
     }
 
@@ -116,24 +114,20 @@ final class SwapAmountInputView: RoundedView {
         )
     }
 
-    // MARK: Action
-
     @objc private func actionEditingDidBeginEnd() {
-        strokeWidth = textInputView.isFirstResponder ? 0.5 : 0.0
+        strokeWidth = textInputView.textField.isFirstResponder ? 0.5 : 0.0
     }
 }
 
 extension SwapAmountInputView {
     func bind(assetViewModel: SwapsAssetViewModel) {
-        swapAssetControl.bind(assetViewModel: assetViewModel)
-        swapAssetControl.invalidateIntrinsicContentSize()
+        assetControl.bind(assetViewModel: assetViewModel)
         setNeedsLayout()
     }
 
     func bind(emptyViewModel: EmptySwapsAssetViewModel) {
-        swapAssetControl.bind(emptyViewModel: emptyViewModel)
+        assetControl.bind(emptyViewModel: emptyViewModel)
         textInputView.isHidden = true
-        swapAssetControl.invalidateIntrinsicContentSize()
         setNeedsLayout()
     }
 

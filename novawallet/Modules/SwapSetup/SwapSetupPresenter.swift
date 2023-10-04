@@ -11,60 +11,45 @@ final class SwapSetupPresenter {
         interactor: SwapSetupInteractorInputProtocol,
         wireframe: SwapSetupWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryFacadeProtocol,
-        localizationManager _: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.localizationManager = localizationManager
     }
 }
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
-        view?.didReceiveButtonState(title: "Enter amount", enabled: false)
-        view?.didReceiveTitle(payViewModel: .init(title: "You pay", subtitle: "Max:", value: "100 USDT"))
-        view?.didReceiveInputChainAsset(payViewModel: dotModel())
-        view?.didReceiveAmount(payInputViewModel: amount())
-        view?.didReceiveAmountInputPrice(payViewModel: "$0")
-        view?.didReceiveTitle(receiveViewModel: .init(title: "You receive", subtitle: "", value: ""))
-        view?.didReceiveInputChainAsset(receiveViewModel: nil)
-    }
-
-    func dotModel() -> SwapsAssetViewModel {
-        let dotImage = RemoteImageViewModel(url: URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/chains/white/Polkadot.svg")!)
-        let hubImage = RemoteImageViewModel(url: URL(string: "https://parachains.info/images/parachains/1688559044_assethub.svg")!)
-        return SwapsAssetViewModel(
-            symbol: "DOT",
-            imageViewModel: dotImage,
-            hub: .init(
-                name: "Polkadot Asset Hub",
-                icon: hubImage
-            )
+        let mock = MockViewModelFactory()
+        let buttonState = mock.buttonState()
+        view?.didReceiveButtonState(
+            title: buttonState.title.value(for: selectedLocale),
+            enabled: buttonState.enabled
         )
+        view?.didReceiveTitle(payViewModel: mock.payTitleModel(locale: selectedLocale))
+        view?.didReceiveInputChainAsset(payViewModel: mock.payModel())
+        view?.didReceiveAmount(payInputViewModel: mock.payAmount(
+            locale: selectedLocale,
+            balanceViewModelFactory: balanceViewModelFactory
+        ))
+        view?.didReceiveAmountInputPrice(payViewModel: mock.payPriceModel())
+        view?.didReceiveTitle(receiveViewModel: mock.receiveTitleModel(locale: selectedLocale))
+        view?.didReceiveInputChainAsset(receiveViewModel: mock.receiveModel(locale: selectedLocale))
     }
 
-    func amount() -> AmountInputViewModelProtocol {
-        let targetAssetInfo = AssetBalanceDisplayInfo(
-            displayPrecision: 2,
-            assetPrecision: 10,
-            symbol: "DOT",
-            symbolValueSeparator: "",
-            symbolPosition: .suffix,
-            icon: nil
-        )
-        return balanceViewModelFactory.createBalanceInputViewModel(
-            targetAssetInfo: targetAssetInfo,
-            amount: 0
-        ).value(for: selectedLocale)
-    }
+    // TODO: navigate to select token screen
+    func selectPayToken() {}
 
-    func selectPayToken() {
-        print("SELECT PAY TOKEN")
-    }
+    // TODO: navigate to select token screen
+    func selectReceiveToken() {}
 
-    func selectReceiveToken() {
-        print("SELECT RECEIVE TOKEN")
-    }
+    // TODO: implement
+    func swap() {}
+
+    // TODO: navigate to confirm screen
+    func proceed() {}
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {}

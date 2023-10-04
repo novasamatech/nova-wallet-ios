@@ -21,7 +21,10 @@ struct SwapSetupViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = SwapSetupViewController(presenter: presenter)
+        let view = SwapSetupViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
