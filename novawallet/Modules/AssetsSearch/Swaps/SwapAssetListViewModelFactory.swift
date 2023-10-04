@@ -1,6 +1,6 @@
 import Foundation
 
-final class SwapAssetListAssetViewModelFactory: AssetListAssetViewModelFactory {
+final class SwapAssetListViewModelFactory: AssetListAssetViewModelFactory {
     override func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
         guard amount > 0 else {
             return ""
