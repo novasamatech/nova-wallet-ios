@@ -282,11 +282,11 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recepient: AccountId,
-        extras: StatemineAssetExtras
+        info: AssetsPalletStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         let call = callFactory.assetsTransfer(
             to: recepient,
-            extras: extras,
+            info: info,
             amount: amount.value
         )
 
@@ -327,12 +327,12 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
                 recepient: recepient,
                 tokenStorageInfo: info
             )
-        case let .statemine(extras):
+        case let .statemine(info):
             return try addingAssetsTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
-                extras: extras
+                info: info
             )
         case let .native(info):
             return try addingNativeTransferCommand(

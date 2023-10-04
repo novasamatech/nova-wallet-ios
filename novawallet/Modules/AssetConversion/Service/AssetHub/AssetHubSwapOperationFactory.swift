@@ -81,14 +81,14 @@ final class AssetHubSwapOperationFactory {
 
             let optNativeAsset = chain.utilityAsset()
 
-            let initAssetsStore = [BigUInt: (AssetModel, StatemineAssetExtras)]()
+            let initAssetsStore = [JSON: (AssetModel, AssetsPalletStorageInfo)]()
             let assetsPalletTokens = chain.assets.reduce(into: initAssetsStore) { store, asset in
                 let optStorageInfo = try? AssetStorageInfo.extract(from: asset, codingFactory: codingFactory)
-                guard case let .statemine(extras) = optStorageInfo, let assetId = BigUInt(extras.assetId) else {
+                guard case let .statemine(info) = optStorageInfo else {
                     return
                 }
 
-                store[assetId] = (asset, extras)
+                store[info.assetId] = (asset, info)
             }
 
             let mappingClosure: (AssetConversionPallet.PoolAsset) -> ChainAssetId? = { remoteAsset in
@@ -100,7 +100,7 @@ final class AssetHubSwapOperationFactory {
                         return nil
                     }
                 case let .assets(pallet, index):
-                    guard let localToken = assetsPalletTokens[index] else {
+                    guard let localToken = assetsPalletTokens[.stringValue(String(index))] else {
                         return nil
                     }
 
@@ -110,6 +110,14 @@ final class AssetHubSwapOperationFactory {
                         let moduleIndex = codingFactory.metadata.getModuleIndex(palletName),
                         moduleIndex == pallet else {
                         // only Assets pallet currently supported
+                        return nil
+                    }
+
+                    return ChainAssetId(chainId: chain.chainId, assetId: localToken.0.assetId)
+                case let .foreign(remoteId):
+                    guard
+                        let json = try? remoteId.toScaleCompatibleJSON(),
+                        let localToken = assetsPalletTokens[json] else {
                         return nil
                     }
 

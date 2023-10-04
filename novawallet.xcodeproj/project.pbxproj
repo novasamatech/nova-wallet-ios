@@ -253,6 +253,7 @@
 		0CD352952ACAF59900B3E446 /* BigRational.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352942ACAF59900B3E446 /* BigRational.swift */; };
 		0CD352972ACAFADA00B3E446 /* AssetConversionOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352962ACAFADA00B3E446 /* AssetConversionOperationFactory.swift */; };
 		0CD352982ACB01FD00B3E446 /* AccountGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822426EFE03E00D25C72 /* AccountGenerator.swift */; };
+		0CD3529B2ACD3E4300B3E446 /* PalletAssets+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD3529A2ACD3E4300B3E446 /* PalletAssets+Call.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
@@ -4234,6 +4235,7 @@
 		0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicService.swift; sourceTree = "<group>"; };
 		0CD352942ACAF59900B3E446 /* BigRational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigRational.swift; sourceTree = "<group>"; };
 		0CD352962ACAFADA00B3E446 /* AssetConversionOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionOperationFactory.swift; sourceTree = "<group>"; };
+		0CD3529A2ACD3E4300B3E446 /* PalletAssets+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+Call.swift"; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -8616,6 +8618,14 @@
 			path = V3;
 			sourceTree = "<group>";
 		};
+		0CD352992ACD3E3500B3E446 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				0CD3529A2ACD3E4300B3E446 /* PalletAssets+Call.swift */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */ = {
 			isa = PBXGroup;
 			children = (
@@ -11563,6 +11573,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				0CD352992ACD3E3500B3E446 /* Assets */,
 				0C22006C2ACAAC0F0067BA61 /* AssetConversionPallet */,
 				0C7945BC2ABB22AA001C07CA /* XTokens */,
 				0C13D3052A7FB9170054BB6F /* NominationPools */,
@@ -20441,6 +20452,7 @@
 				84D8F16324D8194100AF43E9 /* TitleWithSubtitleTableViewCell.swift in Sources */,
 				0C9C64322A8D67A0004DC078 /* StakingNPoolsInteractor.swift in Sources */,
 				F462B35C260C86880005AB01 /* ViewHolder.swift in Sources */,
+				0CD3529B2ACD3E4300B3E446 /* PalletAssets+Call.swift in Sources */,
 				8846F73E29D7561100B8B776 /* Data+base36.swift in Sources */,
 				84948C36287DD1C800E6DD3E /* NftListRMRKV2ViewModel.swift in Sources */,
 				84C515FB26D84F8C000DBA45 /* AccountImportWrapper.swift in Sources */,

@@ -211,7 +211,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 storagePath: accountStoragePath,
                 localKey: accountLocalKey,
                 keyParamClosure: { (assetId, accountId) },
-                param1Encoder: nil,
+                param1Encoder: StatemineAssetSerializer.subscriptionKeyEncoder(for: assetId),
                 param2Encoder: nil
             )
 
@@ -225,7 +225,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             let detailsRequest = MapSubscriptionRequest(
                 storagePath: detailsStoragePath,
                 localKey: detailsLocalKey,
-                keyParamClosure: { StringScaleMapper(value: assetId) }
+                keyParamClosure: { assetId },
+                paramEncoder: StatemineAssetSerializer.subscriptionKeyEncoder(for: assetId)
             )
 
             let handlingFactory = AssetsSubscriptionHandlingFactory(
