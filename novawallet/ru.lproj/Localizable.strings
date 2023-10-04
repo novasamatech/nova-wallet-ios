@@ -1377,4 +1377,4 @@
 "governance.referendums.status.deciding" = "На рассмотрении";
 "common.alert.external.link.disclaimer.title" = "Вы покидаете Nova Wallet";
 "common.alert.external.link.disclaimer.message" = "Вы будете перенаправлены на сайт %@";
-"swaps.receive.token.selection.title" = "Получаемый токен";
+"swaps.pay.token.selection.title" = "Токен для оплаты";

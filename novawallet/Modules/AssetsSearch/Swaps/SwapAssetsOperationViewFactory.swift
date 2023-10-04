@@ -29,7 +29,7 @@ enum SwapAssetsOperationViewFactory {
         }
 
         let title: LocalizableResource<String> = .init {
-            R.string.localizable.swapsReceiveTokenSelectionTitle(
+            R.string.localizable.swapsPayTokenSelectionTitle(
                 preferredLanguages: $0.rLanguages
             )
         }
