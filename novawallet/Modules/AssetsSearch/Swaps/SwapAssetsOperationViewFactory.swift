@@ -13,9 +13,10 @@ enum SwapAssetsOperationViewFactory {
             )
         }
 
-        return createSelectPayTokenView(
+        return createView(
             for: stateObservable,
             chainAsset: chainAsset,
+            title: title,
             selectClosure: selectClosure
         )
     }
