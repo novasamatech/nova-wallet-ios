@@ -1374,5 +1374,5 @@
 "wallet.list.empty.action.title" = "Купить токены";
 "asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
 "governance.referendums.status.deciding" = "Решение";
-"common.alert.external.link.disclaimer.title" = "Вы покидаете Nova Wallet";
-"common.alert.external.link.disclaimer.message" = "Вы будете перенаправлены на сайт %@";
+"common.alert.external.link.disclaimer.title" = "Продолжить в браузере?";
+"common.alert.external.link.disclaimer.message" = "Для продолжения покупки вы будете перенаправлены из приложения Nova Wallet на сайт %@";

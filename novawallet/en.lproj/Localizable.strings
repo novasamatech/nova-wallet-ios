@@ -1374,5 +1374,5 @@
 "wallet.list.empty.action.title" = "Buy tokens";
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
 "governance.referendums.status.deciding" = "Deciding";
-"common.alert.external.link.disclaimer.title" = "You are leaving Nova Wallet";
-"common.alert.external.link.disclaimer.message" = "You will be redirected to %@";
+"common.alert.external.link.disclaimer.title" = "Continue in browser?";
+"common.alert.external.link.disclaimer.message" = "To continue the purchase you will be redirected from Nova Wallet app to %@";
