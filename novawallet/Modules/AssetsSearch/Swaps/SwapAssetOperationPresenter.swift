@@ -12,10 +12,10 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         view as? SwapAssetsViewProtocol
     }
 
-    let selectClosure: (ChainAssetId) -> Void
+    let selectClosure: (ChainAsset) -> Void
 
     init(
-        selectClosure: @escaping (ChainAssetId) -> Void,
+        selectClosure: @escaping (ChainAsset) -> Void,
         interactor: SwapAssetsOperationInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -38,7 +38,10 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
-        selectClosure(chainAssetId)
+        guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
+            return
+        }
+        selectClosure(chainAsset)
         wireframe.close(view: view)
     }
 }
