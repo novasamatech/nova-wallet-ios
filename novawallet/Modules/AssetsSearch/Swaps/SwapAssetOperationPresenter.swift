@@ -12,15 +12,19 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         view as? SwapAssetsViewProtocol
     }
 
+    let selectClosure: (ChainAssetId) -> Void
+
     init(
-        delegate: AssetsSearchDelegate,
+        selectClosure: @escaping (ChainAssetId) -> Void,
         interactor: SwapAssetsOperationInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         wireframe: SwapAssetsOperationWireframeProtocol
     ) {
+        self.selectClosure = selectClosure
+
         super.init(
-            delegate: delegate,
+            delegate: nil,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
@@ -31,6 +35,11 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
     override func setup() {
         interactor.setup()
         swapAssetsView?.didStartLoading()
+    }
+
+    override func selectAsset(for chainAssetId: ChainAssetId) {
+        selectClosure(chainAssetId)
+        wireframe.close(view: view)
     }
 }
 

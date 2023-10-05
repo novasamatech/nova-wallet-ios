@@ -2,10 +2,29 @@ import Foundation
 import SoraFoundation
 
 enum SwapAssetsOperationViewFactory {
+    static func createSelectPayTokenView(
+        for stateObservable: AssetListModelObservable,
+        chainAsset: ChainAsset? = nil,
+        selectClosure: @escaping (ChainAssetId) -> Void
+    ) -> AssetsSearchViewProtocol? {
+        let title: LocalizableResource<String> = .init {
+            R.string.localizable.swapsPayTokenSelectionTitle(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+
+        return createSelectPayTokenView(
+            for: stateObservable,
+            chainAsset: chainAsset,
+            selectClosure: selectClosure
+        )
+    }
+
     static func createView(
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
-        delegate: AssetsSearchDelegate
+        title: LocalizableResource<String>,
+        selectClosure: @escaping (ChainAssetId) -> Void
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -23,15 +42,9 @@ enum SwapAssetsOperationViewFactory {
             stateObservable: stateObservable,
             viewModelFactory: viewModelFactory,
             chainAsset: chainAsset,
-            delegate: delegate
+            selectClosure: selectClosure
         ) else {
             return nil
-        }
-
-        let title: LocalizableResource<String> = .init {
-            R.string.localizable.swapsPayTokenSelectionTitle(
-                preferredLanguages: $0.rLanguages
-            )
         }
 
         let view = SwapAssetsOperationViewController(
@@ -51,7 +64,7 @@ enum SwapAssetsOperationViewFactory {
         stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         chainAsset: ChainAsset?,
-        delegate: AssetsSearchDelegate
+        selectClosure: @escaping (ChainAssetId) -> Void
     ) -> SwapAssetsOperationPresenter? {
         let westmintChainId = KnowChainId.westmint
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -80,7 +93,7 @@ enum SwapAssetsOperationViewFactory {
         )
 
         let presenter = SwapAssetsOperationPresenter(
-            delegate: delegate,
+            selectClosure: selectClosure,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
