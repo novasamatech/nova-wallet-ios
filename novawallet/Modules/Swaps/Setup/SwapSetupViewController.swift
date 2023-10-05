@@ -57,6 +57,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = R.string.localizable.walletAssetsSwap(preferredLanguages: selectedLocale.rLanguages)
+        rootView.setup(locale: selectedLocale)
     }
 
     @objc private func selectPayTokenAction() {
@@ -123,6 +124,14 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveAmountInputPrice(receiveViewModel viewModel: String?) {
         rootView.receiveAmountInputView.bind(priceViewModel: viewModel)
+    }
+
+    func didReceiveRate(viewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
+        rootView.rateCell.bind(loadableViewModel: viewModel)
+    }
+
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
+        rootView.networkFeeCell.bind(loadableViewModel: viewModel)
     }
 }
 

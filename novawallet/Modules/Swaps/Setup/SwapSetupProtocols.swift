@@ -1,3 +1,5 @@
+import BigInt
+
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveButtonState(title: String, enabled: Bool)
     func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel)
@@ -8,6 +10,8 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(receiveViewModel: String?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
+    func didReceiveRate(viewModel: LoadableViewModelState<BalanceViewModelProtocol>)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<BalanceViewModelProtocol>)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -18,8 +22,19 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func swap()
 }
 
-protocol SwapSetupInteractorInputProtocol: AnyObject {}
+protocol SwapSetupInteractorInputProtocol: AnyObject {
+    func calculateQuote(for args: AssetConversion.QuoteArgs)
+}
 
-protocol SwapSetupInteractorOutputProtocol: AnyObject {}
+protocol SwapSetupInteractorOutputProtocol: AnyObject {
+    func didReceive(quote: AssetConversion.Quote)
+    func didReceive(fee: BigUInt?)
+    func didReceive(error: SwapSetupError)
+}
 
-protocol SwapSetupWireframeProtocol: AnyObject {}
+protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {}
+
+enum SwapSetupError: Error {
+    case quote(Error)
+    case fetchFeeFailed(Error)
+}

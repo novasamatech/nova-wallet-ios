@@ -1388,3 +1388,5 @@
 "swaps.setup.asset.max" = "Максимум:";
 "common.alert.external.link.disclaimer.title" = "Вы покидаете Nova Wallet";
 "common.alert.external.link.disclaimer.message" = "Вы будете перенаправлены на сайт %@";
+"swaps.setup.details.rate" = "Курс";
+"swaps.setup.details.title" = "Детали обмена";

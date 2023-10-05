@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 final class SwapSetupPresenter {
     weak var view: SwapSetupViewProtocol?
@@ -52,7 +53,13 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func proceed() {}
 }
 
-extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {}
+extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
+    func didReceive(error _: SwapSetupError) {}
+
+    func didReceive(quote _: AssetConversion.Quote) {}
+
+    func didReceive(fee _: BigUInt?) {}
+}
 
 extension SwapSetupPresenter: Localizable {
     func applyLocalization() {
