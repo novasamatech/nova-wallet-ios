@@ -27,7 +27,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
     }
 
-    let detailsHeaderCell: CollapsableView = .create {
+    let detailsHeaderCell: CollapsableViewHeader = .create {
         $0.actionControl.addTarget(self, action: #selector(detailsControlAction), for: .valueChanged)
         $0.actionControl.imageView.isUserInteractionEnabled = false
     }

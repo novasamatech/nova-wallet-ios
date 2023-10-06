@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 import SoraUI
 
-final class CollapsableView: UIView {
+final class CollapsableViewHeader: UIView {
     var titleLabel = UILabel(style: .footnoteSecondary, textAlignment: .left, numberOfLines: 1)
     var actionControl: ActionTitleControl = .create {
         $0.indicator = ResizableImageActionIndicator(size: .init(width: 24, height: 24))
