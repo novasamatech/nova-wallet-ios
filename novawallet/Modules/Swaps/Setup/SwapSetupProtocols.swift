@@ -26,13 +26,17 @@ protocol SwapSetupPresenterProtocol: AnyObject {
 
 protocol SwapSetupInteractorInputProtocol: AnyObject {
     func setup()
+    func set(chainModel: ChainModel)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
+    func calculateFee(for args: FeeArgs)
+    func performSubscriptions(chainAsset: ChainAsset)
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {
     func didReceive(quote: AssetConversion.Quote)
     func didReceive(fee: BigUInt?)
     func didReceive(error: SwapSetupError)
+    func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
 }
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {
@@ -49,4 +53,14 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
 enum SwapSetupError: Error {
     case quote(Error)
     case fetchFeeFailed(Error)
+    case price(Error, AssetModel.PriceId)
+}
+
+struct FeeArgs {
+    let assetIn: ChainAssetId
+    let amountIn: BigUInt
+    let assetOut: ChainAssetId
+    let amountOut: BigUInt
+    let direction: AssetConversion.Direction
+    let slippage: BigUInt
 }

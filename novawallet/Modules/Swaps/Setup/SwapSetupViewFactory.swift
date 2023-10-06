@@ -46,7 +46,9 @@ struct SwapSetupViewFactory {
 
         guard let connection = chainRegistry.getConnection(for: westmintChainId),
               let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
-              let chainModel = chainRegistry.getChain(for: westmintChainId) else {
+              let chainModel = chainRegistry.getChain(for: westmintChainId),
+              let currencyManager = CurrencyManager.shared,
+              let selectedAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -70,6 +72,9 @@ struct SwapSetupViewFactory {
             runtimeService: runtimeService,
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicServiceFactory: extrinsicServiceFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
+            selectedAccount: selectedAccount,
             operationQueue: operationQueue
         )
 

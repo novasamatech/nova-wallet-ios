@@ -30,7 +30,13 @@ protocol SwapsSetupViewModelFactoryProtocol {
     func receiveTitleViewModel(locale: Locale) -> TitleHorizontalMultiValueView.Model
     func receiveAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel
     func amountInputViewModel(chainAsset: ChainAsset, amount: Decimal?, locale: Locale) -> AmountInputViewModelProtocol
-    func rate(from params: RateParams, locale: Locale) -> String
+    func rateViewModel(from params: RateParams, locale: Locale) -> String
+    func feeViewModel(
+        amount: BigUInt,
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol
 }
 
 final class SwapsSetupViewModelFactory {
@@ -191,7 +197,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         chainAsset.map { .asset(assetViewModel(chainAsset: $0)) } ?? .empty(emptyReceiveAssetViewModel(locale: locale))
     }
 
-    func rate(from params: RateParams, locale: Locale) -> String {
+    func rateViewModel(from params: RateParams, locale: Locale) -> String {
         guard
             let amountOutDecimal = Decimal.fromSubstrateAmount(
                 params.amountOut,
@@ -219,10 +225,31 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         return "\(amountIn) ≈ \(amountOut)"
     }
 
-    func amountInputViewModel(chainAsset: ChainAsset, amount: Decimal?, locale: Locale) -> AmountInputViewModelProtocol {
+    func amountInputViewModel(
+        chainAsset: ChainAsset,
+        amount: Decimal?,
+        locale: Locale
+    ) -> AmountInputViewModelProtocol {
         balanceViewModelFactoryFacade.createBalanceInputViewModel(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             amount: amount
+        ).value(for: locale)
+    }
+
+    func feeViewModel(
+        amount: BigUInt,
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol {
+        let amountDecimal = Decimal.fromSubstrateAmount(
+            amount,
+            precision: assetDisplayInfo.assetPrecision
+        ) ?? 0
+        return balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: assetDisplayInfo,
+            amount: amountDecimal,
+            priceData: priceData
         ).value(for: locale)
     }
 }

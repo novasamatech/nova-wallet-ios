@@ -131,7 +131,9 @@ extension SwapAmountInput: AmountInputViewModelObserver {
     func amountInputDidChange() {
         textField.text = inputViewModel?.displayAmount
 
-        sendActions(for: .editingChanged)
+        if textField.isEditing {
+            sendActions(for: .editingChanged)
+        }
     }
 }
 

@@ -60,7 +60,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
-        rootView.payAmountInputView.textInputView.addTarget(
+        rootView.receiveAmountInputView.textInputView.addTarget(
             self,
             action: #selector(receiveAmountChangeAction),
             for: .editingChanged
