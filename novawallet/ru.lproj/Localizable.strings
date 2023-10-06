@@ -1375,6 +1375,17 @@
 "common.back" = "Назад";
 "asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
 "governance.referendums.status.deciding" = "На рассмотрении";
+"wallet.assets.swap" = "Обмен";
+"swaps.setup.asset.select.subtitle" = "Выберите токeн";
+"swaps.setup.asset.pay.title" = "Оплата в";
+"swaps.setup.asset.receive.title" = "Получение";
+"swaps.setup.asset.action.select.tokens" = "Выберите токены для обмена";
+"swaps.setup.asset.action.select.receive" = "Выберите получаемый токен";
+"swaps.setup.asset.action.select.pay" = "Выберите отдаваемый токен";
+"swaps.setup.asset.action.enter.amount" = "Введите сумму";
+"swaps.setup.asset.select.pay.title" = "Вы платите";
+"swaps.setup.asset.select.receive.title" = "Вы получаете";
+"swaps.setup.asset.max" = "Максимум:";
 "common.alert.external.link.disclaimer.title" = "Вы покидаете Nova Wallet";
 "common.alert.external.link.disclaimer.message" = "Вы будете перенаправлены на сайт %@";
 "swaps.pay.token.selection.title" = "Токен для оплаты";
