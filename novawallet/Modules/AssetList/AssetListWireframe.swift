@@ -127,6 +127,18 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func showSwapTokens(from view: AssetListViewProtocol?) {
+        guard let swapTokensView = SwapSetupViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: swapTokensView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
     func showNfts(from view: AssetListViewProtocol?) {
         guard let nftListView = NftListViewFactory.createView() else {
             return
