@@ -21,6 +21,25 @@ enum SwapAssetsOperationViewFactory {
         )
     }
 
+    static func createSelectReceiveTokenView(
+        for stateObservable: AssetListModelObservable,
+        chainAsset: ChainAsset? = nil,
+        selectClosure: @escaping (ChainAsset) -> Void
+    ) -> AssetsSearchViewProtocol? {
+        let title: LocalizableResource<String> = .init {
+            R.string.localizable.swapsReceiveTokenSelectionTitle(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+
+        return createView(
+            for: stateObservable,
+            chainAsset: chainAsset,
+            title: title,
+            selectClosure: selectClosure
+        )
+    }
+
     static func createView(
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
