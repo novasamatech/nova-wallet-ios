@@ -1387,3 +1387,5 @@
 "swaps.setup.asset.max" = "Max:";
 "common.alert.external.link.disclaimer.title" = "You are leaving Nova Wallet";
 "common.alert.external.link.disclaimer.message" = "You will be redirected to %@";
+"swaps.pay.token.selection.title" = "Token to pay";
+"swaps.receive.token.selection.title" = "Token to receive";

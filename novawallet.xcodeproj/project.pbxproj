@@ -763,6 +763,14 @@
 		77AB55592AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */; };
 		77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */; };
 		77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */; };
+		77C9BCC42ACD570100022EA2 /* SwapAssetsOperationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */; };
+		77C9BCC62ACD571400022EA2 /* SwapAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCC52ACD571400022EA2 /* SwapAssetOperationPresenter.swift */; };
+		77C9BCCA2ACD574800022EA2 /* SwapAssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCC92ACD574800022EA2 /* SwapAssetOperationWireframe.swift */; };
+		77C9BCCC2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCCB2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift */; };
+		77C9BCCE2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCCD2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift */; };
+		77C9BCD02ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCCF2ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift */; };
+		77C9BCD22ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCD12ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift */; };
+		77C9BCD42ACDF1AD00022EA2 /* SwapAssetListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCD32ACDF1AD00022EA2 /* SwapAssetListViewModelFactory.swift */; };
 		77C9BCBC2ACD1AF500022EA2 /* ViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCBB2ACD1AF500022EA2 /* ViewModels.swift */; };
 		77C9BCBE2ACD286100022EA2 /* MockViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCBD2ACD286100022EA2 /* MockViewModelFactory.swift */; };
 		77CB33CE2A38780700B6709A /* structures_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77CB33CD2A38780700B6709A /* structures_output.json */; };
@@ -4754,6 +4762,14 @@
 		77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashModel.swift; sourceTree = "<group>"; };
 		77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashViewModel.swift; sourceTree = "<group>"; };
 		77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsPoolRewardView.swift; sourceTree = "<group>"; };
+		77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationInteractor.swift; sourceTree = "<group>"; };
+		77C9BCC52ACD571400022EA2 /* SwapAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetOperationPresenter.swift; sourceTree = "<group>"; };
+		77C9BCC92ACD574800022EA2 /* SwapAssetOperationWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetOperationWireframe.swift; sourceTree = "<group>"; };
+		77C9BCCB2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationProtocols.swift; sourceTree = "<group>"; };
+		77C9BCCD2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationViewFactory.swift; sourceTree = "<group>"; };
+		77C9BCCF2ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationViewLayout.swift; sourceTree = "<group>"; };
+		77C9BCD12ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationViewController.swift; sourceTree = "<group>"; };
+		77C9BCD32ACDF1AD00022EA2 /* SwapAssetListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetListViewModelFactory.swift; sourceTree = "<group>"; };
 		77C9BCBB2ACD1AF500022EA2 /* ViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels.swift; sourceTree = "<group>"; };
 		77C9BCBD2ACD286100022EA2 /* MockViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockViewModelFactory.swift; sourceTree = "<group>"; };
 		77CB33CD2A38780700B6709A /* structures_output.json */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; path = structures_output.json; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 0; };
@@ -9680,6 +9696,21 @@
 				77EA2A172A333C1500B0670B /* output */,
 			);
 			path = canonicalization;
+			sourceTree = "<group>";
+		};
+		77C9BCC22ACD563E00022EA2 /* Swaps */ = {
+			isa = PBXGroup;
+			children = (
+				77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */,
+				77C9BCC52ACD571400022EA2 /* SwapAssetOperationPresenter.swift */,
+				77C9BCC92ACD574800022EA2 /* SwapAssetOperationWireframe.swift */,
+				77C9BCCB2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift */,
+				77C9BCCD2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift */,
+				77C9BCCF2ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift */,
+				77C9BCD12ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift */,
+				77C9BCD32ACDF1AD00022EA2 /* SwapAssetListViewModelFactory.swift */,
+			);
+			path = Swaps;
 			sourceTree = "<group>";
 		};
 		77C9BCBA2ACD1AE800022EA2 /* Model */ = {
@@ -17193,6 +17224,7 @@
 		A29C55960FE9EADBDEAC6F03 /* AssetsSearch */ = {
 			isa = PBXGroup;
 			children = (
+				77C9BCC22ACD563E00022EA2 /* Swaps */,
 				0C1FE4F22A52EDD5003769E7 /* Model */,
 				775692822A24CA5100220756 /* AssetOperation */,
 				778D97A02A24D459002BA681 /* AssetSearch */,
@@ -19816,6 +19848,7 @@
 				77F189402A49972300E8B933 /* UILabel+bind.swift in Sources */,
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
 				847A259029B5D2710054F90C /* GovJsonLocalStorageHandler.swift in Sources */,
+				77C9BCCE2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
 				8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */,
 				849E17E8279143B2002D1744 /* NavigationBarStyle.swift in Sources */,
@@ -20469,6 +20502,7 @@
 				84744953289268770042FD80 /* WalletSwitchViewModel.swift in Sources */,
 				84FACCD925F8C22A00F32ED4 /* BigInt+Hex.swift in Sources */,
 				77799AF02A7CFB7C00B7E564 /* ValidatorViewModel.swift in Sources */,
+				77C9BCCA2ACD574800022EA2 /* SwapAssetOperationWireframe.swift in Sources */,
 				849F33BC29F7C659001AEFA4 /* DAppInteractionProtocols.swift in Sources */,
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
 				84E0EE0E292D69A9008B2953 /* CallMetadata+TypeCheck.swift in Sources */,
@@ -21304,6 +21338,7 @@
 				842A736D27DB7B5E006EE1EA /* OperationTransferViewModel.swift in Sources */,
 				842B18022864F9950014CC57 /* CrossChainTransferPresenter.swift in Sources */,
 				84C1DBBA29C0A11200F295A5 /* XcmTransferService+Fee.swift in Sources */,
+				77C9BCD02ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift in Sources */,
 				845B081529190056005785D3 /* Gov1UnlockReferendum.swift in Sources */,
 				84B24FB02A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift in Sources */,
 				77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */,
@@ -21878,6 +21913,7 @@
 				880855F028D099F2004255E7 /* CrowdloanOnChainSyncService.swift in Sources */,
 				843CE3A627D2098100436F4E /* NftDetailsLabel.swift in Sources */,
 				84216FD42827982800479375 /* SelectedRoundCollators.swift in Sources */,
+				77C9BCC62ACD571400022EA2 /* SwapAssetOperationPresenter.swift in Sources */,
 				0C2F868B2A725C3C00593C01 /* EraNominationPoolsChanged.swift in Sources */,
 				849E17DC27909179002D1744 /* DAppSearchQueryTableViewCell.swift in Sources */,
 				2AC7BC842731A214001D99B0 /* AssetLocks+Sort.swift in Sources */,
@@ -22154,6 +22190,7 @@
 				6ECB27B386124F87382073FD /* DAppAddFavoriteProtocols.swift in Sources */,
 				84033057290FD8AB009C18E6 /* ReferendumsPersonalActivityView.swift in Sources */,
 				433A3C2B0D1E4BA5974D681B /* DAppAddFavoriteWireframe.swift in Sources */,
+				77C9BCCC2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift in Sources */,
 				F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */,
 				AC904E313DC15AE40C927946 /* DAppAddFavoriteInteractor.swift in Sources */,
 				0CD352932ACAD7A500B3E446 /* AssetHubExtrinsicService.swift in Sources */,
@@ -22307,6 +22344,7 @@
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
 				8407716828CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift in Sources */,
 				73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */,
+				77C9BCD42ACDF1AD00022EA2 /* SwapAssetListViewModelFactory.swift in Sources */,
 				77ED167E2A0D0AE900E1FC8C /* Lenses.swift in Sources */,
 				6BBD025775841F8B055CA367 /* AssetsSearchViewFactory.swift in Sources */,
 				88C5F07E297EE7BC001CCADE /* InAppUpdatesRepository.swift in Sources */,
@@ -22342,6 +22380,7 @@
 				1812D5012A1765CB38D32A4A /* WalletsListPresenter.swift in Sources */,
 				A265CC9857E951EB71E5E831 /* WalletsListInteractor.swift in Sources */,
 				28B4C94DBAF461CBF18B1B63 /* WalletsListViewController.swift in Sources */,
+				77C9BCC42ACD570100022EA2 /* SwapAssetsOperationInteractor.swift in Sources */,
 				233CB11F486DE1953D977295 /* WalletsListViewLayout.swift in Sources */,
 				0C9525E52A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift in Sources */,
 				FD43B68CFBD5C3497B446F53 /* ChangeWatchOnlyProtocols.swift in Sources */,
@@ -22680,6 +22719,7 @@
 				34D6FF85BEA25EFD1D15D460 /* InAppUpdatesInteractor.swift in Sources */,
 				0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */,
 				841E54A07ACD3AD160A1250A /* InAppUpdatesViewController.swift in Sources */,
+				77C9BCD22ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift in Sources */,
 				DDA07514BEF3E2FD6EE1BB4E /* InAppUpdatesViewLayout.swift in Sources */,
 				32009DBB90D19ACD6D7B7A5C /* InAppUpdatesViewFactory.swift in Sources */,
 				77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */,
