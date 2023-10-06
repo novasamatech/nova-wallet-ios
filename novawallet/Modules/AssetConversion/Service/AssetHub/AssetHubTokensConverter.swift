@@ -33,19 +33,28 @@ enum AssetHubTokensConverter {
         switch storageInfo {
         case .native:
             return .init(parents: 0, interior: .init(items: []))
-        case let .statemine(extras):
-            let palletName = extras.palletName ?? PalletAssets.name
+        case let .statemine(info):
+            if info.assetIdString.isHex() {
+                let remoteAssetId = try? info.assetId.map(
+                    to: AssetConversionPallet.AssetId.self,
+                    with: codingFactory.createRuntimeJsonContext().toRawContext()
+                )
 
-            guard
-                let palletIndex = codingFactory.metadata.getModuleIndex(palletName),
-                let generalIndex = BigUInt(extras.assetId) else {
-                return nil
+                return remoteAssetId
+            } else {
+                let palletName = info.palletName ?? PalletAssets.name
+
+                guard
+                    let palletIndex = codingFactory.metadata.getModuleIndex(palletName),
+                    let generalIndex = BigUInt(info.assetIdString) else {
+                    return nil
+                }
+
+                let palletJunction = XcmV3.Junction.palletInstance(palletIndex)
+                let generalIndexJunction = XcmV3.Junction.generalIndex(generalIndex)
+
+                return .init(parents: 0, interior: .init(items: [palletJunction, generalIndexJunction]))
             }
-
-            let palletJunction = XcmV3.Junction.palletInstance(palletIndex)
-            let generalIndexJunction = XcmV3.Junction.generalIndex(generalIndex)
-
-            return .init(parents: 0, interior: .init(items: [palletJunction, generalIndexJunction]))
         default:
             return nil
         }

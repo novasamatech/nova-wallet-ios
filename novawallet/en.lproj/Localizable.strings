@@ -1389,3 +1389,5 @@
 "common.alert.external.link.disclaimer.message" = "You will be redirected to %@";
 "swaps.setup.details.rate" = "Rate";
 "swaps.setup.details.title" = "Swap details";
+"swaps.pay.token.selection.title" = "Token to pay";
+"swaps.receive.token.selection.title" = "Token to receive";

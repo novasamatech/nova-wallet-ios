@@ -60,14 +60,21 @@ class UnkeyedEncodingOperation: BaseOperation<Data> {
 class MapKeyEncodingOperation<T: Encodable>: BaseOperation<[Data]> {
     var keyParams: [T]?
     var codingFactory: RuntimeCoderFactoryProtocol?
+    var paramEncoder: ((T) throws -> Data)?
 
     let path: StorageCodingPath
     let storageKeyFactory: StorageKeyFactoryProtocol
 
-    init(path: StorageCodingPath, storageKeyFactory: StorageKeyFactoryProtocol, keyParams: [T]? = nil) {
+    init(
+        path: StorageCodingPath,
+        storageKeyFactory: StorageKeyFactoryProtocol,
+        keyParams: [T]? = nil,
+        paramEncoder: ((T) throws -> Data)? = nil
+    ) {
         self.path = path
         self.keyParams = keyParams
         self.storageKeyFactory = storageKeyFactory
+        self.paramEncoder = paramEncoder
 
         super.init()
     }
@@ -109,10 +116,17 @@ class MapKeyEncodingOperation<T: Encodable>: BaseOperation<[Data]> {
             }
 
             let keys: [Data] = try keyParams.map { keyParam in
-                let encoder = factory.createEncoder()
-                try encoder.append(keyParam, ofType: keyType)
+                let encodedParam: Data
 
-                let encodedParam = try encoder.encode()
+                if let paramEncoder = paramEncoder {
+                    encodedParam = try paramEncoder(keyParam)
+                } else {
+                    encodedParam = try encodeParam(
+                        keyParam,
+                        factory: factory,
+                        type: keyType
+                    )
+                }
 
                 return try storageKeyFactory.createStorageKey(
                     moduleName: path.moduleName,
@@ -140,6 +154,16 @@ class MapKeyEncodingOperation<T: Encodable>: BaseOperation<[Data]> {
         }
 
         performEncoding()
+    }
+
+    private func encodeParam<T: Encodable>(
+        _ param: T,
+        factory: RuntimeCoderFactoryProtocol,
+        type: String
+    ) throws -> Data {
+        let encoder = factory.createEncoder()
+        try encoder.append(param, ofType: type)
+        return try encoder.encode()
     }
 }
 

@@ -60,7 +60,7 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,
-                metadata: coderFactory.metadata,
+                codingFactory: coderFactory,
                 context: runtimeJsonContext
             ) {
                 return processingResult
