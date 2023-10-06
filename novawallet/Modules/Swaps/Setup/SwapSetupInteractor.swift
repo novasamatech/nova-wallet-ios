@@ -12,6 +12,7 @@ final class SwapSetupInteractor: AnyCancellableCleaning {
 
     private let operationQueue: OperationQueue
     private var quoteCall: CancellableCall?
+    private var runtimeOperationCall: CancellableCall?
 
     init(
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
@@ -55,17 +56,26 @@ final class SwapSetupInteractor: AnyCancellableCleaning {
         nil
     }
 
-    private func fee(args _: AssetConversion.CallArgs) {
+    private func fee(args: AssetConversion.CallArgs) {
+        clear(cancellable: &runtimeOperationCall)
         guard let extrinsicService = extrinsicService() else {
             presenter?.didReceive(error: .fetchFeeFailed(CommonError.undefined))
             return
         }
 
-//        let builder = assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
-//            for: args,
-//            codingFactory: runtimeCoderFactory
-//        )
-//        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "", setupBy: builder)
+        let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        runtimeCoderFactoryOperation.completionBlock = { [weak self] in
+            let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
+            let builder = assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
+                for: args,
+                codingFactory: runtimeCoderFactory
+            )
+            self?.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "", setupBy: builder)
+        }
+
+        runtimeOperationCall = runtimeCoderFactoryOperation
+        operationQueue.addOperation(runtimeCoderFactoryOperation)
     }
 }
 
