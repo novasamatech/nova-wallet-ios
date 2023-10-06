@@ -3,25 +3,29 @@ import SoraFoundation
 import RobinHood
 
 struct SwapSetupViewFactory {
-    static func createView() -> SwapSetupViewProtocol? {
+    static func createView(assetListObservable: AssetListModelObservable) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let balanceViewModelFactory = BalanceViewModelFactoryFacade(
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager))
 
         guard let interactor = createInteractor() else {
             return nil
         }
 
-        let wireframe = SwapSetupWireframe()
+        let wireframe = SwapSetupWireframe(assetListObservable: assetListObservable)
+        let viewModelFactory = SwapsSetupViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            networkViewModelFactory: NetworkViewModelFactory()
+        )
 
         let presenter = SwapSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            balanceViewModelFactory: balanceViewModelFactory,
+            viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 

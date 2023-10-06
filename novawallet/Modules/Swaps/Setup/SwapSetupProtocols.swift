@@ -10,7 +10,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(receiveViewModel: String?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
-    func didReceiveRate(viewModel: LoadableViewModelState<BalanceViewModelProtocol>)
+    func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<BalanceViewModelProtocol>)
 }
 
@@ -20,9 +20,12 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func selectReceiveToken()
     func proceed()
     func swap()
+    func updatePayAmount(_ amount: Decimal?)
+    func updateReceiveAmount(_ amount: Decimal?)
 }
 
 protocol SwapSetupInteractorInputProtocol: AnyObject {
+    func setup()
     func calculateQuote(for args: AssetConversion.QuoteArgs)
 }
 
@@ -32,7 +35,16 @@ protocol SwapSetupInteractorOutputProtocol: AnyObject {
     func didReceive(error: SwapSetupError)
 }
 
-protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {}
+protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {
+    func showPayTokenSelection(
+        from view: ControllerBackedProtocol?,
+        completionHandler: @escaping (ChainAsset) -> Void
+    )
+    func showReceiveTokenSelection(
+        from view: ControllerBackedProtocol?,
+        completionHandler: @escaping (ChainAsset) -> Void
+    )
+}
 
 enum SwapSetupError: Error {
     case quote(Error)

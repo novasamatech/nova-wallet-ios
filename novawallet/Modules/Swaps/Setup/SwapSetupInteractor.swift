@@ -35,16 +35,17 @@ final class SwapSetupInteractor: AnyCancellableCleaning {
 
         let wrapper = assetConversionOperationFactory.quote(for: args)
         wrapper.targetOperation.completionBlock = { [weak self] in
-            guard self?.quoteCall === wrapper else {
-                return
-            }
-            do {
-                let result = try wrapper.targetOperation.extractNoCancellableResultData()
-                DispatchQueue.main.async {
-                    self?.presenter?.didReceive(quote: result)
+            DispatchQueue.main.async {
+                guard self?.quoteCall === wrapper else {
+                    return
                 }
-            } catch {
-                self?.presenter?.didReceive(error: .quote(error))
+                do {
+                    let result = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                    self?.presenter?.didReceive(quote: result)
+                } catch {
+                    self?.presenter?.didReceive(error: .quote(error))
+                }
             }
         }
 
@@ -66,12 +67,21 @@ final class SwapSetupInteractor: AnyCancellableCleaning {
         let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         runtimeCoderFactoryOperation.completionBlock = { [weak self] in
-            let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
-            let builder = assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
-                for: args,
-                codingFactory: runtimeCoderFactory
-            )
-            self?.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "", setupBy: builder)
+            guard let self = self else {
+                return
+            }
+            do {
+                let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
+                let builder = self.assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
+                    for: args,
+                    codingFactory: runtimeCoderFactory
+                )
+                self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "", setupBy: builder)
+            } catch {
+                DispatchQueue.main.async {
+                    self.presenter?.didReceive(error: .fetchFeeFailed(error))
+                }
+            }
         }
 
         runtimeOperationCall = runtimeCoderFactoryOperation

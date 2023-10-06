@@ -53,6 +53,18 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(swapAction),
             for: .touchUpInside
         )
+
+        rootView.payAmountInputView.textInputView.addTarget(
+            self,
+            action: #selector(payAmountChangeAction),
+            for: .editingChanged
+        )
+
+        rootView.payAmountInputView.textInputView.addTarget(
+            self,
+            action: #selector(receiveAmountChangeAction),
+            for: .editingChanged
+        )
     }
 
     private func setupLocalization() {
@@ -76,6 +88,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func swapAction() {
         presenter.swap()
+    }
+
+    @objc private func payAmountChangeAction() {
+        let amount = rootView.payAmountInputView.textInputView.inputViewModel?.decimalAmount
+        presenter.updatePayAmount(amount)
+    }
+
+    @objc private func receiveAmountChangeAction() {
+        let amount = rootView.receiveAmountInputView.textInputView.inputViewModel?.decimalAmount
+        presenter.updateReceiveAmount(amount)
     }
 }
 
@@ -126,7 +148,7 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.receiveAmountInputView.bind(priceViewModel: viewModel)
     }
 
-    func didReceiveRate(viewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
+    func didReceiveRate(viewModel: LoadableViewModelState<String>) {
         rootView.rateCell.bind(loadableViewModel: viewModel)
     }
 

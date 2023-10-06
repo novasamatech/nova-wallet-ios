@@ -71,8 +71,13 @@ extension StackTitleMultiValueCell {
         )
     }
 
-    // TODO: Skeleton
-    func bind(loadableViewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
-        loadableViewModel.value.map(bind)
+    func bind(loadableViewModel: LoadableViewModelState<String>) {
+        switch loadableViewModel {
+        case let .cached(value), let .loaded(value):
+            rowContentView.valueView.valueTop.text = value
+        case .loading:
+            // TODO: Skeleton
+            break
+        }
     }
 }

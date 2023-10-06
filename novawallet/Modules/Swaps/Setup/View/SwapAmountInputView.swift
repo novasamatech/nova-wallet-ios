@@ -121,6 +121,7 @@ final class SwapAmountInputView: RoundedView {
 
 extension SwapAmountInputView {
     func bind(assetViewModel: SwapsAssetViewModel) {
+        textInputView.isHidden = false
         assetControl.bind(assetViewModel: assetViewModel)
         setNeedsLayout()
     }
