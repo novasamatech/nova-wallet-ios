@@ -242,10 +242,9 @@ final class SwapSetupPresenter {
                     direction: .buy
                 )
                 isCalculating = true
-            } else {
-                payAmountInput = nil
-                providePayAmountInputViewModel()
             }
+            payAmountInput = nil
+            providePayAmountInputViewModel()
         case .sell:
             if let payInPlank = absoluteValue(for: payAmountInput)?.toSubstrateAmount(
                 precision: Int16(payChainAsset.asset.precision)), payInPlank > 0 {
@@ -256,10 +255,10 @@ final class SwapSetupPresenter {
                     direction: .sell
                 )
                 isCalculating = true
-            } else {
-                receiveAmountInput = nil
-                provideReceiveAmountInputViewModel()
             }
+
+            receiveAmountInput = nil
+            provideReceiveAmountInputViewModel()
         default:
             break
         }
@@ -366,7 +365,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 precision: Int16(payChainAsset.asset.precision)
             ) ?? 0
             payAmountInput = .absolute(payAmount)
-            providePayInputPriceViewModel()
+            providePayAmountInputViewModel()
         case .sell:
             receiveAmountInput = Decimal.fromSubstrateAmount(
                 quote.amountOut,

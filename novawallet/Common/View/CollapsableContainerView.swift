@@ -122,7 +122,6 @@ class CollapsableContainerView: UIView {
         rows.forEach { view in
             stackView.addArrangedSubview(view)
 
-            view.translatesAutoresizingMaskIntoConstraints = false
             view.snp.makeConstraints { make in
                 make.height.equalTo(Constants.rowHeight)
             }
