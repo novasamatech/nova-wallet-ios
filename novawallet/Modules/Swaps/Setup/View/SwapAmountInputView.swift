@@ -127,8 +127,8 @@ extension SwapAmountInputView {
     }
 
     func bind(emptyViewModel: EmptySwapsAssetViewModel) {
-        assetControl.bind(emptyViewModel: emptyViewModel)
         textInputView.isHidden = true
+        assetControl.bind(emptyViewModel: emptyViewModel)
         setNeedsLayout()
     }
 

@@ -3,13 +3,21 @@ import UIKit
 import SoraUI
 import Kingfisher
 
-final class StackTitleMultiValueEditCell: RowView<GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>> {
-    var titleButton: RoundedButton { rowContentView.titleView }
-    var valueTopButton: RoundedButton { rowContentView.valueView.fView }
-    var valueBottomLabel: UILabel { rowContentView.valueView.sView }
+final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>, SkeletonableView {
+    var titleButton: RoundedButton { titleView }
+    var valueTopButton: RoundedButton { valueView.fView }
+    var valueBottomLabel: UILabel { valueView.sView }
+    var skeletonView: SkrullableView?
 
-    convenience init() {
-        self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
+    private var isLoading: Bool = false
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
     }
 
     override init(frame: CGRect) {
@@ -45,24 +53,63 @@ final class StackTitleMultiValueEditCell: RowView<GenericTitleValueView<RoundedB
         valueBottomLabel.textColor = R.color.colorTextSecondary()
         valueBottomLabel.font = .caption1
         valueBottomLabel.textAlignment = .right
-        borderView.strokeColor = R.color.colorDivider()!
 
-        rowContentView.valueView.makeVertical()
-        hasInteractableContent = true
+        valueView.makeVertical()
     }
 }
 
-extension StackTitleMultiValueEditCell: StackTableViewCellProtocol {}
-
-extension StackTitleMultiValueEditCell {
+extension SwapNetworkFeeView {
     func bind(viewModel: BalanceViewModelProtocol) {
         valueTopButton.imageWithTitleView?.title = viewModel.amount
         valueBottomLabel.text = viewModel.price
         valueTopButton.invalidateLayout()
     }
 
-    // TODO: Skeleton
     func bind(loadableViewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
-        loadableViewModel.value.map(bind)
+        switch loadableViewModel {
+        case let .cached(value), let .loaded(value):
+            isLoading = false
+            stopLoadingIfNeeded()
+            bind(viewModel: value)
+        case .loading:
+            isLoading = true
+            startLoadingIfNeeded()
+        }
+    }
+}
+
+extension SwapNetworkFeeView {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let size = CGSize(width: 68, height: 8)
+        let offset = CGPoint(
+            x: spaceSize.width - size.width,
+            y: spaceSize.height / 2.0 - size.height / 2.0
+        )
+
+        let row = SingleSkeleton.createRow(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: offset,
+            size: size
+        )
+
+        return [row]
+    }
+
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [valueView]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }

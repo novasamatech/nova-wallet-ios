@@ -137,7 +137,7 @@ extension SwapAssetControl {
             network: assetViewModel.hub.name,
             icon: assetViewModel.hub.icon
         )
-        invalidateIntrinsicContentSize()
+        invalidateLayout()
     }
 
     func bind(emptyViewModel: EmptySwapsAssetViewModel) {
@@ -149,6 +149,6 @@ extension SwapAssetControl {
             network: emptyViewModel.subtitle,
             icon: nil
         )
-        invalidateIntrinsicContentSize()
+        invalidateLayout()
     }
 }

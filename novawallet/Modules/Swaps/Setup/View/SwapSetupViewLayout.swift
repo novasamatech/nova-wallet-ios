@@ -27,25 +27,15 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
     }
 
-    let detailsHeaderCell: CollapsableViewHeader = .create {
-        $0.actionControl.addTarget(self, action: #selector(detailsControlAction), for: .valueChanged)
-        $0.actionControl.imageView.isUserInteractionEnabled = false
+    let detailsView = SwapDetailsView()
+
+    var rateCell: SwapRateView {
+        detailsView.rateCell
     }
 
-    let detailsTableView: StackTableView = .create {
-        $0.cellHeight = 44
-        $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        $0.isHidden = true
+    var networkFeeCell: SwapNetworkFeeView {
+        detailsView.networkFeeCell
     }
-
-    let rateCell: StackTitleMultiValueCell = .create {
-        $0.titleLabel.apply(style: .footnoteSecondary)
-        $0.rowContentView.titleView.iconWidth = 16
-        $0.rowContentView.titleView.imageView.image = R.image.iconInfoFilledAccent()
-    }
-
-    let networkFeeCell = StackTitleMultiValueEditCell()
 
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
@@ -80,10 +70,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             $0.height.equalTo(64)
         }
 
-        addArrangedSubview(detailsHeaderCell, spacingAfter: 8)
-        addArrangedSubview(detailsTableView)
-        detailsTableView.addArrangedSubview(rateCell)
-        detailsTableView.addArrangedSubview(networkFeeCell)
+        addArrangedSubview(detailsView, spacingAfter: 8)
 
         addSubview(switchButton)
         switchButton.snp.makeConstraints {
@@ -95,17 +82,12 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
-        detailsHeaderCell.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
+        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
             preferredLanguages: locale.rLanguages
         )
-        rateCell.titleLabel.text = R.string.localizable.swapsSetupDetailsRate(preferredLanguages: locale.rLanguages)
+        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(preferredLanguages: locale.rLanguages)
         networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
-    }
-
-    @objc
-    private func detailsControlAction() {
-        detailsTableView.isHidden = !detailsHeaderCell.actionControl.isActivated
-        detailsHeaderCell.actionControl.invalidateLayout()
-        detailsHeaderCell.setNeedsLayout()
+        rateCell.setNeedsLayout()
+        detailsView.setNeedsLayout()
     }
 }

@@ -66,9 +66,21 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
-        rootView.rateCell.addTarget(self, action: #selector(rateInfoAction), for: .touchUpInside)
-        rootView.networkFeeCell.valueTopButton.addTarget(self, action: #selector(changeNetworkFeeAction), for: .touchUpInside)
-        rootView.networkFeeCell.titleButton.addTarget(self, action: #selector(networkFeeInfoAction), for: .touchUpInside)
+        rootView.rateCell.titleButton.addTarget(
+            self,
+            action: #selector(rateInfoAction),
+            for: .touchUpInside
+        )
+        rootView.networkFeeCell.valueTopButton.addTarget(
+            self,
+            action: #selector(changeNetworkFeeAction),
+            for: .touchUpInside
+        )
+        rootView.networkFeeCell.titleButton.addTarget(
+            self,
+            action: #selector(networkFeeInfoAction),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -162,6 +174,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveAmountInputPrice(receiveViewModel viewModel: String?) {
         rootView.receiveAmountInputView.bind(priceViewModel: viewModel)
+    }
+
+    func didReceiveDetailsState(isAvailable: Bool) {
+        rootView.detailsView.isHidden = !isAvailable
     }
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {
