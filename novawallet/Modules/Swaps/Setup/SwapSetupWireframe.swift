@@ -18,7 +18,11 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(selectTokenView.controller, animated: true)
+        let navigationController = NovaNavigationController(
+            rootViewController: selectTokenView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showReceiveTokenSelection(
@@ -32,6 +36,10 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(selectTokenView.controller, animated: true)
+        let navigationController = NovaNavigationController(
+            rootViewController: selectTokenView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

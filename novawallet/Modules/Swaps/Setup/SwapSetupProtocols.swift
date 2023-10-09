@@ -22,14 +22,17 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func swap()
     func updatePayAmount(_ amount: Decimal?)
     func updateReceiveAmount(_ amount: Decimal?)
+    func showFeeActions()
+    func showFeeInfo()
+    func showRateInfo()
 }
 
 protocol SwapSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func set(chainModel: ChainModel)
+    func update(receiveChainAsset: ChainAsset)
+    func update(payChainAsset: ChainAsset)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(for args: FeeArgs)
-    func performSubscriptions(chainAsset: ChainAsset)
+    func calculateFee(for quote: AssetConversion.Quote, slippage: SwapSlippage)
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {
@@ -56,11 +59,7 @@ enum SwapSetupError: Error {
     case price(Error, AssetModel.PriceId)
 }
 
-struct FeeArgs {
-    let assetIn: ChainAssetId
-    let amountIn: BigUInt
-    let assetOut: ChainAssetId
-    let amountOut: BigUInt
+struct SwapSlippage {
     let direction: AssetConversion.Direction
     let slippage: BigUInt
 }

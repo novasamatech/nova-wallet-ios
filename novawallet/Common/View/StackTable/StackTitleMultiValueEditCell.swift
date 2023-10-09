@@ -1,12 +1,12 @@
 import Foundation
 import UIKit
+import SoraUI
+import Kingfisher
 
-final class StackTitleMultiValueEditCell: RowView<GenericTitleValueView<IconDetailsView, GenericPairValueView<IconDetailsView, UILabel>>> {
-    var titleLabel: UILabel { rowContentView.titleView.detailsLabel }
-    var titleImageView: UIImageView { rowContentView.titleView.imageView }
-    var topValueImageView: UIImageView { rowContentView.valueView.fView.imageView }
-    var topValueLabel: UILabel { rowContentView.valueView.fView.detailsLabel }
-    var bottomValueLabel: UILabel { rowContentView.valueView.sView }
+final class StackTitleMultiValueEditCell: RowView<GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>> {
+    var titleButton: RoundedButton { rowContentView.titleView }
+    var valueTopButton: RoundedButton { rowContentView.valueView.fView }
+    var valueBottomLabel: UILabel { rowContentView.valueView.sView }
 
     convenience init() {
         self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
@@ -26,23 +26,29 @@ final class StackTitleMultiValueEditCell: RowView<GenericTitleValueView<IconDeta
     }
 
     private func configure() {
-        titleLabel.textColor = R.color.colorTextSecondary()
-        titleLabel.font = .regularFootnote
-        titleImageView.image = R.image.iconInfoFilledAccent()
+        titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        titleButton.imageWithTitleView?.titleFont = .regularFootnote
+        titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
+        titleButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 4
+        titleButton.imageWithTitleView?.layoutType = .horizontalLabelFirst
+        titleButton.applyIconStyle()
+        titleButton.contentInsets = .init(top: 8, left: 0, bottom: 8, right: 0)
 
-        rowContentView.titleView.mode = .detailsIcon
-        rowContentView.titleView.spacing = 4
+        let iconPencil = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)
+        valueTopButton.applyIconStyle()
+        valueTopButton.imageWithTitleView?.iconImage = iconPencil?.kf.resize(to: .init(width: 16, height: 16))
+        valueTopButton.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
+        valueTopButton.imageWithTitleView?.titleFont = .regularFootnote
+        valueTopButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 6
+        valueTopButton.contentInsets = .init(top: 8, left: 0, bottom: 8, right: 0)
 
-        topValueImageView.image = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)
-        topValueLabel.textColor = R.color.colorTextPrimary()
-        topValueLabel.font = .regularFootnote
-
-        bottomValueLabel.textColor = R.color.colorTextSecondary()
-        bottomValueLabel.font = .caption1
-        bottomValueLabel.textAlignment = .right
-        rowContentView.valueView.fView.iconWidth = 12
-        rowContentView.valueView.fView.spacing = 6
+        valueBottomLabel.textColor = R.color.colorTextSecondary()
+        valueBottomLabel.font = .caption1
+        valueBottomLabel.textAlignment = .right
         borderView.strokeColor = R.color.colorDivider()!
+
+        rowContentView.valueView.makeVertical()
+        hasInteractableContent = true
     }
 }
 
@@ -50,8 +56,9 @@ extension StackTitleMultiValueEditCell: StackTableViewCellProtocol {}
 
 extension StackTitleMultiValueEditCell {
     func bind(viewModel: BalanceViewModelProtocol) {
-        topValueLabel.text = viewModel.amount
-        bottomValueLabel.text = viewModel.price
+        valueTopButton.imageWithTitleView?.title = viewModel.amount
+        valueBottomLabel.text = viewModel.price
+        valueTopButton.invalidateLayout()
     }
 
     // TODO: Skeleton

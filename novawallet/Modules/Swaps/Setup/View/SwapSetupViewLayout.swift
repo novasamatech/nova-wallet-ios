@@ -99,7 +99,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             preferredLanguages: locale.rLanguages
         )
         rateCell.titleLabel.text = R.string.localizable.swapsSetupDetailsRate(preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
     }
 
     @objc

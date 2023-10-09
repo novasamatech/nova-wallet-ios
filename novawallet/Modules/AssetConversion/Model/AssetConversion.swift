@@ -35,7 +35,7 @@ enum AssetConversion {
         }
     }
 
-    struct CallArgs {
+    struct CallArgs: Hashable {
         let assetIn: ChainAssetId
         let amountIn: BigUInt
         let assetOut: ChainAssetId

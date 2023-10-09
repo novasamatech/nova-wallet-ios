@@ -209,24 +209,15 @@ final class SwapSetupPresenter {
     }
 
     private func estimateFee() {
-        guard
-            let payChainAsset = payChainAsset,
-            let receiveChainAsset = receiveChainAsset,
-            let payInPlank = absoluteValue(for: payAmountInput)?.toSubstrateAmount(
-                precision: Int16(payChainAsset.asset.precision)),
-            let receiveInPlank = receiveAmountInput?.toSubstrateAmount(precision: Int16(receiveChainAsset.asset.precision))
-        else {
+        guard let quote = quote else {
             return
         }
 
-        interactor.calculateFee(for: .init(
-            assetIn: payChainAsset.chainAssetId,
-            amountIn: payInPlank,
-            assetOut: receiveChainAsset.chainAssetId,
-            amountOut: receiveInPlank,
-            direction: .sell,
-            slippage: 1
-        ))
+        // TODO: Remove hardcode slippage and direction
+        interactor.calculateFee(
+            for: quote,
+            slippage: .init(direction: .sell, slippage: 1)
+        )
     }
 
     private func refreshQuote() {
@@ -263,17 +254,15 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         wireframe.showPayTokenSelection(from: view) { [weak self] chainAsset in
             self?.payChainAsset = chainAsset
             self?.providePayAssetViews()
-            self?.interactor.set(chainModel: chainAsset.chain)
-            self?.interactor.performSubscriptions(chainAsset: chainAsset)
+            self?.interactor.update(payChainAsset: chainAsset)
         }
     }
 
     func selectReceiveToken() {
         wireframe.showReceiveTokenSelection(from: view) { [weak self] chainAsset in
-            self?.interactor.set(chainModel: chainAsset.chain)
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
-            self?.interactor.performSubscriptions(chainAsset: chainAsset)
+            self?.interactor.update(receiveChainAsset: chainAsset)
         }
     }
 
@@ -307,6 +296,15 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveAssetViews()
         provideButtonState()
     }
+
+    // TODO: show editing fee
+    func showFeeActions() {}
+
+    // TODO: show fee information
+    func showFeeInfo() {}
+
+    // TODO: show rate information
+    func showRateInfo() {}
 
     // TODO: navigate to confirm screen
     func proceed() {}

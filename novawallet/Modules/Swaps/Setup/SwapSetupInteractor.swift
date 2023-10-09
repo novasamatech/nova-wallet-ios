@@ -110,7 +110,7 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
                     for: args,
                     codingFactory: runtimeCoderFactory
                 )
-                self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "", setupBy: builder)
+                self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "\(args.hashValue)", setupBy: builder)
             } catch {
                 DispatchQueue.main.async {
                     self.presenter?.didReceive(error: .fetchFeeFailed(error))
@@ -132,39 +132,46 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         quote(args: args)
     }
 
-    func set(chainModel: ChainModel) {
-        update(chainModel: chainModel)
+    func update(receiveChainAsset: ChainAsset) {
+        update(chainModel: receiveChainAsset.chain)
+        performPriceSubscription(chainAsset: receiveChainAsset)
     }
 
-    func calculateFee(for args: FeeArgs) {
+    func update(payChainAsset: ChainAsset) {
+        update(chainModel: payChainAsset.chain)
+        performPriceSubscription(chainAsset: payChainAsset)
+    }
+
+    func calculateFee(
+        for quote: AssetConversion.Quote,
+        slippage: SwapSlippage
+    ) {
         guard let receiver = accountId else {
             return
         }
-        fee(args: .init(
-            assetIn: args.assetIn,
-            amountIn: args.amountIn,
-            assetOut: args.assetOut,
-            amountOut: args.amountOut,
-            receiver: receiver,
-            direction: args.direction,
-            slippage: .percent(of: args.slippage)
-        ))
-    }
 
-    func performSubscriptions(chainAsset: ChainAsset) {
-        // TODO: Add subscription to balance
-        performPriceSubscription(chainAsset: chainAsset)
+        fee(args: .init(
+            assetIn: quote.assetIn,
+            amountIn: quote.amountIn,
+            assetOut: quote.assetOut,
+            amountOut: quote.amountOut,
+            receiver: receiver,
+            direction: slippage.direction,
+            slippage: .percent(of: slippage.slippage)
+        ))
     }
 }
 
 extension SwapSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
-        switch result {
-        case let .success(dispatchInfo):
-            let fee = BigUInt(dispatchInfo.fee)
-            presenter?.didReceive(fee: fee)
-        case let .failure(error):
-            presenter?.didReceive(error: .fetchFeeFailed(error))
+        DispatchQueue.main.async {
+            switch result {
+            case let .success(dispatchInfo):
+                let fee = BigUInt(dispatchInfo.fee)
+                self.presenter?.didReceive(fee: fee)
+            case let .failure(error):
+                self.presenter?.didReceive(error: .fetchFeeFailed(error))
+            }
         }
     }
 }

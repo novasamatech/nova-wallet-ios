@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct BigRational {
+struct BigRational: Hashable {
     let numerator: BigUInt
     let denominator: BigUInt
 

@@ -65,6 +65,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(receiveAmountChangeAction),
             for: .editingChanged
         )
+
+        rootView.rateCell.addTarget(self, action: #selector(rateInfoAction), for: .touchUpInside)
+        rootView.networkFeeCell.valueTopButton.addTarget(self, action: #selector(changeNetworkFeeAction), for: .touchUpInside)
+        rootView.networkFeeCell.titleButton.addTarget(self, action: #selector(networkFeeInfoAction), for: .touchUpInside)
     }
 
     private func setupLocalization() {
@@ -98,6 +102,18 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     @objc private func receiveAmountChangeAction() {
         let amount = rootView.receiveAmountInputView.textInputView.inputViewModel?.decimalAmount
         presenter.updateReceiveAmount(amount)
+    }
+
+    @objc private func changeNetworkFeeAction() {
+        presenter.showFeeActions()
+    }
+
+    @objc private func networkFeeInfoAction() {
+        presenter.showFeeInfo()
+    }
+
+    @objc private func rateInfoAction() {
+        presenter.showRateInfo()
     }
 }
 
