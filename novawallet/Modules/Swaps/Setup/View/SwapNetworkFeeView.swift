@@ -8,6 +8,7 @@ final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPair
     var valueTopButton: RoundedButton { valueView.fView }
     var valueBottomLabel: UILabel { valueView.sView }
     var skeletonView: SkrullableView?
+    private lazy var iconPencil = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)?.kf.resize(to: .init(width: 16, height: 16))
 
     private var isLoading: Bool = false
 
@@ -42,9 +43,8 @@ final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPair
         titleButton.applyIconStyle()
         titleButton.contentInsets = .init(top: 8, left: 0, bottom: 8, right: 0)
 
-        let iconPencil = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)
         valueTopButton.applyIconStyle()
-        valueTopButton.imageWithTitleView?.iconImage = iconPencil?.kf.resize(to: .init(width: 16, height: 16))
+        valueTopButton.imageWithTitleView?.iconImage = iconPencil
         valueTopButton.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
         valueTopButton.imageWithTitleView?.titleFont = .regularFootnote
         valueTopButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 6
@@ -59,13 +59,15 @@ final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPair
 }
 
 extension SwapNetworkFeeView {
-    func bind(viewModel: BalanceViewModelProtocol) {
-        valueTopButton.imageWithTitleView?.title = viewModel.amount
-        valueBottomLabel.text = viewModel.price
+    func bind(viewModel: SwapFeeViewModel) {
+        valueTopButton.imageWithTitleView?.iconImage = viewModel.isEditable ? iconPencil : nil
+        valueTopButton.isUserInteractionEnabled = viewModel.isEditable
+        valueTopButton.imageWithTitleView?.title = viewModel.balanceViewModel.amount
+        valueBottomLabel.text = viewModel.balanceViewModel.price
         valueTopButton.invalidateLayout()
     }
 
-    func bind(loadableViewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
+    func bind(loadableViewModel: LoadableViewModelState<SwapFeeViewModel>) {
         switch loadableViewModel {
         case let .cached(value), let .loaded(value):
             isLoading = false

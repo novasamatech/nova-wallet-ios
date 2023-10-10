@@ -11,7 +11,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmountInputPrice(receiveViewModel: String?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
-    func didReceiveNetworkFee(viewModel: LoadableViewModelState<BalanceViewModelProtocol>)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
 }
 
@@ -33,12 +33,12 @@ protocol SwapSetupInteractorInputProtocol: AnyObject {
     func update(receiveChainAsset: ChainAsset)
     func update(payChainAsset: ChainAsset)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(for quote: AssetConversion.Quote, slippage: SwapSlippage)
+    func calculateFee(for quote: AssetConversion.Quote, slippage: SwapSlippage) -> TransactionFeeId?
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {
-    func didReceive(quote: AssetConversion.Quote)
-    func didReceive(fee: BigUInt?)
+    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs)
+    func didReceive(fee: BigUInt?, transactionId: TransactionFeeId)
     func didReceive(error: SwapSetupError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
 }
@@ -46,17 +46,19 @@ protocol SwapSetupInteractorOutputProtocol: AnyObject {
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     )
 }
 
 enum SwapSetupError: Error {
-    case quote(Error)
-    case fetchFeeFailed(Error)
+    case quote(Error, AssetConversion.QuoteArgs)
+    case fetchFeeFailed(Error, TransactionFeeId)
     case price(Error, AssetModel.PriceId)
 }
 

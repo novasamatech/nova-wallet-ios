@@ -9,10 +9,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     ) {
         guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
             for: assetListObservable,
+            chainAsset: chainAsset,
             selectClosure: completionHandler
         ) else {
             return
@@ -27,10 +29,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     ) {
         guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectReceiveTokenView(
             for: assetListObservable,
+            chainAsset: chainAsset,
             selectClosure: completionHandler
         ) else {
             return

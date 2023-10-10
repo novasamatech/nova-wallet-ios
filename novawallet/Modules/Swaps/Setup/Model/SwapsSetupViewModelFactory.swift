@@ -36,7 +36,7 @@ protocol SwapsSetupViewModelFactoryProtocol {
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
         locale: Locale
-    ) -> BalanceViewModelProtocol
+    ) -> SwapFeeViewModel
 }
 
 final class SwapsSetupViewModelFactory {
@@ -241,15 +241,18 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
         locale: Locale
-    ) -> BalanceViewModelProtocol {
+    ) -> SwapFeeViewModel {
         let amountDecimal = Decimal.fromSubstrateAmount(
             amount,
             precision: assetDisplayInfo.assetPrecision
         ) ?? 0
-        return balanceViewModelFactoryFacade.balanceFromPrice(
+        let balanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
             targetAssetInfo: assetDisplayInfo,
             amount: amountDecimal,
             priceData: priceData
         ).value(for: locale)
+
+        // TODO: provide isEditable
+        return .init(isEditable: false, balanceViewModel: balanceViewModel)
     }
 }

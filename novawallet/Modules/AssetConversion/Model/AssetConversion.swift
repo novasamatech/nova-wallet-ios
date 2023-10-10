@@ -7,7 +7,7 @@ enum AssetConversion {
         case buy
     }
 
-    struct QuoteArgs {
+    struct QuoteArgs: Equatable {
         let assetIn: ChainAssetId
         let assetOut: ChainAssetId
         let amount: BigUInt
@@ -44,4 +44,8 @@ enum AssetConversion {
         let direction: Direction
         let slippage: BigRational
     }
+}
+
+extension AssetConversion.CallArgs {
+    var identifier: String { "\(hashValue)" }
 }

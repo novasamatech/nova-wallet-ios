@@ -60,7 +60,7 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
         clear(cancellable: &quoteCall)
 
         let wrapper = assetConversionOperationFactory.quote(for: args)
-        wrapper.targetOperation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self, args] in
             DispatchQueue.main.async {
                 guard self?.quoteCall === wrapper else {
                     return
@@ -68,9 +68,9 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
                 do {
                     let result = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                    self?.presenter?.didReceive(quote: result)
+                    self?.presenter?.didReceive(quote: result, for: args)
                 } catch {
-                    self?.presenter?.didReceive(error: .quote(error))
+                    self?.presenter?.didReceive(error: .quote(error, args))
                 }
             }
         }
@@ -110,10 +110,14 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
                     for: args,
                     codingFactory: runtimeCoderFactory
                 )
-                self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: "\(args.hashValue)", setupBy: builder)
+                self.feeProxy.estimateFee(
+                    using: extrinsicService,
+                    reuseIdentifier: args.identifier,
+                    setupBy: builder
+                )
             } catch {
                 DispatchQueue.main.async {
-                    self.presenter?.didReceive(error: .fetchFeeFailed(error))
+                    self.presenter?.didReceive(error: .fetchFeeFailed(error, args.identifier))
                 }
             }
         }
@@ -142,15 +146,16 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         performPriceSubscription(chainAsset: payChainAsset)
     }
 
+    @discardableResult
     func calculateFee(
         for quote: AssetConversion.Quote,
         slippage: SwapSlippage
-    ) {
+    ) -> TransactionFeeId? {
         guard let receiver = accountId else {
-            return
+            return nil
         }
 
-        fee(args: .init(
+        let args = AssetConversion.CallArgs(
             assetIn: quote.assetIn,
             amountIn: quote.amountIn,
             assetOut: quote.assetOut,
@@ -158,19 +163,23 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
             receiver: receiver,
             direction: slippage.direction,
             slippage: .percent(of: slippage.slippage)
-        ))
+        )
+
+        fee(args: args)
+
+        return args.identifier
     }
 }
 
 extension SwapSetupInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for transactionId: TransactionFeeId) {
         DispatchQueue.main.async {
             switch result {
             case let .success(dispatchInfo):
                 let fee = BigUInt(dispatchInfo.fee)
-                self.presenter?.didReceive(fee: fee)
+                self.presenter?.didReceive(fee: fee, transactionId: transactionId)
             case let .failure(error):
-                self.presenter?.didReceive(error: .fetchFeeFailed(error))
+                self.presenter?.didReceive(error: .fetchFeeFailed(error, transactionId))
             }
         }
     }

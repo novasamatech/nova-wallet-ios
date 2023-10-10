@@ -15,9 +15,15 @@ final class SwapSetupPresenter {
     private var receiveChainAsset: ChainAsset?
     private var payAmountInput: AmountInputResult?
     private var receiveAmountInput: Decimal?
-    private var direction: AssetConversion.Direction?
     private var fee: BigUInt?
     private var quote: AssetConversion.Quote?
+    private var quoteArgs: AssetConversion.QuoteArgs? {
+        didSet {
+            provideDetailsViewModel(isAvailable: quoteArgs != nil)
+        }
+    }
+
+    private var feeIdentifier: String?
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -29,21 +35,6 @@ final class SwapSetupPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
-    }
-
-    private func quote(
-        amount: BigUInt,
-        assetIn: ChainAssetId,
-        assetOut: ChainAssetId,
-        direction: AssetConversion.Direction
-    ) {
-        self.direction = direction
-        interactor.calculateQuote(for: .init(
-            assetIn: assetIn,
-            assetOut: assetOut,
-            amount: amount,
-            direction: direction
-        ))
     }
 
     private func provideButtonState() {
@@ -218,43 +209,49 @@ final class SwapSetupPresenter {
         }
 
         // TODO: Remove hardcode slippage and direction
-        interactor.calculateFee(
+        feeIdentifier = interactor.calculateFee(
             for: quote,
             slippage: .init(direction: .sell, slippage: 1)
         )
     }
 
-    private func refreshQuote() {
+    private func refreshQuote(direction: AssetConversion.Direction) {
         guard
             let payChainAsset = payChainAsset,
             let receiveChainAsset = receiveChainAsset else {
             return
         }
-        var isCalculating: Bool = false
 
+        quote = nil
         switch direction {
         case .buy:
             if let receiveInPlank = receiveAmountInput?.toSubstrateAmount(precision: Int16(receiveChainAsset.asset.precision)), receiveInPlank > 0 {
-                quote(
-                    amount: receiveInPlank,
+                let quoteArgs = AssetConversion.QuoteArgs(
                     assetIn: payChainAsset.chainAssetId,
                     assetOut: receiveChainAsset.chainAssetId,
-                    direction: .buy
+                    amount: receiveInPlank,
+                    direction: direction
                 )
-                isCalculating = true
+                self.quoteArgs = quoteArgs
+                interactor.calculateQuote(for: quoteArgs)
+            } else {
+                quoteArgs = nil
             }
             payAmountInput = nil
             providePayAmountInputViewModel()
         case .sell:
             if let payInPlank = absoluteValue(for: payAmountInput)?.toSubstrateAmount(
                 precision: Int16(payChainAsset.asset.precision)), payInPlank > 0 {
-                quote(
-                    amount: payInPlank,
+                let quoteArgs = AssetConversion.QuoteArgs(
                     assetIn: payChainAsset.chainAssetId,
                     assetOut: receiveChainAsset.chainAssetId,
-                    direction: .sell
+                    amount: payInPlank,
+                    direction: direction
                 )
-                isCalculating = true
+                self.quoteArgs = quoteArgs
+                interactor.calculateQuote(for: quoteArgs)
+            } else {
+                quoteArgs = nil
             }
 
             receiveAmountInput = nil
@@ -262,7 +259,7 @@ final class SwapSetupPresenter {
         default:
             break
         }
-        provideDetailsViewModel(isAvailable: isCalculating)
+
         provideRateViewModel()
         provideFeeViewModel()
     }
@@ -278,33 +275,31 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectPayToken() {
-        wireframe.showPayTokenSelection(from: view) { [weak self] chainAsset in
+        wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
             self?.payChainAsset = chainAsset
             self?.providePayAssetViews()
-            self?.refreshQuote()
+            self?.refreshQuote(direction: .sell)
             self?.interactor.update(payChainAsset: chainAsset)
         }
     }
 
     func selectReceiveToken() {
-        wireframe.showReceiveTokenSelection(from: view) { [weak self] chainAsset in
+        wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
-            self?.refreshQuote()
+            self?.refreshQuote(direction: .buy)
             self?.interactor.update(receiveChainAsset: chainAsset)
         }
     }
 
     func updatePayAmount(_ amount: Decimal?) {
         payAmountInput = amount.map { .absolute($0) }
-        direction = .sell
-        refreshQuote()
+        refreshQuote(direction: .sell)
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
         receiveAmountInput = amount
-        direction = .buy
-        refreshQuote()
+        refreshQuote(direction: .buy)
     }
 
     func swap() {
@@ -312,8 +307,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         providePayAssetViews()
         provideReceiveAssetViews()
         provideButtonState()
-        quote = nil
-        refreshQuote()
+        refreshQuote(direction: quoteArgs?.direction ?? .sell)
     }
 
     // TODO: show editing fee
@@ -332,11 +326,17 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     func didReceive(error: SwapSetupError) {
         switch error {
-        case .quote:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshQuote()
+        case let .quote(_, args):
+            guard args == quoteArgs else {
+                return
             }
-        case .fetchFeeFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshQuote(direction: args.direction)
+            }
+        case let .fetchFeeFailed(_, id):
+            guard id == feeIdentifier else {
+                return
+            }
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
@@ -347,30 +347,30 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
     }
 
-    func didReceive(quote: AssetConversion.Quote) {
-        guard
-            let payChainAsset = payChainAsset,
-            let receiveChainAsset = receiveChainAsset,
-            quote.assetIn == payChainAsset.chainAssetId,
-            quote.assetOut == receiveChainAsset.chainAssetId else {
+    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
+        guard quoteArgs == self.quoteArgs else {
             return
         }
 
         self.quote = quote
 
-        switch direction {
+        switch quoteArgs.direction {
         case .buy:
-            let payAmount = Decimal.fromSubstrateAmount(
-                quote.amountIn,
-                precision: Int16(payChainAsset.asset.precision)
-            ) ?? 0
-            payAmountInput = .absolute(payAmount)
+            let payAmount = payChainAsset.map {
+                Decimal.fromSubstrateAmount(
+                    quote.amountIn,
+                    precision: Int16($0.asset.precision)
+                ) ?? 0
+            }
+            payAmountInput = payAmount.map { .absolute($0) }
             providePayAmountInputViewModel()
         case .sell:
-            receiveAmountInput = Decimal.fromSubstrateAmount(
-                quote.amountOut,
-                precision: Int16(receiveChainAsset.asset.precision)
-            ) ?? 0
+            receiveAmountInput = receiveChainAsset.map {
+                Decimal.fromSubstrateAmount(
+                    quote.amountOut,
+                    precision: Int16($0.asset.precision)
+                ) ?? 0
+            }
             provideReceiveAmountInputViewModel()
         default:
             break
@@ -380,7 +380,10 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         estimateFee()
     }
 
-    func didReceive(fee: BigUInt?) {
+    func didReceive(fee: BigUInt?, transactionId: TransactionFeeId) {
+        guard feeIdentifier == transactionId else {
+            return
+        }
         self.fee = fee
         provideFeeViewModel()
     }

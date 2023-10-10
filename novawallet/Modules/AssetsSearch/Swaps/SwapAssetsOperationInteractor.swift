@@ -87,7 +87,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             guard let availableDirections = self?.availableDirections else {
                 return false
             }
-            return availableDirections[chainAsset.chainAssetId]?.isEmpty == false
+            return availableDirections.contains(where: { $0.value.contains(chainAsset.chainAssetId) })
         }
 
         builder = .init(
