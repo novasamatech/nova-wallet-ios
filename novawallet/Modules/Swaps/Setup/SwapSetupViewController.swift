@@ -53,19 +53,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(swapAction),
             for: .touchUpInside
         )
-
         rootView.payAmountInputView.textInputView.addTarget(
             self,
             action: #selector(payAmountChangeAction),
             for: .editingChanged
         )
-
         rootView.receiveAmountInputView.textInputView.addTarget(
             self,
             action: #selector(receiveAmountChangeAction),
             for: .editingChanged
         )
-
         rootView.rateCell.titleButton.addTarget(
             self,
             action: #selector(rateInfoAction),
@@ -86,6 +83,18 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string.localizable.walletAssetsSwap(preferredLanguages: selectedLocale.rLanguages)
         rootView.setup(locale: selectedLocale)
+        setupAccessoryView()
+    }
+
+    private func setupAccessoryView() {
+        let accessoryView =
+            UIFactory.default.createDoneAccessoryView(
+                target: self,
+                selector: #selector(doneAction),
+                locale: selectedLocale
+            )
+        rootView.payAmountInputView.textInputView.textField.inputAccessoryView = accessoryView
+        rootView.receiveAmountInputView.textInputView.textField.inputAccessoryView = accessoryView
     }
 
     @objc private func selectPayTokenAction() {
@@ -126,6 +135,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func rateInfoAction() {
         presenter.showRateInfo()
+    }
+
+    @objc private func doneAction() {
+        view.endEditing(true)
     }
 }
 

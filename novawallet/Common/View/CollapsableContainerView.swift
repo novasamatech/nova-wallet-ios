@@ -67,10 +67,6 @@ class CollapsableContainerView: UIView {
     }
 
     func setExpanded(_ value: Bool, animated: Bool) {
-        guard value != expanded else {
-            return
-        }
-
         if value {
             titleControl.activate(animated: animated)
         } else {
@@ -89,8 +85,6 @@ class CollapsableContainerView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(backgroundView)
-
         addSubview(titleControl)
         titleControl.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -108,8 +102,10 @@ class CollapsableContainerView: UIView {
             make.edges.equalToSuperview()
         }
 
+        contentView.addSubview(backgroundView)
+
         backgroundView.snp.makeConstraints { make in
-            make.edges.equalTo(networkInfoContainer.snp.edges)
+            make.edges.equalToSuperview()
         }
 
         contentView.addSubview(stackView)
@@ -131,18 +127,18 @@ class CollapsableContainerView: UIView {
     private func applyExpansion(animated: Bool) {
         if animated {
             expansionAnimator.animate(block: { [weak self] in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     return
                 }
 
-                strongSelf.applyExpansionState()
+                self.applyExpansionState()
 
                 let animation = CABasicAnimation()
-                animation.toValue = strongSelf.backgroundView.contentView?.shapePath
-                strongSelf.backgroundView.contentView?.layer
+                animation.toValue = self.backgroundView.contentView?.shapePath
+                self.backgroundView.contentView?.layer
                     .add(animation, forKey: #keyPath(CAShapeLayer.path))
 
-                strongSelf.delegate?.animateAlongsideWithInfo(sender: strongSelf)
+                self.delegate?.animateAlongsideWithInfo(sender: self)
             }, completionBlock: nil)
         } else {
             applyExpansionState()
@@ -153,19 +149,17 @@ class CollapsableContainerView: UIView {
     private func applyExpansionState() {
         if expanded {
             contentView.snp.updateConstraints { make in
-                make.top.equalToSuperview()
+                make.top.bottom.equalToSuperview().offset(0)
             }
-
-            networkInfoContainer.alpha = 1.0
+            layoutIfNeeded()
             delegate?.didChangeExpansion(isExpanded: true, sender: self)
         } else {
             contentView.snp.updateConstraints { make in
-                make.top.equalToSuperview().offset(
+                make.top.bottom.equalToSuperview().offset(
                     -CGFloat(stackView.arrangedSubviews.count) * Constants.rowHeight - Constants.stackViewBottomInset
                 )
             }
-
-            networkInfoContainer.alpha = 0.0
+            layoutIfNeeded()
             delegate?.didChangeExpansion(isExpanded: false, sender: self)
         }
     }

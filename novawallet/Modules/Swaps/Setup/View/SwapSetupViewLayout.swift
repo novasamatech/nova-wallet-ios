@@ -27,7 +27,9 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
     }
 
-    let detailsView = SwapDetailsView()
+    let detailsView: SwapDetailsView = .create {
+        $0.setExpanded(false, animated: false)
+    }
 
     var rateCell: SwapRateView {
         detailsView.rateCell
@@ -87,7 +89,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         )
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(preferredLanguages: locale.rLanguages)
         networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
-        rateCell.setNeedsLayout()
-        detailsView.setNeedsLayout()
+        rateCell.titleButton.invalidateLayout()
+        networkFeeCell.titleButton.invalidateLayout()
     }
 }

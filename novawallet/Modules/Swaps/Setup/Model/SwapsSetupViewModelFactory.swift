@@ -253,6 +253,6 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         ).value(for: locale)
 
         // TODO: provide isEditable
-        return .init(isEditable: false, balanceViewModel: balanceViewModel)
+        return .init(isEditable: true, balanceViewModel: balanceViewModel)
     }
 }

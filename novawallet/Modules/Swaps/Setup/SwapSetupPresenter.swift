@@ -278,6 +278,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
             self?.payChainAsset = chainAsset
             self?.providePayAssetViews()
+            self?.provideButtonState()
             self?.refreshQuote(direction: .sell)
             self?.interactor.update(payChainAsset: chainAsset)
         }
@@ -287,6 +288,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
+            self?.provideButtonState()
             self?.refreshQuote(direction: .buy)
             self?.interactor.update(receiveChainAsset: chainAsset)
         }
@@ -295,11 +297,13 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func updatePayAmount(_ amount: Decimal?) {
         payAmountInput = amount.map { .absolute($0) }
         refreshQuote(direction: .sell)
+        provideButtonState()
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
         receiveAmountInput = amount
         refreshQuote(direction: .buy)
+        provideButtonState()
     }
 
     func swap() {
@@ -378,6 +382,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 
         provideRateViewModel()
         estimateFee()
+        provideButtonState()
     }
 
     func didReceive(fee: BigUInt?, transactionId: TransactionFeeId) {
@@ -386,6 +391,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
         self.fee = fee
         provideFeeViewModel()
+        provideButtonState()
     }
 
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
