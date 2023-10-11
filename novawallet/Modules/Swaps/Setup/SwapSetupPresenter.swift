@@ -24,6 +24,7 @@ final class SwapSetupPresenter {
     }
 
     private var feeIdentifier: String?
+    private var accountId: AccountId?
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -204,15 +205,27 @@ final class SwapSetupPresenter {
     }
 
     private func estimateFee() {
-        guard let quote = quote else {
+        guard let quote = quote, let accountId = accountId else {
             return
         }
 
-        // TODO: Remove hardcode slippage and direction
-        feeIdentifier = interactor.calculateFee(
-            for: quote,
-            slippage: .init(direction: .sell, slippage: 1)
+        // TODO: Provide slippage and direction
+        let args = AssetConversion.CallArgs(
+            assetIn: quote.assetIn,
+            amountIn: quote.amountIn,
+            assetOut: quote.assetOut,
+            amountOut: quote.amountOut,
+            receiver: accountId,
+            direction: .sell,
+            slippage: .percent(of: 1)
         )
+
+        guard args.identifier != feeIdentifier else {
+            return
+        }
+
+        feeIdentifier = args.identifier
+        interactor.calculateFee(args: args)
     }
 
     private func refreshQuote(direction: AssetConversion.Direction) {
@@ -402,6 +415,10 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             receiveAssetPriceData = price
             provideReceiveInputPriceViewModel()
         }
+    }
+
+    func didReceive(payAccountId: AccountId?) {
+        accountId = payAccountId
     }
 }
 

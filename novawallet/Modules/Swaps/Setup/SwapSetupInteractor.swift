@@ -144,30 +144,16 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(payChainAsset: ChainAsset) {
         update(chainModel: payChainAsset.chain)
         performPriceSubscription(chainAsset: payChainAsset)
+
+        let metaAccount = selectedAccount.fetchMetaChainAccount(for: payChainAsset.chain.accountRequest())
+        let accountId = metaAccount?.chainAccount.accountId
+        presenter?.didReceive(payAccountId: accountId)
     }
 
-    @discardableResult
     func calculateFee(
-        for quote: AssetConversion.Quote,
-        slippage: SwapSlippage
-    ) -> TransactionFeeId? {
-        guard let receiver = accountId else {
-            return nil
-        }
-
-        let args = AssetConversion.CallArgs(
-            assetIn: quote.assetIn,
-            amountIn: quote.amountIn,
-            assetOut: quote.assetOut,
-            amountOut: quote.amountOut,
-            receiver: receiver,
-            direction: slippage.direction,
-            slippage: .percent(of: slippage.slippage)
-        )
-
+        args: AssetConversion.CallArgs
+    ) {
         fee(args: args)
-
-        return args.identifier
     }
 }
 

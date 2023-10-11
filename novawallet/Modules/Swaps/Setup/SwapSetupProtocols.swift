@@ -33,7 +33,7 @@ protocol SwapSetupInteractorInputProtocol: AnyObject {
     func update(receiveChainAsset: ChainAsset)
     func update(payChainAsset: ChainAsset)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(for quote: AssetConversion.Quote, slippage: SwapSlippage) -> TransactionFeeId?
+    func calculateFee(args: AssetConversion.CallArgs) -> Void
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {
@@ -41,6 +41,7 @@ protocol SwapSetupInteractorOutputProtocol: AnyObject {
     func didReceive(fee: BigUInt?, transactionId: TransactionFeeId)
     func didReceive(error: SwapSetupError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
+    func didReceive(payAccountId: AccountId?)
 }
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {
@@ -60,9 +61,4 @@ enum SwapSetupError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
     case fetchFeeFailed(Error, TransactionFeeId)
     case price(Error, AssetModel.PriceId)
-}
-
-struct SwapSlippage {
-    let direction: AssetConversion.Direction
-    let slippage: BigUInt
 }
