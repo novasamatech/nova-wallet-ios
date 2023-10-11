@@ -100,6 +100,7 @@ final class SwapAssetControl: BackgroundedContentControl {
         }
 
         contentView?.addSubview(assetView)
+        changesContentOpacityWhenHighlighted = true
     }
 
     private func lazyIconViewOrCreateIfNeeded() -> AssetIconView {

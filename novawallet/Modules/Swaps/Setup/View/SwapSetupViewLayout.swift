@@ -77,8 +77,8 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         addSubview(switchButton)
         switchButton.snp.makeConstraints {
             $0.height.equalTo(switchButton.snp.width)
-            $0.top.equalTo(payAmountInputView.snp.bottom).offset(9)
-            $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-9)
+            $0.top.equalTo(payAmountInputView.snp.bottom).offset(4)
+            $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-4)
             $0.centerX.equalTo(payAmountInputView.snp.centerX)
         }
     }
@@ -87,8 +87,10 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
             preferredLanguages: locale.rLanguages
         )
-        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
+        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
+            preferredLanguages: locale.rLanguages)
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(
+            preferredLanguages: locale.rLanguages)
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
     }
