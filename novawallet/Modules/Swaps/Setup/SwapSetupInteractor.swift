@@ -142,25 +142,32 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         quote(args: args)
     }
 
-    func update(receiveChainAsset: ChainAsset) {
+    func update(receiveChainAsset: ChainAsset?) {
         clear(streamableProvider: &receivePriceProvider)
-        receivePriceProvider = priceSubscription(chainAsset: receiveChainAsset)
+        if let receiveChainAsset = receiveChainAsset {
+            receivePriceProvider = priceSubscription(chainAsset: receiveChainAsset)
+        }
     }
 
-    func update(payChainAsset: ChainAsset) {
+    func update(payChainAsset: ChainAsset?) {
         clear(streamableProvider: &payPriceProvider)
-        payPriceProvider = priceSubscription(chainAsset: payChainAsset)
-
         clear(streamableProvider: &balanceProvider)
-        balanceProvider = assetBalanceSubscription(chainAsset: payChainAsset)
 
-        if let chainAccount = chainAccountResponse(for: payChainAsset) {
-            extrinsicService = extrinsicServiceFactory.createService(
-                account: chainAccount,
-                chain: payChainAsset.chain
-            )
-            presenter?.didReceive(payAccountId: chainAccount.accountId)
+        if let payChainAsset = payChainAsset {
+            payPriceProvider = priceSubscription(chainAsset: payChainAsset)
+            balanceProvider = assetBalanceSubscription(chainAsset: payChainAsset)
+
+            if let chainAccount = chainAccountResponse(for: payChainAsset) {
+                extrinsicService = extrinsicServiceFactory.createService(
+                    account: chainAccount,
+                    chain: payChainAsset.chain
+                )
+                presenter?.didReceive(payAccountId: chainAccount.accountId)
+            } else {
+                presenter?.didReceive(payAccountId: nil)
+            }
         } else {
+            extrinsicService = nil
             presenter?.didReceive(payAccountId: nil)
         }
     }

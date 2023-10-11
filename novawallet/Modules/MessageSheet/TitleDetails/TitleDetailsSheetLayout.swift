@@ -89,15 +89,10 @@ extension TitleDetailsSheetViewLayout {
         let titleHeight = height(for: titleLabel, with: model.title.value(for: locale))
         let messageHeight = height(for: detailsLabel, with: model.message.value(for: locale))
         let topOffset: CGFloat = 10
-        let buttonHeight: CGFloat
-        if model.mainAction != nil || model.secondaryAction != nil {
-            let bottomOffset: CGFloat = 16
-            buttonHeight = UIConstants.actionHeight + bottomOffset
-        } else {
-            buttonHeight = 0
-        }
-
-        return topOffset + titleHeight + 10 + messageHeight + buttonHeight
+        let bottomOffset: CGFloat = 16
+        let hasAnyActionButton = model.mainAction != nil || model.secondaryAction != nil
+        let buttonHeight: CGFloat = hasAnyActionButton ? UIConstants.actionHeight : 0
+        return topOffset + titleHeight + 10 + messageHeight + buttonHeight + bottomOffset
     }
 
     private func height(for label: UILabel, with text: String) -> CGFloat {

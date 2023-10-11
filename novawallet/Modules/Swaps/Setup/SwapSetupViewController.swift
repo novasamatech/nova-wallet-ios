@@ -117,6 +117,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc private func swapAction() {
+        view.endEditing(true)
         presenter.swap()
     }
 
