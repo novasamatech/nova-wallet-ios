@@ -83,3 +83,32 @@ final class TitleDetailsSheetViewLayout: UIView {
         }
     }
 }
+
+extension TitleDetailsSheetViewLayout {
+    func contentHeight(model: TitleDetailsSheetViewModel, locale: Locale) -> CGFloat {
+        let titleHeight = height(for: titleLabel, with: model.title.value(for: locale))
+        let messageHeight = height(for: detailsLabel, with: model.message.value(for: locale))
+        let topOffset: CGFloat = 10
+        let buttonHeight: CGFloat
+        if model.mainAction != nil || model.secondaryAction != nil {
+            let bottomOffset: CGFloat = 16
+            buttonHeight = UIConstants.actionHeight + bottomOffset
+        } else {
+            buttonHeight = 0
+        }
+
+        return topOffset + titleHeight + 10 + messageHeight + buttonHeight
+    }
+
+    private func height(for label: UILabel, with text: String) -> CGFloat {
+        let width = UIScreen.main.bounds.width - UIConstants.horizontalInset * 2
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = text.boundingRect(
+            with: constraintRect,
+            options: .usesLineFragmentOrigin,
+            attributes: [.font: label.font],
+            context: nil
+        )
+        return boundingBox.height
+    }
+}

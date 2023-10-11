@@ -2,11 +2,7 @@ import UIKit
 import SoraUI
 
 final class SwapSetupViewLayout: ScrollableContainerLayoutView {
-    let payAmountView: TitleHorizontalMultiValueView = .create {
-        $0.titleView.apply(style: .footnoteSecondary)
-        $0.detailsTitleLabel.apply(style: .footnoteAccentText)
-        $0.detailsValueLabel.apply(style: .footnotePrimary)
-    }
+    let payAmountView = SwapSetupTitleView(frame: .zero)
 
     let payAmountInputView = SwapAmountInputView()
 

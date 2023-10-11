@@ -73,6 +73,7 @@ struct SwapSetupViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
             selectedAccount: selectedAccount,
             operationQueue: operationQueue

@@ -38,6 +38,11 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(selectPayTokenAction),
             for: .touchUpInside
         )
+        rootView.payAmountView.button.addTarget(
+            self,
+            action: #selector(payMaxAction),
+            for: .touchUpInside
+        )
         rootView.receiveAmountInputView.assetControl.addTarget(
             self,
             action: #selector(selectReceiveTokenAction),
@@ -135,6 +140,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func rateInfoAction() {
         presenter.showRateInfo()
+    }
+
+    @objc private func payMaxAction() {
+        presenter.selectMaxPayAmount()
     }
 
     @objc private func doneAction() {

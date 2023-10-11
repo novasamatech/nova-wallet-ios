@@ -327,14 +327,51 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         refreshQuote(direction: quoteArgs?.direction ?? .sell)
     }
 
+    func selectMaxPayAmount() {
+        payAmountInput = .rate(1)
+        providePayAssetViews()
+        refreshQuote(direction: .sell)
+        provideButtonState()
+    }
+
     // TODO: show editing fee
     func showFeeActions() {}
 
-    // TODO: show fee information
-    func showFeeInfo() {}
+    func showFeeInfo() {
+        let title = LocalizableResource {
+            R.string.localizable.commonNetwork(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        let details = LocalizableResource {
+            R.string.localizable.swapsNetworkFeeDescription(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        wireframe.showInfo(
+            from: view,
+            title: title,
+            details: details
+        )
+    }
 
-    // TODO: show rate information
-    func showRateInfo() {}
+    func showRateInfo() {
+        let title = LocalizableResource {
+            R.string.localizable.swapsSetupDetailsRate(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        let details = LocalizableResource {
+            R.string.localizable.swapsRateDescription(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        wireframe.showInfo(
+            from: view,
+            title: title,
+            details: details
+        )
+    }
 
     // TODO: navigate to confirm screen
     func proceed() {}
@@ -360,6 +397,15 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         case let .price(_, priceId):
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
+            }
+        case let .assetBalance(_, chainAssetId, accountId):
+            guard accountId == self.accountId,
+                  let payChainAsset = payChainAsset,
+                  payChainAsset.chainAssetId == chainAssetId else {
+                return
+            }
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.update(payChainAsset: payChainAsset)
             }
         }
     }
@@ -419,6 +465,14 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 
     func didReceive(payAccountId: AccountId?) {
         accountId = payAccountId
+    }
+
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId) {
+        guard accountId == self.accountId, payChainAsset?.chainAssetId == chainAsset else {
+            return
+        }
+        assetBalance = balance
+        providePayTitle()
     }
 }
 
