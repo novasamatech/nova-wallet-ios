@@ -42,7 +42,7 @@ final class SwapSetupPresenter {
         let buttonState = viewModelFactory.buttonState(
             assetIn: payChainAsset?.chainAssetId,
             assetOut: receiveChainAsset?.chainAssetId,
-            amountIn: absoluteValue(for: payAmountInput),
+            amountIn: getPayAmount(for: payAmountInput),
             amountOut: receiveAmountInput
         )
         view?.didReceiveButtonState(
@@ -75,7 +75,7 @@ final class SwapSetupPresenter {
         }
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
-            amount: absoluteValue(for: payAmountInput),
+            amount: getPayAmount(for: payAmountInput),
             priceData: payAssetPriceData,
             locale: selectedLocale
         )
@@ -115,7 +115,7 @@ final class SwapSetupPresenter {
         }
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: payChainAsset,
-            amount: absoluteValue(for: payAmountInput),
+            amount: getPayAmount(for: payAmountInput),
             locale: selectedLocale
         )
         view?.didReceiveAmount(payInputViewModel: amountInputViewModel)
@@ -133,21 +133,29 @@ final class SwapSetupPresenter {
         view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
 
-    private func absoluteValue(for input: AmountInputResult?) -> Decimal? {
+    private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
         guard
             let input = input,
             let payChainAsset = payChainAsset else {
             return nil
         }
-        guard let transferrableBalanceDecimal =
-            Decimal.fromSubstrateAmount(
-                assetBalance?.transferable ?? 0,
-                precision: payChainAsset.asset.displayInfo.assetPrecision
-            ) else {
-            return nil
+        let includedFee: BigUInt
+        switch input {
+        case .rate:
+            includedFee = fee ?? 0
+        case .absolute:
+            includedFee = 0
         }
 
-        return input.absoluteValue(from: transferrableBalanceDecimal)
+        let transferable = assetBalance?.transferable ?? 0
+        let balance = max(transferable - includedFee, 0)
+        guard let balanceDecimal = Decimal.fromSubstrateAmount(
+            balance,
+            precision: payChainAsset.asset.displayInfo.assetPrecision
+        ) else {
+            return nil
+        }
+        return input.absoluteValue(from: balanceDecimal)
     }
 
     private func providePayAssetViews() {
@@ -258,7 +266,7 @@ final class SwapSetupPresenter {
                 }
             }
         case .sell:
-            if let payInPlank = absoluteValue(for: payAmountInput)?.toSubstrateAmount(
+            if let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
                 precision: Int16(payChainAsset.asset.precision)), payInPlank > 0 {
                 let quoteArgs = AssetConversion.QuoteArgs(
                     assetIn: payChainAsset.chainAssetId,
