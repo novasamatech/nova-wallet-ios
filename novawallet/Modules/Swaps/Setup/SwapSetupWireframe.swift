@@ -46,4 +46,20 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showSettings(
+        from view: ControllerBackedProtocol?,
+        completionHandler: @escaping (BigRational) -> Void
+    ) {
+        guard let settingsView = SwapSlippageViewFactory.createView(
+            completionHandler: completionHandler
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            settingsView.controller,
+            animated: true
+        )
+    }
 }

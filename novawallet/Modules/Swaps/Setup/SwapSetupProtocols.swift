@@ -26,6 +26,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showFeeActions()
     func showFeeInfo()
     func showRateInfo()
+    func showSettings()
 }
 
 protocol SwapSetupInteractorInputProtocol: AnyObject {
@@ -54,6 +55,10 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
+    )
+    func showSettings(
+        from view: ControllerBackedProtocol?,
+        completionHandler: @escaping (BigRational) -> Void
     )
 }
 

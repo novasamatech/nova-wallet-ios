@@ -29,6 +29,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
         setupHandlers()
         setupLocalization()
+        setupNavigationItem()
         presenter.setup()
     }
 
@@ -97,6 +98,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         rootView.receiveAmountInputView.textInputView.textField.inputAccessoryView = accessoryView
     }
 
+    private func setupNavigationItem() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: R.image.iconAssetsSettings()?.withRenderingMode(.alwaysTemplate),
+            style: .plain,
+            target: self,
+            action: #selector(settingsAction)
+        )
+        navigationItem.rightBarButtonItem?.tintColor = R.color.colorIconPrimary()
+    }
+
     @objc private func selectPayTokenAction() {
         rootView.receiveAmountInputView.endEditing(true)
         presenter.selectPayToken()
@@ -139,6 +150,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func doneAction() {
         view.endEditing(true)
+    }
+
+    @objc private func settingsAction() {
+        presenter.showSettings()
     }
 }
 

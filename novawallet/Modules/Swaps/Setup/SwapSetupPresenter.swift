@@ -23,6 +23,8 @@ final class SwapSetupPresenter {
         }
     }
 
+    private var slippage: (value: BigRational, direction: AssetConversion.Direction)?
+
     private var feeIdentifier: String?
     private var accountId: AccountId?
 
@@ -205,19 +207,20 @@ final class SwapSetupPresenter {
     }
 
     private func estimateFee() {
-        guard let quote = quote, let accountId = accountId else {
+        guard let quote = quote,
+              let accountId = accountId,
+              let slippage = slippage else {
             return
         }
 
-        // TODO: Provide slippage and direction
         let args = AssetConversion.CallArgs(
             assetIn: quote.assetIn,
             amountIn: quote.amountIn,
             assetOut: quote.assetOut,
             amountOut: quote.amountOut,
             receiver: accountId,
-            direction: .sell,
-            slippage: .percent(of: 1)
+            direction: slippage.direction,
+            slippage: slippage.value
         )
 
         guard args.identifier != feeIdentifier else {
@@ -284,6 +287,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveAssetViews()
         provideDetailsViewModel(isAvailable: false)
         provideButtonState()
+        // TODO: get from settings
+        slippage = (value: .percent(of: 1), direction: .sell)
         interactor.setup()
     }
 
@@ -338,6 +343,18 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     // TODO: navigate to confirm screen
     func proceed() {}
+
+    func showSettings() {
+        wireframe.showSettings(
+            from: view
+        ) { [weak self, payChainAsset] slippageValue in
+            guard payChainAsset == self?.payChainAsset else {
+                return
+            }
+            self?.slippage = (value: slippageValue, direction: .sell)
+            self?.estimateFee()
+        }
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
