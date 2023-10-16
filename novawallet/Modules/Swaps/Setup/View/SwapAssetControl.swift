@@ -14,7 +14,7 @@ final class SwapAssetControl: BackgroundedContentControl {
         }
     }
 
-    var horizontalSpacing: CGFloat = 8 {
+    var horizontalSpacing: CGFloat = 12 {
         didSet {
             setNeedsLayout()
         }
