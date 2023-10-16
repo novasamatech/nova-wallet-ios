@@ -1,3 +1,5 @@
+import BigInt
+
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveButtonState(title: String, enabled: Bool)
     func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel)
@@ -8,6 +10,9 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(receiveViewModel: String?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
+    func didReceiveRate(viewModel: LoadableViewModelState<String>)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
+    func didReceiveDetailsState(isAvailable: Bool)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -16,10 +21,44 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func selectReceiveToken()
     func proceed()
     func swap()
+    func updatePayAmount(_ amount: Decimal?)
+    func updateReceiveAmount(_ amount: Decimal?)
+    func showFeeActions()
+    func showFeeInfo()
+    func showRateInfo()
 }
 
-protocol SwapSetupInteractorInputProtocol: AnyObject {}
+protocol SwapSetupInteractorInputProtocol: AnyObject {
+    func setup()
+    func update(receiveChainAsset: ChainAsset)
+    func update(payChainAsset: ChainAsset)
+    func calculateQuote(for args: AssetConversion.QuoteArgs)
+    func calculateFee(args: AssetConversion.CallArgs) -> Void
+}
 
-protocol SwapSetupInteractorOutputProtocol: AnyObject {}
+protocol SwapSetupInteractorOutputProtocol: AnyObject {
+    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs)
+    func didReceive(fee: BigUInt?, transactionId: TransactionFeeId)
+    func didReceive(error: SwapSetupError)
+    func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
+    func didReceive(payAccountId: AccountId?)
+}
 
-protocol SwapSetupWireframeProtocol: AnyObject {}
+protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {
+    func showPayTokenSelection(
+        from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset?,
+        completionHandler: @escaping (ChainAsset) -> Void
+    )
+    func showReceiveTokenSelection(
+        from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset?,
+        completionHandler: @escaping (ChainAsset) -> Void
+    )
+}
+
+enum SwapSetupError: Error {
+    case quote(Error, AssetConversion.QuoteArgs)
+    case fetchFeeFailed(Error, TransactionFeeId)
+    case price(Error, AssetModel.PriceId)
+}

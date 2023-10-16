@@ -128,7 +128,9 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
-        guard let swapTokensView = SwapSetupViewFactory.createView() else {
+        guard let swapTokensView = SwapSetupViewFactory.createView(
+            assetListObservable: assetListModelObservable
+        ) else {
             return
         }
 

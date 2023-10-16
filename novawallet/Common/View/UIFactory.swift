@@ -548,3 +548,34 @@ final class UIFactory: UIFactoryProtocol {
         return view
     }
 }
+
+extension UIFactory {
+    func createDoneAccessoryView(
+        target: Any?,
+        selector: Selector,
+        locale: Locale
+    ) -> UIToolbar {
+        let frame = CGRect(
+            x: 0.0,
+            y: 0.0,
+            width: UIScreen.main.bounds.width,
+            height: UIConstants.accessoryBarHeight
+        )
+
+        let toolBar = UIToolbar(frame: frame)
+
+        let doneTitle = R.string.localizable.commonDone(preferredLanguages: locale.rLanguages)
+        let doneAction = ViewSelectorAction(
+            title: doneTitle,
+            selector: selector
+        )
+
+        return createActionsAccessoryView(
+            for: toolBar,
+            actions: [],
+            doneAction: doneAction,
+            target: target,
+            spacing: 0
+        )
+    }
+}

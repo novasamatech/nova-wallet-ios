@@ -97,6 +97,7 @@ final class SwapAmountInput: BackgroundedContentControl {
 
     private func configureLocalHandlers() {
         addTarget(self, action: #selector(actionTouchUpInside), for: .touchUpInside)
+        textField.delegate = self
     }
 
     private func configureContentViewIfNeeded() {
@@ -130,13 +131,14 @@ extension SwapAmountInput: AmountInputViewModelObserver {
     func amountInputDidChange() {
         textField.text = inputViewModel?.displayAmount
 
-        sendActions(for: .editingChanged)
+        if textField.isEditing {
+            sendActions(for: .editingChanged)
+        }
     }
 }
 
 extension SwapAmountInput {
     func bind(inputViewModel: AmountInputViewModelProtocol) {
-        textField.isHidden = false
         self.inputViewModel?.observable.remove(observer: self)
         inputViewModel.observable.add(observer: self)
 

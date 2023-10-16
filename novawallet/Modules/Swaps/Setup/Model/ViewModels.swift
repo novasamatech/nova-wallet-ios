@@ -14,3 +14,8 @@ enum SwapAssetInputViewModel {
     case asset(SwapsAssetViewModel)
     case empty(EmptySwapsAssetViewModel)
 }
+
+struct SwapFeeViewModel {
+    var isEditable: Bool
+    var balanceViewModel: BalanceViewModelProtocol
+}

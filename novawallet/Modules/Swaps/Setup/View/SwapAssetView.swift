@@ -25,6 +25,8 @@ final class SwapAssetView: GenericPairValueView<SwapIconDetailsView, IconDetails
         fView.fView.spacing = 0
         fView.fView.iconWidth = 20
         fView.fView.mode = .detailsIcon
+        hubNameView.numberOfLines = 1
+        assetLabel.numberOfLines = 1
 
         sView.spacing = 8
         sView.iconWidth = 16

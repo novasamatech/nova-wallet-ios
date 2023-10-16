@@ -27,6 +27,18 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
     }
 
+    let detailsView: SwapDetailsView = .create {
+        $0.setExpanded(false, animated: false)
+    }
+
+    var rateCell: SwapRateView {
+        detailsView.rateCell
+    }
+
+    var networkFeeCell: SwapNetworkFeeView {
+        detailsView.networkFeeCell
+    }
+
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }
@@ -55,10 +67,12 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         receiveAmountView.snp.makeConstraints {
             $0.height.equalTo(18)
         }
-        addArrangedSubview(receiveAmountInputView)
+        addArrangedSubview(receiveAmountInputView, spacingAfter: 16)
         receiveAmountInputView.snp.makeConstraints {
             $0.height.equalTo(64)
         }
+
+        addArrangedSubview(detailsView, spacingAfter: 8)
 
         addSubview(switchButton)
         switchButton.snp.makeConstraints {
@@ -67,5 +81,15 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-9)
             $0.centerX.equalTo(payAmountInputView.snp.centerX)
         }
+    }
+
+    func setup(locale: Locale) {
+        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
+            preferredLanguages: locale.rLanguages
+        )
+        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(preferredLanguages: locale.rLanguages)
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages)
+        rateCell.titleButton.invalidateLayout()
+        networkFeeCell.titleButton.invalidateLayout()
     }
 }
