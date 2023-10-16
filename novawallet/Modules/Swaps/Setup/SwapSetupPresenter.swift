@@ -25,6 +25,7 @@ final class SwapSetupPresenter {
 
     private var feeIdentifier: String?
     private var accountId: AccountId?
+    private var splippage: BigRational = .percent(of: 1)
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -209,7 +210,6 @@ final class SwapSetupPresenter {
             return
         }
 
-        // TODO: Provide slippage
         let args = AssetConversion.CallArgs(
             assetIn: quote.assetIn,
             amountIn: quote.amountIn,
@@ -217,7 +217,7 @@ final class SwapSetupPresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: quoteArgs.direction,
-            slippage: .percent(of: 1)
+            slippage: splippage
         )
 
         guard args.identifier != feeIdentifier else {
