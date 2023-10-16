@@ -205,18 +205,18 @@ final class SwapSetupPresenter {
     }
 
     private func estimateFee() {
-        guard let quote = quote, let accountId = accountId else {
+        guard let quote = quote, let quoteArgs = quoteArgs, let accountId = accountId else {
             return
         }
 
-        // TODO: Provide slippage and direction
+        // TODO: Provide slippage
         let args = AssetConversion.CallArgs(
             assetIn: quote.assetIn,
             amountIn: quote.amountIn,
             assetOut: quote.assetOut,
             amountOut: quote.amountOut,
             receiver: accountId,
-            direction: .sell,
+            direction: quoteArgs.direction,
             slippage: .percent(of: 1)
         )
 
@@ -238,7 +238,11 @@ final class SwapSetupPresenter {
         quote = nil
         switch direction {
         case .buy:
-            if let receiveInPlank = receiveAmountInput?.toSubstrateAmount(precision: Int16(receiveChainAsset.asset.precision)), receiveInPlank > 0 {
+            if
+                let receiveInPlank = receiveAmountInput?.toSubstrateAmount(
+                    precision: receiveChainAsset.assetDisplayInfo.assetPrecision
+                ),
+                receiveInPlank > 0 {
                 let quoteArgs = AssetConversion.QuoteArgs(
                     assetIn: payChainAsset.chainAssetId,
                     assetOut: receiveChainAsset.chainAssetId,
@@ -269,8 +273,6 @@ final class SwapSetupPresenter {
 
             receiveAmountInput = nil
             provideReceiveAmountInputViewModel()
-        default:
-            break
         }
 
         provideRateViewModel()
@@ -357,7 +359,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
-        case let .price(_, priceId):
+        case .price:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
@@ -385,12 +387,10 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             receiveAmountInput = receiveChainAsset.map {
                 Decimal.fromSubstrateAmount(
                     quote.amountOut,
-                    precision: Int16($0.asset.precision)
+                    precision: $0.asset.displayInfo.assetPrecision
                 ) ?? 0
             }
             provideReceiveAmountInputViewModel()
-        default:
-            break
         }
 
         provideRateViewModel()
