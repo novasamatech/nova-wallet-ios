@@ -1391,3 +1391,5 @@
 "swaps.setup.details.title" = "Swap details";
 "swaps.pay.token.selection.title" = "Token to pay";
 "swaps.receive.token.selection.title" = "Token to receive";
+"swaps.setup.settings.title" = "Swap settings";
+"swaps.setup.slippage" = "Slippage";

@@ -3,6 +3,8 @@ import SoraFoundation
 
 struct SwapSlippageViewFactory {
     static func createView(
+        percent: BigRational?,
+        chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) -> SwapSlippageViewProtocol? {
         let interactor = SwapSlippageInteractor()
@@ -17,6 +19,8 @@ struct SwapSlippageViewFactory {
             numberFormatterLocalizable: amountFormatter.localizableResource(),
             percentFormatterLocalizable: percentFormatter.localizableResource(),
             localizationManager: LocalizationManager.shared,
+            initPercent: percent,
+            chainAsset: chainAsset,
             completionHandler: completionHandler
         )
 

@@ -30,19 +30,27 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
         setupLocalization()
         setupHandlers()
         setupAccessoryView()
+        setupNavigationItem()
         presenter.setup()
     }
 
     private func setupLocalization() {
-        title = "Swap settings"
-        rootView.slippageButton.imageWithTitleView?.title = "Slippage"
-        rootView.actionButton.imageWithTitleView?.title = "Apply"
+        let languages = selectedLocale.rLanguages
+        title = R.string.localizable.swapsSetupSettingsTitle(
+            preferredLanguages: languages)
+        rootView.slippageButton.imageWithTitleView?.title = R.string.localizable.swapsSetupSlippage(
+            preferredLanguages: languages)
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonApply(
+            preferredLanguages: languages)
+        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonReset(
+            preferredLanguages: selectedLocale.rLanguages)
     }
 
     private func setupHandlers() {
         rootView.amountInput.delegate = self
         rootView.actionButton.addTarget(self, action: #selector(applyButtonAction), for: .touchUpInside)
         rootView.amountInput.textField.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
+        rootView.slippageButton.addTarget(self, action: #selector(slippageInfoAction), for: .touchUpInside)
     }
 
     private func setupAccessoryView() {
@@ -53,6 +61,15 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
                 locale: selectedLocale
             )
         rootView.amountInput.textField.inputAccessoryView = accessoryView
+    }
+
+    private func setupNavigationItem() {
+        navigationItem.rightBarButtonItem = .init(
+            title: R.string.localizable.commonReset(preferredLanguages: selectedLocale.rLanguages),
+            style: .plain,
+            target: self,
+            action: #selector(resetAction)
+        )
     }
 
     private func updateActionButton() {
@@ -72,6 +89,14 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
         presenter.updateAmount(amount)
         updateActionButton()
     }
+
+    @objc private func slippageInfoAction() {
+        presenter.showSlippageInfo()
+    }
+
+    @objc private func resetAction() {
+        presenter.reset()
+    }
 }
 
 extension SwapSlippageViewController: SwapSlippageViewProtocol {
@@ -82,6 +107,10 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
     func didReceiveInput(viewModel: AmountInputViewModelProtocol) {
         rootView.amountInput.bind(inputViewModel: viewModel)
         updateActionButton()
+    }
+
+    func didReceiveResetState(available: Bool) {
+        navigationItem.rightBarButtonItem?.isEnabled = available
     }
 }
 

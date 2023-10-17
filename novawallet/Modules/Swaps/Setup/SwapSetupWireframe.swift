@@ -49,9 +49,13 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showSettings(
         from view: ControllerBackedProtocol?,
+        percent: BigRational?,
+        chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) {
         guard let settingsView = SwapSlippageViewFactory.createView(
+            percent: percent,
+            chainAsset: chainAsset,
             completionHandler: completionHandler
         ) else {
             return

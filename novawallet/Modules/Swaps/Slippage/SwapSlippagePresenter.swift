@@ -10,6 +10,8 @@ final class SwapSlippagePresenter {
     let percentFormatterLocalizable: LocalizableResource<NumberFormatter>
     let completionHandler: (BigRational) -> Void
     let prefilledPercents: [Decimal] = [0.1, 1, 3]
+    let initPercent: BigRational?
+    let chainAsset: ChainAsset
 
     private var percentFormatter: NumberFormatter
     private var numberFormatter: NumberFormatter
@@ -21,12 +23,16 @@ final class SwapSlippagePresenter {
         numberFormatterLocalizable: LocalizableResource<NumberFormatter>,
         percentFormatterLocalizable: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol,
+        initPercent: BigRational?,
+        chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.numberFormatterLocalizable = numberFormatterLocalizable
         self.percentFormatterLocalizable = percentFormatterLocalizable
+        self.initPercent = initPercent
+        self.chainAsset = chainAsset
         self.completionHandler = completionHandler
         percentFormatter = percentFormatterLocalizable.value(for: localizationManager.selectedLocale)
         numberFormatter = numberFormatterLocalizable.value(for: localizationManager.selectedLocale)
@@ -45,10 +51,15 @@ final class SwapSlippagePresenter {
             formatter: numberFormatter,
             inputLocale: selectedLocale,
             precision: 1,
-            plugin: AddSymbolAmountInputFormatterPlugin()
+            plugin: nil
         )
 
         view?.didReceiveInput(viewModel: inputViewModel)
+    }
+
+    func provideResetButtonState() {
+        let amountChanged = amountInput.map { fraction(from: $0) } != initPercent
+        view?.didReceiveResetState(available: amountChanged)
     }
 
     func fraction(from number: Decimal) -> BigRational {
@@ -68,17 +79,41 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
                 title: title(for: $0 / (percentFormatter.multiplier?.decimalValue ?? 1))
             )
         }
-        view?.didReceivePreFilledPercents(viewModel: viewModel)
+
+        if let percent = initPercent, percent.denominator != 0 {
+            let numerator = percent.numerator.decimal(precision: chainAsset.asset.precision)
+            let denominator = percent.denominator.decimal(precision: chainAsset.asset.precision)
+            amountInput = numerator / denominator
+        }
+        provideResetButtonState()
         provideAmountViewModel()
+        view?.didReceivePreFilledPercents(viewModel: viewModel)
     }
 
     func select(percent: Percent) {
         amountInput = percent.value
         provideAmountViewModel()
+        provideResetButtonState()
     }
 
     func updateAmount(_ amount: Decimal?) {
         amountInput = amount
+        provideResetButtonState()
+    }
+
+    func showSlippageInfo() {
+        // TODO: show bottomsheet
+    }
+
+    func reset() {
+        if let initPercent = initPercent, initPercent.denominator != 0 {
+            amountInput = initPercent.numerator.decimal(precision: chainAsset.asset.precision) / initPercent.denominator.decimal(precision: chainAsset.asset.precision)
+        } else {
+            amountInput = nil
+        }
+
+        provideAmountViewModel()
+        provideResetButtonState()
     }
 
     func apply() {

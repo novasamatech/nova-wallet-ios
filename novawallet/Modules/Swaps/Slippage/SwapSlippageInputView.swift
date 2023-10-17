@@ -7,7 +7,7 @@ protocol SwapSlippageInputViewDelegateProtocol: AnyObject {
 
 final class SwapSlippageInputView: BackgroundedContentControl {
     let textField: UITextField = .create {
-        $0.font = .title2
+        $0.font = UIFont.regularSubheadline
         $0.textColor = R.color.colorTextPrimary()
         $0.tintColor = R.color.colorTextPrimary()
         $0.textAlignment = .left
@@ -16,12 +16,20 @@ final class SwapSlippageInputView: BackgroundedContentControl {
             string: "0.5 %",
             attributes: [
                 .foregroundColor: R.color.colorHintText()!,
-                .font: UIFont.title2
+                .font: UIFont.regularSubheadline
             ]
         )
 
         $0.keyboardType = .decimalPad
         $0.clearButtonMode = .whileEditing
+    }
+
+    let symbolLabel: UILabel = .create {
+        $0.apply(style: .regularSubhedlinePrimary)
+        $0.numberOfLines = 1
+        $0.textAlignment = .left
+        $0.text = "%"
+        $0.isHidden = true
     }
 
     var roundedBackgroundView: RoundedView? {
@@ -40,8 +48,10 @@ final class SwapSlippageInputView: BackgroundedContentControl {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupLayout()
+
+        contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         configureBackgroundViewIfNeeded()
+        configureContentView()
         setupTextFieldHandlers()
     }
 
@@ -50,18 +60,49 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-        addSubview(textField)
-        textField.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(12)
-            $0.top.bottom.equalToSuperview().inset(14)
+    override func layoutSubviews() {
+        let availableWidth = bounds.width - contentInsets.left - contentInsets.right
+        let textFieldWidth = max(availableWidth, 0)
+
+        let textFieldHeight: CGFloat = textField.intrinsicContentSize.height
+
+        textField.frame = CGRect(
+            x: bounds.maxX - contentInsets.right - textFieldWidth,
+            y: bounds.midY - textFieldHeight / 2,
+            width: textFieldWidth,
+            height: textFieldHeight
+        )
+
+        if !symbolLabel.isHidden {
+            let text = textField.text ?? ""
+            let texFieldContentSize = text.size(withAttributes: textField.typingAttributes)
+            symbolLabel.frame = .init(
+                x: textField.frame.minX + texFieldContentSize.width + 4,
+                y: textField.frame.midY - symbolLabel.intrinsicContentSize.height / 2,
+                width: symbolLabel.intrinsicContentSize.width,
+                height: symbolLabel.intrinsicContentSize.height
+            )
         }
-        addSubview(buttonsStack)
-        buttonsStack.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(12)
-            $0.top.bottom.equalToSuperview().inset(8)
-            $0.width.lessThanOrEqualToSuperview().multipliedBy(0.7)
+
+        if !buttonsStack.isHidden, !buttonsStack.arrangedSubviews.isEmpty {
+            var buttonsWidth: CGFloat = buttonsStack.arrangedSubviews.reduce(into: 0) {
+                $0 = $0 + $1.intrinsicContentSize.width
+            }
+            buttonsWidth += CGFloat(buttonsStack.arrangedSubviews.count - 1) * 8
+            let height: CGFloat = buttonsStack.arrangedSubviews.max(by: {
+                $0.intrinsicContentSize.height > $1.intrinsicContentSize.height
+            })?.intrinsicContentSize.height ?? 0
+            let buttonStackX = bounds.maxX - contentInsets.right - buttonsWidth
+
+            buttonsStack.frame = .init(
+                x: buttonStackX,
+                y: textField.frame.midY - height / 2,
+                width: buttonsWidth,
+                height: height
+            )
         }
+
+        backgroundView?.frame = bounds
     }
 
     private func configureBackgroundViewIfNeeded() {
@@ -73,8 +114,13 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         }
     }
 
+    private func configureContentView() {
+        addSubview(textField)
+        addSubview(symbolLabel)
+        addSubview(buttonsStack)
+    }
+
     private func setupTextFieldHandlers() {
-        textField.addTarget(self, action: #selector(editingDidChangeAction), for: .editingChanged)
         textField.addTarget(self, action: #selector(editingDidBeginAction), for: .editingDidBegin)
         textField.addTarget(self, action: #selector(editingDidEndAction), for: .editingDidEnd)
         textField.addTarget(self, action: #selector(editingDidEndAction), for: .editingDidEndOnExit)
@@ -84,10 +130,6 @@ final class SwapSlippageInputView: BackgroundedContentControl {
     @objc private func editingDidBeginAction() {
         buttonsStack.isHidden = true
         roundedBackgroundView?.strokeWidth = textField.isFirstResponder ? 0.5 : 0.0
-    }
-
-    @objc private func editingDidChangeAction() {
-        buttonsStack.isHidden = true
     }
 
     @objc private func editingDidEndAction() {
@@ -101,7 +143,7 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         guard let delegate = delegate else {
             return
         }
-        if let index = buttonsStack.arrangedSubviews.index(where: { $0 === sender }),
+        if let index = buttonsStack.arrangedSubviews.firstIndex(where: { $0 === sender }),
            let buttonModel = viewModel[safe: index] {
             delegate.didSelect(percent: buttonModel, sender: self)
         }
@@ -117,6 +159,13 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
         return button
     }
+
+    private func updateViewsVisablilty(for text: String?) {
+        symbolLabel.isHidden = text.isNilOrEmpty
+        buttonsStack.isHidden = !text.isNilOrEmpty
+        setNeedsLayout()
+        layoutIfNeeded()
+    }
 }
 
 extension SwapSlippageInputView: UITextFieldDelegate {
@@ -125,27 +174,24 @@ extension SwapSlippageInputView: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        inputViewModel?.didReceiveReplacement(string, for: range) ?? false
+        let shouldChangeCharacters = inputViewModel?.didReceiveReplacement(string, for: range) ?? false
+        updateViewsVisablilty(for: string)
+        return shouldChangeCharacters
     }
 
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if let offset = inputViewModel?.currentOffset,
-           let position = textField.position(from: textField.beginningOfDocument, offset: offset) {
-            textField.selectedTextRange = textField.textRange(
-                from: textField.beginningOfDocument,
-                to: position
-            )
-        }
+    func textFieldShouldClear(_: UITextField) -> Bool {
+        updateViewsVisablilty(for: "")
+
+        return true
     }
 }
 
 extension SwapSlippageInputView: AmountInputViewModelObserver {
     func amountInputDidChange() {
         textField.text = inputViewModel?.displayAmount
+        updateViewsVisablilty(for: textField.text)
 
-        if textField.isEditing {
-            sendActions(for: .editingChanged)
-        }
+        sendActions(for: .editingChanged)
     }
 }
 
@@ -168,5 +214,6 @@ extension SwapSlippageInputView {
 
         self.inputViewModel = inputViewModel
         textField.text = inputViewModel.displayAmount
+        updateViewsVisablilty(for: textField.text)
     }
 }

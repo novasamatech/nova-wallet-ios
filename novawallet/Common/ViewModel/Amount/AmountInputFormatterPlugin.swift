@@ -24,7 +24,10 @@ struct AddSymbolAmountInputFormatterPlugin: AmountInputFormatterPluginProtocol {
     }
 
     func postProccesAmount(_ amount: String) -> String {
-        [amount, symbol].joined(separator: separator)
+        guard !amount.isEmpty else {
+            return ""
+        }
+        return [amount, symbol].joined(separator: separator)
     }
 
     func processAvailableCharacters(_ characterSet: CharacterSet) -> CharacterSet {

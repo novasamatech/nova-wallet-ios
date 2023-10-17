@@ -345,8 +345,13 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func proceed() {}
 
     func showSettings() {
+        guard let payChainAsset = payChainAsset else {
+            return
+        }
         wireframe.showSettings(
-            from: view
+            from: view,
+            percent: slippage?.value,
+            chainAsset: payChainAsset
         ) { [weak self, payChainAsset] slippageValue in
             guard payChainAsset == self?.payChainAsset else {
                 return

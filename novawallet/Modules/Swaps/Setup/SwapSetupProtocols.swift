@@ -58,6 +58,8 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     )
     func showSettings(
         from view: ControllerBackedProtocol?,
+        percent: BigRational?,
+        chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     )
 }
