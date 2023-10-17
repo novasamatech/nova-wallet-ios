@@ -3,12 +3,13 @@ import UIKit
 import SoraUI
 import Kingfisher
 
-final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>, SkeletonableView {
+final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>,
+    SkeletonableView {
     var titleButton: RoundedButton { titleView }
     var valueTopButton: RoundedButton { valueView.fView }
     var valueBottomLabel: UILabel { valueView.sView }
     var skeletonView: SkrullableView?
-    private lazy var iconPencil = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)?.kf.resize(to: .init(width: 16, height: 16))
+    private lazy var iconPencil = R.image.iconPencilEdit()!
 
     private var isLoading: Bool = false
 
