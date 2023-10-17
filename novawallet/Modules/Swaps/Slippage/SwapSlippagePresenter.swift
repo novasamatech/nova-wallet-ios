@@ -50,8 +50,7 @@ final class SwapSlippagePresenter {
             limit: 50,
             formatter: numberFormatter,
             inputLocale: selectedLocale,
-            precision: 1,
-            plugin: nil
+            precision: 1
         )
 
         view?.didReceiveInput(viewModel: inputViewModel)

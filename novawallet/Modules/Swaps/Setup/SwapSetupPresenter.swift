@@ -23,7 +23,7 @@ final class SwapSetupPresenter {
         }
     }
 
-    private var slippage: (value: BigRational, direction: AssetConversion.Direction)?
+    private var slippage: BigRational?
 
     private var feeIdentifier: String?
     private var accountId: AccountId?
@@ -222,7 +222,7 @@ final class SwapSetupPresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: quoteArgs.direction,
-            slippage: slippage.value
+            slippage: slippage
         )
 
         guard args.identifier != feeIdentifier else {
@@ -292,7 +292,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideDetailsViewModel(isAvailable: false)
         provideButtonState()
         // TODO: get from settings
-        slippage = (value: .percent(of: 1), direction: .sell)
+        slippage = .percent(of: 1)
         interactor.setup()
     }
 
@@ -354,13 +354,13 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         }
         wireframe.showSettings(
             from: view,
-            percent: slippage?.value,
+            percent: slippage,
             chainAsset: payChainAsset
         ) { [weak self, payChainAsset] slippageValue in
             guard payChainAsset == self?.payChainAsset else {
                 return
             }
-            self?.slippage = (value: slippageValue, direction: .sell)
+            self?.slippage = slippageValue
             self?.estimateFee()
         }
     }

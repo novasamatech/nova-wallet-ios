@@ -4,7 +4,6 @@ protocol MoneyPresentable {
     var formatter: NumberFormatter { get }
     var amount: String { get }
     var precision: Int16 { get }
-    var plugin: AmountInputFormatterPluginProtocol? { get }
 
     func transform(input: String, from locale: Locale) -> String
 }
@@ -19,19 +18,17 @@ extension MoneyPresentable {
             return ""
         }
 
-        let preprocessedAmount = plugin?.preProccessAmount(amount) ?? amount
-
-        guard let decimalAmount = Decimal(string: preprocessedAmount, locale: formatter.locale) else {
+        guard let decimalAmount = Decimal(string: amount, locale: formatter.locale) else {
             return nil
         }
 
         var amountFormatted = formatter.string(from: decimalAmount as NSDecimalNumber)
         let separator = decimalSeparator()
 
-        if preprocessedAmount.hasSuffix(separator) {
+        if amount.hasSuffix(separator) {
             amountFormatted?.append(separator)
         } else {
-            let amountParts = preprocessedAmount.components(separatedBy: separator)
+            let amountParts = amount.components(separatedBy: separator)
             let formattedParts = amountFormatted?.components(separatedBy: separator)
 
             if amountParts.count == 2, formattedParts?.count == 1 {
@@ -54,11 +51,7 @@ extension MoneyPresentable {
             }
         }
 
-        guard let plugin = plugin, let amountFormatted = amountFormatted else {
-            return amountFormatted
-        }
-
-        return plugin.postProccesAmount(amountFormatted)
+        return amountFormatted
     }
 
     private func decimalSeparator() -> String {
@@ -70,14 +63,12 @@ extension MoneyPresentable {
     }
 
     private func notEligibleSet() -> CharacterSet {
-        let availableSet = CharacterSet.decimalDigits
+        CharacterSet.decimalDigits
             .union(CharacterSet(charactersIn: "\(decimalSeparator())\(groupingSeparator())")).inverted
-        return plugin?.processAvailableCharacters(availableSet) ?? availableSet
     }
 
     private func isValid(amount: String) -> Bool {
-        let preprocessedAmount = plugin?.preProccessAmount(amount) ?? amount
-        let components = preprocessedAmount.components(separatedBy: decimalSeparator())
+        let components = amount.components(separatedBy: decimalSeparator())
 
         return !((precision == 0 && components.count > 1) ||
             components.count > 2 ||
@@ -89,8 +80,7 @@ extension MoneyPresentable {
             return self.amount
         }
 
-        let preprocessedAmount = plugin?.preProccessAmount(self.amount) ?? self.amount
-        var newAmount = (preprocessedAmount + amount).replacingOccurrences(
+        var newAmount = (self.amount + amount).replacingOccurrences(
             of: groupingSeparator(),
             with: ""
         )
@@ -99,19 +89,15 @@ extension MoneyPresentable {
             newAmount = "\(MoneyPresentableConstants.singleZero)\(newAmount)"
         }
 
-        let postprocessedAmount = plugin?.postProccesAmount(newAmount) ?? newAmount
-
-        return isValid(amount: postprocessedAmount) ? postprocessedAmount : self.amount
+        return isValid(amount: newAmount) ? newAmount : self.amount
     }
 
     func set(_ amount: String) -> String {
-        let preprocessedAmount = plugin?.preProccessAmount(amount) ?? amount
-
-        guard preprocessedAmount.rangeOfCharacter(from: notEligibleSet()) == nil else {
+        guard amount.rangeOfCharacter(from: notEligibleSet()) == nil else {
             return self.amount
         }
 
-        var settingAmount = preprocessedAmount.replacingOccurrences(
+        var settingAmount = amount.replacingOccurrences(
             of: groupingSeparator(),
             with: ""
         )
@@ -120,9 +106,7 @@ extension MoneyPresentable {
             settingAmount = "\(MoneyPresentableConstants.singleZero)\(settingAmount)"
         }
 
-        let postprocessedAmount = plugin?.postProccesAmount(settingAmount) ?? settingAmount
-
-        return isValid(amount: postprocessedAmount) ? postprocessedAmount : self.amount
+        return isValid(amount: settingAmount) ? settingAmount : self.amount
     }
 
     func transform(input: String, from locale: Locale) -> String {

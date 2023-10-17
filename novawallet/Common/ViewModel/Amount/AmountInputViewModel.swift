@@ -13,7 +13,6 @@ protocol AmountInputViewModelProtocol: AnyObject {
 
     func didReceiveReplacement(_ string: String, for range: NSRange) -> Bool
     func didUpdateAmount(to newAmount: Decimal)
-    var currentOffset: Int? { get }
 }
 
 extension AmountInputViewModelProtocol {
@@ -63,23 +62,19 @@ final class AmountInputViewModel: AmountInputViewModelProtocol, MoneyPresentable
 
     public var observable: WalletViewModelObserverContainer<AmountInputViewModelObserver>
 
-    let plugin: AmountInputFormatterPluginProtocol?
-
     public init(
         symbol: String,
         amount: Decimal?,
         limit: Decimal,
         formatter: NumberFormatter,
         inputLocale: Locale = Locale.current,
-        precision: Int16 = 2,
-        plugin: AmountInputFormatterPluginProtocol? = nil
+        precision: Int16 = 2
     ) {
         self.symbol = symbol
         self.limit = limit
         self.formatter = formatter
         self.inputLocale = inputLocale
         self.precision = precision
-        self.plugin = plugin
 
         observable = WalletViewModelObserverContainer()
 
@@ -122,9 +117,5 @@ final class AmountInputViewModel: AmountInputViewModelProtocol, MoneyPresentable
         else { return }
 
         amount = inputAmount
-    }
-
-    var currentOffset: Int? {
-        plugin?.currentOffset(in: amount)
     }
 }

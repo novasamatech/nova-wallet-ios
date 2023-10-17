@@ -704,9 +704,6 @@
 		775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */; };
 		775F19512A5811FA009915B6 /* StartStakingParachainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */; };
 		775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */; };
-		7765BB712ADA66A400451274 /* MoneyPresentableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765BB702ADA66A400451274 /* MoneyPresentableTests.swift */; };
-		7765BB732ADA744400451274 /* MoneyPresentableMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765BB722ADA744400451274 /* MoneyPresentableMock.swift */; };
-		7765BB752ADA749400451274 /* AmountInputFormatterPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765BB742ADA749400451274 /* AmountInputFormatterPlugin.swift */; };
 		77740BBC2AD4A7B800E8C06F /* CollapsableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */; };
 		77740BBE2AD4A7F500E8C06F /* SwapDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */; };
 		77740BC02AD4A80D00E8C06F /* SwapRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */; };
@@ -4722,9 +4719,6 @@
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
-		7765BB702ADA66A400451274 /* MoneyPresentableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyPresentableTests.swift; sourceTree = "<group>"; };
-		7765BB722ADA744400451274 /* MoneyPresentableMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyPresentableMock.swift; sourceTree = "<group>"; };
-		7765BB742ADA749400451274 /* AmountInputFormatterPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputFormatterPlugin.swift; sourceTree = "<group>"; };
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
 		77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDetailsView.swift; sourceTree = "<group>"; };
 		77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRateView.swift; sourceTree = "<group>"; };
@@ -8236,7 +8230,6 @@
 				0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */,
 				0CE629D42AA9B5E200E250BD /* BalanceViewModel.swift */,
 				0CE629D52AA9B5E200E250BD /* BalanceViewModelFactory.swift */,
-				7765BB742ADA749400451274 /* AmountInputFormatterPlugin.swift */,
 			);
 			path = Amount;
 			sourceTree = "<group>";
@@ -16344,8 +16337,6 @@
 				847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */,
 				842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */,
 				840D627029CB3FD900D5E894 /* URLBuilderTests.swift */,
-				7765BB702ADA66A400451274 /* MoneyPresentableTests.swift */,
-				7765BB722ADA744400451274 /* MoneyPresentableMock.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -20248,7 +20239,6 @@
 				0C59E8E12AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */,
-				7765BB752ADA749400451274 /* AmountInputFormatterPlugin.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
 				84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */,
 				84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */,
@@ -23107,7 +23097,6 @@
 				842D1E8E24D2091A00C30A7A /* CommonMocks.swift in Sources */,
 				8467FD0824E5E0BD005D486C /* KeystoreDefinition+Test.swift in Sources */,
 				84452F5D25D5CB3B00F47EC5 /* FileManagerTests.swift in Sources */,
-				7765BB732ADA744400451274 /* MoneyPresentableMock.swift in Sources */,
 				84B7C72D289BFA79001A3566 /* ValidatorSearchTests.swift in Sources */,
 				841B45292603D91800C08693 /* EraValidatorsServiceStub.swift in Sources */,
 				84F47D652667804100F7647A /* CrowdloanBonusServiceStub.swift in Sources */,
@@ -23140,7 +23129,6 @@
 				840D627129CB3FD900D5E894 /* URLBuilderTests.swift in Sources */,
 				84D9C41126CD361C004AB2AB /* SpecVersionSubscriptionTests.swift in Sources */,
 				84B66A1626FDF7D70038B963 /* JsonSubscriptionFactoryStub.swift in Sources */,
-				7765BB712ADA66A400451274 /* MoneyPresentableTests.swift in Sources */,
 				8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */,
 				8467FD3B24EAD236005D486C /* SigningWrapperTests.swift in Sources */,
 				84B7C71D289BFA79001A3566 /* MnemonicTextNormalizerTest.swift in Sources */,
