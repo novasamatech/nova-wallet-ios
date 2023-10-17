@@ -11,7 +11,7 @@ struct SwapSlippageViewFactory {
         let wireframe = SwapSlippageWireframe()
 
         let amountFormatter = NumberFormatter.amount
-        let percentFormatter = NumberFormatter.percent
+        let percentFormatter = NumberFormatter.percentSingle
 
         let presenter = SwapSlippagePresenter(
             interactor: interactor,

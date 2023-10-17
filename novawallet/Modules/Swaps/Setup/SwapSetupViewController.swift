@@ -100,12 +100,11 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: R.image.iconAssetsSettings()?.withRenderingMode(.alwaysTemplate),
+            image: R.image.iconSwapSettings(),
             style: .plain,
             target: self,
             action: #selector(settingsAction)
         )
-        navigationItem.rightBarButtonItem?.tintColor = R.color.colorIconPrimary()
     }
 
     @objc private func selectPayTokenAction() {
