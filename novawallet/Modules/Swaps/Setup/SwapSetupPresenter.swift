@@ -210,7 +210,7 @@ final class SwapSetupPresenter {
     private func estimateFee() {
         guard let quote = quote,
               let accountId = accountId,
-			  let quoteArgs = quoteArg,
+              let quoteArgs = quoteArgs,
               let slippage = slippage else {
             return
         }
