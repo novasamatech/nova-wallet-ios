@@ -1394,3 +1394,5 @@
 "swaps.setup.settings.title" = "Swap settings";
 "swaps.setup.slippage" = "Slippage";
 "swaps.setup.slippage.error.amount.bounds" = "Enter a value between %@ and %@";
+"swaps.setup.slippage.warning.low.amount" = "Transaction might be reverted because of low slippage tolerance.";
+"swaps.setup.slippage.warning.high.amount" = "Transaction might be frontrun because of high slippage.";

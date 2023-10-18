@@ -4,6 +4,7 @@ protocol SwapSlippageViewProtocol: ControllerBackedProtocol {
     func didReceivePreFilledPercents(viewModel: [SlippagePercentViewModel])
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)
     func didReceiveInput(error: String?)
+    func didReceiveInput(warning: String?)
     func didReceiveResetState(available: Bool)
 }
 

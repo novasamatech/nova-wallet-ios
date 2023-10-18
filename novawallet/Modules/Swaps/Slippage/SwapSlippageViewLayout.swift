@@ -21,6 +21,7 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
     }
 
     let errorLabel = UILabel(style: .caption1Negative, textAlignment: .left, numberOfLines: 0)
+    private var warningView: InlineAlertView?
 
     override func setupLayout() {
         super.setupLayout()
@@ -36,7 +37,8 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
             $0.height.equalTo(48)
         }
 
-        addArrangedSubview(errorLabel)
+        errorLabel.isHidden = true
+        addArrangedSubview(errorLabel, spacingAfter: 8)
 
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -50,5 +52,14 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
         errorLabel.text = error
         errorLabel.isHidden = error.isNilOrEmpty
         amountInput.apply(style: error.isNilOrEmpty ? .normal : .error)
+    }
+
+    func set(warning: String?) {
+        applyWarning(
+            on: &warningView,
+            after: errorLabel,
+            text: warning,
+            spacing: 16
+        )
     }
 }

@@ -11,8 +11,8 @@ final class SwapSlippagePresenter {
     let prefilledPercents: [Decimal] = [0.1, 1, 3]
     let initPercent: BigRational?
     let chainAsset: ChainAsset
-    let minAmount: Decimal = 0.01
-    let maxAmount: Decimal = 50
+    let amountRestriction: (lower: Decimal, upper: Decimal) = (lower: 0.01, upper: 50)
+    let amountRecommendation: (lower: Decimal, upper: Decimal) = (lower: 0.1, upper: 2.3)
 
     private var percentFormatter: NumberFormatter
     private var numberFormatter: NumberFormatter
@@ -75,9 +75,10 @@ final class SwapSlippagePresenter {
     }
 
     private func provideErrors() {
-        if let amountInput = amountInput, amountInput < minAmount || amountInput > maxAmount {
-            let minAmountString = title(for: minAmount)
-            let maxAmountString = title(for: maxAmount)
+        if let amountInput = amountInput,
+           amountInput < amountRestriction.lower || amountInput > amountRestriction.upper {
+            let minAmountString = title(for: amountRestriction.lower)
+            let maxAmountString = title(for: amountRestriction.upper)
             let error = R.string.localizable.swapsSetupSlippageErrorAmountBounds(
                 minAmountString,
                 maxAmountString,
@@ -86,6 +87,26 @@ final class SwapSlippagePresenter {
             view?.didReceiveInput(error: error)
         } else {
             view?.didReceiveInput(error: nil)
+        }
+    }
+
+    private func provideWarnings() {
+        guard let amountInput = amountInput, amountInput > 0 else {
+            view?.didReceiveInput(warning: nil)
+            return
+        }
+        if amountInput <= amountRecommendation.lower {
+            let warning = R.string.localizable.swapsSetupSlippageWarningLowAmount(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            view?.didReceiveInput(warning: warning)
+        } else if amountInput >= amountRecommendation.upper {
+            let warning = R.string.localizable.swapsSetupSlippageWarningHighAmount(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            view?.didReceiveInput(warning: warning)
+        } else {
+            view?.didReceiveInput(warning: nil)
         }
     }
 
@@ -122,12 +143,14 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         provideAmountViewModel()
         provideResetButtonState()
         provideErrors()
+        provideWarnings()
     }
 
     func updateAmount(_ amount: Decimal?) {
         amountInput = amount
         provideResetButtonState()
         provideErrors()
+        provideWarnings()
     }
 
     func showSlippageInfo() {
@@ -139,6 +162,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         provideAmountViewModel()
         provideResetButtonState()
         provideErrors()
+        provideWarnings()
     }
 
     func apply() {

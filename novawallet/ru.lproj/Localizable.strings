@@ -1395,3 +1395,5 @@
 "swaps.setup.settings.title" = "Настройки обмена";
 "swaps.setup.slippage" = "Slippage";
 "swaps.setup.slippage.error.amount.bounds" = "Введите значение между %@ и %@";
+"swaps.setup.slippage.warning.low.amount" = "Транзакция может быть отменена из-за низкого значения проскальзывания.";
+"swaps.setup.slippage.warning.high.amount" = "Транзакция может быть приостановлена из-за высокого значения проскальзывания.";

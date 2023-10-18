@@ -118,6 +118,10 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
         rootView.set(error: error)
         updateActionButton()
     }
+
+    func didReceiveInput(warning: String?) {
+        rootView.set(warning: warning)
+    }
 }
 
 extension SwapSlippageViewController: SwapSlippageInputViewDelegateProtocol {
