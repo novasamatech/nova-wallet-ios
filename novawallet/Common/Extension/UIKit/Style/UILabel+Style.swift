@@ -96,6 +96,11 @@ extension UILabel.Style {
         font: .caption1
     )
 
+    static let caption1Negative = UILabel.Style(
+        textColor: R.color.colorTextNegative(),
+        font: .caption1
+    )
+
     static let caption2Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .caption2

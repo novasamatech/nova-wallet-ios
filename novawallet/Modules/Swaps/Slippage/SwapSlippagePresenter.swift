@@ -5,20 +5,20 @@ import BigInt
 final class SwapSlippagePresenter {
     weak var view: SwapSlippageViewProtocol?
     let wireframe: SwapSlippageWireframeProtocol
-    let interactor: SwapSlippageInteractorInputProtocol
     let numberFormatterLocalizable: LocalizableResource<NumberFormatter>
     let percentFormatterLocalizable: LocalizableResource<NumberFormatter>
     let completionHandler: (BigRational) -> Void
     let prefilledPercents: [Decimal] = [0.1, 1, 3]
     let initPercent: BigRational?
     let chainAsset: ChainAsset
+    let minAmount: Decimal = 0.01
+    let maxAmount: Decimal = 50
 
     private var percentFormatter: NumberFormatter
     private var numberFormatter: NumberFormatter
     private var amountInput: Decimal?
 
     init(
-        interactor: SwapSlippageInteractorInputProtocol,
         wireframe: SwapSlippageWireframeProtocol,
         numberFormatterLocalizable: LocalizableResource<NumberFormatter>,
         percentFormatterLocalizable: LocalizableResource<NumberFormatter>,
@@ -27,7 +27,6 @@ final class SwapSlippagePresenter {
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) {
-        self.interactor = interactor
         self.wireframe = wireframe
         self.numberFormatterLocalizable = numberFormatterLocalizable
         self.percentFormatterLocalizable = percentFormatterLocalizable
@@ -40,14 +39,15 @@ final class SwapSlippagePresenter {
     }
 
     private func title(for percent: Decimal) -> String {
-        percentFormatter.stringFromDecimal(percent) ?? ""
+        let value = percent / (percentFormatter.multiplier?.decimalValue ?? 1)
+        return percentFormatter.stringFromDecimal(value) ?? ""
     }
 
-    func provideAmountViewModel() {
+    private func provideAmountViewModel() {
         let inputViewModel = AmountInputViewModel(
             symbol: "",
             amount: amountInput,
-            limit: 50,
+            limit: 100,
             formatter: numberFormatter,
             inputLocale: selectedLocale,
             precision: 1
@@ -56,14 +56,38 @@ final class SwapSlippagePresenter {
         view?.didReceiveInput(viewModel: inputViewModel)
     }
 
-    func provideResetButtonState() {
+    private func provideResetButtonState() {
         let amountChanged = amountInput.map { fraction(from: $0) } != initPercent
         view?.didReceiveResetState(available: amountChanged)
     }
 
-    func fraction(from number: Decimal) -> BigRational {
-        let decimalNumber = NSDecimalNumber(decimal: number)
-        let scale = -number.exponent
+    private func provideErrors() {
+        if let amountInput = amountInput, amountInput < minAmount || amountInput > maxAmount {
+            let minAmountString = title(for: minAmount)
+            let maxAmountString = title(for: maxAmount)
+            let error = R.string.localizable.swapsSetupSlippageErrorAmountBounds(
+                minAmountString,
+                maxAmountString,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            view?.didReceiveInput(error: error)
+        } else {
+            view?.didReceiveInput(error: nil)
+        }
+    }
+
+    private func fraction(from number: Decimal) -> BigRational {
+        var roundedNumber = Decimal()
+        var value = number
+        NSDecimalRound(
+            &roundedNumber,
+            &value,
+            percentFormatter.maximumFractionDigits,
+            NSDecimalNumber.RoundingMode.plain
+        )
+
+        let decimalNumber = NSDecimalNumber(decimal: roundedNumber)
+        let scale = -roundedNumber.exponent
         let numerator = decimalNumber.multiplying(byPowerOf10: Int16(scale)).intValue
         let denominator = Int(truncating: pow(10, scale) as NSNumber)
         return .init(numerator: BigUInt(numerator), denominator: BigUInt(denominator))
@@ -75,7 +99,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         let viewModel = prefilledPercents.map {
             SlippagePercentViewModel(
                 value: $0,
-                title: title(for: $0 / (percentFormatter.multiplier?.decimalValue ?? 1))
+                title: title(for: $0)
             )
         }
 
@@ -93,11 +117,13 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         amountInput = percent.value
         provideAmountViewModel()
         provideResetButtonState()
+        provideErrors()
     }
 
     func updateAmount(_ amount: Decimal?) {
         amountInput = amount
         provideResetButtonState()
+        provideErrors()
     }
 
     func showSlippageInfo() {
@@ -113,18 +139,17 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
 
         provideAmountViewModel()
         provideResetButtonState()
+        provideErrors()
     }
 
     func apply() {
         if let amountInput = amountInput {
             let rational = fraction(from: amountInput)
             completionHandler(rational)
+            wireframe.close(from: view)
         }
-        wireframe.close(from: view)
     }
 }
-
-extension SwapSlippagePresenter: SwapSlippageInteractorOutputProtocol {}
 
 extension SwapSlippagePresenter: Localizable {
     func applyLocalization() {

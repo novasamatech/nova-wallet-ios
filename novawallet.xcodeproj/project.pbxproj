@@ -3423,7 +3423,6 @@
 		9B6CD060F0EB77C162D90D3E /* ChainAddressDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781FA4C896AF31B4035AFB38 /* ChainAddressDetailsViewFactory.swift */; };
 		9BADFCBF3AF5186094DB8D67 /* DAppTxDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB4A14C99D151B41F61F474 /* DAppTxDetailsInteractor.swift */; };
 		9C223E4BF19F7314A9E6F1CA /* NominationPoolSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D686A91FF92C89FE8937EF5A /* NominationPoolSearchViewLayout.swift */; };
-		9C8C32AFF22AC1165FA7FDDA /* SwapSlippageInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF43098AE15348910BA4627 /* SwapSlippageInteractor.swift */; };
 		9D509AD640B01CAB872E0E71 /* NominationPoolSearchViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AC3897EC736F5096949BBC /* NominationPoolSearchViewFactory.swift */; };
 		9D5926790B055C56FB74B282 /* AccountManagementProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5072E250B7277F605855B3 /* AccountManagementProtocols.swift */; };
 		9DE1757D047A4D1E97913774 /* GovernanceUnlockConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3FE2CE7F9F2836755DBA63 /* GovernanceUnlockConfirmProtocols.swift */; };
@@ -7645,7 +7644,6 @@
 		AEE5FB1726457AC1002B8FDC /* StakingRewardDestSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDestSetupViewController.swift; sourceTree = "<group>"; };
 		AEE5FB1926457AE9002B8FDC /* StakingRewardDestSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDestSetupProtocols.swift; sourceTree = "<group>"; };
 		AEE5FB1B264A610C002B8FDC /* StakingRewardDestSetupLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDestSetupLayout.swift; sourceTree = "<group>"; };
-		AEF43098AE15348910BA4627 /* SwapSlippageInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageInteractor.swift; sourceTree = "<group>"; };
 		AEF50585261EE6230098574D /* PurchaseProviderPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseProviderPickerTableViewCell.swift; sourceTree = "<group>"; };
 		AEF5058A261EF27B0098574D /* PurchaseProviderPickerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PurchaseProviderPickerTableViewCell.xib; sourceTree = "<group>"; };
 		AEF505A82620249F0098574D /* UIColor+HEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+HEX.swift"; sourceTree = "<group>"; };
@@ -8971,7 +8969,6 @@
 				2AE0E677E64DAC7E93562412 /* SwapSlippageProtocols.swift */,
 				088C765E5A0F81B96ADE72D8 /* SwapSlippageWireframe.swift */,
 				0816F2A4A5CC1F111E626188 /* SwapSlippagePresenter.swift */,
-				AEF43098AE15348910BA4627 /* SwapSlippageInteractor.swift */,
 				F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */,
 				2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */,
 				28294C13CF8F62D2FE4D0427 /* SwapSlippageViewFactory.swift */,
@@ -23063,7 +23060,6 @@
 				94A6747402550FB39D2E2BE7 /* SwapSlippageProtocols.swift in Sources */,
 				2451E27286A176CDA2DC040D /* SwapSlippageWireframe.swift in Sources */,
 				07D1F0F4FAE24BED8A1CF257 /* SwapSlippagePresenter.swift in Sources */,
-				9C8C32AFF22AC1165FA7FDDA /* SwapSlippageInteractor.swift in Sources */,
 				143F6C9044429A337265DF39 /* SwapSlippageViewController.swift in Sources */,
 				F9CEF01779F811AEEED06C43 /* SwapSlippageViewLayout.swift in Sources */,
 				80603DA36CD481AE310CDFE1 /* SwapSlippageViewFactory.swift in Sources */,

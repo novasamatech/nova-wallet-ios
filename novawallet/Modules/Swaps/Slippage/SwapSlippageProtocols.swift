@@ -3,6 +3,7 @@ import Foundation
 protocol SwapSlippageViewProtocol: ControllerBackedProtocol {
     func didReceivePreFilledPercents(viewModel: [SlippagePercentViewModel])
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)
+    func didReceiveInput(error: String?)
     func didReceiveResetState(available: Bool)
 }
 
@@ -14,10 +15,6 @@ protocol SwapSlippagePresenterProtocol: AnyObject {
     func showSlippageInfo()
     func reset()
 }
-
-protocol SwapSlippageInteractorInputProtocol: AnyObject {}
-
-protocol SwapSlippageInteractorOutputProtocol: AnyObject {}
 
 protocol SwapSlippageWireframeProtocol: AnyObject {
     func close(from view: ControllerBackedProtocol?)

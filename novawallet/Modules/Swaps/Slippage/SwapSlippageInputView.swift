@@ -178,12 +178,17 @@ extension SwapSlippageInputView: UITextFieldDelegate {
         replacementString string: String
     ) -> Bool {
         let shouldChangeCharacters = inputViewModel?.didReceiveReplacement(string, for: range) ?? false
-        updateViewsVisablilty(for: string)
+        updateViewsVisablilty(for: inputViewModel?.displayAmount)
         return shouldChangeCharacters
     }
 
-    func textFieldShouldClear(_: UITextField) -> Bool {
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
         updateViewsVisablilty(for: "")
+        if let text = textField.text {
+            inputViewModel?.didReceiveReplacement("", for: NSRange(location: 0, length: text.count))
+            textField.text = ""
+            return false
+        }
 
         return true
     }
@@ -218,5 +223,28 @@ extension SwapSlippageInputView {
         self.inputViewModel = inputViewModel
         textField.text = inputViewModel.displayAmount
         updateViewsVisablilty(for: textField.text)
+    }
+}
+
+extension SwapSlippageInputView {
+    enum Style {
+        case error
+        case normal
+    }
+
+    func apply(style: Style) {
+        switch style {
+        case .error:
+            let color = R.color.colorTextNegative()!
+            roundedBackgroundView?.strokeWidth = 0.5
+            roundedBackgroundView?.strokeColor = color
+            textField.textColor = color
+            symbolLabel.textColor = color
+        case .normal:
+            roundedBackgroundView?.strokeWidth = 0
+            roundedBackgroundView?.strokeColor = R.color.colorActiveBorder()!
+            textField.textColor = R.color.colorTextPrimary()
+            symbolLabel.textColor = R.color.colorTextPrimary()
+        }
     }
 }

@@ -1393,3 +1393,4 @@
 "swaps.receive.token.selection.title" = "Token to receive";
 "swaps.setup.settings.title" = "Swap settings";
 "swaps.setup.slippage" = "Slippage";
+"swaps.setup.slippage.error.amount.bounds" = "Enter a value between %@ and %@";

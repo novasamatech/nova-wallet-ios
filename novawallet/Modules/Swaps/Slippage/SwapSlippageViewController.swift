@@ -49,7 +49,7 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.amountInput.delegate = self
         rootView.actionButton.addTarget(self, action: #selector(applyButtonAction), for: .touchUpInside)
-        rootView.amountInput.textField.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
+        rootView.amountInput.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
         rootView.slippageButton.addTarget(self, action: #selector(slippageInfoAction), for: .touchUpInside)
     }
 
@@ -73,7 +73,8 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     }
 
     private func updateActionButton() {
-        rootView.actionButton.isEnabled = rootView.amountInput.inputViewModel?.isValid == true
+        let inputValid = rootView.amountInput.inputViewModel?.isValid == true
+        rootView.actionButton.isEnabled = inputValid && rootView.errorLabel.isHidden
     }
 
     @objc private func applyButtonAction() {
@@ -112,11 +113,17 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
     func didReceiveResetState(available: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = available
     }
+
+    func didReceiveInput(error: String?) {
+        rootView.set(error: error)
+        updateActionButton()
+    }
 }
 
 extension SwapSlippageViewController: SwapSlippageInputViewDelegateProtocol {
     func didSelect(percent: SlippagePercentViewModel, sender _: Any?) {
         presenter.select(percent: percent)
+        updateActionButton()
     }
 }
 

@@ -215,7 +215,7 @@ final class SwapSetupPresenter {
         guard let quote = quote,
               let accountId = accountId,
               let quoteArgs = quoteArgs,
-              let slippage = slippage else {
+              let slippage = self.slippage else {
             return
         }
 

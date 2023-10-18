@@ -1394,3 +1394,4 @@
 "swaps.receive.token.selection.title" = "Токен для получения";
 "swaps.setup.settings.title" = "Настройки обмена";
 "swaps.setup.slippage" = "Slippage";
+"swaps.setup.slippage.error.amount.bounds" = "Введите значение между %@ и %@";

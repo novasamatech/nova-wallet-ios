@@ -20,6 +20,8 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
         $0.applyDefaultStyle()
     }
 
+    let errorLabel = UILabel(style: .caption1Negative, textAlignment: .left, numberOfLines: 0)
+
     override func setupLayout() {
         super.setupLayout()
         let title = UIView.hStack([
@@ -28,11 +30,13 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
         ])
         addArrangedSubview(title)
         slippageButton.setContentHuggingPriority(.low, for: .horizontal)
-        addArrangedSubview(amountInput)
+        addArrangedSubview(amountInput, spacingAfter: 8)
 
         amountInput.snp.makeConstraints {
             $0.height.equalTo(48)
         }
+
+        addArrangedSubview(errorLabel)
 
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -40,5 +44,11 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
+    }
+
+    func set(error: String?) {
+        errorLabel.text = error
+        errorLabel.isHidden = error.isNilOrEmpty
+        amountInput.apply(style: error.isNilOrEmpty ? .normal : .error)
     }
 }
