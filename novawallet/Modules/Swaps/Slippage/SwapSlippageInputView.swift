@@ -2,7 +2,7 @@ import SnapKit
 import SoraUI
 
 protocol SwapSlippageInputViewDelegateProtocol: AnyObject {
-    func didSelect(percent: Percent, sender: Any?)
+    func didSelect(percent: SlippagePercentViewModel, sender: Any?)
 }
 
 final class SwapSlippageInputView: BackgroundedContentControl {
@@ -45,6 +45,7 @@ final class SwapSlippageInputView: BackgroundedContentControl {
 
     weak var delegate: SwapSlippageInputViewDelegateProtocol?
     private(set) var inputViewModel: AmountInputViewModelProtocol?
+    private var viewModel: [SlippagePercentViewModel] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -82,6 +83,8 @@ final class SwapSlippageInputView: BackgroundedContentControl {
                 width: symbolLabel.intrinsicContentSize.width,
                 height: symbolLabel.intrinsicContentSize.height
             )
+        } else {
+            symbolLabel.frame = .zero
         }
 
         if !buttonsStack.isHidden, !buttonsStack.arrangedSubviews.isEmpty {
@@ -100,6 +103,8 @@ final class SwapSlippageInputView: BackgroundedContentControl {
                 width: buttonsWidth,
                 height: height
             )
+        } else {
+            buttonsStack.frame = .zero
         }
 
         backgroundView?.frame = bounds
@@ -149,8 +154,6 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         }
     }
 
-    private var viewModel: [Percent] = []
-
     private func createButton(title: String) -> RoundedButton {
         let button = RoundedButton()
         button.applyAccessoryStyle()
@@ -196,7 +199,7 @@ extension SwapSlippageInputView: AmountInputViewModelObserver {
 }
 
 extension SwapSlippageInputView {
-    func bind(viewModel: [Percent]) {
+    func bind(viewModel: [SlippagePercentViewModel]) {
         buttonsStack.arrangedSubviews.forEach {
             $0.removeFromSuperview()
         }

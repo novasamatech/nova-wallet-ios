@@ -136,6 +136,10 @@ final class SwapSetupPresenter {
         view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
 
+    private func provideSettingsState() {
+        view?.didReceiveSettingsState(isAvailable: payChainAsset != nil)
+    }
+
     private func absoluteValue(for input: AmountInputResult?) -> Decimal? {
         guard
             let input = input,
@@ -291,6 +295,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveAssetViews()
         provideDetailsViewModel(isAvailable: false)
         provideButtonState()
+        provideSettingsState()
         // TODO: get from settings
         slippage = .percent(of: 1)
         interactor.setup()
@@ -301,6 +306,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.payChainAsset = chainAsset
             self?.providePayAssetViews()
             self?.provideButtonState()
+            self?.provideSettingsState()
             self?.refreshQuote(direction: .sell)
             self?.interactor.update(payChainAsset: chainAsset)
         }
@@ -333,6 +339,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         providePayAssetViews()
         provideReceiveAssetViews()
         provideButtonState()
+        provideSettingsState()
         refreshQuote(direction: quoteArgs?.direction ?? .sell)
     }
 

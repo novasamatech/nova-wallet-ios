@@ -13,6 +13,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
+    func didReceiveSettingsState(isAvailable: Bool)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -34,7 +35,7 @@ protocol SwapSetupInteractorInputProtocol: AnyObject {
     func update(receiveChainAsset: ChainAsset)
     func update(payChainAsset: ChainAsset)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(args: AssetConversion.CallArgs) -> Void
+    func calculateFee(args: AssetConversion.CallArgs)
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {

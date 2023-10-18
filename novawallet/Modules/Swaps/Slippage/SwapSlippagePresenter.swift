@@ -73,7 +73,7 @@ final class SwapSlippagePresenter {
 extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     func setup() {
         let viewModel = prefilledPercents.map {
-            Percent(
+            SlippagePercentViewModel(
                 value: $0,
                 title: title(for: $0 / (percentFormatter.multiplier?.decimalValue ?? 1))
             )
@@ -89,7 +89,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         view?.didReceivePreFilledPercents(viewModel: viewModel)
     }
 
-    func select(percent: Percent) {
+    func select(percent: SlippagePercentViewModel) {
         amountInput = percent.value
         provideAmountViewModel()
         provideResetButtonState()

@@ -214,6 +214,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
     }
+
+    func didReceiveSettingsState(isAvailable: Bool) {
+        navigationItem.rightBarButtonItem?.isEnabled = isAvailable
+    }
 }
 
 extension SwapSetupViewController: Localizable {

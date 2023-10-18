@@ -100,7 +100,7 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
 }
 
 extension SwapSlippageViewController: SwapSlippageViewProtocol {
-    func didReceivePreFilledPercents(viewModel: [Percent]) {
+    func didReceivePreFilledPercents(viewModel: [SlippagePercentViewModel]) {
         rootView.amountInput.bind(viewModel: viewModel)
     }
 
@@ -115,7 +115,7 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
 }
 
 extension SwapSlippageViewController: SwapSlippageInputViewDelegateProtocol {
-    func didSelect(percent: Percent, sender _: Any?) {
+    func didSelect(percent: SlippagePercentViewModel, sender _: Any?) {
         presenter.select(percent: percent)
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Percent {
+struct SlippagePercentViewModel {
     let value: Decimal
     let title: String
 }
