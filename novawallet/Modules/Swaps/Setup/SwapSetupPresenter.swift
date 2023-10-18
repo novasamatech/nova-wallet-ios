@@ -8,11 +8,15 @@ final class SwapSetupPresenter {
     let interactor: SwapSetupInteractorInputProtocol
     let viewModelFactory: SwapsSetupViewModelFactoryProtocol
 
-    private var assetBalance: AssetBalance?
+    private var payAssetBalance: AssetBalance?
+    private var feeAssetBalance: AssetBalance?
     private var payChainAsset: ChainAsset?
+    private var receiveChainAsset: ChainAsset?
+    private var feeChainAsset: ChainAsset?
     private var payAssetPriceData: PriceData?
     private var receiveAssetPriceData: PriceData?
-    private var receiveChainAsset: ChainAsset?
+    private var feeAssetPriceData: PriceData?
+
     private var payAmountInput: AmountInputResult?
     private var receiveAmountInput: Decimal?
     private var fee: BigUInt?
@@ -25,7 +29,7 @@ final class SwapSetupPresenter {
 
     private var feeIdentifier: String?
     private var accountId: AccountId?
-    private var splippage: BigRational = .percent(of: 1)
+    private var slippage: BigRational = .percent(of: 1)
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -55,7 +59,7 @@ final class SwapSetupPresenter {
     private func providePayTitle() {
         let payTitleViewModel = viewModelFactory.payTitleViewModel(
             assetDisplayInfo: payChainAsset?.assetDisplayInfo,
-            maxValue: assetBalance?.transferable,
+            maxValue: payAssetBalance?.transferable,
             locale: selectedLocale
         )
         view?.didReceiveTitle(payViewModel: payTitleViewModel)
@@ -135,28 +139,10 @@ final class SwapSetupPresenter {
     }
 
     private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
-        guard
-            let input = input,
-            let payChainAsset = payChainAsset else {
+        guard let input = input, let balanceMinusFee = balanceMinusFee() else {
             return nil
         }
-        let includedFee: BigUInt
-        switch input {
-        case .rate:
-            includedFee = fee ?? 0
-        case .absolute:
-            includedFee = 0
-        }
-
-        let transferable = assetBalance?.transferable ?? 0
-        let balance = max(transferable - includedFee, 0)
-        guard let balanceDecimal = Decimal.fromSubstrateAmount(
-            balance,
-            precision: payChainAsset.asset.displayInfo.assetPrecision
-        ) else {
-            return nil
-        }
-        return input.absoluteValue(from: balanceDecimal)
+        return input.absoluteValue(from: balanceMinusFee)
     }
 
     private func providePayAssetViews() {
@@ -196,7 +182,7 @@ final class SwapSetupPresenter {
     }
 
     private func provideFeeViewModel() {
-        guard let payChainAsset = payChainAsset, receiveChainAsset != nil else {
+        guard quoteArgs != nil, let feeChainAsset = feeChainAsset else {
             return
         }
         guard let fee = fee else {
@@ -205,8 +191,8 @@ final class SwapSetupPresenter {
         }
         let viewModel = viewModelFactory.feeViewModel(
             amount: fee,
-            assetDisplayInfo: payChainAsset.assetDisplayInfo,
-            priceData: payAssetPriceData,
+            assetDisplayInfo: feeChainAsset.assetDisplayInfo,
+            priceData: feeAssetPriceData,
             locale: selectedLocale
         )
 
@@ -225,7 +211,7 @@ final class SwapSetupPresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: quoteArgs.direction,
-            slippage: splippage
+            slippage: slippage
         )
 
         guard args.identifier != feeIdentifier else {
@@ -294,6 +280,24 @@ final class SwapSetupPresenter {
         provideRateViewModel()
         provideFeeViewModel()
     }
+
+    private func balanceMinusFee() -> Decimal? {
+        guard let payChainAsset = payChainAsset, let feeChainAsset = feeChainAsset else {
+            return nil
+        }
+        let balanceValue = payAssetBalance?.transferable ?? 0
+        let feeValue = payChainAsset == feeChainAsset ? fee : 0
+
+        let precision = Int16(feeChainAsset.asset.precision)
+
+        guard
+            let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
+            let fee = Decimal.fromSubstrateAmount(feeValue ?? 0, precision: precision) else {
+            return 0
+        }
+
+        return balance - fee
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
@@ -308,6 +312,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func selectPayToken() {
         wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
             self?.payChainAsset = chainAsset
+            // TODO: select fee asset
+            self?.feeChainAsset = chainAsset.chain.utilityAsset().map {
+                ChainAsset(chain: chainAsset.chain, asset: $0)
+            }
             self?.providePayAssetViews()
             self?.provideButtonState()
             self?.refreshQuote(direction: .sell, forceUpdate: false)
@@ -421,13 +429,17 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 self?.estimateFee()
             }
         case let .assetBalance(_, chainAssetId, accountId):
-            guard accountId == self.accountId,
-                  let payChainAsset = payChainAsset,
-                  payChainAsset.chainAssetId == chainAssetId else {
-                return
-            }
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.update(payChainAsset: payChainAsset)
+            switch chainAssetId {
+            case payChainAsset?.chainAssetId:
+                wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                    self?.payChainAsset.map { self?.interactor.update(payChainAsset: $0) }
+                }
+            case feeChainAsset?.chainAssetId:
+                wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                    self?.feeChainAsset.map { self?.interactor.update(feeChainAsset: $0) }
+                }
+            default:
+                break
             }
         }
     }
@@ -474,12 +486,18 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     }
 
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        if payChainAsset?.asset.priceId == priceId {
+        switch priceId {
+        case payChainAsset?.asset.priceId:
             payAssetPriceData = price
             providePayInputPriceViewModel()
-        } else if receiveChainAsset?.asset.priceId == priceId {
+        case receiveChainAsset?.asset.priceId:
             receiveAssetPriceData = price
             provideReceiveInputPriceViewModel()
+        case feeChainAsset?.asset.priceId:
+            feeAssetPriceData = price
+            provideFeeViewModel()
+        default:
+            break
         }
     }
 
@@ -487,12 +505,19 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         accountId = payAccountId
     }
 
-    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId) {
-        guard accountId == self.accountId, payChainAsset?.chainAssetId == chainAsset else {
-            return
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId _: AccountId) {
+        if chainAsset == payChainAsset?.chainAssetId {
+            payAssetBalance = balance
+            providePayTitle()
         }
-        assetBalance = balance
-        providePayTitle()
+        if chainAsset == feeChainAsset?.chainAssetId {
+            feeAssetBalance = balance
+            if case let .rate = payAmountInput {
+                providePayInputPriceViewModel()
+                providePayAmountInputViewModel()
+                provideButtonState()
+            }
+        }
     }
 }
 
