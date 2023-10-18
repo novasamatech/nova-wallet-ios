@@ -39,8 +39,21 @@ final class SwapSlippagePresenter {
     }
 
     private func title(for percent: Decimal) -> String {
-        let value = percent / (percentFormatter.multiplier?.decimalValue ?? 1)
-        return percentFormatter.stringFromDecimal(value) ?? ""
+        percentFormatter.stringFromDecimal(value(for: percent)) ?? ""
+    }
+
+    private func value(for percent: Decimal) -> Decimal {
+        percent / (percentFormatter.multiplier?.decimalValue ?? 1)
+    }
+
+    private func initialPercent() -> Decimal? {
+        if let percent = initPercent, percent.denominator != 0 {
+            let numerator = percent.numerator.decimal(precision: 0)
+            let denominator = percent.denominator.decimal(precision: 0)
+            return numerator / denominator
+        } else {
+            return nil
+        }
     }
 
     private func provideAmountViewModel() {
@@ -57,7 +70,7 @@ final class SwapSlippagePresenter {
     }
 
     private func provideResetButtonState() {
-        let amountChanged = amountInput.map { fraction(from: $0) } != initPercent
+        let amountChanged = amountInput != initialPercent()
         view?.didReceiveResetState(available: amountChanged)
     }
 
@@ -77,17 +90,12 @@ final class SwapSlippagePresenter {
     }
 
     private func fraction(from number: Decimal) -> BigRational {
-        var roundedNumber = Decimal()
-        var value = number
-        NSDecimalRound(
-            &roundedNumber,
-            &value,
-            percentFormatter.maximumFractionDigits,
-            NSDecimalNumber.RoundingMode.plain
-        )
+        let decimalNumber = NSDecimalNumber(decimal: number)
+        guard decimalNumber.doubleValue.remainder(dividingBy: 1) != 0 else {
+            return .init(numerator: BigUInt(decimalNumber.intValue), denominator: 1)
+        }
 
-        let decimalNumber = NSDecimalNumber(decimal: roundedNumber)
-        let scale = -roundedNumber.exponent
+        let scale = -number.exponent
         let numerator = decimalNumber.multiplying(byPowerOf10: Int16(scale)).intValue
         let denominator = Int(truncating: pow(10, scale) as NSNumber)
         return .init(numerator: BigUInt(numerator), denominator: BigUInt(denominator))
@@ -103,11 +111,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
             )
         }
 
-        if let percent = initPercent, percent.denominator != 0 {
-            let numerator = percent.numerator.decimal(precision: chainAsset.asset.precision)
-            let denominator = percent.denominator.decimal(precision: chainAsset.asset.precision)
-            amountInput = numerator / denominator
-        }
+        amountInput = initialPercent()
         provideResetButtonState()
         provideAmountViewModel()
         view?.didReceivePreFilledPercents(viewModel: viewModel)
@@ -131,12 +135,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func reset() {
-        if let initPercent = initPercent, initPercent.denominator != 0 {
-            amountInput = initPercent.numerator.decimal(precision: chainAsset.asset.precision) / initPercent.denominator.decimal(precision: chainAsset.asset.precision)
-        } else {
-            amountInput = nil
-        }
-
+        amountInput = initialPercent()
         provideAmountViewModel()
         provideResetButtonState()
         provideErrors()

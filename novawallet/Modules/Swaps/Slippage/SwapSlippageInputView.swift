@@ -241,7 +241,7 @@ extension SwapSlippageInputView {
             textField.textColor = color
             symbolLabel.textColor = color
         case .normal:
-            roundedBackgroundView?.strokeWidth = 0
+            roundedBackgroundView?.strokeWidth = textField.isFirstResponder ? 0.5 : 0.0
             roundedBackgroundView?.strokeColor = R.color.colorActiveBorder()!
             textField.textColor = R.color.colorTextPrimary()
             symbolLabel.textColor = R.color.colorTextPrimary()
