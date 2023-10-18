@@ -25,7 +25,7 @@ struct TitleDetailsSheetViewFactory {
         return view
     }
 
-    static func createSelfSizedView(
+    static func createContentSizedView(
         from viewModel: TitleDetailsSheetViewModel,
         allowsSwipeDown: Bool = true
     ) -> MessageSheetViewProtocol {

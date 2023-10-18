@@ -129,9 +129,16 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
         operationQueue.addOperation(runtimeCoderFactoryOperation)
     }
 
-    func chainAccountResponse(for chainAsset: ChainAsset) -> ChainAccountResponse? {
+    private func chainAccountResponse(for chainAsset: ChainAsset) -> ChainAccountResponse? {
         let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest())
         return metaChainAccountResponse?.chainAccount
+    }
+
+    private func providersEqual<T>(_ provider1: StreamableProvider<T>?, _ provider2: StreamableProvider<T>?) -> Bool {
+        if provider1 == nil, provider2 == nil {
+            return false
+        }
+        return provider1 === provider2
     }
 }
 
@@ -152,44 +159,37 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     }
 
     func update(payChainAsset: ChainAsset?) {
-        guard let payChainAsset = payChainAsset else {
-            extrinsicService = nil
-            presenter?.didReceive(payAccountId: nil)
-            return
-        }
-
-        if payAssetPriceProvider !== feeAssetPriceProvider {
+        if !providersEqual(payAssetPriceProvider, feeAssetPriceProvider) {
             clear(streamableProvider: &payAssetPriceProvider)
-            payAssetPriceProvider = priceSubscription(chainAsset: payChainAsset)
+            payAssetPriceProvider = payChainAsset.map { priceSubscription(chainAsset: $0) } ?? nil
         }
 
-        if payAssetBalanceProvider !== feeAssetBalanceProvider {
+        if !providersEqual(payAssetBalanceProvider, feeAssetBalanceProvider) {
             clear(streamableProvider: &payAssetBalanceProvider)
-            payAssetBalanceProvider = assetBalanceSubscription(chainAsset: payChainAsset)
+            payAssetBalanceProvider = payChainAsset.map { assetBalanceSubscription(chainAsset: $0) } ?? nil
         }
 
-        if let chainAccount = chainAccountResponse(for: payChainAsset) {
+        if let payChainAsset = payChainAsset,
+           let chainAccount = chainAccountResponse(for: payChainAsset) {
             extrinsicService = extrinsicServiceFactory.createService(
                 account: chainAccount,
                 chain: payChainAsset.chain
             )
             presenter?.didReceive(payAccountId: chainAccount.accountId)
         } else {
+            extrinsicService = nil
             presenter?.didReceive(payAccountId: nil)
         }
     }
 
     func update(feeChainAsset: ChainAsset?) {
-        guard let feeChainAsset = feeChainAsset else {
-            return
-        }
-        if feeAssetPriceProvider !== payAssetPriceProvider {
+        if !providersEqual(feeAssetPriceProvider, payAssetPriceProvider) {
             clear(streamableProvider: &feeAssetPriceProvider)
-            feeAssetPriceProvider = priceSubscription(chainAsset: feeChainAsset)
+            feeAssetPriceProvider = feeChainAsset.map { priceSubscription(chainAsset: $0) } ?? nil
         }
-        if feeAssetBalanceProvider !== payAssetBalanceProvider {
+        if !providersEqual(feeAssetBalanceProvider, payAssetBalanceProvider) {
             clear(streamableProvider: &feeAssetBalanceProvider)
-            feeAssetBalanceProvider = assetBalanceSubscription(chainAsset: feeChainAsset)
+            feeAssetBalanceProvider = feeChainAsset.map { assetBalanceSubscription(chainAsset: $0) } ?? nil
         }
     }
 

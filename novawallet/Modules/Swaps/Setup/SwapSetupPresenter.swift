@@ -282,13 +282,13 @@ final class SwapSetupPresenter {
     }
 
     private func balanceMinusFee() -> Decimal? {
-        guard let payChainAsset = payChainAsset, let feeChainAsset = feeChainAsset else {
+        guard let payChainAsset = payChainAsset else {
             return nil
         }
         let balanceValue = payAssetBalance?.transferable ?? 0
         let feeValue = payChainAsset == feeChainAsset ? fee : 0
 
-        let precision = Int16(feeChainAsset.asset.precision)
+        let precision = Int16(payChainAsset.asset.precision)
 
         guard
             let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
@@ -486,18 +486,17 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     }
 
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        switch priceId {
-        case payChainAsset?.asset.priceId:
+        if priceId == payChainAsset?.asset.priceId {
             payAssetPriceData = price
             providePayInputPriceViewModel()
-        case receiveChainAsset?.asset.priceId:
+        }
+        if priceId == receiveChainAsset?.asset.priceId {
             receiveAssetPriceData = price
             provideReceiveInputPriceViewModel()
-        case feeChainAsset?.asset.priceId:
+        }
+        if priceId == feeChainAsset?.asset.priceId {
             feeAssetPriceData = price
             provideFeeViewModel()
-        default:
-            break
         }
     }
 

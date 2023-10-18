@@ -61,7 +61,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             secondaryAction: nil
         )
 
-        let bottomSheet = TitleDetailsSheetViewFactory.createSelfSizedView(from: viewModel)
+        let bottomSheet = TitleDetailsSheetViewFactory.createContentSizedView(from: viewModel)
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
