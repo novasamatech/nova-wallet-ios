@@ -10,6 +10,7 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
     let feeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let selectedAccount: MetaAccountModel
 
@@ -17,9 +18,12 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
     private var quoteCall: CancellableCall?
     private var runtimeOperationCall: CancellableCall?
     private var extrinsicService: ExtrinsicServiceProtocol?
-    private var accountId: AccountId?
 
-    private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
+    private var payAssetPriceProvider: StreamableProvider<PriceData>?
+    private var receiveAssetPriceProvider: StreamableProvider<PriceData>?
+    private var feeAssetPriceProvider: StreamableProvider<PriceData>?
+    private var payAssetBalanceProvider: StreamableProvider<AssetBalance>?
+    private var feeAssetBalanceProvider: StreamableProvider<AssetBalance>?
 
     init(
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
@@ -28,6 +32,7 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedAccount: MetaAccountModel,
         operationQueue: OperationQueue
@@ -38,21 +43,32 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
         self.feeProxy = feeProxy
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.selectedAccount = selectedAccount
         self.operationQueue = operationQueue
     }
 
-    private func performPriceSubscription(chainAsset: ChainAsset) {
-        clear(streamableProvider: &priceProviders[chainAsset.chainAssetId])
-
+    private func priceSubscription(chainAsset: ChainAsset) -> StreamableProvider<PriceData>? {
         guard let priceId = chainAsset.asset.priceId else {
-            return
+            return nil
         }
 
-        priceProviders[chainAsset.chainAssetId] = subscribeToPrice(
+        return subscribeToPrice(
             for: priceId,
             currency: currencyManager.selectedCurrency
+        )
+    }
+
+    private func assetBalanceSubscription(chainAsset: ChainAsset) -> StreamableProvider<AssetBalance>? {
+        guard let accountId = chainAccountResponse(for: chainAsset)?.accountId else {
+            return nil
+        }
+        let chainAssetId = chainAsset.chainAssetId
+        return subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId
         )
     }
 
@@ -77,19 +93,6 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
 
         quoteCall = wrapper
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func update(chainModel: ChainModel) {
-        guard let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(
-            for: chainModel.accountRequest()
-        ) else {
-            return
-        }
-        extrinsicService = extrinsicServiceFactory.createService(
-            account: metaChainAccountResponse.chainAccount,
-            chain: chainModel
-        )
-        accountId = metaChainAccountResponse.chainAccount.accountId
     }
 
     private func fee(args: AssetConversion.CallArgs) {
@@ -125,6 +128,18 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
         runtimeOperationCall = runtimeCoderFactoryOperation
         operationQueue.addOperation(runtimeCoderFactoryOperation)
     }
+
+    private func chainAccountResponse(for chainAsset: ChainAsset) -> ChainAccountResponse? {
+        let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest())
+        return metaChainAccountResponse?.chainAccount
+    }
+
+    private func providersEqual<T>(_ provider1: StreamableProvider<T>?, _ provider2: StreamableProvider<T>?) -> Bool {
+        if provider1 == nil, provider2 == nil {
+            return false
+        }
+        return provider1 === provider2
+    }
 }
 
 extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
@@ -136,18 +151,46 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         quote(args: args)
     }
 
-    func update(receiveChainAsset: ChainAsset) {
-        update(chainModel: receiveChainAsset.chain)
-        performPriceSubscription(chainAsset: receiveChainAsset)
+    func update(receiveChainAsset: ChainAsset?) {
+        clear(streamableProvider: &receiveAssetPriceProvider)
+        if let receiveChainAsset = receiveChainAsset {
+            receiveAssetPriceProvider = priceSubscription(chainAsset: receiveChainAsset)
+        }
     }
 
-    func update(payChainAsset: ChainAsset) {
-        update(chainModel: payChainAsset.chain)
-        performPriceSubscription(chainAsset: payChainAsset)
+    func update(payChainAsset: ChainAsset?) {
+        if !providersEqual(payAssetPriceProvider, feeAssetPriceProvider) {
+            clear(streamableProvider: &payAssetPriceProvider)
+            payAssetPriceProvider = payChainAsset.map { priceSubscription(chainAsset: $0) } ?? nil
+        }
 
-        let metaAccount = selectedAccount.fetchMetaChainAccount(for: payChainAsset.chain.accountRequest())
-        let accountId = metaAccount?.chainAccount.accountId
-        presenter?.didReceive(payAccountId: accountId)
+        if !providersEqual(payAssetBalanceProvider, feeAssetBalanceProvider) {
+            clear(streamableProvider: &payAssetBalanceProvider)
+            payAssetBalanceProvider = payChainAsset.map { assetBalanceSubscription(chainAsset: $0) } ?? nil
+        }
+
+        if let payChainAsset = payChainAsset,
+           let chainAccount = chainAccountResponse(for: payChainAsset) {
+            extrinsicService = extrinsicServiceFactory.createService(
+                account: chainAccount,
+                chain: payChainAsset.chain
+            )
+            presenter?.didReceive(payAccountId: chainAccount.accountId)
+        } else {
+            extrinsicService = nil
+            presenter?.didReceive(payAccountId: nil)
+        }
+    }
+
+    func update(feeChainAsset: ChainAsset?) {
+        if !providersEqual(feeAssetPriceProvider, payAssetPriceProvider) {
+            clear(streamableProvider: &feeAssetPriceProvider)
+            feeAssetPriceProvider = feeChainAsset.map { priceSubscription(chainAsset: $0) } ?? nil
+        }
+        if !providersEqual(feeAssetBalanceProvider, payAssetBalanceProvider) {
+            clear(streamableProvider: &feeAssetBalanceProvider)
+            feeAssetBalanceProvider = feeChainAsset.map { assetBalanceSubscription(chainAsset: $0) } ?? nil
+        }
     }
 
     func calculateFee(
@@ -178,6 +221,31 @@ extension SwapSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSubscripti
             presenter?.didReceive(price: priceData, priceId: priceId)
         case let .failure(error):
             presenter?.didReceive(error: .price(error, priceId))
+        }
+    }
+}
+
+extension SwapSetupInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        let chainAssetId = ChainAssetId(chainId: chainId, assetId: assetId)
+        switch result {
+        case let .success(balance):
+            let balance = balance ?? .createZero(
+                for: .init(chainId: chainId, assetId: assetId),
+                accountId: accountId
+            )
+            presenter?.didReceive(
+                balance: balance,
+                for: chainAssetId,
+                accountId: accountId
+            )
+        case let .failure(error):
+            presenter?.didReceive(error: .assetBalance(error, chainAssetId, accountId))
         }
     }
 }
