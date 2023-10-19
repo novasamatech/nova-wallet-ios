@@ -7,6 +7,7 @@ final class SwapSetupPresenter {
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
     let viewModelFactory: SwapsSetupViewModelFactoryProtocol
+    let dataValidatingFactory: SwapDataValidatorFactoryProtocol
 
     private var assetBalance: AssetBalance?
     private var payChainAsset: ChainAsset?
@@ -429,3 +430,75 @@ extension SwapSetupPresenter: Localizable {
         }
     }
 }
+//
+//
+//extension SwapSetupPresenter {
+//    func validators(spendingAmount: Decimal,
+//                    payChainAsset: ChainAsset,
+//                    feeChainAsset: ChainAsset) -> [DataValidating] {
+//        var validators: [DataValidating] = [
+//            dataValidatingFactory.has(fee: fee?.value, locale: selectedLocale) { [weak self] in
+//                self?.estimateFee()
+//            },
+//
+//            dataValidatingFactory.canSpendAmountInPlank(
+//                balance: assetBalance?.transferable,
+//                spendingAmount: spendingAmount,
+//                asset: payChainAsset.assetDisplayInfo,
+//                locale: selectedLocale
+//            ),
+//
+//            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
+//                balance: ass,
+//                fee: fee?.value,
+//                spendingAmount: isUtilityTransfer ? sendingAmount : nil,
+//                asset: utilityAssetInfo,
+//                locale: selectedLocale
+//            ),
+//
+//            dataValidatingFactory.notViolatingMinBalancePaying(
+//                fee: fee?.value,
+//                total: senderUtilityAssetTotal,
+//                minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
+//                locale: selectedLocale
+//            ),
+//
+//            dataValidatingFactory.receiverWillHaveAssetAccount(
+//                sendingAmount: sendingAmount,
+//                totalAmount: recepientSendingAssetBalance?.totalInPlank,
+//                minBalance: sendingAssetExistence?.minBalance,
+//                locale: selectedLocale
+//            ),
+//
+//            dataValidatingFactory.receiverNotBlocked(
+//                recepientSendingAssetBalance?.blocked,
+//                locale: selectedLocale
+//            )
+//        ]
+//
+//        if !isUtilityTransfer {
+//            let accountProviderValidation = dataValidatingFactory.receiverHasAccountProvider(
+//                utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
+//                utilityMinBalance: utilityAssetMinBalance,
+//                assetExistence: sendingAssetExistence,
+//                locale: selectedLocale
+//            )
+//
+//            validators.append(accountProviderValidation)
+//        }
+//
+//        let optFeeValidation = fee?.validationProvider?.getValidations(
+//            for: view,
+//            onRefresh: { [weak self] in
+//                self?.refreshFee()
+//            },
+//            locale: selectedLocale
+//        )
+//
+//        if let feeValidation = optFeeValidation {
+//            validators.append(feeValidation)
+//        }
+//
+//        return validators
+//    }
+//}
