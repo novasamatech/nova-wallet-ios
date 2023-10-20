@@ -286,7 +286,7 @@ final class SwapSetupPresenter {
             return nil
         }
         let balanceValue = payAssetBalance?.transferable ?? 0
-        let feeValue = payChainAsset == feeChainAsset ? fee : 0
+        let feeValue = payChainAsset.chainAssetId == feeChainAsset?.chainAssetId ? fee : 0
 
         let precision = Int16(payChainAsset.asset.precision)
 
@@ -297,6 +297,21 @@ final class SwapSetupPresenter {
         }
 
         return balance - fee
+    }
+
+    private func handleAssetBalanceError(chainAssetId: ChainAssetId) {
+        switch chainAssetId {
+        case payChainAsset?.chainAssetId:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.payChainAsset.map { self?.interactor.update(payChainAsset: $0) }
+            }
+        case feeChainAsset?.chainAssetId:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.feeChainAsset.map { self?.interactor.update(feeChainAsset: $0) }
+            }
+        default:
+            break
+        }
     }
 }
 
@@ -429,18 +444,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 self?.estimateFee()
             }
         case let .assetBalance(_, chainAssetId, accountId):
-            switch chainAssetId {
-            case payChainAsset?.chainAssetId:
-                wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                    self?.payChainAsset.map { self?.interactor.update(payChainAsset: $0) }
-                }
-            case feeChainAsset?.chainAssetId:
-                wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                    self?.feeChainAsset.map { self?.interactor.update(feeChainAsset: $0) }
-                }
-            default:
-                break
-            }
+            handleAssetBalanceError(chainAssetId: chainAssetId)
         }
     }
 
