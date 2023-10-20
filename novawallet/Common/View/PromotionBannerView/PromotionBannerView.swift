@@ -9,11 +9,12 @@ final class PromotionBannerView: UIView {
     let backgroundView = UIImageView()
 
     let titleLabel: UILabel = .create { label in
-        label.apply(style: .semiboldSubhedlinePrimary)
+        label.apply(style: Constants.titleStyle)
+        label.numberOfLines = 0
     }
 
     let detailsLabel: UILabel = .create { label in
-        label.apply(style: .footnotePrimary)
+        label.apply(style: Constants.detailsStyle)
         label.numberOfLines = 0
     }
 
@@ -60,23 +61,21 @@ final class PromotionBannerView: UIView {
         addSubview(iconImageView)
 
         iconImageView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(24.0)
+            make.trailing.equalToSuperview().inset(Constants.contentInset.right)
             make.centerY.equalToSuperview()
         }
 
         let descriptionView = UIView.vStack(
-            alignment: .fill,
-            spacing: 8.0,
+            spacing: Constants.descriptionVerticalSpacing,
             [titleLabel, detailsLabel]
         )
 
         addSubview(descriptionView)
 
         descriptionView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(12)
-            make.bottom.equalToSuperview().inset(16)
-            make.trailing.lessThanOrEqualTo(iconImageView.snp.leading).offset(-8)
+            make.leading.equalToSuperview().inset(Constants.contentInset.left)
+            make.top.equalToSuperview().inset(Constants.contentInset.top)
+            make.trailing.lessThanOrEqualTo(iconImageView.snp.leading).offset(-Constants.descriptionHorizontalSpacing)
         }
 
         addSubview(closeButton)
@@ -103,5 +102,47 @@ extension PromotionBannerView {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
         iconImageView.image = viewModel.icon
+    }
+}
+
+extension PromotionBannerView {
+    enum Constants {
+        static let descriptionVerticalSpacing: CGFloat = 8
+        static let descriptionHorizontalSpacing: CGFloat = 8
+        static let contentInset: UIEdgeInsets = .init(top: 12, left: 16, bottom: 16, right: 24)
+        static let titleStyle = UILabel.Style.semiboldSubhedlinePrimary
+        static let detailsStyle = UILabel.Style.footnotePrimary
+    }
+
+    static func estimateHeight(for viewModel: ViewModel, width: CGFloat) -> CGFloat {
+        let availableWidth: CGFloat
+
+        let contentWidth = width - Constants.contentInset.left - Constants.contentInset.right
+
+        if let icon = viewModel.icon {
+            availableWidth = contentWidth - Constants.descriptionHorizontalSpacing - icon.size.width
+        } else {
+            availableWidth = contentWidth
+        }
+
+        let titleSize = viewModel.title.boundingRect(
+            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
+            options: .usesLineFragmentOrigin,
+            attributes: [.font: Constants.titleStyle.font],
+            context: nil
+        )
+
+        let descriptionSize = viewModel.details.boundingRect(
+            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
+            options: .usesLineFragmentOrigin,
+            attributes: [.font: Constants.detailsStyle.font],
+            context: nil
+        )
+
+        let descriptionHeight = titleSize.height + descriptionSize.height + Constants.descriptionVerticalSpacing
+
+        let contentHeight = max(descriptionHeight, viewModel.icon?.size.height ?? 0)
+
+        return Constants.contentInset.top + contentHeight + Constants.contentInset.bottom
     }
 }

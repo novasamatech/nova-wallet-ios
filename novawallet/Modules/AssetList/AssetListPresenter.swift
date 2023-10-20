@@ -20,7 +20,7 @@ final class AssetListPresenter {
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
-    private var shouldShowPolkadotPromotion: Bool = false
+    private var shouldShowPolkadotPromotion: Bool = true
 
     private(set) var walletConnectSessionsCount: Int = 0
 
@@ -532,7 +532,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool) {
         shouldShowPolkadotPromotion = shouldShowPolkadotStaking
-
         providePolkadotStakingPromotion()
     }
 }

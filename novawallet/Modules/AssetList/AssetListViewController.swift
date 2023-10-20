@@ -189,7 +189,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        AssetListFlowLayout.SectionType(section: section).insets
+        let sectionType = AssetListFlowLayout.SectionType(section: section)
+        return rootView.collectionViewLayout.sectionInsets(for: sectionType)
     }
 }
 
@@ -465,6 +466,9 @@ extension AssetListViewController: AssetListViewProtocol {
         nftViewModel = viewModel
 
         rootView.collectionView.reloadData()
+
+        let isNftActive = viewModel != nil
+        rootView.collectionViewLayout.setNftsActive(isNftActive)
     }
 
     func didCompleteRefreshing() {
@@ -475,6 +479,9 @@ extension AssetListViewController: AssetListViewProtocol {
         promotionBannerViewModel = viewModel
 
         rootView.collectionView.reloadData()
+
+        let height = AssetListBannerCell.estimateHeight(for: viewModel)
+        rootView.collectionViewLayout.activatePromotionWithHeight(height)
     }
 
     func didClosePromotion() {
@@ -488,6 +495,8 @@ extension AssetListViewController: AssetListViewProtocol {
             let indexPath = AssetListFlowLayout.CellType.banner.indexPath
             self?.rootView.collectionView.deleteItems(at: [indexPath])
         }
+
+        rootView.collectionViewLayout.deactivatePromotion()
     }
 }
 
