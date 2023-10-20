@@ -1394,3 +1394,7 @@
 "swaps.receive.token.selection.title" = "Токен для получения";
 "swaps.rate.description" = "Обменный курс между двумя различными криптовалютами. Он представляет, сколько одной криптовалюты вы можете получить в обмен на определенное количество другой криптовалюты.";
 "swaps.network.fee.description" = "Это комиссия сети, взимаемая блокчейном за обработку и подтверждение любых транзакций. Она может изменяться в зависимости от условий в сети или скорости выполнения транзакции.";
+"swaps.setup.error.not.enough.liquidity.title" = "В пуле недостаточно ликвидности для обмена";
+"swaps.setup.error.insufficient.balance.ed.message" = "You can swap up to %@ since you need to pay %@ for network fee and also convert %@ to %@ to meet %@ minimum balance.";
+"swaps.setup.error.insufficient.balance.message" = "You can swap up to %@ since you need to pay %@ for network fee.";
+"swaps.setup.error.insufficient.balance.action" = "Swap max";

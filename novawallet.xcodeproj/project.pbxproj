@@ -678,6 +678,10 @@
 		77171CAA2A98BC420032B387 /* NominationPoolDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */; };
 		7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */; };
 		7719018E2AE0E71F00D9C918 /* SwapErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */; };
+		771901902AE2424B00D9C918 /* SwapsValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */; };
+		771901932AE2736E00D9C918 /* SwapFeeParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901922AE2736E00D9C918 /* SwapFeeParams.swift */; };
+		771901952AE2739800D9C918 /* SwapMaxErrorParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901942AE2739800D9C918 /* SwapMaxErrorParams.swift */; };
+		771901972AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901962AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift */; };
 		77204EA42A1CD59100BBDE4A /* GenericBorderedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77204EA32A1CD59100BBDE4A /* GenericBorderedView.swift */; };
 		77204EA62A1E0EAA00BBDE4A /* WalletConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77204EA52A1E0EAA00BBDE4A /* WalletConnectionsView.swift */; };
 		7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */; };
@@ -4682,6 +4686,10 @@
 		77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolDataValidatorFactory.swift; sourceTree = "<group>"; };
 		7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDataValidatorFactory.swift; sourceTree = "<group>"; };
 		7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapErrorPresentable.swift; sourceTree = "<group>"; };
+		7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapsValidationTests.swift; sourceTree = "<group>"; };
+		771901922AE2736E00D9C918 /* SwapFeeParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapFeeParams.swift; sourceTree = "<group>"; };
+		771901942AE2739800D9C918 /* SwapMaxErrorParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapMaxErrorParams.swift; sourceTree = "<group>"; };
+		771901962AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+Validating.swift"; sourceTree = "<group>"; };
 		77204EA32A1CD59100BBDE4A /* GenericBorderedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBorderedView.swift; sourceTree = "<group>"; };
 		77204EA52A1E0EAA00BBDE4A /* WalletConnectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectionsView.swift; sourceTree = "<group>"; };
 		7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferendumSearchViewLayout.swift; sourceTree = "<group>"; };
@@ -8961,6 +8969,7 @@
 				C585109AC3A2580AB1253C31 /* SwapSetupInteractor.swift */,
 				BBEB2BC52266AF493D310834 /* SwapSetupViewController.swift */,
 				6A6BCE8F8DB7576E1E5B5974 /* SwapSetupViewFactory.swift */,
+				771901962AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift */,
 			);
 			path = Setup;
 			sourceTree = "<group>";
@@ -9514,8 +9523,18 @@
 			children = (
 				7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */,
 				7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */,
+				771901922AE2736E00D9C918 /* SwapFeeParams.swift */,
+				771901942AE2739800D9C918 /* SwapMaxErrorParams.swift */,
 			);
 			path = Validation;
+			sourceTree = "<group>";
+		};
+		771901912AE2425400D9C918 /* Swaps */ = {
+			isa = PBXGroup;
+			children = (
+				7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */,
+			);
+			path = Swaps;
 			sourceTree = "<group>";
 		};
 		7726E232D196BDD627329E24 /* ParaStkStakeSetup */ = {
@@ -14467,6 +14486,7 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				771901912AE2425400D9C918 /* Swaps */,
 				8440F4A3295AB4C200CAFBF9 /* SecurityLayer */,
 				843461F8290E55BE00379936 /* Governance */,
 				84B7C683289BFA78001A3566 /* Settings */,
@@ -20435,6 +20455,7 @@
 				842876AA24AE049B00D91AD8 /* SelectionTitleTableViewCell.swift in Sources */,
 				840E59B92A187E0700BA6ADD /* GladingPatternModel.swift in Sources */,
 				84CA68DD26BEA60A003B9453 /* ConnectionFactory.swift in Sources */,
+				771901972AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift in Sources */,
 				84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */,
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
@@ -20615,6 +20636,7 @@
 				84FBED0329279CF200FBEB83 /* ContractTransactionHistoryUpdater.swift in Sources */,
 				84893BFE24DA0000008F6A3F /* FieldStatus.swift in Sources */,
 				84F51053263AB440005D15AE /* StakingUnbondSetupLayout.swift in Sources */,
+				771901952AE2739800D9C918 /* SwapMaxErrorParams.swift in Sources */,
 				77F033952A8142B0006BC67E /* StakingTypeValidatorView.swift in Sources */,
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
 				849014BF24AA87E4008F705E /* ScreenAuthorizationProtocol.swift in Sources */,
@@ -21676,6 +21698,7 @@
 				880E40FF298CF1ED0077B18B /* VotesProtocols.swift in Sources */,
 				84FEF3E528089FFB0042CBE7 /* TextInputField.swift in Sources */,
 				84D17EE12805A62600F7BAFF /* DAppAlertPresentable.swift in Sources */,
+				771901932AE2736E00D9C918 /* SwapFeeParams.swift in Sources */,
 				A871B6ABACAE8A811010F792 /* StakingPayoutConfirmationWireframe.swift in Sources */,
 				1795E946F1E386442E96E2BC /* StakingPayoutConfirmationPresenter.swift in Sources */,
 				AEFA82BC4285117096BCBB16 /* StakingPayoutConfirmationInteractor.swift in Sources */,
@@ -23161,6 +23184,7 @@
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
 				8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */,
+				771901902AE2424B00D9C918 /* SwapsValidationTests.swift in Sources */,
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,
