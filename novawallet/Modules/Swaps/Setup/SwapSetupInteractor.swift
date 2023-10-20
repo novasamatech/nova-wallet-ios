@@ -226,6 +226,10 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     ) {
         fee(args: args)
     }
+
+    func remakePriceSubscription(for chainAsset: ChainAsset) {
+        priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
+    }
 }
 
 extension SwapSetupInteractor: ExtrinsicFeeProxyDelegate {

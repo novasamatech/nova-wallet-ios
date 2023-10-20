@@ -313,6 +313,18 @@ final class SwapSetupPresenter {
             break
         }
     }
+
+    func handlePriceError(priceId: AssetModel.PriceId) {
+        wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            guard let self = self else {
+                return
+            }
+            [self.payChainAsset, self.receiveChainAsset, self.feeChainAsset]
+                .compactMap { $0 }
+                .filter { $0.asset.priceId == priceId }
+                .forEach(self.interactor.remakePriceSubscription)
+        }
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
@@ -439,10 +451,8 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
-        case .price:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.estimateFee()
-            }
+        case let .price(_, priceId):
+            handlePriceError(priceId: priceId)
         case let .assetBalance(_, chainAssetId, accountId):
             handleAssetBalanceError(chainAssetId: chainAssetId)
         }
