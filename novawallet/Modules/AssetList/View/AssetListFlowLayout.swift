@@ -6,6 +6,7 @@ enum AssetListMeasurement {
     static let totalBalanceWithLocksHeight: CGFloat = 200.0
     static let settingsHeight: CGFloat = 56.0
     static let nftsHeight = 56.0
+    static let bannerHeight = 102.0
     static let assetHeight: CGFloat = 56.0
     static let assetHeaderHeight: CGFloat = 45.0
     static let emptyStateCellHeight: CGFloat = 230
@@ -20,6 +21,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         case summary
         case nfts
         case settings
+        case promotion
         case assetGroup
 
         init(section: Int) {
@@ -29,6 +31,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             case 1:
                 self = .nfts
             case 2:
+                self = .promotion
+            case 3:
                 self = .settings
             default:
                 self = .assetGroup
@@ -41,10 +45,12 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 return 0
             case .nfts:
                 return 1
-            case .settings:
+            case .promotion:
                 return 2
-            case .assetGroup:
+            case .settings:
                 return 3
+            case .assetGroup:
+                return 4
             }
         }
 
@@ -64,7 +70,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .summary:
                 return 10.0
-            case .settings, .assetGroup, .nfts:
+            case .settings, .assetGroup, .nfts, .promotion:
                 return 0
             }
         }
@@ -75,6 +81,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 return UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
             case .nfts:
                 return UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+            case .promotion:
+                return .zero
             case .settings:
                 return .zero
             case .assetGroup:
@@ -87,6 +95,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         case account
         case totalBalance
         case yourNfts
+        case banner
         case settings
         case asset(sectionIndex: Int, itemIndex: Int)
         case emptyState
@@ -98,6 +107,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             case 1:
                 self = .yourNfts
             case 2:
+                self = .banner
+            case 3:
                 self = indexPath.row == 0 ? .settings : .emptyState
             default:
                 self = .asset(sectionIndex: indexPath.section, itemIndex: indexPath.row)
@@ -112,10 +123,12 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 return IndexPath(item: 1, section: 0)
             case .yourNfts:
                 return IndexPath(item: 0, section: 1)
-            case .settings:
+            case .banner:
                 return IndexPath(item: 0, section: 2)
+            case .settings:
+                return IndexPath(item: 0, section: 3)
             case .emptyState:
-                return IndexPath(item: 1, section: 2)
+                return IndexPath(item: 1, section: 3)
             case let .asset(sectionIndex, itemIndex):
                 return IndexPath(item: itemIndex, section: sectionIndex)
             }
@@ -186,6 +199,14 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             groupY += AssetListMeasurement.nftsHeight
         }
 
+        groupY += SectionType.promotion.insets.top + SectionType.promotion.insets.bottom
+
+        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
+
+        if hasPromotion {
+            groupY += AssetListMeasurement.bannerHeight
+        }
+
         groupY += SectionType.settings.insets.top + AssetListMeasurement.settingsHeight +
             SectionType.settings.insets.bottom
 
@@ -242,6 +263,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             return totalBalanceHeight
         case .yourNfts:
             return AssetListMeasurement.nftsHeight
+        case .banner:
+            return AssetListMeasurement.bannerHeight
         case .settings:
             return AssetListMeasurement.settingsHeight
         case .emptyState:

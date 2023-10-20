@@ -13,6 +13,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     private var headerViewModel: AssetListHeaderViewModel?
     private var groupsViewModel: AssetListViewModel = .init(isFiltered: false, listState: .list(groups: []))
     private var nftViewModel: AssetListNftsViewModel?
+    private var promotionBannerViewModel: PromotionBannerView.ViewModel?
 
     init(presenter: AssetListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -50,6 +51,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
         rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         rootView.collectionView.registerCellClass(AssetListNftsCell.self)
+        rootView.collectionView.registerCellClass(AssetListBannerCell.self)
         rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -147,7 +149,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
                 height: AssetListMeasurement.assetHeaderHeight
             )
 
-        case .summary, .settings, .nfts:
+        case .summary, .settings, .nfts, .promotion:
             return .zero
         }
     }
@@ -169,6 +171,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             }
         case .yourNfts:
             presenter.selectNfts()
+        case .banner:
+            presenter.selectPromotion()
         }
     }
 
@@ -200,6 +204,8 @@ extension AssetListViewController: UICollectionViewDataSource {
             return headerViewModel != nil ? 2 : 0
         case .nfts:
             return nftViewModel != nil ? 1 : 0
+        case .promotion:
+            return promotionBannerViewModel != nil ? 1 : 0
         case .settings:
             return groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
@@ -365,6 +371,24 @@ extension AssetListViewController: UICollectionViewDataSource {
         return cell
     }
 
+    private func providePromotionBannerCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> AssetListBannerCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListBannerCell.self,
+            for: indexPath
+        )!
+
+        if let viewModel = promotionBannerViewModel {
+            cell.bind(viewModel: viewModel)
+        }
+
+        cell.bannerView.delegate = self
+
+        return cell
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -376,6 +400,8 @@ extension AssetListViewController: UICollectionViewDataSource {
             return provideTotalBalanceCell(collectionView, indexPath: indexPath)
         case .yourNfts:
             return provideYourNftsCell(collectionView, indexPath: indexPath)
+        case .banner:
+            return providePromotionBannerCell(collectionView, indexPath: indexPath)
         case .settings:
             return provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
@@ -443,5 +469,30 @@ extension AssetListViewController: AssetListViewProtocol {
 
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
+    }
+
+    func didReceivePromotion(viewModel: PromotionBannerView.ViewModel) {
+        promotionBannerViewModel = viewModel
+
+        rootView.collectionView.reloadData()
+    }
+
+    func didClosePromotion() {
+        guard promotionBannerViewModel != nil else {
+            return
+        }
+
+        rootView.collectionView.performBatchUpdates { [weak self] in
+            self?.promotionBannerViewModel = nil
+
+            let indexPath = AssetListFlowLayout.CellType.banner.indexPath
+            self?.rootView.collectionView.deleteItems(at: [indexPath])
+        }
+    }
+}
+
+extension AssetListViewController: PromotionBannerViewDelegate {
+    func promotionBannerDidRequestClose(view _: PromotionBannerView) {
+        presenter.closePromotion()
     }
 }
