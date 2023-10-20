@@ -284,15 +284,6 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         invalidateLayout()
     }
 
-    func updatePromotionBannerInsets(_ insets: UIEdgeInsets) {
-        guard promotionInsets != insets else {
-            return
-        }
-
-        promotionInsets = insets
-        invalidateLayout()
-    }
-
     func cellHeight(for type: CellType) -> CGFloat {
         switch type {
         case .account:
