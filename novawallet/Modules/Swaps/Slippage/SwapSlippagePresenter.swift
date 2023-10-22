@@ -11,8 +11,8 @@ final class SwapSlippagePresenter {
     let prefilledPercents: [Decimal] = [0.1, 1, 3]
     let initPercent: BigRational?
     let chainAsset: ChainAsset
-    let amountRestriction: (lower: Decimal, upper: Decimal) = (lower: 0.01, upper: 50)
-    let amountRecommendation: (lower: Decimal, upper: Decimal) = (lower: 0.1, upper: 2.3)
+    let amountRestriction: (lower: Decimal, upper: Decimal) = (lower: 0.1, upper: 50)
+    let amountRecommendation: (lower: Decimal, upper: Decimal) = (lower: 0.1, upper: 5)
 
     private var percentFormatter: NumberFormatter
     private var numberFormatter: NumberFormatter
@@ -47,13 +47,7 @@ final class SwapSlippagePresenter {
     }
 
     private func initialPercent() -> Decimal? {
-        if let percent = initPercent, percent.denominator != 0 {
-            let numerator = percent.numerator.decimal(precision: 0)
-            let denominator = percent.denominator.decimal(precision: 0)
-            return numerator / denominator
-        } else {
-            return nil
-        }
+        initPercent?.decimalValue
     }
 
     private func provideAmountViewModel() {

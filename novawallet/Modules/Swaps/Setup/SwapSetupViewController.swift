@@ -100,7 +100,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: R.image.iconSwapSettings(),
+            image: R.image.iconOptions(),
             style: .plain,
             target: self,
             action: #selector(settingsAction)
