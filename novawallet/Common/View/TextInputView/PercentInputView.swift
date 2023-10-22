@@ -1,11 +1,11 @@
 import SnapKit
 import SoraUI
 
-protocol SwapSlippageInputViewDelegateProtocol: AnyObject {
+protocol PercentInputViewDelegateProtocol: AnyObject {
     func didSelect(percent: SlippagePercentViewModel, sender: Any?)
 }
 
-final class SwapSlippageInputView: BackgroundedContentControl {
+final class PercentInputView: BackgroundedContentControl {
     let textField: UITextField = .create {
         $0.font = UIFont.regularSubheadline
         $0.textColor = R.color.colorTextPrimary()
@@ -43,7 +43,7 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         []
     )
 
-    weak var delegate: SwapSlippageInputViewDelegateProtocol?
+    weak var delegate: PercentInputViewDelegateProtocol?
     private(set) var inputViewModel: AmountInputViewModelProtocol?
     private var viewModel: [SlippagePercentViewModel] = []
 
@@ -163,7 +163,7 @@ final class SwapSlippageInputView: BackgroundedContentControl {
         return button
     }
 
-    private func updateViewsVisablilty(for text: String?) {
+    private func updateViewsVisibility(for text: String?) {
         symbolLabel.isHidden = text.isNilOrEmpty
         buttonsStack.isHidden = !text.isNilOrEmpty
         setNeedsLayout()
@@ -171,19 +171,19 @@ final class SwapSlippageInputView: BackgroundedContentControl {
     }
 }
 
-extension SwapSlippageInputView: UITextFieldDelegate {
+extension PercentInputView: UITextFieldDelegate {
     func textField(
         _: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
         let shouldChangeCharacters = inputViewModel?.didReceiveReplacement(string, for: range) ?? false
-        updateViewsVisablilty(for: inputViewModel?.displayAmount)
+        updateViewsVisibility(for: inputViewModel?.displayAmount)
         return shouldChangeCharacters
     }
 
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        updateViewsVisablilty(for: "")
+        updateViewsVisibility(for: "")
         if let text = textField.text {
             inputViewModel?.didReceiveReplacement("", for: NSRange(location: 0, length: text.count))
             textField.text = ""
@@ -194,16 +194,16 @@ extension SwapSlippageInputView: UITextFieldDelegate {
     }
 }
 
-extension SwapSlippageInputView: AmountInputViewModelObserver {
+extension PercentInputView: AmountInputViewModelObserver {
     func amountInputDidChange() {
         textField.text = inputViewModel?.displayAmount
-        updateViewsVisablilty(for: textField.text)
+        updateViewsVisibility(for: textField.text)
 
         sendActions(for: .editingChanged)
     }
 }
 
-extension SwapSlippageInputView {
+extension PercentInputView {
     func bind(viewModel: [SlippagePercentViewModel]) {
         buttonsStack.arrangedSubviews.forEach {
             $0.removeFromSuperview()
@@ -222,11 +222,11 @@ extension SwapSlippageInputView {
 
         self.inputViewModel = inputViewModel
         textField.text = inputViewModel.displayAmount
-        updateViewsVisablilty(for: textField.text)
+        updateViewsVisibility(for: textField.text)
     }
 }
 
-extension SwapSlippageInputView {
+extension PercentInputView {
     enum Style {
         case error
         case normal

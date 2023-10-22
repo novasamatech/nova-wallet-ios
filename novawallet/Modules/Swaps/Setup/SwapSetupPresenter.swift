@@ -215,7 +215,7 @@ final class SwapSetupPresenter {
         guard let quote = quote,
               let accountId = accountId,
               let quoteArgs = quoteArgs,
-              let slippage = self.slippage else {
+              let slippage = slippage else {
             return
         }
 
@@ -364,7 +364,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             percent: slippage,
             chainAsset: payChainAsset
         ) { [weak self, payChainAsset] slippageValue in
-            guard payChainAsset == self?.payChainAsset else {
+            guard payChainAsset.chainAssetId == self?.payChainAsset?.chainAssetId else {
                 return
             }
             self?.slippage = slippageValue

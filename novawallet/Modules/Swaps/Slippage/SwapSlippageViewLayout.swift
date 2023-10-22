@@ -14,7 +14,7 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
         $0.contentInsets = .init(top: 12, left: 0, bottom: 12, right: 0)
     }
 
-    let amountInput = SwapSlippageInputView()
+    let amountInput = PercentInputView()
 
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()

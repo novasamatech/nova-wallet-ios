@@ -707,7 +707,7 @@
 		77740BBC2AD4A7B800E8C06F /* CollapsableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */; };
 		77740BBE2AD4A7F500E8C06F /* SwapDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */; };
 		77740BC02AD4A80D00E8C06F /* SwapRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */; };
-		77740BC42AD8145500E8C06F /* SwapSlippageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC32AD8145500E8C06F /* SwapSlippageInputView.swift */; };
+		77740BC42AD8145500E8C06F /* PercentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC32AD8145500E8C06F /* PercentInputView.swift */; };
 		77740BC62AD849D100E8C06F /* SlippagePercentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC52AD849D100E8C06F /* SlippagePercentViewModel.swift */; };
 		77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799ADC2A74219A00B7E564 /* ButtonState.swift */; };
 		77799ADF2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799ADE2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift */; };
@@ -4720,7 +4720,7 @@
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
 		77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDetailsView.swift; sourceTree = "<group>"; };
 		77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRateView.swift; sourceTree = "<group>"; };
-		77740BC32AD8145500E8C06F /* SwapSlippageInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSlippageInputView.swift; sourceTree = "<group>"; };
+		77740BC32AD8145500E8C06F /* PercentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentInputView.swift; sourceTree = "<group>"; };
 		77740BC52AD849D100E8C06F /* SlippagePercentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlippagePercentViewModel.swift; sourceTree = "<group>"; };
 		77799ADC2A74219A00B7E564 /* ButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonState.swift; sourceTree = "<group>"; };
 		77799ADE2A78DAB200B7E564 /* StartStakingInfoRelaychainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainWireframe.swift; sourceTree = "<group>"; };
@@ -8972,7 +8972,6 @@
 				F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */,
 				2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */,
 				28294C13CF8F62D2FE4D0427 /* SwapSlippageViewFactory.swift */,
-				77740BC32AD8145500E8C06F /* SwapSlippageInputView.swift */,
 			);
 			path = Slippage;
 			sourceTree = "<group>";
@@ -10360,6 +10359,7 @@
 				8422F2ED2887E3D300C7B840 /* TextInputView.swift */,
 				847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */,
 				849F1452294477DA00D9F9BA /* TextWithServiceInputView.swift */,
+				77740BC32AD8145500E8C06F /* PercentInputView.swift */,
 			);
 			path = TextInputView;
 			sourceTree = "<group>";
@@ -22845,7 +22845,7 @@
 				1232A714A96F937330FC0AFA /* GovernanceDelegateConfirmViewFactory.swift in Sources */,
 				4B1FA597B618713C75917816 /* GovernanceYourDelegationsProtocols.swift in Sources */,
 				15B079FA97C96327FD4A2E16 /* GovernanceYourDelegationsWireframe.swift in Sources */,
-				77740BC42AD8145500E8C06F /* SwapSlippageInputView.swift in Sources */,
+				77740BC42AD8145500E8C06F /* PercentInputView.swift in Sources */,
 				75249684C6F3EE4E553DABA1 /* GovernanceYourDelegationsPresenter.swift in Sources */,
 				EB20C6B406155664B981BA94 /* GovernanceYourDelegationsInteractor.swift in Sources */,
 				59A0AF440ABAAA459EF7D993 /* GovernanceYourDelegationsViewController.swift in Sources */,

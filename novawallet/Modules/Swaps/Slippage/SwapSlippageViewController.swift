@@ -124,7 +124,7 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
     }
 }
 
-extension SwapSlippageViewController: SwapSlippageInputViewDelegateProtocol {
+extension SwapSlippageViewController: PercentInputViewDelegateProtocol {
     func didSelect(percent: SlippagePercentViewModel, sender _: Any?) {
         presenter.select(percent: percent)
         updateActionButton()
