@@ -27,9 +27,10 @@ final class SwapSetupPresenter {
         }
     }
 
+    private var slippage: BigRational?
+
     private var feeIdentifier: String?
     private var accountId: AccountId?
-    private var slippage: BigRational = .percent(of: 1)
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -138,6 +139,10 @@ final class SwapSetupPresenter {
         view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
 
+    private func provideSettingsState() {
+        view?.didReceiveSettingsState(isAvailable: payChainAsset != nil)
+    }
+
     private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
         guard let input = input, let balanceMinusFee = balanceMinusFee() else {
             return nil
@@ -200,7 +205,10 @@ final class SwapSetupPresenter {
     }
 
     private func estimateFee() {
-        guard let quote = quote, let quoteArgs = quoteArgs, let accountId = accountId else {
+        guard let quote = quote,
+              let accountId = accountId,
+              let quoteArgs = quoteArgs,
+              let slippage = slippage else {
             return
         }
 
@@ -333,6 +341,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveAssetViews()
         provideDetailsViewModel(isAvailable: false)
         provideButtonState()
+        provideSettingsState()
+        // TODO: get from settings
+        slippage = .fraction(from: 0.5)?.fromPercents()
         interactor.setup()
     }
 
@@ -345,6 +356,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             }
             self?.providePayAssetViews()
             self?.provideButtonState()
+            self?.provideSettingsState()
             self?.refreshQuote(direction: .sell, forceUpdate: false)
             self?.interactor.update(payChainAsset: chainAsset)
         }
@@ -381,6 +393,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         providePayAssetViews()
         provideReceiveAssetViews()
         provideButtonState()
+        provideSettingsState()
         refreshQuote(direction: .sell, forceUpdate: false)
     }
 
@@ -432,6 +445,23 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     // TODO: navigate to confirm screen
     func proceed() {}
+
+    func showSettings() {
+        guard let payChainAsset = payChainAsset else {
+            return
+        }
+        wireframe.showSettings(
+            from: view,
+            percent: slippage,
+            chainAsset: payChainAsset
+        ) { [weak self, payChainAsset] slippageValue in
+            guard payChainAsset.chainAssetId == self?.payChainAsset?.chainAssetId else {
+                return
+            }
+            self?.slippage = slippageValue
+            self?.estimateFee()
+        }
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
@@ -453,7 +483,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             }
         case let .price(_, priceId):
             handlePriceError(priceId: priceId)
-        case let .assetBalance(_, chainAssetId, accountId):
+        case let .assetBalance(_, chainAssetId, _):
             handleAssetBalanceError(chainAssetId: chainAssetId)
         }
     }
@@ -525,7 +555,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
         if chainAsset == feeChainAsset?.chainAssetId {
             feeAssetBalance = balance
-            if case let .rate = payAmountInput {
+            if case .rate = payAmountInput {
                 providePayInputPriceViewModel()
                 providePayAmountInputViewModel()
                 provideButtonState()
