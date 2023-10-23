@@ -14,7 +14,7 @@ final class SwapAssetControl: BackgroundedContentControl {
         }
     }
 
-    var horizontalSpacing: CGFloat = 8 {
+    var horizontalSpacing: CGFloat = 12 {
         didSet {
             setNeedsLayout()
         }
@@ -100,6 +100,7 @@ final class SwapAssetControl: BackgroundedContentControl {
         }
 
         contentView?.addSubview(assetView)
+        changesContentOpacityWhenHighlighted = true
     }
 
     private func lazyIconViewOrCreateIfNeeded() -> AssetIconView {

@@ -135,7 +135,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         if let assetDisplayInfo = assetDisplayInfo, let maxValue = maxValue {
             let amountDecimal = Decimal.fromSubstrateAmount(
                 maxValue,
-                precision: Int16(assetDisplayInfo.displayPrecision)
+                precision: Int16(assetDisplayInfo.assetPrecision)
             ) ?? 0
             let maxValueString = balanceViewModelFactoryFacade.amountFromValue(
                 targetAssetInfo: assetDisplayInfo,

@@ -149,7 +149,7 @@ class CollapsableContainerView: UIView {
     private func applyExpansionState() {
         if expanded {
             contentView.snp.updateConstraints { make in
-                make.top.bottom.equalToSuperview().offset(0)
+                make.top.bottom.equalToSuperview()
             }
             layoutIfNeeded()
             delegate?.didChangeExpansion(isExpanded: true, sender: self)

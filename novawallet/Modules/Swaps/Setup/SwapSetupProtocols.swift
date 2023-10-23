@@ -1,4 +1,5 @@
 import BigInt
+import SoraFoundation
 
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveButtonState(title: String, enabled: Bool)
@@ -26,14 +27,17 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showFeeActions()
     func showFeeInfo()
     func showRateInfo()
+    func selectMaxPayAmount()
 }
 
 protocol SwapSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func update(receiveChainAsset: ChainAsset)
-    func update(payChainAsset: ChainAsset)
+    func update(receiveChainAsset: ChainAsset?)
+    func update(payChainAsset: ChainAsset?)
+    func update(feeChainAsset: ChainAsset?)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(args: AssetConversion.CallArgs) -> Void
+    func calculateFee(args: AssetConversion.CallArgs)
+    func remakePriceSubscription(for chainAsset: ChainAsset)
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {
@@ -42,6 +46,7 @@ protocol SwapSetupInteractorOutputProtocol: AnyObject {
     func didReceive(error: SwapSetupError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
     func didReceive(payAccountId: AccountId?)
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
 }
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {
@@ -55,10 +60,16 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     )
+    func showInfo(
+        from view: ControllerBackedProtocol?,
+        title: LocalizableResource<String>,
+        details: LocalizableResource<String>
+    )
 }
 
 enum SwapSetupError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
     case fetchFeeFailed(Error, TransactionFeeId)
     case price(Error, AssetModel.PriceId)
+    case assetBalance(Error, ChainAssetId, AccountId)
 }
