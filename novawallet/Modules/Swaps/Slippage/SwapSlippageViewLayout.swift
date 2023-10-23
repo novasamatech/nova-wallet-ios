@@ -8,10 +8,10 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
             with: R.color.colorIconSecondary()!
         )
         $0.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
-        $0.imageWithTitleView?.titleFont = .regularFootnote
+        $0.imageWithTitleView?.titleFont = .semiBoldBody
         $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 4
         $0.imageWithTitleView?.layoutType = .horizontalLabelFirst
-        $0.contentInsets = .init(top: 12, left: 0, bottom: 12, right: 0)
+        $0.contentInsets = .init(top: 0, left: 0, bottom: 12, right: 0)
     }
 
     let amountInput = PercentInputView()

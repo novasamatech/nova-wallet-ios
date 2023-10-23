@@ -17,6 +17,6 @@ protocol SwapSlippagePresenterProtocol: AnyObject {
     func reset()
 }
 
-protocol SwapSlippageWireframeProtocol: AnyObject {
+protocol SwapSlippageWireframeProtocol: AnyObject, ShortTextInfoPresentable {
     func close(from view: ControllerBackedProtocol?)
 }

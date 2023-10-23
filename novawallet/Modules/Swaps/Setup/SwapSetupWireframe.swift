@@ -48,6 +48,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
     func showSettings(
         from view: ControllerBackedProtocol?,
         percent: BigRational?,
@@ -66,26 +67,5 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             settingsView.controller,
             animated: true
         )
-    }
-    func showInfo(
-        from view: ControllerBackedProtocol?,
-        title: LocalizableResource<String>,
-        details: LocalizableResource<String>
-    ) {
-        let viewModel = TitleDetailsSheetViewModel(
-            title: title,
-            message: details,
-            mainAction: nil,
-            secondaryAction: nil
-        )
-
-        let bottomSheet = TitleDetailsSheetViewFactory.createContentSizedView(from: viewModel)
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-
-        bottomSheet.controller.modalTransitioningFactory = factory
-        bottomSheet.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(bottomSheet.controller, animated: true)
     }
 }

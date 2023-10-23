@@ -139,11 +139,11 @@ final class SwapSetupPresenter {
         view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
 
-	private func provideSettingsState() {
+    private func provideSettingsState() {
         view?.didReceiveSettingsState(isAvailable: payChainAsset != nil)
     }
 
-  	private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
+    private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
         guard let input = input, let balanceMinusFee = balanceMinusFee() else {
             return nil
         }
