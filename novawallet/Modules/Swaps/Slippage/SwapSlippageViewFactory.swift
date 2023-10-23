@@ -17,7 +17,7 @@ struct SwapSlippageViewFactory {
             numberFormatterLocalizable: amountFormatter.localizableResource(),
             percentFormatterLocalizable: percentFormatter.localizableResource(),
             localizationManager: LocalizationManager.shared,
-            initPercent: percent,
+            initPercent: percent?.toPercents(),
             chainAsset: chainAsset,
             completionHandler: completionHandler
         )

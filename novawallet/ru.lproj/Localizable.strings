@@ -831,7 +831,7 @@
 "account.management.watch.only.hint" = "Это watch-only кошелек, Nova может показать вам баланс и другую информацию, но вы не можете выполнять какие-либо транзакции с этим кошельком.";
 "common.select.wallet" = "Выберите кошелек";
 "welcome.import.subtitle" = "Nova совместима со всеми приложениями";
-"welcome.watch.only.subtitle" = "Отследить л��бой кошелек по его адресу";
+"welcome.watch.only.subtitle" = "Отследить любой кошелек по его адресу";
 "common.ok.back" = "Хорошо, назад";
 "no.key.title" = "Упс! Ключ отсутствует";
 "no.key.message" = "Ваш кошелек доступен только для просмотра, то есть вы не можете выполнять с ним никаких операций";
@@ -1183,7 +1183,7 @@
 "gov.remove.votes.ask.details" = "Вы ранее голосовали в референдумах в %@. Для того, чтобы сделать эти треки доступными для делегирования, вам необходимо удалить голоса.";
 "delegations.list.empty" = "Список делегаций появится здесь";
 "gov.add.delegate.voting.error.title" = "Вы уже голосовали";
-"gov.add.delegate.voting.error.message" = "Пожалуйста, удалите голоса в выбра��ных треках для начала делегирования";
+"gov.add.delegate.voting.error.message" = "Пожалуйста, удалите голоса в выбранных треках для начала делегирования";
 "gov.revoke.delegate.missing.error.title" = "Делегация уже отменена";
 "gov.revoke.delegate.missing.error.message" = "Вы уже отменили делегацию в одном из треков";
 "common.multi.tx.error.no.details.message" = "При отправке транзакций возникла ошибка (%@). Вы хотите повторить?";

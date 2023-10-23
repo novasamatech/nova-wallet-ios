@@ -160,7 +160,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
 
     func apply() {
         if let amountInput = amountInput,
-           let rational = BigRational.fraction(from: amountInput) {
+           let rational = BigRational.fraction(from: amountInput)?.fromPercents() {
             completionHandler(rational)
             wireframe.close(from: view)
         }

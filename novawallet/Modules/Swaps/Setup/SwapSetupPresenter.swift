@@ -343,7 +343,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
         provideSettingsState()
         // TODO: get from settings
-        slippage = .init(numerator: 1, denominator: 10)
+        slippage = .fraction(from: 0.5)?.fromPercents()
         interactor.setup()
     }
 
@@ -483,7 +483,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             }
         case let .price(_, priceId):
             handlePriceError(priceId: priceId)
-        case let .assetBalance(_, chainAssetId, accountId):
+        case let .assetBalance(_, chainAssetId, _):
             handleAssetBalanceError(chainAssetId: chainAssetId)
         }
     }
@@ -555,7 +555,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
         if chainAsset == feeChainAsset?.chainAssetId {
             feeAssetBalance = balance
-            if case let .rate = payAmountInput {
+            if case .rate = payAmountInput {
                 providePayInputPriceViewModel()
                 providePayAmountInputViewModel()
                 provideButtonState()
