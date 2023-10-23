@@ -25,6 +25,16 @@ extension RoundedButton {
         changesContentOpacityWhenHighlighted = true
     }
 
+    func applyIconWithBackgroundStyle() {
+        roundedBackgroundView?.shadowOpacity = 0
+        roundedBackgroundView?.fillColor = R.color.colorBlockBackground()!
+        roundedBackgroundView?.highlightedFillColor = R.color.colorBlockBackground()!
+        roundedBackgroundView?.strokeColor = .clear
+        roundedBackgroundView?.highlightedStrokeColor = .clear
+        roundedBackgroundView?.cornerRadius = 12
+        changesContentOpacityWhenHighlighted = true
+    }
+
     func applySecondaryStyle() {
         roundedBackgroundView?.shadowOpacity = 0.0
         roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!

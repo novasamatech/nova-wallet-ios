@@ -80,6 +80,10 @@ final class AssetListInteractor: AssetListBaseInteractor {
         updateLocksSubscription(from: enabledChainChanges)
     }
 
+    private func providePolkadotStakingPromotion() {
+        presenter?.didReceivePromotionBanner(shouldShowPolkadotStaking: !settingsManager.polkadotStakingPromoSeen)
+    }
+
     private func clearLocksSubscription() {
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
@@ -155,6 +159,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         provideHidesZeroBalances()
         provideWalletConnectSessionsCount()
+        providePolkadotStakingPromotion()
 
         subscribeChains()
 
@@ -207,6 +212,11 @@ final class AssetListInteractor: AssetListBaseInteractor {
 }
 
 extension AssetListInteractor: AssetListInteractorInputProtocol {
+    func markPolkadotStakingPromotionSeen() {
+        settingsManager.polkadotStakingPromoSeen = true
+        providePolkadotStakingPromotion()
+    }
+
     func refresh() {
         if let provider = priceSubscription {
             provider.refresh()
