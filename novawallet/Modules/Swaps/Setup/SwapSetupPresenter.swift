@@ -155,7 +155,7 @@ final class SwapSetupPresenter {
         }
         guard let transferableBalance = Decimal.fromSubstrateAmount(
             payAssetBalance?.transferable ?? 0,
-            precision: Int16(payChainAsset.asset.precision)
+            precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
         ) else {
             return nil
         }
@@ -294,7 +294,7 @@ final class SwapSetupPresenter {
 
     private func refreshQuoteForSell(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset, forceUpdate: Bool) {
         if let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
-            precision: Int16(payChainAsset.asset.precision)), payInPlank > 0 {
+            precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)), payInPlank > 0 {
             let quoteArgs = AssetConversion.QuoteArgs(
                 assetIn: payChainAsset.chainAssetId,
                 assetOut: receiveChainAsset.chainAssetId,
