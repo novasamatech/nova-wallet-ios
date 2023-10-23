@@ -173,4 +173,12 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         walletConnectView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
+
+    func showStaking(from view: AssetListViewProtocol?) {
+        guard let tabBarController = view?.controller.navigationController?.tabBarController else {
+            return
+        }
+
+        tabBarController.selectedIndex = MainTabBarIndex.staking
+    }
 }

@@ -37,6 +37,7 @@ protocol SwapSetupInteractorInputProtocol: AnyObject {
     func update(feeChainAsset: ChainAsset?)
     func calculateQuote(for args: AssetConversion.QuoteArgs)
     func calculateFee(args: AssetConversion.CallArgs)
+    func remakePriceSubscription(for chainAsset: ChainAsset)
 }
 
 protocol SwapSetupInteractorOutputProtocol: AnyObject {
