@@ -1376,3 +1376,5 @@
 "governance.referendums.status.deciding" = "Deciding";
 "common.alert.external.link.disclaimer.title" = "Continue in browser?";
 "common.alert.external.link.disclaimer.message" = "To continue the purchase you will be redirected from Nova Wallet app to %@";
+"polkadot.staking.promotion.title" = "Boost your DOT 🚀";
+"polkadot.staking.promotion.message" = "Received your DOT back from crowdloans? Start staking your DOT today to get the maximum possible rewards!";

@@ -6,20 +6,31 @@ enum AssetListMeasurement {
     static let totalBalanceWithLocksHeight: CGFloat = 200.0
     static let settingsHeight: CGFloat = 56.0
     static let nftsHeight = 56.0
+    static let bannerHeight = 102.0
     static let assetHeight: CGFloat = 56.0
     static let assetHeaderHeight: CGFloat = 45.0
     static let emptyStateCellHeight: CGFloat = 230
     static let decorationInset: CGFloat = 8.0
+    static let promotionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
+    static let summaryInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
+    static let nftsInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
+    static let settingsInsets = UIEdgeInsets.zero
+    static let assetGroupInsets = UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
 }
 
 final class AssetListFlowLayout: UICollectionViewFlowLayout {
     static let assetGroupDecoration = "assetGroupDecoration"
     private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
+    private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
+    private var promotionInsets: UIEdgeInsets = .zero
+    private var nftsInsets: UIEdgeInsets = .zero
+
     enum SectionType: CaseIterable {
         case summary
         case nfts
         case settings
+        case promotion
         case assetGroup
 
         init(section: Int) {
@@ -29,6 +40,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             case 1:
                 self = .nfts
             case 2:
+                self = .promotion
+            case 3:
                 self = .settings
             default:
                 self = .assetGroup
@@ -41,10 +54,12 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 return 0
             case .nfts:
                 return 1
-            case .settings:
+            case .promotion:
                 return 2
-            case .assetGroup:
+            case .settings:
                 return 3
+            case .assetGroup:
+                return 4
             }
         }
 
@@ -64,21 +79,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .summary:
                 return 10.0
-            case .settings, .assetGroup, .nfts:
+            case .settings, .assetGroup, .nfts, .promotion:
                 return 0
-            }
-        }
-
-        var insets: UIEdgeInsets {
-            switch self {
-            case .summary:
-                return UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
-            case .nfts:
-                return UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
-            case .settings:
-                return .zero
-            case .assetGroup:
-                return UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
             }
         }
     }
@@ -87,6 +89,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         case account
         case totalBalance
         case yourNfts
+        case banner
         case settings
         case asset(sectionIndex: Int, itemIndex: Int)
         case emptyState
@@ -98,6 +101,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             case 1:
                 self = .yourNfts
             case 2:
+                self = .banner
+            case 3:
                 self = indexPath.row == 0 ? .settings : .emptyState
             default:
                 self = .asset(sectionIndex: indexPath.section, itemIndex: indexPath.row)
@@ -112,10 +117,12 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 return IndexPath(item: 1, section: 0)
             case .yourNfts:
                 return IndexPath(item: 0, section: 1)
-            case .settings:
+            case .banner:
                 return IndexPath(item: 0, section: 2)
+            case .settings:
+                return IndexPath(item: 0, section: 3)
             case .emptyState:
-                return IndexPath(item: 1, section: 2)
+                return IndexPath(item: 1, section: 3)
             case let .asset(sectionIndex, itemIndex):
                 return IndexPath(item: itemIndex, section: sectionIndex)
             }
@@ -158,6 +165,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         updateItemsBackgroundAttributesIfNeeded()
     }
 
+    // swiftlint:disable:next function_body_length
     private func updateItemsBackgroundAttributesIfNeeded() {
         guard
             let collectionView = collectionView,
@@ -176,9 +184,9 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 totalBalanceHeight
         }
 
-        groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
+        groupY += AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
 
-        groupY += SectionType.nfts.insets.top + SectionType.nfts.insets.bottom
+        groupY += nftsInsets.top + nftsInsets.bottom
 
         let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
 
@@ -186,8 +194,16 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             groupY += AssetListMeasurement.nftsHeight
         }
 
-        groupY += SectionType.settings.insets.top + AssetListMeasurement.settingsHeight +
-            SectionType.settings.insets.bottom
+        groupY += promotionInsets.top + promotionInsets.bottom
+
+        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
+
+        if hasPromotion {
+            groupY += promotionHeight
+        }
+
+        groupY += AssetListMeasurement.settingsInsets.top + AssetListMeasurement.settingsHeight +
+            AssetListMeasurement.settingsInsets.bottom
 
         let initAttributes = [UICollectionViewLayoutAttributes]()
         let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, groupY)) { result, groupIndex in
@@ -199,7 +215,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
 
             let contentHeight = AssetListMeasurement.assetHeaderHeight +
                 CGFloat(numberOfItems) * AssetListMeasurement.assetHeight
-            let decorationHeight = SectionType.assetGroup.insets.top + contentHeight +
+            let decorationHeight = AssetListMeasurement.assetGroupInsets.top + contentHeight +
                 AssetListMeasurement.decorationInset
 
             let itemsDecorationAttributes = UICollectionViewLayoutAttributes(
@@ -215,8 +231,8 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             itemsDecorationAttributes.frame = CGRect(origin: origin, size: size)
             itemsDecorationAttributes.zIndex = -1
 
-            let newPosition = positionY + SectionType.assetGroup.insets.top + contentHeight +
-                SectionType.assetGroup.insets.bottom
+            let newPosition = positionY + AssetListMeasurement.assetGroupInsets.top + contentHeight +
+                AssetListMeasurement.assetGroupInsets.bottom
 
             let newAttributes = attributes + [itemsDecorationAttributes]
 
@@ -234,6 +250,40 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         invalidateLayout()
     }
 
+    func activatePromotionWithHeight(_ height: CGFloat) {
+        let newInsets = AssetListMeasurement.promotionInsets
+
+        guard height != promotionHeight || promotionInsets != newInsets else {
+            return
+        }
+
+        promotionHeight = height
+        promotionInsets = newInsets
+        invalidateLayout()
+    }
+
+    func deactivatePromotion() {
+        let newInsets = UIEdgeInsets.zero
+
+        guard promotionInsets != newInsets else {
+            return
+        }
+
+        promotionInsets = newInsets
+        invalidateLayout()
+    }
+
+    func setNftsActive(_ isActive: Bool) {
+        let newInsets = isActive ? AssetListMeasurement.nftsInsets : .zero
+
+        guard nftsInsets != newInsets else {
+            return
+        }
+
+        nftsInsets = newInsets
+        invalidateLayout()
+    }
+
     func cellHeight(for type: CellType) -> CGFloat {
         switch type {
         case .account:
@@ -242,12 +292,29 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
             return totalBalanceHeight
         case .yourNfts:
             return AssetListMeasurement.nftsHeight
+        case .banner:
+            return promotionHeight
         case .settings:
             return AssetListMeasurement.settingsHeight
         case .emptyState:
             return AssetListMeasurement.emptyStateCellHeight
         case .asset:
             return AssetListMeasurement.assetHeight
+        }
+    }
+
+    func sectionInsets(for type: SectionType) -> UIEdgeInsets {
+        switch type {
+        case .summary:
+            return AssetListMeasurement.summaryInsets
+        case .nfts:
+            return nftsInsets
+        case .promotion:
+            return promotionInsets
+        case .settings:
+            return AssetListMeasurement.settingsInsets
+        case .assetGroup:
+            return AssetListMeasurement.assetGroupInsets
         }
     }
 }

@@ -36,6 +36,11 @@ extension UILabel.Style {
         font: .semiBoldSubheadline
     )
 
+    static let semiboldSubhedlinePrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldSubheadline
+    )
+
     static let semiboldBodyPrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .semiBoldBody
@@ -79,6 +84,11 @@ extension UILabel.Style {
     static let footnoteAccentText = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .regularFootnote
+    )
+
+    static let caption1Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .caption1
     )
 
     static let caption1Secondary = UILabel.Style(
