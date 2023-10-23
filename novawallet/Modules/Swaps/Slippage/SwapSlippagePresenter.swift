@@ -117,6 +117,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         amountInput = initialPercent()
         provideResetButtonState()
         provideAmountViewModel()
+        provideWarnings()
         view?.didReceivePreFilledPercents(viewModel: viewModel)
     }
 
@@ -148,8 +149,8 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func apply() {
-        if let amountInput = amountInput {
-            let rational = BigRational.fraction(from: amountInput)
+        if let amountInput = amountInput,
+           let rational = BigRational.fraction(from: amountInput) {
             completionHandler(rational)
             wireframe.close(from: view)
         }

@@ -21,7 +21,7 @@ final class PercentInputView: BackgroundedContentControl {
         )
 
         $0.keyboardType = .decimalPad
-        $0.clearButtonMode = .whileEditing
+        $0.clearButtonMode = .always
     }
 
     let symbolLabel: UILabel = .create {
@@ -166,6 +166,7 @@ final class PercentInputView: BackgroundedContentControl {
     private func updateViewsVisibility(for text: String?) {
         symbolLabel.isHidden = text.isNilOrEmpty
         buttonsStack.isHidden = !text.isNilOrEmpty
+        textField.clearButtonMode = text.isNilOrEmpty ? .never : .always
         setNeedsLayout()
         layoutIfNeeded()
     }

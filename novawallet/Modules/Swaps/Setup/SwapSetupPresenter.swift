@@ -27,7 +27,6 @@ final class SwapSetupPresenter {
 
     private var feeIdentifier: String?
     private var accountId: AccountId?
-    private var splippage: BigRational = .percent(of: 1)
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -297,7 +296,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
         provideSettingsState()
         // TODO: get from settings
-        slippage = .percent(of: 1)
+        slippage = .init(numerator: 1, denominator: 10)
         interactor.setup()
     }
 
