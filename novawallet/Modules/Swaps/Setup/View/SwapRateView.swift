@@ -95,3 +95,22 @@ extension SwapRateView {
         isLoading = false
     }
 }
+
+final class SwapRateViewCell: RowView<SwapRateView>, StackTableViewCellProtocol {
+    var titleButton: RoundedButton { rowContentView.titleView }
+    var valueLabel: UILabel { rowContentView.valueView }
+
+    func bind(loadableViewModel: LoadableViewModelState<String>) {
+        rowContentView.bind(loadableViewModel: loadableViewModel)
+    }
+}
+
+final class SwapNetworkFeeViewCell: RowView<SwapNetworkFeeView>, StackTableViewCellProtocol {
+    var titleButton: RoundedButton { rowContentView.titleView }
+    var valueTopButton: RoundedButton { rowContentView.valueView.fView }
+    var valueBottomLabel: UILabel { rowContentView.valueView.sView }
+
+    func bind(loadableViewModel: LoadableViewModelState<SwapFeeViewModel>) {
+        rowContentView.bind(loadableViewModel: loadableViewModel)
+    }
+}

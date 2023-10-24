@@ -3,45 +3,45 @@ import SoraUI
 
 final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
     let pairsView = SwapPairView()
-    
+
     let detailsTableView: StackTableView = .create {
         $0.cellHeight = 44
         $0.hasSeparators = true
         $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
     }
-    
-    let rateCell: SwapRateView = .create {
+
+    let rateCell: SwapRateViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.titleView.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
-    }
-    
-    let priceDifferenceCell: SwapRateView = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.titleView.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
-    }
-    
-    let slippageCell: SwapRateView = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.titleView.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
+        $0.titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
     }
 
-    let networkFeeCell = SwapNetworkFeeView(frame: .zero)
+    let priceDifferenceCell: SwapRateViewCell = .create {
+        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
+        $0.titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
+    }
+
+    let slippageCell: SwapRateViewCell = .create {
+        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
+        $0.titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
+    }
+
+    let networkFeeCell = SwapNetworkFeeViewCell()
 
     let walletTableView: StackTableView = .create {
         $0.cellHeight = 44
         $0.hasSeparators = true
         $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
     }
-    
+
     let walletCell = StackTableCell()
 
     let accountCell: StackInfoTableCell = .create {
         $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
     }
-    
+
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
     }
@@ -60,11 +60,11 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         detailsTableView.addArrangedSubview(priceDifferenceCell)
         detailsTableView.addArrangedSubview(slippageCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
-        
+
         addArrangedSubview(walletTableView)
         walletTableView.addArrangedSubview(walletCell)
         walletTableView.addArrangedSubview(accountCell)
-        
+
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -83,12 +83,12 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
             preferredLanguages: locale.rLanguages)
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
-        
+
         walletCell.titleLabel.text = R.string.localizable.commonWallet(
             preferredLanguages: locale.rLanguages)
         accountCell.titleLabel.text = R.string.localizable.commonAccount(
             preferredLanguages: locale.rLanguages)
-        
+
         actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: locale.rLanguages)
     }

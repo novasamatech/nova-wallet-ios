@@ -6,11 +6,13 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     let presenter: SwapConfirmPresenterProtocol
 
-    init(presenter: SwapConfirmPresenterProtocol,
-         localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: SwapConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-        
+
         self.localizationManager = localizationManager
     }
 
@@ -30,14 +32,12 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
         setupHandlers()
         presenter.setup()
     }
-    
+
     private func setupLocalization() {
         rootView.setup(locale: selectedLocale)
     }
-    
-    private func setupHandlers() {
-       
-    }
+
+    private func setupHandlers() {}
 }
 
 extension SwapConfirmViewController: SwapConfirmViewProtocol {}

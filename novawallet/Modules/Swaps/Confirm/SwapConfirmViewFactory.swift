@@ -8,8 +8,10 @@ struct SwapConfirmViewFactory {
 
         let presenter = SwapConfirmPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = SwapConfirmViewController(presenter: presenter,
-                                             localizationManager: LocalizationManager.shared)
+        let view = SwapConfirmViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
