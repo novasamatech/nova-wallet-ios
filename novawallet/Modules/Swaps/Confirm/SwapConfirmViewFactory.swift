@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct SwapConfirmViewFactory {
     static func createView() -> SwapConfirmViewProtocol? {
@@ -7,7 +8,8 @@ struct SwapConfirmViewFactory {
 
         let presenter = SwapConfirmPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = SwapConfirmViewController(presenter: presenter)
+        let view = SwapConfirmViewController(presenter: presenter,
+                                             localizationManager: LocalizationManager.shared)
 
         presenter.view = view
         interactor.presenter = presenter
