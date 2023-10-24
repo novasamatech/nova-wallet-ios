@@ -29,6 +29,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
         setupHandlers()
         setupLocalization()
+        setupNavigationItem()
         presenter.setup()
     }
 
@@ -102,6 +103,15 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         rootView.receiveAmountInputView.textInputView.textField.inputAccessoryView = accessoryView
     }
 
+    private func setupNavigationItem() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: R.image.iconOptions(),
+            style: .plain,
+            target: self,
+            action: #selector(settingsAction)
+        )
+    }
+
     @objc private func selectPayTokenAction() {
         rootView.receiveAmountInputView.endEditing(true)
         presenter.selectPayToken()
@@ -149,6 +159,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func doneAction() {
         view.endEditing(true)
+    }
+
+    @objc private func settingsAction() {
+        presenter.showSettings()
     }
 }
 
@@ -209,6 +223,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
+    }
+
+    func didReceiveSettingsState(isAvailable: Bool) {
+        navigationItem.rightBarButtonItem?.isEnabled = isAvailable
     }
 }
 
