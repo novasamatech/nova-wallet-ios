@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: sinoru/actions-setup-xcode@v2
         with:
-          xcode-version: '14.1'
+          xcode-version: '14.3'
 
       - name: Checkout
         uses: actions/checkout@v2
