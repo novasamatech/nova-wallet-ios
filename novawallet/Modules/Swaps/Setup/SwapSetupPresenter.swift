@@ -490,7 +490,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         }
     }
 
- func showSettings() {
+    func showSettings() {
         guard let payChainAsset = payChainAsset else {
             return
         }
@@ -506,7 +506,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.estimateFee()
         }
     }
-
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
