@@ -14,6 +14,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
+    func didReceiveSettingsState(isAvailable: Bool)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -27,6 +28,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showFeeActions()
     func showFeeInfo()
     func showRateInfo()
+    func showSettings()
     func selectMaxPayAmount()
 }
 
@@ -50,7 +52,7 @@ protocol SwapSetupInteractorOutputProtocol: AnyObject {
 }
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
-    ErrorPresentable, SwapErrorPresentable {
+    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
@@ -60,6 +62,12 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
+    )
+    func showSettings(
+        from view: ControllerBackedProtocol?,
+        percent: BigRational?,
+        chainAsset: ChainAsset,
+        completionHandler: @escaping (BigRational) -> Void
     )
     func showInfo(
         from view: ControllerBackedProtocol?,
