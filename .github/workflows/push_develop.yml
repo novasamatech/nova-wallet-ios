@@ -7,12 +7,14 @@ on:
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-13
+    runs-on: macos-12
 
     steps:
-      - uses: sinoru/actions-setup-xcode@v2
+      - uses: sinoru/actions-setup-xcode@main
         with:
           xcode-version: '14.3'
+          apple-id: 'stlavr12@gmail.com'
+          apple-id-password: 'QjsipEd948VG.$T'
 
       - name: Checkout
         uses: actions/checkout@v2
