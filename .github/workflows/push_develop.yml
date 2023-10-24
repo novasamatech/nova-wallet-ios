@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
       - uses: sinoru/actions-setup-xcode@v2
