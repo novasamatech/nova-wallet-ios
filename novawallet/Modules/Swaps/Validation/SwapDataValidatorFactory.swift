@@ -68,26 +68,26 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
             guard let self = self, let view = self.view else {
                 return
             }
-            let availableToPayString = balanceViewModelFactoryFacade.amountFromValue(
+            let availableToPayString = self.balanceViewModelFactoryFacade.amountFromValue(
                 targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
                 value: preparedValues.availableToPay
             ).value(for: locale)
-            let feeString = balanceViewModelFactoryFacade.amountFromValue(
+            let feeString = self.balanceViewModelFactoryFacade.amountFromValue(
                 targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
                 value: preparedValues.feeDecimal
             ).value(for: locale)
             let errorParams: SwapMaxErrorParams
 
             if preparedValues.toBuyED != 0 {
-                let diffString = balanceViewModelFactoryFacade.amountFromValue(
+                let diffString = self.balanceViewModelFactoryFacade.amountFromValue(
                     targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
                     value: preparedValues.diff
                 ).value(for: locale)
-                let edDepositInFeeTokenString = balanceViewModelFactoryFacade.amountFromValue(
+                let edDepositInFeeTokenString = self.balanceViewModelFactoryFacade.amountFromValue(
                     targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
                     value: preparedValues.edDepositInFeeTokenDecimal
                 ).value(for: locale)
-                let edString = balanceViewModelFactoryFacade.amountFromValue(
+                let edString = self.balanceViewModelFactoryFacade.amountFromValue(
                     targetAssetInfo: params.edChainAsset.assetDisplayInfo,
                     value: preparedValues.edDecimal
                 ).value(for: locale)
