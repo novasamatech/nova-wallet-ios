@@ -74,6 +74,36 @@ final class SwapSetupInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning
         self.operationQueue = operationQueue
     }
 
+    private func updateExtrinsicService() {
+        guard let chainAsset = feeChainAsset, let chainAccount = chainAccountResponse(for: chainAsset) else {
+            extrinsicService = nil
+            return
+        }
+
+        guard !chainAsset.isUtilityAsset else {
+            extrinsicService = extrinsicServiceFactory.createService(
+                account: chainAccount,
+                chain: chainAsset.chain
+            )
+            return
+        }
+
+        if
+            let assetType = chainAsset.asset.type,
+            case .statemine = AssetType(rawValue: assetType),
+            let typeExtras = chainAsset.asset.typeExtras,
+            let extras = try? typeExtras.map(to: StatemineAssetExtras.self),
+            let assetId = UInt32(extras.assetId) {
+            extrinsicService = extrinsicServiceFactory.createService(
+                account: chainAccount,
+                chain: chainAsset.chain,
+                feeAssetId: assetId
+            )
+        } else {
+            extrinsicService = nil
+        }
+    }
+
     private func updateSubscriptions() {
         priceProviders = clear(providers: priceProviders)
         assetBalanceProviders = clear(providers: assetBalanceProviders)
@@ -197,26 +227,25 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
 
         guard let chainAsset = payChainAsset,
               let chainAccount = chainAccountResponse(for: chainAsset) else {
-            extrinsicService = nil
             presenter?.didReceive(payAccountId: nil)
             return
         }
+        
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
 
-        extrinsicService = extrinsicServiceFactory.createService(
-            account: chainAccount,
-            chain: chainAsset.chain
-        )
         presenter?.didReceive(payAccountId: chainAccount.accountId)
     }
 
     func update(feeChainAsset: ChainAsset?) {
         self.feeChainAsset = feeChainAsset
 
+        updateExtrinsicService()
+
         guard let chainAsset = feeChainAsset else {
             return
         }
+
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
