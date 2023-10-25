@@ -77,6 +77,9 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         slippageCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupSlippage(
             preferredLanguages: locale.rLanguages
         )
+        priceDifferenceCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupPriceDifference(
+            preferredLanguages: locale.rLanguages
+        )
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
             preferredLanguages: locale.rLanguages)
         networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(

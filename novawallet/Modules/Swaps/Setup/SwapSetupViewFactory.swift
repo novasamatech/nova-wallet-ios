@@ -35,7 +35,7 @@ struct SwapSetupViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.basePresenter = presenter
 
         return view
     }

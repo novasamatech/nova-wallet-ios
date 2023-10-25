@@ -5,10 +5,10 @@ final class SwapPairView: UIView {
     let leftAssetView = SwapElementView()
     let rigthAssetView = SwapElementView()
 
-    let arrowView: UIImageView = .create {
-        $0.backgroundColor = R.color.colorSecondaryScreenBackground()
-        $0.layer.cornerRadius = 24
-        $0.image = R.image.iconForward()
+    let arrowView: RoundedButton = .create {
+        $0.imageWithTitleView?.iconImage = R.image.iconForward()
+        $0.backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
+        $0.roundedBackgroundView?.cornerRadius = 24
     }
 
     override init(frame: CGRect) {
@@ -25,7 +25,7 @@ final class SwapPairView: UIView {
     }
 
     private func setupLayout() {
-        let stackView = UIView.hStack(distribution: .fillEqually, [
+        let stackView = UIView.hStack(distribution: .fillEqually, spacing: 8, [
             leftAssetView,
             rigthAssetView
         ])

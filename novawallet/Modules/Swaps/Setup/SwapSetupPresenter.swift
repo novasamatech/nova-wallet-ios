@@ -443,8 +443,21 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         )
     }
 
-    // TODO: navigate to confirm screen
-    func proceed() {}
+    func proceed() {
+        guard let payChainAsset = payChainAsset,
+              let receiveChainAsset = receiveChainAsset,
+              let feeChainAsset = feeChainAsset,
+              let slippage = slippage else {
+            return
+        }
+        wireframe.showConfirmation(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: feeChainAsset,
+            slippage: slippage
+        )
+    }
 
     func showSettings() {
         guard let payChainAsset = payChainAsset else {

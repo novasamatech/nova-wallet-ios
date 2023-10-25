@@ -32,22 +32,14 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func selectMaxPayAmount()
 }
 
-protocol SwapSetupInteractorInputProtocol: AnyObject {
+protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func setup()
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
-    func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(args: AssetConversion.CallArgs)
-    func remakePriceSubscription(for chainAsset: ChainAsset)
 }
 
-protocol SwapSetupInteractorOutputProtocol: AnyObject {
-    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs)
-    func didReceive(fee: BigUInt?, transactionId: TransactionFeeId)
-    func didReceive(error: SwapSetupError)
-    func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
-    func didReceive(payAccountId: AccountId?)
+protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
 }
 
@@ -72,6 +64,13 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         from view: ControllerBackedProtocol?,
         title: LocalizableResource<String>,
         details: LocalizableResource<String>
+    )
+    func showConfirmation(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        feeChainAsset: ChainAsset,
+        slippage: BigRational
     )
 }
 

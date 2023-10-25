@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 final class SwapConfirmPresenter {
     weak var view: SwapConfirmViewProtocol?
@@ -15,7 +16,19 @@ final class SwapConfirmPresenter {
 }
 
 extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 }
 
-extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {}
+extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
+    func didReceive(quote _: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {}
+
+    func didReceive(fee _: BigUInt?, transactionId _: TransactionFeeId) {}
+
+    func didReceive(error _: SwapSetupError) {}
+
+    func didReceive(price _: PriceData?, priceId _: AssetModel.PriceId) {}
+
+    func didReceive(payAccountId _: AccountId?) {}
+}

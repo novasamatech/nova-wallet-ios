@@ -1,11 +1,11 @@
-protocol SwapConfirmViewProtocol: AnyObject {}
+protocol SwapConfirmViewProtocol: ControllerBackedProtocol {}
 
 protocol SwapConfirmPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol SwapConfirmInteractorInputProtocol: AnyObject {}
+protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {}
 
-protocol SwapConfirmInteractorOutputProtocol: AnyObject {}
+protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {}
 
 protocol SwapConfirmWireframeProtocol: AnyObject {}
