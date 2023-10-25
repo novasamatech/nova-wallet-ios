@@ -62,7 +62,7 @@ final class SwapSlippagePresenter {
         view?.didReceiveInput(viewModel: inputViewModel)
     }
 
-    private func provideButtonsState() {
+    private func provideButtonStates() {
         let amountChanged = amountInput != initialPercent()
         view?.didReceiveResetState(available: amountChanged)
         view?.didReceiveButtonState(available: amountChanged)
@@ -117,7 +117,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         }
 
         amountInput = initialPercent()
-        provideButtonsState()
+        provideButtonStates()
         provideAmountViewModel()
         provideWarnings()
         view?.didReceivePreFilledPercents(viewModel: viewModel)
@@ -126,14 +126,14 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     func select(percent: SlippagePercentViewModel) {
         amountInput = percent.value
         provideAmountViewModel()
-        provideButtonsState()
+        provideButtonStates()
         provideErrors()
         provideWarnings()
     }
 
     func updateAmount(_ amount: Decimal?) {
         amountInput = amount
-        provideButtonsState()
+        provideButtonStates()
         provideErrors()
         provideWarnings()
     }
@@ -155,7 +155,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     func reset() {
         amountInput = initialPercent()
         provideAmountViewModel()
-        provideButtonsState()
+        provideButtonStates()
         provideErrors()
         provideWarnings()
     }
