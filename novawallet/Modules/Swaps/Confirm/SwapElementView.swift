@@ -50,7 +50,7 @@ final class SwapElementView: UIView {
         setupLayout()
     }
 
-    lazy var contentView = UIView.vStack([
+    lazy var contentView = UIView.vStack(distribution: .equalCentering, [
         imageView,
         valueLabel,
         priceLabel,
@@ -72,6 +72,10 @@ final class SwapElementView: UIView {
 
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(contentInsets)
+        }
+
+        imageView.snp.makeConstraints {
+            $0.height.width.equalTo(48)
         }
     }
 }
