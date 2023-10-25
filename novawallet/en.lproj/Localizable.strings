@@ -1398,6 +1398,10 @@
 "swaps.setup.slippage.description" = "Swap slippage is a common occurrence in decentralized trading where the final price of a swap transaction might slightly differ from the expected price, due to changing market conditions.";
 "swaps.rate.description" = "Exchange rate between two different cryptocurrencies. It represents how much of one cryptocurrency you can get in exchange for a certain amount of another cryptocurrency.";
 "swaps.network.fee.description" = "A network fees charged by the blockchain to process and validate any transactions. May vary depending on network conditions or transaction speed.";
+"swaps.setup.error.not.enough.liquidity.title" = "Pool doesn’t have enough liquidity to swap";
+"swaps.setup.error.insufficient.balance.ed.message" = "You can swap up to %@ since you need to pay %@ for network fee and also convert %@ to %@ to meet %@ minimum balance.";
+"swaps.setup.error.insufficient.balance.message" = "You can swap up to %@ since you need to pay %@ for network fee.";
+"swaps.setup.error.insufficient.balance.action" = "Swap max";
 "common.alert.external.link.disclaimer.title" = "Continue in browser?";
 "common.alert.external.link.disclaimer.message" = "To continue the purchase you will be redirected from Nova Wallet app to %@";
 "polkadot.staking.promotion.title" = "Boost your DOT 🚀";

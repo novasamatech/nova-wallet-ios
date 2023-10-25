@@ -43,7 +43,8 @@ protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
 }
 
-protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable, ShortTextInfoPresentable {
+protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
+    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,

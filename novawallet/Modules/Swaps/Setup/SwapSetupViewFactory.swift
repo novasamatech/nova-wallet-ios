@@ -21,11 +21,16 @@ struct SwapSetupViewFactory {
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             networkViewModelFactory: NetworkViewModelFactory()
         )
+        let dataValidatingFactory = SwapDataValidatorFactory(
+            presentable: wireframe,
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
 
         let presenter = SwapSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared
         )
 
@@ -36,6 +41,7 @@ struct SwapSetupViewFactory {
 
         presenter.view = view
         interactor.basePresenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
