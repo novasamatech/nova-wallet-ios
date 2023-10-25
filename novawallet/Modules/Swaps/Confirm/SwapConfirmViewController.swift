@@ -40,7 +40,53 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
     private func setupHandlers() {}
 }
 
-extension SwapConfirmViewController: SwapConfirmViewProtocol {}
+extension SwapConfirmViewController: SwapConfirmViewProtocol {
+    func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel) {
+        rootView.pairsView.leftAssetView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel) {
+        rootView.pairsView.rigthAssetView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveRate(viewModel: LoadableViewModelState<String>) {
+        rootView.rateCell.bind(loadableViewModel: viewModel)
+    }
+
+    func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?) {
+        if let viewModel = viewModel {
+            rootView.priceDifferenceCell.isHidden = false
+            rootView.priceDifferenceCell.bind(differenceViewModel: viewModel)
+        } else {
+            rootView.priceDifferenceCell.isHidden = true
+        }
+    }
+
+    func didReceiveSlippage(viewModel: String) {
+        rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel))
+    }
+
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
+        rootView.networkFeeCell.bind(loadableViewModel: viewModel)
+    }
+
+    func didReceiveWallet(viewModel: WalletAccountViewModel?) {
+        guard let viewModel = viewModel else {
+            rootView.walletTableView.isHidden = true
+            return
+        }
+        rootView.walletTableView.isHidden = false
+        rootView.walletCell.bind(viewModel: .init(
+            details: viewModel.walletName ?? "",
+            imageViewModel: viewModel.walletIcon
+        ))
+
+        rootView.accountCell.bind(viewModel: .init(
+            details: viewModel.address,
+            imageViewModel: viewModel.addressIcon
+        ))
+    }
+}
 
 extension SwapConfirmViewController: Localizable {
     func applyLocalization() {

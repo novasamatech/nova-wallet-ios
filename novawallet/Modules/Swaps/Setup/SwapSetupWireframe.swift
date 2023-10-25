@@ -74,13 +74,17 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset,
         feeChainAsset: ChainAsset,
-        slippage: BigRational
+        slippage: BigRational,
+        quote: AssetConversion.Quote,
+        quoteArgs: AssetConversion.QuoteArgs
     ) {
         guard let confimView = SwapConfirmViewFactory.createView(
             payChainAsset: payChainAsset,
             receiveChainAsset: receiveChainAsset,
             feeChainAsset: feeChainAsset,
-            slippage: slippage
+            slippage: slippage,
+            quote: quote,
+            quoteArgs: quoteArgs
         ) else {
             return
         }

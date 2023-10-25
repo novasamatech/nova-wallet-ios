@@ -7,19 +7,51 @@ struct SwapConfirmViewFactory {
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset,
         feeChainAsset: ChainAsset,
-        slippage: BigRational
+        slippage: BigRational,
+        quote: AssetConversion.Quote,
+        quoteArgs: AssetConversion.QuoteArgs
     ) -> SwapConfirmViewProtocol? {
+        let accountRequest = payChainAsset.chain.accountRequest()
+
+        guard let currencyManager = CurrencyManager.shared,
+              let selectedAccount = SelectedWalletSettings.shared.value,
+              let chainAccountResponse = selectedAccount.fetchMetaChainAccount(for: accountRequest) else {
+            return nil
+        }
         guard let interactor = createInteractor(
             payChainAsset: payChainAsset,
             receiveChainAsset: receiveChainAsset,
             feeChainAsset: feeChainAsset,
-            slippage: slippage
+            slippage: slippage,
+            quote: quote
         ) else {
             return nil
         }
         let wireframe = SwapConfirmWireframe()
 
-        let presenter = SwapConfirmPresenter(interactor: interactor, wireframe: wireframe)
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let viewModelFactory = SwapConfirmViewModelFactory(
+            locale: LocalizationManager.shared.selectedLocale,
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            networkViewModelFactory: NetworkViewModelFactory(),
+            percentForamatter: NumberFormatter.percentSingle.localizableResource()
+        )
+
+        let presenter = SwapConfirmPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            chainAssetIn: payChainAsset,
+            chainAssetOut: receiveChainAsset,
+            feeChainAsset: feeChainAsset,
+            quote: quote,
+            quoteArgs: quoteArgs,
+            slippage: slippage,
+            chainAccountResponse: chainAccountResponse
+        )
 
         let view = SwapConfirmViewController(
             presenter: presenter,
@@ -36,7 +68,8 @@ struct SwapConfirmViewFactory {
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset,
         feeChainAsset: ChainAsset,
-        slippage: BigRational
+        slippage: BigRational,
+        quote: AssetConversion.Quote
     ) -> SwapConfirmInteractor? {
         let westmintChainId = KnowChainId.westmint
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -68,6 +101,7 @@ struct SwapConfirmViewFactory {
             receiveChainAsset: receiveChainAsset,
             feeChainAsset: feeChainAsset,
             slippage: slippage,
+            quote: quote,
             assetConversionOperationFactory: assetConversionOperationFactory,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
             runtimeService: runtimeService,

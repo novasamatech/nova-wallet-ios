@@ -6,12 +6,14 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     let receiveChainAsset: ChainAsset
     let feeChainAsset: ChainAsset
     let slippage: BigRational
+    let quote: AssetConversion.Quote
 
     init(
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset,
         feeChainAsset: ChainAsset,
         slippage: BigRational,
+        quote: AssetConversion.Quote,
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
@@ -27,6 +29,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         self.receiveChainAsset = receiveChainAsset
         self.feeChainAsset = feeChainAsset
         self.slippage = slippage
+        self.quote = quote
 
         super.init(
             assetConversionOperationFactory: assetConversionOperationFactory,

@@ -71,7 +71,9 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset,
         feeChainAsset: ChainAsset,
-        slippage: BigRational
+        slippage: BigRational,
+        quote: AssetConversion.Quote,
+        quoteArgs: AssetConversion.QuoteArgs
     )
 }
 

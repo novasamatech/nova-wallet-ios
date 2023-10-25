@@ -42,4 +42,14 @@ final class SwapPairView: UIView {
             $0.center.equalTo(stackView.snp.center)
         }
     }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(
+            width: UIView.noIntrinsicMetric,
+            height: max(
+                leftAssetView.intrinsicContentSize.height,
+                rigthAssetView.intrinsicContentSize.height
+            )
+        )
+    }
 }

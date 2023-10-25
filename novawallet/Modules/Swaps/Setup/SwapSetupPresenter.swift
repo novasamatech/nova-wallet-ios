@@ -490,7 +490,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let receiveChainAsset = self?.receiveChainAsset,
-                  let slippage = self?.slippage else {
+                  let slippage = self?.slippage,
+                  let quote = self?.quote,
+                  let quoteArgs = self?.quoteArgs else {
                 return
             }
 
@@ -499,7 +501,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                 payChainAsset: payChainAsset,
                 receiveChainAsset: receiveChainAsset,
                 feeChainAsset: feeChainAsset,
-                slippage: slippage
+                slippage: slippage,
+                quote: quote,
+                quoteArgs: quoteArgs
             )
         }
     }
