@@ -2,51 +2,42 @@ import Foundation
 import SoraFoundation
 import RobinHood
 
-struct SwapSetupViewFactory {
-    static func createView(assetListObservable: AssetListModelObservable) -> SwapSetupViewProtocol? {
-        guard
-            let currencyManager = CurrencyManager.shared else {
+struct SwapConfirmViewFactory {
+    static func createView(
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        feeChainAsset: ChainAsset,
+        slippage: BigRational
+    ) -> SwapConfirmViewProtocol? {
+        guard let interactor = createInteractor(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: feeChainAsset,
+            slippage: slippage
+        ) else {
             return nil
         }
+        let wireframe = SwapConfirmWireframe()
 
-        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager))
+        let presenter = SwapConfirmPresenter(interactor: interactor, wireframe: wireframe)
 
-        guard let interactor = createInteractor() else {
-            return nil
-        }
-
-        let wireframe = SwapSetupWireframe(assetListObservable: assetListObservable)
-        let viewModelFactory = SwapsSetupViewModelFactory(
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
-            networkViewModelFactory: NetworkViewModelFactory()
-        )
-        let dataValidatingFactory = SwapDataValidatorFactory(
-            presentable: wireframe,
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
-        )
-
-        let presenter = SwapSetupPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            viewModelFactory: viewModelFactory,
-            dataValidatingFactory: dataValidatingFactory,
-            localizationManager: LocalizationManager.shared
-        )
-
-        let view = SwapSetupViewController(
+        let view = SwapConfirmViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
-        interactor.basePresenter = presenter
-        dataValidatingFactory.view = view
+        interactor.presenter = presenter
 
         return view
     }
 
-    private static func createInteractor() -> SwapSetupInteractor? {
+    private static func createInteractor(
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        feeChainAsset: ChainAsset,
+        slippage: BigRational
+    ) -> SwapConfirmInteractor? {
         let westmintChainId = KnowChainId.westmint
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -72,7 +63,11 @@ struct SwapSetupViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let interactor = SwapSetupInteractor(
+        let interactor = SwapConfirmInteractor(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: feeChainAsset,
+            slippage: slippage,
             assetConversionOperationFactory: assetConversionOperationFactory,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
             runtimeService: runtimeService,

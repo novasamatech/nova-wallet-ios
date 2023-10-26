@@ -477,16 +477,30 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func proceed() {
-        guard let payChainAsset = payChainAsset, let feeChainAsset = feeChainAsset else {
+        guard let payChainAsset = payChainAsset,
+              let feeChainAsset = feeChainAsset else {
             return
         }
+
         let validators = validators(
             spendingAmount: getSpendingAmount(),
             payChainAsset: payChainAsset,
             feeChainAsset: feeChainAsset
         )
+
         DataValidationRunner(validators: validators).runValidation { [weak self] in
-            // TODO: Show confirm screen
+            guard let receiveChainAsset = self?.receiveChainAsset,
+                  let slippage = self?.slippage else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                payChainAsset: payChainAsset,
+                receiveChainAsset: receiveChainAsset,
+                feeChainAsset: feeChainAsset,
+                slippage: slippage
+            )
         }
     }
 
