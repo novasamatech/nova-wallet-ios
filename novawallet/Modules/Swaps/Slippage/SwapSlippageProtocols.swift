@@ -6,6 +6,7 @@ protocol SwapSlippageViewProtocol: ControllerBackedProtocol {
     func didReceiveInput(error: String?)
     func didReceiveInput(warning: String?)
     func didReceiveResetState(available: Bool)
+    func didReceiveButtonState(available: Bool)
 }
 
 protocol SwapSlippagePresenterProtocol: AnyObject {

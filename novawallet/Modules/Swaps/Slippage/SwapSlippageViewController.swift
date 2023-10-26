@@ -5,6 +5,7 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwapSlippageViewLayout
 
     let presenter: SwapSlippagePresenterProtocol
+    private var isApplyAvailable: Bool = false
 
     init(
         presenter: SwapSlippagePresenterProtocol,
@@ -74,7 +75,7 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
 
     private func updateActionButton() {
         let inputValid = rootView.amountInput.inputViewModel?.isValid == true
-        rootView.actionButton.isEnabled = inputValid && rootView.errorLabel.isHidden
+        rootView.actionButton.isEnabled = isApplyAvailable && inputValid
     }
 
     @objc private func applyButtonAction() {
@@ -112,6 +113,11 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
 
     func didReceiveResetState(available: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = available
+    }
+
+    func didReceiveButtonState(available: Bool) {
+        isApplyAvailable = available
+        updateActionButton()
     }
 
     func didReceiveInput(error: String?) {
