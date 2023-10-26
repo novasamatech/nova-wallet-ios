@@ -376,7 +376,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
         provideSettingsState()
         // TODO: get from settings
-        slippage = .fraction(from: 0.5)?.fromPercents()
+        slippage = .fraction(from: AssetConversionConstants.defaultSlippage)?.fromPercents()
         interactor.setup()
     }
 
