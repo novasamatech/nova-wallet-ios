@@ -178,6 +178,56 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
         estimateFee()
         updateViews()
     }
+
+    func showRateInfo() {
+        wireframe.showRateInfo(from: view)
+    }
+
+    func showPriceDifferenceInfo() {
+        let title = LocalizableResource {
+            R.string.localizable.swapsSetupPriceDifference(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        let details = LocalizableResource {
+            R.string.localizable.swapsSetupPriceDifferenceDescription(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        wireframe.showInfo(
+            from: view,
+            title: title,
+            details: details
+        )
+    }
+
+    func showSlippageInfo() {
+        wireframe.showSlippageInfo(from: view)
+    }
+
+    func showNetworkFeeInfo() {
+        wireframe.showFeeInfo(from: view)
+    }
+
+    func showAddressOptions() {
+        guard let view = view else {
+            return
+        }
+        guard let address = chainAccountResponse.chainAccount.toAddress() else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chainAssetIn.chain,
+            locale: selectedLocale
+        )
+    }
+
+    func confirm() {
+        // TODO: Validations + submit
+    }
 }
 
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
@@ -216,7 +266,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         estimateFee()
     }
 
-    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId) {
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId _: AccountId) {
         balances[chainAsset] = balance
     }
 }

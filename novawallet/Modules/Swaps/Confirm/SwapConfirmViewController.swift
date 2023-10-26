@@ -37,7 +37,33 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
         rootView.setup(locale: selectedLocale)
     }
 
-    private func setupHandlers() {}
+    private func setupHandlers() {
+        rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+        rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
+        rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
+        rootView.networkFeeCell.addTarget(self, action: #selector(networkFeeAction), for: .touchUpInside)
+        rootView.accountCell.addTarget(self, action: #selector(addressAction), for: .touchUpInside)
+    }
+
+    @objc private func rateAction() {
+        presenter.showRateInfo()
+    }
+
+    @objc private func priceDifferenceAction() {
+        presenter.showPriceDifferenceInfo()
+    }
+
+    @objc private func slippageAction() {
+        presenter.showSlippageInfo()
+    }
+
+    @objc private func networkFeeAction() {
+        presenter.showNetworkFeeInfo()
+    }
+
+    @objc private func addressAction() {
+        presenter.showAddressOptions()
+    }
 }
 
 extension SwapConfirmViewController: SwapConfirmViewProtocol {
@@ -85,6 +111,10 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
             details: viewModel.address,
             imageViewModel: viewModel.addressIcon
         ))
+    }
+
+    func didReceiveWarning(viewModel: String?) {
+        rootView.set(warning: viewModel)
     }
 }
 

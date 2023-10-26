@@ -1,6 +1,6 @@
 import SoraUI
 
-final class SwapRateViewCell: RowView<SwapRateView>, StackTableViewCellProtocol {
+final class SwapInfoViewCell: RowView<SwapInfoView>, StackTableViewCellProtocol {
     var titleButton: RoundedButton { rowContentView.titleView }
     var valueLabel: UILabel { rowContentView.valueView }
 

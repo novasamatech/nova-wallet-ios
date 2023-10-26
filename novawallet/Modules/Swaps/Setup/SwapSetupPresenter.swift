@@ -441,39 +441,11 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func showFeeActions() {}
 
     func showFeeInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.commonNetwork(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsNetworkFeeDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showFeeInfo(from: view)
     }
 
     func showRateInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.swapsSetupDetailsRate(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsRateDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showRateInfo(from: view)
     }
 
     func proceed() {

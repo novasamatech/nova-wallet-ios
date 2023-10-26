@@ -123,7 +123,7 @@ extension SwapElementView {
     }
 }
 
-extension SwapRateViewCell {
+extension SwapInfoViewCell {
     func bind(attention: AttentionState) {
         switch attention {
         case .high:

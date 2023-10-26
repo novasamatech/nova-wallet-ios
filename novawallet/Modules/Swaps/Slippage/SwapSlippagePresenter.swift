@@ -137,17 +137,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func showSlippageInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.swapsSetupSlippage(preferredLanguages: $0.rLanguages)
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsSetupSlippageDescription(preferredLanguages: $0.rLanguages)
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showSlippageInfo(from: view)
     }
 
     func reset() {

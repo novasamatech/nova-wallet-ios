@@ -694,10 +694,11 @@
 		7719019F2AE6C9DC00D9C918 /* SwapElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */; };
 		771901A22AE7E34D00D9C918 /* SwapBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A12AE7E34D00D9C918 /* SwapBaseInteractor.swift */; };
 		771901A42AE7E48800D9C918 /* SwapBaseProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */; };
-		771901A62AE8FF7E00D9C918 /* SwapRateViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A52AE8FF7E00D9C918 /* SwapRateViewCell.swift */; };
+		771901A62AE8FF7E00D9C918 /* SwapInfoViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A52AE8FF7E00D9C918 /* SwapInfoViewCell.swift */; };
 		771901A82AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A72AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift */; };
 		771901AB2AE9581400D9C918 /* SwapConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901AA2AE9581400D9C918 /* SwapConfirmViewModelFactory.swift */; };
 		771901B02AE97DA500D9C918 /* SwapConfirmViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901AF2AE97DA500D9C918 /* SwapConfirmViewModels.swift */; };
+		771901B22AEA3E5100D9C918 /* ShortTextInfoPresentableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901B12AEA3E5100D9C918 /* ShortTextInfoPresentableExtensions.swift */; };
 		77204EA42A1CD59100BBDE4A /* GenericBorderedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77204EA32A1CD59100BBDE4A /* GenericBorderedView.swift */; };
 		77204EA62A1E0EAA00BBDE4A /* WalletConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77204EA52A1E0EAA00BBDE4A /* WalletConnectionsView.swift */; };
 		7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */; };
@@ -725,7 +726,7 @@
 		775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */; };
 		77740BBC2AD4A7B800E8C06F /* CollapsableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */; };
 		77740BBE2AD4A7F500E8C06F /* SwapDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */; };
-		77740BC02AD4A80D00E8C06F /* SwapRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */; };
+		77740BC02AD4A80D00E8C06F /* SwapInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */; };
 		77740BC22AD69E3400E8C06F /* SwapMaxButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC12AD69E3400E8C06F /* SwapMaxButtonView.swift */; };
 		77740BC42AD8145500E8C06F /* PercentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC32AD8145500E8C06F /* PercentInputView.swift */; };
 		77740BC62AD849D100E8C06F /* SlippagePercentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC52AD849D100E8C06F /* SlippagePercentViewModel.swift */; };
@@ -4733,10 +4734,11 @@
 		7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapElementView.swift; sourceTree = "<group>"; };
 		771901A12AE7E34D00D9C918 /* SwapBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapBaseInteractor.swift; sourceTree = "<group>"; };
 		771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapBaseProtocols.swift; sourceTree = "<group>"; };
-		771901A52AE8FF7E00D9C918 /* SwapRateViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRateViewCell.swift; sourceTree = "<group>"; };
+		771901A52AE8FF7E00D9C918 /* SwapInfoViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInfoViewCell.swift; sourceTree = "<group>"; };
 		771901A72AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapNetworkFeeViewCell.swift; sourceTree = "<group>"; };
 		771901AA2AE9581400D9C918 /* SwapConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		771901AF2AE97DA500D9C918 /* SwapConfirmViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapConfirmViewModels.swift; sourceTree = "<group>"; };
+		771901B12AEA3E5100D9C918 /* ShortTextInfoPresentableExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortTextInfoPresentableExtensions.swift; sourceTree = "<group>"; };
 		77204EA32A1CD59100BBDE4A /* GenericBorderedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBorderedView.swift; sourceTree = "<group>"; };
 		77204EA52A1E0EAA00BBDE4A /* WalletConnectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectionsView.swift; sourceTree = "<group>"; };
 		7725062B2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferendumSearchViewLayout.swift; sourceTree = "<group>"; };
@@ -4765,7 +4767,7 @@
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
 		77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDetailsView.swift; sourceTree = "<group>"; };
-		77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRateView.swift; sourceTree = "<group>"; };
+		77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInfoView.swift; sourceTree = "<group>"; };
 		77740BC12AD69E3400E8C06F /* SwapMaxButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapMaxButtonView.swift; sourceTree = "<group>"; };
 		77740BC32AD8145500E8C06F /* PercentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentInputView.swift; sourceTree = "<group>"; };
 		77740BC52AD849D100E8C06F /* SlippagePercentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlippagePercentViewModel.swift; sourceTree = "<group>"; };
@@ -9619,6 +9621,7 @@
 				771901A92AE8FFDC00D9C918 /* View */,
 				771901A12AE7E34D00D9C918 /* SwapBaseInteractor.swift */,
 				771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */,
+				771901B12AEA3E5100D9C918 /* ShortTextInfoPresentableExtensions.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -9627,8 +9630,8 @@
 			isa = PBXGroup;
 			children = (
 				771901A72AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift */,
-				771901A52AE8FF7E00D9C918 /* SwapRateViewCell.swift */,
-				77740BBF2AD4A80D00E8C06F /* SwapRateView.swift */,
+				771901A52AE8FF7E00D9C918 /* SwapInfoViewCell.swift */,
+				77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */,
 				77ECB46F2ACEEE2D0015CE9F /* SwapNetworkFeeView.swift */,
 			);
 			path = View;
@@ -20124,7 +20127,7 @@
 				84FD3DBB254104B600A234E3 /* WalletTransactionListUpdated.swift in Sources */,
 				842EBB2928908ADB00B952D8 /* WalletsListTableViewCell.swift in Sources */,
 				84C1706629961FAD00CBE531 /* GovernanceYourDelegationsInteractorError.swift in Sources */,
-				771901A62AE8FF7E00D9C918 /* SwapRateViewCell.swift in Sources */,
+				771901A62AE8FF7E00D9C918 /* SwapInfoViewCell.swift in Sources */,
 				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
 				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
 				8433B34A29B63661005E5D0F /* ExtrinsicSplitter.swift in Sources */,
@@ -21603,6 +21606,7 @@
 				1BFC90E1D8646F7429FFD5E6 /* ExportMnemonicProtocols.swift in Sources */,
 				848B59BA28BCB3CA0009543C /* LedgerBaseAccountConfirmationWireframe.swift in Sources */,
 				3133215566E418F40844A60E /* ExportMnemonicWireframe.swift in Sources */,
+				771901B22AEA3E5100D9C918 /* ShortTextInfoPresentableExtensions.swift in Sources */,
 				8446F5F02817279600B7A86C /* HintListView.swift in Sources */,
 				84BFE89728C2314300140F1F /* ParaStkYieldBoostOperationFactory.swift in Sources */,
 				84A70DA129CCEDC800C648AD /* GovV2SubsquareOperationFactory.swift in Sources */,
@@ -22773,7 +22777,7 @@
 				C644308270C29AC6F90CFEA6 /* ReferendumDetailsWireframe.swift in Sources */,
 				7D2906130F25492872637EFC /* ReferendumDetailsPresenter.swift in Sources */,
 				5E3B1E6B9E94848B186FD4D1 /* ReferendumDetailsInteractor.swift in Sources */,
-				77740BC02AD4A80D00E8C06F /* SwapRateView.swift in Sources */,
+				77740BC02AD4A80D00E8C06F /* SwapInfoView.swift in Sources */,
 				488E4467895040EA85FDCC79 /* ReferendumDetailsViewController.swift in Sources */,
 				845B811D28F44A700040CE84 /* ReferendumActionLocal.swift in Sources */,
 				77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */,

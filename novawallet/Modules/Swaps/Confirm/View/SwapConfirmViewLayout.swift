@@ -10,19 +10,19 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
     }
 
-    let rateCell: SwapRateViewCell = .create {
+    let rateCell: SwapInfoViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
         $0.titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
     }
 
-    let priceDifferenceCell: SwapRateViewCell = .create {
+    let priceDifferenceCell: SwapInfoViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
         $0.titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
     }
 
-    let slippageCell: SwapRateViewCell = .create {
+    let slippageCell: SwapInfoViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
         $0.titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
@@ -40,7 +40,10 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
     let accountCell: StackInfoTableCell = .create {
         $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        $0.infoIcon = R.image.iconInfoFilledAccent()
     }
+
+    private var warningView: InlineAlertView?
 
     let actionButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
@@ -94,5 +97,14 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
         actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: locale.rLanguages)
+    }
+
+    func set(warning: String?) {
+        applyWarning(
+            on: &warningView,
+            after: walletTableView,
+            text: warning,
+            spacing: 8
+        )
     }
 }

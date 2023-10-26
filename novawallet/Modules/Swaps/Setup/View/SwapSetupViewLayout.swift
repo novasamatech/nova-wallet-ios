@@ -27,7 +27,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.setExpanded(false, animated: false)
     }
 
-    var rateCell: SwapRateView {
+    var rateCell: SwapInfoView {
         detailsView.rateCell
     }
 
