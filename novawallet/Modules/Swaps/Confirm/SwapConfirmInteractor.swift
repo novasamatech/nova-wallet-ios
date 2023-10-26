@@ -1,7 +1,10 @@
 import UIKit
 
 final class SwapConfirmInteractor: SwapBaseInteractor {
-    weak var presenter: SwapConfirmInteractorOutputProtocol?
+    var presenter: SwapConfirmInteractorOutputProtocol? {
+        basePresenter as? SwapConfirmInteractorOutputProtocol
+    }
+
     let payChainAsset: ChainAsset
     let receiveChainAsset: ChainAsset
     let feeChainAsset: ChainAsset

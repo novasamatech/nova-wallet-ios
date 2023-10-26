@@ -1,8 +1,9 @@
 import UIKit
 import SoraUI
+import SnapKit
 
 final class SwapElementView: UIView {
-    var contentInsets: UIEdgeInsets = .zero {
+    var contentInsets: UIEdgeInsets = .init(top: 16, left: 12, bottom: 20, right: 12) {
         didSet {
             contentView.snp.updateConstraints {
                 $0.edges.equalToSuperview().inset(contentInsets)
@@ -42,10 +43,6 @@ final class SwapElementView: UIView {
 
     private var hubImageViewModel: ImageViewModelProtocol?
 
-    override var intrinsicContentSize: CGSize {
-        .init(width: UIView.noIntrinsicMetric, height: 168)
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -54,12 +51,7 @@ final class SwapElementView: UIView {
         setupLayout()
     }
 
-    lazy var contentView = UIView.vStack(distribution: .equalCentering, [
-        assetIconView,
-        valueLabel,
-        priceLabel,
-        hubIconNameView
-    ])
+    lazy var contentView = UIView()
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -70,16 +62,40 @@ final class SwapElementView: UIView {
         addSubview(backgroundView)
         addSubview(contentView)
 
+        contentView.addSubview(assetIconView)
+        contentView.addSubview(valueLabel)
+        contentView.addSubview(priceLabel)
+        contentView.addSubview(hubIconNameView)
+
+        assetIconView.snp.makeConstraints {
+            $0.width.height.equalTo(48)
+            $0.top.centerX.equalToSuperview()
+        }
+
+        valueLabel.snp.makeConstraints {
+            $0.top.equalTo(assetIconView.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview()
+        }
+
+        priceLabel.snp.makeConstraints {
+            $0.top.equalTo(valueLabel.snp.bottom).offset(2)
+            $0.leading.trailing.equalToSuperview()
+        }
+
+        hubIconNameView.snp.makeConstraints {
+            $0.top.equalTo(priceLabel.snp.bottom).offset(16)
+            $0.leading.greaterThanOrEqualToSuperview()
+            $0.trailing.lessThanOrEqualToSuperview()
+            $0.centerX.equalToSuperview().priority(.high)
+            $0.bottom.equalToSuperview()
+        }
+
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
 
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(contentInsets)
-        }
-
-        assetIconView.snp.makeConstraints {
-            $0.height.width.equalTo(48)
         }
     }
 }

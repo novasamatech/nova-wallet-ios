@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 
 class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapBaseInteractorInputProtocol {
-    weak var basePresenter: SwapSetupInteractorOutputProtocol?
+    weak var basePresenter: SwapBaseInteractorOutputProtocol?
     let assetConversionOperationFactory: AssetConversionOperationFactoryProtocol
     let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     let runtimeService: RuntimeProviderProtocol

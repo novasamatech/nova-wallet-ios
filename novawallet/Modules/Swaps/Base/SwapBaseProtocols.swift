@@ -13,4 +13,5 @@ protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(error: SwapSetupError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
     func didReceive(payAccountId: AccountId?)
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
 }

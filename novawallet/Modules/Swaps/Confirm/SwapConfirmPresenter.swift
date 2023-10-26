@@ -20,6 +20,7 @@ final class SwapConfirmPresenter {
     private var payAccountId: AccountId?
     private var chainAccountResponse: MetaChainAccountResponse
     private var quoteArgs: AssetConversion.QuoteArgs?
+    private var balances: [ChainAssetId: AssetBalance?] = [:]
 
     init(
         interactor: SwapConfirmInteractorInputProtocol,
@@ -152,10 +153,22 @@ final class SwapConfirmPresenter {
     }
 
     func estimateFee() {
-        guard let quoteArgs = quoteArgs else {
+        guard let quote = quote, let quoteArgs = quoteArgs, let accountId = payAccountId else {
             return
         }
-        interactor.calculateQuote(for: quoteArgs)
+        fee = nil
+        provideFeeViewModel()
+
+        interactor.calculateFee(args: .init(
+            assetIn: quote.assetIn,
+            amountIn: quote.amountIn,
+            assetOut: quote.assetOut,
+            amountOut: quote.amountOut,
+            receiver: accountId,
+            direction: quoteArgs.direction,
+            slippage: slippage
+        )
+        )
     }
 }
 
@@ -168,12 +181,15 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 }
 
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
-    func didReceive(quote: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {
+    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
         self.quote = quote
+        self.quoteArgs = quoteArgs
+
         provideAssetInViewModel()
         provideAssetOutViewModel()
         provideRateViewModel()
         providePriceDifferenceViewModel()
+        estimateFee()
     }
 
     func didReceive(fee: BigUInt?, transactionId _: TransactionFeeId) {
@@ -197,6 +213,11 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
 
     func didReceive(payAccountId: AccountId?) {
         self.payAccountId = payAccountId
+        estimateFee()
+    }
+
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId) {
+        balances[chainAsset] = balance
     }
 }
 

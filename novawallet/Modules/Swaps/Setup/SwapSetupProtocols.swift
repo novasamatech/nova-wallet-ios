@@ -39,9 +39,7 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(feeChainAsset: ChainAsset?)
 }
 
-protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
-    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
-}
+protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {}
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
     ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {
