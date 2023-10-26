@@ -63,9 +63,11 @@ final class SwapSlippagePresenter {
     }
 
     private func provideButtonStates() {
-        let amountChanged = amountInput != initialPercent()
-        view?.didReceiveResetState(available: amountChanged)
-        view?.didReceiveButtonState(available: amountChanged)
+        let canReset = amountInput != AssetConversionConstants.defaultSlippage
+        view?.didReceiveResetState(available: canReset)
+
+        let canApply = amountInput != initialPercent()
+        view?.didReceiveButtonState(available: canApply)
     }
 
     private func provideErrors() {
@@ -153,7 +155,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func reset() {
-        amountInput = initialPercent()
+        amountInput = AssetConversionConstants.defaultSlippage
         provideAmountViewModel()
         provideButtonStates()
         provideErrors()
