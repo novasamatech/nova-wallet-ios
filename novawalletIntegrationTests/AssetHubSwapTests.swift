@@ -77,8 +77,8 @@ final class AssetHubSwapTests: XCTestCase {
         Logger.shared.info("Quote: \(quote)")
     }
     
-    func testFeeForWestmintSiriSell() throws {
-        let amountIn: BigUInt = 1_000_000_000_000
+    func testFeeForWestmintSiriSellInNativeToken() throws {
+        let amountIn: BigUInt = 1_000_000_000
         
         let quote = try fetchQuote(
             for: KnowChainId.westmint,
@@ -98,9 +98,35 @@ final class AssetHubSwapTests: XCTestCase {
             slippage: .percent(of: 1)
         )
         
-        let fee = try fetchNetworkFee(for: callArgs)
+        let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 0))
         
-        Logger.shared.info("Fee: \(String(fee))")
+        Logger.shared.info("Max fee: \(String(fee.totalFee.targetAmount))")
+    }
+    
+    func testFeeForWestmintSiriSellInSiriToken() throws {
+        let amountIn: BigUInt = 1_000_000_000
+        
+        let quote = try fetchQuote(
+            for: KnowChainId.westmint,
+            assetIn: 1,
+            assetOut: 0,
+            direction: .sell,
+            amount: amountIn
+        )
+        
+        let callArgs = AssetConversion.CallArgs(
+            assetIn: quote.assetIn,
+            amountIn: quote.amountIn,
+            assetOut: quote.assetOut,
+            amountOut: quote.amountOut,
+            receiver: AccountId.zeroAccountId(of: 32),
+            direction: .sell,
+            slippage: .percent(of: 1)
+        )
+        
+        let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 1))
+        
+        Logger.shared.info("Max fee: \(String(fee.totalFee.targetAmount))")
     }
     
     private func performAvailableDirectionsFetch(
@@ -184,46 +210,35 @@ final class AssetHubSwapTests: XCTestCase {
         return try quoteWrapper.targetOperation.extractNoCancellableResultData()
     }
     
-    private func fetchNetworkFee(for args: AssetConversion.CallArgs) throws -> BigUInt {
+    private func fetchFee(for args: AssetConversion.CallArgs, feeAssetId: ChainAssetId) throws -> AssetConversion.FeeModel {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         
         let chainId = args.assetIn.chainId
         
-        let wallet = AccountGenerator.generateMetaAccount(generatingChainAccounts: 1)
-        
         guard
             let chain = chainRegistry.getChain(for: chainId),
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-            let accountResponse = wallet.fetch(for: chain.accountRequest()) else {
-            throw ChainRegistryError.noChain(chainId)
+            let asset = chain.asset(for: feeAssetId.assetId) else {
+            throw CommonError.dataCorruption
         }
+        
+        let feeAsset = ChainAsset(chain: chain, asset: asset)
+        
+        let wallet = AccountGenerator.generateMetaAccount(generatingChainAccounts: 1)
         
         let operationQueue = OperationQueue()
         
-        let extrinsicService = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeService,
-            engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ).createService(account: accountResponse, chain: chain)
-        
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-        
-        operationQueue.addOperations([codingFactoryOperation], waitUntilFinished: true)
-        
-        let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-        
-        let builderClosure = AssetHubExtrinsicService(chain: chain).fetchExtrinsicBuilderClosure(
-            for: args,
-            codingFactory: codingFactory
+        let feeService = AssetHubFeeService(
+            wallet: wallet,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
         
-        var feeResult: FeeExtrinsicResult?
+        var feeResult: AssetConversion.FeeResult?
         
         let expectation = XCTestExpectation()
         
-        extrinsicService.estimateFee(builderClosure, runningIn: .main) { result in
+        feeService.calculate(in: feeAsset, callArgs: args, runCompletionIn: .main) { result in
             feeResult = result
             
             expectation.fulfill()
@@ -232,8 +247,8 @@ final class AssetHubSwapTests: XCTestCase {
         wait(for: [expectation], timeout: 600)
         
         switch feeResult {
-        case let .success(dispatchInfo):
-            return BigUInt(dispatchInfo.fee) ?? 0
+        case let .success(fee):
+            return fee
         case let .failure(error):
             throw error
         case .none:

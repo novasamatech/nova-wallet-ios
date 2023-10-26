@@ -56,16 +56,18 @@ final class SwapSlippagePresenter {
             amount: amountInput,
             limit: 100,
             formatter: numberFormatter,
-            inputLocale: selectedLocale,
             precision: 1
         )
 
         view?.didReceiveInput(viewModel: inputViewModel)
     }
 
-    private func provideResetButtonState() {
-        let amountChanged = amountInput != initialPercent()
-        view?.didReceiveResetState(available: amountChanged)
+    private func provideButtonStates() {
+        let canReset = amountInput != AssetConversionConstants.defaultSlippage
+        view?.didReceiveResetState(available: canReset)
+
+        let canApply = amountInput != initialPercent()
+        view?.didReceiveButtonState(available: canApply)
     }
 
     private func provideErrors() {
@@ -79,8 +81,10 @@ final class SwapSlippagePresenter {
                 preferredLanguages: selectedLocale.rLanguages
             )
             view?.didReceiveInput(error: error)
+            view?.didReceiveButtonState(available: false)
         } else {
             view?.didReceiveInput(error: nil)
+            view?.didReceiveButtonState(available: amountInput != initialPercent())
         }
     }
 
@@ -115,7 +119,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
         }
 
         amountInput = initialPercent()
-        provideResetButtonState()
+        provideButtonStates()
         provideAmountViewModel()
         provideWarnings()
         view?.didReceivePreFilledPercents(viewModel: viewModel)
@@ -124,14 +128,14 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     func select(percent: SlippagePercentViewModel) {
         amountInput = percent.value
         provideAmountViewModel()
-        provideResetButtonState()
+        provideButtonStates()
         provideErrors()
         provideWarnings()
     }
 
     func updateAmount(_ amount: Decimal?) {
         amountInput = amount
-        provideResetButtonState()
+        provideButtonStates()
         provideErrors()
         provideWarnings()
     }
@@ -151,9 +155,9 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func reset() {
-        amountInput = initialPercent()
+        amountInput = AssetConversionConstants.defaultSlippage
         provideAmountViewModel()
-        provideResetButtonState()
+        provideButtonStates()
         provideErrors()
         provideWarnings()
     }

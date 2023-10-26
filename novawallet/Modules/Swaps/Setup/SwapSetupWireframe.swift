@@ -68,4 +68,26 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             animated: true
         )
     }
+
+    func showConfirmation(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        feeChainAsset: ChainAsset,
+        slippage: BigRational
+    ) {
+        guard let confimView = SwapConfirmViewFactory.createView(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: feeChainAsset,
+            slippage: slippage
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            confimView.controller,
+            animated: true
+        )
+    }
 }
