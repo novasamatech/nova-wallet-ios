@@ -75,7 +75,9 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
 
     private func updateActionButton() {
         let inputValid = rootView.amountInput.inputViewModel?.isValid == true
-        rootView.actionButton.isEnabled = isApplyAvailable && inputValid
+
+        let isEnabled = isApplyAvailable && inputValid
+        rootView.actionButton.set(enabled: isEnabled, changeStyle: true)
     }
 
     @objc private func applyButtonAction() {
