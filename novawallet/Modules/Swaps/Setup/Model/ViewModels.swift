@@ -19,3 +19,8 @@ struct SwapFeeViewModel {
     var isEditable: Bool
     var balanceViewModel: BalanceViewModelProtocol
 }
+
+struct SwapPriceDifferenceViewModel {
+    let price: String?
+    let difference: DifferenceViewModel?
+}

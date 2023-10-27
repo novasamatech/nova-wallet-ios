@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-protocol SwapConfirmViewModelFactoryProtocol {
+protocol SwapConfirmViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactoryProtocol {
     var locale: Locale { get set }
 
     func assetViewModel(
@@ -26,8 +26,8 @@ final class SwapConfirmViewModelFactory {
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     let walletViewModelFactory = WalletAccountViewModelFactory()
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    private var localizedPercentForamatter: NumberFormatter
-    private var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
+    private(set) var localizedPercentForamatter: NumberFormatter
+    private(set) var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
 
     var locale: Locale {
         didSet {
@@ -101,47 +101,6 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         ).value(for: locale)
 
         return "\(amountIn) = \(amountOut)"
-    }
-
-    func priceDifferenceViewModel(
-        rateParams params: RateParams,
-        priceIn: PriceData?,
-        priceOut: PriceData?
-    ) -> DifferenceViewModel? {
-        guard
-            let amountOutDecimal = Decimal.fromSubstrateAmount(
-                params.amountOut,
-                precision: params.assetDisplayInfoOut.assetPrecision
-            ),
-            let amountInDecimal = Decimal.fromSubstrateAmount(
-                params.amountIn,
-                precision: params.assetDisplayInfoIn.assetPrecision
-            ) else {
-            return nil
-        }
-        guard let priceIn = priceIn?.decimalRate,
-              let priceOut = priceOut?.decimalRate else {
-            return nil
-        }
-
-        let amountPriceIn = amountInDecimal * priceIn
-        let amountPriceOut = amountOutDecimal * priceOut
-
-        guard amountPriceIn != 0, amountPriceIn > amountPriceOut else {
-            return nil
-        }
-
-        var diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
-        let diffString = localizedPercentForamatter.stringFromDecimal(diff) ?? ""
-
-        switch diff {
-        case _ where diff > priceDifferenceWarningRange.end:
-            return .init(details: diffString, attention: .high)
-        case priceDifferenceWarningRange.start ..< priceDifferenceWarningRange.end:
-            return .init(details: diffString, attention: .medium)
-        default:
-            return .init(details: diffString, attention: .low)
-        }
     }
 
     func slippageViewModel(slippage: BigRational) -> String {
