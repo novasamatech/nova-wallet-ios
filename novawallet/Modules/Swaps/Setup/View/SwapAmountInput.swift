@@ -164,7 +164,7 @@ extension SwapAmountInput {
         }
         if let difference = priceDifferenceViewModel?.difference {
             priceString.append(.init(
-                string: difference.details,
+                string: " " + difference.details,
                 attributes: [
                     .font: UIFont.regularFootnote,
                     .foregroundColor: color(for: difference.attention)
