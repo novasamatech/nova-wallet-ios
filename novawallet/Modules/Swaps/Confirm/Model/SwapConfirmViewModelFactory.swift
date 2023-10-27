@@ -127,11 +127,11 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         let amountPriceIn = amountInDecimal * priceIn
         let amountPriceOut = amountOutDecimal * priceOut
 
-        guard amountPriceOut != 0, amountPriceIn > amountPriceOut else {
+        guard amountPriceIn != 0, amountPriceIn > amountPriceOut else {
             return nil
         }
 
-        var diff = abs(amountPriceIn - amountPriceOut) / amountPriceOut
+        var diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
         let diffString = localizedPercentForamatter.stringFromDecimal(diff) ?? ""
 
         switch diff {
