@@ -62,26 +62,26 @@ final class SwapSlippagePresenter {
     }
 
     private func provideButtonStates() {
+        let error = bounds.error(
+            for: amountInput,
+            stringAmountClosure: title,
+            locale: selectedLocale
+        )
         let canReset = amountInput != AssetConversionConstants.defaultSlippage
         view?.didReceiveResetState(available: canReset)
 
-        let canApply = amountInput != initialPercent()
+        let canApply = amountInput != initialPercent() && error == nil
         view?.didReceiveButtonState(available: canApply)
     }
 
     private func provideErrors() {
- 		let error = bounds.error(
+        let error = bounds.error(
             for: amountInput,
             stringAmountClosure: title,
             locale: selectedLocale
         )
         view?.didReceiveInput(error: error)
-		if error != nil {
-			view?.didReceiveButtonState(available: false)
-		} else {
-			view?.didReceiveButtonState(available: amountInput != initialPercent())
-		}
-		view?.didReceiveButtonState(available: amountInput != initialPercent())
+        provideButtonStates()
     }
 
     private func provideWarnings() {
