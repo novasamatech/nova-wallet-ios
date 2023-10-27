@@ -66,12 +66,7 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     )
     func showConfirmation(
         from view: ControllerBackedProtocol?,
-        payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset,
-        feeChainAsset: ChainAsset,
-        slippage: BigRational,
-        quote: AssetConversion.Quote,
-        quoteArgs: AssetConversion.QuoteArgs
+        initState: SwapConfirmInitState
     )
 }
 

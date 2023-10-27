@@ -1,3 +1,5 @@
+import Foundation
+
 protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel)
     func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel)
@@ -19,9 +21,20 @@ protocol SwapConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {}
+protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {
+    func submit(args: AssetConversion.CallArgs)
+}
 
-protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {}
+protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
+    func didReceiveConfirmation(hash: String)
+    func didReceive(error: SwapConfirmError)
+}
 
 protocol SwapConfirmWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, AddressOptionsPresentable,
-    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {}
+    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, ModalAlertPresenting {
+    func complete(on view: ControllerBackedProtocol?, locale: Locale)
+}
+
+enum SwapConfirmError {
+    case submit(Error)
+}

@@ -12,7 +12,7 @@ extension SwapSetupPresenter {
             precision: Int16(feeChainAsset.asset.precision)
         ) } ?? nil
 
-        var validators: [DataValidating] = [
+        let validators: [DataValidating] = [
             dataValidatingFactory.has(fee: feeDecimal, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             },

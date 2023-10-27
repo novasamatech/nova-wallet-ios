@@ -4,26 +4,18 @@ import RobinHood
 
 struct SwapConfirmViewFactory {
     static func createView(
-        payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset,
-        feeChainAsset: ChainAsset,
-        slippage: BigRational,
-        quote: AssetConversion.Quote,
-        quoteArgs: AssetConversion.QuoteArgs
+        initState: SwapConfirmInitState
     ) -> SwapConfirmViewProtocol? {
-        let accountRequest = payChainAsset.chain.accountRequest()
+        let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
         guard let currencyManager = CurrencyManager.shared,
-              let selectedAccount = SelectedWalletSettings.shared.value,
-              let chainAccountResponse = selectedAccount.fetchMetaChainAccount(for: accountRequest) else {
+              let wallet = SelectedWalletSettings.shared.value,
+              let chainAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest) else {
             return nil
         }
         guard let interactor = createInteractor(
-            payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset,
-            feeChainAsset: feeChainAsset,
-            slippage: slippage,
-            quote: quote
+            wallet: wallet,
+            initState: initState
         ) else {
             return nil
         }
@@ -40,17 +32,19 @@ struct SwapConfirmViewFactory {
             percentForamatter: NumberFormatter.percentSingle.localizableResource()
         )
 
+        let dataValidatingFactory = SwapDataValidatorFactory(
+            presentable: wireframe,
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
+
         let presenter = SwapConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            chainAssetIn: payChainAsset,
-            chainAssetOut: receiveChainAsset,
-            feeChainAsset: feeChainAsset,
-            quote: quote,
-            quoteArgs: quoteArgs,
-            slippage: slippage,
-            chainAccountResponse: chainAccountResponse
+            chainAccountResponse: chainAccountResponse,
+            localizationManager: LocalizationManager.shared,
+            dataValidatingFactory: dataValidatingFactory,
+            initState: initState
         )
 
         let view = SwapConfirmViewController(
@@ -59,26 +53,25 @@ struct SwapConfirmViewFactory {
         )
 
         presenter.view = view
+        dataValidatingFactory.view = view
         interactor.basePresenter = presenter
 
         return view
     }
 
     private static func createInteractor(
-        payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset,
-        feeChainAsset: ChainAsset,
-        slippage: BigRational,
-        quote: AssetConversion.Quote
+        wallet: MetaAccountModel,
+        initState: SwapConfirmInitState
     ) -> SwapConfirmInteractor? {
-        let westmintChainId = KnowChainId.westmint
+        let chainId = initState.chainAssetIn.chain.chainId
         let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
-        guard let connection = chainRegistry.getConnection(for: westmintChainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
-              let chainModel = chainRegistry.getChain(for: westmintChainId),
+        guard let connection = chainRegistry.getConnection(for: chainId),
+              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+              let chainModel = chainRegistry.getChain(for: chainId),
               let currencyManager = CurrencyManager.shared,
-              let selectedAccount = SelectedWalletSettings.shared.value else {
+              let chainAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest) else {
             return nil
         }
 
@@ -96,12 +89,13 @@ struct SwapConfirmViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: chainAccountResponse.metaId,
+            accountResponse: chainAccountResponse.chainAccount
+        )
+
         let interactor = SwapConfirmInteractor(
-            payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset,
-            feeChainAsset: feeChainAsset,
-            slippage: slippage,
-            quote: quote,
+            initState: initState,
             assetConversionOperationFactory: assetConversionOperationFactory,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
             runtimeService: runtimeService,
@@ -110,8 +104,9 @@ struct SwapConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
-            selectedAccount: selectedAccount,
-            operationQueue: operationQueue
+            selectedAccount: wallet,
+            operationQueue: operationQueue,
+            signer: signingWrapper
         )
 
         return interactor

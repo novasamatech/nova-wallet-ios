@@ -71,20 +71,10 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showConfirmation(
         from view: ControllerBackedProtocol?,
-        payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset,
-        feeChainAsset: ChainAsset,
-        slippage: BigRational,
-        quote: AssetConversion.Quote,
-        quoteArgs: AssetConversion.QuoteArgs
+        initState: SwapConfirmInitState
     ) {
         guard let confimView = SwapConfirmViewFactory.createView(
-            payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset,
-            feeChainAsset: feeChainAsset,
-            slippage: slippage,
-            quote: quote,
-            quoteArgs: quoteArgs
+            initState: initState
         ) else {
             return
         }

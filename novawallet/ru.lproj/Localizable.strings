@@ -1374,7 +1374,7 @@
 "wallet.list.empty.action.title" = "Купить токены";
 "asset.operation.send.empty.state.message" = "У вас нет токенов для отправки.\nКупите или получите токены\nна свой аккаунт.";
 "governance.referendums.status.deciding" = "Решение";
-"wallet.assets.swap" = "Обмен";
+"common.swap" = "Обмен";
 "swaps.setup.asset.select.subtitle" = "Выберите токeн";
 "swaps.setup.asset.pay.title" = "Оплата в";
 "swaps.setup.asset.receive.title" = "Получение";

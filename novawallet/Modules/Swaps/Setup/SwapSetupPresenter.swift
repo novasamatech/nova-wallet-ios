@@ -468,14 +468,18 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                 return
             }
 
-            self?.wireframe.showConfirmation(
-                from: self?.view,
-                payChainAsset: payChainAsset,
-                receiveChainAsset: receiveChainAsset,
+            let confirmInitState = SwapConfirmInitState(
+                chainAssetIn: payChainAsset,
+                chainAssetOut: receiveChainAsset,
                 feeChainAsset: feeChainAsset,
                 slippage: slippage,
                 quote: quote,
                 quoteArgs: quoteArgs
+            )
+
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                initState: confirmInitState
             )
         }
     }
@@ -499,8 +503,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
-    func didReceive(error: SwapSetupError) {
-        switch error {
+    func didReceive(baseError: SwapSetupError) {
+        switch baseError {
         case let .quote(_, args):
             guard args == quoteArgs else {
                 return

@@ -17,10 +17,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     private let operationQueue: OperationQueue
     private var quoteCall: CancellableCall?
     private var runtimeOperationCall: CancellableCall?
-    private var extrinsicService: ExtrinsicServiceProtocol?
+    private(set) var extrinsicService: ExtrinsicServiceProtocol?
 
-    private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
-    private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
+    private(set) var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
+    private(set) var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
 
     init(
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
@@ -101,7 +101,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
                     self?.basePresenter?.didReceive(quote: result, for: args)
                 } catch {
-                    self?.basePresenter?.didReceive(error: .quote(error, args))
+                    self?.basePresenter?.didReceive(baseError: .quote(error, args))
                 }
             }
         }
@@ -135,7 +135,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
                 )
             } catch {
                 DispatchQueue.main.async {
-                    self.basePresenter?.didReceive(error: .fetchFeeFailed(error, args.identifier))
+                    self.basePresenter?.didReceive(baseError: .fetchFeeFailed(error, args.identifier))
                 }
             }
         }
@@ -203,7 +203,7 @@ extension SwapBaseInteractor: ExtrinsicFeeProxyDelegate {
                 let fee = BigUInt(dispatchInfo.fee)
                 self.basePresenter?.didReceive(fee: fee, transactionId: transactionId)
             case let .failure(error):
-                self.basePresenter?.didReceive(error: .fetchFeeFailed(error, transactionId))
+                self.basePresenter?.didReceive(baseError: .fetchFeeFailed(error, transactionId))
             }
         }
     }
@@ -215,7 +215,7 @@ extension SwapBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptio
         case let .success(priceData):
             basePresenter?.didReceive(price: priceData, priceId: priceId)
         case let .failure(error):
-            basePresenter?.didReceive(error: .price(error, priceId))
+            basePresenter?.didReceive(baseError: .price(error, priceId))
         }
     }
 }
@@ -240,7 +240,7 @@ extension SwapBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
                 accountId: accountId
             )
         case let .failure(error):
-            basePresenter?.didReceive(error: .assetBalance(error, chainAssetId, accountId))
+            basePresenter?.didReceive(baseError: .assetBalance(error, chainAssetId, accountId))
         }
     }
 }

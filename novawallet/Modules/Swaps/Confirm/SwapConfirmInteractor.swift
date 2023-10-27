@@ -1,22 +1,18 @@
 import UIKit
+import RobinHood
 
 final class SwapConfirmInteractor: SwapBaseInteractor {
     var presenter: SwapConfirmInteractorOutputProtocol? {
         basePresenter as? SwapConfirmInteractorOutputProtocol
     }
 
-    let payChainAsset: ChainAsset
-    let receiveChainAsset: ChainAsset
-    let feeChainAsset: ChainAsset
-    let slippage: BigRational
-    let quote: AssetConversion.Quote
+    let initState: SwapConfirmInitState
+    let signer: SigningWrapperProtocol
+    let operationQueue: OperationQueue
+    private var submitOperationCall: CancellableCall?
 
     init(
-        payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset,
-        feeChainAsset: ChainAsset,
-        slippage: BigRational,
-        quote: AssetConversion.Quote,
+        initState: SwapConfirmInitState,
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
@@ -26,13 +22,12 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedAccount: MetaAccountModel,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        signer: SigningWrapperProtocol
     ) {
-        self.payChainAsset = payChainAsset
-        self.receiveChainAsset = receiveChainAsset
-        self.feeChainAsset = feeChainAsset
-        self.slippage = slippage
-        self.quote = quote
+        self.initState = initState
+        self.signer = signer
+        self.operationQueue = operationQueue
 
         super.init(
             assetConversionOperationFactory: assetConversionOperationFactory,
@@ -51,10 +46,62 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     override func setup() {
         super.setup()
 
-        set(payChainAsset: payChainAsset)
-        set(receiveChainAsset: receiveChainAsset)
-        set(feeChainAsset: feeChainAsset)
+        set(payChainAsset: initState.chainAssetIn)
+        set(receiveChainAsset: initState.chainAssetOut)
+        set(feeChainAsset: initState.feeChainAsset)
+    }
+
+    func submitExtrinsic(args: AssetConversion.CallArgs) {
+        clear(cancellable: &submitOperationCall)
+        guard let extrinsicService = extrinsicService else {
+            return
+        }
+
+        let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        runtimeCoderFactoryOperation.completionBlock = { [weak self] in
+            guard let self = self else {
+                return
+            }
+            do {
+                let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
+                let builder = self.assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
+                    for: args,
+                    codingFactory: runtimeCoderFactory
+                )
+                self.submitClosure(extrinsicService: extrinsicService, builder: builder)
+            } catch {
+                DispatchQueue.main.async {
+                    self.presenter?.didReceive(error: .submit(error))
+                }
+            }
+        }
+
+        submitOperationCall = runtimeCoderFactoryOperation
+        operationQueue.addOperation(runtimeCoderFactoryOperation)
+    }
+
+    private func submitClosure(
+        extrinsicService: ExtrinsicServiceProtocol,
+        builder: @escaping ExtrinsicBuilderClosure
+    ) {
+        extrinsicService.submit(
+            builder,
+            signer: signer,
+            runningIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(hash):
+                self?.presenter?.didReceiveConfirmation(hash: hash)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .submit(error))
+            }
+        }
     }
 }
 
-extension SwapConfirmInteractor: SwapConfirmInteractorInputProtocol {}
+extension SwapConfirmInteractor: SwapConfirmInteractorInputProtocol {
+    func submit(args: AssetConversion.CallArgs) {
+        submitExtrinsic(args: args)
+    }
+}

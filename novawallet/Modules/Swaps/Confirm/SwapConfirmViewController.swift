@@ -35,6 +35,9 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         rootView.setup(locale: selectedLocale)
+        title = R.string.localizable.commonSwap(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     private func setupHandlers() {
@@ -43,6 +46,7 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
         rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(networkFeeAction), for: .touchUpInside)
         rootView.accountCell.addTarget(self, action: #selector(addressAction), for: .touchUpInside)
+        rootView.actionButton.addTarget(self, action: #selector(confirmAction), for: .touchUpInside)
     }
 
     @objc private func rateAction() {
@@ -63,6 +67,10 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     @objc private func addressAction() {
         presenter.showAddressOptions()
+    }
+
+    @objc private func confirmAction() {
+        presenter.confirm()
     }
 }
 

@@ -1374,7 +1374,7 @@
 "wallet.list.empty.action.title" = "Buy tokens";
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
 "governance.referendums.status.deciding" = "Deciding";
-"wallet.assets.swap" = "Swap";
+"common.swap" = "Swap";
 "swaps.setup.asset.select.subtitle" = "Select a token";
 "swaps.setup.asset.pay.title" = "Pay";
 "swaps.setup.asset.receive.title" = "Receive";
