@@ -4,12 +4,26 @@ import BigInt
 extension AssetConversion {
     struct AmountWithNative {
         let targetAmount: BigUInt
-        let nativeAmouunt: BigUInt
+        let nativeAmount: BigUInt
     }
 
     struct FeeModel {
         let totalFee: AmountWithNative
         let networkFeeAddition: AmountWithNative?
+
+        var networkFee: AmountWithNative {
+            guard let addition = networkFeeAddition else {
+                return totalFee
+            }
+
+            let feeInTargetToken = totalFee.targetAmount >= addition.targetAmount ?
+                totalFee.targetAmount - addition.targetAmount : totalFee.targetAmount
+
+            let feeInNativeToken = totalFee.nativeAmount >= addition.nativeAmount ?
+                totalFee.nativeAmount - addition.nativeAmount : totalFee.nativeAmount
+
+            return .init(targetAmount: feeInTargetToken, nativeAmount: feeInNativeToken)
+        }
     }
 
     typealias FeeResult = Result<AssetConversion.FeeModel, AssetConversionFeeServiceError>

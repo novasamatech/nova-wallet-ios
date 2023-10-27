@@ -97,6 +97,7 @@
 		0C2F86962A72807E00593C01 /* NominationPoolsRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86952A72807E00593C01 /* NominationPoolsRewardEngine.swift */; };
 		0C2F86982A728EE900593C01 /* NPoolsRewardEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86972A728EE900593C01 /* NPoolsRewardEngineFactory.swift */; };
 		0C2F869A2A72948100593C01 /* NominationPoolsApyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86992A72948100593C01 /* NominationPoolsApyTests.swift */; };
+		0C2FDF192AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2FDF182AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift */; };
 		0C3205BB2A8679F0002EB914 /* EvmGasPriceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205BA2A8679F0002EB914 /* EvmGasPriceProvider.swift */; };
 		0C3205BE2A867A9C002EB914 /* EvmLegacyGasPriceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205BD2A867A9C002EB914 /* EvmLegacyGasPriceProvider.swift */; };
 		0C3205C02A867DD6002EB914 /* EvmMaxPriorityGasPriceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205BF2A867DD6002EB914 /* EvmMaxPriorityGasPriceProvider.swift */; };
@@ -4138,6 +4139,7 @@
 		0C2F86952A72807E00593C01 /* NominationPoolsRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRewardEngine.swift; sourceTree = "<group>"; };
 		0C2F86972A728EE900593C01 /* NPoolsRewardEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsRewardEngineFactory.swift; sourceTree = "<group>"; };
 		0C2F86992A72948100593C01 /* NominationPoolsApyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsApyTests.swift; sourceTree = "<group>"; };
+		0C2FDF182AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubFeeModelBuilder.swift; sourceTree = "<group>"; };
 		0C3205BA2A8679F0002EB914 /* EvmGasPriceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGasPriceProvider.swift; sourceTree = "<group>"; };
 		0C3205BD2A867A9C002EB914 /* EvmLegacyGasPriceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmLegacyGasPriceProvider.swift; sourceTree = "<group>"; };
 		0C3205BF2A867DD6002EB914 /* EvmMaxPriorityGasPriceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmMaxPriorityGasPriceProvider.swift; sourceTree = "<group>"; };
@@ -8422,6 +8424,14 @@
 			path = NominationPools;
 			sourceTree = "<group>";
 		};
+		0C2FDF172AEB8292006A6C59 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C2FDF182AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		0C3205BC2A867A46002EB914 /* GasPriceProviders */ = {
 			isa = PBXGroup;
 			children = (
@@ -9623,6 +9633,7 @@
 		771901A02AE7E33A00D9C918 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				0C2FDF172AEB8292006A6C59 /* Model */,
 				771901A92AE8FFDC00D9C918 /* View */,
 				771901A12AE7E34D00D9C918 /* SwapBaseInteractor.swift */,
 				771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */,
@@ -19744,6 +19755,7 @@
 				8490146A24A9463B008F705E /* Locale+Localization.swift in Sources */,
 				84715786291136B100D7D003 /* GovernanceUnlocksViewModel.swift in Sources */,
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
+				0C2FDF192AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,

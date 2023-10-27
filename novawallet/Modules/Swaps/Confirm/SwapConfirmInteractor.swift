@@ -2,6 +2,10 @@ import UIKit
 
 final class SwapConfirmInteractor: SwapBaseInteractor {
     weak var presenter: SwapConfirmInteractorOutputProtocol?
+
+    let runtimeService: RuntimeProviderProtocol
+    let extrinsicService: ExtrinsicServiceProtocol
+    let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     let payChainAsset: ChainAsset
     let receiveChainAsset: ChainAsset
     let feeChainAsset: ChainAsset
@@ -12,17 +16,20 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         receiveChainAsset: ChainAsset,
         feeChainAsset: ChainAsset,
         slippage: BigRational,
+        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedAccount: MetaAccountModel,
         operationQueue: OperationQueue
     ) {
+        self.runtimeService = runtimeService
+        self.extrinsicService = extrinsicService
+        self.assetConversionExtrinsicService = assetConversionExtrinsicService
         self.payChainAsset = payChainAsset
         self.receiveChainAsset = receiveChainAsset
         self.feeChainAsset = feeChainAsset
@@ -30,10 +37,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
 
         super.init(
             assetConversionOperationFactory: assetConversionOperationFactory,
-            assetConversionExtrinsicService: assetConversionExtrinsicService,
-            runtimeService: runtimeService,
-            feeProxy: feeProxy,
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            assetConversionFeeService: assetConversionFeeService,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,

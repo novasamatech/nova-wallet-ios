@@ -187,7 +187,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             return .init(
                 totalFee: .init(
                     targetAmount: feeAmount,
-                    nativeAmouunt: feeAmount
+                    nativeAmount: feeAmount
                 ),
                 networkFeeAddition: nil
             )
@@ -242,11 +242,11 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             return .init(
                 totalFee: .init(
                     targetAmount: quotes[0].amountIn,
-                    nativeAmouunt: feeAmount + edAmount
+                    nativeAmount: feeAmount + edAmount
                 ),
                 networkFeeAddition: .init(
                     targetAmount: quotes[1].amountIn,
-                    nativeAmouunt: edAmount
+                    nativeAmount: edAmount
                 )
             )
         }
