@@ -27,7 +27,7 @@ final class SwapConfirmViewModelFactory {
     let walletViewModelFactory = WalletAccountViewModelFactory()
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private var localizedPercentForamatter: NumberFormatter
-    private var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 10, end: 20)
+    private var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
 
     var locale: Locale {
         didSet {
@@ -127,15 +127,15 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         let amountPriceIn = amountInDecimal * priceIn
         let amountPriceOut = amountOutDecimal * priceOut
 
-        guard amountPriceOut > 0 else {
+        guard amountPriceOut != 0, amountPriceIn > amountPriceOut else {
             return nil
         }
 
-        let diff = (amountPriceIn - amountPriceOut) / amountPriceOut * 100
+        var diff = abs(amountPriceIn - amountPriceOut) / amountPriceOut
         let diffString = localizedPercentForamatter.stringFromDecimal(diff) ?? ""
 
-        switch abs(diff) {
-        case _ where abs(diff) > priceDifferenceWarningRange.end:
+        switch diff {
+        case _ where diff > priceDifferenceWarningRange.end:
             return .init(details: diffString, attention: .high)
         case priceDifferenceWarningRange.start ..< priceDifferenceWarningRange.end:
             return .init(details: diffString, attention: .medium)

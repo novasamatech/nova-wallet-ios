@@ -119,7 +119,7 @@ extension SwapElementView {
         )
         hubIconNameView.detailsLabel.text = viewModel.hub.name
         valueLabel.text = viewModel.balance.amount
-        priceLabel.text = viewModel.balance.price
+        priceLabel.text = viewModel.balance.price ?? " "
     }
 }
 
@@ -127,11 +127,11 @@ extension SwapInfoViewCell {
     func bind(attention: AttentionState) {
         switch attention {
         case .high:
-            titleButton.imageWithTitleView?.titleColor = R.color.colorTextNegative()
+            valueLabel.textColor = R.color.colorTextNegative()
         case .medium:
-            titleButton.imageWithTitleView?.titleColor = R.color.colorTextWarning()
+            valueLabel.textColor = R.color.colorTextWarning()
         case .low:
-            titleButton.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
+            valueLabel.textColor = R.color.colorTextPrimary()
         }
     }
 
