@@ -590,8 +590,6 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             return
         }
 
-        logger.debug("Did receive fee: \(fee.map { String($0.totalFee.targetAmount) })")
-
         self.fee = fee
         provideFeeViewModel()
         provideButtonState()
