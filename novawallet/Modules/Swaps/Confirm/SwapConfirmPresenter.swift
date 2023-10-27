@@ -230,6 +230,58 @@ final class SwapConfirmPresenter {
 
         interactor.submit(args: args)
     }
+
+    private func checkRateChanged(
+        oldValue: AssetConversion.Quote,
+        newValue: AssetConversion.Quote,
+        confirmClosure: @escaping () -> Void
+    ) {
+        guard oldValue != newValue else {
+            confirmClosure()
+            return
+        }
+        let oldRateParams = RateParams(
+            assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
+            assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
+            amountIn: oldValue.amountIn,
+            amountOut: oldValue.amountOut
+        )
+        let newRateParams = RateParams(
+            assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
+            assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
+            amountIn: newValue.amountIn,
+            amountOut: newValue.amountOut
+        )
+
+        let oldRate = viewModelFactory.rateViewModel(from: oldRateParams)
+        let newRate = viewModelFactory.rateViewModel(from: newRateParams)
+
+        let title = R.string.localizable.swapsSetupErrorRateWasUpdatedTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let message = R.string.localizable.swapsSetupErrorRateWasUpdatedMessage(
+            oldRate,
+            newRate,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let confirmTitle = R.string.localizable.commonConfirm(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let cancelTitle = R.string.localizable.commonCancel(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let confirmAction = AlertPresentableAction(title: confirmTitle, handler: confirmClosure)
+        wireframe.present(
+            viewModel: .init(
+                title: title,
+                message: message,
+                actions: [confirmAction],
+                closeAction: cancelTitle
+            ),
+            style: .alert,
+            from: view
+        )
+    }
 }
 
 extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
@@ -299,13 +351,17 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
     func didReceive(quote: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {
-        self.quote = quote
-
-        provideAssetInViewModel()
-        provideAssetOutViewModel()
-        provideRateViewModel()
-        providePriceDifferenceViewModel()
-        estimateFee()
+        checkRateChanged(
+            oldValue: self.quote ?? initState.quote,
+            newValue: quote
+        ) { [weak self] in
+            self?.quote = quote
+            self?.provideAssetInViewModel()
+            self?.provideAssetOutViewModel()
+            self?.provideRateViewModel()
+            self?.providePriceDifferenceViewModel()
+            self?.estimateFee()
+        }
     }
 
     func didReceive(fee: BigUInt?, transactionId _: TransactionFeeId) {
