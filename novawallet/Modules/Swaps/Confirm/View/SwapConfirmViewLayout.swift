@@ -45,9 +45,7 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
     private var warningView: InlineAlertView?
 
-    let actionButton: TriangularedButton = .create {
-        $0.applyDefaultStyle()
-    }
+    let loadableActionView = LoadableActionView()
 
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
@@ -64,12 +62,12 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         detailsTableView.addArrangedSubview(slippageCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
 
-        addArrangedSubview(walletTableView)
+        addArrangedSubview(walletTableView, spacingAfter: 8)
         walletTableView.addArrangedSubview(walletCell)
         walletTableView.addArrangedSubview(accountCell)
 
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        addSubview(loadableActionView)
+        loadableActionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -95,16 +93,15 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         accountCell.titleLabel.text = R.string.localizable.commonAccount(
             preferredLanguages: locale.rLanguages)
 
-        actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        loadableActionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: locale.rLanguages)
     }
 
     func set(warning: String?) {
         applyWarning(
             on: &warningView,
-            after: walletTableView,
-            text: warning,
-            spacing: 8
+            after: nil,
+            text: warning
         )
     }
 }

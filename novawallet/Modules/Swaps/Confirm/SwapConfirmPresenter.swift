@@ -8,6 +8,7 @@ final class SwapConfirmPresenter {
     let interactor: SwapConfirmInteractorInputProtocol
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let initState: SwapConfirmInitState
+    let slippageBounds = SlippageBounds()
 
     private var viewModelFactory: SwapConfirmViewModelFactoryProtocol
     private var feePriceData: PriceData?
@@ -106,6 +107,11 @@ final class SwapConfirmPresenter {
     private func provideSlippageViewModel() {
         let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage)
         view?.didReceiveSlippage(viewModel: viewModel)
+        let warning = slippageBounds.warning(
+            for: initState.slippage.toPercents().decimalValue,
+            locale: selectedLocale
+        )
+        view?.didReceiveWarning(viewModel: warning)
     }
 
     private func provideFeeViewModel() {
@@ -163,7 +169,7 @@ final class SwapConfirmPresenter {
         )
     }
 
-    func validators(
+    private func validators(
         spendingAmount: Decimal?
     ) -> [DataValidating] {
         let feeDecimal = fee.map { Decimal.fromSubstrateAmount(
@@ -280,6 +286,7 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func confirm() {
+        view?.didReceiveStartLoading()
         let spendingAmount = quote?.amountIn.decimal(precision: initState.chainAssetIn.asset.precision)
 
         let validators = validators(spendingAmount: spendingAmount)
@@ -360,15 +367,19 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
     }
 
     func didReceive(error: SwapConfirmError) {
+        view?.didReceiveStopLoading()
         switch error {
         case let .submit(error):
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.submit()
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
             }
         }
     }
 
     func didReceiveConfirmation(hash _: String) {
+        view?.didReceiveStopLoading()
         wireframe.complete(on: view, locale: selectedLocale)
     }
 }

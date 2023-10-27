@@ -9,6 +9,8 @@ protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveWallet(viewModel: WalletAccountViewModel?)
     func didReceiveWarning(viewModel: String?)
+    func didReceiveStartLoading()
+    func didReceiveStopLoading()
 }
 
 protocol SwapConfirmPresenterProtocol: AnyObject {
@@ -31,7 +33,7 @@ protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
 }
 
 protocol SwapConfirmWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, AddressOptionsPresentable,
-    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, ModalAlertPresenting {
+    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable {
     func complete(on view: ControllerBackedProtocol?, locale: Locale)
 }
 

@@ -46,7 +46,7 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
         rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(networkFeeAction), for: .touchUpInside)
         rootView.accountCell.addTarget(self, action: #selector(addressAction), for: .touchUpInside)
-        rootView.actionButton.addTarget(self, action: #selector(confirmAction), for: .touchUpInside)
+        rootView.loadableActionView.actionButton.addTarget(self, action: #selector(confirmAction), for: .touchUpInside)
     }
 
     @objc private func rateAction() {
@@ -123,6 +123,14 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
 
     func didReceiveWarning(viewModel: String?) {
         rootView.set(warning: viewModel)
+    }
+
+    func didReceiveStartLoading() {
+        rootView.loadableActionView.startLoading()
+    }
+
+    func didReceiveStopLoading() {
+        rootView.loadableActionView.stopLoading()
     }
 }
 
