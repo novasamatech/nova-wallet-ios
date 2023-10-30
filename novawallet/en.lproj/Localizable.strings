@@ -1406,3 +1406,5 @@
 "common.alert.external.link.disclaimer.message" = "To continue the purchase you will be redirected from Nova Wallet app to %@";
 "polkadot.staking.promotion.title" = "Boost your DOT 🚀";
 "polkadot.staking.promotion.message" = "Received your DOT back from crowdloans? Start staking your DOT today to get the maximum possible rewards!";
+"swaps.setup.network.fee.token.title" = "Token for paying network fee";
+"swaps.setup.network.fee.token.hint" = "Network fee is added on top of entered amount";

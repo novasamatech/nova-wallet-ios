@@ -65,7 +65,7 @@ extension SwapNetworkFeeSheetLayout {
         static let detailsSwitchOffset: CGFloat = 10
         static let switchHintOffset: CGFloat = 16
         static let topOffset: CGFloat = 10
-        static let bottomOffset: CGFloat = 34
+        static let bottomOffset: CGFloat = 8
         static let controlHeight: CGFloat = 40
     }
 }

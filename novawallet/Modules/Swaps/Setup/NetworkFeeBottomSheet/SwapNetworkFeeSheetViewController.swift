@@ -35,14 +35,18 @@ final class SwapNetworkFeeSheetViewController: UIViewController, ViewHolder {
 
         setupHandlers()
         setupLocalization()
-        rootView.feeTypeSwitch.selectedSegmentIndex = viewModel.selectedIndex
+        setupSwitch()
     }
 
     private func setupLocalization() {
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
         rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
         rootView.hint.detailsLabel.text = viewModel.hint.value(for: selectedLocale)
-        rootView.feeTypeSwitch.titles = (0 ..< viewModel.count).map { viewModel.sectionTitle($0) }
+        rootView.feeTypeSwitch.titles = (0 ..< viewModel.count).map { viewModel.sectionTitle($0).value(for: selectedLocale) }
+    }
+
+    private func setupSwitch() {
+        rootView.feeTypeSwitch.selectedSegmentIndex = viewModel.selectedIndex
     }
 
     private func setupHandlers() {

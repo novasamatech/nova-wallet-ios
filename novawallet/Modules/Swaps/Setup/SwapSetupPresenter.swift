@@ -244,7 +244,7 @@ final class SwapSetupPresenter {
         )
 
         let newIdentifier = SwapSetupFeeIdentifier(
-            transcationId: args.identifier,
+            transactionId: args.identifier,
             feeChainAssetId: feeChainAsset?.chainAssetId
         )
 
@@ -331,7 +331,7 @@ final class SwapSetupPresenter {
         }
     }
 
-    func balanceMinusFee() -> Decimal? {
+    private func balanceMinusFee() -> Decimal? {
         guard let payChainAsset = payChainAsset else {
             return nil
         }
@@ -364,7 +364,7 @@ final class SwapSetupPresenter {
         }
     }
 
-    func handlePriceError(priceId: AssetModel.PriceId) {
+    private func handlePriceError(priceId: AssetModel.PriceId) {
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
             guard let self = self else {
                 return
@@ -374,6 +374,12 @@ final class SwapSetupPresenter {
                 .filter { $0.asset.priceId == priceId }
                 .forEach(self.interactor.remakePriceSubscription)
         }
+    }
+
+    private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
+        feeChainAsset = chainAsset
+        interactor.update(feeChainAsset: chainAsset)
+        estimateFee()
     }
 }
 
@@ -450,40 +456,29 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
     }
 
-    // TODO: show editing fee
     func showFeeActions() {
         guard let payChainAsset = payChainAsset,
               let utilityAsset = payChainAsset.chain.utilityChainAsset() else {
             return
         }
-
+        let payAssetSelected = feeChainAsset?.chainAssetId == payChainAsset.chainAssetId
         let viewModel = SwapNetworkFeeSheetViewModel(
-            title: .init {
-                R.string.localizable.commonNetworkFee(preferredLanguages: $0.rLanguages)
-            },
-            message: .init { _ in
-                "Token for paying network fee"
-            },
+            title: FeeSelectionViewModel.title,
+            message: FeeSelectionViewModel.message,
             sectionTitle: { section in
-                section == 0 ? payChainAsset.asset.symbol : utilityAsset.asset.symbol
-            },
-            action: { [weak self] in
-                if $0 == 0 {
-                    self?.feeChainAsset = payChainAsset
-                    self?.interactor.update(feeChainAsset: payChainAsset)
-                    self?.estimateFee()
-                } else {
-                    self?.feeChainAsset = utilityAsset
-                    self?.interactor.update(feeChainAsset: utilityAsset)
-                    self?.estimateFee()
+                .init { _ in
+                    FeeSelectionViewModel(rawValue: section) == .utilityAsset ?
+                        utilityAsset.asset.symbol : payChainAsset.asset.symbol
                 }
             },
-            selectedIndex:
-            feeChainAsset?.chainAssetId == self.payChainAsset?.chainAssetId ? 0 : 1,
-            count: 2,
-            hint: .init { _ in
-                "Network fee is added on top of entered amount"
-            }
+            action: { [weak self] in
+                let chainAsset = FeeSelectionViewModel(rawValue: $0) == .utilityAsset ? utilityAsset : payChainAsset
+                self?.updateFeeChainAsset(chainAsset)
+            },
+            selectedIndex: payAssetSelected ? FeeSelectionViewModel.payAsset.rawValue :
+                FeeSelectionViewModel.utilityAsset.rawValue,
+            count: FeeSelectionViewModel.allCases.count,
+            hint: FeeSelectionViewModel.hint
         )
 
         wireframe.showNetworkFeeAssetSelection(
@@ -585,7 +580,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 self?.refreshQuote(direction: args.direction)
             }
         case let .fetchFeeFailed(_, id, feeChainAssetId):
-            let identifier = SwapSetupFeeIdentifier(transcationId: id, feeChainAssetId: feeChainAssetId)
+            let identifier = SwapSetupFeeIdentifier(transactionId: id, feeChainAssetId: feeChainAssetId)
             guard identifier == feeIdentifier else {
                 return
             }
@@ -633,7 +628,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 
     func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId, feeChainAssetId: FeeChainAssetId?) {
         let identifier = SwapSetupFeeIdentifier(
-            transcationId: transactionId,
+            transactionId: transactionId,
             feeChainAssetId: feeChainAssetId
         )
 
