@@ -45,7 +45,8 @@ struct SwapConfirmViewFactory {
               let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
               let chainModel = chainRegistry.getChain(for: westmintChainId),
               let currencyManager = CurrencyManager.shared,
-              let selectedAccount = SelectedWalletSettings.shared.value else {
+              let selectedWallet = SelectedWalletSettings.shared.value,
+              let selectedAccount = selectedWallet.fetch(for: chainModel.accountRequest()) else {
             return nil
         }
 
@@ -57,10 +58,17 @@ struct SwapConfirmViewFactory {
             connection: connection,
             operationQueue: operationQueue
         )
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
+        ).createService(account: selectedAccount, chain: chainModel)
+
+        let feeService = AssetHubFeeService(
+            wallet: selectedWallet,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         let interactor = SwapConfirmInteractor(
@@ -68,15 +76,15 @@ struct SwapConfirmViewFactory {
             receiveChainAsset: receiveChainAsset,
             feeChainAsset: feeChainAsset,
             slippage: slippage,
+            assetConversionFeeService: feeService,
             assetConversionOperationFactory: assetConversionOperationFactory,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
             runtimeService: runtimeService,
-            feeProxy: ExtrinsicFeeProxy(),
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
-            selectedAccount: selectedAccount,
+            selectedAccount: selectedWallet,
             operationQueue: operationQueue
         )
 

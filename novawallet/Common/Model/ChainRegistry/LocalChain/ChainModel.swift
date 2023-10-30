@@ -184,6 +184,14 @@ struct ChainModel: Equatable, Codable, Hashable {
         return ChainAssetId(chainId: chainId, assetId: utilityAsset.assetId)
     }
 
+    func utilityChainAsset() -> ChainAsset? {
+        guard let utilityAsset = utilityAssets().first else {
+            return nil
+        }
+
+        return ChainAsset(chain: self, asset: utilityAsset)
+    }
+
     var typesUsage: TypesUsage {
         if let types = types {
             return types.overridesCommon ? .onlyOwn : .both

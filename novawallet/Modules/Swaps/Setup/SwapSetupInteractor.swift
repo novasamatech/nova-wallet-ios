@@ -48,6 +48,7 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
 
     func update(payChainAsset: ChainAsset?) {
         self.payChainAsset = payChainAsset
+
         payChainAsset.map {
             set(payChainAsset: $0)
         }
