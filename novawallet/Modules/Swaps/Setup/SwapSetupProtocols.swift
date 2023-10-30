@@ -73,6 +73,10 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         feeChainAsset: ChainAsset,
         slippage: BigRational
     )
+    func showNetworkFeeAssetSelection(
+        form view: ControllerBackedProtocol?,
+        viewModel: SwapNetworkFeeSheetViewModel
+    )
 }
 
 enum SwapSetupError: Error {
