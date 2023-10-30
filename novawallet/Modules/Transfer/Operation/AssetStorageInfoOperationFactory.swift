@@ -16,6 +16,52 @@ protocol AssetStorageInfoOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<AssetBalanceExistence>
 }
 
+extension AssetStorageInfoOperationFactoryProtocol {
+    func createAssetBalanceExistenceOperation(
+        chainId: ChainModel.Id,
+        asset: AssetModel,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
+        let storageInfoWrapper = createStorageInfoWrapper(
+            from: asset,
+            runtimeProvider: runtimeProvider
+        )
+
+        let existenseBalanceOperation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let storageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
+
+            let wrapper = self.createAssetBalanceExistenceOperation(
+                for: storageInfo,
+                chainId: chainId,
+                asset: asset
+            )
+
+            return [wrapper]
+        }.longrunOperation()
+
+        existenseBalanceOperation.addDependency(storageInfoWrapper.targetOperation)
+
+        let mappingOperation = ClosureOperation<AssetBalanceExistence> {
+            let models = try existenseBalanceOperation.extractNoCancellableResultData()
+
+            guard let model = models.first else {
+                throw CommonError.dataCorruption
+            }
+
+            return model
+        }
+
+        mappingOperation.addDependency(existenseBalanceOperation)
+
+        let dependencies = storageInfoWrapper.allOperations + [existenseBalanceOperation]
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+}
+
 final class AssetStorageInfoOperationFactory {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue

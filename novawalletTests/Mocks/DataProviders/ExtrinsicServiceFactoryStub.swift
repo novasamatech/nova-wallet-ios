@@ -1,5 +1,6 @@
 import Foundation
 @testable import novawallet
+import SubstrateSdk
 
 final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     let extrinsicService: ExtrinsicServiceProtocol
@@ -15,14 +16,16 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
 
     func createService(
         account: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        extensions: [ExtrinsicExtension]
     ) -> ExtrinsicServiceProtocol {
         extrinsicService
     }
 
     func createOperationFactory(
         account: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        extensions: [ExtrinsicExtension]
     ) -> ExtrinsicOperationFactoryProtocol {
         extrinsicOperationFactory
     }

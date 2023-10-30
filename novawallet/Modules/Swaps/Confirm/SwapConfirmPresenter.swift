@@ -24,11 +24,13 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
     func didReceive(quote _: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {}
 
-    func didReceive(fee _: BigUInt?, transactionId _: TransactionFeeId) {}
+    func didReceive(fee _: AssetConversion.FeeModel?, transactionId _: TransactionFeeId) {}
 
     func didReceive(error _: SwapSetupError) {}
 
     func didReceive(price _: PriceData?, priceId _: AssetModel.PriceId) {}
 
     func didReceive(payAccountId _: AccountId?) {}
+
+    func didReceive(balance _: AssetBalance?, for _: ChainAssetId, accountId _: AccountId) {}
 }

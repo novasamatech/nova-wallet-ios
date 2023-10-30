@@ -3,12 +3,9 @@ import RobinHood
 import BigInt
 
 class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapBaseInteractorInputProtocol {
-    weak var basePresenter: SwapSetupInteractorOutputProtocol?
+    weak var basePresenter: SwapBaseInteractorOutputProtocol?
     let assetConversionOperationFactory: AssetConversionOperationFactoryProtocol
-    let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
-    let runtimeService: RuntimeProviderProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
-    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let assetConversionFeeService: AssetConversionFeeServiceProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
@@ -16,18 +13,14 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     private let operationQueue: OperationQueue
     private var quoteCall: CancellableCall?
-    private var runtimeOperationCall: CancellableCall?
-    private var extrinsicService: ExtrinsicServiceProtocol?
 
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
+    private var feeModelBuilder: AssetHubFeeModelBuilder?
 
     init(
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
-        assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
-        runtimeService: RuntimeProviderProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -35,15 +28,26 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         operationQueue: OperationQueue
     ) {
         self.assetConversionOperationFactory = assetConversionOperationFactory
-        self.assetConversionExtrinsicService = assetConversionExtrinsicService
-        self.runtimeService = runtimeService
-        self.feeProxy = feeProxy
-        self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.assetConversionFeeService = assetConversionFeeService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.selectedAccount = selectedAccount
         self.operationQueue = operationQueue
+    }
+
+    func updateFeeModelBuilder(for chain: ChainModel) {
+        guard
+            let utilityAsset = chain.utilityChainAsset(),
+            feeModelBuilder?.utilityChainAssetId != utilityAsset.chainAssetId else {
+            return
+        }
+
+        feeModelBuilder = AssetHubFeeModelBuilder(
+            utilityChainAssetId: utilityAsset.chainAssetId
+        ) { [weak self] feeModel, callArgs in
+            self?.basePresenter?.didReceive(fee: feeModel, transactionId: callArgs.identifier)
+        }
     }
 
     func updateSubscriptions(activeChainAssets: Set<ChainAssetId>) {
@@ -111,37 +115,22 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func fee(args: AssetConversion.CallArgs) {
-        clear(cancellable: &runtimeOperationCall)
-        guard let extrinsicService = extrinsicService else {
+        guard let feeAsset = feeModelBuilder?.feeAsset else {
             return
         }
 
-        let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        runtimeCoderFactoryOperation.completionBlock = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            do {
-                let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
-                let builder = self.assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
-                    for: args,
-                    codingFactory: runtimeCoderFactory
-                )
-                self.feeProxy.estimateFee(
-                    using: extrinsicService,
-                    reuseIdentifier: args.identifier,
-                    setupBy: builder
-                )
-            } catch {
-                DispatchQueue.main.async {
-                    self.basePresenter?.didReceive(error: .fetchFeeFailed(error, args.identifier))
-                }
+        assetConversionFeeService.calculate(
+            in: feeAsset,
+            callArgs: args,
+            runCompletionIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(feeModel):
+                self?.feeModelBuilder?.apply(feeModel: feeModel, args: args)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(error: .fetchFeeFailed(error, args.identifier))
             }
         }
-
-        runtimeOperationCall = runtimeCoderFactoryOperation
-        operationQueue.addOperation(runtimeCoderFactoryOperation)
     }
 
     func chainAccountResponse(for chainAsset: ChainAsset) -> ChainAccountResponse? {
@@ -150,35 +139,39 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func set(receiveChainAsset chainAsset: ChainAsset) {
+        updateFeeModelBuilder(for: chainAsset.chain)
+
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
     }
 
     func set(payChainAsset chainAsset: ChainAsset) {
+        updateFeeModelBuilder(for: chainAsset.chain)
+
+        if let utilityAsset = chainAsset.chain.utilityChainAsset() {
+            feeModelBuilder?.apply(feeAsset: utilityAsset)
+        }
+
         guard let chainAccount = chainAccountResponse(for: chainAsset) else {
-            extrinsicService = nil
             basePresenter?.didReceive(payAccountId: nil)
             return
         }
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
 
-        extrinsicService = extrinsicServiceFactory.createService(
-            account: chainAccount,
-            chain: chainAsset.chain
-        )
         basePresenter?.didReceive(payAccountId: chainAccount.accountId)
     }
 
     func set(feeChainAsset chainAsset: ChainAsset) {
+        updateFeeModelBuilder(for: chainAsset.chain)
+        feeModelBuilder?.apply(feeAsset: chainAsset)
+
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
     // MARK: - SwapBaseInteractorInputProtocol
 
-    func setup() {
-        feeProxy.delegate = self
-    }
+    func setup() {}
 
     func calculateQuote(for args: AssetConversion.QuoteArgs) {
         quote(args: args)
@@ -192,20 +185,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func remakePriceSubscription(for chainAsset: ChainAsset) {
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
-    }
-}
-
-extension SwapBaseInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for transactionId: TransactionFeeId) {
-        DispatchQueue.main.async {
-            switch result {
-            case let .success(dispatchInfo):
-                let fee = BigUInt(dispatchInfo.fee)
-                self.basePresenter?.didReceive(fee: fee, transactionId: transactionId)
-            case let .failure(error):
-                self.basePresenter?.didReceive(error: .fetchFeeFailed(error, transactionId))
-            }
-        }
     }
 }
 
@@ -234,11 +213,17 @@ extension SwapBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
                 for: .init(chainId: chainId, assetId: assetId),
                 accountId: accountId
             )
+
+            if feeModelBuilder?.utilityChainAssetId == chainAssetId {
+                feeModelBuilder?.apply(recepientUtilityBalance: balance)
+            }
+
             basePresenter?.didReceive(
                 balance: balance,
                 for: chainAssetId,
                 accountId: accountId
             )
+
         case let .failure(error):
             basePresenter?.didReceive(error: .assetBalance(error, chainAssetId, accountId))
         }
