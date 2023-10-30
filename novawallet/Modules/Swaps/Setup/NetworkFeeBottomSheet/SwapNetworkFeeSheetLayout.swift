@@ -17,9 +17,10 @@ final class SwapNetworkFeeSheetLayout: UIView {
         $0.titleFont = .regularFootnote
         $0.selectedTitleColor = R.color.colorTextPrimary()!
         $0.titleColor = R.color.colorTextSecondary()!
+        $0.selectionCornerRadius = 10
     }
 
-    let hint = HintView()
+    let hint: IconDetailsView = .hint()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -51,17 +52,21 @@ final class SwapNetworkFeeSheetLayout: UIView {
             make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().inset(Constants.topOffset)
         }
+
+        feeTypeSwitch.snp.makeConstraints { make in
+            make.height.equalTo(Constants.controlHeight)
+        }
     }
 }
 
 extension SwapNetworkFeeSheetLayout {
     enum Constants {
-        static let titleDetailsOffset: CGFloat = 8
+        static let titleDetailsOffset: CGFloat = 18
         static let detailsSwitchOffset: CGFloat = 10
         static let switchHintOffset: CGFloat = 16
         static let topOffset: CGFloat = 10
         static let bottomOffset: CGFloat = 34
-        static let controlHeight: CGFloat = 32
+        static let controlHeight: CGFloat = 40
     }
 }
 
@@ -69,7 +74,7 @@ extension SwapNetworkFeeSheetLayout {
     func contentHeight(model: SwapNetworkFeeSheetViewModel, locale: Locale) -> CGFloat {
         let titleHeight = height(for: titleLabel, with: model.title.value(for: locale))
         let messageHeight = height(for: detailsLabel, with: model.message.value(for: locale))
-        let hintHeight = height(for: hint.titleLabel, with: model.hint.value(for: locale))
+        let hintHeight = height(for: hint.detailsLabel, with: model.hint.value(for: locale))
 
         let vOffsets = Constants.topOffset + Constants.titleDetailsOffset +
             Constants.detailsSwitchOffset + Constants.switchHintOffset + Constants.bottomOffset

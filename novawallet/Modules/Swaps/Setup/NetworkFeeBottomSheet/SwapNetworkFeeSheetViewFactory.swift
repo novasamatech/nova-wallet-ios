@@ -4,7 +4,7 @@ import SoraFoundation
 struct SwapNetworkFeeSheetViewFactory {
     static func createView(
         from viewModel: SwapNetworkFeeSheetViewModel,
-        allowsSwipeDown: Bool = true
+        allowsSwipeDown _: Bool = true
     ) -> MessageSheetViewProtocol {
         let wireframe = MessageSheetWireframe()
 
@@ -16,7 +16,6 @@ struct SwapNetworkFeeSheetViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        view.allowsSwipeDown = allowsSwipeDown
         let height = view.rootView.contentHeight(
             model: viewModel,
             locale: LocalizationManager.shared.selectedLocale

@@ -31,7 +31,7 @@ final class SwapSetupPresenter {
 
     private var slippage: BigRational?
 
-    private var feeIdentifier: String?
+    private var feeIdentifier: SwapSetupFeeIdentifier?
     private var accountId: AccountId?
 
     init(
@@ -217,6 +217,7 @@ final class SwapSetupPresenter {
         let viewModel = viewModelFactory.feeViewModel(
             amount: fee,
             assetDisplayInfo: feeChainAsset.assetDisplayInfo,
+            isEditable: payChainAsset?.isUtilityAsset == false,
             priceData: feeAssetPriceData,
             locale: selectedLocale
         )
@@ -242,11 +243,16 @@ final class SwapSetupPresenter {
             slippage: slippage
         )
 
-        guard args.identifier != feeIdentifier else {
+        let newIdentifier = SwapSetupFeeIdentifier(
+            transcationId: args.identifier,
+            feeChainAssetId: feeChainAsset?.chainAssetId
+        )
+
+        guard newIdentifier != feeIdentifier else {
             return
         }
 
-        feeIdentifier = args.identifier
+        feeIdentifier = newIdentifier
         interactor.calculateFee(args: args)
     }
 
@@ -445,7 +451,46 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     // TODO: show editing fee
-    func showFeeActions() {}
+    func showFeeActions() {
+        guard let payChainAsset = payChainAsset,
+              let utilityAsset = payChainAsset.chain.utilityChainAsset() else {
+            return
+        }
+
+        let viewModel = SwapNetworkFeeSheetViewModel(
+            title: .init {
+                R.string.localizable.commonNetworkFee(preferredLanguages: $0.rLanguages)
+            },
+            message: .init { _ in
+                "Token for paying network fee"
+            },
+            sectionTitle: { section in
+                section == 0 ? payChainAsset.asset.symbol : utilityAsset.asset.symbol
+            },
+            action: { [weak self] in
+                if $0 == 0 {
+                    self?.feeChainAsset = payChainAsset
+                    self?.interactor.update(feeChainAsset: payChainAsset)
+                    self?.estimateFee()
+                } else {
+                    self?.feeChainAsset = utilityAsset
+                    self?.interactor.update(feeChainAsset: utilityAsset)
+                    self?.estimateFee()
+                }
+            },
+            selectedIndex:
+            feeChainAsset?.chainAssetId == self.payChainAsset?.chainAssetId ? 0 : 1,
+            count: 2,
+            hint: .init { _ in
+                "Network fee is added on top of entered amount"
+            }
+        )
+
+        wireframe.showNetworkFeeAssetSelection(
+            form: view,
+            viewModel: viewModel
+        )
+    }
 
     func showFeeInfo() {
         let title = LocalizableResource {
@@ -539,8 +584,9 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshQuote(direction: args.direction)
             }
-        case let .fetchFeeFailed(_, id):
-            guard id == feeIdentifier else {
+        case let .fetchFeeFailed(_, id, feeChainAssetId):
+            let identifier = SwapSetupFeeIdentifier(transcationId: id, feeChainAssetId: feeChainAssetId)
+            guard identifier == feeIdentifier else {
                 return
             }
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -585,8 +631,13 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         provideButtonState()
     }
 
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId) {
-        guard feeIdentifier == transactionId else {
+    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId, feeChainAssetId: FeeChainAssetId?) {
+        let identifier = SwapSetupFeeIdentifier(
+            transcationId: transactionId,
+            feeChainAssetId: feeChainAssetId
+        )
+
+        guard identifier == feeIdentifier else {
             return
         }
 

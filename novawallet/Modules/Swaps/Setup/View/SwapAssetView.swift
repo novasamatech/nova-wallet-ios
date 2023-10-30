@@ -40,7 +40,7 @@ final class SwapAssetView: GenericPairValueView<SwapIconDetailsView, IconDetails
     }
 
     override var intrinsicContentSize: CGSize {
-        let assetViewWidth = assetLabel.intrinsicContentSize.width + iconWidth
+        let assetViewWidth = assetLabel.intrinsicContentSize.width + iconWidth + fView.fView.iconWidth
         let hubViewWidth = iconWidth + iconSpacing + hubNameView.intrinsicContentSize.width
         let width: CGFloat = max(assetViewWidth, hubViewWidth)
         let assetHeight = max(assetLabel.intrinsicContentSize.height, iconWidth)

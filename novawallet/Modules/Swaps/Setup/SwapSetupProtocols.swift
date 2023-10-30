@@ -79,7 +79,7 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
 
 enum SwapSetupError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId)
+    case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
 }

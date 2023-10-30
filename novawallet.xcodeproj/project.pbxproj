@@ -9062,6 +9062,7 @@
 		29BD7DA0076BA8BC3411221A /* Setup */ = {
 			isa = PBXGroup;
 			children = (
+				77E304B32AEFC2E2006FD6F0 /* NetworkFeeBottomSheet */,
 				77C9BCBA2ACD1AE800022EA2 /* Model */,
 				774091FA2ACC052400172516 /* View */,
 				53775773F2060B4B7F6D62DA /* SwapSetupProtocols.swift */,
@@ -9934,7 +9935,7 @@
 			path = SelectValidatorsConfirm;
 			sourceTree = "<group>";
 		};
-		77E304B32AEFC2E2006FD6F0 /* NetworkFee */ = {
+		77E304B32AEFC2E2006FD6F0 /* NetworkFeeBottomSheet */ = {
 			isa = PBXGroup;
 			children = (
 				77E304AF2AEFA261006FD6F0 /* SwapNetworkFeeSheetLayout.swift */,
@@ -9942,7 +9943,7 @@
 				77E304B42AEFC303006FD6F0 /* SwapNetworkFeeSheetViewFactory.swift */,
 				77E304B62AEFC348006FD6F0 /* SwapNetworkFeeSheetViewModel.swift */,
 			);
-			path = NetworkFee;
+			path = NetworkFeeBottomSheet;
 			sourceTree = "<group>";
 		};
 		77E4088EF503B8FD414F14EA /* GovernanceUnlockConfirm */ = {
@@ -17382,7 +17383,6 @@
 		95ED25232B568F2C7DA953CC /* MessageSheet */ = {
 			isa = PBXGroup;
 			children = (
-				77E304B32AEFC2E2006FD6F0 /* NetworkFee */,
 				8465DA33298EC5D900C7CFF1 /* TitleDetails */,
 				8465DA32298EC5A800C7CFF1 /* Compound */,
 			);

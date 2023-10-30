@@ -9,7 +9,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs)
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId)
+    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId, feeChainAssetId: ChainAssetId?)
     func didReceive(error: SwapSetupError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
     func didReceive(payAccountId: AccountId?)

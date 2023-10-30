@@ -34,6 +34,7 @@ protocol SwapsSetupViewModelFactoryProtocol {
     func feeViewModel(
         amount: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
+        isEditable: Bool,
         priceData: PriceData?,
         locale: Locale
     ) -> SwapFeeViewModel
@@ -239,6 +240,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
     func feeViewModel(
         amount: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
+        isEditable: Bool,
         priceData: PriceData?,
         locale: Locale
     ) -> SwapFeeViewModel {
@@ -252,7 +254,6 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             priceData: priceData
         ).value(for: locale)
 
-        // TODO: provide isEditable
-        return .init(isEditable: true, balanceViewModel: balanceViewModel)
+        return .init(isEditable: isEditable, balanceViewModel: balanceViewModel)
     }
 }

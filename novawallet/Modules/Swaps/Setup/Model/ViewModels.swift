@@ -19,3 +19,8 @@ struct SwapFeeViewModel {
     var isEditable: Bool
     var balanceViewModel: BalanceViewModelProtocol
 }
+
+struct SwapSetupFeeIdentifier: Equatable {
+    let transcationId: String
+    let feeChainAssetId: ChainAssetId?
+}

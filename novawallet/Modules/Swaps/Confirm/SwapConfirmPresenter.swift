@@ -24,7 +24,7 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
     func didReceive(quote _: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {}
 
-    func didReceive(fee _: AssetConversion.FeeModel?, transactionId _: TransactionFeeId) {}
+    func didReceive(fee _: AssetConversion.FeeModel?, transactionId _: TransactionFeeId, feeChainAssetId _: FeeChainAssetId?) {}
 
     func didReceive(error _: SwapSetupError) {}
 
