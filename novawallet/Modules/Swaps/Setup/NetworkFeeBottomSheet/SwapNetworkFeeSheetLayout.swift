@@ -12,7 +12,7 @@ final class SwapNetworkFeeSheetLayout: UIView {
     }
 
     let feeTypeSwitch: RoundedSegmentedControl = .create {
-        $0.backgroundView.fillColor = R.color.colorSegmentedBackground()!
+        $0.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
         $0.selectionColor = R.color.colorSegmentedTabActive()!
         $0.titleFont = .regularFootnote
         $0.selectedTitleColor = R.color.colorTextPrimary()!
