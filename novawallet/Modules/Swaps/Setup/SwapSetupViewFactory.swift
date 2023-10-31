@@ -80,7 +80,7 @@ struct SwapSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
-            selectedAccount: selectedWallet,
+            selectedWallet: selectedWallet,
             operationQueue: operationQueue
         )
 

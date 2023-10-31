@@ -448,39 +448,11 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func showFeeActions() {}
 
     func showFeeInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.commonNetwork(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsNetworkFeeDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showFeeInfo(from: view)
     }
 
     func showRateInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.swapsSetupDetailsRate(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsRateDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showRateInfo(from: view)
     }
 
     func proceed() {
@@ -497,16 +469,24 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let receiveChainAsset = self?.receiveChainAsset,
-                  let slippage = self?.slippage else {
+                  let slippage = self?.slippage,
+                  let quote = self?.quote,
+                  let quoteArgs = self?.quoteArgs else {
                 return
             }
 
+            let confirmInitState = SwapConfirmInitState(
+                chainAssetIn: payChainAsset,
+                chainAssetOut: receiveChainAsset,
+                feeChainAsset: feeChainAsset,
+                slippage: slippage,
+                quote: quote,
+                quoteArgs: quoteArgs
+            )
+
             self?.wireframe.showConfirmation(
                 from: self?.view,
-                payChainAsset: payChainAsset,
-                receiveChainAsset: receiveChainAsset,
-                feeChainAsset: feeChainAsset,
-                slippage: slippage
+                initState: confirmInitState
             )
         }
     }
@@ -530,8 +510,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
-    func didReceive(error: SwapSetupError) {
-        switch error {
+    func didReceive(baseError: SwapSetupError) {
+        switch baseError {
         case let .quote(_, args):
             guard args == quoteArgs else {
                 return

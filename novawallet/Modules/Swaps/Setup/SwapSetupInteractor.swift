@@ -7,8 +7,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         basePresenter as? SwapSetupInteractorOutputProtocol
     }
 
-    private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
-
     private var receiveChainAsset: ChainAsset? {
         didSet {
             updateSubscriptions(activeChainAssets: activeChainAssets)
