@@ -5,6 +5,12 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     let payAmountView = SwapSetupTitleView(frame: .zero)
 
     let payAmountInputView = SwapAmountInputView()
+    
+    let depositTokenButton: TriangularedButton = .create {
+        $0.applySecondaryStyle()
+        $0.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
+        $0.isHidden = true
+    }
 
     let receiveAmountView: TitleHorizontalMultiValueView = .create {
         $0.titleView.apply(style: .footnoteSecondary)
