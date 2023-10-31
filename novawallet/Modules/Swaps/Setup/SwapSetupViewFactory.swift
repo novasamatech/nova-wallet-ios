@@ -31,7 +31,8 @@ struct SwapSetupViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = SwapSetupViewController(
@@ -54,7 +55,7 @@ struct SwapSetupViewFactory {
               let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
               let chainModel = chainRegistry.getChain(for: westmintChainId),
               let currencyManager = CurrencyManager.shared,
-              let selectedAccount = SelectedWalletSettings.shared.value else {
+              let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -66,22 +67,20 @@ struct SwapSetupViewFactory {
             connection: connection,
             operationQueue: operationQueue
         )
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeService,
-            engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
+
+        let feeService = AssetHubFeeService(
+            wallet: selectedWallet,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         let interactor = SwapSetupInteractor(
             assetConversionOperationFactory: assetConversionOperationFactory,
-            assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
-            runtimeService: runtimeService,
-            feeProxy: ExtrinsicFeeProxy(),
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            assetConversionFeeService: feeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
-            selectedAccount: selectedAccount,
+            selectedWallet: selectedWallet,
             operationQueue: operationQueue
         )
 

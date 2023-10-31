@@ -15,7 +15,7 @@ final class SwapConfirmPresenter {
     private var chainAssetInPriceData: PriceData?
     private var chainAssetOutPriceData: PriceData?
     private var quote: AssetConversion.Quote?
-    private var fee: BigUInt?
+    private var fee: AssetConversion.FeeModel?
     private var payAccountId: AccountId?
     private var chainAccountResponse: MetaChainAccountResponse
     private var balances: [ChainAssetId: AssetBalance?] = [:]
@@ -120,7 +120,7 @@ final class SwapConfirmPresenter {
             return
         }
         let viewModel = viewModelFactory.feeViewModel(
-            fee: fee,
+            fee: fee.networkFee.targetAmount,
             chainAsset: initState.feeChainAsset,
             priceData: feePriceData
         )
@@ -173,7 +173,7 @@ final class SwapConfirmPresenter {
         spendingAmount: Decimal?
     ) -> [DataValidating] {
         let feeDecimal = fee.map { Decimal.fromSubstrateAmount(
-            $0,
+            $0.totalFee.targetAmount,
             precision: Int16(initState.feeChainAsset.asset.precision)
         ) } ?? nil
 
@@ -191,7 +191,7 @@ final class SwapConfirmPresenter {
             ),
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: payAssetBalance??.transferable,
-                fee: initState.chainAssetIn.chainAssetId == initState.feeChainAsset.chainAssetId ? fee : nil,
+                fee: initState.chainAssetIn.chainAssetId == initState.feeChainAsset.chainAssetId ? fee?.totalFee.targetAmount : nil,
                 spendingAmount: spendingAmount,
                 asset: initState.feeChainAsset.assetDisplayInfo,
                 locale: selectedLocale
@@ -364,7 +364,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         }
     }
 
-    func didReceive(fee: BigUInt?, transactionId _: TransactionFeeId) {
+    func didReceive(fee: AssetConversion.FeeModel?, transactionId _: TransactionFeeId) {
         self.fee = fee
         provideFeeViewModel()
     }
@@ -397,11 +397,11 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
 
     func didReceive(baseError: SwapSetupError) {
         switch baseError {
-        case let .quote:
+        case .quote:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self, initState] in
                 self?.interactor.calculateQuote(for: initState.quoteArgs)
             }
-        case let .fetchFeeFailed:
+        case .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
@@ -415,7 +415,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
                     .filter { $0.asset.priceId == priceId }
                     .forEach(self.interactor.remakePriceSubscription)
             }
-        case let .assetBalance:
+        case .assetBalance:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
             }

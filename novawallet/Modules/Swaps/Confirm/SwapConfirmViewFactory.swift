@@ -71,7 +71,7 @@ struct SwapConfirmViewFactory {
               let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
               let chainModel = chainRegistry.getChain(for: chainId),
               let currencyManager = CurrencyManager.shared,
-              let chainAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest) else {
+              let selectedAccount = wallet.fetchMetaChainAccount(for: accountRequest) else {
             return nil
         }
 
@@ -83,28 +83,35 @@ struct SwapConfirmViewFactory {
             connection: connection,
             operationQueue: operationQueue
         )
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
+        ).createService(account: selectedAccount.chainAccount, chain: chainModel)
+
+        let feeService = AssetHubFeeService(
+            wallet: wallet,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
-            for: chainAccountResponse.metaId,
-            accountResponse: chainAccountResponse.chainAccount
+            for: selectedAccount.metaId,
+            accountResponse: selectedAccount.chainAccount
         )
 
         let interactor = SwapConfirmInteractor(
             initState: initState,
+            assetConversionFeeService: feeService,
             assetConversionOperationFactory: assetConversionOperationFactory,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
             runtimeService: runtimeService,
-            feeProxy: ExtrinsicFeeProxy(),
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
-            selectedAccount: wallet,
+            selectedWallet: wallet,
             operationQueue: operationQueue,
             signer: signingWrapper
         )

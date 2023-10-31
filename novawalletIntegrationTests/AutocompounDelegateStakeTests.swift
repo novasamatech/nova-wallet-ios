@@ -199,6 +199,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             cryptoType: .sr25519,
             walletType: .watchOnly,
             runtimeRegistry: runtimeProvider,
+            extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
@@ -269,6 +270,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             cryptoType: .sr25519,
             walletType: .watchOnly,
             runtimeRegistry: runtimeProvider,
+            extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: OperationQueue())
         )

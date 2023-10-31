@@ -7,38 +7,40 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     }
 
     let initState: SwapConfirmInitState
+    let runtimeService: RuntimeProviderProtocol
+    let extrinsicService: ExtrinsicServiceProtocol
+    let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     let signer: SigningWrapperProtocol
     let operationQueue: OperationQueue
-    private var submitOperationCall: CancellableCall?
 
     init(
         initState: SwapConfirmInitState,
+        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        selectedAccount: MetaAccountModel,
+        selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue,
         signer: SigningWrapperProtocol
     ) {
         self.initState = initState
         self.signer = signer
         self.operationQueue = operationQueue
+        self.runtimeService = runtimeService
+        self.extrinsicService = extrinsicService
+        self.assetConversionExtrinsicService = assetConversionExtrinsicService
 
         super.init(
             assetConversionOperationFactory: assetConversionOperationFactory,
-            assetConversionExtrinsicService: assetConversionExtrinsicService,
-            runtimeService: runtimeService,
-            feeProxy: feeProxy,
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            assetConversionFeeService: assetConversionFeeService,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,
-            selectedAccount: selectedAccount,
+            selectedWallet: selectedWallet,
             operationQueue: operationQueue
         )
     }
@@ -52,11 +54,6 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     }
 
     func submitExtrinsic(args: AssetConversion.CallArgs) {
-        clear(cancellable: &submitOperationCall)
-        guard let extrinsicService = extrinsicService else {
-            return
-        }
-
         let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         runtimeCoderFactoryOperation.completionBlock = { [weak self] in
@@ -77,7 +74,6 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
             }
         }
 
-        submitOperationCall = runtimeCoderFactoryOperation
         operationQueue.addOperation(runtimeCoderFactoryOperation)
     }
 
