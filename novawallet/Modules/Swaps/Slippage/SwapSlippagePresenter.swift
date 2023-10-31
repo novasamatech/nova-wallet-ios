@@ -11,8 +11,7 @@ final class SwapSlippagePresenter {
     let prefilledPercents: [Decimal] = [0.1, 1, 3]
     let initPercent: BigRational?
     let chainAsset: ChainAsset
-    let amountRestriction: (lower: Decimal, upper: Decimal) = (lower: 0.1, upper: 50)
-    let amountRecommendation: (lower: Decimal, upper: Decimal) = (lower: 0.1, upper: 5)
+    let bounds = SlippageBounds()
 
     private var percentFormatter: NumberFormatter
     private var numberFormatter: NumberFormatter
@@ -63,49 +62,31 @@ final class SwapSlippagePresenter {
     }
 
     private func provideButtonStates() {
+        let error = bounds.error(
+            for: amountInput,
+            stringAmountClosure: title,
+            locale: selectedLocale
+        )
         let canReset = amountInput != AssetConversionConstants.defaultSlippage
         view?.didReceiveResetState(available: canReset)
 
-        let canApply = amountInput != initialPercent()
+        let canApply = amountInput != initialPercent() && error == nil
         view?.didReceiveButtonState(available: canApply)
     }
 
     private func provideErrors() {
-        if let amountInput = amountInput,
-           amountInput < amountRestriction.lower || amountInput > amountRestriction.upper {
-            let minAmountString = title(for: amountRestriction.lower)
-            let maxAmountString = title(for: amountRestriction.upper)
-            let error = R.string.localizable.swapsSetupSlippageErrorAmountBounds(
-                minAmountString,
-                maxAmountString,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            view?.didReceiveInput(error: error)
-            view?.didReceiveButtonState(available: false)
-        } else {
-            view?.didReceiveInput(error: nil)
-            view?.didReceiveButtonState(available: amountInput != initialPercent())
-        }
+        let error = bounds.error(
+            for: amountInput,
+            stringAmountClosure: title,
+            locale: selectedLocale
+        )
+        view?.didReceiveInput(error: error)
+        provideButtonStates()
     }
 
     private func provideWarnings() {
-        guard let amountInput = amountInput, amountInput > 0 else {
-            view?.didReceiveInput(warning: nil)
-            return
-        }
-        if amountInput <= amountRecommendation.lower {
-            let warning = R.string.localizable.swapsSetupSlippageWarningLowAmount(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            view?.didReceiveInput(warning: warning)
-        } else if amountInput >= amountRecommendation.upper {
-            let warning = R.string.localizable.swapsSetupSlippageWarningHighAmount(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            view?.didReceiveInput(warning: warning)
-        } else {
-            view?.didReceiveInput(warning: nil)
-        }
+        let warning = bounds.warning(for: amountInput, locale: selectedLocale)
+        view?.didReceiveInput(warning: warning)
     }
 }
 
@@ -141,17 +122,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func showSlippageInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.swapsSetupSlippage(preferredLanguages: $0.rLanguages)
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsSetupSlippageDescription(preferredLanguages: $0.rLanguages)
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showSlippageInfo(from: view)
     }
 
     func reset() {

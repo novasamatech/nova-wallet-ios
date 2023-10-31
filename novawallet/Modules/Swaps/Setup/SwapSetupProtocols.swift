@@ -9,7 +9,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveTitle(payViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveInputChainAsset(receiveViewModel viewModel: SwapAssetInputViewModel)
     func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol)
-    func didReceiveAmountInputPrice(receiveViewModel: String?)
+    func didReceiveAmountInputPrice(receiveViewModel: SwapPriceDifferenceViewModel?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
@@ -67,10 +67,7 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     )
     func showConfirmation(
         from view: ControllerBackedProtocol?,
-        payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset,
-        feeChainAsset: ChainAsset,
-        slippage: BigRational
+        initState: SwapConfirmInitState
     )
 }
 

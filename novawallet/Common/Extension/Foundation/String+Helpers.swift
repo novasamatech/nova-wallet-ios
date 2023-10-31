@@ -37,6 +37,14 @@ extension String {
             return self
         }
     }
+
+    func inParenthesis() -> String {
+        guard !isEmpty else {
+            return ""
+        }
+
+        return "(\(self))"
+    }
 }
 
 extension Optional where Wrapped == String {

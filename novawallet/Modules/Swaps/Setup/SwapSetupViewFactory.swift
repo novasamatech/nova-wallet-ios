@@ -19,7 +19,9 @@ struct SwapSetupViewFactory {
         let wireframe = SwapSetupWireframe(assetListObservable: assetListObservable)
         let viewModelFactory = SwapsSetupViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
-            networkViewModelFactory: NetworkViewModelFactory()
+            networkViewModelFactory: NetworkViewModelFactory(),
+            percentForamatter: NumberFormatter.percentSingle.localizableResource(),
+            locale: LocalizationManager.shared.selectedLocale
         )
         let dataValidatingFactory = SwapDataValidatorFactory(
             presentable: wireframe,
@@ -80,7 +82,7 @@ struct SwapSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
-            selectedAccount: selectedWallet,
+            selectedWallet: selectedWallet,
             operationQueue: operationQueue
         )
 

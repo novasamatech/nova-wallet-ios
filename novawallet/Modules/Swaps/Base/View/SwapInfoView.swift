@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class SwapRateView: GenericTitleValueView<RoundedButton, UILabel>, SkeletonableView {
+final class SwapInfoView: GenericTitleValueView<RoundedButton, UILabel>, SkeletonableView {
     var titleButton: RoundedButton { titleView }
     var valueLabel: UILabel { valueView }
     var skeletonView: SkrullableView?
@@ -46,7 +46,7 @@ final class SwapRateView: GenericTitleValueView<RoundedButton, UILabel>, Skeleto
     }
 }
 
-extension SwapRateView {
+extension SwapInfoView {
     func bind(loadableViewModel: LoadableViewModelState<String>) {
         switch loadableViewModel {
         case let .cached(value), let .loaded(value):
@@ -60,7 +60,7 @@ extension SwapRateView {
     }
 }
 
-extension SwapRateView {
+extension SwapInfoView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let size = CGSize(width: 68, height: 8)
         let offset = CGPoint(
