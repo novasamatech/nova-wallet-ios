@@ -195,6 +195,10 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         )
         wireframe.showLocks(from: view, model: model)
     }
+
+    func handleSwap() {
+        wireframe.showSwaps(from: view, chainAsset: chainAsset)
+    }
 }
 
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {

@@ -138,6 +138,14 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(where: { $0 == .governance }) ?? false
     }
 
+    var hasSwapHub: Bool {
+        options?.contains(where: { $0 == .swapHub }) ?? false
+    }
+
+    var hasSwaps: Bool {
+        hasSwapHub
+    }
+
     var noSubstrateRuntime: Bool {
         options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
     }
@@ -224,6 +232,7 @@ enum ChainOptions: String, Codable {
     case governance
     case governanceV1 = "governance-v1"
     case noSubstrateRuntime
+    case swapHub = "swap-hub"
 }
 
 extension ChainModel {

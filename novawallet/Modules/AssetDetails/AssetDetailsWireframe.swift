@@ -4,6 +4,12 @@ import SoraUI
 import SoraFoundation
 
 final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
+    let assetListObservable: AssetListModelObservable
+
+    init(assetListObservable: AssetListModelObservable) {
+        self.assetListObservable = assetListObservable
+    }
+
     func showPurchaseTokens(
         from view: AssetDetailsViewProtocol?,
         action: PurchaseAction,
@@ -91,6 +97,19 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
             return
         }
         present(confirmationView.controller, from: view)
+    }
+
+    func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
+        guard let swapsView = SwapSetupViewFactory.createView(
+            assetListObservable: assetListObservable,
+            payChainAsset: chainAsset
+        ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: swapsView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 
     private func present(_ viewController: UIViewController, from view: AssetDetailsViewProtocol?) {

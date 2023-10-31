@@ -55,12 +55,17 @@ final class AssetListPresenter {
 
         guard case let .success(priceMapping) = model.priceResult, !model.balanceResults.isEmpty else {
             let viewModel = viewModelFactory.createHeaderViewModel(
-                from: name,
-                walletIdenticon: walletIdenticon,
-                walletType: walletType,
-                prices: nil,
-                locks: nil,
-                walletConnectSessionsCount: walletConnectSessionsCount,
+                params: .init(
+                    title: name,
+                    wallet: .init(
+                        walletIdenticon: walletIdenticon,
+                        walletType: walletType,
+                        walletConnectSessionsCount: walletConnectSessionsCount
+                    ),
+                    prices: nil,
+                    locks: nil,
+                    hasSwaps: model.hasSwaps()
+                ),
                 locale: selectedLocale
             )
 
@@ -140,12 +145,17 @@ final class AssetListPresenter {
         let totalLocks = createHeaderLockState(from: priceMapping, externalBalances: externalBalances)
 
         let viewModel = viewModelFactory.createHeaderViewModel(
-            from: name,
-            walletIdenticon: walletIdenticon,
-            walletType: walletType,
-            prices: totalValue,
-            locks: totalLocks,
-            walletConnectSessionsCount: walletConnectSessionsCount,
+            params: .init(
+                title: name,
+                wallet: .init(
+                    walletIdenticon: walletIdenticon,
+                    walletType: walletType,
+                    walletConnectSessionsCount: walletConnectSessionsCount
+                ),
+                prices: totalValue,
+                locks: totalLocks,
+                hasSwaps: model.hasSwaps()
+            ),
             locale: selectedLocale
         )
 

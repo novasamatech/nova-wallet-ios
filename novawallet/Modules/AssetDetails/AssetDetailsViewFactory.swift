@@ -2,7 +2,11 @@ import Foundation
 import SoraFoundation
 
 struct AssetDetailsViewFactory {
-    static func createView(chain: ChainModel, asset: AssetModel) -> AssetDetailsViewProtocol? {
+    static func createView(
+        assetListObservable: AssetListModelObservable,
+        chain: ChainModel,
+        asset: AssetModel
+    ) -> AssetDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -19,7 +23,7 @@ struct AssetDetailsViewFactory {
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             currencyManager: currencyManager
         )
-        let wireframe = AssetDetailsWireframe()
+        let wireframe = AssetDetailsWireframe(assetListObservable: assetListObservable)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetDetailsViewModelFactory(

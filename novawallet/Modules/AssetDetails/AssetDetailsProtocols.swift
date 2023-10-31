@@ -14,6 +14,7 @@ protocol AssetDetailsPresenterProtocol: AnyObject {
     func handleReceive()
     func handleBuy()
     func handleLocks()
+    func handleSwap()
 }
 
 protocol AssetDetailsInteractorInputProtocol: AnyObject {
@@ -40,6 +41,7 @@ protocol AssetDetailsWireframeProtocol: AnyObject, PurchasePresentable, AlertPre
     func showNoSigning(from view: AssetDetailsViewProtocol?)
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
     func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel)
+    func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
 }
 
 enum AssetDetailsError: Error {

@@ -14,14 +14,18 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
 
     let selectClosure: (ChainAsset) -> Void
 
+    let selectClosureStrategy: SubmoduleNavigationStrategy
+
     init(
         selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosureStrategy: SubmoduleNavigationStrategy,
         interactor: SwapAssetsOperationInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         wireframe: SwapAssetsOperationWireframeProtocol
     ) {
         self.selectClosure = selectClosure
+        self.selectClosureStrategy = selectClosureStrategy
 
         super.init(
             delegate: nil,
@@ -41,8 +45,12 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
-        selectClosure(chainAsset)
-        wireframe.close(view: view)
+
+        selectClosureStrategy.applyStrategy(for: { dismissalCallback in
+            self.wireframe.close(view: self.view, completion: dismissalCallback)
+        }, callback: {
+            self.selectClosure(chainAsset)
+        })
     }
 }
 

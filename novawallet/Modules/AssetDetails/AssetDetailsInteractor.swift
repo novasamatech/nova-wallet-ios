@@ -71,6 +71,10 @@ final class AssetDetailsInteractor {
 
         operations.insert(.receive)
 
+        if chainAsset.chain.hasSwaps {
+            operations.insert(.swap)
+        }
+
         presenter?.didReceive(purchaseActions: actions)
         presenter?.didReceive(availableOperations: operations)
     }

@@ -24,7 +24,7 @@ final class ReceiveAssetOperationWireframe: ReceiveAssetOperationWireframeProtoc
 }
 
 extension ReceiveAssetOperationWireframe: AssetsSearchWireframeProtocol {
-    func close(view: AssetsSearchViewProtocol?) {
-        view?.controller.presentingViewController?.dismiss(animated: true)
+    func close(view: AssetsSearchViewProtocol?, completion: (() -> Void)?) {
+        view?.controller.presentingViewController?.dismiss(animated: true, completion: completion)
     }
 }

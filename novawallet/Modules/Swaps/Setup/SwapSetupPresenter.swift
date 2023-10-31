@@ -35,6 +35,7 @@ final class SwapSetupPresenter {
     private var accountId: AccountId?
 
     init(
+        payChainAsset: ChainAsset?,
         interactor: SwapSetupInteractorInputProtocol,
         wireframe: SwapSetupWireframeProtocol,
         viewModelFactory: SwapsSetupViewModelFactoryProtocol,
@@ -42,6 +43,8 @@ final class SwapSetupPresenter {
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
+        self.payChainAsset = payChainAsset
+        feeChainAsset = payChainAsset?.chain.utilityChainAsset()
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -396,7 +399,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideSettingsState()
         // TODO: get from settings
         slippage = .fraction(from: AssetConversionConstants.defaultSlippage)?.fromPercents()
+
         interactor.setup()
+        interactor.update(payChainAsset: payChainAsset)
+        interactor.update(feeChainAsset: feeChainAsset)
     }
 
     func selectPayToken() {
