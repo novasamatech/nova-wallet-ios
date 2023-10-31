@@ -612,7 +612,11 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         provideButtonState()
     }
 
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId, feeChainAssetId: FeeChainAssetId?) {
+    func didReceive(
+        fee: AssetConversion.FeeModel?,
+        transactionId: TransactionFeeId,
+        feeChainAssetId: FeeChainAssetId?
+    ) {
         let identifier = SwapSetupFeeIdentifier(
             transactionId: transactionId,
             feeChainAssetId: feeChainAssetId

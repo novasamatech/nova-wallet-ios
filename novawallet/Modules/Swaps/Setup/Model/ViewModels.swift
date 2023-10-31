@@ -26,6 +26,7 @@ struct SwapPriceDifferenceViewModel {
     let price: String?
     let difference: DifferenceViewModel?
 }
+
 struct SwapSetupFeeIdentifier: Equatable {
     let transactionId: String
     let feeChainAssetId: ChainAssetId?
