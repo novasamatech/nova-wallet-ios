@@ -19,10 +19,12 @@ struct SwapFeeViewModel {
     var isEditable: Bool
     var balanceViewModel: BalanceViewModelProtocol
 }
+
 enum TextFieldFocus {
     case payAsset
     case receiveAsset
 }
+
 struct SwapPriceDifferenceViewModel {
     let price: String?
     let difference: DifferenceViewModel?

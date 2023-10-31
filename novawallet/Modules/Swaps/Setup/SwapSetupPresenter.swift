@@ -441,16 +441,16 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         let newFocus: TextFieldFocus?
 
         switch currentFocus {
-        case .payAsset:
+        case .payAsset, .none:
             receiveAmountInput = payAmount
             payAmountInput = nil
             refreshQuote(direction: .buy, forceUpdate: false)
             newFocus = .receiveAsset
-        case .receiveAsset, .none:
+        case .receiveAsset:
             payAmountInput = receiveAmount
             receiveAmountInput = nil
             refreshQuote(direction: .sell, forceUpdate: false)
-            newFocus = currentFocus == nil ? nil : .payAsset
+            newFocus = .payAsset
         }
 
         providePayAssetViews()
