@@ -6,10 +6,10 @@ final class SwapSetupPresenter {
     weak var view: SwapSetupViewProtocol?
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
-    let viewModelFactory: SwapsSetupViewModelFactoryProtocol
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let logger: LoggerProtocol
 
+    private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
     private(set) var payAssetBalance: AssetBalance?
     private(set) var feeAssetBalance: AssetBalance?
     private(set) var payChainAsset: ChainAsset?
@@ -67,16 +67,14 @@ final class SwapSetupPresenter {
     private func providePayTitle() {
         let payTitleViewModel = viewModelFactory.payTitleViewModel(
             assetDisplayInfo: payChainAsset?.assetDisplayInfo,
-            maxValue: payAssetBalance?.transferable,
-            locale: selectedLocale
+            maxValue: payAssetBalance?.transferable
         )
         view?.didReceiveTitle(payViewModel: payTitleViewModel)
     }
 
     private func providePayAssetViewModel() {
         let payAssetViewModel = viewModelFactory.payAssetViewModel(
-            chainAsset: payChainAsset,
-            locale: selectedLocale
+            chainAsset: payChainAsset
         )
         view?.didReceiveInputChainAsset(payViewModel: payAssetViewModel)
     }
@@ -89,21 +87,19 @@ final class SwapSetupPresenter {
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
             amount: getPayAmount(for: payAmountInput),
-            priceData: payAssetPriceData,
-            locale: selectedLocale
+            priceData: payAssetPriceData
         )
         view?.didReceiveAmountInputPrice(payViewModel: inputPriceViewModel)
     }
 
     private func provideReceiveTitle() {
-        let receiveTitleViewModel = viewModelFactory.receiveTitleViewModel(locale: selectedLocale)
+        let receiveTitleViewModel = viewModelFactory.receiveTitleViewModel()
         view?.didReceiveTitle(receiveViewModel: receiveTitleViewModel)
     }
 
     private func provideReceiveAssetViewModel() {
         let receiveAssetViewModel = viewModelFactory.receiveAssetViewModel(
-            chainAsset: receiveChainAsset,
-            locale: selectedLocale
+            chainAsset: receiveChainAsset
         )
         view?.didReceiveInputChainAsset(receiveViewModel: receiveAssetViewModel)
     }
@@ -113,13 +109,35 @@ final class SwapSetupPresenter {
             view?.didReceiveAmountInputPrice(receiveViewModel: nil)
             return
         }
+
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
             amount: receiveAmountInput,
-            priceData: receiveAssetPriceData,
-            locale: selectedLocale
+            priceData: receiveAssetPriceData
         )
-        view?.didReceiveAmountInputPrice(receiveViewModel: inputPriceViewModel)
+
+        let differenceViewModel: DifferenceViewModel?
+        if let quote = quote, let payAssetDisplayInfo = payChainAsset?.assetDisplayInfo {
+            let params = RateParams(
+                assetDisplayInfoIn: payAssetDisplayInfo,
+                assetDisplayInfoOut: assetDisplayInfo,
+                amountIn: quote.amountIn,
+                amountOut: quote.amountOut
+            )
+
+            differenceViewModel = viewModelFactory.priceDifferenceViewModel(
+                rateParams: params,
+                priceIn: payAssetPriceData,
+                priceOut: receiveAssetPriceData
+            )
+        } else {
+            differenceViewModel = nil
+        }
+
+        view?.didReceiveAmountInputPrice(receiveViewModel: .init(
+            price: inputPriceViewModel,
+            difference: differenceViewModel
+        ))
     }
 
     private func providePayAmountInputViewModel() {
@@ -128,8 +146,7 @@ final class SwapSetupPresenter {
         }
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: payChainAsset,
-            amount: getPayAmount(for: payAmountInput),
-            locale: selectedLocale
+            amount: getPayAmount(for: payAmountInput)
         )
         view?.didReceiveAmount(payInputViewModel: amountInputViewModel)
     }
@@ -140,8 +157,7 @@ final class SwapSetupPresenter {
         }
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: receiveChainAsset,
-            amount: receiveAmountInput,
-            locale: selectedLocale
+            amount: receiveAmountInput
         )
         view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
@@ -188,7 +204,7 @@ final class SwapSetupPresenter {
             assetDisplayInfoOut: assetDisplayInfoOut,
             amountIn: quote.amountIn,
             amountOut: quote.amountOut
-        ), locale: selectedLocale)
+        ))
 
         view?.didReceiveRate(viewModel: .loaded(value: rateViewModel))
     }
@@ -205,8 +221,7 @@ final class SwapSetupPresenter {
             amount: fee,
             assetDisplayInfo: feeChainAsset.assetDisplayInfo,
             isEditable: payChainAsset?.isUtilityAsset == false,
-            priceData: feeAssetPriceData,
-            locale: selectedLocale
+            priceData: feeAssetPriceData
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
@@ -312,6 +327,7 @@ final class SwapSetupPresenter {
             if forceUpdate {
                 receiveAmountInput = nil
                 provideReceiveAmountInputViewModel()
+                provideReceiveInputPriceViewModel()
             } else {
                 refreshQuote(direction: .buy)
             }
@@ -477,39 +493,11 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showFeeInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.commonNetwork(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsNetworkFeeDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showFeeInfo(from: view)
     }
 
     func showRateInfo() {
-        let title = LocalizableResource {
-            R.string.localizable.swapsSetupDetailsRate(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        let details = LocalizableResource {
-            R.string.localizable.swapsRateDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
+        wireframe.showRateInfo(from: view)
     }
 
     func proceed() {
@@ -526,16 +514,24 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let receiveChainAsset = self?.receiveChainAsset,
-                  let slippage = self?.slippage else {
+                  let slippage = self?.slippage,
+                  let quote = self?.quote,
+                  let quoteArgs = self?.quoteArgs else {
                 return
             }
 
+            let confirmInitState = SwapConfirmInitState(
+                chainAssetIn: payChainAsset,
+                chainAssetOut: receiveChainAsset,
+                feeChainAsset: feeChainAsset,
+                slippage: slippage,
+                quote: quote,
+                quoteArgs: quoteArgs
+            )
+
             self?.wireframe.showConfirmation(
                 from: self?.view,
-                payChainAsset: payChainAsset,
-                receiveChainAsset: receiveChainAsset,
-                feeChainAsset: feeChainAsset,
-                slippage: slippage
+                initState: confirmInitState
             )
         }
     }
@@ -559,8 +555,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
-    func didReceive(error: SwapSetupError) {
-        switch error {
+    func didReceive(baseError: SwapSetupError) {
+        switch baseError {
         case let .quote(_, args):
             guard args == quoteArgs else {
                 return
@@ -608,6 +604,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 ) ?? 0
             }
             provideReceiveAmountInputViewModel()
+            provideReceiveInputPriceViewModel()
         }
 
         provideRateViewModel()
@@ -669,6 +666,7 @@ extension SwapSetupPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             setup()
+            viewModelFactory.locale = selectedLocale
         }
     }
 }

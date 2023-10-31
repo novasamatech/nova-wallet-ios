@@ -14,7 +14,7 @@ enum AssetConversion {
         let direction: Direction
     }
 
-    struct Quote {
+    struct Quote: Equatable {
         let amountIn: BigUInt
         let assetIn: ChainAssetId
         let amountOut: BigUInt

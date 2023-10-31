@@ -9,7 +9,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
-    let selectedAccount: MetaAccountModel
+    let selectedWallet: MetaAccountModel
 
     private let operationQueue: OperationQueue
     private var quoteCall: CancellableCall?
@@ -24,7 +24,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        selectedAccount: MetaAccountModel,
+        selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue
     ) {
         self.assetConversionOperationFactory = assetConversionOperationFactory
@@ -32,7 +32,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.currencyManager = currencyManager
-        self.selectedAccount = selectedAccount
+        self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
     }
 
@@ -109,7 +109,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
                     self?.basePresenter?.didReceive(quote: result, for: args)
                 } catch {
-                    self?.basePresenter?.didReceive(error: .quote(error, args))
+                    self?.basePresenter?.didReceive(baseError: .quote(error, args))
                 }
             }
         }
@@ -132,13 +132,13 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             case let .success(feeModel):
                 self?.feeModelBuilder?.apply(feeModel: feeModel, args: args)
             case let .failure(error):
-                self?.basePresenter?.didReceive(error: .fetchFeeFailed(error, args.identifier, feeAsset.chainAssetId))
+                self?.basePresenter?.didReceive(baseError: .fetchFeeFailed(error, args.identifier, feeAsset.chainAssetId))
             }
         }
     }
 
     func chainAccountResponse(for chainAsset: ChainAsset) -> ChainAccountResponse? {
-        let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest())
+        let metaChainAccountResponse = selectedWallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest())
         return metaChainAccountResponse?.chainAccount
     }
 
@@ -198,7 +198,7 @@ extension SwapBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptio
         case let .success(priceData):
             basePresenter?.didReceive(price: priceData, priceId: priceId)
         case let .failure(error):
-            basePresenter?.didReceive(error: .price(error, priceId))
+            basePresenter?.didReceive(baseError: .price(error, priceId))
         }
     }
 }
@@ -229,7 +229,7 @@ extension SwapBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
             )
 
         case let .failure(error):
-            basePresenter?.didReceive(error: .assetBalance(error, chainAssetId, accountId))
+            basePresenter?.didReceive(baseError: .assetBalance(error, chainAssetId, accountId))
         }
     }
 }

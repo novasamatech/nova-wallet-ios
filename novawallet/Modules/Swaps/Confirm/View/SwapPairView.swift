@@ -7,8 +7,10 @@ final class SwapPairView: UIView {
 
     let arrowView: RoundedButton = .create {
         $0.imageWithTitleView?.iconImage = R.image.iconForward()
-        $0.backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
+        $0.roundedBackgroundView?.apply(style: .icon)
+        $0.roundedBackgroundView?.fillColor = R.color.colorSecondaryScreenBackground()!
         $0.roundedBackgroundView?.cornerRadius = 24
+        $0.isUserInteractionEnabled = false
     }
 
     override init(frame: CGRect) {
@@ -39,5 +41,15 @@ final class SwapPairView: UIView {
         arrowView.snp.makeConstraints {
             $0.center.equalTo(stackView.snp.center)
         }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(
+            width: UIView.noIntrinsicMetric,
+            height: max(
+                leftAssetView.intrinsicContentSize.height,
+                rigthAssetView.intrinsicContentSize.height
+            )
+        )
     }
 }
