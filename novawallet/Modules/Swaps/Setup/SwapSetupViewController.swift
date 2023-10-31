@@ -240,12 +240,12 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
     func didReceive(focus: TextFieldFocus?) {
         switch focus {
         case .none:
-            rootView.payAmountInputView.set(focus: false)
-            rootView.receiveAmountInputView.set(focus: false)
+            rootView.payAmountInputView.set(focused: false)
+            rootView.receiveAmountInputView.set(focused: false)
         case .payAsset:
-            rootView.payAmountInputView.set(focus: true)
+            rootView.payAmountInputView.set(focused: true)
         case .receiveAsset:
-            rootView.receiveAmountInputView.set(focus: true)
+            rootView.receiveAmountInputView.set(focused: true)
         }
     }
 }

@@ -147,11 +147,11 @@ extension SwapAmountInputView {
         setNeedsLayout()
     }
 
-    func set(focus: Bool) {
+    func set(focused: Bool) {
         guard !textInputView.isHidden else {
             return
         }
-        if focus {
+        if focused {
             textInputView.textField.becomeFirstResponder()
         } else {
             textInputView.textField.resignFirstResponder()
