@@ -57,18 +57,18 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         runtimeCoderFactoryOperation.completionBlock = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            do {
-                let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
-                let builder = self.assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
-                    for: args,
-                    codingFactory: runtimeCoderFactory
-                )
-                self.submitClosure(extrinsicService: extrinsicService, builder: builder)
-            } catch {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                guard let self = self else {
+                    return
+                }
+                do {
+                    let runtimeCoderFactory = try runtimeCoderFactoryOperation.extractNoCancellableResultData()
+                    let builder = self.assetConversionExtrinsicService.fetchExtrinsicBuilderClosure(
+                        for: args,
+                        codingFactory: runtimeCoderFactory
+                    )
+                    self.submitClosure(extrinsicService: self.extrinsicService, builder: builder)
+                } catch {
                     self.presenter?.didReceive(error: .submit(error))
                 }
             }

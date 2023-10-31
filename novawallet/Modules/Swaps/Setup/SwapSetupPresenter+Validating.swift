@@ -24,7 +24,7 @@ extension SwapSetupPresenter {
             ),
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: payAssetBalance?.transferable,
-                fee: payChainAsset.chainAssetId == feeChainAsset.chainAssetId ? fee?.totalFee.targetAmount : nil,
+                fee: payChainAsset.chainAssetId == feeChainAsset.chainAssetId ? fee?.totalFee.targetAmount : 0,
                 spendingAmount: spendingAmount,
                 asset: feeChainAsset.assetDisplayInfo,
                 locale: selectedLocale

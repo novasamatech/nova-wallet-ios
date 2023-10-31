@@ -177,6 +177,9 @@ final class SwapConfirmPresenter {
             precision: Int16(initState.feeChainAsset.asset.precision)
         ) } ?? nil
 
+        let feeInPayAsset = initState.chainAssetIn.chainAssetId == initState.feeChainAsset.chainAssetId ?
+            fee?.totalFee.targetAmount : 0
+
         let payAssetBalance = balances[initState.chainAssetIn.chainAssetId]
 
         let validators: [DataValidating] = [
@@ -191,7 +194,7 @@ final class SwapConfirmPresenter {
             ),
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: payAssetBalance??.transferable,
-                fee: initState.chainAssetIn.chainAssetId == initState.feeChainAsset.chainAssetId ? fee?.totalFee.targetAmount : nil,
+                fee: feeInPayAsset,
                 spendingAmount: spendingAmount,
                 asset: initState.feeChainAsset.assetDisplayInfo,
                 locale: selectedLocale
