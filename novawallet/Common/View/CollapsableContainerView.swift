@@ -10,7 +10,6 @@ class CollapsableContainerView: UIView {
     private enum Constants {
         static let headerHeight: CGFloat = 32
         static let rowHeight: CGFloat = 44
-        static let contentMargins = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         static let stackViewBottomInset: CGFloat = 4
     }
 
@@ -44,8 +43,14 @@ class CollapsableContainerView: UIView {
         $0.distribution = .fill
         $0.alignment = .fill
         $0.spacing = 0.0
-        $0.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        $0.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         $0.isLayoutMarginsRelativeArrangement = true
+    }
+
+    var contentInsets: UIEdgeInsets = .zero {
+        didSet {
+            stackView.layoutMargins = contentInsets
+        }
     }
 
     weak var delegate: CollapsableNetworkInfoViewDelegate?

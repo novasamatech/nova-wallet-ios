@@ -69,7 +69,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(receiveAmountChangeAction),
             for: .editingChanged
         )
-        rootView.rateCell.titleButton.addTarget(
+        rootView.rateCell.addTarget(
             self,
             action: #selector(rateInfoAction),
             for: .touchUpInside
@@ -79,7 +79,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(changeNetworkFeeAction),
             for: .touchUpInside
         )
-        rootView.networkFeeCell.titleButton.addTarget(
+        rootView.networkFeeCell.addTarget(
             self,
             action: #selector(networkFeeInfoAction),
             for: .touchUpInside
