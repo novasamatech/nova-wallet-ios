@@ -19,3 +19,8 @@ struct SwapFeeViewModel {
     var isEditable: Bool
     var balanceViewModel: BalanceViewModelProtocol
 }
+
+enum TextFieldFocus {
+    case payAsset
+    case receiveAsset
+}

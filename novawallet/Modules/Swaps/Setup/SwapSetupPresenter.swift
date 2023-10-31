@@ -12,6 +12,7 @@ final class SwapSetupPresenter {
 
     private(set) var payAssetBalance: AssetBalance?
     private(set) var feeAssetBalance: AssetBalance?
+    private(set) var receiveAssetBalance: AssetBalance?
     private(set) var payChainAsset: ChainAsset?
     private(set) var receiveChainAsset: ChainAsset?
     private(set) var feeChainAsset: ChainAsset?
@@ -155,19 +156,6 @@ final class SwapSetupPresenter {
             return nil
         }
         return input.absoluteValue(from: balanceMinusFee)
-    }
-
-    private func getSpendingAmount() -> Decimal? {
-        guard let input = payAmountInput, let payChainAsset = payChainAsset else {
-            return nil
-        }
-        guard let transferableBalance = Decimal.fromSubstrateAmount(
-            payAssetBalance?.transferable ?? 0,
-            precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
-        ) else {
-            return nil
-        }
-        return input.absoluteValue(from: transferableBalance)
     }
 
     private func providePayAssetViews() {
@@ -424,17 +412,36 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
     }
 
-    func swap() {
+    func flip(currentFocus: TextFieldFocus?) {
+        let payAmount = getPayAmount(for: payAmountInput)
+        let receiveAmount = receiveAmountInput.map { AmountInputResult.absolute($0) }
+
         Swift.swap(&payChainAsset, &receiveChainAsset)
+        Swift.swap(&payAssetBalance, &receiveAssetBalance)
+        Swift.swap(&payAssetPriceData, &receiveAssetPriceData)
+
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
-        payAmountInput = nil
-        receiveAmountInput = nil
+        let newFocus: TextFieldFocus?
+
+        switch currentFocus {
+        case .payAsset:
+            receiveAmountInput = payAmount
+            payAmountInput = nil
+            refreshQuote(direction: .buy, forceUpdate: false)
+            newFocus = .receiveAsset
+        case .receiveAsset, .none:
+            payAmountInput = receiveAmount
+            receiveAmountInput = nil
+            refreshQuote(direction: .sell, forceUpdate: false)
+            newFocus = currentFocus == nil ? nil : .payAsset
+        }
+
         providePayAssetViews()
         provideReceiveAssetViews()
         provideButtonState()
         provideSettingsState()
-        refreshQuote(direction: .sell, forceUpdate: false)
+        view?.didReceive(focus: newFocus)
     }
 
     func selectMaxPayAmount() {
@@ -490,7 +497,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         }
 
         let validators = validators(
-            spendingAmount: getSpendingAmount(),
+            spendingAmount: getPayAmount(for: payAmountInput),
             payChainAsset: payChainAsset,
             feeChainAsset: feeChainAsset
         )
@@ -626,6 +633,9 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 providePayAmountInputViewModel()
                 provideButtonState()
             }
+        }
+        if chainAsset == receiveChainAsset?.chainAssetId {
+            receiveAssetBalance = balance
         }
     }
 }

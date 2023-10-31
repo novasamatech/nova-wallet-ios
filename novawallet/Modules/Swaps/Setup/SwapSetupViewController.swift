@@ -127,8 +127,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc private func swapAction() {
+        let currentFocus: TextFieldFocus?
+        if rootView.payAmountInputView.textInputView.textField.isFirstResponder {
+            currentFocus = .payAsset
+        } else if rootView.receiveAmountInputView.textInputView.textField.isFirstResponder {
+            currentFocus = .receiveAsset
+        } else {
+            currentFocus = nil
+        }
         view.endEditing(true)
-        presenter.swap()
+        presenter.flip(currentFocus: currentFocus)
     }
 
     @objc private func payAmountChangeAction() {
@@ -227,6 +235,18 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveSettingsState(isAvailable: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isAvailable
+    }
+
+    func didReceive(focus: TextFieldFocus?) {
+        switch focus {
+        case .none:
+            rootView.payAmountInputView.textInputView.textField.resignFirstResponder()
+            rootView.receiveAmountInputView.textInputView.textField.resignFirstResponder()
+        case .payAsset:
+            rootView.payAmountInputView.textInputView.textField.becomeFirstResponder()
+        case .receiveAsset:
+            rootView.receiveAmountInputView.textInputView.textField.becomeFirstResponder()
+        }
     }
 }
 
