@@ -157,19 +157,6 @@ final class SwapSetupPresenter {
         return input.absoluteValue(from: balanceMinusFee)
     }
 
-    private func getSpendingAmount() -> Decimal? {
-        guard let input = payAmountInput, let payChainAsset = payChainAsset else {
-            return nil
-        }
-        guard let transferableBalance = Decimal.fromSubstrateAmount(
-            payAssetBalance?.transferable ?? 0,
-            precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
-        ) else {
-            return nil
-        }
-        return input.absoluteValue(from: transferableBalance)
-    }
-
     private func providePayAssetViews() {
         providePayTitle()
         providePayAssetViewModel()
@@ -532,7 +519,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         }
 
         let validators = validators(
-            spendingAmount: getSpendingAmount(),
+            spendingAmount: getPayAmount(for: payAmountInput),
             payChainAsset: payChainAsset,
             feeChainAsset: feeChainAsset
         )
