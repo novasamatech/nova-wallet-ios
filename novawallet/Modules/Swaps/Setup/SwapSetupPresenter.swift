@@ -346,7 +346,7 @@ final class SwapSetupPresenter {
             return 0
         }
 
-        return balance - fee
+        return max(0, balance - fee)
     }
 
     private func handleAssetBalanceError(chainAssetId: ChainAssetId) {
@@ -378,8 +378,10 @@ final class SwapSetupPresenter {
 
     private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
         feeChainAsset = chainAsset
+        providePayAssetViews()
         interactor.update(feeChainAsset: chainAsset)
         estimateFee()
+        refreshQuote(direction: .sell)
     }
 }
 
