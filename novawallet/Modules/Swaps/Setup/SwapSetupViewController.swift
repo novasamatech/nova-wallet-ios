@@ -209,8 +209,8 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.receiveAmountInputView.bind(inputViewModel: inputViewModel)
     }
 
-    func didReceiveAmountInputPrice(receiveViewModel viewModel: String?) {
-        rootView.receiveAmountInputView.bind(priceViewModel: viewModel)
+    func didReceiveAmountInputPrice(receiveViewModel viewModel: SwapPriceDifferenceViewModel?) {
+        rootView.receiveAmountInputView.bind(priceDifferenceViewModel: viewModel)
     }
 
     func didReceiveDetailsState(isAvailable: Bool) {

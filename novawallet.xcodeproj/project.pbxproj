@@ -820,6 +820,7 @@
 		77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255682A16148000B644C3 /* StakingRewardsFilter.swift */; };
 		77E304A92AEB9F76006FD6F0 /* SwapConfirmInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304A82AEB9F76006FD6F0 /* SwapConfirmInitState.swift */; };
 		77E304AB2AEBB214006FD6F0 /* SlippageBounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304AA2AEBB214006FD6F0 /* SlippageBounds.swift */; };
+		77E304AD2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304AC2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift */; };
 		77EA2A232A333C1500B0670B /* french_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A182A333C1500B0670B /* french_output.json */; };
 		77EA2A242A333C1500B0670B /* arrays_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A192A333C1500B0670B /* arrays_output.json */; };
 		77EA2A252A333C1500B0670B /* weird_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A1A2A333C1500B0670B /* weird_output.json */; };
@@ -4869,6 +4870,7 @@
 		77E255682A16148000B644C3 /* StakingRewardsFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilter.swift; sourceTree = "<group>"; };
 		77E304A82AEB9F76006FD6F0 /* SwapConfirmInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapConfirmInitState.swift; sourceTree = "<group>"; };
 		77E304AA2AEBB214006FD6F0 /* SlippageBounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlippageBounds.swift; sourceTree = "<group>"; };
+		77E304AC2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPriceDifferenceViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
 		77EA2A182A333C1500B0670B /* french_output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = french_output.json; sourceTree = "<group>"; };
 		77EA2A192A333C1500B0670B /* arrays_output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = arrays_output.json; sourceTree = "<group>"; };
 		77EA2A1A2A333C1500B0670B /* weird_output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = weird_output.json; sourceTree = "<group>"; };
@@ -9649,6 +9651,7 @@
 				771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */,
 				771901B12AEA3E5100D9C918 /* ShortTextInfoPresentableExtensions.swift */,
 				77E304AA2AEBB214006FD6F0 /* SlippageBounds.swift */,
+				77E304AC2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -22399,6 +22402,7 @@
 				77F189442A49974A00E8B933 /* UITextView+bind.swift in Sources */,
 				D840B64C33EF47E723905378 /* OperationDetailsViewFactory.swift in Sources */,
 				84355CE628B507AD004E5C5E /* LedgerAccountAmount.swift in Sources */,
+				77E304AD2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift in Sources */,
 				841E5553282E35D000C8438F /* StakingParachainPresenter.swift in Sources */,
 				88F33F1329CC1ECD006125D5 /* Web3NameAddressesSelectionState.swift in Sources */,
 				EB8FCA00BD20C63D578D6F80 /* TransferSetupProtocols.swift in Sources */,

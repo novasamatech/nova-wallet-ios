@@ -148,7 +148,42 @@ extension SwapAmountInput {
 
     func bind(priceViewModel: String?) {
         priceLabel.text = priceViewModel
-
         setNeedsLayout()
+    }
+
+    func bind(priceDifferenceViewModel: SwapPriceDifferenceViewModel?) {
+        let priceString = NSMutableAttributedString()
+        if let price = priceDifferenceViewModel?.price {
+            priceString.append(.init(
+                string: price,
+                attributes: [
+                    .font: UIFont.regularFootnote,
+                    .foregroundColor: R.color.colorTextSecondary()!
+                ]
+            ))
+        }
+        if let difference = priceDifferenceViewModel?.difference {
+            priceString.append(.init(
+                string: " " + difference.details,
+                attributes: [
+                    .font: UIFont.regularFootnote,
+                    .foregroundColor: color(for: difference.attention)
+                ]
+            ))
+        }
+
+        priceLabel.attributedText = priceString
+        setNeedsLayout()
+    }
+
+    private func color(for attention: AttentionState) -> UIColor {
+        switch attention {
+        case .high:
+            return R.color.colorTextNegative()!
+        case .medium:
+            return R.color.colorTextWarning()!
+        case .low:
+            return R.color.colorTextSecondary()!
+        }
     }
 }

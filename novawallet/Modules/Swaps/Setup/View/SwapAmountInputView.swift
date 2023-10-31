@@ -141,4 +141,9 @@ extension SwapAmountInputView {
         textInputView.bind(priceViewModel: priceViewModel)
         setNeedsLayout()
     }
+
+    func bind(priceDifferenceViewModel: SwapPriceDifferenceViewModel?) {
+        textInputView.bind(priceDifferenceViewModel: priceDifferenceViewModel)
+        setNeedsLayout()
+    }
 }
