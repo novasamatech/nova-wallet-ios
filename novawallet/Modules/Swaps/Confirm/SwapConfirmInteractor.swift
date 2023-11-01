@@ -11,7 +11,6 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     let extrinsicService: ExtrinsicServiceProtocol
     let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     let signer: SigningWrapperProtocol
-    let operationQueue: OperationQueue
 
     init(
         initState: SwapConfirmInitState,
@@ -29,7 +28,6 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     ) {
         self.initState = initState
         self.signer = signer
-        self.operationQueue = operationQueue
         self.runtimeService = runtimeService
         self.extrinsicService = extrinsicService
         self.assetConversionExtrinsicService = assetConversionExtrinsicService

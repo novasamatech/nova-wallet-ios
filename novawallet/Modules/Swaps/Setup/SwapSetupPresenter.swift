@@ -566,8 +566,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
-    func didReceive(baseError: SwapSetupError) {
-        logger.error("Did receive error: \(baseError)")
+    func didReceive(baseError: SwapBaseError) {
+        logger.error("Did receive base error: \(baseError)")
 
         switch baseError {
         case let .quote(_, args):
@@ -589,6 +589,19 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             handlePriceError(priceId: priceId)
         case let .assetBalance(_, chainAssetId, _):
             handleAssetBalanceError(chainAssetId: chainAssetId)
+        }
+    }
+
+    func didReceive(setupError: SwapSetupError) {
+        logger.error("Did receive setup error: \(setupError)")
+
+        switch setupError {
+        case let .payAssetSetFailed(error):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let payChainAsset = self?.payChainAsset {
+                    self?.interactor.update(payChainAsset: payChainAsset)
+                }
+            }
         }
     }
 
@@ -675,6 +688,14 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 providePayAmountInputViewModel()
                 provideButtonState()
             }
+        }
+    }
+
+    func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId) {
+        if payChainAsset?.chainAssetId == chainAssetId {
+            canPayFeeInPayAsset = value
+
+            provideFeeViewModel()
         }
     }
 }

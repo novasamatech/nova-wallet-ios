@@ -39,7 +39,10 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(feeChainAsset: ChainAsset?)
 }
 
-protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {}
+protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
+    func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
+    func didReceive(setupError: SwapSetupError)
+}
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
     ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {
@@ -75,8 +78,5 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
 }
 
 enum SwapSetupError: Error {
-    case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
-    case price(Error, AssetModel.PriceId)
-    case assetBalance(Error, ChainAssetId, AccountId)
+    case payAssetSetFailed(Error)
 }

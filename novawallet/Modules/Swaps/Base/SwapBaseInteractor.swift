@@ -10,8 +10,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let selectedWallet: MetaAccountModel
+    let operationQueue: OperationQueue
 
-    private let operationQueue: OperationQueue
     private var quoteCall = CancellableCallStore()
 
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]

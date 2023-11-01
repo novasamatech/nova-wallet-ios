@@ -367,7 +367,11 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         }
     }
 
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) {
+    func didReceive(
+        fee: AssetConversion.FeeModel?,
+        transactionId _: TransactionFeeId,
+        feeChainAssetId _: ChainAssetId?
+    ) {
         self.fee = fee
         provideFeeViewModel()
     }
@@ -398,7 +402,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         balances[chainAsset] = balance
     }
 
-    func didReceive(baseError: SwapSetupError) {
+    func didReceive(baseError: SwapBaseError) {
         switch baseError {
         case let .quote(_, args):
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
