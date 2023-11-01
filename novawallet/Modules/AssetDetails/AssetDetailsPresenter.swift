@@ -233,7 +233,7 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     }
 
     func didReceive(error: AssetDetailsError) {
-        logger?.error(error.localizedDescription)
+        logger?.error("Did receive error: \(error)")
     }
 }
 

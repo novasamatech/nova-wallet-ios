@@ -49,4 +49,5 @@ enum AssetDetailsError: Error {
     case price(Error)
     case locks(Error)
     case externalBalances(Error)
+    case swaps(Error)
 }

@@ -13,7 +13,14 @@ struct AssetDetailsViewFactory {
         guard let selectedAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
+
         let chainAsset = ChainAsset(chain: chain, asset: asset)
+
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
@@ -21,8 +28,11 @@ struct AssetDetailsViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            assetConvertionAggregator: assetConversionAggregator,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
+
         let wireframe = AssetDetailsWireframe(assetListObservable: assetListObservable)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
