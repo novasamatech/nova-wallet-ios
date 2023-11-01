@@ -18,7 +18,8 @@ final class SwapSetupPresenter {
     private(set) var payAssetPriceData: PriceData?
     private(set) var receiveAssetPriceData: PriceData?
     private(set) var feeAssetPriceData: PriceData?
-
+    private(set) var payAssetSelfSufficient: Bool = false
+    private(set) var receiveAssetSelfSufficient: Bool = false
     private(set) var payAmountInput: AmountInputResult?
     private(set) var receiveAmountInput: Decimal?
     private(set) var fee: AssetConversion.FeeModel?
@@ -217,10 +218,11 @@ final class SwapSetupPresenter {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
+        let isEditable = (payChainAsset?.isUtilityAsset == false) && payAssetSelfSufficient
         let viewModel = viewModelFactory.feeViewModel(
             amount: fee,
             assetDisplayInfo: feeChainAsset.assetDisplayInfo,
-            isEditable: payChainAsset?.isUtilityAsset == false,
+            isEditable: isEditable,
             priceData: feeAssetPriceData
         )
 
@@ -401,14 +403,15 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectPayToken() {
-        wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
+        wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAssetModel in
+            let chainAsset = chainAssetModel.chainAsset
             self?.payChainAsset = chainAsset
             let feeChainAsset = chainAsset.chain.utilityAsset().map {
                 ChainAsset(chain: chainAsset.chain, asset: $0)
             }
 
             self?.feeChainAsset = feeChainAsset
-
+            self?.payAssetSelfSufficient = chainAssetModel.selfSufficient
             self?.providePayAssetViews()
             self?.provideButtonState()
             self?.provideSettingsState()
@@ -420,8 +423,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectReceiveToken() {
-        wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
+        wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAssetModel in
+            let chainAsset = chainAssetModel.chainAsset
             self?.receiveChainAsset = chainAsset
+            self?.receiveAssetSelfSufficient = chainAssetModel.selfSufficient
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
             self?.refreshQuote(direction: .buy, forceUpdate: false)
@@ -443,6 +448,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func swap() {
         Swift.swap(&payChainAsset, &receiveChainAsset)
+        Swift.swap(&payAssetSelfSufficient, &receiveAssetSelfSufficient)
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
         payAmountInput = nil
@@ -451,6 +457,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveAssetViews()
         provideButtonState()
         provideSettingsState()
+        provideFeeViewModel()
         refreshQuote(direction: .sell, forceUpdate: false)
     }
 
