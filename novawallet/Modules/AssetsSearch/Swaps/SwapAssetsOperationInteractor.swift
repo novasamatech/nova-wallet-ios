@@ -7,76 +7,132 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     let stateObservable: AssetListModelObservable
     let logger: LoggerProtocol
     let chainAsset: ChainAsset?
-    let assetConversionOperationFactory: AssetConversionOperationFactoryProtocol
+    let assetConversionAggregation: AssetConversionAggregationFactoryProtocol
 
     private let operationQueue: OperationQueue
     private var builder: AssetSearchBuilder?
-    private var directionsCall: CancellableCall?
-    private var availableDirections: [ChainAssetId: Set<ChainAssetId>]?
+    private var directionsCall = CancellableCallStore()
+    private var availableDirections: [ChainAssetId: Set<ChainAssetId>] = [:]
+    private var availableChains: Set<ChainModel.Id> = []
 
     init(
         stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset?,
-        assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
-        logger: LoggerProtocol,
-        operationQueue: OperationQueue
+        assetConversionAggregation: AssetConversionAggregationFactoryProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
         self.logger = logger
         self.chainAsset = chainAsset
-        self.assetConversionOperationFactory = assetConversionOperationFactory
+        self.assetConversionAggregation = assetConversionAggregation
         self.operationQueue = operationQueue
     }
 
-    private func loadDirections() {
+    deinit {
+        directionsCall.cancel()
+    }
+
+    private func reloadDirectionsIfNeeded() {
         if let chainAsset = chainAsset {
-            loadDirections(for: chainAsset)
-        } else {
-            loadAllDirections()
-        }
-    }
-
-    private func loadAllDirections() {
-        let wrapper = assetConversionOperationFactory.availableDirections()
-        loadDirections(wrapper: wrapper, mapper: { $0 })
-    }
-
-    private func loadDirections(for chainAsset: ChainAsset) {
-        let wrapper = assetConversionOperationFactory.availableDirectionsForAsset(chainAsset.chainAssetId)
-        loadDirections(wrapper: wrapper) {
-            var result = [ChainAssetId: Set<ChainAssetId>]()
-            result[chainAsset.chainAssetId] = $0
-            return result
-        }
-    }
-
-    private func loadDirections<Result>(
-        wrapper: CompoundOperationWrapper<Result>,
-        mapper: @escaping (Result) -> [ChainAssetId: Set<ChainAssetId>]
-    ) {
-        clear(cancellable: &directionsCall)
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            guard self?.directionsCall === wrapper else {
+            guard !availableChains.contains(chainAsset.chain.chainId), chainAsset.chain.hasSwaps else {
+                presenter?.directionsLoaded()
                 return
             }
 
-            self?.directionsCall = nil
+            availableChains.insert(chainAsset.chain.chainId)
+            availableDirections = [:]
+            loadAssetDirections(for: chainAsset)
+        } else {
+            let allChains = stateObservable.state.value.allChains.values
 
-            DispatchQueue.main.async {
-                do {
-                    let result = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.availableDirections = mapper(result)
-                    self?.createBuilder()
-                    self?.presenter?.directionsLoaded()
-                } catch {
-                    self?.presenter?.didReceive(error: .directions(error))
+            let chainsWithSwaps = allChains.filter(\.hasSwaps)
+            let chainsWithSwapsIds = Set(chainsWithSwaps.map(\.chainId))
+
+            if chainsWithSwapsIds != availableChains {
+                availableChains = chainsWithSwapsIds
+                availableDirections = [:]
+
+                loadDirections(for: chainsWithSwaps)
+            } else {
+                presenter?.directionsLoaded()
+            }
+        }
+    }
+
+    private func loadDirections(for chains: [ChainModel]) {
+        directionsCall.cancel()
+
+        let wrappers = chains.map { assetConversionAggregation.createAvailableDirectionsWrapper(for: $0) }
+
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        let mergingOperation = ClosureOperation<Void> {
+            try wrappers.forEach { _ = try $0.targetOperation.extractNoCancellableResultData() }
+        }
+
+        dependencies.forEach {
+            mergingOperation.addDependency($0)
+        }
+
+        let commonWrapper = CompoundOperationWrapper(targetOperation: mergingOperation, dependencies: dependencies)
+
+        wrappers.forEach { wrapper in
+            wrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard let self = self else {
+                        return
+                    }
+
+                    if case let .success(directions) = wrapper.targetOperation.result {
+                        self.updateAvailableDirections(directions)
+                    }
                 }
             }
         }
 
-        directionsCall = wrapper
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        executeCancellable(
+            wrapper: commonWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: directionsCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.directionsLoaded()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .directions(error))
+            }
+        }
+    }
+
+    private func loadAssetDirections(for chainAsset: ChainAsset) {
+        directionsCall.cancel()
+
+        let wrapper = assetConversionAggregation.createAvailableDirectionsWrapper(for: chainAsset)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: directionsCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(directions):
+                self?.updateAvailableDirections([chainAsset.chainAssetId: directions])
+                self?.presenter?.directionsLoaded()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .directions(error))
+            }
+        }
+    }
+
+    private func updateAvailableDirections(_ newDirections: [ChainAssetId: Set<ChainAssetId>]) {
+        availableDirections = newDirections.reduce(into: availableDirections) { accum, keyValue in
+            accum[keyValue.key] = keyValue.value
+        }
+
+        builder?.reload()
     }
 
     private func createBuilder() {
@@ -108,13 +164,15 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
                 return
             }
             self.builder?.apply(model: newState.value)
+            self.reloadDirectionsIfNeeded()
         }
     }
 }
 
 extension SwapAssetsOperationInteractor: SwapAssetsOperationInteractorInputProtocol {
     func setup() {
-        loadDirections()
+        createBuilder()
+        reloadDirectionsIfNeeded()
     }
 
     func search(query: String) {

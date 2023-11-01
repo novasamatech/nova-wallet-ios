@@ -16,16 +16,20 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
 
     let selectClosureStrategy: SubmoduleNavigationStrategy
 
+    let logger: LoggerProtocol
+
     init(
         selectClosure: @escaping (ChainAsset) -> Void,
         selectClosureStrategy: SubmoduleNavigationStrategy,
         interactor: SwapAssetsOperationInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        wireframe: SwapAssetsOperationWireframeProtocol
+        wireframe: SwapAssetsOperationWireframeProtocol,
+        logger: Logger
     ) {
         self.selectClosure = selectClosure
         self.selectClosureStrategy = selectClosureStrategy
+        self.logger = logger
 
         super.init(
             delegate: nil,
@@ -59,7 +63,9 @@ extension SwapAssetsOperationPresenter: SwapAssetsOperationPresenterProtocol {
         swapAssetsView?.didStopLoading()
     }
 
-    func didReceive(error _: SwapAssetsOperationError) {
+    func didReceive(error: SwapAssetsOperationError) {
+        logger.error("Did receive error: \(error)")
+
         swapAssetsWireframe?.presentRequestStatus(
             on: swapAssetsView,
             locale: selectedLocale,

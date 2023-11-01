@@ -93,30 +93,21 @@ enum SwapAssetsOperationViewFactory {
         selectClosureStrategy: SubmoduleNavigationStrategy,
         selectClosure: @escaping (ChainAsset) -> Void
     ) -> SwapAssetsOperationPresenter? {
-        let westmintChainId = KnowChainId.westmint
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard let connection = chainRegistry.getConnection(for: westmintChainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
-              let chainModel = chainRegistry.getChain(for: westmintChainId) else {
-            return nil
-        }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: chainModel,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let interactor = SwapAssetsOperationInteractor(
             stateObservable: stateObservable,
             chainAsset: chainAsset,
-            assetConversionOperationFactory: assetConversionOperationFactory,
-            logger: Logger.shared,
-            operationQueue: operationQueue
+            assetConversionAggregation: assetConversionAggregator,
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         let presenter = SwapAssetsOperationPresenter(
@@ -125,7 +116,8 @@ enum SwapAssetsOperationViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            wireframe: SwapAssetsOperationWireframe()
+            wireframe: SwapAssetsOperationWireframe(),
+            logger: Logger.shared
         )
 
         interactor.presenter = presenter

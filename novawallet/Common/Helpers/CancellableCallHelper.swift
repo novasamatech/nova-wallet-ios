@@ -19,13 +19,17 @@ final class CancellableCallStore {
     }
 
     func clearIfMatches(call: CancellableCall) -> Bool {
-        guard cancellableCall === call else {
+        guard matches(call: call) else {
             return false
         }
 
         cancellableCall = nil
 
         return true
+    }
+
+    func matches(call: CancellableCall) -> Bool {
+        cancellableCall === call
     }
 }
 
