@@ -4,7 +4,7 @@ import BigInt
 
 class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapBaseInteractorInputProtocol {
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
-    let assetConversionOperationFactory: AssetConversionOperationFactoryProtocol
+    let assetConversionAggregator: AssetConversionAggregationFactoryProtocol
     let assetConversionFeeService: AssetConversionFeeServiceProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -12,14 +12,15 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let selectedWallet: MetaAccountModel
 
     private let operationQueue: OperationQueue
-    private var quoteCall: CancellableCall?
+    private var quoteCall = CancellableCallStore()
 
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var feeModelBuilder: AssetHubFeeModelBuilder?
+    private var currentChain: ChainModel?
 
     init(
-        assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
+        assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -27,13 +28,17 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue
     ) {
-        self.assetConversionOperationFactory = assetConversionOperationFactory
+        self.assetConversionAggregator = assetConversionAggregator
         self.assetConversionFeeService = assetConversionFeeService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
+    }
+
+    deinit {
+        quoteCall.cancel()
     }
 
     func updateFeeModelBuilder(for chain: ChainModel) {
@@ -92,26 +97,27 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func quote(args: AssetConversion.QuoteArgs) {
-        clear(cancellable: &quoteCall)
+        quoteCall.cancel()
 
-        let wrapper = assetConversionOperationFactory.quote(for: args)
-        wrapper.targetOperation.completionBlock = { [weak self, args] in
-            DispatchQueue.main.async {
-                guard self?.quoteCall === wrapper else {
-                    return
-                }
-                do {
-                    let result = try wrapper.targetOperation.extractNoCancellableResultData()
-
-                    self?.basePresenter?.didReceive(quote: result, for: args)
-                } catch {
-                    self?.basePresenter?.didReceive(baseError: .quote(error, args))
-                }
-            }
+        guard let chain = currentChain else {
+            return
         }
 
-        quoteCall = wrapper
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: quoteCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(quote):
+                self?.basePresenter?.didReceive(quote: quote, for: args)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(baseError: .quote(error, args))
+            }
+        }
     }
 
     func fee(args: AssetConversion.CallArgs) {
@@ -139,12 +145,16 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func set(receiveChainAsset chainAsset: ChainAsset) {
+        currentChain = chainAsset.chain
+
         updateFeeModelBuilder(for: chainAsset.chain)
 
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
     }
 
     func set(payChainAsset chainAsset: ChainAsset) {
+        currentChain = chainAsset.chain
+
         updateFeeModelBuilder(for: chainAsset.chain)
 
         if let utilityAsset = chainAsset.chain.utilityChainAsset() {

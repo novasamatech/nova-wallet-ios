@@ -219,6 +219,10 @@ struct ChainModel: Equatable, Codable, Hashable {
     var defaultBlockTimeMillis: BlockTime? {
         additional?.defaultBlockTime?.unsignedIntValue
     }
+
+    var isUtilityTokenOnRelaychain: Bool {
+        additional?.relaychainAsNative?.boolValue ?? false
+    }
 }
 
 extension ChainModel: Identifiable {

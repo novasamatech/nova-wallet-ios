@@ -9,6 +9,11 @@ protocol AssetConversionAggregationFactoryProtocol {
     func createAvailableDirectionsWrapper(
         for chain: ChainModel
     ) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
+
+    func createQuoteWrapper(
+        for chain: ChainModel,
+        args: AssetConversion.QuoteArgs
+    ) -> CompoundOperationWrapper<AssetConversion.Quote>
 }
 
 enum AssetConversionAggregationFactoryError: Error {
@@ -62,6 +67,26 @@ final class AssetConversionAggregationFactory {
             operationQueue: operationQueue
         ).availableDirectionsForAsset(chainAsset.chainAssetId)
     }
+
+    private func createAssetHubQuote(
+        for chain: ChainModel,
+        args: AssetConversion.QuoteArgs
+    ) -> CompoundOperationWrapper<AssetConversion.Quote> {
+        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            return .createWithError(ChainRegistryError.connectionUnavailable)
+        }
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
+        return AssetHubSwapOperationFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        ).quote(for: args)
+    }
 }
 
 extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryProtocol {
@@ -82,6 +107,19 @@ extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryPr
     ) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         if chain.hasSwapHub {
             return createAssetHubAllDirections(for: chain)
+        } else {
+            return CompoundOperationWrapper.createWithError(
+                AssetConversionAggregationFactoryError.unavailableProvider(chain)
+            )
+        }
+    }
+
+    func createQuoteWrapper(
+        for chain: ChainModel,
+        args: AssetConversion.QuoteArgs
+    ) -> CompoundOperationWrapper<AssetConversion.Quote> {
+        if chain.hasSwapHub {
+            return createAssetHubQuote(for: chain, args: args)
         } else {
             return CompoundOperationWrapper.createWithError(
                 AssetConversionAggregationFactoryError.unavailableProvider(chain)

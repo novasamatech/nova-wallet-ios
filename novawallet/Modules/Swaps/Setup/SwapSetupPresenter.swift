@@ -533,6 +533,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     func didReceive(baseError: SwapSetupError) {
+        logger.error("Did receive error: \(baseError)")
+
         switch baseError {
         case let .quote(_, args):
             guard args == quoteArgs else {

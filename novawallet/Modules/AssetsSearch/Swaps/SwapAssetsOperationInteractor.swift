@@ -101,7 +101,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             case .success:
                 self?.presenter?.directionsLoaded()
             case let .failure(error):
-                self?.presenter?.didReceive(error: .directions(error))
+                self?.handleDirectionsResponse(error: error)
             }
         }
     }
@@ -122,8 +122,17 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
                 self?.updateAvailableDirections([chainAsset.chainAssetId: directions])
                 self?.presenter?.directionsLoaded()
             case let .failure(error):
-                self?.presenter?.didReceive(error: .directions(error))
+                self?.handleDirectionsResponse(error: error)
             }
+        }
+    }
+
+    private func handleDirectionsResponse(error: Error) {
+        if let encodingError = error as? StorageKeyEncodingOperationError, encodingError == .invalidStoragePath {
+            // ignore not retryable errors
+            presenter?.directionsLoaded()
+        } else {
+            presenter?.didReceive(error: .directions(error))
         }
     }
 
