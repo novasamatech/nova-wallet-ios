@@ -50,8 +50,12 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         feeModelBuilder = AssetHubFeeModelBuilder(
             utilityChainAssetId: utilityAsset.chainAssetId
-        ) { [weak self] feeModel, callArgs in
-            self?.basePresenter?.didReceive(fee: feeModel, transactionId: callArgs.identifier)
+        ) { [weak self] feeModel, callArgs, feeChainAssetId in
+            self?.basePresenter?.didReceive(
+                fee: feeModel,
+                transactionId: callArgs.identifier,
+                feeChainAssetId: feeChainAssetId
+            )
         }
     }
 
@@ -134,7 +138,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             case let .success(feeModel):
                 self?.feeModelBuilder?.apply(feeModel: feeModel, args: args)
             case let .failure(error):
-                self?.basePresenter?.didReceive(baseError: .fetchFeeFailed(error, args.identifier))
+                self?.basePresenter?.didReceive(baseError: .fetchFeeFailed(error, args.identifier, feeAsset.chainAssetId))
             }
         }
     }

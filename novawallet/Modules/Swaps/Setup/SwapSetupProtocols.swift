@@ -68,11 +68,15 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         from view: ControllerBackedProtocol?,
         initState: SwapConfirmInitState
     )
+    func showNetworkFeeAssetSelection(
+        form view: ControllerBackedProtocol?,
+        viewModel: SwapNetworkFeeSheetViewModel
+    )
 }
 
 enum SwapSetupError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId)
+    case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
 }

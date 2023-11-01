@@ -34,6 +34,7 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactory
     func feeViewModel(
         amount: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
+        isEditable: Bool,
         priceData: PriceData?
     ) -> SwapFeeViewModel
 }
@@ -249,6 +250,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
     func feeViewModel(
         amount: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
+        isEditable: Bool,
         priceData: PriceData?
     ) -> SwapFeeViewModel {
         let amountDecimal = Decimal.fromSubstrateAmount(
@@ -261,7 +263,6 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             priceData: priceData
         ).value(for: locale)
 
-        // TODO: provide isEditable
-        return .init(isEditable: true, balanceViewModel: balanceViewModel)
+        return .init(isEditable: isEditable, balanceViewModel: balanceViewModel)
     }
 }

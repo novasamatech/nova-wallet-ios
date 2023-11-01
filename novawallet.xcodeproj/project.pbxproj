@@ -824,6 +824,10 @@
 		77E304A92AEB9F76006FD6F0 /* SwapConfirmInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304A82AEB9F76006FD6F0 /* SwapConfirmInitState.swift */; };
 		77E304AB2AEBB214006FD6F0 /* SlippageBounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304AA2AEBB214006FD6F0 /* SlippageBounds.swift */; };
 		77E304AD2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304AC2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift */; };
+		77E304B02AEFA261006FD6F0 /* SwapNetworkFeeSheetLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304AF2AEFA261006FD6F0 /* SwapNetworkFeeSheetLayout.swift */; };
+		77E304B22AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304B12AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift */; };
+		77E304B52AEFC303006FD6F0 /* SwapNetworkFeeSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304B42AEFC303006FD6F0 /* SwapNetworkFeeSheetViewFactory.swift */; };
+		77E304B72AEFC348006FD6F0 /* SwapNetworkFeeSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E304B62AEFC348006FD6F0 /* SwapNetworkFeeSheetViewModel.swift */; };
 		77EA2A232A333C1500B0670B /* french_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A182A333C1500B0670B /* french_output.json */; };
 		77EA2A242A333C1500B0670B /* arrays_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A192A333C1500B0670B /* arrays_output.json */; };
 		77EA2A252A333C1500B0670B /* weird_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A1A2A333C1500B0670B /* weird_output.json */; };
@@ -4878,6 +4882,10 @@
 		77E304A82AEB9F76006FD6F0 /* SwapConfirmInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapConfirmInitState.swift; sourceTree = "<group>"; };
 		77E304AA2AEBB214006FD6F0 /* SlippageBounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlippageBounds.swift; sourceTree = "<group>"; };
 		77E304AC2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPriceDifferenceViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
+		77E304AF2AEFA261006FD6F0 /* SwapNetworkFeeSheetLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapNetworkFeeSheetLayout.swift; sourceTree = "<group>"; };
+		77E304B12AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapNetworkFeeSheetViewController.swift; sourceTree = "<group>"; };
+		77E304B42AEFC303006FD6F0 /* SwapNetworkFeeSheetViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapNetworkFeeSheetViewFactory.swift; sourceTree = "<group>"; };
+		77E304B62AEFC348006FD6F0 /* SwapNetworkFeeSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapNetworkFeeSheetViewModel.swift; sourceTree = "<group>"; };
 		77EA2A182A333C1500B0670B /* french_output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = french_output.json; sourceTree = "<group>"; };
 		77EA2A192A333C1500B0670B /* arrays_output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = arrays_output.json; sourceTree = "<group>"; };
 		77EA2A1A2A333C1500B0670B /* weird_output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = weird_output.json; sourceTree = "<group>"; };
@@ -9074,6 +9082,7 @@
 		29BD7DA0076BA8BC3411221A /* Setup */ = {
 			isa = PBXGroup;
 			children = (
+				77E304B32AEFC2E2006FD6F0 /* NetworkFeeBottomSheet */,
 				77C9BCBA2ACD1AE800022EA2 /* Model */,
 				774091FA2ACC052400172516 /* View */,
 				53775773F2060B4B7F6D62DA /* SwapSetupProtocols.swift */,
@@ -9967,6 +9976,17 @@
 				849DEBD225ED014000C64C19 /* ViewModel */,
 			);
 			path = SelectValidatorsConfirm;
+			sourceTree = "<group>";
+		};
+		77E304B32AEFC2E2006FD6F0 /* NetworkFeeBottomSheet */ = {
+			isa = PBXGroup;
+			children = (
+				77E304AF2AEFA261006FD6F0 /* SwapNetworkFeeSheetLayout.swift */,
+				77E304B12AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift */,
+				77E304B42AEFC303006FD6F0 /* SwapNetworkFeeSheetViewFactory.swift */,
+				77E304B62AEFC348006FD6F0 /* SwapNetworkFeeSheetViewModel.swift */,
+			);
+			path = NetworkFeeBottomSheet;
 			sourceTree = "<group>";
 		};
 		77E4088EF503B8FD414F14EA /* GovernanceUnlockConfirm */ = {
@@ -20199,6 +20219,7 @@
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,
+				77E304B52AEFC303006FD6F0 /* SwapNetworkFeeSheetViewFactory.swift in Sources */,
 				845B07F729162AB3005785D3 /* Democracy+ConstantPath.swift in Sources */,
 				84F4B2372A31D2F300113DDD /* ParitySignerType.swift in Sources */,
 				84DBEA56265ED62700FDF73C /* BaseErrorPresentable.swift in Sources */,
@@ -21892,9 +21913,11 @@
 				84BB3CEE267CD6B500676FFE /* CrowdloanContributionDict.swift in Sources */,
 				8473F4B4282BD5A1007CC55A /* StakingRelaychainInteractor.swift in Sources */,
 				845B821B26EF80BC00D25C72 /* MetaAccountModel.swift in Sources */,
+				77E304B02AEFA261006FD6F0 /* SwapNetworkFeeSheetLayout.swift in Sources */,
 				88FB7DCF295071B100784E08 /* ContainerViewController.swift in Sources */,
 				841E5536282CDB9E00C8438F /* StakingMainPresenterFactory+Relaychain.swift in Sources */,
 				8499FEC827BF73F400712589 /* StorageKeyFactory+Size.swift in Sources */,
+				77E304B72AEFC348006FD6F0 /* SwapNetworkFeeSheetViewModel.swift in Sources */,
 				0CB0646A2A40572C00BFBA3F /* AmountInputViewModel.swift in Sources */,
 				847A25CA28D85204006AC9F5 /* ReferendumInfo.swift in Sources */,
 				5869563D0EA593FBD02C169C /* StakingPayoutConfirmationProtocols.swift in Sources */,
@@ -22772,6 +22795,7 @@
 				75DAB313623E900EC475E215 /* LedgerTxConfirmViewFactory.swift in Sources */,
 				44D9F74D7851B874F2045E7E /* LedgerInstructionsProtocols.swift in Sources */,
 				84AC794A297FEAFF00E284DE /* GovernanceDelegateDetails.swift in Sources */,
+				77E304B22AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
 				84A5915E292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift in Sources */,
 				CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */,
