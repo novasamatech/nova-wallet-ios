@@ -46,12 +46,12 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
     )
     func showSettings(
         from view: ControllerBackedProtocol?,
