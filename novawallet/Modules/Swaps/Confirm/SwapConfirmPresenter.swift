@@ -408,7 +408,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.calculateQuote(for: args)
             }
-        case let .fetchFeeFailed:
+        case .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
@@ -422,7 +422,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
                     .filter { $0.asset.priceId == priceId }
                     .forEach(self.interactor.remakePriceSubscription)
             }
-        case let .assetBalance:
+        case .assetBalance:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
             }

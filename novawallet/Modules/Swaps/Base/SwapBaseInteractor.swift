@@ -57,6 +57,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
                 feeChainAssetId: feeChainAssetId
             )
         }
+
+        assetBalanceProviders[utilityAsset.chainAssetId] = assetBalanceSubscription(chainAsset: utilityAsset)
     }
 
     func updateSubscriptions(activeChainAssets: Set<ChainAssetId>) {
@@ -138,7 +140,9 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             case let .success(feeModel):
                 self?.feeModelBuilder?.apply(feeModel: feeModel, args: args)
             case let .failure(error):
-                self?.basePresenter?.didReceive(baseError: .fetchFeeFailed(error, args.identifier, feeAsset.chainAssetId))
+                self?.basePresenter?.didReceive(
+                    baseError: .fetchFeeFailed(error, args.identifier, feeAsset.chainAssetId)
+                )
             }
         }
     }
@@ -154,6 +158,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         updateFeeModelBuilder(for: chainAsset.chain)
 
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
+        assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
     func set(payChainAsset chainAsset: ChainAsset) {

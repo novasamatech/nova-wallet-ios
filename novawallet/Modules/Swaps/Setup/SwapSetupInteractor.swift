@@ -30,7 +30,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             [
                 receiveChainAsset?.chainAssetId,
                 payChainAsset?.chainAssetId,
-                feeChainAsset?.chainAssetId
+                feeChainAsset?.chainAssetId,
+                feeChainAsset?.chain.utilityChainAssetId()
             ].compactMap { $0 }
         )
     }
