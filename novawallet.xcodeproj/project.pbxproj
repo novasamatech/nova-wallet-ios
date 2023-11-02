@@ -798,6 +798,8 @@
 		77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */; };
 		77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */; };
 		77C9761E2AF220130049272C /* SwapSelectedChainAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9761D2AF220130049272C /* SwapSelectedChainAsset.swift */; };
+		77C976262AF421AE0049272C /* OperationDetailsSwapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */; };
+		77C976282AF426100049272C /* OperationSwapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976272AF426100049272C /* OperationSwapViewModel.swift */; };
 		77C9BCBC2ACD1AF500022EA2 /* ViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCBB2ACD1AF500022EA2 /* ViewModels.swift */; };
 		77C9BCBE2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCBD2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift */; };
 		77C9BCC42ACD570100022EA2 /* SwapAssetsOperationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */; };
@@ -4852,6 +4854,8 @@
 		77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashViewModel.swift; sourceTree = "<group>"; };
 		77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsPoolRewardView.swift; sourceTree = "<group>"; };
 		77C9761D2AF220130049272C /* SwapSelectedChainAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSelectedChainAsset.swift; sourceTree = "<group>"; };
+		77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsSwapView.swift; sourceTree = "<group>"; };
+		77C976272AF426100049272C /* OperationSwapViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapViewModel.swift; sourceTree = "<group>"; };
 		77C9BCBB2ACD1AF500022EA2 /* ViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels.swift; sourceTree = "<group>"; };
 		77C9BCBD2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsSetupViewModelFactory.swift; sourceTree = "<group>"; };
 		77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationInteractor.swift; sourceTree = "<group>"; };
@@ -10740,6 +10744,7 @@
 			children = (
 				842A736A27DB7A2E006EE1EA /* OperationDetailsViewModel.swift */,
 				842A736C27DB7B5E006EE1EA /* OperationTransferViewModel.swift */,
+				77C976272AF426100049272C /* OperationSwapViewModel.swift */,
 				842A736E27DB7E57006EE1EA /* OperationExtrinsicViewModel.swift */,
 				842A737227DB7F75006EE1EA /* OperationRewardOrSlashViewModel.swift */,
 				77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */,
@@ -10753,6 +10758,7 @@
 			isa = PBXGroup;
 			children = (
 				842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */,
+				77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */,
 				842A737D27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift */,
 				842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */,
 				77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */,
@@ -22109,6 +22115,7 @@
 				0E6C2939AFB3D125C760D5A0 /* CrowdloanContributionSetupProtocols.swift in Sources */,
 				8410562C27AF1C15004F5CA3 /* Ethereum+Checksum.swift in Sources */,
 				4E5CD7B8821FA5298EA1598E /* CrowdloanContributionSetupWireframe.swift in Sources */,
+				77C976262AF421AE0049272C /* OperationDetailsSwapView.swift in Sources */,
 				0CC2E5622A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift in Sources */,
 				8846F72029D56A0700B8B776 /* Web3NameAddressListPresentable.swift in Sources */,
 				77A6F5C12A2F1724004AFD1A /* MessageSheetPresentable+presentOperationResult.swift in Sources */,
@@ -22356,6 +22363,7 @@
 				0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */,
 				84AE7AAD27D3839D00495267 /* StackCellViewModel.swift in Sources */,
 				848CC94628D9FC46009EB4B0 /* ConvictionVotingTally.swift in Sources */,
+				77C976282AF426100049272C /* OperationSwapViewModel.swift in Sources */,
 				84953F6A2934C9E20033F47D /* EtherscanERC20OperationFactory.swift in Sources */,
 				0CE629D72AA9B5E200E250BD /* BalanceViewModelFactory.swift in Sources */,
 				CD9359A2720F2EE1D4E09DF6 /* DAppTxDetailsWireframe.swift in Sources */,

@@ -264,6 +264,44 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         return view
     }
 
+    private func applySwap(
+        viewModel: OperationSwapViewModel
+    ) {
+        let swapView: OperationDetailsSwapView = rootView.setupLocalizableView()
+        swapView.locale = selectedLocale
+        swapView.bind(viewModel: viewModel)
+
+        let repeatOperationButton = rootView.setupActionButton()
+        repeatOperationButton.imageWithTitleView?.title = R.string.localizable.commonActionRepeatOperation(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        swapView.rateCell.addTarget(
+            self,
+            action: #selector(actionRate),
+            for: .touchUpInside
+        )
+        swapView.networkFeeCell.addTarget(
+            self,
+            action: #selector(actionNetworkFee),
+            for: .touchUpInside
+        )
+        swapView.accountCell.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+        swapView.transactionHashView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
+        repeatOperationButton.addTarget(
+            self,
+            action: #selector(actionRepeatSwapOperation),
+            for: .touchUpInside
+        )
+    }
+
     @objc func actionSender() {
         presenter.showSenderActions()
     }
@@ -278,6 +316,18 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
 
     @objc func actionSend() {
         presenter.send()
+    }
+
+    @objc func actionRate() {
+        presenter.showRateInfo()
+    }
+
+    @objc func actionNetworkFee() {
+        presenter.showNetworkFeeInfo()
+    }
+
+    @objc func actionRepeatSwapOperation() {
+        presenter.repeatOperation()
     }
 }
 
@@ -305,6 +355,8 @@ extension OperationDetailsViewController: OperationDetailsViewProtocol {
             applyPoolReward(viewModel: poolRewardViewModel, networkViewModel: networkViewModel)
         case let .poolSlash(poolSlashViewModel):
             applyPoolSlash(viewModel: poolSlashViewModel, networkViewModel: networkViewModel)
+        case let .swap(swapViewModel):
+            applySwap(viewModel: swapViewModel)
         }
     }
 }

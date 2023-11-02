@@ -151,6 +151,18 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             )
         }
     }
+
+    func showRateInfo() {
+        wireframe.showRateInfo(from: view)
+    }
+
+    func showNetworkFeeInfo() {
+        wireframe.showFeeInfo(from: view)
+    }
+
+    func repeatOperation() {
+        // TODO: Show swap
+    }
 }
 
 extension OperationDetailsPresenter: OperationDetailsInteractorOutputProtocol {
