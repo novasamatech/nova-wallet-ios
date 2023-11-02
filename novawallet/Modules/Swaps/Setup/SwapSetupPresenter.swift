@@ -8,6 +8,8 @@ final class SwapSetupPresenter {
     let interactor: SwapSetupInteractorInputProtocol
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let logger: LoggerProtocol
+    let selectedAccount: MetaAccountModel
+    let purchaseProvider: PurchaseProviderProtocol
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
     private(set) var payAssetBalance: AssetBalance?
@@ -18,7 +20,6 @@ final class SwapSetupPresenter {
     private(set) var payAssetPriceData: PriceData?
     private(set) var receiveAssetPriceData: PriceData?
     private(set) var feeAssetPriceData: PriceData?
-
     private(set) var payAmountInput: AmountInputResult?
     private(set) var receiveAmountInput: Decimal?
     private(set) var fee: AssetConversion.FeeModel?
@@ -40,6 +41,8 @@ final class SwapSetupPresenter {
         viewModelFactory: SwapsSetupViewModelFactoryProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        selectedAccount: MetaAccountModel,
+        purchaseProvider: PurchaseProviderProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -47,7 +50,8 @@ final class SwapSetupPresenter {
         self.viewModelFactory = viewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
-
+        self.selectedAccount = selectedAccount
+        self.purchaseProvider = purchaseProvider
         self.localizationManager = localizationManager
     }
 
@@ -227,6 +231,21 @@ final class SwapSetupPresenter {
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
     }
 
+    private func provideErrors() {
+        guard let payAmount = getPayAmount(for: payAmountInput) else {
+            view?.didReceive(errors: [])
+            return
+        }
+        var errors: [SwapSetupViewError] = []
+        let balanceMinusFee = balanceMinusFee() ?? 0
+
+        if payAmount > balanceMinusFee {
+            errors.append(.insufficientToken)
+        }
+
+        view?.didReceive(errors: errors)
+    }
+
     func estimateFee() {
         guard let quote = quote,
               let accountId = accountId,
@@ -397,6 +416,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideSettingsState()
         // TODO: get from settings
         slippage = .fraction(from: AssetConversionConstants.defaultSlippage)?.fromPercents()
+        provideErrors()
         interactor.setup()
     }
 
@@ -416,6 +436,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.interactor.update(feeChainAsset: feeChainAsset)
 
             self?.refreshQuote(direction: .sell, forceUpdate: false)
+            self?.provideErrors()
         }
     }
 
@@ -433,6 +454,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         payAmountInput = amount.map { .absolute($0) }
         refreshQuote(direction: .sell)
         provideButtonState()
+        provideErrors()
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
@@ -459,6 +481,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         providePayAssetViews()
         refreshQuote(direction: .sell)
         provideButtonState()
+        provideErrors()
     }
 
     func showFeeActions() {
@@ -552,6 +575,34 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.estimateFee()
         }
     }
+
+    func depositInsufficientToken() {
+        guard let payChainAsset = payChainAsset, let accountId = accountId else {
+            return
+        }
+        let purchaseActions = purchaseProvider.buildPurchaseActions(for: payChainAsset, accountId: accountId)
+        let sendAvailable = TokenOperation.checkTransferOperationAvailable()
+        let recieveAvailable = TokenOperation.checkReceiveOperationAvailable(
+            walletType: selectedAccount.type,
+            chainAsset: payChainAsset
+        ).available
+        let buyAvailable = TokenOperation.checkBuyOperationAvailable(
+            purchaseActions: purchaseActions,
+            walletType: selectedAccount.type,
+            chainAsset: payChainAsset
+        ).available
+        let operations: [(token: TokenOperation, active: Bool)] = [
+            (token: .send, active: sendAvailable),
+            (token: .receive, active: recieveAvailable),
+            (token: .buy, active: buyAvailable)
+        ]
+        wireframe.showTokenDepositOptions(
+            form: view,
+            operations: operations,
+            token: payChainAsset.asset.symbol,
+            delegate: self
+        )
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
@@ -629,6 +680,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         self.fee = fee
         provideFeeViewModel()
         provideButtonState()
+        provideErrors()
     }
 
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
@@ -648,12 +700,14 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 
     func didReceive(payAccountId: AccountId?) {
         accountId = payAccountId
+        provideErrors()
     }
 
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId _: AccountId) {
         if chainAsset == payChainAsset?.chainAssetId {
             payAssetBalance = balance
             providePayTitle()
+            provideErrors()
         }
         if chainAsset == feeChainAsset?.chainAssetId {
             feeAssetBalance = balance
@@ -673,4 +727,10 @@ extension SwapSetupPresenter: Localizable {
             viewModelFactory.locale = selectedLocale
         }
     }
+}
+
+extension SwapSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_: Int, context _: AnyObject?) {}
+
+    func modalPickerDidSelectModel(at _: Int, section _: Int, context _: AnyObject?) {}
 }

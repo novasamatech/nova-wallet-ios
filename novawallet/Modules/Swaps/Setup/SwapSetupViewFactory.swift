@@ -5,7 +5,8 @@ import RobinHood
 struct SwapSetupViewFactory {
     static func createView(assetListObservable: AssetListModelObservable) -> SwapSetupViewProtocol? {
         guard
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -34,6 +35,8 @@ struct SwapSetupViewFactory {
             viewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
+            selectedAccount: selectedWallet,
+            purchaseProvider: PurchaseAggregator.defaultAggregator(),
             logger: Logger.shared
         )
 

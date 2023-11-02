@@ -56,11 +56,27 @@ typealias TransferAvailableCheckResult = Bool
 
 enum ReceiveAvailableCheckResult {
     case common(OperationCheckCommonResult)
+
+    var available: Bool {
+        switch self {
+        case let .common(operationCheckCommonResult):
+            return operationCheckCommonResult == .available
+        }
+    }
 }
 
 enum BuyAvailableCheckResult {
     case common(OperationCheckCommonResult)
     case noBuyOptions
+
+    var available: Bool {
+        switch self {
+        case let .common(operationCheckCommonResult):
+            return operationCheckCommonResult == .available
+        case .noBuyOptions:
+            return false
+        }
+    }
 }
 
 enum OperationCheckCommonResult {

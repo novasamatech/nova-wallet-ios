@@ -84,6 +84,11 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(networkFeeInfoAction),
             for: .touchUpInside
         )
+        rootView.depositTokenButton.addTarget(
+            self,
+            action: #selector(depositTokenAction),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -164,6 +169,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     @objc private func settingsAction() {
         presenter.showSettings()
     }
+
+    @objc private func depositTokenAction() {
+        presenter.depositInsufficientToken()
+    }
 }
 
 extension SwapSetupViewController: SwapSetupViewProtocol {
@@ -179,8 +188,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         switch viewModel {
         case let .asset(assetViewModel):
             rootView.payAmountInputView.bind(assetViewModel: assetViewModel)
+            rootView.depositTokenButton.imageWithTitleView?.title = "Get \(assetViewModel.symbol)"
         case let .empty(emptySwapsAssetViewModel):
             rootView.payAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
+            rootView.depositTokenButton.imageWithTitleView?.title = nil
         }
     }
 
@@ -227,6 +238,14 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveSettingsState(isAvailable: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isAvailable
+    }
+
+    func didReceive(errors: [SwapSetupViewError]) {
+        if errors.contains(.insufficientToken) {
+            rootView.changeDepositTokenButtonVisibility(hidden: false)
+        } else {
+            rootView.changeDepositTokenButtonVisibility(hidden: true)
+        }
     }
 }
 

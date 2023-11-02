@@ -508,3 +508,89 @@ extension ModalPickerFactory {
         return viewController
     }
 }
+
+extension ModalPickerFactory {
+    static func createPickerListForOperations(
+        operations: [(token: TokenOperation, active: Bool)],
+        delegate: ModalPickerViewControllerDelegate?,
+        token: String,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !operations.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<TokenOperationTableViewCell, TokenOperationTableViewCell.Model>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = .init { _ in "Get \(token) using" }
+
+        viewController.selectedIndex = NSNotFound
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.headerBorderType = .none
+        viewController.separatorStyle = .none
+        viewController.separatorColor = R.color.colorDivider()
+        viewController.cellHeight = 48.0
+
+        viewController.viewModels = operations.map { operation in
+            LocalizableResource { locale in
+                TokenOperationTableViewCell.Model(
+                    content: .init(
+                        title: operation.token.titleForLocale(locale),
+                        subtitle: operation.token.subtitleForLocale(locale, token: token),
+                        icon: operation.token.icon
+                    ),
+                    isActive: operation.active
+                )
+            }
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(operations.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+}
+
+extension TokenOperation {
+    func titleForLocale(_: Locale) -> String {
+        switch self {
+        case .send:
+            return "Cross-chain transfer"
+        case .receive:
+            return "Receive"
+        case .buy:
+            return "Buy"
+        }
+    }
+
+    func subtitleForLocale(_: Locale, token: String) -> String {
+        switch self {
+        case .send:
+            return "Transfer \(token) from another network"
+        case .receive:
+            return "Receive \(token) with QR or your address"
+        case .buy:
+            return "Instantly buy \(token) with a credit card"
+        }
+    }
+
+    var icon: UIImage? {
+        switch self {
+        case .send:
+            return R.image.iconSend()
+        case .receive:
+            return R.image.iconReceive()
+        case .buy:
+            return R.image.iconBuy()
+        }
+    }
+}

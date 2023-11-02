@@ -15,6 +15,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
+    func didReceive(errors: [SwapSetupViewError])
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -30,6 +31,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showRateInfo()
     func showSettings()
     func selectMaxPayAmount()
+    func depositInsufficientToken()
 }
 
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
@@ -72,6 +74,12 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         form view: ControllerBackedProtocol?,
         viewModel: SwapNetworkFeeSheetViewModel
     )
+    func showTokenDepositOptions(
+        form view: ControllerBackedProtocol?,
+        operations: [(token: TokenOperation, active: Bool)],
+        token: String,
+        delegate: ModalPickerViewControllerDelegate?
+    )
 }
 
 enum SwapSetupError: Error {
@@ -79,4 +87,8 @@ enum SwapSetupError: Error {
     case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
+}
+
+enum SwapSetupViewError {
+    case insufficientToken
 }

@@ -98,4 +98,22 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
         view?.controller.present(bottomSheet.controller, animated: true)
     }
+
+    func showTokenDepositOptions(
+        form view: ControllerBackedProtocol?,
+        operations: [(token: TokenOperation, active: Bool)],
+        token: String,
+        delegate: ModalPickerViewControllerDelegate?
+    ) {
+        guard let bottomSheet = ModalPickerFactory.createPickerListForOperations(
+            operations: operations,
+            delegate: delegate,
+            token: token,
+            context: nil
+        ) else {
+            return
+        }
+
+        view?.controller.present(bottomSheet, animated: true)
+    }
 }
