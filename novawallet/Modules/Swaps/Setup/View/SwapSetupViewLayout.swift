@@ -6,6 +6,11 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
 
     let payAmountInputView = SwapAmountInputView()
 
+    let depositTokenButton: TriangularedButton = .create {
+        $0.applySecondaryDefaultStyle()
+        $0.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
+    }
+
     let receiveAmountView: TitleHorizontalMultiValueView = .create {
         $0.titleView.apply(style: .footnoteSecondary)
         $0.detailsTitleLabel.apply(style: .footnoteSecondary)
@@ -56,9 +61,13 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         payAmountView.snp.makeConstraints {
             $0.height.equalTo(18)
         }
-        addArrangedSubview(payAmountInputView, spacingAfter: 24)
+        addArrangedSubview(payAmountInputView, spacingAfter: 12)
         payAmountInputView.snp.makeConstraints {
             $0.height.equalTo(64)
+        }
+        addArrangedSubview(depositTokenButton, spacingAfter: 24)
+        depositTokenButton.snp.makeConstraints {
+            $0.height.equalTo(44)
         }
         addArrangedSubview(receiveAmountView, spacingAfter: 8)
         receiveAmountView.snp.makeConstraints {
@@ -74,7 +83,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         addSubview(switchButton)
         switchButton.snp.makeConstraints {
             $0.height.equalTo(switchButton.snp.width)
-            $0.top.equalTo(payAmountInputView.snp.bottom).offset(4)
             $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-4)
             $0.centerX.equalTo(payAmountInputView.snp.centerX)
         }
@@ -90,5 +98,15 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             preferredLanguages: locale.rLanguages)
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
+    }
+
+    func changeDepositTokenButtonVisibility(hidden: Bool) {
+        if hidden {
+            stackView.setCustomSpacing(24, after: payAmountInputView)
+        } else {
+            stackView.setCustomSpacing(12, after: payAmountInputView)
+        }
+        depositTokenButton.isHidden = hidden
+        setNeedsLayout()
     }
 }

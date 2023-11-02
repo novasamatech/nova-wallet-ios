@@ -8,7 +8,8 @@ struct SwapSetupViewFactory {
         payChainAsset: ChainAsset
     ) -> SwapSetupViewProtocol? {
         guard
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -38,6 +39,8 @@ struct SwapSetupViewFactory {
             viewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
+            selectedAccount: selectedWallet,
+            purchaseProvider: PurchaseAggregator.defaultAggregator(),
             logger: Logger.shared
         )
 
@@ -73,8 +76,15 @@ struct SwapSetupViewFactory {
             operationQueue: operationQueue
         )
 
+        let xcmTransfersSyncService = XcmTransfersSyncService(
+            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            operationQueue: operationQueue
+        )
+
         let interactor = SwapSetupInteractor(
-            assetConversionAggregator: assetConversionAggregator,
+            xcmTransfersSyncService: xcmTransfersSyncService,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            assetConversionAggregatorFactory: assetConversionAggregator,
             assetConversionFeeService: feeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

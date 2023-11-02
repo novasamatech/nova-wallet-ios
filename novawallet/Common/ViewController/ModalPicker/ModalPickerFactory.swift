@@ -508,3 +508,59 @@ extension ModalPickerFactory {
         return viewController
     }
 }
+
+extension ModalPickerFactory {
+    static func createPickerListForOperations(
+        operations: [DepositOperationModel],
+        delegate: ModalPickerViewControllerDelegate?,
+        token: String,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !operations.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<TokenOperationTableViewCell, TokenOperationTableViewCell.Model>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = .init {
+            R.string.localizable.swapsSetupDepositTitle(
+                token,
+                preferredLanguages: $0.rLanguages
+            )
+        }
+
+        viewController.selectedIndex = NSNotFound
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.headerBorderType = .none
+        viewController.separatorStyle = .none
+        viewController.separatorColor = R.color.colorDivider()
+        viewController.cellHeight = 48
+
+        viewController.viewModels = operations.map { operation in
+            LocalizableResource { locale in
+                TokenOperationTableViewCell.Model(
+                    content: .init(
+                        title: operation.titleForLocale(locale),
+                        subtitle: operation.subtitleForLocale(locale, token: token),
+                        icon: operation.icon
+                    ),
+                    isActive: operation.active
+                )
+            }
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(operations.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+}

@@ -9,6 +9,35 @@ struct TransferSetupViewFactory {
         recepient: DisplayAddress?,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
+        createView(from: chainAsset, recepient: recepient, transferCompletion: transferCompletion) { factory, state, view in
+            factory.createOnChainPresenter(for: chainAsset, initialState: state, view: view)
+        }
+    }
+
+    static func createCrossChainView(
+        from chainAsset: ChainAsset,
+        to destinationChainAsset: ChainAsset,
+        xcmTransfers: XcmTransfers,
+        recepient: DisplayAddress?,
+        transferCompletion: TransferCompletionClosure? = nil
+    ) -> TransferSetupViewProtocol? {
+        createView(from: chainAsset, recepient: recepient, transferCompletion: transferCompletion) { factory, state, view in
+            factory.createCrossChainPresenter(
+                for: chainAsset,
+                destinationChainAsset: destinationChainAsset,
+                xcmTransfers: xcmTransfers,
+                initialState: state,
+                view: view
+            )
+        }
+    }
+
+    static func createView(
+        from chainAsset: ChainAsset,
+        recepient: DisplayAddress?,
+        transferCompletion: TransferCompletionClosure?,
+        createChildPresenterClosure: (TransferSetupPresenterFactoryProtocol, TransferSetupInputState, TransferSetupChildViewProtocol) -> TransferSetupChildPresenterProtocol?
+    ) -> TransferSetupViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -48,11 +77,7 @@ struct TransferSetupViewFactory {
             localizationManager: localizationManager
         )
 
-        presenter.childPresenter = presenterFactory.createOnChainPresenter(
-            for: chainAsset,
-            initialState: initPresenterState,
-            view: view
-        )
+        presenter.childPresenter = createChildPresenterClosure(presenterFactory, initPresenterState, view)
 
         presenter.view = view
         interactor.presenter = presenter
