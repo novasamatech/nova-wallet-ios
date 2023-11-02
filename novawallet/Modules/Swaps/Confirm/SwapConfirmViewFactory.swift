@@ -82,11 +82,11 @@ struct SwapConfirmViewFactory {
             operationQueue: operationQueue
         )
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
-        ).createService(account: selectedAccount.chainAccount, chain: chain)
+        )
 
         let feeService = AssetHubFeeService(
             wallet: wallet,
@@ -105,7 +105,7 @@ struct SwapConfirmViewFactory {
             assetConversionAggregator: assetConversionAggregator,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chain),
             runtimeService: runtimeService,
-            extrinsicService: extrinsicService,
+            extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,

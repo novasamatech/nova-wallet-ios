@@ -8,7 +8,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
 
     let initState: SwapConfirmInitState
     let runtimeService: RuntimeProviderProtocol
-    let extrinsicService: ExtrinsicServiceProtocol
+    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     let signer: SigningWrapperProtocol
 
@@ -18,7 +18,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -29,7 +29,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         self.initState = initState
         self.signer = signer
         self.runtimeService = runtimeService
-        self.extrinsicService = extrinsicService
+        self.extrinsicServiceFactory = extrinsicServiceFactory
         self.assetConversionExtrinsicService = assetConversionExtrinsicService
 
         super.init(
@@ -65,7 +65,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
                         for: args,
                         codingFactory: runtimeCoderFactory
                     )
-                    self.submitClosure(extrinsicService: self.extrinsicService, builder: builder)
+                    try self.submitClosure(builder: builder, runtimeCoderFactory: runtimeCoderFactory)
                 } catch {
                     self.presenter?.didReceive(error: .submit(error))
                 }
@@ -76,9 +76,35 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     }
 
     private func submitClosure(
-        extrinsicService: ExtrinsicServiceProtocol,
-        builder: @escaping ExtrinsicBuilderClosure
-    ) {
+        builder: @escaping ExtrinsicBuilderClosure,
+        runtimeCoderFactory: RuntimeCoderFactoryProtocol
+    ) throws {
+        let extrinsicService: ExtrinsicServiceProtocol
+
+        guard let account = chainAccountResponse(for: initState.feeChainAsset) else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+
+        if initState.feeChainAsset.isUtilityAsset {
+            extrinsicService = extrinsicServiceFactory.createService(
+                account: account,
+                chain: initState.feeChainAsset.chain
+            )
+        } else {
+            guard let assetId = AssetHubTokensConverter.convertToMultilocation(
+                chainAsset: initState.feeChainAsset,
+                codingFactory: runtimeCoderFactory
+            ) else {
+                throw SwapConfirmError.submit(CommonError.dataCorruption)
+            }
+
+            extrinsicService = extrinsicServiceFactory.createService(
+                account: account,
+                chain: initState.feeChainAsset.chain,
+                feeAssetConversionId: assetId
+            )
+        }
+
         extrinsicService.submit(
             builder,
             signer: signer,

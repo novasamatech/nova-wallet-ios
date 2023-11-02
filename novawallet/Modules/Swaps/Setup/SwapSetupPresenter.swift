@@ -10,16 +10,39 @@ final class SwapSetupPresenter {
     let logger: LoggerProtocol
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
-    private(set) var payAssetBalance: AssetBalance?
-    private(set) var feeAssetBalance: AssetBalance?
-    private(set) var receiveAssetBalance: AssetBalance?
+
+    private(set) var balances: [ChainAssetId: AssetBalance] = [:]
+
+    var payAssetBalance: AssetBalance? {
+        payChainAsset.flatMap { balances[$0.chainAssetId] }
+    }
+
+    var feeAssetBalance: AssetBalance? {
+        feeChainAsset.flatMap { balances[$0.chainAssetId] }
+    }
+
+    var receiveAssetBalance: AssetBalance? {
+        receiveChainAsset.flatMap { balances[$0.chainAssetId] }
+    }
+
+    private(set) var prices: [ChainAssetId: PriceData] = [:]
+
+    var payAssetPriceData: PriceData? {
+        payChainAsset.flatMap { prices[$0.chainAssetId] }
+    }
+
+    var receiveAssetPriceData: PriceData? {
+        receiveChainAsset.flatMap { prices[$0.chainAssetId] }
+    }
+
+    var feeAssetPriceData: PriceData? {
+        feeChainAsset.flatMap { prices[$0.chainAssetId] }
+    }
+
     private(set) var payChainAsset: ChainAsset?
     private(set) var canPayFeeInPayAsset: Bool = false
     private(set) var receiveChainAsset: ChainAsset?
     private(set) var feeChainAsset: ChainAsset?
-    private(set) var payAssetPriceData: PriceData?
-    private(set) var receiveAssetPriceData: PriceData?
-    private(set) var feeAssetPriceData: PriceData?
     private(set) var payAmountInput: AmountInputResult?
     private(set) var receiveAmountInput: Decimal?
     private(set) var fee: AssetConversion.FeeModel?
@@ -388,8 +411,11 @@ final class SwapSetupPresenter {
         feeChainAsset = chainAsset
         providePayAssetViews()
         interactor.update(feeChainAsset: chainAsset)
+
+        fee = nil
+        provideFeeViewModel()
+
         estimateFee()
-        refreshQuote(direction: .sell)
     }
 }
 
@@ -417,25 +443,42 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             }
 
             self?.feeChainAsset = feeChainAsset
+            self?.fee = nil
             self?.canPayFeeInPayAsset = false
+
             self?.providePayAssetViews()
             self?.provideButtonState()
             self?.provideSettingsState()
+            self?.provideFeeViewModel()
+
             self?.interactor.update(payChainAsset: chainAsset)
             self?.interactor.update(feeChainAsset: feeChainAsset)
 
-            self?.refreshQuote(direction: .sell, forceUpdate: false)
+            if let direction = self?.quoteArgs?.direction {
+                self?.refreshQuote(direction: direction, forceUpdate: false)
+            } else if self?.payAmountInput != nil {
+                self?.refreshQuote(direction: .sell, forceUpdate: false)
+            } else {
+                self?.refreshQuote(direction: .buy, forceUpdate: false)
+            }
         }
     }
 
     func selectReceiveToken() {
         wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
-            let chainAsset = chainAsset
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
-            self?.refreshQuote(direction: .buy, forceUpdate: false)
+
             self?.interactor.update(receiveChainAsset: chainAsset)
+
+            if let direction = self?.quoteArgs?.direction {
+                self?.refreshQuote(direction: direction, forceUpdate: false)
+            } else if self?.receiveAmountInput != nil {
+                self?.refreshQuote(direction: .buy, forceUpdate: false)
+            } else {
+                self?.refreshQuote(direction: .sell, forceUpdate: false)
+            }
         }
     }
 
@@ -457,8 +500,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
         Swift.swap(&payChainAsset, &receiveChainAsset)
         canPayFeeInPayAsset = false
-        Swift.swap(&payAssetBalance, &receiveAssetBalance)
-        Swift.swap(&payAssetPriceData, &receiveAssetPriceData)
+
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
         let newFocus: TextFieldFocus?
@@ -687,16 +729,18 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     }
 
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        if priceId == payChainAsset?.asset.priceId {
-            payAssetPriceData = price
+        if let payChainAsset = payChainAsset, priceId == payChainAsset.asset.priceId {
+            prices[payChainAsset.chainAssetId] = price
             providePayInputPriceViewModel()
         }
-        if priceId == receiveChainAsset?.asset.priceId {
-            receiveAssetPriceData = price
+
+        if let receiveChainAsset = receiveChainAsset, priceId == receiveChainAsset.asset.priceId {
+            prices[receiveChainAsset.chainAssetId] = price
             provideReceiveInputPriceViewModel()
         }
-        if priceId == feeChainAsset?.asset.priceId {
-            feeAssetPriceData = price
+
+        if let feeChainAsset = feeChainAsset, priceId == feeChainAsset.asset.priceId {
+            prices[feeChainAsset.chainAssetId] = price
             provideFeeViewModel()
         }
     }
@@ -706,20 +750,16 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     }
 
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId _: AccountId) {
+        balances[chainAsset] = balance
+
         if chainAsset == payChainAsset?.chainAssetId {
-            payAssetBalance = balance
             providePayTitle()
-        }
-        if chainAsset == feeChainAsset?.chainAssetId {
-            feeAssetBalance = balance
+
             if case .rate = payAmountInput {
                 providePayInputPriceViewModel()
                 providePayAmountInputViewModel()
                 provideButtonState()
             }
-        }
-        if chainAsset == receiveChainAsset?.chainAssetId {
-            receiveAssetBalance = balance
         }
     }
 
