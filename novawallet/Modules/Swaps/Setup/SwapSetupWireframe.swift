@@ -101,7 +101,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showTokenDepositOptions(
         form view: ControllerBackedProtocol?,
-        operations: [(token: TokenOperation, active: Bool)],
+        operations: [DepositOperationModel],
         token: String,
         delegate: ModalPickerViewControllerDelegate?
     ) {
@@ -115,5 +115,39 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         }
 
         view?.controller.present(bottomSheet, animated: true)
+    }
+
+    func showDepositTokensBySend(
+        from view: ControllerBackedProtocol?,
+        origin: ChainAsset,
+        destination: ChainAsset,
+        recepient: DisplayAddress?,
+        xcmTransfers: XcmTransfers
+    ) {
+        guard let transferSetupView = TransferSetupViewFactory.createCrossChainView(
+            from: origin,
+            to: destination,
+            xcmTransfers: xcmTransfers,
+            recepient: recepient
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(transferSetupView.controller, animated: true)
+    }
+
+    func showDepositTokensByReceive(
+        from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset,
+        metaChainAccountResponse: MetaChainAccountResponse
+    ) {
+        guard let receiveTokensView = AssetReceiveViewFactory.createView(
+            chainAsset: chainAsset,
+            metaChainAccountResponse: metaChainAccountResponse
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(receiveTokensView.controller, animated: true)
     }
 }

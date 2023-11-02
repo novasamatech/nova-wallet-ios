@@ -83,6 +83,19 @@ struct XcmTransfers: Decodable {
         return xcmTransfers
     }
 
+    func transferChainAssets(to chainAssetId: ChainAssetId) -> [ChainAssetId] {
+        chains.flatMap { chain in
+            chain.assets.filter { asset in
+                asset.xcmTransfers.contains(where: { transfer in
+                    transfer.destination.chainId == chainAssetId.chainId &&
+                        transfer.destination.assetId == chainAssetId.assetId
+                })
+            }.map {
+                ChainAssetId(chainId: chain.chainId, assetId: $0.assetId)
+            }
+        }
+    }
+
     func transfer(
         from chainAssetId: ChainAssetId,
         destinationChainId: ChainModel.Id

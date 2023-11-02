@@ -39,12 +39,16 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
+    func setupXcm()
 }
 
-protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {}
+protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
+    func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?)
+    func didReceive(error: SwapSetupError)
+}
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
-    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {
+    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, PurchasePresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
@@ -76,17 +80,26 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     )
     func showTokenDepositOptions(
         form view: ControllerBackedProtocol?,
-        operations: [(token: TokenOperation, active: Bool)],
+        operations: [DepositOperationModel],
         token: String,
         delegate: ModalPickerViewControllerDelegate?
+    )
+    func showDepositTokensByReceive(
+        from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset,
+        metaChainAccountResponse: MetaChainAccountResponse
+    )
+    func showDepositTokensBySend(
+        from view: ControllerBackedProtocol?,
+        origin: ChainAsset,
+        destination: ChainAsset,
+        recepient: DisplayAddress?,
+        xcmTransfers: XcmTransfers
     )
 }
 
 enum SwapSetupError: Error {
-    case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
-    case price(Error, AssetModel.PriceId)
-    case assetBalance(Error, ChainAssetId, AccountId)
+    case xcm(Error)
 }
 
 enum SwapSetupViewError {

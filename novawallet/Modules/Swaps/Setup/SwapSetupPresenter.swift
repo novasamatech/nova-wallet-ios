@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-final class SwapSetupPresenter {
+final class SwapSetupPresenter: PurchaseFlowManaging {
     weak var view: SwapSetupViewProtocol?
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
@@ -31,9 +31,12 @@ final class SwapSetupPresenter {
     }
 
     private var slippage: BigRational?
-
     private var feeIdentifier: SwapSetupFeeIdentifier?
     private var accountId: AccountId?
+    private var depositOperations: [DepositOperationModel] = []
+    private var purchaseActions: [PurchaseAction] = []
+    private var depositCrossChainAssets: [ChainAsset] = []
+    private var xcmTransfers: XcmTransfers?
 
     init(
         interactor: SwapSetupInteractorInputProtocol,
@@ -580,8 +583,11 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         guard let payChainAsset = payChainAsset, let accountId = accountId else {
             return
         }
-        let purchaseActions = purchaseProvider.buildPurchaseActions(for: payChainAsset, accountId: accountId)
+
+        purchaseActions = purchaseProvider.buildPurchaseActions(for: payChainAsset, accountId: accountId)
         let sendAvailable = TokenOperation.checkTransferOperationAvailable()
+        let crossChainSendAvailable = depositCrossChainAssets.first != nil && sendAvailable
+
         let recieveAvailable = TokenOperation.checkReceiveOperationAvailable(
             walletType: selectedAccount.type,
             chainAsset: payChainAsset
@@ -591,14 +597,14 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             walletType: selectedAccount.type,
             chainAsset: payChainAsset
         ).available
-        let operations: [(token: TokenOperation, active: Bool)] = [
-            (token: .send, active: sendAvailable),
-            (token: .receive, active: recieveAvailable),
-            (token: .buy, active: buyAvailable)
+        depositOperations = [
+            .init(operation: .send, active: crossChainSendAvailable),
+            .init(operation: .receive, active: recieveAvailable),
+            .init(operation: .buy, active: buyAvailable)
         ]
         wireframe.showTokenDepositOptions(
             form: view,
-            operations: operations,
+            operations: depositOperations,
             token: payChainAsset.asset.symbol,
             delegate: self
         )
@@ -606,7 +612,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
-    func didReceive(baseError: SwapSetupError) {
+    func didReceive(baseError: SwapSetupBaseError) {
         switch baseError {
         case let .quote(_, args):
             guard args == quoteArgs else {
@@ -627,6 +633,15 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             handlePriceError(priceId: priceId)
         case let .assetBalance(_, chainAssetId, _):
             handleAssetBalanceError(chainAssetId: chainAssetId)
+        }
+    }
+
+    func didReceive(error: SwapSetupError) {
+        switch error {
+        case .xcm:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setupXcm()
+            }
         }
     }
 
@@ -718,6 +733,11 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             }
         }
     }
+
+    func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?) {
+        depositCrossChainAssets = origins
+        self.xcmTransfers = xcmTransfers
+    }
 }
 
 extension SwapSetupPresenter: Localizable {
@@ -730,7 +750,50 @@ extension SwapSetupPresenter: Localizable {
 }
 
 extension SwapSetupPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_: Int, context _: AnyObject?) {}
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
+        guard let operation = depositOperations[safe: index], operation.active else {
+            return
+        }
 
-    func modalPickerDidSelectModel(at _: Int, section _: Int, context _: AnyObject?) {}
+        switch operation.operation {
+        case .buy:
+            startPuchaseFlow(
+                from: view,
+                purchaseActions: purchaseActions,
+                wireframe: wireframe,
+                locale: selectedLocale
+            )
+        case .receive:
+            guard let payChainAsset = payChainAsset,
+                  let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: payChainAsset.chain.accountRequest()) else {
+                return
+            }
+            wireframe.showDepositTokensByReceive(
+                from: view,
+                chainAsset: payChainAsset,
+                metaChainAccountResponse: metaChainAccountResponse
+            )
+        case .send:
+            guard let payChainAsset = payChainAsset,
+                  let accountId = accountId,
+                  let address = try? accountId.toAddress(using: payChainAsset.chain.chainFormat),
+                  let origin = depositCrossChainAssets.first,
+                  let xcmTransfers = xcmTransfers else {
+                return
+            }
+            wireframe.showDepositTokensBySend(
+                from: view,
+                origin: origin,
+                destination: payChainAsset,
+                recepient: .init(address: address, username: ""),
+                xcmTransfers: xcmTransfers
+            )
+        }
+    }
+}
+
+extension SwapSetupPresenter: PurchaseDelegate {
+    func purchaseDidComplete() {
+        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+    }
 }

@@ -79,7 +79,14 @@ struct SwapSetupViewFactory {
             operationQueue: operationQueue
         )
 
+        let xcmTransfersSyncService = XcmTransfersSyncService(
+            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            operationQueue: operationQueue
+        )
+
         let interactor = SwapSetupInteractor(
+            xcmTransfersSyncService: xcmTransfersSyncService,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetConversionOperationFactory: assetConversionOperationFactory,
             assetConversionFeeService: feeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

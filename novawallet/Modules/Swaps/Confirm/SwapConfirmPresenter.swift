@@ -398,7 +398,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         balances[chainAsset] = balance
     }
 
-    func didReceive(baseError: SwapSetupError) {
+    func didReceive(baseError: SwapSetupBaseError) {
         switch baseError {
         case let .quote(_, args):
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
