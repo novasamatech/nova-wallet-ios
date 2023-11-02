@@ -480,8 +480,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         Swift.swap(&payChainAsset, &receiveChainAsset)
         Swift.swap(&payAssetBalance, &receiveAssetBalance)
         Swift.swap(&payAssetPriceData, &receiveAssetPriceData)
-
         Swift.swap(&payAssetSelfSufficient, &receiveAssetSelfSufficient)
+
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
         let newFocus: TextFieldFocus?
@@ -505,7 +505,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideSettingsState()
         provideFeeViewModel()
         provideErrors()
-        refreshQuote(direction: .sell, forceUpdate: false)
         view?.didReceive(focus: newFocus)
     }
 
