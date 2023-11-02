@@ -596,7 +596,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         logger.error("Did receive setup error: \(setupError)")
 
         switch setupError {
-        case let .payAssetSetFailed(error):
+        case .payAssetSetFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 if let payChainAsset = self?.payChainAsset {
                     self?.interactor.update(payChainAsset: payChainAsset)
