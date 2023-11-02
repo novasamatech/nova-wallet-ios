@@ -37,6 +37,6 @@ protocol SwapConfirmWireframeProtocol: AnyObject, AlertPresentable, CommonRetrya
     func complete(on view: ControllerBackedProtocol?, locale: Locale)
 }
 
-enum SwapConfirmError {
+enum SwapConfirmError: Error {
     case submit(Error)
 }
