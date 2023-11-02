@@ -45,7 +45,8 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?)
-    func didReceive(error: SwapSetupError)
+    func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
+    func didReceive(setupError: SwapSetupError)
 }
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
@@ -53,12 +54,12 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
+        completionHandler: @escaping (ChainAsset) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
+        completionHandler: @escaping (ChainAsset) -> Void
     )
     func showSettings(
         from view: ControllerBackedProtocol?,
@@ -101,6 +102,7 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
 
 enum SwapSetupError: Error {
     case xcm(Error)
+    case payAssetSetFailed(Error)
 }
 
 enum SwapSetupViewError {

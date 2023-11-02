@@ -231,7 +231,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         ).value(for: locale)
         let amountOut = balanceViewModelFactoryFacade.amountFromValue(
             targetAssetInfo: params.assetDisplayInfoOut,
-            value: difference ?? 0
+            value: difference
         ).value(for: locale)
 
         return "\(amountIn) ≈ \(amountOut)"

@@ -5,12 +5,14 @@ import BigInt
 final class SwapSetupInteractor: SwapBaseInteractor {
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainRegistry: ChainRegistryProtocol
+
     private var xcmTransfers: XcmTransfers?
+    private var canPayFeeInAssetCall = CancellableCallStore()
 
     init(
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
-        assetConversionOperationFactory: AssetConversionOperationFactoryProtocol,
+        assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -22,7 +24,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         self.chainRegistry = chainRegistry
 
         super.init(
-            assetConversionOperationFactory: assetConversionOperationFactory,
+            assetConversionAggregator: assetConversionAggregatorFactory,
             assetConversionFeeService: assetConversionFeeService,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
@@ -59,13 +61,15 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             [
                 receiveChainAsset?.chainAssetId,
                 payChainAsset?.chainAssetId,
-                feeChainAsset?.chainAssetId
+                feeChainAsset?.chainAssetId,
+                feeChainAsset?.chain.utilityChainAssetId()
             ].compactMap { $0 }
         )
     }
 
     deinit {
         xcmTransfersSyncService.throttle()
+        canPayFeeInAssetCall.cancel()
     }
 
     private func setupXcmTransfersSyncService() {
@@ -75,7 +79,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
                 self?.xcmTransfers = xcmTransfers
                 self?.provideAvailableTransfers()
             case let .failure(error):
-                self?.presenter?.didReceive(error: .xcm(error))
+                self?.presenter?.didReceive(setupError: .xcm(error))
             }
         }
 
@@ -110,6 +114,32 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         presenter?.didReceiveAvailableXcm(origins: origins, xcmTransfers: xcmTransfers)
     }
 
+    private func provideCanPayFee(for asset: ChainAsset) {
+        canPayFeeInAssetCall.cancel()
+
+        guard let utilityAssetId = asset.chain.utilityChainAssetId() else {
+            presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
+            return
+        }
+
+        let wrapper = assetConversionAggregator.createAvailableDirectionsWrapper(for: asset)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: canPayFeeInAssetCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(chainAssetIds):
+                let canPayFee = chainAssetIds.contains(utilityAssetId)
+                self?.presenter?.didReceiveCanPayFeeInPayAsset(canPayFee, chainAssetId: asset.chainAssetId)
+            case let .failure(error):
+                self?.presenter?.didReceive(setupError: .payAssetSetFailed(error))
+            }
+        }
+    }
+
     override func setup() {
         super.setup()
         setupXcmTransfersSyncService()
@@ -131,8 +161,9 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(payChainAsset: ChainAsset?) {
         self.payChainAsset = payChainAsset
 
-        payChainAsset.map {
-            set(payChainAsset: $0)
+        if let payChainAsset = payChainAsset {
+            set(payChainAsset: payChainAsset)
+            provideCanPayFee(for: payChainAsset)
         }
 
         provideAvailableTransfers()

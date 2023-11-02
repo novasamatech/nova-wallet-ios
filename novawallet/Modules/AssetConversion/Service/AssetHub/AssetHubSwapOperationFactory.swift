@@ -25,7 +25,8 @@ final class AssetHubSwapOperationFactory {
     }
 
     private func fetchAllPairsWrapper(
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        chain: ChainModel
     ) -> CompoundOperationWrapper<[AssetConversionPallet.PoolAssetPair]> {
         let prefixEncodingOperation = UnkeyedEncodingOperation(
             path: AssetConversionPallet.poolsPath,
@@ -49,7 +50,7 @@ final class AssetHubSwapOperationFactory {
 
         keysFetchOperation.addDependency(prefixEncodingOperation)
 
-        let decodingOperation = StorageKeyDecodingOperation<AssetConversionPallet.PoolAssetPair>(
+        let decodingOperation = StorageKeyDecodingOperation<AssetConversionPallet.AssetIdPair>(
             path: AssetConversionPallet.poolsPath
         )
 
@@ -64,9 +65,29 @@ final class AssetHubSwapOperationFactory {
 
         decodingOperation.addDependency(keysFetchOperation)
 
+        let mappingOperation = ClosureOperation<[AssetConversionPallet.PoolAssetPair]> {
+            let decodedPairs = try decodingOperation.extractNoCancellableResultData()
+
+            return decodedPairs.map { assetIdPair in
+                let asset1 = AssetHubTokensConverter.convertFromMultilocation(
+                    assetIdPair.asset1,
+                    chain: chain
+                )
+
+                let asset2 = AssetHubTokensConverter.convertFromMultilocation(
+                    assetIdPair.asset2,
+                    chain: chain
+                )
+
+                return .init(asset1: asset1, asset2: asset2)
+            }
+        }
+
+        mappingOperation.addDependency(decodingOperation)
+
         return CompoundOperationWrapper(
-            targetOperation: decodingOperation,
-            dependencies: [prefixEncodingOperation, keysFetchOperation]
+            targetOperation: mappingOperation,
+            dependencies: [prefixEncodingOperation, keysFetchOperation, decodingOperation]
         )
     }
 
@@ -147,7 +168,7 @@ final class AssetHubSwapOperationFactory {
 extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-        let fetchRemoteWrapper = fetchAllPairsWrapper(dependingOn: codingFactoryOperation)
+        let fetchRemoteWrapper = fetchAllPairsWrapper(dependingOn: codingFactoryOperation, chain: chain)
         let mappingOperation = mapRemotePairsOperation(
             for: chain,
             dependingOn: codingFactoryOperation,

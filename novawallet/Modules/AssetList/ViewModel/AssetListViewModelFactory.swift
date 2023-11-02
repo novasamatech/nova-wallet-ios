@@ -9,16 +9,22 @@ struct AssetListAssetAccountPrice {
     let price: PriceData
 }
 
+struct AssetListHeaderParams {
+    struct Wallet {
+        let walletIdenticon: Data?
+        let walletType: MetaAccountModelType
+        let walletConnectSessionsCount: Int
+    }
+
+    let title: String
+    let wallet: Wallet
+    let prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?
+    let locks: [AssetListAssetAccountPrice]?
+    let hasSwaps: Bool
+}
+
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
-    func createHeaderViewModel(
-        from title: String,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
-        locks: [AssetListAssetAccountPrice]?,
-        walletConnectSessionsCount: Int,
-        locale: Locale
-    ) -> AssetListHeaderViewModel
+    func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel
 
     func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel
 }
@@ -81,39 +87,36 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
 }
 
 extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
-    func createHeaderViewModel(
-        from title: String,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
-        locks: [AssetListAssetAccountPrice]?,
-        walletConnectSessionsCount: Int,
-        locale: Locale
-    ) -> AssetListHeaderViewModel {
-        let icon = walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
+    func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel {
+        let icon = params.wallet.walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
         let walletSwitch = WalletSwitchViewModel(
-            type: WalletsListSectionViewModel.SectionType(walletType: walletType),
+            type: WalletsListSectionViewModel.SectionType(walletType: params.wallet.walletType),
             iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
         )
-        let formattedWalletConnectSessionsCount = walletConnectSessionsCount > 0 ?
-            quantityFormatter.value(for: locale).string(from: NSNumber(value: walletConnectSessionsCount)) : nil
 
-        if let prices = prices {
+        let walletConnectSessionsCount = params.wallet.walletConnectSessionsCount
+        let formattedWalletConnectSessionsCount = walletConnectSessionsCount > 0 ?
+            quantityFormatter.value(for: locale).string(from: NSNumber(value: walletConnectSessionsCount)) :
+            nil
+
+        if let prices = params.prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return AssetListHeaderViewModel(
                 walletConnectSessionsCount: formattedWalletConnectSessionsCount,
-                title: title,
+                title: params.title,
                 amount: totalPrice,
-                locksAmount: locks.map { formatTotalPrice(from: $0, locale: locale) },
-                walletSwitch: walletSwitch
+                locksAmount: params.locks.map { formatTotalPrice(from: $0, locale: locale) },
+                walletSwitch: walletSwitch,
+                hasSwaps: params.hasSwaps
             )
         } else {
             return AssetListHeaderViewModel(
                 walletConnectSessionsCount: formattedWalletConnectSessionsCount,
-                title: title,
+                title: params.title,
                 amount: .loading,
                 locksAmount: nil,
-                walletSwitch: walletSwitch
+                walletSwitch: walletSwitch,
+                hasSwaps: params.hasSwaps
             )
         }
     }

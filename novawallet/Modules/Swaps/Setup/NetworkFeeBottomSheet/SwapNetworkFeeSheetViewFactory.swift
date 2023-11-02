@@ -2,10 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct SwapNetworkFeeSheetViewFactory {
-    static func createView(
-        from viewModel: SwapNetworkFeeSheetViewModel,
-        allowsSwipeDown _: Bool = true
-    ) -> MessageSheetViewProtocol {
+    static func createView(from viewModel: SwapNetworkFeeSheetViewModel) -> MessageSheetViewProtocol {
         let wireframe = MessageSheetWireframe()
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)

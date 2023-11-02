@@ -31,12 +31,12 @@ extension ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        feeAssetId: UInt32
+        feeAssetConversionId: AssetConversionPallet.AssetId
     ) -> ExtrinsicServiceProtocol {
         createService(
             account: account,
             chain: chain,
-            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetId)
+            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetConversionId)
         )
     }
 

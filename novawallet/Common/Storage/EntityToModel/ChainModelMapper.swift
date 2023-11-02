@@ -301,6 +301,10 @@ final class ChainModelMapper {
             options.append(.noSubstrateRuntime)
         }
 
+        if entity.hasSwapHub {
+            options.append(.swapHub)
+        }
+
         return !options.isEmpty ? options : nil
     }
 }
@@ -379,6 +383,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasGovernanceV1 = model.hasGovernanceV1
         entity.hasGovernance = model.hasGovernanceV2
         entity.noSubstrateRuntime = model.noSubstrateRuntime
+        entity.hasSwapHub = model.hasSwapHub
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.additional = try model.additional.map {

@@ -48,6 +48,10 @@ struct AssetListBuilderResult {
                 locksResult: locksResult
             )
         }
+
+        func hasSwaps() -> Bool {
+            allChains.values.contains { $0.hasSwaps }
+        }
     }
 
     enum ChangeKind {

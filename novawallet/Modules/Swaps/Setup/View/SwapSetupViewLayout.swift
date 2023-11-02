@@ -94,7 +94,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         )
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
             preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
             preferredLanguages: locale.rLanguages)
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()

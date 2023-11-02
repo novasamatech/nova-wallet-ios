@@ -3,7 +3,10 @@ import SoraFoundation
 import RobinHood
 
 struct SwapSetupViewFactory {
-    static func createView(assetListObservable: AssetListModelObservable) -> SwapSetupViewProtocol? {
+    static func createView(
+        assetListObservable: AssetListModelObservable,
+        payChainAsset: ChainAsset
+    ) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
             let selectedWallet = SelectedWalletSettings.shared.value else {
@@ -30,6 +33,7 @@ struct SwapSetupViewFactory {
         )
 
         let presenter = SwapSetupPresenter(
+            payChainAsset: payChainAsset,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
@@ -53,23 +57,16 @@ struct SwapSetupViewFactory {
     }
 
     private static func createInteractor() -> SwapSetupInteractor? {
-        let westmintChainId = KnowChainId.westmint
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard let connection = chainRegistry.getConnection(for: westmintChainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
-              let chainModel = chainRegistry.getChain(for: westmintChainId),
-              let currencyManager = CurrencyManager.shared,
+        guard let currencyManager = CurrencyManager.shared,
               let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: chainModel,
-            runtimeService: runtimeService,
-            connection: connection,
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
@@ -87,7 +84,7 @@ struct SwapSetupViewFactory {
         let interactor = SwapSetupInteractor(
             xcmTransfersSyncService: xcmTransfersSyncService,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            assetConversionOperationFactory: assetConversionOperationFactory,
+            assetConversionAggregatorFactory: assetConversionAggregator,
             assetConversionFeeService: feeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
