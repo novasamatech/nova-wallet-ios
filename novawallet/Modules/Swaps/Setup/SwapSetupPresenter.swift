@@ -787,7 +787,14 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
 
         self.fee = fee
+
         provideFeeViewModel()
+
+        if case .rate = payAmountInput {
+            providePayInputPriceViewModel()
+            providePayAmountInputViewModel()
+        }
+
         provideButtonState()
         provideErrors()
     }
@@ -868,7 +875,9 @@ extension SwapSetupPresenter: ModalPickerViewControllerDelegate {
             )
         case .receive:
             guard let payChainAsset = payChainAsset,
-                  let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: payChainAsset.chain.accountRequest()) else {
+                  let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(
+                      for: payChainAsset.chain.accountRequest()
+                  ) else {
                 return
             }
             wireframe.showDepositTokensByReceive(
