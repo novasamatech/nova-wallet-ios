@@ -12,7 +12,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
     ) {
         guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
             for: assetListObservable,
@@ -32,7 +32,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
     ) {
         guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectReceiveTokenView(
             for: assetListObservable,
@@ -83,5 +83,19 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             confimView.controller,
             animated: true
         )
+    }
+
+    func showNetworkFeeAssetSelection(
+        form view: ControllerBackedProtocol?,
+        viewModel: SwapNetworkFeeSheetViewModel
+    ) {
+        let bottomSheet = SwapNetworkFeeSheetViewFactory.createView(from: viewModel)
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+
+        bottomSheet.controller.modalTransitioningFactory = factory
+        bottomSheet.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(bottomSheet.controller, animated: true)
     }
 }

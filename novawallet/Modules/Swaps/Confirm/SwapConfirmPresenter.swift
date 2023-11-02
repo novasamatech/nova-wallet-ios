@@ -367,7 +367,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         }
     }
 
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId _: TransactionFeeId) {
+    func didReceive(fee: AssetConversion.FeeModel?, transactionId _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) {
         self.fee = fee
         provideFeeViewModel()
     }
@@ -400,11 +400,11 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
 
     func didReceive(baseError: SwapSetupError) {
         switch baseError {
-        case .quote:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self, initState] in
-                self?.interactor.calculateQuote(for: initState.quoteArgs)
+        case let .quote(_, args):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.calculateQuote(for: args)
             }
-        case .fetchFeeFailed:
+        case let .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.estimateFee()
             }
@@ -418,7 +418,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
                     .filter { $0.asset.priceId == priceId }
                     .forEach(self.interactor.remakePriceSubscription)
             }
-        case .assetBalance:
+        case let .assetBalance:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
             }

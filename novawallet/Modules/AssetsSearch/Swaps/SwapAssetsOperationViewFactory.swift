@@ -5,7 +5,7 @@ enum SwapAssetsOperationViewFactory {
     static func createSelectPayTokenView(
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
-        selectClosure: @escaping (ChainAsset) -> Void
+        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
     ) -> AssetsSearchViewProtocol? {
         let title: LocalizableResource<String> = .init {
             R.string.localizable.swapsPayTokenSelectionTitle(
@@ -24,7 +24,7 @@ enum SwapAssetsOperationViewFactory {
     static func createSelectReceiveTokenView(
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
-        selectClosure: @escaping (ChainAsset) -> Void
+        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
     ) -> AssetsSearchViewProtocol? {
         let title: LocalizableResource<String> = .init {
             R.string.localizable.swapsReceiveTokenSelectionTitle(
@@ -44,7 +44,7 @@ enum SwapAssetsOperationViewFactory {
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
         title: LocalizableResource<String>,
-        selectClosure: @escaping (ChainAsset) -> Void
+        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -84,7 +84,7 @@ enum SwapAssetsOperationViewFactory {
         stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         chainAsset: ChainAsset?,
-        selectClosure: @escaping (ChainAsset) -> Void
+        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
     ) -> SwapAssetsOperationPresenter? {
         let westmintChainId = KnowChainId.westmint
         let chainRegistry = ChainRegistryFacade.sharedRegistry

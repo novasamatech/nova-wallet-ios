@@ -19,7 +19,8 @@ final class SwapSetupPresenter {
     private(set) var payAssetPriceData: PriceData?
     private(set) var receiveAssetPriceData: PriceData?
     private(set) var feeAssetPriceData: PriceData?
-
+    private(set) var payAssetSelfSufficient: Bool = false
+    private(set) var receiveAssetSelfSufficient: Bool = false
     private(set) var payAmountInput: AmountInputResult?
     private(set) var receiveAmountInput: Decimal?
     private(set) var fee: AssetConversion.FeeModel?
@@ -32,7 +33,7 @@ final class SwapSetupPresenter {
 
     private var slippage: BigRational?
 
-    private var feeIdentifier: String?
+    private var feeIdentifier: SwapSetupFeeIdentifier?
     private var accountId: AccountId?
 
     init(
@@ -218,9 +219,11 @@ final class SwapSetupPresenter {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
+        let isEditable = (payChainAsset?.isUtilityAsset == false) && payAssetSelfSufficient
         let viewModel = viewModelFactory.feeViewModel(
             amount: fee,
             assetDisplayInfo: feeChainAsset.assetDisplayInfo,
+            isEditable: isEditable,
             priceData: feeAssetPriceData
         )
 
@@ -245,11 +248,16 @@ final class SwapSetupPresenter {
             slippage: slippage
         )
 
-        guard args.identifier != feeIdentifier else {
+        let newIdentifier = SwapSetupFeeIdentifier(
+            transactionId: args.identifier,
+            feeChainAssetId: feeChainAsset?.chainAssetId
+        )
+
+        guard newIdentifier != feeIdentifier else {
             return
         }
 
-        feeIdentifier = args.identifier
+        feeIdentifier = newIdentifier
         interactor.calculateFee(args: args)
     }
 
@@ -329,7 +337,7 @@ final class SwapSetupPresenter {
         }
     }
 
-    func balanceMinusFee() -> Decimal? {
+    private func balanceMinusFee() -> Decimal? {
         guard let payChainAsset = payChainAsset else {
             return nil
         }
@@ -344,7 +352,7 @@ final class SwapSetupPresenter {
             return 0
         }
 
-        return balance - fee
+        return max(0, balance - fee)
     }
 
     private func handleAssetBalanceError(chainAssetId: ChainAssetId) {
@@ -362,7 +370,7 @@ final class SwapSetupPresenter {
         }
     }
 
-    func handlePriceError(priceId: AssetModel.PriceId) {
+    private func handlePriceError(priceId: AssetModel.PriceId) {
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
             guard let self = self else {
                 return
@@ -372,6 +380,14 @@ final class SwapSetupPresenter {
                 .filter { $0.asset.priceId == priceId }
                 .forEach(self.interactor.remakePriceSubscription)
         }
+    }
+
+    private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
+        feeChainAsset = chainAsset
+        providePayAssetViews()
+        interactor.update(feeChainAsset: chainAsset)
+        estimateFee()
+        refreshQuote(direction: .sell)
     }
 }
 
@@ -388,14 +404,15 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectPayToken() {
-        wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
+        wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAssetModel in
+            let chainAsset = chainAssetModel.chainAsset
             self?.payChainAsset = chainAsset
             let feeChainAsset = chainAsset.chain.utilityAsset().map {
                 ChainAsset(chain: chainAsset.chain, asset: $0)
             }
 
             self?.feeChainAsset = feeChainAsset
-
+            self?.payAssetSelfSufficient = chainAssetModel.selfSufficient
             self?.providePayAssetViews()
             self?.provideButtonState()
             self?.provideSettingsState()
@@ -407,8 +424,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectReceiveToken() {
-        wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
+        wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAssetModel in
+            let chainAsset = chainAssetModel.chainAsset
             self?.receiveChainAsset = chainAsset
+            self?.receiveAssetSelfSufficient = chainAssetModel.selfSufficient
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
             self?.refreshQuote(direction: .buy, forceUpdate: false)
@@ -436,6 +455,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         Swift.swap(&payAssetBalance, &receiveAssetBalance)
         Swift.swap(&payAssetPriceData, &receiveAssetPriceData)
 
+        Swift.swap(&payAssetSelfSufficient, &receiveAssetSelfSufficient)
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
         let newFocus: TextFieldFocus?
@@ -457,6 +477,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveAssetViews()
         provideButtonState()
         provideSettingsState()
+        provideFeeViewModel()
+        refreshQuote(direction: .sell, forceUpdate: false)
         view?.didReceive(focus: newFocus)
     }
 
@@ -467,8 +489,36 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
     }
 
-    // TODO: show editing fee
-    func showFeeActions() {}
+    func showFeeActions() {
+        guard let payChainAsset = payChainAsset,
+              let utilityAsset = payChainAsset.chain.utilityChainAsset() else {
+            return
+        }
+        let payAssetSelected = feeChainAsset?.chainAssetId == payChainAsset.chainAssetId
+        let viewModel = SwapNetworkFeeSheetViewModel(
+            title: FeeSelectionViewModel.title,
+            message: FeeSelectionViewModel.message,
+            sectionTitle: { section in
+                .init { _ in
+                    FeeSelectionViewModel(rawValue: section) == .utilityAsset ?
+                        utilityAsset.asset.symbol : payChainAsset.asset.symbol
+                }
+            },
+            action: { [weak self] in
+                let chainAsset = FeeSelectionViewModel(rawValue: $0) == .utilityAsset ? utilityAsset : payChainAsset
+                self?.updateFeeChainAsset(chainAsset)
+            },
+            selectedIndex: payAssetSelected ? FeeSelectionViewModel.payAsset.rawValue :
+                FeeSelectionViewModel.utilityAsset.rawValue,
+            count: FeeSelectionViewModel.allCases.count,
+            hint: FeeSelectionViewModel.hint
+        )
+
+        wireframe.showNetworkFeeAssetSelection(
+            form: view,
+            viewModel: viewModel
+        )
+    }
 
     func showFeeInfo() {
         wireframe.showFeeInfo(from: view)
@@ -542,8 +592,9 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshQuote(direction: args.direction)
             }
-        case let .fetchFeeFailed(_, id):
-            guard id == feeIdentifier else {
+        case let .fetchFeeFailed(_, id, feeChainAssetId):
+            let identifier = SwapSetupFeeIdentifier(transactionId: id, feeChainAssetId: feeChainAssetId)
+            guard identifier == feeIdentifier else {
                 return
             }
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -589,8 +640,17 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         provideButtonState()
     }
 
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId) {
-        guard feeIdentifier == transactionId else {
+    func didReceive(
+        fee: AssetConversion.FeeModel?,
+        transactionId: TransactionFeeId,
+        feeChainAssetId: FeeChainAssetId?
+    ) {
+        let identifier = SwapSetupFeeIdentifier(
+            transactionId: transactionId,
+            feeChainAssetId: feeChainAssetId
+        )
+
+        guard identifier == feeIdentifier else {
             return
         }
 

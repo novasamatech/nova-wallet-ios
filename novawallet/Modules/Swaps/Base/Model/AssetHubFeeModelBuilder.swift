@@ -1,8 +1,8 @@
 import Foundation
+typealias FeeChainAssetId = ChainAssetId
 
 final class AssetHubFeeModelBuilder {
-    typealias ResultClosure = (AssetConversion.FeeModel, AssetConversion.CallArgs) -> Void
-
+    typealias ResultClosure = (AssetConversion.FeeModel, AssetConversion.CallArgs, FeeChainAssetId?) -> Void
     let utilityChainAssetId: ChainAssetId
     let resultClosure: ResultClosure
 
@@ -38,7 +38,7 @@ final class AssetHubFeeModelBuilder {
             resultModel = feeModel
         }
 
-        resultClosure(resultModel, callArgs)
+        resultClosure(resultModel, callArgs, feeAsset?.chainAssetId)
     }
 }
 
