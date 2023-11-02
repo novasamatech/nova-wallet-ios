@@ -69,7 +69,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(receiveAmountChangeAction),
             for: .editingChanged
         )
-        rootView.rateCell.titleButton.addTarget(
+        rootView.rateCell.addTarget(
             self,
             action: #selector(rateInfoAction),
             for: .touchUpInside
@@ -79,7 +79,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(changeNetworkFeeAction),
             for: .touchUpInside
         )
-        rootView.networkFeeCell.titleButton.addTarget(
+        rootView.networkFeeCell.addTarget(
             self,
             action: #selector(networkFeeInfoAction),
             for: .touchUpInside
@@ -127,8 +127,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc private func swapAction() {
+        let currentFocus: TextFieldFocus?
+        if rootView.payAmountInputView.textInputView.textField.isFirstResponder {
+            currentFocus = .payAsset
+        } else if rootView.receiveAmountInputView.textInputView.textField.isFirstResponder {
+            currentFocus = .receiveAsset
+        } else {
+            currentFocus = nil
+        }
         view.endEditing(true)
-        presenter.swap()
+        presenter.flip(currentFocus: currentFocus)
     }
 
     @objc private func payAmountChangeAction() {
@@ -227,6 +235,18 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveSettingsState(isAvailable: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isAvailable
+    }
+
+    func didReceive(focus: TextFieldFocus?) {
+        switch focus {
+        case .none:
+            rootView.payAmountInputView.set(focused: false)
+            rootView.receiveAmountInputView.set(focused: false)
+        case .payAsset:
+            rootView.payAmountInputView.set(focused: true)
+        case .receiveAsset:
+            rootView.receiveAmountInputView.set(focused: true)
+        }
     }
 }
 

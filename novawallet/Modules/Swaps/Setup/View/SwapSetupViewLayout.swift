@@ -25,13 +25,14 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
 
     let detailsView: SwapDetailsView = .create {
         $0.setExpanded(false, animated: false)
+        $0.contentInsets = .zero
     }
 
-    var rateCell: SwapInfoView {
+    var rateCell: SwapInfoViewCell {
         detailsView.rateCell
     }
 
-    var networkFeeCell: SwapNetworkFeeView {
+    var networkFeeCell: SwapNetworkFeeViewCell {
         detailsView.networkFeeCell
     }
 
