@@ -1,9 +1,14 @@
 import SoraFoundation
 
 final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryProtocol {
-    static func createView(chain: ChainModel, asset: AssetModel) -> AssetDetailsContainerViewProtocol? {
+    static func createView(
+        assetListObservable: AssetListModelObservable,
+        chain: ChainModel,
+        asset: AssetModel
+    ) -> AssetDetailsContainerViewProtocol? {
         guard
             let accountView = AssetDetailsViewFactory.createView(
+                assetListObservable: assetListObservable,
                 chain: chain,
                 asset: asset
             ),

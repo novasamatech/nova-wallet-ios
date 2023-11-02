@@ -2,7 +2,7 @@ protocol SwapAssetsOperationWireframeProtocol: AssetsSearchWireframeProtocol, Er
     AlertPresentable, CommonRetryable {}
 
 protocol SwapAssetsOperationPresenterProtocol: AssetsSearchInteractorOutputProtocol {
-    func didReceive(selfSufficientChainAsssets: Set<ChainAssetId>)
+    func directionsLoaded()
     func didReceive(error: SwapAssetsOperationError)
 }
 

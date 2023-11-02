@@ -30,9 +30,42 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             [
                 receiveChainAsset?.chainAssetId,
                 payChainAsset?.chainAssetId,
-                feeChainAsset?.chainAssetId
+                feeChainAsset?.chainAssetId,
+                feeChainAsset?.chain.utilityChainAssetId()
             ].compactMap { $0 }
         )
+    }
+
+    private var canPayFeeInAssetCall = CancellableCallStore()
+
+    deinit {
+        canPayFeeInAssetCall.cancel()
+    }
+
+    private func provideCanPayFee(for asset: ChainAsset) {
+        canPayFeeInAssetCall.cancel()
+
+        guard let utilityAssetId = asset.chain.utilityChainAssetId() else {
+            presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
+            return
+        }
+
+        let wrapper = assetConversionAggregator.createAvailableDirectionsWrapper(for: asset)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: canPayFeeInAssetCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(chainAssetIds):
+                let canPayFee = chainAssetIds.contains(utilityAssetId)
+                self?.presenter?.didReceiveCanPayFeeInPayAsset(canPayFee, chainAssetId: asset.chainAssetId)
+            case let .failure(error):
+                self?.presenter?.didReceive(setupError: .payAssetSetFailed(error))
+            }
+        }
     }
 }
 
@@ -47,8 +80,9 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(payChainAsset: ChainAsset?) {
         self.payChainAsset = payChainAsset
 
-        payChainAsset.map {
-            set(payChainAsset: $0)
+        if let payChainAsset = payChainAsset {
+            set(payChainAsset: payChainAsset)
+            provideCanPayFee(for: payChainAsset)
         }
     }
 

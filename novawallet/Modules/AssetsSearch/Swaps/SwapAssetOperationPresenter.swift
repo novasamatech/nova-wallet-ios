@@ -4,8 +4,6 @@ import RobinHood
 import SoraFoundation
 
 final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
-    private var selfSufficientChainAsssets: Set<ChainAssetId> = .init()
-
     var swapAssetsWireframe: SwapAssetsOperationWireframeProtocol? {
         wireframe as? SwapAssetsOperationWireframeProtocol
     }
@@ -14,16 +12,24 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         view as? SwapAssetsViewProtocol
     }
 
-    let selectClosure: (SwapSelectedChainAsset) -> Void
+    let selectClosure: (ChainAsset) -> Void
+
+    let selectClosureStrategy: SubmoduleNavigationStrategy
+
+    let logger: LoggerProtocol
 
     init(
-        selectClosure: @escaping (SwapSelectedChainAsset) -> Void,
+        selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosureStrategy: SubmoduleNavigationStrategy,
         interactor: SwapAssetsOperationInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        wireframe: SwapAssetsOperationWireframeProtocol
+        wireframe: SwapAssetsOperationWireframeProtocol,
+        logger: Logger
     ) {
         self.selectClosure = selectClosure
+        self.selectClosureStrategy = selectClosureStrategy
+        self.logger = logger
 
         super.init(
             delegate: nil,
@@ -43,23 +49,23 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
-        selectClosure(
-            .init(
-                selfSufficient: selfSufficientChainAsssets.contains(chainAssetId),
-                chainAsset: chainAsset
-            )
-        )
-        wireframe.close(view: view)
+
+        selectClosureStrategy.applyStrategy(for: { dismissalCallback in
+            self.wireframe.close(view: self.view, completion: dismissalCallback)
+        }, callback: {
+            self.selectClosure(chainAsset)
+        })
     }
 }
 
 extension SwapAssetsOperationPresenter: SwapAssetsOperationPresenterProtocol {
-    func didReceive(selfSufficientChainAsssets: Set<ChainAssetId>) {
-        self.selfSufficientChainAsssets = selfSufficientChainAsssets
+    func directionsLoaded() {
         swapAssetsView?.didStopLoading()
     }
 
-    func didReceive(error _: SwapAssetsOperationError) {
+    func didReceive(error: SwapAssetsOperationError) {
+        logger.error("Did receive error: \(error)")
+
         swapAssetsWireframe?.presentRequestStatus(
             on: swapAssetsView,
             locale: selectedLocale,

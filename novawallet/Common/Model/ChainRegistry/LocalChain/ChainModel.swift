@@ -138,6 +138,14 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(where: { $0 == .governance }) ?? false
     }
 
+    var hasSwapHub: Bool {
+        options?.contains(where: { $0 == .swapHub }) ?? false
+    }
+
+    var hasSwaps: Bool {
+        hasSwapHub
+    }
+
     var noSubstrateRuntime: Bool {
         options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
     }
@@ -211,6 +219,10 @@ struct ChainModel: Equatable, Codable, Hashable {
     var defaultBlockTimeMillis: BlockTime? {
         additional?.defaultBlockTime?.unsignedIntValue
     }
+
+    var isUtilityTokenOnRelaychain: Bool {
+        additional?.relaychainAsNative?.boolValue ?? false
+    }
 }
 
 extension ChainModel: Identifiable {
@@ -224,6 +236,7 @@ enum ChainOptions: String, Codable {
     case governance
     case governanceV1 = "governance-v1"
     case noSubstrateRuntime
+    case swapHub = "swap-hub"
 }
 
 extension ChainModel {

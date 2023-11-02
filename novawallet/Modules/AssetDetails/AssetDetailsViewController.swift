@@ -40,6 +40,7 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
         rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
         rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
         rootView.buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
+        rootView.swapButton.addTarget(self, action: #selector(didTapSwapButton), for: .touchUpInside)
         rootView.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
     }
 
@@ -53,6 +54,10 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
 
     @objc private func didTapBuyButton() {
         presenter.handleBuy()
+    }
+
+    @objc private func didTapSwapButton() {
+        presenter.handleSwap()
     }
 
     @objc private func didTapLocks() {
@@ -81,6 +86,7 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
     func didReceive(availableOperations: AssetDetailsOperation) {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
+        rootView.swapButton.isEnabled = availableOperations.contains(.swap)
         rootView.buyButton.isEnabled = availableOperations.contains(.buy)
     }
 }

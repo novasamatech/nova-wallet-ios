@@ -63,13 +63,13 @@ struct SwapConfirmViewFactory {
         wallet: MetaAccountModel,
         initState: SwapConfirmInitState
     ) -> SwapConfirmInteractor? {
-        let chainId = initState.chainAssetIn.chain.chainId
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
-        guard let connection = chainRegistry.getConnection(for: chainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-              let chainModel = chainRegistry.getChain(for: chainId),
+        let chain = initState.chainAssetIn.chain
+
+        guard let connection = chainRegistry.getConnection(for: chain.chainId),
+              let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
               let currencyManager = CurrencyManager.shared,
               let selectedAccount = wallet.fetchMetaChainAccount(for: accountRequest) else {
             return nil
@@ -77,18 +77,16 @@ struct SwapConfirmViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: chainModel,
-            runtimeService: runtimeService,
-            connection: connection,
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
-        ).createService(account: selectedAccount.chainAccount, chain: chainModel)
+        )
 
         let feeService = AssetHubFeeService(
             wallet: wallet,
@@ -104,10 +102,10 @@ struct SwapConfirmViewFactory {
         let interactor = SwapConfirmInteractor(
             initState: initState,
             assetConversionFeeService: feeService,
-            assetConversionOperationFactory: assetConversionOperationFactory,
-            assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chainModel),
+            assetConversionAggregator: assetConversionAggregator,
+            assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chain),
             runtimeService: runtimeService,
-            extrinsicService: extrinsicService,
+            extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,
