@@ -16,6 +16,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(errors: [SwapSetupViewError])
+    func didReceive(focus: TextFieldFocus?)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -23,7 +24,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func selectPayToken()
     func selectReceiveToken()
     func proceed()
-    func swap()
+    func flip(currentFocus: TextFieldFocus?)
     func updatePayAmount(_ amount: Decimal?)
     func updateReceiveAmount(_ amount: Decimal?)
     func showFeeActions()
@@ -52,12 +53,12 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
     )
     func showSettings(
         from view: ControllerBackedProtocol?,

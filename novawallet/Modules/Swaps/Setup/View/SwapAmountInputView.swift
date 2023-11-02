@@ -146,4 +146,15 @@ extension SwapAmountInputView {
         textInputView.bind(priceDifferenceViewModel: priceDifferenceViewModel)
         setNeedsLayout()
     }
+
+    func set(focused: Bool) {
+        guard !textInputView.isHidden else {
+            return
+        }
+        if focused {
+            textInputView.textField.becomeFirstResponder()
+        } else {
+            textInputView.textField.resignFirstResponder()
+        }
+    }
 }

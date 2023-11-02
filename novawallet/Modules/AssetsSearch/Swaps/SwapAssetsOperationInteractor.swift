@@ -66,9 +66,22 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             DispatchQueue.main.async {
                 do {
                     let result = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.availableDirections = mapper(result)
+                    let directions = mapper(result)
+                    self?.availableDirections = directions
                     self?.createBuilder()
-                    self?.presenter?.directionsLoaded()
+
+                    let chains = self?.stateObservable.state.value.allChains ?? [:]
+                    let selfSufficientAssets = directions.reduce(into: [ChainAssetId]()) {
+                        guard let utilityChainAssetId = chains[$1.key.chainId]?.utilityChainAssetId() else {
+                            return
+                        }
+                        if $1.key == utilityChainAssetId {
+                            $0.append(contentsOf: $1.value)
+                        } else if $1.value.contains(utilityChainAssetId) {
+                            $0.append($1.key)
+                        }
+                    }
+                    self?.presenter?.didReceive(selfSufficientChainAsssets: Set(selfSufficientAssets))
                 } catch {
                     self?.presenter?.didReceive(error: .directions(error))
                 }

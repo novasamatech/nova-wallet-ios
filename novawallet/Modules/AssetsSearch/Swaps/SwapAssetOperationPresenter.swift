@@ -4,6 +4,8 @@ import RobinHood
 import SoraFoundation
 
 final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
+    private var selfSufficientChainAsssets: Set<ChainAssetId> = .init()
+
     var swapAssetsWireframe: SwapAssetsOperationWireframeProtocol? {
         wireframe as? SwapAssetsOperationWireframeProtocol
     }
@@ -12,10 +14,10 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         view as? SwapAssetsViewProtocol
     }
 
-    let selectClosure: (ChainAsset) -> Void
+    let selectClosure: (SwapSelectedChainAsset) -> Void
 
     init(
-        selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosure: @escaping (SwapSelectedChainAsset) -> Void,
         interactor: SwapAssetsOperationInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -41,13 +43,19 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
         guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
-        selectClosure(chainAsset)
+        selectClosure(
+            .init(
+                selfSufficient: selfSufficientChainAsssets.contains(chainAssetId),
+                chainAsset: chainAsset
+            )
+        )
         wireframe.close(view: view)
     }
 }
 
 extension SwapAssetsOperationPresenter: SwapAssetsOperationPresenterProtocol {
-    func directionsLoaded() {
+    func didReceive(selfSufficientChainAsssets: Set<ChainAssetId>) {
+        self.selfSufficientChainAsssets = selfSufficientChainAsssets
         swapAssetsView?.didStopLoading()
     }
 
