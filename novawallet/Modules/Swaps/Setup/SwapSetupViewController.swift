@@ -259,7 +259,8 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
             rootView.receiveAmountInputView.set(focused: true)
         }
     }
-  	func didReceive(errors: [SwapSetupViewError]) {
+
+    func didReceive(errors: [SwapSetupViewError]) {
         if errors.contains(.insufficientToken) {
             rootView.changeDepositTokenButtonVisibility(hidden: false)
         } else {

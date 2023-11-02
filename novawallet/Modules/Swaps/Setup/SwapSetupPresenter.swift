@@ -504,6 +504,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
         provideSettingsState()
         provideFeeViewModel()
+        provideErrors()
         refreshQuote(direction: .sell, forceUpdate: false)
         view?.didReceive(focus: newFocus)
     }
