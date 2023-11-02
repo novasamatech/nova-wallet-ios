@@ -12,6 +12,7 @@ final class SwapSetupPresenter {
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
     private(set) var payAssetBalance: AssetBalance?
     private(set) var feeAssetBalance: AssetBalance?
+    private(set) var receiveAssetBalance: AssetBalance?
     private(set) var payChainAsset: ChainAsset?
     private(set) var receiveChainAsset: ChainAsset?
     private(set) var feeChainAsset: ChainAsset?
@@ -446,19 +447,39 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideButtonState()
     }
 
-    func swap() {
+    func flip(currentFocus: TextFieldFocus?) {
+        let payAmount = getPayAmount(for: payAmountInput)
+        let receiveAmount = receiveAmountInput.map { AmountInputResult.absolute($0) }
+
         Swift.swap(&payChainAsset, &receiveChainAsset)
+        Swift.swap(&payAssetBalance, &receiveAssetBalance)
+        Swift.swap(&payAssetPriceData, &receiveAssetPriceData)
+
         Swift.swap(&payAssetSelfSufficient, &receiveAssetSelfSufficient)
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
-        payAmountInput = nil
-        receiveAmountInput = nil
+        let newFocus: TextFieldFocus?
+
+        switch currentFocus {
+        case .payAsset, .none:
+            receiveAmountInput = payAmount
+            payAmountInput = nil
+            refreshQuote(direction: .buy, forceUpdate: false)
+            newFocus = .receiveAsset
+        case .receiveAsset:
+            payAmountInput = receiveAmount
+            receiveAmountInput = nil
+            refreshQuote(direction: .sell, forceUpdate: false)
+            newFocus = .payAsset
+        }
+
         providePayAssetViews()
         provideReceiveAssetViews()
         provideButtonState()
         provideSettingsState()
         provideFeeViewModel()
         refreshQuote(direction: .sell, forceUpdate: false)
+        view?.didReceive(focus: newFocus)
     }
 
     func selectMaxPayAmount() {
@@ -669,6 +690,9 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 providePayAmountInputViewModel()
                 provideButtonState()
             }
+        }
+        if chainAsset == receiveChainAsset?.chainAssetId {
+            receiveAssetBalance = balance
         }
     }
 }

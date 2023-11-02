@@ -15,6 +15,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
+    func didReceive(focus: TextFieldFocus?)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -22,7 +23,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func selectPayToken()
     func selectReceiveToken()
     func proceed()
-    func swap()
+    func flip(currentFocus: TextFieldFocus?)
     func updatePayAmount(_ amount: Decimal?)
     func updateReceiveAmount(_ amount: Decimal?)
     func showFeeActions()
