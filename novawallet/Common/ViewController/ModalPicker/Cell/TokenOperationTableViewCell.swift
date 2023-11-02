@@ -27,7 +27,7 @@ final class TokenOperationTableViewCell: UITableViewCell, ModalPickerCellProtoco
     func bind(model: Model) {
         titleLabel.text = model.content.title
         subtitleLabel.text = model.content.subtitle
-        iconImageView.image = model.content.icon
+        iconImageView.image = model.content.icon?.withRenderingMode(.alwaysTemplate)
 
         if model.isActive {
             titleLabel.textColor = R.color.colorTextPrimary()

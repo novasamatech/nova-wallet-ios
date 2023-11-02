@@ -523,7 +523,12 @@ extension ModalPickerFactory {
         let viewController: ModalPickerViewController<TokenOperationTableViewCell, TokenOperationTableViewCell.Model>
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
-        viewController.localizedTitle = .init { R.string.localizable.swapsSetupDepositTitle(token, preferredLanguages: $0.rLanguages) }
+        viewController.localizedTitle = .init {
+            R.string.localizable.swapsSetupDepositTitle(
+                token,
+                preferredLanguages: $0.rLanguages
+            )
+        }
 
         viewController.selectedIndex = NSNotFound
         viewController.delegate = delegate
