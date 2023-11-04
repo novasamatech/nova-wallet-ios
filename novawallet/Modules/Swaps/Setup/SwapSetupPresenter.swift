@@ -27,6 +27,14 @@ final class SwapSetupPresenter: PurchaseFlowManaging {
         receiveChainAsset.flatMap { balances[$0.chainAssetId] }
     }
 
+    var utilityAssetBalance: AssetBalance? {
+        guard let utilityAssetId = feeChainAsset?.chain.utilityChainAssetId() else {
+            return nil
+        }
+
+        return balances[utilityAssetId]
+    }
+
     private(set) var prices: [ChainAssetId: PriceData] = [:]
 
     var payAssetPriceData: PriceData? {
@@ -52,6 +60,26 @@ final class SwapSetupPresenter: PurchaseFlowManaging {
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
             provideDetailsViewModel(isAvailable: quoteArgs != nil)
+        }
+    }
+
+    private(set) var assetBalanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
+
+    var payAssetMinBalance: BigUInt? {
+        payChainAsset.flatMap { assetBalanceExistences[$0.chainAssetId]?.minBalance }
+    }
+
+    var receiveAssetMinBalance: BigUInt? {
+        receiveChainAsset.flatMap { assetBalanceExistences[$0.chainAssetId]?.minBalance }
+    }
+
+    var feeAssetMinBalance: BigUInt? {
+        feeChainAsset.flatMap { assetBalanceExistences[$0.chainAssetId]?.minBalance }
+    }
+
+    var utilityAssetMinBalance: BigUInt? {
+        feeChainAsset?.chain.utilityChainAsset().flatMap {
+            assetBalanceExistences[$0.chainAssetId]?.minBalance
         }
     }
 
@@ -719,6 +747,10 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
             handlePriceError(priceId: priceId)
         case let .assetBalance(_, chainAssetId, _):
             handleAssetBalanceError(chainAssetId: chainAssetId)
+        case let .assetBalanceExistense(_, chainAsset):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
+            }
         }
     }
 
@@ -834,6 +866,12 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                 provideButtonState()
             }
         }
+    }
+
+    func didReceiveAssetBalance(existense: AssetBalanceExistence, chainAssetId: ChainAssetId) {
+        logger.debug("Did receive existense for \(chainAssetId.stringValue): \(String(existense.minBalance))")
+
+        assetBalanceExistences[chainAssetId] = existense
     }
 
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId) {

@@ -33,6 +33,26 @@ final class CancellableCallStore {
     }
 }
 
+func execute<T>(
+    wrapper: CompoundOperationWrapper<T>,
+    inOperationQueue operationQueue: OperationQueue,
+    runningCallbackIn callbackQueue: DispatchQueue?,
+    callbackClosure: @escaping (Result<T, Error>) -> Void
+) {
+    wrapper.targetOperation.completionBlock = {
+        dispatchInQueueWhenPossible(callbackQueue) {
+            do {
+                let value = try wrapper.targetOperation.extractNoCancellableResultData()
+                callbackClosure(.success(value))
+            } catch {
+                callbackClosure(.failure(error))
+            }
+        }
+    }
+
+    operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+}
+
 func executeCancellable<T>(
     wrapper: CompoundOperationWrapper<T>,
     inOperationQueue operationQueue: OperationQueue,

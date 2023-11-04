@@ -6,6 +6,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
     let assetConversionAggregator: AssetConversionAggregationFactoryProtocol
     let assetConversionFeeService: AssetConversionFeeServiceProtocol
+    let chainRegistry: ChainRegistryProtocol
+    let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
@@ -22,6 +24,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     init(
         assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -30,6 +34,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     ) {
         self.assetConversionAggregator = assetConversionAggregator
         self.assetConversionFeeService = assetConversionFeeService
+        self.chainRegistry = chainRegistry
+        self.assetStorageFactory = assetStorageFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.currencyManager = currencyManager
@@ -39,6 +45,39 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     deinit {
         quoteCall.cancel()
+    }
+
+    private func provideAssetBalanceExistense(for chainAsset: ChainAsset) {
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let error = ChainRegistryError.runtimeMetadaUnavailable
+            basePresenter?.didReceive(baseError: .assetBalanceExistense(error, chainAsset))
+            return
+        }
+
+        let wrapper = assetStorageFactory.createAssetBalanceExistenceOperation(
+            chainId: chainAsset.chain.chainId,
+            asset: chainAsset.asset,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(existense):
+                self?.basePresenter?.didReceiveAssetBalance(
+                    existense: existense,
+                    chainAssetId: chainAsset.chainAssetId
+                )
+            case let .failure(error):
+                self?.basePresenter?.didReceive(
+                    baseError: .assetBalanceExistense(error, chainAsset)
+                )
+            }
+        }
     }
 
     func updateFeeModelBuilder(for chain: ChainModel) {
@@ -157,6 +196,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         updateFeeModelBuilder(for: chainAsset.chain)
 
+        provideAssetBalanceExistense(for: chainAsset)
+
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
@@ -169,6 +210,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         if let utilityAsset = chainAsset.chain.utilityChainAsset() {
             feeModelBuilder?.apply(feeAsset: utilityAsset)
         }
+
+        provideAssetBalanceExistense(for: chainAsset)
 
         guard let chainAccount = chainAccountResponse(for: chainAsset) else {
             basePresenter?.didReceive(payAccountId: nil)
@@ -183,6 +226,12 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func set(feeChainAsset chainAsset: ChainAsset) {
         updateFeeModelBuilder(for: chainAsset.chain)
         feeModelBuilder?.apply(feeAsset: chainAsset)
+
+        provideAssetBalanceExistense(for: chainAsset)
+
+        if let utilityAsset = chainAsset.chain.utilityChainAsset(), !chainAsset.isUtilityAsset {
+            provideAssetBalanceExistense(for: utilityAsset)
+        }
 
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
@@ -204,6 +253,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func remakePriceSubscription(for chainAsset: ChainAsset) {
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
+    }
+
+    func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset) {
+        provideAssetBalanceExistense(for: chainAsset)
     }
 }
 

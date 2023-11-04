@@ -7,13 +7,12 @@ extension SwapSetupPresenter {
         payChainAsset: ChainAsset,
         feeChainAsset: ChainAsset
     ) -> [DataValidating] {
-        let feeDecimal = fee.map { Decimal.fromSubstrateAmount(
-            $0.totalFee.targetAmount,
-            precision: Int16(feeChainAsset.asset.precision)
-        ) } ?? nil
-
         let validators: [DataValidating] = [
-            dataValidatingFactory.has(fee: feeDecimal, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.hasInPlank(
+                fee: fee?.totalFee.targetAmount,
+                locale: selectedLocale,
+                precision: feeChainAsset.assetDisplayInfo.assetPrecision
+            ) { [weak self] in
                 self?.estimateFee()
             },
             dataValidatingFactory.canSpendAmountInPlank(
@@ -27,6 +26,12 @@ extension SwapSetupPresenter {
                 fee: payChainAsset.chainAssetId == feeChainAsset.chainAssetId ? fee?.totalFee.targetAmount : 0,
                 spendingAmount: spendingAmount,
                 asset: feeChainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.notViolatingMinBalancePaying(
+                fee: feeChainAsset.isUtilityAsset ? fee?.totalFee.targetAmount : 0,
+                total: utilityAssetBalance?.totalInPlank,
+                minBalance: utilityAssetMinBalance,
                 locale: selectedLocale
             ),
             dataValidatingFactory.has(

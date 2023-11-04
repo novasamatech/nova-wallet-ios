@@ -99,11 +99,18 @@ struct SwapConfirmViewFactory {
             accountResponse: selectedAccount.chainAccount
         )
 
+        let assetStorageFactory = AssetStorageInfoOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         let interactor = SwapConfirmInteractor(
             initState: initState,
             assetConversionFeeService: feeService,
             assetConversionAggregator: assetConversionAggregator,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chain),
+            chainRegistry: chainRegistry,
+            assetStorageFactory: assetStorageFactory,
             runtimeService: runtimeService,
             extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

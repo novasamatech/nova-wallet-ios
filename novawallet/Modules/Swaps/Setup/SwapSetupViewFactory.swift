@@ -81,11 +81,17 @@ struct SwapSetupViewFactory {
             operationQueue: operationQueue
         )
 
+        let assetStorageFactory = AssetStorageInfoOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         let interactor = SwapSetupInteractor(
             xcmTransfersSyncService: xcmTransfersSyncService,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetConversionAggregatorFactory: assetConversionAggregator,
             assetConversionFeeService: feeService,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             currencyManager: currencyManager,

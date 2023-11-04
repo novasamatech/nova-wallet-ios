@@ -19,6 +19,7 @@ final class SwapConfirmPresenter {
     private var payAccountId: AccountId?
     private var chainAccountResponse: MetaChainAccountResponse
     private var balances: [ChainAssetId: AssetBalance?] = [:]
+    private var assetBalanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
 
     init(
         interactor: SwapConfirmInteractorInputProtocol,
@@ -402,6 +403,10 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         balances[chainAsset] = balance
     }
 
+    func didReceiveAssetBalance(existense: AssetBalanceExistence, chainAssetId: ChainAssetId) {
+        assetBalanceExistences[chainAssetId] = existense
+    }
+
     func didReceive(baseError: SwapBaseError) {
         switch baseError {
         case let .quote(_, args):
@@ -425,6 +430,10 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         case .assetBalance:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.setup()
+            }
+        case let .assetBalanceExistense(_, chainAsset):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
             }
         }
     }

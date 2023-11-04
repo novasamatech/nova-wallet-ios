@@ -4,16 +4,16 @@ import BigInt
 
 final class SwapSetupInteractor: SwapBaseInteractor {
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
-    let chainRegistry: ChainRegistryProtocol
 
     private var xcmTransfers: XcmTransfers?
     private var canPayFeeInAssetCall = CancellableCallStore()
 
     init(
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
-        chainRegistry: ChainRegistryProtocol,
         assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -21,11 +21,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.xcmTransfersSyncService = xcmTransfersSyncService
-        self.chainRegistry = chainRegistry
 
         super.init(
             assetConversionAggregator: assetConversionAggregatorFactory,
             assetConversionFeeService: assetConversionFeeService,
+            chainRegistry: chainRegistry,
+            assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,

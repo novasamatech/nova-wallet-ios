@@ -5,6 +5,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
     func calculateQuote(for args: AssetConversion.QuoteArgs)
     func calculateFee(args: AssetConversion.CallArgs)
     func remakePriceSubscription(for chainAsset: ChainAsset)
+    func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
 }
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {
@@ -14,6 +15,7 @@ protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
     func didReceive(payAccountId: AccountId?)
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
+    func didReceiveAssetBalance(existense: AssetBalanceExistence, chainAssetId: ChainAssetId)
 }
 
 enum SwapBaseError: Error {
@@ -21,4 +23,5 @@ enum SwapBaseError: Error {
     case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
+    case assetBalanceExistense(Error, ChainAsset)
 }

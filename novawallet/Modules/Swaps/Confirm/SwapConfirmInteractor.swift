@@ -17,6 +17,8 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
         assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         runtimeService: RuntimeProviderProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -35,6 +37,8 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         super.init(
             assetConversionAggregator: assetConversionAggregator,
             assetConversionFeeService: assetConversionFeeService,
+            chainRegistry: chainRegistry,
+            assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,

@@ -10,11 +10,6 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale,
         onError: (() -> Void)?
     ) -> DataValidating
-    func canPayFeeSpendingAmount(
-        params: SwapFeeParams,
-        swapAmount: Decimal?,
-        locale: Locale
-    ) -> DataValidating
 }
 
 final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
@@ -54,76 +49,6 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                 return false
             }
             return quote.assetIn == payChainAssetId && quote.assetOut == receiveChainAssetId
-        })
-    }
-
-    func canPayFeeSpendingAmount(
-        params: SwapFeeParams,
-        swapAmount: Decimal?,
-        locale: Locale
-    ) -> DataValidating {
-        let preparedValues = params.prepare(swapAmount: swapAmount)
-
-        return WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let self = self, let view = self.view else {
-                return
-            }
-            let availableToPayString = self.balanceViewModelFactoryFacade.amountFromValue(
-                targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                value: preparedValues.availableToPay
-            ).value(for: locale)
-            let feeString = self.balanceViewModelFactoryFacade.amountFromValue(
-                targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                value: preparedValues.feeDecimal
-            ).value(for: locale)
-            let errorParams: SwapMaxErrorParams
-
-            if preparedValues.toBuyED != 0 {
-                let diffString = self.balanceViewModelFactoryFacade.amountFromValue(
-                    targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                    value: preparedValues.diff
-                ).value(for: locale)
-                let edDepositInFeeTokenString = self.balanceViewModelFactoryFacade.amountFromValue(
-                    targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                    value: preparedValues.edDepositInFeeTokenDecimal
-                ).value(for: locale)
-                let edString = self.balanceViewModelFactoryFacade.amountFromValue(
-                    targetAssetInfo: params.edChainAsset.assetDisplayInfo,
-                    value: preparedValues.edDecimal
-                ).value(for: locale)
-                let edToken = params.edChainAsset.asset.symbol
-                errorParams = .init(
-                    maxSwap: availableToPayString,
-                    fee: feeString,
-                    existentialDeposit: SwapMaxErrorParams.ExistensialDepositErrorParams(
-                        fee: diffString,
-                        value: edString,
-                        token: edToken
-                    )
-                )
-            } else {
-                errorParams = .init(
-                    maxSwap: availableToPayString,
-                    fee: feeString,
-                    existentialDeposit: nil
-                )
-            }
-
-            let action = { [preparedValues] in
-                if preparedValues.availableToPay > 0 {
-                    params.amountUpdateClosure(preparedValues.availableToPay)
-                    delegate.didCompleteWarningHandling()
-                }
-            }
-
-            self.presentable.presentSwapAll(
-                from: view,
-                errorParams: errorParams,
-                action: action,
-                locale: locale
-            )
-        }, preservesCondition: {
-            preparedValues.feeTokenBalanceDecimal >= preparedValues.swapAmountInFeeToken + preparedValues.feeDecimal + preparedValues.toBuyED
         })
     }
 }
