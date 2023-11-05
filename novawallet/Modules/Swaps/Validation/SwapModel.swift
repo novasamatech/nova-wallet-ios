@@ -23,12 +23,12 @@ struct SwapModel {
         case feeInNativeAsset(InsufficientDueNativeFee)
         case feeInPayAsset(InsufficientDuePayAssetFee)
     }
-    
+
     struct DustAfterSwap {
         let dust: Decimal
         let minBalance: Decimal
     }
-    
+
     struct DustAfterSwapAndFee {
         let dust: Decimal
         let minBalance: Decimal
@@ -36,19 +36,23 @@ struct SwapModel {
         let minBalanceInPayAsset: Decimal
         let minBalanceInNativeAsset: Decimal
     }
-    
+
     enum DustReason {
         case swap(DustAfterSwap)
         case swapAndFee(DustAfterSwapAndFee)
     }
-    
+
     struct CannotReceiveDueExistense {
         let minBalance: Decimal
     }
-    
+
+    struct CannotReceiveDueNoProviders {
+        let minBalance: Decimal
+    }
+
     enum CannotReceiveReason {
         case existense(CannotReceiveDueExistense)
-        case noProvider
+        case noProvider(CannotReceiveDueNoProviders)
     }
 
     let payChainAsset: ChainAsset
@@ -66,6 +70,10 @@ struct SwapModel {
     let feeModel: AssetConversion.FeeModel?
     let quote: AssetConversion.Quote?
     let accountInfo: AccountInfo?
+
+    var utilityChainAsset: ChainAsset? {
+        feeChainAsset.chain.utilityChainAsset()
+    }
 
     var spendingAmountInPlank: BigUInt? {
         spendingAmount?.toSubstrateAmount(precision: payChainAsset.assetDisplayInfo.assetPrecision)
@@ -110,7 +118,10 @@ struct SwapModel {
         } else {
             let available = balance > fee ? balance - fee : 0
 
-            if let addition = feeModel?.networkFeeAddition, let utilityAsset = feeChainAsset.chain.utilityAsset() {
+            if
+                isFeeInPayToken,
+                let addition = feeModel?.networkFeeAddition,
+                let utilityAsset = feeChainAsset.chain.utilityAsset() {
                 return .feeInPayAsset(
                     .init(
                         available: available.decimal(precision: payChainAsset.asset.precision),
@@ -141,15 +152,15 @@ struct SwapModel {
 
         return totalBalance >= minBalance + fee
     }
-    
+
     var willKillAccount: Bool {
         guard payChainAsset.isUtilityAsset else {
             return false
         }
-        
+
         let balance = payAssetBalanceAfterSwap
         let minBalance = utilityAssetExistense?.minBalance ?? 0
-        
+
         return balance < minBalance
     }
 
@@ -157,10 +168,10 @@ struct SwapModel {
         guard willKillAccount else {
             return false
         }
-        
+
         return (accountInfo?.consumers ?? 0) > 0
     }
-    
+
     func checkCanReceive() -> CannotReceiveReason? {
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
         let amountAfterSwap = (receiveAssetBalance?.totalInPlank ?? 0) + (quote?.amountOut ?? 0)
@@ -172,8 +183,12 @@ struct SwapModel {
             return .existense(
                 .init(minBalance: minBalance.decimal(precision: receiveChainAsset.asset.precision))
             )
-        } else if !isSelfSufficient && willKillAccount {
-            return .noProvider
+        } else if !isSelfSufficient, willKillAccount {
+            let utilityMinBalance = utilityAssetExistense?.minBalance ?? 0
+            let precision = (utilityChainAsset ?? feeChainAsset).asset.precision
+            return .noProvider(
+                .init(minBalance: utilityMinBalance.decimal(precision: precision))
+            )
         } else {
             return nil
         }
@@ -183,14 +198,14 @@ struct SwapModel {
         let balance = payAssetBalanceAfterSwap
         let minBalance = payAssetExistense?.minBalance ?? 0
 
-        guard balance == 0 || balance >= minBalance else {
+        guard balance > 0, balance < minBalance else {
             return nil
         }
-        
+
         let remaning = minBalance - balance
-        
+
         if
-            !isFeeInPayToken, !payChainAsset.isUtilityAsset,
+            isFeeInPayToken, !payChainAsset.isUtilityAsset,
             let networkFee = feeModel?.networkFee,
             let feeAdditions = feeModel?.networkFeeAddition,
             let utilityAsset = feeChainAsset.chain.utilityAsset() {

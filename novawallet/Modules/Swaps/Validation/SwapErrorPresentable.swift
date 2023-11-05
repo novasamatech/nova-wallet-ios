@@ -2,10 +2,32 @@ import Foundation
 
 protocol SwapErrorPresentable: BaseErrorPresentable {
     func presentNotEnoughLiquidity(from view: ControllerBackedProtocol, locale: Locale?)
-    func presentSwapAll(
+
+    func presentInsufficientBalance(
         from view: ControllerBackedProtocol?,
-        errorParams: SwapMaxErrorParams,
+        reason: SwapDisplayError.InsufficientBalance,
         action: @escaping () -> Void,
+        locale: Locale
+    )
+
+    func presentDustRemains(
+        from view: ControllerBackedProtocol?,
+        reason: SwapDisplayError.DustRemains,
+        swapMaxAction: @escaping () -> Void,
+        proceedAction: @escaping () -> Void,
+        locale: Locale
+    )
+
+    func presentNoProviderForNonSufficientToken(
+        from view: ControllerBackedProtocol,
+        utilityMinBalance: String,
+        token: String,
+        locale: Locale
+    )
+
+    func presentMinBalanceViolatedToReceive(
+        from view: ControllerBackedProtocol,
+        minBalance: String,
         locale: Locale
     )
 }
@@ -20,28 +42,61 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         present(message: nil, title: title, closeAction: closeAction, from: view)
     }
 
-    func presentSwapAll(
+    func presentNoProviderForNonSufficientToken(
+        from view: ControllerBackedProtocol,
+        utilityMinBalance: String,
+        token: String,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.commonReceiveNotSufficientNativeAssetError(
+            utilityMinBalance,
+            token,
+            preferredLanguages: locale.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentMinBalanceViolatedToReceive(
+        from view: ControllerBackedProtocol,
+        minBalance: String,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.commonReceiveAtLeastEdError(
+            minBalance,
+            preferredLanguages: locale.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentInsufficientBalance(
         from view: ControllerBackedProtocol?,
-        errorParams: SwapMaxErrorParams,
+        reason: SwapDisplayError.InsufficientBalance,
         action: @escaping () -> Void,
         locale: Locale
     ) {
         let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale.rLanguages)
         let message: String
 
-        if let edError = errorParams.existentialDeposit {
-            message = R.string.localizable.swapsSetupErrorInsufficientBalanceEdMessage(
-                errorParams.maxSwap,
-                errorParams.fee,
-                edError.fee,
-                edError.value,
-                edError.token,
+        switch reason {
+        case let .dueFeePayAsset(value):
+            message = R.string.localizable.swapsSetupErrorInsufficientBalanceFeeSwapMessage(
+                value.available,
+                value.fee,
+                value.minBalanceInPayAsset,
+                value.minBalanceInUtilityAsset,
+                value.tokenSymbol,
                 preferredLanguages: locale.rLanguages
             )
-        } else {
-            message = R.string.localizable.swapsSetupErrorInsufficientBalanceMessage(
-                errorParams.maxSwap,
-                errorParams.fee,
+        case let .dueFeeNativeAsset(value):
+            message = R.string.localizable.swapsSetupErrorInsufficientBalanceFeeNativeMessage(
+                value.available,
+                value.fee,
                 preferredLanguages: locale.rLanguages
             )
         }
@@ -51,9 +106,7 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         )
 
         let swapAllAction = AlertPresentableAction(
-            title: R.string.localizable.swapsSetupErrorInsufficientBalanceAction(
-                preferredLanguages: locale.rLanguages
-            ),
+            title: R.string.localizable.commonSwapMax(preferredLanguages: locale.rLanguages),
             handler: action
         )
 
@@ -61,6 +114,55 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
             title: title,
             message: message,
             actions: [cancelAction, swapAllAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentDustRemains(
+        from view: ControllerBackedProtocol?,
+        reason: SwapDisplayError.DustRemains,
+        swapMaxAction: @escaping () -> Void,
+        proceedAction: @escaping () -> Void,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.commonDustRemainsTitle(preferredLanguages: locale.rLanguages)
+        let message: String
+
+        switch reason {
+        case let .dueFeeSwap(value):
+            message = R.string.localizable.swapsDustRemainsFeePayAssetMessage(
+                value.minBalanceOfPayAsset,
+                value.fee,
+                value.minBalanceInPayAsset,
+                value.minBalanceInUtilityAsset,
+                value.utilitySymbol,
+                value.remaining,
+                preferredLanguages: locale.rLanguages
+            )
+        case let .dueNativeSwap(value):
+            message = R.string.localizable.swapsDustRemainsFeeNativeAssetMessage(
+                value.minBalance,
+                value.remaining,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        let proceedAction = AlertPresentableAction(
+            title: R.string.localizable.commonProceed(preferredLanguages: locale.rLanguages),
+            handler: proceedAction
+        )
+
+        let swapAllAction = AlertPresentableAction(
+            title: R.string.localizable.commonSwapMax(preferredLanguages: locale.rLanguages),
+            handler: swapMaxAction
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [proceedAction, swapAllAction],
             closeAction: nil
         )
 
