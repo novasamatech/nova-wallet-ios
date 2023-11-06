@@ -77,19 +77,14 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
 
     func rateViewModel(from params: RateParams) -> String {
         guard
-            let amountOutDecimal = Decimal.fromSubstrateAmount(
-                params.amountOut,
-                precision: params.assetDisplayInfoOut.assetPrecision
-            ),
-            let amountInDecimal = Decimal.fromSubstrateAmount(
-                params.amountIn,
-                precision: params.assetDisplayInfoIn.assetPrecision
-            ),
-            amountInDecimal != 0 else {
+            let rate = Decimal.rateFromSubstrate(
+                amount1: params.amountIn,
+                amount2: params.amountOut,
+                precision1: params.assetDisplayInfoIn.assetPrecision,
+                precision2: params.assetDisplayInfoOut.assetPrecision
+            ) else {
             return ""
         }
-
-        let difference = amountOutDecimal / amountInDecimal
 
         let amountIn = balanceViewModelFactoryFacade.amountFromValue(
             targetAssetInfo: params.assetDisplayInfoIn,
@@ -97,10 +92,10 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         ).value(for: locale)
         let amountOut = balanceViewModelFactoryFacade.amountFromValue(
             targetAssetInfo: params.assetDisplayInfoOut,
-            value: difference
+            value: rate
         ).value(for: locale)
 
-        return "\(amountIn) ≈ \(amountOut)"
+        return amountIn.estimatedEqual(to: amountOut)
     }
 
     func slippageViewModel(slippage: BigRational) -> String {

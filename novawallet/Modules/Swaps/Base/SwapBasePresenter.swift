@@ -79,7 +79,9 @@ class SwapBasePresenter {
         guard
             let payChainAsset = getPayChainAsset(),
             let receiveChainAsset = getReceiveChainAsset(),
-            let feeChainAsset = getFeeChainAsset() else {
+            let feeChainAsset = getFeeChainAsset(),
+            let quoteArgs = getQuoteArgs(),
+            let slippage = getSlippage() else {
             return nil
         }
 
@@ -97,7 +99,9 @@ class SwapBasePresenter {
             feeAssetExistense: feeAssetBalanceExistense,
             utilityAssetExistense: utilityAssetBalanceExistense,
             feeModel: fee,
+            quoteArgs: quoteArgs,
             quote: quote,
+            slippage: slippage,
             accountInfo: accountInfo
         )
     }
@@ -115,6 +119,14 @@ class SwapBasePresenter {
     }
 
     func getInputAmount() -> Decimal? {
+        fatalError("Must be implemented by parent class")
+    }
+
+    func getQuoteArgs() -> AssetConversion.QuoteArgs? {
+        fatalError("Must be implemented by parent class")
+    }
+
+    func getSlippage() -> BigRational? {
         fatalError("Must be implemented by parent class")
     }
 
@@ -221,7 +233,11 @@ class SwapBasePresenter {
         }
     }
 
-    func getBaseValidations(for swapModel: SwapModel, locale: Locale) -> [DataValidating] {
+    func getBaseValidations(
+        for swapModel: SwapModel,
+        interactor: SwapBaseInteractorInputProtocol,
+        locale: Locale
+    ) -> [DataValidating] {
         [
             dataValidatingFactory.hasInPlank(
                 fee: swapModel.feeModel?.totalFee.targetAmount,
@@ -248,6 +264,16 @@ class SwapBasePresenter {
                 params: swapModel,
                 swapMaxAction: { [weak self] in
                     self?.applySwapMax()
+                },
+                locale: locale
+            ),
+            dataValidatingFactory.passesRealtimeQuoteValidation(
+                params: swapModel,
+                remoteValidatingClosure: { [weak self] args, completion in
+                    interactor.requestValidatingQuote(for: args, completion: completion)
+                },
+                onQuoteUpdate: { [weak self] quote in
+                    self?.quote = quote
                 },
                 locale: locale
             )

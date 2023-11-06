@@ -8,6 +8,10 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
     func retryAssetBalanceSubscription(for chainAsset: ChainAsset)
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
     func retryAccountInfoSubscription()
+    func requestValidatingQuote(
+        for args: AssetConversion.QuoteArgs,
+        completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
+    )
 }
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {

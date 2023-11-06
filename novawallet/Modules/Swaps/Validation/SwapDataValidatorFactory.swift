@@ -17,12 +17,11 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale
     ) -> DataValidating
 
-    func has(
-        quote: AssetConversion.Quote?,
-        payChainAssetId: ChainAssetId?,
-        receiveChainAssetId: ChainAssetId?,
-        locale: Locale,
-        onError: (() -> Void)?
+    func passesRealtimeQuoteValidation(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping ((AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void),
+        onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
+        locale: Locale
     ) -> DataValidating
 }
 
@@ -251,6 +250,82 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
         }, preservesCondition: {
             dustReason == nil
         })
+    }
+
+    // swiftlint:disable:next function_body_length
+    func passesRealtimeQuoteValidation(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping ((AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void),
+        onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
+        locale: Locale
+    ) -> DataValidating {
+        var reason: SwapModel.InvalidQuoteReason?
+
+        return AsyncWarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                guard
+                    let reason = reason,
+                    let view = self?.view,
+                    let viewModelFactory = self?.balanceViewModelFactoryFacade else {
+                    return
+                }
+
+                switch reason {
+                case let .rateChange(rateUpdate):
+                    onQuoteUpdate(rateUpdate.newQuote)
+
+                    let oldRate = Decimal.rateFromSubstrate(
+                        amount1: rateUpdate.oldQuote.amountIn,
+                        amount2: rateUpdate.oldQuote.amountOut,
+                        precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
+                        precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
+                    ) ?? 0
+
+                    let oldRateString = viewModelFactory.rateFromValue(
+                        mainSymbol: params.payChainAsset.asset.symbol,
+                        targetAssetInfo: params.receiveChainAsset.assetDisplayInfo,
+                        value: oldRate
+                    ).value(for: locale)
+
+                    let newRate = Decimal.rateFromSubstrate(
+                        amount1: rateUpdate.newQuote.amountIn,
+                        amount2: rateUpdate.newQuote.amountOut,
+                        precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
+                        precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
+                    ) ?? 0
+
+                    let newRateString = viewModelFactory.rateFromValue(
+                        mainSymbol: params.payChainAsset.asset.symbol,
+                        targetAssetInfo: params.receiveChainAsset.assetDisplayInfo,
+                        value: newRate
+                    ).value(for: locale)
+
+                    self?.presentable.presentRateUpdated(
+                        from: view,
+                        oldRate: oldRateString,
+                        newRate: newRateString,
+                        onConfirm: {
+                            delegate.didCompleteAsyncHandling()
+                        },
+                        locale: locale
+                    )
+
+                case .noLiqudity:
+                    self?.presentable.presentNotEnoughLiquidity(
+                        from: view,
+                        locale: locale
+                    )
+                }
+            },
+            preservesCondition: { preservationCallback in
+                params.asyncCheckQuoteValidity(remoteValidatingClosure) { result in
+                    let preserves = result == nil
+                    reason = result
+
+                    preservationCallback(preserves)
+                }
+            }
+        )
     }
 
     func has(

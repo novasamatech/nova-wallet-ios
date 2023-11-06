@@ -199,18 +199,6 @@ final class SwapConfirmPresenter {
                 spendingAmount: spendingAmount,
                 asset: initState.feeChainAsset.assetDisplayInfo,
                 locale: selectedLocale
-            ),
-            dataValidatingFactory.has(
-                quote: quote,
-                payChainAssetId: initState.chainAssetIn.chainAssetId,
-                receiveChainAssetId: initState.chainAssetOut.chainAssetId,
-                locale: selectedLocale,
-                onError: { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    self.interactor.calculateQuote(for: self.initState.quoteArgs)
-                }
             )
         ]
 
@@ -260,10 +248,10 @@ final class SwapConfirmPresenter {
         let oldRate = viewModelFactory.rateViewModel(from: oldRateParams)
         let newRate = viewModelFactory.rateViewModel(from: newRateParams)
 
-        let title = R.string.localizable.swapsSetupErrorRateWasUpdatedTitle(
+        let title = R.string.localizable.swapsErrorRateWasUpdatedTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
-        let message = R.string.localizable.swapsSetupErrorRateWasUpdatedMessage(
+        let message = R.string.localizable.swapsErrorRateWasUpdatedMessage(
             oldRate,
             newRate,
             preferredLanguages: selectedLocale.rLanguages

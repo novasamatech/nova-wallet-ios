@@ -61,6 +61,18 @@ struct SwapModel {
         case noProvider(CannotReceiveDueNoProviders)
     }
 
+    struct InvalidQuoteDueRateChange {
+        let oldQuote: AssetConversion.Quote
+        let newQuote: AssetConversion.Quote
+    }
+
+    enum InvalidQuoteReason {
+        case rateChange(InvalidQuoteDueRateChange)
+        case noLiqudity
+    }
+
+    typealias QuoteValidateClosure = (Result<AssetConversion.Quote, Error>) -> Void
+
     let payChainAsset: ChainAsset
     let receiveChainAsset: ChainAsset
     let feeChainAsset: ChainAsset
@@ -74,7 +86,9 @@ struct SwapModel {
     let feeAssetExistense: AssetBalanceExistence?
     let utilityAssetExistense: AssetBalanceExistence?
     let feeModel: AssetConversion.FeeModel?
+    let quoteArgs: AssetConversion.QuoteArgs
     let quote: AssetConversion.Quote?
+    let slippage: BigRational
     let accountInfo: AccountInfo?
 
     var utilityChainAsset: ChainAsset? {
@@ -249,6 +263,33 @@ struct SwapModel {
                     minBalance: minBalance.decimal(precision: payChainAsset.asset.precision)
                 )
             )
+        }
+    }
+
+    func asyncCheckQuoteValidity(
+        _ newQuoteClosure: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
+        completion: @escaping (InvalidQuoteReason?) -> Void
+    ) {
+        guard let currenQuote = quote else {
+            completion(.noLiqudity)
+            return
+        }
+
+        newQuoteClosure(quoteArgs) { result in
+            switch result {
+            case let .success(newQuote):
+                if !currenQuote.matches(
+                    other: newQuote,
+                    slippage: slippage,
+                    direction: quoteArgs.direction
+                ) {
+                    completion(.rateChange(.init(oldQuote: currenQuote, newQuote: newQuote)))
+                } else {
+                    completion(nil)
+                }
+            case .failure:
+                completion(.noLiqudity)
+            }
         }
     }
 }

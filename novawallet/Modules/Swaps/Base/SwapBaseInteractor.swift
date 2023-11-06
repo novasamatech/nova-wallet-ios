@@ -291,6 +291,25 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         updateAccountInfoProvider(for: chain)
     }
 
+    func requestValidatingQuote(
+        for args: AssetConversion.QuoteArgs,
+        completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
+    ) {
+        guard let chain = currentChain else {
+            completion(.failure(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
+    }
+
     // MARK: Overridable General Subscription Handlers
 
     func handleBlockNumber(

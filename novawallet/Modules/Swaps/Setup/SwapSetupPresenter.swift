@@ -363,6 +363,14 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         feeChainAsset
     }
 
+    override func getQuoteArgs() -> AssetConversion.QuoteArgs? {
+        quoteArgs
+    }
+
+    override func getSlippage() -> BigRational? {
+        slippage
+    }
+
     override func shouldHandleQuote(for args: AssetConversion.QuoteArgs?) -> Bool {
         quoteArgs == args
     }
@@ -681,11 +689,11 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             return
         }
 
-        let validators = getBaseValidations(for: swapModel, locale: selectedLocale)
+        let validators = getBaseValidations(for: swapModel, interactor: interactor, locale: selectedLocale)
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let slippage = self?.slippage,
-                  let quote = swapModel.quote,
+                  let quote = self?.quote,
                   let quoteArgs = self?.quoteArgs else {
                 return
             }
