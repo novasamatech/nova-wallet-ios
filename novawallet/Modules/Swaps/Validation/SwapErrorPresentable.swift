@@ -99,6 +99,12 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
                 value.fee,
                 preferredLanguages: locale.rLanguages
             )
+        case let .dueConsumers(value):
+            message = R.string.localizable.swapsViolatingConsumersMessage(
+                value.minBalance,
+                value.fee,
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         let cancelAction = AlertPresentableAction(

@@ -108,6 +108,26 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     action: swapMaxAction,
                     locale: locale
                 )
+            case let .violatingConsumers(model):
+                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
+
+                let params = SwapDisplayError.InsufficientBalanceDueConsumers(
+                    minBalance: viewModelFactory.amountFromValue(
+                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        value: model.minBalance
+                    ).value(for: locale),
+                    fee: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        value: model.fee
+                    ).value(for: locale)
+                )
+
+                self?.presentable.presentInsufficientBalance(
+                    from: view,
+                    reason: .dueConsumers(params),
+                    action: swapMaxAction,
+                    locale: locale
+                )
             }
 
             self?.presentable.presentNotEnoughLiquidity(from: view, locale: locale)

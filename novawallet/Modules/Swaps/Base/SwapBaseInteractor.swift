@@ -213,14 +213,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         provideAssetBalanceExistense(for: chainAsset)
 
-        guard let chainAccount = chainAccountResponse(for: chainAsset) else {
-            basePresenter?.didReceive(payAccountId: nil)
-            return
-        }
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
-
-        basePresenter?.didReceive(payAccountId: chainAccount.accountId)
     }
 
     func set(feeChainAsset chainAsset: ChainAsset) {
@@ -250,8 +244,14 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     ) {
         fee(args: args)
     }
+    
+    func retryAssetBalanceSubscription(for chainAsset: ChainAsset) {
+        clear(streamableProvider: &assetBalanceProviders[chainAsset.chainAssetId])
+        assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
+    }
 
     func remakePriceSubscription(for chainAsset: ChainAsset) {
+        clear(streamableProvider: &priceProviders[chainAsset.chainAssetId])
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
     }
 

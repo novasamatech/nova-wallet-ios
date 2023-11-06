@@ -32,8 +32,7 @@ protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceive(error: SwapConfirmError)
 }
 
-protocol SwapConfirmWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, AddressOptionsPresentable,
-    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable {
+protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptionsPresentable, SwapErrorPresentable, ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable {
     func complete(on view: ControllerBackedProtocol?, locale: Locale)
 }
 

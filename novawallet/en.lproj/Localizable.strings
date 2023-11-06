@@ -1421,3 +1421,4 @@
 "swaps.dust.remains.fee.pay.asset.message" = "You should keep at least %@ after paying %@ network fee and converting %@ to %@ to meet %@ minimum balance.\n\nDo you want to fully swap by adding remaining %@ as well?";
 "common.receive.at.least.ed.error" = "You can’t receive less than %@";
 "common.receive.not.sufficient.native.asset.error" = "You must keep at least %@ to receive %@ token";
+"swaps.violating.consumers.message" = "You should keep at least %@ after paying %@ network fee as you are holding non sufficient tokens.";
