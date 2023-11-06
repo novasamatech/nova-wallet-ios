@@ -370,7 +370,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
 
     func didReceive(
         fee: AssetConversion.FeeModel?,
-        transactionId _: TransactionFeeId,
+        transactionFeeId _: TransactionFeeId,
         feeChainAssetId _: ChainAssetId?
     ) {
         self.fee = fee
@@ -394,12 +394,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         }
     }
 
-    func didReceive(payAccountId: AccountId?) {
-        self.payAccountId = payAccountId
-        estimateFee()
-    }
-
-    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId _: AccountId) {
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId) {
         balances[chainAsset] = balance
     }
 
@@ -435,8 +430,12 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
             }
+        case .accountInfo:
+            break
         }
     }
+
+    func didReceive(accountInfo _: AccountInfo?, chainId _: ChainModel.Id) {}
 
     func didReceive(error: SwapConfirmError) {
         view?.didReceiveStopLoading()

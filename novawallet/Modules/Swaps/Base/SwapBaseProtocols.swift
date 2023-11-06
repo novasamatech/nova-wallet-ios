@@ -7,18 +7,21 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
     func remakePriceSubscription(for chainAsset: ChainAsset)
     func retryAssetBalanceSubscription(for chainAsset: ChainAsset)
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
+    func retryAccountInfoSubscription()
 }
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs)
-    func didReceive(fee: AssetConversion.FeeModel?, transactionId: TransactionFeeId, feeChainAssetId: ChainAssetId?)
+    func didReceive(fee: AssetConversion.FeeModel?, transactionFeeId: TransactionFeeId, feeChainAssetId: ChainAssetId?)
     func didReceive(baseError: SwapBaseError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
-    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId: AccountId)
+    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId)
     func didReceiveAssetBalance(existense: AssetBalanceExistence, chainAssetId: ChainAssetId)
+    func didReceive(accountInfo: AccountInfo?, chainId: ChainModel.Id)
 }
 
-protocol SwapBaseWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable, ErrorPresentable {}
+protocol SwapBaseWireframeProtocol: AnyObject, SwapErrorPresentable, AlertPresentable,
+    CommonRetryable, ErrorPresentable {}
 
 enum SwapBaseError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
@@ -26,4 +29,5 @@ enum SwapBaseError: Error {
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
     case assetBalanceExistense(Error, ChainAsset)
+    case accountInfo(Error)
 }

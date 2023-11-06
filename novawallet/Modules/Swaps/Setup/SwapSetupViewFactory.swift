@@ -16,11 +16,22 @@ struct SwapSetupViewFactory {
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager))
 
-        guard let interactor = createInteractor() else {
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            storageFacade: SubstrateDataStorageFacade.shared,
+            operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue),
+            logger: Logger.shared
+        )
+
+        guard let interactor = createInteractor(with: generalLocalSubscriptionFactory) else {
             return nil
         }
 
-        let wireframe = SwapSetupWireframe(assetListObservable: assetListObservable)
+        let wireframe = SwapSetupWireframe(
+            assetListObservable: assetListObservable,
+            state: generalLocalSubscriptionFactory
+        )
+
         let viewModelFactory = SwapsSetupViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             networkViewModelFactory: NetworkViewModelFactory(),
@@ -39,7 +50,7 @@ struct SwapSetupViewFactory {
             viewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
-            selectedAccount: selectedWallet,
+            selectedWallet: selectedWallet,
             purchaseProvider: PurchaseAggregator.defaultAggregator(),
             logger: Logger.shared
         )
@@ -56,7 +67,9 @@ struct SwapSetupViewFactory {
         return view
     }
 
-    private static func createInteractor() -> SwapSetupInteractor? {
+    private static func createInteractor(
+        with generalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    ) -> SwapSetupInteractor? {
         guard let currencyManager = CurrencyManager.shared,
               let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -94,6 +107,8 @@ struct SwapSetupViewFactory {
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            generalLocalSubscriptionFactory: generalSubscriptionFactory,
+            storageRepository: SubstrateRepositoryFactory().createChainStorageItemRepository(),
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue

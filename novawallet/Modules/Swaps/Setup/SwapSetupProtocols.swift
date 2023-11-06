@@ -41,11 +41,14 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
     func setupXcm()
+    func retryRemoteSubscription()
+    func retryBlockNumberSubscription()
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?, chainId: ChainModel.Id)
     func didReceive(setupError: SwapSetupError)
 }
 
@@ -102,6 +105,8 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol, ShortTextInfoPre
 enum SwapSetupError: Error {
     case xcm(Error)
     case payAssetSetFailed(Error)
+    case remoteSubscription(Error)
+    case blockNumber(Error)
 }
 
 enum SwapSetupViewError {

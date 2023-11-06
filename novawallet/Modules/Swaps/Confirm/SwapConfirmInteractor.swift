@@ -23,6 +23,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue,
@@ -41,6 +42,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            generalSubscriptionFactory: generalLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue

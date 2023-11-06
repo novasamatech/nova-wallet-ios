@@ -12,6 +12,7 @@ typealias DecodedActiveEra = ChainStorageDecodedItem<ActiveEraInfo>
 typealias DecodedEraIndex = ChainStorageDecodedItem<StringScaleMapper<EraIndex>>
 typealias DecodedPayee = ChainStorageDecodedItem<Staking.RewardDestinationArg>
 typealias DecodedBlockNumber = ChainStorageDecodedItem<StringScaleMapper<BlockNumber>>
+typealias DecodedAccountInfo = ChainStorageDecodedItem<AccountInfo>
 typealias DecodedCrowdloanFunds = ChainStorageDecodedItem<CrowdloanFunds>
 typealias DecodedBagListNode = ChainStorageDecodedItem<BagList.Node>
 typealias DecodedPoolMember = ChainStorageDecodedItem<NominationPools.PoolMember>

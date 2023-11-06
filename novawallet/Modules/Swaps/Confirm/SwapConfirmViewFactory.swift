@@ -4,7 +4,8 @@ import RobinHood
 
 struct SwapConfirmViewFactory {
     static func createView(
-        initState: SwapConfirmInitState
+        initState: SwapConfirmInitState,
+        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
     ) -> SwapConfirmViewProtocol? {
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
@@ -15,7 +16,8 @@ struct SwapConfirmViewFactory {
         }
         guard let interactor = createInteractor(
             wallet: wallet,
-            initState: initState
+            initState: initState,
+            generalSubscriptonFactory: generalSubscriptonFactory
         ) else {
             return nil
         }
@@ -61,7 +63,8 @@ struct SwapConfirmViewFactory {
 
     private static func createInteractor(
         wallet: MetaAccountModel,
-        initState: SwapConfirmInitState
+        initState: SwapConfirmInitState,
+        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
     ) -> SwapConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
@@ -115,6 +118,7 @@ struct SwapConfirmViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            generalLocalSubscriptionFactory: generalSubscriptonFactory,
             currencyManager: currencyManager,
             selectedWallet: wallet,
             operationQueue: operationQueue,

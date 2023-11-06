@@ -700,7 +700,6 @@
 		7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */; };
 		7719018E2AE0E71F00D9C918 /* SwapErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */; };
 		771901902AE2424B00D9C918 /* SwapsValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */; };
-		771901972AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901962AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift */; };
 		7719019B2AE670AE00D9C918 /* ShortTextInfoPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019A2AE670AE00D9C918 /* ShortTextInfoPresentable.swift */; };
 		7719019D2AE6996600D9C918 /* SwapPairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019C2AE6996600D9C918 /* SwapPairView.swift */; };
 		7719019F2AE6C9DC00D9C918 /* SwapElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */; };
@@ -4762,7 +4761,6 @@
 		7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDataValidatorFactory.swift; sourceTree = "<group>"; };
 		7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapErrorPresentable.swift; sourceTree = "<group>"; };
 		7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapsValidationTests.swift; sourceTree = "<group>"; };
-		771901962AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+Validating.swift"; sourceTree = "<group>"; };
 		7719019A2AE670AE00D9C918 /* ShortTextInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortTextInfoPresentable.swift; sourceTree = "<group>"; };
 		7719019C2AE6996600D9C918 /* SwapPairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPairView.swift; sourceTree = "<group>"; };
 		7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapElementView.swift; sourceTree = "<group>"; };
@@ -9104,7 +9102,6 @@
 				C585109AC3A2580AB1253C31 /* SwapSetupInteractor.swift */,
 				BBEB2BC52266AF493D310834 /* SwapSetupViewController.swift */,
 				6A6BCE8F8DB7576E1E5B5974 /* SwapSetupViewFactory.swift */,
-				771901962AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift */,
 			);
 			path = Setup;
 			sourceTree = "<group>";
@@ -20697,7 +20694,6 @@
 				842876AA24AE049B00D91AD8 /* SelectionTitleTableViewCell.swift in Sources */,
 				840E59B92A187E0700BA6ADD /* GladingPatternModel.swift in Sources */,
 				84CA68DD26BEA60A003B9453 /* ConnectionFactory.swift in Sources */,
-				771901972AE2897F00D9C918 /* SwapSetupPresenter+Validating.swift in Sources */,
 				84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */,
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
