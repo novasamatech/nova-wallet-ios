@@ -17,7 +17,8 @@ struct SwapSlippageViewFactory {
             numberFormatterLocalizable: amountFormatter.localizableResource(),
             percentFormatterLocalizable: percentFormatter.localizableResource(),
             localizationManager: LocalizationManager.shared,
-            initPercent: percent?.toPercents(),
+            initSlippage: percent?.toPercents(),
+            config: SlippageConfig.defaultConfig,
             chainAsset: chainAsset,
             completionHandler: completionHandler
         )

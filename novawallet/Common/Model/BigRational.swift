@@ -59,4 +59,8 @@ extension BigRational {
         let denominator = denominator.decimal(precision: 0)
         return numerator / denominator
     }
+
+    var decimalOrZeroValue: Decimal {
+        decimalValue ?? 0
+    }
 }

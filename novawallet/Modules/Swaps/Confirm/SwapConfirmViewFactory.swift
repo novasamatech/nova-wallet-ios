@@ -43,6 +43,7 @@ struct SwapConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            slippageBounds: .init(config: SlippageConfig.defaultConfig),
             chainAccountResponse: chainAccountResponse,
             localizationManager: LocalizationManager.shared,
             dataValidatingFactory: dataValidatingFactory,

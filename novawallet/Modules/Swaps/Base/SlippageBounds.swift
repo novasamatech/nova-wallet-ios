@@ -1,12 +1,24 @@
 import Foundation
 
 struct SlippageBounds {
-    let restriction: BoundValue = .init(lower: 0.1, upper: 50)
-    let recommendation: BoundValue = .init(lower: 0.1, upper: 5)
+    let restriction: BoundValue
+    let recommendation: BoundValue
 
     struct BoundValue {
         let lower: Decimal
         let upper: Decimal
+    }
+
+    init(config: SlippageConfig) {
+        restriction = .init(
+            lower: config.minAvailableSlippage.toPercents().decimalOrZeroValue,
+            upper: config.maxAvailableSlippage.toPercents().decimalOrZeroValue
+        )
+
+        recommendation = .init(
+            lower: config.smallSlippage.toPercents().decimalOrZeroValue,
+            upper: config.bigSlippage.toPercents().decimalOrZeroValue
+        )
     }
 }
 

@@ -26,7 +26,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
     private var feeChainAsset: ChainAsset?
 
     private var feeIdentifier: SwapSetupFeeIdentifier?
-    private var slippage: BigRational?
+    private var slippage: BigRational
     private var depositOperations: [DepositOperationModel] = []
     private var purchaseActions: [PurchaseAction] = []
     private var depositCrossChainAssets: [ChainAsset] = []
@@ -41,6 +41,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
+        slippageConfig: SlippageConfig,
         purchaseProvider: PurchaseProviderProtocol,
         logger: LoggerProtocol
     ) {
@@ -50,6 +51,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.issuesViewModelFactory = issuesViewModelFactory
+        slippage = slippageConfig.defaultSlippage
         self.purchaseProvider = purchaseProvider
 
         super.init(
@@ -88,7 +90,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         quoteArgs
     }
 
-    override func getSlippage() -> BigRational? {
+    override func getSlippage() -> BigRational {
         slippage
     }
 
@@ -104,8 +106,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         guard let quote = quote,
               let receiveChain = receiveChainAsset?.chain,
               let accountId = selectedWallet.fetch(for: receiveChain.accountRequest())?.accountId,
-              let quoteArgs = quoteArgs,
-              let slippage = slippage else {
+              let quoteArgs = quoteArgs else {
             return
         }
 
@@ -567,8 +568,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideDetailsViewModel(isAvailable: false)
         provideButtonState()
         provideSettingsState()
-        // TODO: get from settings
-        slippage = .fraction(from: AssetConversionConstants.defaultSlippage)?.fromPercents()
         provideIssues()
 
         interactor.setup()

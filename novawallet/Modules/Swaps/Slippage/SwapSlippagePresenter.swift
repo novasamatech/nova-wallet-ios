@@ -8,10 +8,12 @@ final class SwapSlippagePresenter {
     let numberFormatterLocalizable: LocalizableResource<NumberFormatter>
     let percentFormatterLocalizable: LocalizableResource<NumberFormatter>
     let completionHandler: (BigRational) -> Void
-    let prefilledPercents: [Decimal] = [0.1, 1, 3]
-    let initPercent: BigRational?
     let chainAsset: ChainAsset
-    let bounds = SlippageBounds()
+
+    let initSlippage: Decimal?
+    let defaultSlippage: Decimal
+    let slippageTips: [Decimal]
+    let bounds: SlippageBounds
 
     private var percentFormatter: NumberFormatter
     private var numberFormatter: NumberFormatter
@@ -22,14 +24,19 @@ final class SwapSlippagePresenter {
         numberFormatterLocalizable: LocalizableResource<NumberFormatter>,
         percentFormatterLocalizable: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol,
-        initPercent: BigRational?,
+        initSlippage: BigRational?,
+        config: SlippageConfig,
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) {
         self.wireframe = wireframe
         self.numberFormatterLocalizable = numberFormatterLocalizable
         self.percentFormatterLocalizable = percentFormatterLocalizable
-        self.initPercent = initPercent
+        self.initSlippage = initSlippage?.decimalValue
+        defaultSlippage = config.defaultSlippage.toPercents().decimalOrZeroValue
+        bounds = .init(config: config)
+        slippageTips = config.slippageTips.map { $0.toPercents().decimalOrZeroValue }
+
         self.chainAsset = chainAsset
         self.completionHandler = completionHandler
         percentFormatter = percentFormatterLocalizable.value(for: localizationManager.selectedLocale)
@@ -45,17 +52,13 @@ final class SwapSlippagePresenter {
         percent / (percentFormatter.multiplier?.decimalValue ?? 1)
     }
 
-    private func initialPercent() -> Decimal? {
-        initPercent?.decimalValue
-    }
-
     private func provideAmountViewModel() {
         let inputViewModel = AmountInputViewModel(
             symbol: "",
             amount: amountInput,
             limit: 100,
             formatter: numberFormatter,
-            precision: 1
+            precision: 4
         )
 
         view?.didReceiveInput(viewModel: inputViewModel)
@@ -67,10 +70,11 @@ final class SwapSlippagePresenter {
             stringAmountClosure: title,
             locale: selectedLocale
         )
-        let canReset = amountInput != AssetConversionConstants.defaultSlippage
+
+        let canReset = amountInput != defaultSlippage
         view?.didReceiveResetState(available: canReset)
 
-        let canApply = amountInput != initialPercent() && error == nil
+        let canApply = amountInput != initSlippage && error == nil
         view?.didReceiveButtonState(available: canApply)
     }
 
@@ -92,14 +96,14 @@ final class SwapSlippagePresenter {
 
 extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     func setup() {
-        let viewModel = prefilledPercents.map {
+        let viewModel = slippageTips.map {
             SlippagePercentViewModel(
                 value: $0,
                 title: title(for: $0)
             )
         }
 
-        amountInput = initialPercent()
+        amountInput = initSlippage
         provideButtonStates()
         provideAmountViewModel()
         provideWarnings()
@@ -126,7 +130,7 @@ extension SwapSlippagePresenter: SwapSlippagePresenterProtocol {
     }
 
     func reset() {
-        amountInput = AssetConversionConstants.defaultSlippage
+        amountInput = defaultSlippage
         provideAmountViewModel()
         provideButtonStates()
         provideErrors()

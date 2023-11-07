@@ -8,7 +8,7 @@ final class SwapConfirmPresenter {
     let interactor: SwapConfirmInteractorInputProtocol
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let initState: SwapConfirmInitState
-    let slippageBounds = SlippageBounds()
+    let slippageBounds: SlippageBounds
 
     private var viewModelFactory: SwapConfirmViewModelFactoryProtocol
     private var feePriceData: PriceData?
@@ -25,6 +25,7 @@ final class SwapConfirmPresenter {
         interactor: SwapConfirmInteractorInputProtocol,
         wireframe: SwapConfirmWireframeProtocol,
         viewModelFactory: SwapConfirmViewModelFactoryProtocol,
+        slippageBounds: SlippageBounds,
         chainAccountResponse: MetaChainAccountResponse,
         localizationManager: LocalizationManagerProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
@@ -33,6 +34,7 @@ final class SwapConfirmPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.slippageBounds = slippageBounds
         self.initState = initState
         quote = initState.quote
         self.chainAccountResponse = chainAccountResponse

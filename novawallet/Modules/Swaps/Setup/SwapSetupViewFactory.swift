@@ -57,6 +57,7 @@ struct SwapSetupViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
+            slippageConfig: .defaultConfig,
             purchaseProvider: PurchaseAggregator.defaultAggregator(),
             logger: Logger.shared
         )

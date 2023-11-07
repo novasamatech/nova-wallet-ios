@@ -90,8 +90,7 @@ class SwapBasePresenter {
             let payChainAsset = getPayChainAsset(),
             let receiveChainAsset = getReceiveChainAsset(),
             let feeChainAsset = getFeeChainAsset(),
-            let quoteArgs = getQuoteArgs(),
-            let slippage = getSlippage() else {
+            let quoteArgs = getQuoteArgs() else {
             return nil
         }
 
@@ -111,7 +110,7 @@ class SwapBasePresenter {
             feeModel: fee,
             quoteArgs: quoteArgs,
             quote: quote,
-            slippage: slippage,
+            slippage: getSlippage(),
             accountInfo: accountInfo
         )
     }
@@ -136,7 +135,7 @@ class SwapBasePresenter {
         fatalError("Must be implemented by parent class")
     }
 
-    func getSlippage() -> BigRational? {
+    func getSlippage() -> BigRational {
         fatalError("Must be implemented by parent class")
     }
 
