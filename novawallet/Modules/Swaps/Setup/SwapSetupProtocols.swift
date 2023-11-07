@@ -16,6 +16,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(issues: [SwapSetupViewIssue])
+    func didSetNotification(message: String?)
     func didReceive(focus: TextFieldFocus?)
 }
 

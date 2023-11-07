@@ -58,6 +58,189 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         self.localizationManager = localizationManager
     }
 
+    // MARK: Base implementation
+
+    override func getInputAmount() -> Decimal? {
+        guard let payAmountInput = payAmountInput else {
+            return nil
+        }
+
+        let maxAmount = getMaxModel()?.calculate() ?? 0
+        return payAmountInput.absoluteValue(from: maxAmount)
+    }
+
+    override func getPayChainAsset() -> ChainAsset? {
+        payChainAsset
+    }
+
+    override func getReceiveChainAsset() -> ChainAsset? {
+        receiveChainAsset
+    }
+
+    override func getFeeChainAsset() -> ChainAsset? {
+        feeChainAsset
+    }
+
+    override func getQuoteArgs() -> AssetConversion.QuoteArgs? {
+        quoteArgs
+    }
+
+    override func getSlippage() -> BigRational? {
+        slippage
+    }
+
+    override func shouldHandleQuote(for args: AssetConversion.QuoteArgs?) -> Bool {
+        quoteArgs == args
+    }
+
+    override func shouldHandleFee(for feeIdentifier: TransactionFeeId, feeChainAssetId: ChainAssetId?) -> Bool {
+        self.feeIdentifier == SwapSetupFeeIdentifier(transactionId: feeIdentifier, feeChainAssetId: feeChainAssetId)
+    }
+
+    override func estimateFee() {
+        guard let quote = quote,
+              let receiveChain = receiveChainAsset?.chain,
+              let accountId = selectedWallet.fetch(for: receiveChain.accountRequest())?.accountId,
+              let quoteArgs = quoteArgs,
+              let slippage = slippage else {
+            return
+        }
+
+        let args = AssetConversion.CallArgs(
+            assetIn: quote.assetIn,
+            amountIn: quote.amountIn,
+            assetOut: quote.assetOut,
+            amountOut: quote.amountOut,
+            receiver: accountId,
+            direction: quoteArgs.direction,
+            slippage: slippage
+        )
+
+        let newIdentifier = SwapSetupFeeIdentifier(
+            transactionId: args.identifier,
+            feeChainAssetId: feeChainAsset?.chainAssetId
+        )
+
+        guard newIdentifier != feeIdentifier else {
+            return
+        }
+
+        feeIdentifier = newIdentifier
+        interactor.calculateFee(args: args)
+    }
+
+    override func applySwapMax() {
+        payAmountInput = .rate(1)
+        providePayAssetViews()
+        refreshQuote(direction: .sell)
+        provideButtonState()
+        provideIssues()
+    }
+
+    override func handleBaseError(_ error: SwapBaseError) {
+        handleBaseError(
+            error,
+            view: view,
+            interactor: interactor,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
+    }
+
+    override func handleNewQuote(_ quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
+        logger.debug("New quote: \(quote)")
+
+        switch quoteArgs.direction {
+        case .buy:
+            let payAmount = payChainAsset.map {
+                Decimal.fromSubstrateAmount(
+                    quote.amountIn,
+                    precision: Int16($0.asset.precision)
+                ) ?? 0
+            }
+            payAmountInput = payAmount.map { .absolute($0) }
+            providePayAmountInputViewModel()
+        case .sell:
+            receiveAmountInput = receiveChainAsset.map {
+                Decimal.fromSubstrateAmount(
+                    quote.amountOut,
+                    precision: $0.asset.displayInfo.assetPrecision
+                ) ?? 0
+            }
+            provideReceiveAmountInputViewModel()
+            provideReceiveInputPriceViewModel()
+        }
+
+        provideRateViewModel()
+        provideButtonState()
+
+        estimateFee()
+    }
+
+    override func handleNewFee(
+        _: AssetConversion.FeeModel?,
+        transactionFeeId _: TransactionFeeId,
+        feeChainAssetId _: ChainAssetId?
+    ) {
+        provideFeeViewModel()
+
+        if case .rate = payAmountInput {
+            providePayInputPriceViewModel()
+            providePayAmountInputViewModel()
+        }
+
+        provideButtonState()
+        provideIssues()
+        provideNotification()
+    }
+
+    override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
+        if payChainAsset?.chainAssetId == chainAssetId {
+            providePayInputPriceViewModel()
+        }
+
+        if receiveChainAsset?.chainAssetId == chainAssetId {
+            provideReceiveInputPriceViewModel()
+        }
+
+        if feeChainAsset?.chainAssetId == chainAssetId {
+            provideFeeViewModel()
+        }
+
+        provideNotification()
+    }
+
+    override func handleNewBalance(_: AssetBalance?, for chainAsset: ChainAssetId) {
+        if payChainAsset?.chainAssetId == chainAsset {
+            providePayTitle()
+            provideIssues()
+
+            if case .rate = payAmountInput {
+                providePayInputPriceViewModel()
+                providePayAmountInputViewModel()
+                provideButtonState()
+            }
+        }
+    }
+
+    override func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {
+        if case .rate = payAmountInput {
+            providePayInputPriceViewModel()
+            providePayAmountInputViewModel()
+            provideButtonState()
+        }
+    }
+
+    override func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {
+        if case .rate = payAmountInput {
+            providePayInputPriceViewModel()
+            providePayAmountInputViewModel()
+            provideButtonState()
+        }
+    }
+}
+
+extension SwapSetupPresenter {
     private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
         guard let input = input else {
             return nil
@@ -257,6 +440,26 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         view?.didReceive(issues: issues)
     }
 
+    private func provideNotification() {
+        guard
+            let networkFeeAddition = fee?.networkFeeAddition,
+            let feeChainAsset = feeChainAsset,
+            !feeChainAsset.isUtilityAsset,
+            let utilityChainAsset = feeChainAsset.chain.utilityChainAsset() else {
+            view?.didSetNotification(message: nil)
+            return
+        }
+
+        let message = viewModelFactory.minimalBalanceSwapForFeeMessage(
+            for: networkFeeAddition,
+            feeChainAsset: feeChainAsset,
+            utilityChainAsset: utilityChainAsset,
+            utilityPriceData: prices[utilityChainAsset.chainAssetId]
+        )
+
+        view?.didSetNotification(message: message)
+    }
+
     func refreshQuote(direction: AssetConversion.Direction, forceUpdate: Bool = true) {
         guard
             let payChainAsset = payChainAsset,
@@ -344,184 +547,6 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         provideFeeViewModel()
 
         estimateFee()
-    }
-
-    // MARK: Base implementation
-
-    override func getInputAmount() -> Decimal? {
-        guard let payAmountInput = payAmountInput else {
-            return nil
-        }
-
-        let maxAmount = getMaxModel()?.calculate() ?? 0
-        return payAmountInput.absoluteValue(from: maxAmount)
-    }
-
-    override func getPayChainAsset() -> ChainAsset? {
-        payChainAsset
-    }
-
-    override func getReceiveChainAsset() -> ChainAsset? {
-        receiveChainAsset
-    }
-
-    override func getFeeChainAsset() -> ChainAsset? {
-        feeChainAsset
-    }
-
-    override func getQuoteArgs() -> AssetConversion.QuoteArgs? {
-        quoteArgs
-    }
-
-    override func getSlippage() -> BigRational? {
-        slippage
-    }
-
-    override func shouldHandleQuote(for args: AssetConversion.QuoteArgs?) -> Bool {
-        quoteArgs == args
-    }
-
-    override func shouldHandleFee(for feeIdentifier: TransactionFeeId, feeChainAssetId: ChainAssetId?) -> Bool {
-        self.feeIdentifier == SwapSetupFeeIdentifier(transactionId: feeIdentifier, feeChainAssetId: feeChainAssetId)
-    }
-
-    override func estimateFee() {
-        guard let quote = quote,
-              let receiveChain = receiveChainAsset?.chain,
-              let accountId = selectedWallet.fetch(for: receiveChain.accountRequest())?.accountId,
-              let quoteArgs = quoteArgs,
-              let slippage = slippage else {
-            return
-        }
-
-        let args = AssetConversion.CallArgs(
-            assetIn: quote.assetIn,
-            amountIn: quote.amountIn,
-            assetOut: quote.assetOut,
-            amountOut: quote.amountOut,
-            receiver: accountId,
-            direction: quoteArgs.direction,
-            slippage: slippage
-        )
-
-        let newIdentifier = SwapSetupFeeIdentifier(
-            transactionId: args.identifier,
-            feeChainAssetId: feeChainAsset?.chainAssetId
-        )
-
-        guard newIdentifier != feeIdentifier else {
-            return
-        }
-
-        feeIdentifier = newIdentifier
-        interactor.calculateFee(args: args)
-    }
-
-    override func applySwapMax() {
-        payAmountInput = .rate(1)
-        providePayAssetViews()
-        refreshQuote(direction: .sell)
-        provideButtonState()
-        provideIssues()
-    }
-
-    override func handleBaseError(_ error: SwapBaseError) {
-        handleBaseError(
-            error,
-            view: view,
-            interactor: interactor,
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
-    }
-
-    override func handleNewQuote(_ quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
-        logger.debug("New quote: \(quote)")
-
-        switch quoteArgs.direction {
-        case .buy:
-            let payAmount = payChainAsset.map {
-                Decimal.fromSubstrateAmount(
-                    quote.amountIn,
-                    precision: Int16($0.asset.precision)
-                ) ?? 0
-            }
-            payAmountInput = payAmount.map { .absolute($0) }
-            providePayAmountInputViewModel()
-        case .sell:
-            receiveAmountInput = receiveChainAsset.map {
-                Decimal.fromSubstrateAmount(
-                    quote.amountOut,
-                    precision: $0.asset.displayInfo.assetPrecision
-                ) ?? 0
-            }
-            provideReceiveAmountInputViewModel()
-            provideReceiveInputPriceViewModel()
-        }
-
-        provideRateViewModel()
-        provideButtonState()
-
-        estimateFee()
-    }
-
-    override func handleNewFee(
-        _: AssetConversion.FeeModel?,
-        transactionFeeId _: TransactionFeeId,
-        feeChainAssetId _: ChainAssetId?
-    ) {
-        provideFeeViewModel()
-
-        if case .rate = payAmountInput {
-            providePayInputPriceViewModel()
-            providePayAmountInputViewModel()
-        }
-
-        provideButtonState()
-        provideIssues()
-    }
-
-    override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
-        if payChainAsset?.chainAssetId == chainAssetId {
-            providePayInputPriceViewModel()
-        }
-
-        if receiveChainAsset?.chainAssetId == chainAssetId {
-            provideReceiveInputPriceViewModel()
-        }
-
-        if feeChainAsset?.chainAssetId == chainAssetId {
-            provideFeeViewModel()
-        }
-    }
-
-    override func handleNewBalance(_: AssetBalance?, for chainAsset: ChainAssetId) {
-        if payChainAsset?.chainAssetId == chainAsset {
-            providePayTitle()
-            provideIssues()
-
-            if case .rate = payAmountInput {
-                providePayInputPriceViewModel()
-                providePayAmountInputViewModel()
-                provideButtonState()
-            }
-        }
-    }
-
-    override func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {
-        if case .rate = payAmountInput {
-            providePayInputPriceViewModel()
-            providePayAmountInputViewModel()
-            provideButtonState()
-        }
-    }
-
-    override func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {
-        if case .rate = payAmountInput {
-            providePayInputPriceViewModel()
-            providePayAmountInputViewModel()
-            provideButtonState()
-        }
     }
 }
 

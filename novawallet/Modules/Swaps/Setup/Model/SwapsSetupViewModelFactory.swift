@@ -37,6 +37,15 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactory
         isEditable: Bool,
         priceData: PriceData?
     ) -> SwapFeeViewModel
+
+    func minimalBalanceSwapForFeeMessage(
+        for networkFeeAddition: AssetConversion.AmountWithNative,
+        feeChainAsset: ChainAsset,
+        utilityChainAsset: ChainAsset,
+        utilityPriceData: PriceData?
+    ) -> String
+
+    func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset) -> String
 }
 
 final class SwapsSetupViewModelFactory {
@@ -259,5 +268,52 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         ).value(for: locale)
 
         return .init(isEditable: isEditable, balanceViewModel: balanceViewModel)
+    }
+
+    func minimalBalanceSwapForFeeMessage(
+        for networkFeeAddition: AssetConversion.AmountWithNative,
+        feeChainAsset: ChainAsset,
+        utilityChainAsset: ChainAsset,
+        utilityPriceData: PriceData?
+    ) -> String {
+        let targetAmount = balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: feeChainAsset.assetDisplayInfo,
+            value: networkFeeAddition.targetAmount.decimal(precision: feeChainAsset.asset.precision)
+        ).value(for: locale)
+
+        let nativeAmountDecimal = networkFeeAddition.nativeAmount.decimal(precision: utilityChainAsset.asset.precision)
+        let nativeAmountWithoutPrice = balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+            value: nativeAmountDecimal
+        ).value(for: locale)
+
+        let nativeAmount: String
+
+        if let priceData = utilityPriceData {
+            let price = balanceViewModelFactoryFacade.priceFromAmount(
+                targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                amount: nativeAmountDecimal,
+                priceData: priceData
+            ).value(for: locale)
+
+            nativeAmount = "\(nativeAmountWithoutPrice) \(price.inParenthesis())"
+        } else {
+            nativeAmount = nativeAmountWithoutPrice
+        }
+
+        return R.string.localizable.swapsPayAssetFeeEdMessage(
+            feeChainAsset.asset.symbol,
+            targetAmount,
+            nativeAmount,
+            utilityChainAsset.asset.symbol,
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset) -> String {
+        balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            value: decimal
+        ).value(for: locale)
     }
 }
