@@ -72,7 +72,17 @@ class SwapBasePresenter {
     }
 
     var fee: AssetConversion.FeeModel?
-    var quote: AssetConversion.Quote?
+    var quoteResult: Result<AssetConversion.Quote, Error>?
+
+    var quote: AssetConversion.Quote? {
+        switch quoteResult {
+        case let .success(quote):
+            return quote
+        case .failure, .none:
+            return nil
+        }
+    }
+
     var accountInfo: AccountInfo?
 
     func getSwapModel() -> SwapModel? {
@@ -89,7 +99,7 @@ class SwapBasePresenter {
             payChainAsset: payChainAsset,
             receiveChainAsset: receiveChainAsset,
             feeChainAsset: feeChainAsset,
-            spendingAmount: getInputAmount(),
+            spendingAmount: getSpendingInputAmount(),
             payAssetBalance: payAssetBalance,
             feeAssetBalance: feeAssetBalance,
             receiveAssetBalance: receiveAssetBalance,
@@ -118,7 +128,7 @@ class SwapBasePresenter {
         )
     }
 
-    func getInputAmount() -> Decimal? {
+    func getSpendingInputAmount() -> Decimal? {
         fatalError("Must be implemented by parent class")
     }
 
@@ -186,14 +196,12 @@ class SwapBasePresenter {
         logger.error("Did receive base error: \(error)")
 
         switch error {
-        case let .quote(_, args):
+        case let .quote(error, args):
             guard shouldHandleQuote(for: args) else {
                 return
             }
 
-            wireframe.presentRequestStatus(on: view, locale: locale) {
-                interactor.calculateQuote(for: args)
-            }
+            quoteResult = .failure(error)
         case let .fetchFeeFailed(_, id, feeChainAssetId):
             guard shouldHandleFee(for: id, feeChainAssetId: feeChainAssetId) else {
                 return
@@ -269,11 +277,11 @@ class SwapBasePresenter {
             ),
             dataValidatingFactory.passesRealtimeQuoteValidation(
                 params: swapModel,
-                remoteValidatingClosure: { [weak self] args, completion in
+                remoteValidatingClosure: { args, completion in
                     interactor.requestValidatingQuote(for: args, completion: completion)
                 },
                 onQuoteUpdate: { [weak self] quote in
-                    self?.quote = quote
+                    self?.quoteResult = .success(quote)
                 },
                 locale: locale
             )
@@ -287,7 +295,7 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
             return
         }
 
-        self.quote = quote
+        quoteResult = .success(quote)
 
         handleNewQuote(quote, for: quoteArgs)
     }

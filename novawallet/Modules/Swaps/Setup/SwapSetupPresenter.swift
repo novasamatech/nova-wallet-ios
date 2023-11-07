@@ -7,6 +7,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
     let purchaseProvider: PurchaseProviderProtocol
+    let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
 
@@ -36,6 +37,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         interactor: SwapSetupInteractorInputProtocol,
         wireframe: SwapSetupWireframeProtocol,
         viewModelFactory: SwapsSetupViewModelFactoryProtocol,
+        issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
@@ -47,6 +49,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.issuesViewModelFactory = issuesViewModelFactory
         self.purchaseProvider = purchaseProvider
 
         super.init(
@@ -60,7 +63,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
 
     // MARK: Base implementation
 
-    override func getInputAmount() -> Decimal? {
+    override func getSpendingInputAmount() -> Decimal? {
         guard let payAmountInput = payAmountInput else {
             return nil
         }
@@ -145,6 +148,8 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
             wireframe: wireframe,
             locale: selectedLocale
         )
+
+        provideIssues()
     }
 
     override func handleNewQuote(_ quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
@@ -213,7 +218,6 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
     override func handleNewBalance(_: AssetBalance?, for chainAsset: ChainAssetId) {
         if payChainAsset?.chainAssetId == chainAsset {
             providePayTitle()
-            provideIssues()
 
             if case .rate = payAmountInput {
                 providePayInputPriceViewModel()
@@ -221,6 +225,8 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
                 provideButtonState()
             }
         }
+
+        provideIssues()
     }
 
     override func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {
@@ -229,6 +235,8 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
             providePayAmountInputViewModel()
             provideButtonState()
         }
+
+        provideIssues()
     }
 
     override func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {
@@ -422,20 +430,20 @@ extension SwapSetupPresenter {
     }
 
     private func provideIssues() {
-        var issues: [SwapSetupViewIssue] = []
-
-        if
-            let balance = payAssetBalance?.transferable,
-            balance == 0 {
-            issues.append(.zeroBalance)
-        }
-
-        if
-            let payAmount = getPayAmount(for: payAmountInput),
-            let maxAmount = getMaxModel()?.calculate(),
-            payAmount > maxAmount {
-            issues.append(.insufficientToken)
-        }
+        let issues = issuesViewModelFactory.detectIssues(
+            in: .init(
+                payChainAsset: payChainAsset,
+                receiveChainAsset: receiveChainAsset,
+                payAmount: getSpendingInputAmount(),
+                receiveAmount: receiveAmountInput,
+                payAssetBalance: payAssetBalance,
+                receiveAssetBalance: receiveAssetBalance,
+                payAssetExistense: payAssetBalanceExistense,
+                receiveAssetExistense: receiveAssetBalanceExistense,
+                quoteResult: quoteResult
+            ),
+            locale: selectedLocale
+        )
 
         view?.didReceive(issues: issues)
     }
@@ -468,7 +476,7 @@ extension SwapSetupPresenter {
         }
 
         if forceUpdate {
-            quote = nil
+            quoteResult = nil
         }
 
         switch direction {
@@ -509,6 +517,7 @@ extension SwapSetupPresenter {
             if forceUpdate {
                 payAmountInput = nil
                 providePayAmountInputViewModel()
+                provideIssues()
             } else {
                 refreshQuote(direction: .sell)
             }
@@ -532,6 +541,7 @@ extension SwapSetupPresenter {
                 receiveAmountInput = nil
                 provideReceiveAmountInputViewModel()
                 provideReceiveInputPriceViewModel()
+                provideIssues()
             } else {
                 refreshQuote(direction: .buy)
             }
@@ -601,6 +611,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
+            self?.provideIssues()
 
             self?.interactor.update(receiveChainAsset: chainAsset)
 

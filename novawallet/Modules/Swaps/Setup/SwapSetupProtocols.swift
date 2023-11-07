@@ -112,7 +112,7 @@ enum SwapSetupError: Error {
 
 enum SwapSetupViewIssue {
     case zeroBalance
-    case insufficientToken
+    case insufficientBalance
     case minBalanceViolation(String)
     case noLiqudity
 }

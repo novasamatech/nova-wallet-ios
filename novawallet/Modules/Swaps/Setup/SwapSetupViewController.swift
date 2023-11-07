@@ -268,7 +268,7 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
             switch issue {
             case .zeroBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
-            case .insufficientToken:
+            case .insufficientBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
 
                 let message = R.string.localizable.swapsNotEnoughTokens(

@@ -38,6 +38,11 @@ struct SwapSetupViewFactory {
             percentForamatter: NumberFormatter.percentSingle.localizableResource(),
             locale: LocalizationManager.shared.selectedLocale
         )
+
+        let issuesViewModelFactory = SwapIssueViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
+
         let dataValidatingFactory = SwapDataValidatorFactory(
             presentable: wireframe,
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
@@ -48,6 +53,7 @@ struct SwapSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            issuesViewModelFactory: issuesViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
