@@ -11,22 +11,6 @@ struct BigRational: Hashable {
 }
 
 extension BigRational {
-    func toPercents() -> BigRational {
-        let (quotient, reminder) = denominator.quotientAndRemainder(dividingBy: 100)
-
-        if quotient > 0, reminder == 0 {
-            return .init(numerator: numerator, denominator: quotient)
-        } else {
-            return .init(numerator: numerator * 100, denominator: denominator)
-        }
-    }
-
-    func fromPercents() -> BigRational {
-        let newDenominator = denominator * 100
-
-        return .init(numerator: numerator, denominator: newDenominator)
-    }
-
     static func percent(of numerator: BigUInt) -> BigRational {
         .init(numerator: numerator, denominator: 100)
     }

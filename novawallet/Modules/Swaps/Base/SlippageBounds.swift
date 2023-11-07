@@ -11,13 +11,13 @@ struct SlippageBounds {
 
     init(config: SlippageConfig) {
         restriction = .init(
-            lower: config.minAvailableSlippage.toPercents().decimalOrZeroValue,
-            upper: config.maxAvailableSlippage.toPercents().decimalOrZeroValue
+            lower: config.minAvailableSlippage.decimalOrZeroValue,
+            upper: config.maxAvailableSlippage.decimalOrZeroValue
         )
 
         recommendation = .init(
-            lower: config.smallSlippage.toPercents().decimalOrZeroValue,
-            upper: config.bigSlippage.toPercents().decimalOrZeroValue
+            lower: config.smallSlippage.decimalOrZeroValue,
+            upper: config.bigSlippage.decimalOrZeroValue
         )
     }
 }
@@ -27,12 +27,12 @@ extension SlippageBounds {
         guard let value = value, value > 0 else {
             return nil
         }
-        if value <= recommendation.lower {
+        if value < recommendation.lower {
             let warning = R.string.localizable.swapsSetupSlippageWarningLowAmount(
                 preferredLanguages: locale.rLanguages
             )
             return warning
-        } else if value >= recommendation.upper {
+        } else if value > recommendation.upper {
             let warning = R.string.localizable.swapsSetupSlippageWarningHighAmount(
                 preferredLanguages: locale.rLanguages
             )

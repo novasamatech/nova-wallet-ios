@@ -111,7 +111,7 @@ final class SwapConfirmPresenter {
         let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage)
         view?.didReceiveSlippage(viewModel: viewModel)
         let warning = slippageBounds.warning(
-            for: initState.slippage.toPercents().decimalValue,
+            for: initState.slippage.decimalValue,
             locale: selectedLocale
         )
         view?.didReceiveWarning(viewModel: warning)

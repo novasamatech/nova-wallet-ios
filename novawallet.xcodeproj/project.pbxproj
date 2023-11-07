@@ -77,6 +77,8 @@
 		0C13DFD52AFA4F1500E5F355 /* SwapIssueCheckParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13DFD42AFA4F1500E5F355 /* SwapIssueCheckParams.swift */; };
 		0C13DFD72AFA50A200E5F355 /* SwapIssueViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13DFD62AFA50A200E5F355 /* SwapIssueViewModelFactory.swift */; };
 		0C13DFDB2AFA691400E5F355 /* SlippageConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13DFDA2AFA691400E5F355 /* SlippageConfig.swift */; };
+		0C13DFDD2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13DFDC2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift */; };
+		0C13DFDF2AFA89EF00E5F355 /* Decimal+Percents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13DFDE2AFA89EF00E5F355 /* Decimal+Percents.swift */; };
 		0C154A0E2A45995500932C3F /* CompoundComparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C154A0D2A45995500932C3F /* CompoundComparator.swift */; };
 		0C17BD972A42F162004AF9E7 /* WalletViewModelObserverContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */; };
 		0C17BD992A42F1BE004AF9E7 /* MoneyPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */; };
@@ -4137,6 +4139,8 @@
 		0C13DFD42AFA4F1500E5F355 /* SwapIssueCheckParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapIssueCheckParams.swift; sourceTree = "<group>"; };
 		0C13DFD62AFA50A200E5F355 /* SwapIssueViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapIssueViewModelFactory.swift; sourceTree = "<group>"; };
 		0C13DFDA2AFA691400E5F355 /* SlippageConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlippageConfig.swift; sourceTree = "<group>"; };
+		0C13DFDC2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AmountInputViewModel+Slippage.swift"; sourceTree = "<group>"; };
+		0C13DFDE2AFA89EF00E5F355 /* Decimal+Percents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Percents.swift"; sourceTree = "<group>"; };
 		0C154A0D2A45995500932C3F /* CompoundComparator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundComparator.swift; sourceTree = "<group>"; };
 		0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModelObserverContainer.swift; sourceTree = "<group>"; };
 		0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyPresentable.swift; sourceTree = "<group>"; };
@@ -9092,6 +9096,7 @@
 				F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */,
 				2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */,
 				28294C13CF8F62D2FE4D0427 /* SwapSlippageViewFactory.swift */,
+				0C13DFDC2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift */,
 			);
 			path = Slippage;
 			sourceTree = "<group>";
@@ -13662,6 +13667,7 @@
 				0C7C9B982ABFF355009A0362 /* String+Html.swift */,
 				0C7C9B9A2AC16D7B009A0362 /* NSAttributedString+Helpers.swift */,
 				0C13DFCE2AF8ADB300E5F355 /* BigUInt+Operation.swift */,
+				0C13DFDE2AFA89EF00E5F355 /* Decimal+Percents.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -20532,6 +20538,7 @@
 				77A6F5C92A2F1EFC004AFD1A /* AssetOperationViewFactory.swift in Sources */,
 				848E6BD92761CAC800C91022 /* StakingRewardView.swift in Sources */,
 				F4B39C592732712C00BB6E10 /* AcalaContributionMethod.swift in Sources */,
+				0C13DFDF2AFA89EF00E5F355 /* Decimal+Percents.swift in Sources */,
 				AEA0C8BA268113F900F9666F /* YourValidatorList+RecommendedList.swift in Sources */,
 				88421056289BBA8D00306F2C /* CurrencyPresenter.swift in Sources */,
 				84D33996262250B800130A89 /* String+Substrate.swift in Sources */,
@@ -22683,6 +22690,7 @@
 				88E74E8C29538C36008031A3 /* QRCodeInfo.swift in Sources */,
 				777BD86229F97322004969A2 /* ReferendumsFilter.swift in Sources */,
 				84282288289AC80600163031 /* MultiValueView+Factory.swift in Sources */,
+				0C13DFDD2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift in Sources */,
 				99570B581EF2EE8A1070442F /* CreateWatchOnlyViewFactory.swift in Sources */,
 				6003DF3EBB77510EFB70B4E4 /* MessageSheetProtocols.swift in Sources */,
 				0C13D31D2A82279D0054BB6F /* StartStakingDirectConfirmPresenter.swift in Sources */,
