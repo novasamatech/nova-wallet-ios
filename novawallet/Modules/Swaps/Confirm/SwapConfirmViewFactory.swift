@@ -9,11 +9,10 @@ struct SwapConfirmViewFactory {
     ) -> SwapConfirmViewProtocol? {
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
-        guard let currencyManager = CurrencyManager.shared,
-              let wallet = SelectedWalletSettings.shared.value,
-              let chainAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest) else {
+        guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
+
         guard let interactor = createInteractor(
             wallet: wallet,
             initState: initState,
@@ -21,6 +20,7 @@ struct SwapConfirmViewFactory {
         ) else {
             return nil
         }
+
         let wireframe = SwapConfirmWireframe()
 
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
@@ -42,12 +42,13 @@ struct SwapConfirmViewFactory {
         let presenter = SwapConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            initState: initState,
+            selectedWallet: wallet,
             viewModelFactory: viewModelFactory,
             slippageBounds: .init(config: SlippageConfig.defaultConfig),
-            chainAccountResponse: chainAccountResponse,
-            localizationManager: LocalizationManager.shared,
             dataValidatingFactory: dataValidatingFactory,
-            initState: initState
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = SwapConfirmViewController(

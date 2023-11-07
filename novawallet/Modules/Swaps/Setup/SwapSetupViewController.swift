@@ -300,6 +300,14 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
             rootView.hideNotification()
         }
     }
+
+    func didStartLoading() {
+        rootView.loadableActionView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.loadableActionView.stopLoading()
+    }
 }
 
 extension SwapSetupViewController: Localizable {

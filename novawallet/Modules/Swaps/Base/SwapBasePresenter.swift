@@ -281,6 +281,7 @@ class SwapBasePresenter {
                 },
                 onQuoteUpdate: { [weak self] quote in
                     self?.quoteResult = .success(quote)
+                    self?.handleNewQuote(quote, for: swapModel.quoteArgs)
                 },
                 locale: locale
             )

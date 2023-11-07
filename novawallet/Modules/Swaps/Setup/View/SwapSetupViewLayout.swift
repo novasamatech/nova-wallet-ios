@@ -19,8 +19,10 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
 
     let receiveAmountInputView = SwapAmountInputView()
 
-    let actionButton: TriangularedButton = .create {
-        $0.applyDefaultStyle()
+    let loadableActionView = LoadableActionView()
+
+    var actionButton: TriangularedButton {
+        loadableActionView.actionButton
     }
 
     let switchButton: RoundedButton = .create {
@@ -102,8 +104,8 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
 
         stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
 
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        addSubview(loadableActionView)
+        loadableActionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)

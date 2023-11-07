@@ -18,6 +18,8 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceive(issues: [SwapSetupViewIssue])
     func didSetNotification(message: String?)
     func didReceive(focus: TextFieldFocus?)
+    func didStartLoading()
+    func didStopLoading()
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
