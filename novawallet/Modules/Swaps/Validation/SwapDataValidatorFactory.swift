@@ -2,6 +2,8 @@ import Foundation
 import BigInt
 import SoraFoundation
 
+typealias SwapRemoteValidatingClosure = (AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void
+
 protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func hasSufficientBalance(
         params: SwapModel,
@@ -19,7 +21,7 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
 
     func passesRealtimeQuoteValidation(
         params: SwapModel,
-        remoteValidatingClosure: @escaping ((AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void),
+        remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
         onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
         locale: Locale
     ) -> DataValidating
@@ -255,7 +257,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
     // swiftlint:disable:next function_body_length
     func passesRealtimeQuoteValidation(
         params: SwapModel,
-        remoteValidatingClosure: @escaping ((AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void),
+        remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
         onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
         locale: Locale
     ) -> DataValidating {
@@ -326,29 +328,5 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                 }
             }
         )
-    }
-
-    func has(
-        quote: AssetConversion.Quote?,
-        payChainAssetId: ChainAssetId?,
-        receiveChainAssetId: ChainAssetId?,
-        locale: Locale,
-        onError: (() -> Void)?
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            defer {
-                onError?()
-            }
-
-            guard let view = self?.view else {
-                return
-            }
-            self?.presentable.presentNotEnoughLiquidity(from: view, locale: locale)
-        }, preservesCondition: {
-            guard let quote = quote else {
-                return false
-            }
-            return quote.assetIn == payChainAssetId && quote.assetOut == receiveChainAssetId
-        })
     }
 }

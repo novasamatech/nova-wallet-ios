@@ -63,4 +63,12 @@ extension InlineAlertView {
         view.contentView.stackView.alignment = .top
         return view
     }
+
+    static func info() -> InlineAlertView {
+        let view = InlineAlertView()
+        view.backgroundView.fillColor = R.color.colorIndividualChipBackground()!
+        view.contentView.imageView.image = R.image.iconInfoAccent()!
+        view.contentView.stackView.alignment = .top
+        return view
+    }
 }

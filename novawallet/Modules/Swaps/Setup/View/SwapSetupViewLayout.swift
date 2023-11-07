@@ -41,6 +41,58 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.networkFeeCell
     }
 
+    var payIssueLabel: UILabel?
+
+    var receiveIssueLabel: UILabel?
+
+    var notificationView: InlineAlertView?
+
+    private func setupPayIssueLabel() -> UILabel {
+        if let payIssueLabel = payIssueLabel {
+            return payIssueLabel
+        }
+
+        let label = UILabel(style: .caption1Negative)
+        label.numberOfLines = 0
+
+        insertArrangedSubview(label, after: payAmountInputView, spacingAfter: 8)
+        stackView.setCustomSpacing(8, after: payAmountInputView)
+
+        payIssueLabel = label
+
+        return label
+    }
+
+    private func setupReceiveIssueLabel() -> UILabel {
+        if let receiveIssueLabel = receiveIssueLabel {
+            return receiveIssueLabel
+        }
+
+        let label = UILabel(style: .caption1Negative)
+        label.numberOfLines = 0
+
+        insertArrangedSubview(label, after: receiveAmountInputView, spacingAfter: 8)
+        stackView.setCustomSpacing(8, after: receiveAmountInputView)
+
+        receiveIssueLabel = label
+
+        return label
+    }
+
+    private func setupNotificationView() -> InlineAlertView {
+        if let notificationView = notificationView {
+            return notificationView
+        }
+
+        let view = InlineAlertView.info()
+        insertArrangedSubview(view, after: detailsView, spacingAfter: 8)
+        stackView.setCustomSpacing(16, after: detailsView)
+
+        notificationView = view
+
+        return view
+    }
+
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }
@@ -108,5 +160,54 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         }
         depositTokenButton.isHidden = hidden
         setNeedsLayout()
+    }
+
+    func hideIssues() {
+        hidePayIssue()
+        hideReceiveIssue()
+    }
+
+    func displayPayIssue(with text: String) {
+        let payIssueLabel = setupPayIssueLabel()
+        payIssueLabel.text = text
+
+        payAmountInputView.applyInput(style: .error)
+    }
+
+    func hidePayIssue() {
+        payIssueLabel?.removeFromSuperview()
+        payIssueLabel = nil
+
+        stackView.setCustomSpacing(12, after: payAmountInputView)
+
+        payAmountInputView.applyInput(style: .normal)
+    }
+
+    func displayReceiveIssue(with text: String) {
+        let receiveIssueLabel = setupReceiveIssueLabel()
+        receiveIssueLabel.text = text
+
+        receiveAmountInputView.applyInput(style: .error)
+    }
+
+    func hideReceiveIssue() {
+        receiveIssueLabel?.removeFromSuperview()
+        receiveIssueLabel = nil
+
+        stackView.setCustomSpacing(16, after: receiveAmountInputView)
+
+        receiveAmountInputView.applyInput(style: .normal)
+    }
+
+    func displayInfoNotification(with text: String) {
+        let notificationView = setupNotificationView()
+        notificationView.contentView.detailsLabel.text = text
+    }
+
+    func hideNotification() {
+        notificationView?.removeFromSuperview()
+        notificationView = nil
+
+        stackView.setCustomSpacing(8, after: detailsView)
     }
 }

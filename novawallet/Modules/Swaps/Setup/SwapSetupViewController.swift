@@ -260,11 +260,36 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         }
     }
 
-    func didReceive(errors: [SwapSetupViewError]) {
-        if errors.contains(.insufficientToken) {
-            rootView.changeDepositTokenButtonVisibility(hidden: false)
-        } else {
-            rootView.changeDepositTokenButtonVisibility(hidden: true)
+    func didReceive(issues: [SwapSetupViewIssue]) {
+        rootView.hideIssues()
+        rootView.changeDepositTokenButtonVisibility(hidden: true)
+
+        issues.forEach { issue in
+            switch issue {
+            case .zeroBalance:
+                rootView.changeDepositTokenButtonVisibility(hidden: false)
+            case .insufficientToken:
+                rootView.changeDepositTokenButtonVisibility(hidden: false)
+
+                let message = R.string.localizable.swapsNotEnoughTokens(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayPayIssue(with: message)
+            case let .minBalanceViolation(minBalance):
+                let message = R.string.localizable.commonReceiveAtLeastEdError(
+                    minBalance,
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayReceiveIssue(with: message)
+            case .noLiqudity:
+                let message = R.string.localizable.swapsNotEnoughLiquidity(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayPayIssue(with: message)
+            }
         }
     }
 }

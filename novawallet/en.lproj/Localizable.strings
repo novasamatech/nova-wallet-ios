@@ -1422,3 +1422,5 @@
 "common.receive.at.least.ed.error" = "You can’t receive less than %@";
 "common.receive.not.sufficient.native.asset.error" = "You must keep at least %@ to receive %@ token";
 "swaps.violating.consumers.message" = "You should keep at least %@ after paying %@ network fee as you are holding non sufficient tokens.";
+"swaps.not.enough.tokens" = "Not enough tokens to swap";
+"swaps.not.enough.liquidity" = "Not enough liquidity";

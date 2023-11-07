@@ -1422,3 +1422,5 @@
 "common.receive.at.least.ed.error" = "Вы не можете получить меньше чем %@";
 "common.receive.not.sufficient.native.asset.error" = "У вас должно быть минимум %@ для получения %@ токена";
 "swaps.violating.consumers.message" = "Вам необходимо оставить минимум %@ после уплаты %@ комиссии сети так как вы владеете несамодостаточными токенами.";
+"swaps.not.enough.tokens" = "Недостаточно токенов для обмена";
+"swaps.not.enough.liquidity" = "Недостаточно ликвидности";

@@ -15,7 +15,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
-    func didReceive(errors: [SwapSetupViewError])
+    func didReceive(issues: [SwapSetupViewIssue])
     func didReceive(focus: TextFieldFocus?)
 }
 
@@ -109,6 +109,9 @@ enum SwapSetupError: Error {
     case blockNumber(Error)
 }
 
-enum SwapSetupViewError {
+enum SwapSetupViewIssue {
+    case zeroBalance
     case insufficientToken
+    case minBalanceViolation(String)
+    case noLiqudity
 }

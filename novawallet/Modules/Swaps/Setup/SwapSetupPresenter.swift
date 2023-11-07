@@ -239,7 +239,13 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
     }
 
     private func provideIssues() {
-        var issues: [SwapSetupViewError] = []
+        var issues: [SwapSetupViewIssue] = []
+
+        if
+            let balance = payAssetBalance?.transferable,
+            balance == 0 {
+            issues.append(.zeroBalance)
+        }
 
         if
             let payAmount = getPayAmount(for: payAmountInput),
@@ -248,7 +254,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
             issues.append(.insufficientToken)
         }
 
-        view?.didReceive(errors: issues)
+        view?.didReceive(issues: issues)
     }
 
     func refreshQuote(direction: AssetConversion.Direction, forceUpdate: Bool = true) {
