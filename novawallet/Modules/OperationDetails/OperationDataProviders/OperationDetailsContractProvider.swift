@@ -6,10 +6,12 @@ final class OperationDetailsContractProvider: OperationDetailsBaseProvider {}
 extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        priceCalculator _: TokenPriceCalculatorProtocol?,
-        feePriceCalculator: TokenPriceCalculatorProtocol?,
+        calculatorFactory: CalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
+        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
+        let feePriceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.chain.utilityAsset()?.priceId)
+
         let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
         let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
             PriceData.amount($0)

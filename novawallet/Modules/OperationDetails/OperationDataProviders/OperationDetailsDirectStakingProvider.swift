@@ -52,14 +52,14 @@ final class OperationDetailsDirectStakingProvider: OperationDetailsBaseProvider,
 extension OperationDetailsDirectStakingProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith _: BigUInt?,
-        priceCalculator: TokenPriceCalculatorProtocol?,
-        feePriceCalculator _: TokenPriceCalculatorProtocol?,
+        calculatorFactory: CalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let context = try? transaction.call.map {
             try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
         }
 
+        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
         let eventId = getEventId(from: context) ?? transaction.txHash
 
         let amount = transaction.amountInPlankIntOrZero

@@ -27,7 +27,6 @@ final class TransactionHistoryViewModelFactory {
     let iconGenerator = PolkadotIconGenerator()
     let calendar = Calendar.current
     let dateFormatter: LocalizableResource<DateFormatter>
-
     var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
 
     init(
@@ -90,6 +89,48 @@ final class TransactionHistoryViewModelFactory {
             timestamp: data.timestamp,
             title: itemTitleWithSubtitle.title,
             subtitle: itemTitleWithSubtitle.subtitle,
+            amount: balance.amount,
+            amountDetails: amountDetails,
+            type: txType,
+            status: data.status,
+            imageViewModel: imageViewModel
+        )
+    }
+
+    private func createSwapItemFromData(
+        _ data: TransactionHistoryItem,
+        priceCalculator: TokenPriceCalculatorProtocol?,
+        locale: Locale,
+        txType: TransactionType
+    ) -> TransactionItemViewModel {
+        let assetIn = chainAsset.chain.asset(byHistoryAssetId: data.swap?.assetIdIn) ?? chainAsset.chain.utilityAsset()
+        let assetOut = chainAsset.chain.asset(byHistoryAssetId: data.swap?.assetIdOut) ?? chainAsset.chain.utilityAsset()
+        let isOutgoing = assetIn?.assetId == chainAsset.asset.assetId
+        let optAmountInPlank = isOutgoing ? data.swap?.amountIn : data.swap?.amountOut
+        let amountInPlank = optAmountInPlank.map { BigUInt($0) ?? 0 } ?? 0
+        let precision = (isOutgoing ? assetIn?.precision : assetOut?.precision) ?? 0
+        let amount = Decimal.fromSubstrateAmount(
+            amountInPlank,
+            precision: Int16(precision)
+        ) ?? .zero
+        let time = dateFormatter.value(for: locale)
+            .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
+        let balance = createBalance(
+            from: amount,
+            priceCalculator: priceCalculator,
+            timestamp: data.timestamp,
+            locale: locale
+        )
+        let icon = R.image.iconActionSwap()
+        let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
+        let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
+        let subtitle = [assetIn?.symbol, assetOut?.symbol].compactMap { $0 }.joined(separator: " → ")
+
+        return .init(
+            identifier: data.identifier,
+            timestamp: data.timestamp,
+            title: R.string.localizable.commonSwap(preferredLanguages: locale.rLanguages),
+            subtitle: subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
             type: txType,
@@ -330,6 +371,13 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
                 locale: locale,
                 txType: transactionType
             )
+        case .swap:
+            return createSwapItemFromData(
+                data,
+                priceCalculator: priceCalculator,
+                locale: locale,
+                txType: transactionType
+            )
         case .reward, .slash:
             return createRewardOrSlashItemFromData(
                 data,
@@ -366,6 +414,8 @@ extension TransactionHistoryItem {
             return .poolReward
         case .poolSlash:
             return .poolSlash
+        case .swap:
+            return .swap
         default:
             if callPath.isSubstrateOrEvmTransfer {
                 return sender == address ? .outgoing : .incoming

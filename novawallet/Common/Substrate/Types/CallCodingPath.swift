@@ -119,8 +119,16 @@ extension CallCodingPath {
         CallCodingPath(moduleName: "Substrate", callName: "poolSlash")
     }
 
+    static var swap: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "swap")
+    }
+
     var isAnyStakingRewardOrSlash: Bool {
         [.slash, .reward, .poolReward, .poolSlash].contains(self)
+    }
+
+    var isSwap: Bool {
+        [.swap].contains(self)
     }
 }
 
@@ -137,6 +145,10 @@ extension CallCodingPath {
         }
 
         if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isAnyStakingRewardOrSlash {
+            return false
+        }
+
+        if !filter.contains(.swaps), !isSwap {
             return false
         }
 

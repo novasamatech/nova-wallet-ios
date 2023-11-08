@@ -31,6 +31,8 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             return .rewards
         } else if poolReward != nil {
             return .poolRewards
+        } else if swap != nil {
+            return .swaps
         } else {
             return .extrinsics
         }
@@ -42,6 +44,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         if let transfer = transfer {
             return createTransactionFromTransfer(
                 transfer,
+                chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
+            )
+        } else if let swap = swap {
+            return createTransactionFromSwap(
+                swap,
                 chainAssetId: chainAsset.chainAssetId,
                 chainFormat: chainAsset.chain.chainFormat
             )
@@ -93,10 +101,47 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: transfer.fee,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: CallCodingPath.transfer,
-            call: nil
+            call: nil,
+            swap: nil
+        )
+    }
+
+    private func createTransactionFromSwap(
+        _ swap: SubquerySwap,
+        chainAssetId: ChainAssetId,
+        chainFormat: ChainFormat
+    ) -> TransactionHistoryItem {
+        let source = TransactionHistoryItemSource.substrate
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
+        return .init(
+            identifier: remoteIdentifier,
+            source: source,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: swap.sender.normalize(for: chainFormat) ?? swap.sender,
+            receiver: swap.receiver.normalize(for: chainFormat) ?? swap.receiver,
+            amountInPlank: nil,
+            // TODO: Status decoding
+            status: .success,
+            txHash: extrinsicHash ?? identifier,
+            timestamp: itemTimestamp,
+            fee: swap.fee,
+            // TODO: feeAssetId decoding
+            feeAssetId: nil,
+            blockNumber: blockNumber,
+            txIndex: UInt16(swap.eventIdx),
+            callPath: CallCodingPath.swap,
+            call: nil,
+            swap: .init(
+                amountIn: swap.amountIn,
+                assetIdIn: swap.assetIdIn,
+                amountOut: swap.amountOut,
+                assetIdOut: swap.assetIdOut
+            )
         )
     }
 
@@ -126,10 +171,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: nil,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: reward.isReward ? .reward : .slash,
-            call: try? JSONEncoder().encode(context)
+            call: try? JSONEncoder().encode(context),
+            swap: nil
         )
     }
 
@@ -158,10 +205,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: nil,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: reward.isReward ? .poolReward : .poolSlash,
-            call: try? JSONEncoder().encode(context)
+            call: try? JSONEncoder().encode(context),
+            swap: nil
         )
     }
 
@@ -185,10 +234,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: extrinsic.fee,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: CallCodingPath(moduleName: extrinsic.module, callName: extrinsic.call),
-            call: extrinsic.call.data(using: .utf8)
+            call: extrinsic.call.data(using: .utf8),
+            swap: nil
         )
     }
 

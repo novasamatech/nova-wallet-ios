@@ -11,30 +11,28 @@ protocol OperationDetailsViewModelFactoryProtocol {
 }
 
 final class OperationDetailsViewModelFactory {
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let feeViewModelFactory: BalanceViewModelFactoryProtocol?
     let dateFormatter: LocalizableResource<DateFormatter>
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
     lazy var poolIconFactory: NominationPoolsIconFactoryProtocol = NominationPoolsIconFactory()
+    lazy var walletViewModelFactory = WalletAccountViewModelFactory()
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
     init(
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        feeViewModelFactory: BalanceViewModelFactoryProtocol?,
         dateFormatter: LocalizableResource<DateFormatter> = DateFormatter.txDetails,
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol =
             DisplayAddressViewModelFactory(),
         quantityFormatter: LocalizableResource<NumberFormatter> =
-            NumberFormatter.quantity.localizableResource()
+            NumberFormatter.quantity.localizableResource(),
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.feeViewModelFactory = feeViewModelFactory
         self.dateFormatter = dateFormatter
         self.networkViewModelFactory = networkViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.quantityFormatter = quantityFormatter
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 
     private func createIconViewModel(
@@ -57,6 +55,9 @@ final class OperationDetailsViewModelFactory {
             } else {
                 return nil
             }
+        case .swap:
+            let image = R.image.iconActionSwap()!
+            return StaticImageViewModel(image: image)
         }
     }
 
@@ -68,6 +69,7 @@ final class OperationDetailsViewModelFactory {
         let amount: BigUInt
         let priceData: PriceData?
         let prefix: String
+        var precision = assetInfo.assetPrecision
 
         switch model {
         case let .transfer(model):
@@ -98,17 +100,29 @@ final class OperationDetailsViewModelFactory {
             amount = model.amount
             priceData = model.priceData
             prefix = "-"
+        case let .swap(model):
+            if model.isOutgoing {
+                amount = model.amountIn
+                priceData = model.priceIn
+                prefix = "-"
+                precision = model.assetIn.displayInfo.assetPrecision
+            } else {
+                amount = model.amountOut
+                priceData = model.priceOut
+                prefix = "+"
+                precision = model.assetOut.displayInfo.assetPrecision
+            }
         }
 
         return Decimal.fromSubstrateAmount(
             amount,
-            precision: assetInfo.assetPrecision
+            precision: precision
         ).map { amountDecimal in
-            let amountViewModel = balanceViewModelFactory.balanceFromPrice(
-                amountDecimal,
+            let amountViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
+                targetAssetInfo: assetInfo,
+                amount: amountDecimal,
                 priceData: priceData
             ).value(for: locale)
-
             return BalanceViewModel(amount: prefix + amountViewModel.amount, price: amountViewModel.price)
         }
     }
@@ -136,9 +150,9 @@ final class OperationDetailsViewModelFactory {
             model.fee,
             precision: feeAssetInfo.assetPrecision
         ).map { amount in
-            let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
-            return viewModelFactory.balanceFromPrice(
-                amount,
+            balanceViewModelFactoryFacade.balanceFromPrice(
+                targetAssetInfo: feeAssetInfo,
+                amount: amount,
                 priceData: model.feePriceData
             ).value(for: locale)
         }
@@ -211,6 +225,111 @@ final class OperationDetailsViewModelFactory {
         return OperationPoolRewardOrSlashViewModel(eventId: model.eventId, pool: poolViewModel)
     }
 
+    private func createSwapViewModel(
+        from model: OperationSwapModel,
+        chainAsset _: ChainAsset,
+        locale: Locale
+    ) -> OperationSwapViewModel {
+        let assetInViewModel = assetViewModel(
+            chain: model.chain,
+            asset: model.assetIn,
+            amount: model.amountIn,
+            priceData: model.priceIn,
+            locale: locale
+        )
+        let assetOutViewModel = assetViewModel(
+            chain: model.chain,
+            asset: model.assetOut,
+            amount: model.amountOut,
+            priceData: model.priceOut,
+            locale: locale
+        )
+        let rateViewModel = rateViewModel(
+            from: .init(
+                assetDisplayInfoIn: model.assetIn.displayInfo,
+                assetDisplayInfoOut: model.assetOut.displayInfo,
+                amountIn: model.amountIn,
+                amountOut: model.amountOut
+            ),
+            locale: locale
+        )
+        let feeAmountDecimal = Decimal.fromSubstrateAmount(
+            model.fee,
+            precision: model.feeAsset.displayInfo.assetPrecision
+        ) ?? 0
+        let feeBalanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: model.feeAsset.displayInfo,
+            amount: feeAmountDecimal,
+            priceData: model.feePrice
+        ).value(for: locale)
+        let walletViewModel = try? walletViewModelFactory.createViewModel(from: model.wallet)
+
+        return OperationSwapViewModel(
+            isOutgoing: model.isOutgoing,
+            assetIn: assetInViewModel,
+            assetOut: assetOutViewModel,
+            rate: rateViewModel,
+            fee: feeBalanceViewModel,
+            wallet: walletViewModel ?? .init(walletName: nil, walletIcon: nil, address: "", addressIcon: nil),
+            transactionHash: model.txHash
+        )
+    }
+
+    private func assetViewModel(
+        chain: ChainModel,
+        asset: AssetModel,
+        amount: BigUInt,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> SwapAssetAmountViewModel {
+        let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
+        let assetIcon: ImageViewModelProtocol = asset.icon.map { RemoteImageViewModel(url: $0) } ??
+            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+        let amountDecimal = Decimal.fromSubstrateAmount(
+            amount,
+            precision: asset.displayInfo.assetPrecision
+        ) ?? 0
+        let balanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: asset.displayInfo,
+            amount: amountDecimal,
+            priceData: priceData
+        ).value(for: locale)
+
+        return .init(
+            imageViewModel: assetIcon,
+            hub: networkViewModel,
+            balance: balanceViewModel
+        )
+    }
+
+    func rateViewModel(from params: RateParams, locale: Locale) -> String {
+        guard
+            let amountOutDecimal = Decimal.fromSubstrateAmount(
+                params.amountOut,
+                precision: params.assetDisplayInfoOut.assetPrecision
+            ),
+            let amountInDecimal = Decimal.fromSubstrateAmount(
+                params.amountIn,
+                precision: params.assetDisplayInfoIn.assetPrecision
+            ),
+            amountInDecimal != 0 else {
+            return ""
+        }
+
+        let difference = amountOutDecimal / amountInDecimal
+
+        let amountIn = balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: params.assetDisplayInfoIn,
+            value: 1
+        ).value(for: locale)
+        let amountOut = balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: params.assetDisplayInfoOut,
+            value: difference
+        ).value(for: locale)
+
+        return "\(amountIn) = \(amountOut)"
+    }
+
     private func createContentViewModel(
         from data: OperationDetailsModel.OperationData,
         chainAsset: ChainAsset,
@@ -260,6 +379,9 @@ final class OperationDetailsViewModelFactory {
                 locale: locale
             )
             return .poolSlash(viewModel)
+        case let .swap(model):
+            let viewModel = createSwapViewModel(from: model, chainAsset: chainAsset, locale: locale)
+            return .swap(viewModel)
         }
     }
 }

@@ -3,7 +3,7 @@ import RobinHood
 import CoreData
 
 extension CDTransactionItem: CoreDataCodable {
-    public func populate(from decoder: Decoder, using _: NSManagedObjectContext) throws {
+    public func populate(from decoder: Decoder, using context: NSManagedObjectContext) throws {
         let container = try decoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
         let identifier = try container.decode(String.self, forKey: .identifier)
@@ -28,7 +28,11 @@ extension CDTransactionItem: CoreDataCodable {
         if let fee = try container.decodeIfPresent(String.self, forKey: .fee) {
             self.fee = fee
         }
-
+        if let feeAssetId = try container.decodeIfPresent(UInt32.self, forKey: .feeAssetId) {
+            self.feeAssetId = NSNumber(value: feeAssetId)
+        } else {
+            feeAssetId = nil
+        }
         let callPath = try container.decode(CallCodingPath.self, forKey: .callPath)
         callName = callPath.callName
         moduleName = callPath.moduleName
@@ -45,6 +49,14 @@ extension CDTransactionItem: CoreDataCodable {
             txIndex = NSNumber(value: index)
         } else {
             txIndex = nil
+        }
+        if let swapContainer = try? container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap) {
+            let newSwap = CDTransactionSwapItem(context: context)
+            newSwap.amountIn = try swapContainer.decode(String.self, forKey: .amountIn)
+            newSwap.amountOut = try swapContainer.decode(String.self, forKey: .amountOut)
+            newSwap.assetIdIn = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdIn)
+            newSwap.assetIdOut = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdOut)
+            swap = newSwap
         }
     }
 
@@ -71,5 +83,13 @@ extension CDTransactionItem: CoreDataCodable {
         }
 
         try container.encodeIfPresent(call, forKey: .call)
+
+        if let swap = swap {
+            var nestedSwap = container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap)
+            try nestedSwap.encode(swap.amountIn, forKey: .amountIn)
+            try nestedSwap.encode(swap.amountOut, forKey: .amountOut)
+            try nestedSwap.encodeIfPresent(swap.assetIdIn, forKey: .assetIdIn)
+            try nestedSwap.encodeIfPresent(swap.assetIdOut, forKey: .assetIdOut)
+        }
     }
 }

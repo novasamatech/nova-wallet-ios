@@ -169,7 +169,7 @@ extension HistoryItemTableViewCell {
         amountDetailsLabel.text = transactionModel.amountDetails
 
         switch transactionModel.type {
-        case .incoming, .reward, .poolReward:
+        case .incoming, .reward, .poolReward, .swap:
             amountLabel.text = "+ \(transactionModel.amount)"
             amountLabel.textColor = R.color.colorTextPositive()!
         case .outgoing, .slash, .poolSlash, .extrinsic:
@@ -186,7 +186,7 @@ extension HistoryItemTableViewCell {
                     .offset(-Constants.titleSpacingForTransfer)
             }
 
-        case .slash, .reward, .poolReward, .poolSlash:
+        case .slash, .reward, .poolReward, .poolSlash, .swap:
             subtitleLabel.lineBreakMode = .byTruncatingTail
 
             subtitleLabel.snp.updateConstraints { make in

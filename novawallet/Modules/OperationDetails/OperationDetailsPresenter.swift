@@ -105,6 +105,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
                 return
             }
             presentAddressOptions(address)
+        case let .swap(model):
+            presentAddressOptions(model.wallet.address)
         case .none:
             break
         }
@@ -135,7 +137,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             presentTransactionHashOptions(contractModel.txHash)
         case let .poolReward(poolRewardOrSlashModel), let .poolSlash(poolRewardOrSlashModel):
             presentEventIdOptions(poolRewardOrSlashModel.eventId)
-        case .none:
+        // TODO: repeat swap action
+        case .none, .swap:
             break
         }
     }

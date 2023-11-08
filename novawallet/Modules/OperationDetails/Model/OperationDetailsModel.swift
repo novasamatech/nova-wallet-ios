@@ -15,6 +15,7 @@ struct OperationDetailsModel {
         case contract(_ model: OperationContractCallModel)
         case poolReward(_ model: OperationPoolRewardOrSlashModel)
         case poolSlash(_ model: OperationPoolRewardOrSlashModel)
+        case swap(_ model: OperationSwapModel)
     }
 
     let time: Date

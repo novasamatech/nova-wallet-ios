@@ -1,6 +1,6 @@
 import UIKit
 
-final class OperationDetailsSwapView: ScrollableContainerLayoutView, LocalizableViewProtocol {
+final class OperationDetailsSwapView: LocalizableView {
     let senderTableView = StackTableView()
 
     let pairsView = SwapPairView()
@@ -39,6 +39,18 @@ final class OperationDetailsSwapView: ScrollableContainerLayoutView, Localizable
         }
     }
 
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupStyle()
+        setupLayout()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     func bind(viewModel: OperationSwapViewModel) {
         pairsView.leftAssetView.bind(viewModel: viewModel.assetIn)
         pairsView.rigthAssetView.bind(viewModel: viewModel.assetOut)
@@ -56,6 +68,14 @@ final class OperationDetailsSwapView: ScrollableContainerLayoutView, Localizable
             imageViewModel: viewModel.wallet.addressIcon
         ))
         transactionHashView.bind(details: viewModel.transactionHash)
+
+        if viewModel.isOutgoing {
+            pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPositive()
+            pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPrimary()
+        } else {
+            pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPrimary()
+            pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPositive()
+        }
     }
 
     private func setup(locale: Locale) {
@@ -75,30 +95,37 @@ final class OperationDetailsSwapView: ScrollableContainerLayoutView, Localizable
         )
     }
 
-    override func setupStyle() {
+    func setupStyle() {
         backgroundColor = .clear
     }
 
-    override func setupLayout() {
-        super.setupLayout()
+    func setupLayout() {
+        addSubview(pairsView)
+        addSubview(detailsTableView)
+        addSubview(walletTableView)
+        addSubview(transactionTableView)
 
-        stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
-        addArrangedSubview(pairsView, spacingAfter: 8)
-        addArrangedSubview(detailsTableView, spacingAfter: 8)
-        addArrangedSubview(walletTableView, spacingAfter: 8)
-        addArrangedSubview(transactionTableView)
+        pairsView.snp.makeConstraints {
+            $0.leading.trailing.top.equalToSuperview()
+        }
+        detailsTableView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(pairsView.snp.bottom).offset(8)
+        }
+        walletTableView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(detailsTableView.snp.bottom).offset(8)
+        }
+        transactionTableView.snp.makeConstraints {
+            $0.leading.trailing.bottom.equalToSuperview()
+            $0.top.equalTo(walletTableView.snp.bottom).offset(8)
+            $0.bottom.equalToSuperview().offset(24)
+        }
 
         detailsTableView.addArrangedSubview(rateCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
         walletTableView.addArrangedSubview(walletCell)
         walletTableView.addArrangedSubview(accountCell)
         transactionTableView.addArrangedSubview(transactionHashView)
-
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
     }
 }

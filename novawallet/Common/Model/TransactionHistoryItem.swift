@@ -21,10 +21,12 @@ struct TransactionHistoryItem: Codable {
         case txHash
         case timestamp
         case fee
+        case feeAssetId
         case blockNumber
         case txIndex
         case callPath
         case call
+        case swap
     }
 
     enum Status: Int16, Codable {
@@ -44,10 +46,12 @@ struct TransactionHistoryItem: Codable {
     let txHash: String
     let timestamp: Int64
     let fee: String?
+    let feeAssetId: String?
     let blockNumber: UInt64?
     let txIndex: UInt16?
     let callPath: CallCodingPath
     let call: Data?
+    let swap: SwapHistoryData?
 }
 
 extension TransactionHistoryItem: Identifiable {
@@ -82,4 +86,18 @@ extension TransactionHistoryItemSource {
             self = .evmNative
         }
     }
+}
+
+struct SwapHistoryData: Codable {
+    enum CodingKeys: String, CodingKey {
+        case amountIn
+        case assetIdIn
+        case amountOut
+        case assetIdOut
+    }
+
+    let amountIn: String
+    let assetIdIn: String?
+    let amountOut: String
+    let assetIdOut: String?
 }

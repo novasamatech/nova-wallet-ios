@@ -87,6 +87,14 @@ final class SubqueryHistoryOperationFactory {
             }
         }
 
+        if filter.contains(.swaps) {
+            if let assetId = assetId {
+                filterStrings.append(prepareAssetIdFilter(assetId))
+            } else {
+                filterStrings.append("{ swap: { isNull: false } }")
+            }
+        }
+
         return filterStrings.joined(separator: ",")
     }
 
@@ -127,6 +135,7 @@ final class SubqueryHistoryOperationFactory {
                      extrinsic
                      \(transferField)
                      \(poolRewardField)
+                     swap
                  }
              }
         }

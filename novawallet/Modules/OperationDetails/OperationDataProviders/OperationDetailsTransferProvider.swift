@@ -27,14 +27,15 @@ final class OperationDetailsTransferProvider: OperationDetailsBaseProvider, Acco
 extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        priceCalculator: TokenPriceCalculatorProtocol?,
-        feePriceCalculator: TokenPriceCalculatorProtocol?,
+        calculatorFactory: CalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
             progressClosure(nil)
             return
         }
+        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
+        let feePriceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.chain.utilityAsset()?.priceId)
         let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
             ?? transaction.sender
         let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
