@@ -119,14 +119,16 @@ struct SwapModel {
         let swapAmount = spendingAmountInPlank ?? 0
 
         let totalSpending = swapAmount + fee
+        
+        let isViolatingConsumers = !notViolatingConsumers
 
-        guard balance < totalSpending else {
+        guard balance < totalSpending || isViolatingConsumers else {
             return nil
         }
 
         if balance < swapAmount {
             return .amountToHigh(.init(available: balance.decimal(precision: payChainAsset.asset.precision)))
-        } else if !notViolatingConsumers {
+        } else if isViolatingConsumers {
             let minBalance = utilityAssetExistense?.minBalance ?? 0
             let precision = (utilityChainAsset ?? feeChainAsset).asset.precision
             let fee = feeModel?.totalFee.targetAmount ?? 0
@@ -169,18 +171,6 @@ struct SwapModel {
                 )
             }
         }
-    }
-
-    var notViolatingExistenseAfterFee: Bool {
-        guard feeChainAsset.isUtilityAsset else {
-            return true
-        }
-
-        let totalBalance = utilityAssetBalance?.freeInPlank ?? 0
-        let minBalance = utilityAssetExistense?.minBalance ?? 0
-        let fee = feeModel?.totalFee.targetAmount ?? 0
-
-        return totalBalance >= minBalance + fee
     }
 
     var accountWillBeKilled: Bool {
