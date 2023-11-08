@@ -6,6 +6,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     let presenter: SwapSetupPresenterProtocol
 
+    private var toggledDetailsManually: Bool = false
+
     init(
         presenter: SwapSetupPresenterProtocol,
         localizationManager: LocalizationManager
@@ -89,6 +91,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(depositTokenAction),
             for: .touchUpInside
         )
+
+        rootView.detailsView.delegate = self
     }
 
     private func setupLocalization() {
@@ -234,6 +238,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveDetailsState(isAvailable: Bool) {
         rootView.detailsView.isHidden = !isAvailable
+
+        if !isAvailable {
+            toggledDetailsManually = false
+        }
     }
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {
@@ -242,6 +250,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
+
+        if !toggledDetailsManually, !rootView.detailsView.expanded {
+            rootView.detailsView.setExpanded(true, animated: true)
+        }
     }
 
     func didReceiveSettingsState(isAvailable: Bool) {
@@ -307,6 +319,16 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didStopLoading() {
         rootView.loadableActionView.stopLoading()
+    }
+}
+
+extension SwapSetupViewController: CollapsableContainerViewDelegate {
+    func animateAlongsideWithInfo(sender _: AnyObject?) {
+        rootView.containerView.scrollView.layoutIfNeeded()
+    }
+
+    func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {
+        toggledDetailsManually = true
     }
 }
 

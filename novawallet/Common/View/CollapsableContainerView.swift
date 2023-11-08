@@ -1,7 +1,7 @@
 import SoraUI
 import SnapKit
 
-protocol CollapsableNetworkInfoViewDelegate: AnyObject {
+protocol CollapsableContainerViewDelegate: AnyObject {
     func animateAlongsideWithInfo(sender: AnyObject?)
     func didChangeExpansion(isExpanded: Bool, sender: AnyObject)
 }
@@ -53,7 +53,7 @@ class CollapsableContainerView: UIView {
         }
     }
 
-    weak var delegate: CollapsableNetworkInfoViewDelegate?
+    weak var delegate: CollapsableContainerViewDelegate?
 
     lazy var expansionAnimator: BlockViewAnimatorProtocol = BlockViewAnimator()
 
@@ -78,7 +78,7 @@ class CollapsableContainerView: UIView {
             titleControl.deactivate(animated: animated)
         }
 
-        applyExpansion(animated: animated)
+        applyExpansion(animated: animated, shouldNotifyDelegate: false)
     }
 
     private func setupHandlers() {
@@ -129,14 +129,14 @@ class CollapsableContainerView: UIView {
         }
     }
 
-    private func applyExpansion(animated: Bool) {
+    private func applyExpansion(animated: Bool, shouldNotifyDelegate: Bool) {
         if animated {
             expansionAnimator.animate(block: { [weak self] in
                 guard let self = self else {
                     return
                 }
 
-                self.applyExpansionState()
+                self.applyExpansionState(shouldNotifyDelegate)
 
                 let animation = CABasicAnimation()
                 animation.toValue = self.backgroundView.contentView?.shapePath
@@ -146,30 +146,36 @@ class CollapsableContainerView: UIView {
                 self.delegate?.animateAlongsideWithInfo(sender: self)
             }, completionBlock: nil)
         } else {
-            applyExpansionState()
+            applyExpansionState(shouldNotifyDelegate)
             setNeedsLayout()
         }
     }
 
-    private func applyExpansionState() {
+    private func applyExpansionState(_ shouldNotifyDelegate: Bool) {
         if expanded {
             contentView.snp.updateConstraints { make in
-                make.top.bottom.equalToSuperview()
+                make.top.equalToSuperview()
             }
             layoutIfNeeded()
-            delegate?.didChangeExpansion(isExpanded: true, sender: self)
+
+            if shouldNotifyDelegate {
+                delegate?.didChangeExpansion(isExpanded: true, sender: self)
+            }
         } else {
             contentView.snp.updateConstraints { make in
-                make.top.bottom.equalToSuperview().offset(
+                make.top.equalToSuperview().offset(
                     -CGFloat(stackView.arrangedSubviews.count) * Constants.rowHeight - Constants.stackViewBottomInset
                 )
             }
             layoutIfNeeded()
-            delegate?.didChangeExpansion(isExpanded: false, sender: self)
+
+            if shouldNotifyDelegate {
+                delegate?.didChangeExpansion(isExpanded: false, sender: self)
+            }
         }
     }
 
     @objc func actionToggleExpansion() {
-        applyExpansion(animated: true)
+        applyExpansion(animated: true, shouldNotifyDelegate: true)
     }
 }
