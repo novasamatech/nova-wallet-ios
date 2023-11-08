@@ -85,7 +85,7 @@ extension OperationDetailsSwapProvider: OperationDetailsDataProviderProtocol {
         guard let priceId = assetModel?.priceId else {
             return nil
         }
-        let provider = calculatorFactory.createPriceProvider(for: priceId)
+        let provider = calculatorFactory.createPriceCalculator(for: priceId)
         return provider?.calculatePrice(for: timestamp).map {
             PriceData.amount($0)
         }

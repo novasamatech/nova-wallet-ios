@@ -56,7 +56,7 @@ final class OperationDetailsViewModelFactory {
                 return nil
             }
         case .swap:
-            let image = R.image.iconActionSwap()!
+            let image = R.image.iconSwap()!
             return StaticImageViewModel(image: image)
         }
     }
@@ -227,7 +227,6 @@ final class OperationDetailsViewModelFactory {
 
     private func createSwapViewModel(
         from model: OperationSwapModel,
-        chainAsset _: ChainAsset,
         locale: Locale
     ) -> OperationSwapViewModel {
         let assetInViewModel = assetViewModel(
@@ -380,7 +379,7 @@ final class OperationDetailsViewModelFactory {
             )
             return .poolSlash(viewModel)
         case let .swap(model):
-            let viewModel = createSwapViewModel(from: model, chainAsset: chainAsset, locale: locale)
+            let viewModel = createSwapViewModel(from: model, locale: locale)
             return .swap(viewModel)
         }
     }

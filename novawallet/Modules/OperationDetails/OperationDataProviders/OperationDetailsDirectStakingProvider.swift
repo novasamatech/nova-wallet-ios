@@ -59,7 +59,7 @@ extension OperationDetailsDirectStakingProvider: OperationDetailsDataProviderPro
             try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
         }
 
-        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
+        let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
         let eventId = getEventId(from: context) ?? transaction.txHash
 
         let amount = transaction.amountInPlankIntOrZero

@@ -140,7 +140,7 @@ extension OperationDetailsPoolStakingProvider: OperationDetailsDataProviderProto
             try JSONDecoder().decode(HistoryPoolRewardContext.self, from: $0)
         }
 
-        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
+        let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
         let eventId = getEventId(from: optContext) ?? transaction.txHash
         let amount = transaction.amountInPlankIntOrZero
         let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {

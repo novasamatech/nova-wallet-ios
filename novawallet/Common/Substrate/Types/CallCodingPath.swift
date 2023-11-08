@@ -128,7 +128,7 @@ extension CallCodingPath {
     }
 
     var isSwap: Bool {
-        [.swap].contains(self)
+        self == .swap
     }
 }
 

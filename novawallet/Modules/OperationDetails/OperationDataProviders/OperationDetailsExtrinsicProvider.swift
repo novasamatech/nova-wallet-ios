@@ -14,7 +14,7 @@ extension OperationDetailsExtrinsicProvider: OperationDetailsDataProviderProtoco
             return
         }
 
-        let feePriceCalculator = calculatorFactory.createPriceProvider(for: chain.utilityAsset()?.priceId)
+        let feePriceCalculator = calculatorFactory.createPriceCalculator(for: chain.utilityAsset()?.priceId)
         let fee = newFee ?? transaction.feeInPlankIntOrZero
         let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
             PriceData.amount($0)

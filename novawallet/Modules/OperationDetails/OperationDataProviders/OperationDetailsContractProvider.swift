@@ -9,8 +9,8 @@ extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol
         calculatorFactory: CalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
-        let feePriceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.chain.utilityAsset()?.priceId)
+        let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
+        let feePriceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.chain.utilityAsset()?.priceId)
 
         let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
         let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {

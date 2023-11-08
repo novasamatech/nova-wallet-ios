@@ -137,8 +137,9 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             presentTransactionHashOptions(contractModel.txHash)
         case let .poolReward(poolRewardOrSlashModel), let .poolSlash(poolRewardOrSlashModel):
             presentEventIdOptions(poolRewardOrSlashModel.eventId)
-        // TODO: repeat swap action
-        case .none, .swap:
+        case let .swap(swapModel):
+            presentTransactionHashOptions(swapModel.txHash)
+        case .none:
             break
         }
     }

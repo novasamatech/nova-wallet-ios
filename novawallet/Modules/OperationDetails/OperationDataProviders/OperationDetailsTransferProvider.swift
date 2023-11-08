@@ -34,8 +34,8 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
             progressClosure(nil)
             return
         }
-        let priceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.asset.priceId)
-        let feePriceCalculator = calculatorFactory.createPriceProvider(for: chainAsset.chain.utilityAsset()?.priceId)
+        let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
+        let feePriceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.chain.utilityAsset()?.priceId)
         let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
             ?? transaction.sender
         let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
