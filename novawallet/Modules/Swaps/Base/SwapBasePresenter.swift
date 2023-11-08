@@ -123,7 +123,7 @@ class SwapBasePresenter {
             feeModel: fee,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            accountInfo: nil
+            accountInfo: accountInfo
         )
     }
 
@@ -360,6 +360,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
 
         logger.debug("New account info: \(String(describing: accountInfo))")
 
+        self.accountInfo = accountInfo
+        
         handleNewAccountInfo(accountInfo, chainId: chainId)
     }
 }

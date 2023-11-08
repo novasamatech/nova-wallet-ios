@@ -740,6 +740,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation(
             notifyingOnSuccess: { [weak self] in
+                self?.view?.didStopLoading()
+
                 guard let slippage = self?.slippage,
                       let quote = self?.quote,
                       let quoteArgs = self?.quoteArgs else {

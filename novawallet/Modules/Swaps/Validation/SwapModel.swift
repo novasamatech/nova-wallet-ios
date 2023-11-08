@@ -119,7 +119,7 @@ struct SwapModel {
         let swapAmount = spendingAmountInPlank ?? 0
 
         let totalSpending = swapAmount + fee
-        
+
         let isViolatingConsumers = !notViolatingConsumers
 
         guard balance < totalSpending || isViolatingConsumers else {
