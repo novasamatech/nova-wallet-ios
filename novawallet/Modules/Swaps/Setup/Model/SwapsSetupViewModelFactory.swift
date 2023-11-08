@@ -1,76 +1,64 @@
 import SoraFoundation
 import BigInt
 
-struct RateParams {
-    let assetDisplayInfoIn: AssetBalanceDisplayInfo
-    let assetDisplayInfoOut: AssetBalanceDisplayInfo
-    let amountIn: BigUInt
-    let amountOut: BigUInt
-}
-
-protocol SwapsSetupViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactoryProtocol, SwapIssueViewModelFactoryProtocol {
-    var locale: Locale { get set }
-
-    func buttonState(for issueParams: SwapIssueCheckParams) -> ButtonState
+protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol,
+    SwapPriceDifferenceViewModelFactoryProtocol,
+    SwapIssueViewModelFactoryProtocol {
+    func buttonState(for issueParams: SwapIssueCheckParams, locale: Locale) -> ButtonState
 
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        maxValue: BigUInt?
+        maxValue: BigUInt?,
+        locale: Locale
     ) -> TitleHorizontalMultiValueView.Model
-    func payAssetViewModel(chainAsset: ChainAsset?) -> SwapAssetInputViewModel
+
+    func payAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel
+
     func inputPriceViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo,
         amount: Decimal?,
-        priceData: PriceData?
+        priceData: PriceData?,
+        locale: Locale
     ) -> String?
-    func receiveTitleViewModel() -> TitleHorizontalMultiValueView.Model
-    func receiveAssetViewModel(chainAsset: ChainAsset?) -> SwapAssetInputViewModel
-    func amountInputViewModel(chainAsset: ChainAsset, amount: Decimal?) -> AmountInputViewModelProtocol
-    func rateViewModel(from params: RateParams) -> String
+
+    func receiveTitleViewModel(for locale: Locale) -> TitleHorizontalMultiValueView.Model
+    func receiveAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel
+
+    func amountInputViewModel(
+        chainAsset: ChainAsset,
+        amount: Decimal?,
+        locale: Locale
+    ) -> AmountInputViewModelProtocol
+
     func feeViewModel(
         amount: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         isEditable: Bool,
-        priceData: PriceData?
+        priceData: PriceData?,
+        locale: Locale
     ) -> SwapFeeViewModel
 
-    func minimalBalanceSwapForFeeMessage(
-        for networkFeeAddition: AssetConversion.AmountWithNative,
-        feeChainAsset: ChainAsset,
-        utilityChainAsset: ChainAsset,
-        utilityPriceData: PriceData?
-    ) -> String
-
-    func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset) -> String
+    func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String
 }
 
-final class SwapsSetupViewModelFactory {
-    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let percentForamatter: LocalizableResource<NumberFormatter>
-    private(set) var localizedPercentForamatter: NumberFormatter
-    private(set) var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
 
-    var locale: Locale {
-        didSet {
-            localizedPercentForamatter = percentForamatter.value(for: locale)
-        }
-    }
+    private(set) var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        percentForamatter: LocalizableResource<NumberFormatter>,
-        locale: Locale
+        percentForamatter: LocalizableResource<NumberFormatter>
     ) {
-        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
         self.issuesViewModelFactory = issuesViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.percentForamatter = percentForamatter
-        self.locale = locale
-        localizedPercentForamatter = percentForamatter.value(for: locale)
+
+        super.init(balanceViewModelFactoryFacade: balanceViewModelFactoryFacade)
     }
 
     private static func buttonTitle(
@@ -104,7 +92,7 @@ final class SwapsSetupViewModelFactory {
         )
     }
 
-    private func emptyPayAssetViewModel() -> EmptySwapsAssetViewModel {
+    private func emptyPayAssetViewModel(for locale: Locale) -> EmptySwapsAssetViewModel {
         EmptySwapsAssetViewModel(
             imageViewModel: StaticImageViewModel(image: R.image.iconAddSwapAmount()!),
             title: R.string.localizable.swapsSetupAssetPayTitle(preferredLanguages: locale.rLanguages),
@@ -112,7 +100,7 @@ final class SwapsSetupViewModelFactory {
         )
     }
 
-    private func emptyReceiveAssetViewModel() -> EmptySwapsAssetViewModel {
+    private func emptyReceiveAssetViewModel(for locale: Locale) -> EmptySwapsAssetViewModel {
         EmptySwapsAssetViewModel(
             imageViewModel: StaticImageViewModel(image: R.image.iconAddSwapAmount()!),
             title: R.string.localizable.swapsSetupAssetReceiveTitle(preferredLanguages: locale.rLanguages),
@@ -122,7 +110,7 @@ final class SwapsSetupViewModelFactory {
 }
 
 extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
-    func buttonState(for issueParams: SwapIssueCheckParams) -> ButtonState {
+    func buttonState(for issueParams: SwapIssueCheckParams, locale: Locale) -> ButtonState {
         let dataFullFilled = issueParams.payChainAsset != nil &&
             issueParams.receiveChainAsset != nil &&
             issueParams.payAmount != nil && issueParams.receiveAmount != nil
@@ -143,7 +131,8 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
 
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        maxValue: BigUInt?
+        maxValue: BigUInt?,
+        locale: Locale
     ) -> TitleHorizontalMultiValueView.Model {
         let title = R.string.localizable.swapsSetupAssetSelectPayTitle(
             preferredLanguages: locale.rLanguages
@@ -179,14 +168,16 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         }
     }
 
-    func payAssetViewModel(chainAsset: ChainAsset?) -> SwapAssetInputViewModel {
-        chainAsset.map { .asset(assetViewModel(chainAsset: $0)) } ?? .empty(emptyPayAssetViewModel())
+    func payAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel {
+        chainAsset.map { .asset(assetViewModel(chainAsset: $0)) } ??
+            .empty(emptyPayAssetViewModel(for: locale))
     }
 
     func inputPriceViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo,
         amount: Decimal?,
-        priceData: PriceData?
+        priceData: PriceData?,
+        locale: Locale
     ) -> String? {
         guard
             let amount = amount,
@@ -200,7 +191,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         ).value(for: locale)
     }
 
-    func receiveTitleViewModel() -> TitleHorizontalMultiValueView.Model {
+    func receiveTitleViewModel(for locale: Locale) -> TitleHorizontalMultiValueView.Model {
         TitleHorizontalMultiValueView.Model(
             title:
             R.string.localizable.swapsSetupAssetSelectReceiveTitle(preferredLanguages: locale.rLanguages),
@@ -209,36 +200,15 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         )
     }
 
-    func receiveAssetViewModel(chainAsset: ChainAsset?) -> SwapAssetInputViewModel {
-        chainAsset.map { .asset(assetViewModel(chainAsset: $0)) } ?? .empty(emptyReceiveAssetViewModel())
-    }
-
-    func rateViewModel(from params: RateParams) -> String {
-        guard
-            let rate = Decimal.rateFromSubstrate(
-                amount1: params.amountIn,
-                amount2: params.amountOut,
-                precision1: params.assetDisplayInfoIn.assetPrecision,
-                precision2: params.assetDisplayInfoOut.assetPrecision
-            ) else {
-            return ""
-        }
-
-        let amountIn = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: params.assetDisplayInfoIn,
-            value: 1
-        ).value(for: locale)
-        let amountOut = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: params.assetDisplayInfoOut,
-            value: rate
-        ).value(for: locale)
-
-        return amountIn.estimatedEqual(to: amountOut)
+    func receiveAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel {
+        chainAsset.map { .asset(assetViewModel(chainAsset: $0)) } ??
+            .empty(emptyReceiveAssetViewModel(for: locale))
     }
 
     func amountInputViewModel(
         chainAsset: ChainAsset,
-        amount: Decimal?
+        amount: Decimal?,
+        locale: Locale
     ) -> AmountInputViewModelProtocol {
         balanceViewModelFactoryFacade.createBalanceInputViewModel(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -250,7 +220,8 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         amount: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         isEditable: Bool,
-        priceData: PriceData?
+        priceData: PriceData?,
+        locale: Locale
     ) -> SwapFeeViewModel {
         let amountDecimal = Decimal.fromSubstrateAmount(
             amount,
@@ -265,47 +236,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         return .init(isEditable: isEditable, balanceViewModel: balanceViewModel)
     }
 
-    func minimalBalanceSwapForFeeMessage(
-        for networkFeeAddition: AssetConversion.AmountWithNative,
-        feeChainAsset: ChainAsset,
-        utilityChainAsset: ChainAsset,
-        utilityPriceData: PriceData?
-    ) -> String {
-        let targetAmount = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: feeChainAsset.assetDisplayInfo,
-            value: networkFeeAddition.targetAmount.decimal(precision: feeChainAsset.asset.precision)
-        ).value(for: locale)
-
-        let nativeAmountDecimal = networkFeeAddition.nativeAmount.decimal(precision: utilityChainAsset.asset.precision)
-        let nativeAmountWithoutPrice = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: utilityChainAsset.assetDisplayInfo,
-            value: nativeAmountDecimal
-        ).value(for: locale)
-
-        let nativeAmount: String
-
-        if let priceData = utilityPriceData {
-            let price = balanceViewModelFactoryFacade.priceFromAmount(
-                targetAssetInfo: utilityChainAsset.assetDisplayInfo,
-                amount: nativeAmountDecimal,
-                priceData: priceData
-            ).value(for: locale)
-
-            nativeAmount = "\(nativeAmountWithoutPrice) \(price.inParenthesis())"
-        } else {
-            nativeAmount = nativeAmountWithoutPrice
-        }
-
-        return R.string.localizable.swapsPayAssetFeeEdMessage(
-            feeChainAsset.asset.symbol,
-            targetAmount,
-            nativeAmount,
-            utilityChainAsset.asset.symbol,
-            preferredLanguages: locale.rLanguages
-        )
-    }
-
-    func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset) -> String {
+    func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String {
         balanceViewModelFactoryFacade.amountFromValue(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             value: decimal

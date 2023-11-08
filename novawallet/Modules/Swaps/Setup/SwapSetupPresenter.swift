@@ -280,13 +280,18 @@ extension SwapSetupPresenter {
     private func providePayTitle() {
         let payTitleViewModel = viewModelFactory.payTitleViewModel(
             assetDisplayInfo: payChainAsset?.assetDisplayInfo,
-            maxValue: payAssetBalance?.transferable
+            maxValue: payAssetBalance?.transferable,
+            locale: selectedLocale
         )
         view?.didReceiveTitle(payViewModel: payTitleViewModel)
     }
 
     private func providePayAssetViewModel() {
-        let payAssetViewModel = viewModelFactory.payAssetViewModel(chainAsset: payChainAsset)
+        let payAssetViewModel = viewModelFactory.payAssetViewModel(
+            chainAsset: payChainAsset,
+            locale: selectedLocale
+        )
+
         view?.didReceiveInputChainAsset(payViewModel: payAssetViewModel)
     }
 
@@ -294,10 +299,13 @@ extension SwapSetupPresenter {
         guard let payChainAsset = payChainAsset else {
             return
         }
+
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: payChainAsset,
-            amount: getPayAmount(for: payAmountInput)
+            amount: getPayAmount(for: payAmountInput),
+            locale: selectedLocale
         )
+
         view?.didReceiveAmount(payInputViewModel: amountInputViewModel)
     }
 
@@ -310,21 +318,27 @@ extension SwapSetupPresenter {
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
             amount: getPayAmount(for: payAmountInput),
-            priceData: payAssetPriceData
+            priceData: payAssetPriceData,
+            locale: selectedLocale
         )
 
         view?.didReceiveAmountInputPrice(payViewModel: inputPriceViewModel)
     }
 
     private func provideReceiveTitle() {
-        let receiveTitleViewModel = viewModelFactory.receiveTitleViewModel()
+        let receiveTitleViewModel = viewModelFactory.receiveTitleViewModel(
+            for: selectedLocale
+        )
+
         view?.didReceiveTitle(receiveViewModel: receiveTitleViewModel)
     }
 
     private func provideReceiveAssetViewModel() {
         let receiveAssetViewModel = viewModelFactory.receiveAssetViewModel(
-            chainAsset: receiveChainAsset
+            chainAsset: receiveChainAsset,
+            locale: selectedLocale
         )
+
         view?.didReceiveInputChainAsset(receiveViewModel: receiveAssetViewModel)
     }
 
@@ -334,8 +348,10 @@ extension SwapSetupPresenter {
         }
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: receiveChainAsset,
-            amount: receiveAmountInput
+            amount: receiveAmountInput,
+            locale: selectedLocale
         )
+
         view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
 
@@ -348,7 +364,8 @@ extension SwapSetupPresenter {
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
             amount: receiveAmountInput,
-            priceData: receiveAssetPriceData
+            priceData: receiveAssetPriceData,
+            locale: selectedLocale
         )
 
         let differenceViewModel: DifferenceViewModel?
@@ -390,7 +407,10 @@ extension SwapSetupPresenter {
     }
 
     private func provideButtonState() {
-        let buttonState = viewModelFactory.buttonState(for: getIssueParams())
+        let buttonState = viewModelFactory.buttonState(
+            for: getIssueParams(),
+            locale: selectedLocale
+        )
 
         view?.didReceiveButtonState(
             title: buttonState.title.value(for: selectedLocale),
@@ -414,12 +434,15 @@ extension SwapSetupPresenter {
             view?.didReceiveRate(viewModel: .loading)
             return
         }
-        let rateViewModel = viewModelFactory.rateViewModel(from: .init(
-            assetDisplayInfoIn: assetDisplayInfoIn,
-            assetDisplayInfoOut: assetDisplayInfoOut,
-            amountIn: quote.amountIn,
-            amountOut: quote.amountOut
-        ))
+        let rateViewModel = viewModelFactory.rateViewModel(
+            from: .init(
+                assetDisplayInfoIn: assetDisplayInfoIn,
+                assetDisplayInfoOut: assetDisplayInfoOut,
+                amountIn: quote.amountIn,
+                amountOut: quote.amountOut
+            ),
+            locale: selectedLocale
+        )
 
         view?.didReceiveRate(viewModel: .loaded(value: rateViewModel))
     }
@@ -437,7 +460,8 @@ extension SwapSetupPresenter {
             amount: fee,
             assetDisplayInfo: feeChainAsset.assetDisplayInfo,
             isEditable: isEditable,
-            priceData: feeAssetPriceData
+            priceData: feeAssetPriceData,
+            locale: selectedLocale
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
@@ -462,7 +486,8 @@ extension SwapSetupPresenter {
             for: networkFeeAddition,
             feeChainAsset: feeChainAsset,
             utilityChainAsset: utilityChainAsset,
-            utilityPriceData: prices[utilityChainAsset.chainAssetId]
+            utilityPriceData: prices[utilityChainAsset.chainAssetId],
+            locale: selectedLocale
         )
 
         view?.didSetNotification(message: message)
@@ -565,16 +590,21 @@ extension SwapSetupPresenter {
 
         estimateFee()
     }
+
+    private func updateViews() {
+        providePayAssetViews()
+        provideReceiveAssetViews()
+        provideDetailsViewModel(isAvailable: quoteArgs != nil)
+        provideButtonState()
+        provideSettingsState()
+        provideIssues()
+        provideNotification()
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
-        providePayAssetViews()
-        provideReceiveAssetViews()
-        provideDetailsViewModel(isAvailable: false)
-        provideButtonState()
-        provideSettingsState()
-        provideIssues()
+        updateViews()
 
         interactor.setup()
         interactor.update(payChainAsset: payChainAsset)
@@ -873,8 +903,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 extension SwapSetupPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            setup()
-            viewModelFactory.locale = selectedLocale
+            updateViews()
         }
     }
 }
