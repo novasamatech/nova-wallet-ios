@@ -274,8 +274,6 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                 switch reason {
                 case let .rateChange(rateUpdate):
-                    onQuoteUpdate(rateUpdate.newQuote)
-
                     let oldRate = Decimal.rateFromSubstrate(
                         amount1: rateUpdate.oldQuote.amountIn,
                         amount2: rateUpdate.oldQuote.amountOut,
@@ -307,6 +305,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                         oldRate: oldRateString,
                         newRate: newRateString,
                         onConfirm: {
+                            onQuoteUpdate(rateUpdate.newQuote)
                             delegate.didCompleteAsyncHandling()
                         },
                         locale: locale

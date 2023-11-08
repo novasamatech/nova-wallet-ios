@@ -122,7 +122,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
             feeChainAssetId: feeChainAsset?.chainAssetId
         )
 
-        guard newIdentifier != feeIdentifier else {
+        guard newIdentifier != feeIdentifier || fee == nil else {
             return
         }
 
@@ -194,6 +194,9 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         if case .rate = payAmountInput {
             providePayInputPriceViewModel()
             providePayAmountInputViewModel()
+
+            // as fee changes the max amount we might also refresh the quote
+            refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
         }
 
         provideButtonState()
@@ -474,7 +477,6 @@ extension SwapSetupPresenter {
 
         if forceUpdate {
             quoteResult = nil
-            fee = nil
         }
 
         switch direction {

@@ -361,7 +361,7 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         logger.debug("New account info: \(String(describing: accountInfo))")
 
         self.accountInfo = accountInfo
-        
+
         handleNewAccountInfo(accountInfo, chainId: chainId)
     }
 }
