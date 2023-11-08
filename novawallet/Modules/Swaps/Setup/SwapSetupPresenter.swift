@@ -7,7 +7,6 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
     let purchaseProvider: PurchaseProviderProtocol
-    let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
 
@@ -37,7 +36,6 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         interactor: SwapSetupInteractorInputProtocol,
         wireframe: SwapSetupWireframeProtocol,
         viewModelFactory: SwapsSetupViewModelFactoryProtocol,
-        issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
@@ -50,7 +48,6 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.issuesViewModelFactory = issuesViewModelFactory
         slippage = slippageConfig.defaultSlippage
         self.purchaseProvider = purchaseProvider
 
@@ -128,6 +125,10 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         guard newIdentifier != feeIdentifier else {
             return
         }
+
+        fee = nil
+        provideFeeViewModel()
+        provideNotification()
 
         feeIdentifier = newIdentifier
         interactor.calculateFee(args: args)
@@ -259,6 +260,20 @@ extension SwapSetupPresenter {
         return input.absoluteValue(from: maxAmount ?? 0)
     }
 
+    func getIssueParams() -> SwapIssueCheckParams {
+        .init(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            payAmount: getSpendingInputAmount(),
+            receiveAmount: receiveAmountInput,
+            payAssetBalance: payAssetBalance,
+            receiveAssetBalance: receiveAssetBalance,
+            payAssetExistense: payAssetBalanceExistense,
+            receiveAssetExistense: receiveAssetBalanceExistense,
+            quoteResult: quoteResult
+        )
+    }
+
     private func providePayTitle() {
         let payTitleViewModel = viewModelFactory.payTitleViewModel(
             assetDisplayInfo: payChainAsset?.assetDisplayInfo,
@@ -372,12 +387,7 @@ extension SwapSetupPresenter {
     }
 
     private func provideButtonState() {
-        let buttonState = viewModelFactory.buttonState(
-            assetIn: payChainAsset?.chainAssetId,
-            assetOut: receiveChainAsset?.chainAssetId,
-            amountIn: getPayAmount(for: payAmountInput),
-            amountOut: receiveAmountInput
-        )
+        let buttonState = viewModelFactory.buttonState(for: getIssueParams())
 
         view?.didReceiveButtonState(
             title: buttonState.title.value(for: selectedLocale),
@@ -431,21 +441,7 @@ extension SwapSetupPresenter {
     }
 
     private func provideIssues() {
-        let issues = issuesViewModelFactory.detectIssues(
-            in: .init(
-                payChainAsset: payChainAsset,
-                receiveChainAsset: receiveChainAsset,
-                payAmount: getSpendingInputAmount(),
-                receiveAmount: receiveAmountInput,
-                payAssetBalance: payAssetBalance,
-                receiveAssetBalance: receiveAssetBalance,
-                payAssetExistense: payAssetBalanceExistense,
-                receiveAssetExistense: receiveAssetBalanceExistense,
-                quoteResult: quoteResult
-            ),
-            locale: selectedLocale
-        )
-
+        let issues = viewModelFactory.detectIssues(in: getIssueParams(), locale: selectedLocale)
         view?.didReceive(issues: issues)
     }
 
@@ -478,6 +474,7 @@ extension SwapSetupPresenter {
 
         if forceUpdate {
             quoteResult = nil
+            fee = nil
         }
 
         switch direction {
@@ -515,10 +512,13 @@ extension SwapSetupPresenter {
             interactor.calculateQuote(for: quoteArgs)
         } else {
             quoteArgs = nil
+
             if forceUpdate {
                 payAmountInput = nil
                 providePayAmountInputViewModel()
                 provideIssues()
+                provideFeeViewModel()
+                provideNotification()
             } else {
                 refreshQuote(direction: .sell)
             }
@@ -538,11 +538,14 @@ extension SwapSetupPresenter {
             interactor.calculateQuote(for: quoteArgs)
         } else {
             quoteArgs = nil
+
             if forceUpdate {
                 receiveAmountInput = nil
                 provideReceiveAmountInputViewModel()
                 provideReceiveInputPriceViewModel()
                 provideIssues()
+                provideFeeViewModel()
+                provideNotification()
             } else {
                 refreshQuote(direction: .buy)
             }
@@ -556,6 +559,7 @@ extension SwapSetupPresenter {
 
         fee = nil
         provideFeeViewModel()
+        provideNotification()
 
         estimateFee()
     }
@@ -629,6 +633,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         refreshQuote(direction: .sell)
         provideButtonState()
         provideIssues()
+        provideNotification()
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
@@ -636,6 +641,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         refreshQuote(direction: .buy)
         provideButtonState()
         provideIssues()
+        provideNotification()
     }
 
     func flip(currentFocus: TextFieldFocus?) {

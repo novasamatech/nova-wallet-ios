@@ -8,15 +8,11 @@ struct RateParams {
     let amountOut: BigUInt
 }
 
-protocol SwapsSetupViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactoryProtocol {
+protocol SwapsSetupViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactoryProtocol, SwapIssueViewModelFactoryProtocol {
     var locale: Locale { get set }
 
-    func buttonState(
-        assetIn: ChainAssetId?,
-        assetOut: ChainAssetId?,
-        amountIn: Decimal?,
-        amountOut: Decimal?
-    ) -> ButtonState
+    func buttonState(for issueParams: SwapIssueCheckParams) -> ButtonState
+
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
         maxValue: BigUInt?
@@ -50,6 +46,7 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactory
 
 final class SwapsSetupViewModelFactory {
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+    let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let percentForamatter: LocalizableResource<NumberFormatter>
     private(set) var localizedPercentForamatter: NumberFormatter
@@ -63,11 +60,13 @@ final class SwapsSetupViewModelFactory {
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         percentForamatter: LocalizableResource<NumberFormatter>,
         locale: Locale
     ) {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.issuesViewModelFactory = issuesViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.percentForamatter = percentForamatter
         self.locale = locale
@@ -75,19 +74,17 @@ final class SwapsSetupViewModelFactory {
     }
 
     private static func buttonTitle(
-        assetIn: ChainAssetId?,
-        assetOut: ChainAssetId?,
-        amountIn: Decimal?,
-        amountOut: Decimal?,
+        params: SwapIssueCheckParams,
+        hasIssues: Bool,
         locale: Locale
     ) -> String {
-        switch (assetIn, assetOut) {
+        switch (params.payChainAsset, params.receiveChainAsset) {
         case (nil, nil), (nil, _):
             return R.string.localizable.swapsSetupAssetActionSelectPay(preferredLanguages: locale.rLanguages)
         case (_, nil):
             return R.string.localizable.swapsSetupAssetActionSelectReceive(preferredLanguages: locale.rLanguages)
         default:
-            if amountIn == nil || amountOut == nil {
+            if params.payAmount == nil || params.receiveAmount == nil || hasIssues {
                 return R.string.localizable.swapsSetupAssetActionEnterAmount(preferredLanguages: locale.rLanguages)
             } else {
                 return R.string.localizable.commonContinue(preferredLanguages: locale.rLanguages)
@@ -125,24 +122,22 @@ final class SwapsSetupViewModelFactory {
 }
 
 extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
-    func buttonState(
-        assetIn: ChainAssetId?,
-        assetOut: ChainAssetId?,
-        amountIn: Decimal?,
-        amountOut: Decimal?
-    ) -> ButtonState {
-        let dataFullFilled = assetIn != nil && assetOut != nil && amountIn != nil && amountOut != nil
+    func buttonState(for issueParams: SwapIssueCheckParams) -> ButtonState {
+        let dataFullFilled = issueParams.payChainAsset != nil &&
+            issueParams.receiveChainAsset != nil &&
+            issueParams.payAmount != nil && issueParams.receiveAmount != nil
+
+        let hasIssues = !issuesViewModelFactory.detectIssues(in: issueParams, locale: locale).isEmpty
+
         return .init(
             title: .init {
                 Self.buttonTitle(
-                    assetIn: assetIn,
-                    assetOut: assetOut,
-                    amountIn: amountIn,
-                    amountOut: amountOut,
+                    params: issueParams,
+                    hasIssues: hasIssues,
                     locale: $0
                 )
             },
-            enabled: dataFullFilled
+            enabled: dataFullFilled && !hasIssues
         )
     }
 
@@ -315,5 +310,9 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             targetAssetInfo: chainAsset.assetDisplayInfo,
             value: decimal
         ).value(for: locale)
+    }
+
+    func detectIssues(in model: SwapIssueCheckParams, locale: Locale) -> [SwapSetupViewIssue] {
+        issuesViewModelFactory.detectIssues(in: model, locale: locale)
     }
 }

@@ -32,15 +32,16 @@ struct SwapSetupViewFactory {
             state: generalLocalSubscriptionFactory
         )
 
+        let issuesViewModelFactory = SwapIssueViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
+
         let viewModelFactory = SwapsSetupViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            issuesViewModelFactory: issuesViewModelFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             percentForamatter: NumberFormatter.percentSingle.localizableResource(),
             locale: LocalizationManager.shared.selectedLocale
-        )
-
-        let issuesViewModelFactory = SwapIssueViewModelFactory(
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
         let dataValidatingFactory = SwapDataValidatorFactory(
@@ -53,7 +54,6 @@ struct SwapSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            issuesViewModelFactory: issuesViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
