@@ -8,9 +8,9 @@ enum DefaultExtrinsicExtension {
         ]
     }
 
-    static func extensions(payingFeeIn assetId: UInt32) -> [ExtrinsicExtension] {
+    static func extensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicExtension] {
         [
-            ChargeAssetTxPayment(assetId: assetId)
+            AssetConversionTxPayment(assetId: assetId)
         ]
     }
 

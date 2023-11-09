@@ -12,37 +12,16 @@ enum AssetConversionPallet {
         case assets(pallet: UInt8, index: BigUInt)
         case foreign(AssetId)
         case undefined(AssetId)
-
-        init(multilocation: XcmV3.Multilocation) {
-            let junctions = multilocation.interior.items
-
-            if multilocation.parents == 0 {
-                guard !junctions.isEmpty else {
-                    self = .native
-                    return
-                }
-
-                switch junctions[0] {
-                case let .palletInstance(pallet):
-                    if
-                        junctions.count == 2,
-                        case let .generalIndex(index) = junctions[1] {
-                        self = .assets(pallet: pallet, index: index)
-                    } else {
-                        self = .undefined(multilocation)
-                    }
-                default:
-                    self = .undefined(multilocation)
-                }
-            } else {
-                self = .foreign(multilocation)
-            }
-        }
     }
 
-    struct PoolAssetPair: JSONListConvertible {
+    struct PoolAssetPair {
         let asset1: PoolAsset
         let asset2: PoolAsset
+    }
+
+    struct AssetIdPair: JSONListConvertible {
+        let asset1: AssetId
+        let asset2: AssetId
 
         init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
             let expectedFieldsCount = 1
@@ -58,11 +37,8 @@ enum AssetConversionPallet {
                 throw JSONListConvertibleError.unexpectedValue(jsonList[0])
             }
 
-            let multilocation1 = try poolId[0].map(to: AssetId.self, with: context)
-            let multilocation2 = try poolId[1].map(to: AssetId.self, with: context)
-
-            asset1 = PoolAsset(multilocation: multilocation1)
-            asset2 = PoolAsset(multilocation: multilocation2)
+            asset1 = try poolId[0].map(to: AssetId.self, with: context)
+            asset2 = try poolId[1].map(to: AssetId.self, with: context)
         }
     }
 }

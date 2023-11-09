@@ -151,6 +151,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
+
+        swapButton.isEnabled = viewModel.hasSwaps
     }
 
     private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {

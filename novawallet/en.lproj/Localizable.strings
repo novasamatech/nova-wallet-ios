@@ -1412,3 +1412,8 @@
 "swaps.setup.error.rate.was.updated.title" = "Swap rate was updated";
 "swaps.setup.error.rate.was.updated.message" = "Old rate: %@.\nNew rate:%@";
 "common.action.repeat.operation" = "Repeat the operation";
+"swaps.setup.deposit.by.cross.chain.transfer.title" = "Cross-chain transfer";
+"swaps.setup.deposit.by.cross.chain.transfer.subtitle" = "Transfer %@ from another network";
+"swaps.setup.deposit.by.receive.subtitle" = "Receive %@ with QR or your address";
+"swaps.setup.deposit.by.buy.subtitle" = "Instantly buy %@ with a credit card";
+"swaps.setup.deposit.title" = "Get %@ using";

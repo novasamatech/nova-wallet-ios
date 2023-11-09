@@ -5,7 +5,8 @@ enum SwapAssetsOperationViewFactory {
     static func createSelectPayTokenView(
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
-        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
+        selectClosureStrategy: SubmoduleNavigationStrategy = .callbackBeforeDismissal,
+        selectClosure: @escaping (ChainAsset) -> Void
     ) -> AssetsSearchViewProtocol? {
         let title: LocalizableResource<String> = .init {
             R.string.localizable.swapsPayTokenSelectionTitle(
@@ -17,6 +18,7 @@ enum SwapAssetsOperationViewFactory {
             for: stateObservable,
             chainAsset: chainAsset,
             title: title,
+            selectClosureStrategy: selectClosureStrategy,
             selectClosure: selectClosure
         )
     }
@@ -24,7 +26,8 @@ enum SwapAssetsOperationViewFactory {
     static func createSelectReceiveTokenView(
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
-        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
+        selectClosureStrategy: SubmoduleNavigationStrategy = .callbackBeforeDismissal,
+        selectClosure: @escaping (ChainAsset) -> Void
     ) -> AssetsSearchViewProtocol? {
         let title: LocalizableResource<String> = .init {
             R.string.localizable.swapsReceiveTokenSelectionTitle(
@@ -36,6 +39,7 @@ enum SwapAssetsOperationViewFactory {
             for: stateObservable,
             chainAsset: chainAsset,
             title: title,
+            selectClosureStrategy: selectClosureStrategy,
             selectClosure: selectClosure
         )
     }
@@ -44,7 +48,8 @@ enum SwapAssetsOperationViewFactory {
         for stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset? = nil,
         title: LocalizableResource<String>,
-        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
+        selectClosureStrategy: SubmoduleNavigationStrategy,
+        selectClosure: @escaping (ChainAsset) -> Void
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -62,6 +67,7 @@ enum SwapAssetsOperationViewFactory {
             stateObservable: stateObservable,
             viewModelFactory: viewModelFactory,
             chainAsset: chainAsset,
+            selectClosureStrategy: selectClosureStrategy,
             selectClosure: selectClosure
         ) else {
             return nil
@@ -84,40 +90,34 @@ enum SwapAssetsOperationViewFactory {
         stateObservable: AssetListModelObservable,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         chainAsset: ChainAsset?,
-        selectClosure: @escaping (SwapSelectedChainAsset) -> Void
+        selectClosureStrategy: SubmoduleNavigationStrategy,
+        selectClosure: @escaping (ChainAsset) -> Void
     ) -> SwapAssetsOperationPresenter? {
-        let westmintChainId = KnowChainId.westmint
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard let connection = chainRegistry.getConnection(for: westmintChainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
-              let chainModel = chainRegistry.getChain(for: westmintChainId) else {
-            return nil
-        }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: chainModel,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let interactor = SwapAssetsOperationInteractor(
             stateObservable: stateObservable,
             chainAsset: chainAsset,
-            assetConversionOperationFactory: assetConversionOperationFactory,
-            logger: Logger.shared,
-            operationQueue: operationQueue
+            assetConversionAggregation: assetConversionAggregator,
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         let presenter = SwapAssetsOperationPresenter(
             selectClosure: selectClosure,
+            selectClosureStrategy: selectClosureStrategy,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            wireframe: SwapAssetsOperationWireframe()
+            wireframe: SwapAssetsOperationWireframe(),
+            logger: Logger.shared
         )
 
         interactor.presenter = presenter

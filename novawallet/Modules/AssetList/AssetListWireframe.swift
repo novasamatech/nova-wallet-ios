@@ -16,6 +16,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
+            assetListObservable: assetListModelObservable,
             chain: chain,
             asset: asset
         ),
@@ -128,14 +129,20 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
-        guard let swapTokensView = SwapSetupViewFactory.createView(
-            assetListObservable: assetListModelObservable
+        let selectClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+            self?.showSwapTokens(from: view, payAsset: chainAsset)
+        }
+
+        guard let swapDirectionsView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
+            for: assetListModelObservable,
+            selectClosureStrategy: .callbackAfterDismissal,
+            selectClosure: selectClosure
         ) else {
             return
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: swapTokensView.controller
+            rootViewController: swapDirectionsView.controller
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
@@ -180,5 +187,18 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         tabBarController.selectedIndex = MainTabBarIndex.staking
+    }
+
+    private func showSwapTokens(from view: AssetListViewProtocol?, payAsset: ChainAsset) {
+        guard let swapTokensView = SwapSetupViewFactory.createView(
+            assetListObservable: assetListModelObservable,
+            payChainAsset: payAsset
+        ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: swapTokensView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

@@ -56,10 +56,11 @@ final class AssetDetailsViewLayout: UIView {
     let sendButton: RoundedButton = createOperationButton(icon: R.image.iconSend())
     let receiveButton: RoundedButton = createOperationButton(icon: R.image.iconReceive())
     let buyButton: RoundedButton = createOperationButton(icon: R.image.iconBuy())
+    let swapButton = createOperationButton(icon: R.image.iconActionChange())
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
-        views: [sendButton, receiveButton, buyButton]
+        views: [sendButton, receiveButton, swapButton, buyButton]
     )
 
     private let balanceTableView: StackTableView = .create {
@@ -180,6 +181,11 @@ final class AssetDetailsViewLayout: UIView {
             preferredLanguages: languages
         )
         receiveButton.invalidateLayout()
+
+        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwap(
+            preferredLanguages: languages
+        )
+        swapButton.invalidateLayout()
 
         buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
             preferredLanguages: languages

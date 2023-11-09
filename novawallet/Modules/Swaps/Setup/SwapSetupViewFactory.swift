@@ -3,9 +3,13 @@ import SoraFoundation
 import RobinHood
 
 struct SwapSetupViewFactory {
-    static func createView(assetListObservable: AssetListModelObservable) -> SwapSetupViewProtocol? {
+    static func createView(
+        assetListObservable: AssetListModelObservable,
+        payChainAsset: ChainAsset
+    ) -> SwapSetupViewProtocol? {
         guard
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -29,11 +33,14 @@ struct SwapSetupViewFactory {
         )
 
         let presenter = SwapSetupPresenter(
+            payChainAsset: payChainAsset,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,
+            selectedAccount: selectedWallet,
+            purchaseProvider: PurchaseAggregator.defaultAggregator(),
             logger: Logger.shared
         )
 
@@ -50,23 +57,16 @@ struct SwapSetupViewFactory {
     }
 
     private static func createInteractor() -> SwapSetupInteractor? {
-        let westmintChainId = KnowChainId.westmint
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard let connection = chainRegistry.getConnection(for: westmintChainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: westmintChainId),
-              let chainModel = chainRegistry.getChain(for: westmintChainId),
-              let currencyManager = CurrencyManager.shared,
+        guard let currencyManager = CurrencyManager.shared,
               let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: chainModel,
-            runtimeService: runtimeService,
-            connection: connection,
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
@@ -76,8 +76,15 @@ struct SwapSetupViewFactory {
             operationQueue: operationQueue
         )
 
+        let xcmTransfersSyncService = XcmTransfersSyncService(
+            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            operationQueue: operationQueue
+        )
+
         let interactor = SwapSetupInteractor(
-            assetConversionOperationFactory: assetConversionOperationFactory,
+            xcmTransfersSyncService: xcmTransfersSyncService,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            assetConversionAggregatorFactory: assetConversionAggregator,
             assetConversionFeeService: feeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

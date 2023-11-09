@@ -15,6 +15,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
+    func didReceive(errors: [SwapSetupViewError])
     func didReceive(focus: TextFieldFocus?)
 }
 
@@ -31,6 +32,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showRateInfo()
     func showSettings()
     func selectMaxPayAmount()
+    func depositInsufficientToken()
 }
 
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
@@ -38,21 +40,26 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
+    func setupXcm()
 }
 
-protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {}
+protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
+    func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?)
+    func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
+    func didReceive(setupError: SwapSetupError)
+}
 
 protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
-    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable {
+    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, PurchasePresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
+        completionHandler: @escaping (ChainAsset) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
-        completionHandler: @escaping (SwapSelectedChainAsset) -> Void
+        completionHandler: @escaping (ChainAsset) -> Void
     )
     func showSettings(
         from view: ControllerBackedProtocol?,
@@ -73,11 +80,31 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
         form view: ControllerBackedProtocol?,
         viewModel: SwapNetworkFeeSheetViewModel
     )
+    func showTokenDepositOptions(
+        form view: ControllerBackedProtocol?,
+        operations: [DepositOperationModel],
+        token: String,
+        delegate: ModalPickerViewControllerDelegate?
+    )
+    func showDepositTokensByReceive(
+        from view: ControllerBackedProtocol?,
+        chainAsset: ChainAsset,
+        metaChainAccountResponse: MetaChainAccountResponse
+    )
+    func showDepositTokensBySend(
+        from view: ControllerBackedProtocol?,
+        origin: ChainAsset,
+        destination: ChainAsset,
+        recepient: DisplayAddress?,
+        xcmTransfers: XcmTransfers
+    )
 }
 
 enum SwapSetupError: Error {
-    case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
-    case price(Error, AssetModel.PriceId)
-    case assetBalance(Error, ChainAssetId, AccountId)
+    case xcm(Error)
+    case payAssetSetFailed(Error)
+}
+
+enum SwapSetupViewError {
+    case insufficientToken
 }
