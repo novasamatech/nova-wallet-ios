@@ -10,6 +10,7 @@ final class SwapDetailsView: CollapsableContainerView {
 
     let networkFeeCell: SwapNetworkFeeViewCell = .create {
         $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
+        $0.borderView.borderType = .none
     }
 
     override var rows: [UIView] {

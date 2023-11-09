@@ -7,7 +7,7 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
     let detailsTableView: StackTableView = .create {
         $0.cellHeight = 44
         $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
+        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 4, right: 16)
     }
 
     let rateCell: SwapInfoViewCell = .create {
