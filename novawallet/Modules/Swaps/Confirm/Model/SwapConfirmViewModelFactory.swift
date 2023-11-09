@@ -2,50 +2,43 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-protocol SwapConfirmViewModelFactoryProtocol: SwapPriceDifferenceViewModelFactoryProtocol {
-    var locale: Locale { get set }
-
+protocol SwapConfirmViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
     func assetViewModel(
         chainAsset: ChainAsset,
         amount: BigUInt,
-        priceData: PriceData?
+        priceData: PriceData?,
+        locale: Locale
     ) -> SwapAssetAmountViewModel
-    func rateViewModel(from params: RateParams) -> String
-    func priceDifferenceViewModel(
-        rateParams: RateParams,
-        priceIn: PriceData?,
-        priceOut: PriceData?
-    ) -> DifferenceViewModel?
-    func slippageViewModel(slippage: BigRational) -> String
-    func feeViewModel(fee: BigUInt, chainAsset: ChainAsset, priceData: PriceData?) -> SwapFeeViewModel
+
+    func slippageViewModel(slippage: BigRational, locale: Locale) -> String
+
+    func feeViewModel(
+        fee: BigUInt,
+        chainAsset: ChainAsset,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> SwapFeeViewModel
+
     func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel?
 }
 
-final class SwapConfirmViewModelFactory {
-    let percentForamatter: LocalizableResource<NumberFormatter>
-    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+final class SwapConfirmViewModelFactory: SwapBaseViewModelFactory {
     let walletViewModelFactory = WalletAccountViewModelFactory()
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    private(set) var localizedPercentForamatter: NumberFormatter
-    private(set) var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
-
-    var locale: Locale {
-        didSet {
-            localizedPercentForamatter = percentForamatter.value(for: locale)
-        }
-    }
 
     init(
-        locale: Locale,
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        percentForamatter: LocalizableResource<NumberFormatter>
+        percentForamatter: LocalizableResource<NumberFormatter>,
+        priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
-        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
         self.networkViewModelFactory = networkViewModelFactory
-        self.percentForamatter = percentForamatter
-        self.locale = locale
-        localizedPercentForamatter = percentForamatter.value(for: locale)
+
+        super.init(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            percentForamatter: percentForamatter,
+            priceDifferenceConfig: priceDifferenceConfig
+        )
     }
 }
 
@@ -53,7 +46,8 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
     func assetViewModel(
         chainAsset: ChainAsset,
         amount: BigUInt,
-        priceData: PriceData?
+        priceData: PriceData?,
+        locale: Locale
     ) -> SwapAssetAmountViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         let assetIcon: ImageViewModelProtocol = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) } ??
@@ -75,39 +69,16 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         )
     }
 
-    func rateViewModel(from params: RateParams) -> String {
-        guard
-            let amountOutDecimal = Decimal.fromSubstrateAmount(
-                params.amountOut,
-                precision: params.assetDisplayInfoOut.assetPrecision
-            ),
-            let amountInDecimal = Decimal.fromSubstrateAmount(
-                params.amountIn,
-                precision: params.assetDisplayInfoIn.assetPrecision
-            ),
-            amountInDecimal != 0 else {
-            return ""
-        }
-
-        let difference = amountOutDecimal / amountInDecimal
-
-        let amountIn = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: params.assetDisplayInfoIn,
-            value: 1
-        ).value(for: locale)
-        let amountOut = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: params.assetDisplayInfoOut,
-            value: difference
-        ).value(for: locale)
-
-        return "\(amountIn) ≈ \(amountOut)"
+    func slippageViewModel(slippage: BigRational, locale: Locale) -> String {
+        slippage.decimalValue.map { percentForamatter.value(for: locale).stringFromDecimal($0) ?? "" } ?? ""
     }
 
-    func slippageViewModel(slippage: BigRational) -> String {
-        slippage.decimalValue.map { localizedPercentForamatter.stringFromDecimal($0) ?? "" } ?? ""
-    }
-
-    func feeViewModel(fee: BigUInt, chainAsset: ChainAsset, priceData: PriceData?) -> SwapFeeViewModel {
+    func feeViewModel(
+        fee: BigUInt,
+        chainAsset: ChainAsset,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> SwapFeeViewModel {
         let amountDecimal = Decimal.fromSubstrateAmount(
             fee,
             precision: chainAsset.assetDisplayInfo.assetPrecision

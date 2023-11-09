@@ -18,3 +18,17 @@ protocol BatchStorageSubscriptionResult {
         context: [CodingUserInfoKey: Any]?
     ) throws
 }
+
+struct BatchStorageSubscriptionRawResult: BatchStorageSubscriptionResult {
+    let values: [BatchStorageSubscriptionResultValue]
+    let blockHashJson: JSON
+
+    init(
+        values: [BatchStorageSubscriptionResultValue],
+        blockHashJson: JSON,
+        context _: [CodingUserInfoKey: Any]?
+    ) throws {
+        self.values = values
+        self.blockHashJson = blockHashJson
+    }
+}

@@ -10,14 +10,17 @@ struct SwapSlippageViewFactory {
         let wireframe = SwapSlippageWireframe()
 
         let amountFormatter = NumberFormatter.amount
+        amountFormatter.maximumFractionDigits = 4
+        amountFormatter.maximumSignificantDigits = 4
+
         let percentFormatter = NumberFormatter.percentSingle
 
         let presenter = SwapSlippagePresenter(
             wireframe: wireframe,
-            numberFormatterLocalizable: amountFormatter.localizableResource(),
             percentFormatterLocalizable: percentFormatter.localizableResource(),
             localizationManager: LocalizationManager.shared,
-            initPercent: percent?.toPercents(),
+            initSlippage: percent,
+            config: SlippageConfig.defaultConfig,
             chainAsset: chainAsset,
             completionHandler: completionHandler
         )

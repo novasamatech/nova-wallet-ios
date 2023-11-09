@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 
 final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
-    weak var presenter: CrowdloanYourContributionsInteractorOutputProtocol!
+    weak var presenter: CrowdloanYourContributionsInteractorOutputProtocol?
 
     let chain: ChainModel
     let selectedMetaAccount: MetaAccountModel
@@ -48,7 +48,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
                 chain: chain
             )
         } else {
-            presenter.didReceiveError(ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceiveError(ChainAccountFetchingError.accountNotExists)
         }
     }
 
@@ -56,7 +56,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePrice(nil)
+            presenter?.didReceivePrice(nil)
         }
     }
 
@@ -68,9 +68,9 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         ) { [weak self] (result: Result<BlockTime, Error>) in
             switch result {
             case let .success(blockTime):
-                self?.presenter.didReceiveBlockDuration(blockTime)
+                self?.presenter?.didReceiveBlockDuration(blockTime)
             case let .failure(error):
-                self?.presenter.didReceiveError(error)
+                self?.presenter?.didReceiveError(error)
             }
         }
 
@@ -81,9 +81,9 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         ) { [weak self] (result: Result<LeasingPeriod, Error>) in
             switch result {
             case let .success(period):
-                self?.presenter.didReceiveLeasingPeriod(period)
+                self?.presenter?.didReceiveLeasingPeriod(period)
             case let .failure(error):
-                self?.presenter.didReceiveError(error)
+                self?.presenter?.didReceiveError(error)
             }
         }
 
@@ -94,9 +94,9 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         ) { [weak self] (result: Result<LeasingOffset, Error>) in
             switch result {
             case let .success(offset):
-                self?.presenter.didReceiveLeasingOffset(offset)
+                self?.presenter?.didReceiveLeasingOffset(offset)
             case let .failure(error):
-                self?.presenter.didReceiveError(error)
+                self?.presenter?.didReceiveError(error)
             }
         }
     }
@@ -107,9 +107,9 @@ extension CrowdloanYourContributionsInteractor: CrowdloanLocalStorageSubscriber,
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(blockNumber):
-            presenter.didReceiveBlockNumber(blockNumber)
+            presenter?.didReceiveBlockNumber(blockNumber)
         case let .failure(error):
-            presenter.didReceiveError(error)
+            presenter?.didReceiveError(error)
         }
     }
 }
@@ -131,9 +131,9 @@ extension CrowdloanYourContributionsInteractor: CrowdloanOffchainSubscriber, Cro
     ) {
         switch result {
         case let .success(maybeContributions):
-            presenter.didReceiveExternalContributions(maybeContributions ?? [])
+            presenter?.didReceiveExternalContributions(maybeContributions ?? [])
         case let .failure(error):
-            presenter.didReceiveError(error)
+            presenter?.didReceiveError(error)
         }
     }
 }
@@ -142,9 +142,9 @@ extension CrowdloanYourContributionsInteractor: PriceLocalStorageSubscriber, Pri
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
-            presenter.didReceivePrice(priceData)
+            presenter?.didReceivePrice(priceData)
         case let .failure(error):
-            presenter.didReceiveError(error)
+            presenter?.didReceiveError(error)
         }
     }
 }

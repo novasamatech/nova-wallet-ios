@@ -83,12 +83,16 @@ extension SwapNetworkFeeSheetLayout {
     }
 
     private func height(for label: UILabel, with text: String) -> CGFloat {
+        guard let font = label.font else {
+            return 0
+        }
+
         let width = UIScreen.main.bounds.width - UIConstants.horizontalInset * 2
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
         let boundingBox = text.boundingRect(
             with: constraintRect,
             options: .usesLineFragmentOrigin,
-            attributes: [.font: label.font],
+            attributes: [.font: font],
             context: nil
         )
         return boundingBox.height

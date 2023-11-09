@@ -6,7 +6,7 @@ enum NftListInteractorError: Error {
 }
 
 final class NftListInteractor {
-    weak var presenter: NftListInteractorOutputProtocol!
+    weak var presenter: NftListInteractorOutputProtocol?
 
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
@@ -115,7 +115,7 @@ final class NftListInteractor {
         }
 
         if !nftChanges.isEmpty {
-            presenter.didReceiveNft(changes: nftChanges)
+            presenter?.didReceiveNft(changes: nftChanges)
         }
 
         if hasChanges {
@@ -233,11 +233,11 @@ extension NftListInteractor: NftListInteractorInputProtocol {
 
     func getNftForId(_ identifier: NftModel.Id) {
         guard let nft = nfts[identifier] else {
-            presenter.didReceive(error: NftListInteractorError.nftUnavailable)
+            presenter?.didReceive(error: NftListInteractorError.nftUnavailable)
             return
         }
 
-        presenter.didReceiveNft(nft)
+        presenter?.didReceiveNft(nft)
     }
 }
 
@@ -247,10 +247,10 @@ extension NftListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscription
         case let .success(optionalPriceData):
             if let priceData = optionalPriceData {
                 let changes = updateNftsFromPrice(priceData, priceId: priceId)
-                presenter.didReceiveNft(changes: changes)
+                presenter?.didReceiveNft(changes: changes)
             }
         case let .failure(error):
-            presenter.didReceive(error: error)
+            presenter?.didReceive(error: error)
         }
     }
 }
@@ -260,9 +260,9 @@ extension NftListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHand
         switch result {
         case let .success(changes):
             let changes = updateNftsFromModel(changes: changes)
-            presenter.didReceiveNft(changes: changes)
+            presenter?.didReceiveNft(changes: changes)
         case let .failure(error):
-            presenter.didReceive(error: error)
+            presenter?.didReceive(error: error)
         }
     }
 }

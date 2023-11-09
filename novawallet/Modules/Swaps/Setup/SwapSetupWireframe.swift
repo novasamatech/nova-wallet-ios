@@ -4,9 +4,11 @@ import SoraUI
 
 final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     let assetListObservable: AssetListModelObservable
+    let state: GeneralStorageSubscriptionFactoryProtocol
 
-    init(assetListObservable: AssetListModelObservable) {
+    init(assetListObservable: AssetListModelObservable, state: GeneralStorageSubscriptionFactoryProtocol) {
         self.assetListObservable = assetListObservable
+        self.state = state
     }
 
     func showPayTokenSelection(
@@ -74,7 +76,8 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         initState: SwapConfirmInitState
     ) {
         guard let confimView = SwapConfirmViewFactory.createView(
-            initState: initState
+            initState: initState,
+            generalSubscriptonFactory: state
         ) else {
             return
         }

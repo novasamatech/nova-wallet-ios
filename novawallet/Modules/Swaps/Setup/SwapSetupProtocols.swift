@@ -15,8 +15,11 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
-    func didReceive(errors: [SwapSetupViewError])
+    func didReceive(issues: [SwapSetupViewIssue])
+    func didSetNotification(message: String?)
     func didReceive(focus: TextFieldFocus?)
+    func didStartLoading()
+    func didStopLoading()
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -41,16 +44,18 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
     func setupXcm()
+    func retryRemoteSubscription()
+    func retryBlockNumberSubscription()
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?, chainId: ChainModel.Id)
     func didReceive(setupError: SwapSetupError)
 }
 
-protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryable,
-    ErrorPresentable, SwapErrorPresentable, ShortTextInfoPresentable, PurchasePresentable {
+protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol, ShortTextInfoPresentable, PurchasePresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
@@ -103,8 +108,13 @@ protocol SwapSetupWireframeProtocol: AnyObject, AlertPresentable, CommonRetryabl
 enum SwapSetupError: Error {
     case xcm(Error)
     case payAssetSetFailed(Error)
+    case remoteSubscription(Error)
+    case blockNumber(Error)
 }
 
-enum SwapSetupViewError {
-    case insufficientToken
+enum SwapSetupViewIssue {
+    case zeroBalance
+    case insufficientBalance
+    case minBalanceViolation(String)
+    case noLiqudity
 }

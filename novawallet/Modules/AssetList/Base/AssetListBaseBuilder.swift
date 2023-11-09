@@ -151,9 +151,7 @@ class AssetListBaseBuilder {
             case let .success(maybeAmount):
                 if let amount = maybeAmount {
                     balanceResults[chainAssetId] = .success(amount.total)
-                    if let balance = amount.balance {
-                        balances[chainAssetId] = .success(balance)
-                    }
+                    balances[chainAssetId] = amount.balance.map { .success($0) }
                 } else if balanceResults[chainAssetId] == nil {
                     balanceResults[chainAssetId] = .success(0)
                 }

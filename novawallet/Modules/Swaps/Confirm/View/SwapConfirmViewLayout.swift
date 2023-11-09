@@ -45,6 +45,8 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
     private var warningView: InlineAlertView?
 
+    private var notificationView: InlineAlertView?
+
     let loadableActionView = LoadableActionView()
 
     override func setupStyle() {
@@ -100,8 +102,18 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
     func set(warning: String?) {
         applyWarning(
             on: &warningView,
-            after: nil,
-            text: warning
+            after: walletTableView,
+            text: warning,
+            spacing: 8
+        )
+    }
+
+    func set(notification: String?) {
+        applyInfo(
+            on: &notificationView,
+            after: warningView ?? walletTableView,
+            text: notification,
+            spacing: 8
         )
     }
 }

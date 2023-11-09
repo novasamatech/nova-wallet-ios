@@ -23,37 +23,38 @@ final class SwapsValidationTests: XCTestCase {
                                            reservedInPlank: 0,
                                            frozenInPlank: 0,
                                            blocked: false)
-        let utilityAssetBalance = AssetBalance(chainAssetId: utilityChainAsset.chainAssetId,
-                                               accountId: accountId,
-                                               freeInPlank: 0,
-                                               reservedInPlank: 0,
-                                               frozenInPlank: 0,
-                                               blocked: false)
         let existentialDeposit = amountInPlank(1, utilityChainAsset)
         let fee = amountInPlank(0.1, payChainAsset)
         let existentialDepositInFeeToken = amountInPlank(0.01, payChainAsset)
         
-        let params = SwapFeeParams(
-            fee: fee,
-            feeChainAsset: payChainAsset,
-            feeAssetBalance: payAssetBalance,
-            edAmount: existentialDeposit,
-            edAmountInFeeToken: existentialDepositInFeeToken,
-            edChainAsset: utilityChainAsset,
-            edChainAssetBalance: utilityAssetBalance,
+        let swapMax = SwapMaxModel(
             payChainAsset: payChainAsset,
-            amountUpdateClosure: { _ in })
+            feeChainAsset: feeChainAsset,
+            balance: payAssetBalance,
+            feeModel: .init(
+                totalFee: .init(
+                    targetAmount: fee + existentialDepositInFeeToken,
+                    nativeAmount: (fee + existentialDepositInFeeToken) / 100
+                ),
+                networkFeeAddition: .init(
+                    targetAmount: existentialDepositInFeeToken,
+                    nativeAmount: existentialDeposit
+                )
+            ),
+            payAssetExistense: nil,
+            receiveAssetExistense: nil,
+            accountInfo: nil
+        )
         
-        let result = params.prepare(swapAmount: 50)
+        let result = swapMax.calculate()
         
-        XCTAssertEqual(result.availableToPay, 49.89)
+        XCTAssertEqual(result, 49.89)
        
     }
     
     func testCalculatedFeeWithED() throws {
         let chain = ChainModelGenerator.generateChain(generatingAssets: 3, addressPrefix: 42)
         let utilityChainAsset = ChainAsset(chain: chain, asset: chain.assets.first(where: { $0.assetId == 0 })!)
-        let ksmChainAsset = ChainAsset(chain: chain, asset: chain.assets.first(where: { $0.assetId == 1 })!)
         let payChainAsset = ChainAsset(chain: chain, asset: chain.assets.first(where: { $0.assetId == 2 })!)
         let feeChainAsset = utilityChainAsset
         let accountId = try WestendStub.address.toAccountId()
@@ -65,30 +66,28 @@ final class SwapsValidationTests: XCTestCase {
                                            reservedInPlank: 0,
                                            frozenInPlank: 0,
                                            blocked: false)
-        let utilityAssetBalance = AssetBalance(chainAssetId: utilityChainAsset.chainAssetId,
-                                               accountId: accountId,
-                                               freeInPlank: 10,
-                                               reservedInPlank: 0,
-                                               frozenInPlank: 0,
-                                               blocked: false)
-        let existentialDeposit = amountInPlank(1, utilityChainAsset)
+        
         let fee = amountInPlank(0.1, payChainAsset)
-        let existentialDepositInFeeToken = amountInPlank(0.01, payChainAsset)
         
-        let params = SwapFeeParams(
-            fee: fee,
-            feeChainAsset: payChainAsset,
-            feeAssetBalance: payAssetBalance,
-            edAmount: existentialDeposit,
-            edAmountInFeeToken: existentialDepositInFeeToken,
-            edChainAsset: utilityChainAsset,
-            edChainAssetBalance: utilityAssetBalance,
+        let params = SwapMaxModel(
             payChainAsset: payChainAsset,
-            amountUpdateClosure: { _ in })
+            feeChainAsset: feeChainAsset,
+            balance: payAssetBalance,
+            feeModel: .init(
+                totalFee: .init(
+                    targetAmount: fee,
+                    nativeAmount: fee
+                ),
+                networkFeeAddition: nil
+            ),
+            payAssetExistense: nil,
+            receiveAssetExistense: nil,
+            accountInfo: nil
+        )
         
-        let result = params.prepare(swapAmount: 50)
+        let result = params.calculate()
         
-        XCTAssertEqual(result.availableToPay, 49.9)
+        XCTAssertEqual(result, 50)
        
     }
 }
