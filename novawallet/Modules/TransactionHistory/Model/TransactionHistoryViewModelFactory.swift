@@ -91,7 +91,7 @@ final class TransactionHistoryViewModelFactory {
             subtitle: itemTitleWithSubtitle.subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
-            type: txType,
+            typeViewModel: .init(txType),
             status: data.status,
             imageViewModel: imageViewModel
         )
@@ -133,7 +133,7 @@ final class TransactionHistoryViewModelFactory {
             subtitle: subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
-            type: txType,
+            typeViewModel: .init(txType, isIncome: !isOutgoing),
             status: data.status,
             imageViewModel: imageViewModel
         )
@@ -263,7 +263,7 @@ final class TransactionHistoryViewModelFactory {
             subtitle: subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
-            type: txType,
+            typeViewModel: .init(txType),
             status: data.status,
             imageViewModel: imageViewModel
         )
@@ -306,7 +306,7 @@ final class TransactionHistoryViewModelFactory {
             subtitle: extrinsicTitleWithSubtitle.subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
-            type: txType,
+            typeViewModel: .init(txType),
             status: data.status,
             imageViewModel: imageViewModel
         )

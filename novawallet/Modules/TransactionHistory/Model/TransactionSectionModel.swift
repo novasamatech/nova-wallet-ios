@@ -14,13 +14,13 @@ struct TransactionItemViewModel: Hashable {
             lhs.subtitle == rhs.subtitle &&
             lhs.amountDetails == rhs.amountDetails &&
             lhs.amount == rhs.amount &&
-            lhs.type == rhs.type &&
+            lhs.typeViewModel.type == rhs.typeViewModel.type &&
             lhs.status == rhs.status
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
-        hasher.combine(type)
+        hasher.combine(typeViewModel.type)
     }
 
     let identifier: String
@@ -29,7 +29,28 @@ struct TransactionItemViewModel: Hashable {
     let subtitle: String
     let amount: String
     let amountDetails: String
-    let type: TransactionType
+    let typeViewModel: TransactionTypeViewModel
     let status: TransactionHistoryItem.Status
     let imageViewModel: ImageViewModelProtocol?
+}
+
+struct TransactionTypeViewModel {
+    let type: TransactionType
+    let isIncome: Bool
+
+    init(_ type: TransactionType, isIncome: Bool? = nil) {
+        self.type = type
+        self.isIncome = isIncome ?? TransactionTypeViewModel.incomeDefault(for: type)
+    }
+
+    static func incomeDefault(for type: TransactionType) -> Bool {
+        switch type {
+        case .incoming, .reward, .poolReward:
+            return true
+        case .outgoing, .slash, .poolSlash, .extrinsic:
+            return false
+        case .swap:
+            return false
+        }
+    }
 }
