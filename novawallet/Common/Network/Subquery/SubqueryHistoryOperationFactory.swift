@@ -15,12 +15,14 @@ final class SubqueryHistoryOperationFactory {
     let filter: WalletHistoryFilter
     let assetId: String?
     let hasPoolStaking: Bool
+    let hasSwaps: Bool
 
-    init(url: URL, filter: WalletHistoryFilter, assetId: String?, hasPoolStaking: Bool) {
+    init(url: URL, filter: WalletHistoryFilter, assetId: String?, hasPoolStaking: Bool, hasSwaps: Bool) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
         self.hasPoolStaking = hasPoolStaking
+        self.hasSwaps = hasSwaps
     }
 
     private func prepareExtrinsicInclusionFilter() -> String {
@@ -87,7 +89,7 @@ final class SubqueryHistoryOperationFactory {
             }
         }
 
-        if filter.contains(.swaps) {
+        if filter.contains(.swaps), hasSwaps {
             if let assetId = assetId {
                 filterStrings.append(prepareAssetIdFilter(assetId))
             } else {
@@ -107,6 +109,7 @@ final class SubqueryHistoryOperationFactory {
         let transferField = assetId != nil ? "assetTransfer" : "transfer"
         let filterString = prepareFilter()
         let poolRewardField = hasPoolStaking ? "poolReward" : ""
+        let swapField = hasSwaps ? "swap" : ""
         return """
         {
             historyElements(
@@ -135,7 +138,7 @@ final class SubqueryHistoryOperationFactory {
                      extrinsic
                      \(transferField)
                      \(poolRewardField)
-                     swap
+                     \(swapField)
                  }
              }
         }

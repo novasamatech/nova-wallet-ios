@@ -807,13 +807,11 @@
 		77AB55592AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */; };
 		77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */; };
 		77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */; };
-		77C9761E2AF220130049272C /* SwapSelectedChainAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9761D2AF220130049272C /* SwapSelectedChainAsset.swift */; };
-		77C976262AF421AE0049272C /* OperationDetailsSwapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */; };
-		77C976282AF426100049272C /* OperationSwapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976272AF426100049272C /* OperationSwapViewModel.swift */; };
 		77C976202AF36A170049272C /* SwapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9761F2AF36A170049272C /* SwapModels.swift */; };
 		77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */; };
 		77C976242AF3A5280049272C /* SwapViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976232AF3A5280049272C /* SwapViewModels.swift */; };
-		77C9BCBC2ACD1AF500022EA2 /* ViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCBB2ACD1AF500022EA2 /* ViewModels.swift */; };
+		77C976262AF421AE0049272C /* OperationDetailsSwapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */; };
+		77C976282AF426100049272C /* OperationSwapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976272AF426100049272C /* OperationSwapViewModel.swift */; };
 		77C9BCBE2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCBD2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift */; };
 		77C9BCC42ACD570100022EA2 /* SwapAssetsOperationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */; };
 		77C9BCC62ACD571400022EA2 /* SwapAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9BCC52ACD571400022EA2 /* SwapAssetOperationPresenter.swift */; };
@@ -4868,23 +4866,21 @@
 		77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepositoryFactory.swift; sourceTree = "<group>"; };
 		77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizer.swift; sourceTree = "<group>"; };
 		77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizerTests.swift; sourceTree = "<group>"; };
-		77AAE21C2AF56C88006872CC /* SubstrateDataModel20.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel20.xcdatamodel; sourceTree = "<group>"; };
 		77AAE21F2AFB00CB006872CC /* OperationSwapModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapModel.swift; sourceTree = "<group>"; };
 		77AAE2212AFB026E006872CC /* OperationDetailsSwapProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsSwapProvider.swift; sourceTree = "<group>"; };
 		77AAE2232AFB67BE006872CC /* OperationSwapDetailsInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapDetailsInteractor.swift; sourceTree = "<group>"; };
 		77AAE2252AFC10EE006872CC /* CalculatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorFactory.swift; sourceTree = "<group>"; };
 		77AAE2272AFC1167006872CC /* ChainModel+historyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+historyId.swift"; sourceTree = "<group>"; };
 		77AAE2292AFC36EE006872CC /* OperationDetailsBaseInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsBaseInteractor.swift; sourceTree = "<group>"; };
+		77AAE22B2AFCD7AA006872CC /* SubstrateDataModel21.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel21.xcdatamodel; sourceTree = "<group>"; };
 		77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashModel.swift; sourceTree = "<group>"; };
 		77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashViewModel.swift; sourceTree = "<group>"; };
 		77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsPoolRewardView.swift; sourceTree = "<group>"; };
-		77C9761D2AF220130049272C /* SwapSelectedChainAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSelectedChainAsset.swift; sourceTree = "<group>"; };
-		77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsSwapView.swift; sourceTree = "<group>"; };
-		77C976272AF426100049272C /* OperationSwapViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapViewModel.swift; sourceTree = "<group>"; };
 		77C9761F2AF36A170049272C /* SwapModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapModels.swift; sourceTree = "<group>"; };
 		77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperationTableViewCell.swift; sourceTree = "<group>"; };
 		77C976232AF3A5280049272C /* SwapViewModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapViewModels.swift; sourceTree = "<group>"; };
-		77C9BCBB2ACD1AF500022EA2 /* ViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels.swift; sourceTree = "<group>"; };
+		77C976252AF421AE0049272C /* OperationDetailsSwapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsSwapView.swift; sourceTree = "<group>"; };
+		77C976272AF426100049272C /* OperationSwapViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapViewModel.swift; sourceTree = "<group>"; };
 		77C9BCBD2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsSetupViewModelFactory.swift; sourceTree = "<group>"; };
 		77C9BCC32ACD570100022EA2 /* SwapAssetsOperationInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationInteractor.swift; sourceTree = "<group>"; };
 		77C9BCC52ACD571400022EA2 /* SwapAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAssetOperationPresenter.swift; sourceTree = "<group>"; };
@@ -24185,6 +24181,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				77AAE22B2AFCD7AA006872CC /* SubstrateDataModel21.xcdatamodel */,
 				0CEB4ECF2AF148500048FD84 /* SubstrateDataModel20.xcdatamodel */,
 				0C59E8C72AA5C3F4001E11F3 /* SubstrateDataModel19.xcdatamodel */,
 				0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */,
@@ -24206,7 +24203,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 0CEB4ECF2AF148500048FD84 /* SubstrateDataModel20.xcdatamodel */;
+			currentVersion = 77AAE22B2AFCD7AA006872CC /* SubstrateDataModel21.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

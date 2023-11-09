@@ -37,7 +37,8 @@ final class AssetHistoryFacade {
                 url: url,
                 filter: mappedFilter,
                 assetId: historyAssetId,
-                hasPoolStaking: asset.hasPoolStaking
+                hasPoolStaking: asset.hasPoolStaking,
+                hasSwaps: chainAsset.chain.hasSwaps
             )
         } catch {
             return nil

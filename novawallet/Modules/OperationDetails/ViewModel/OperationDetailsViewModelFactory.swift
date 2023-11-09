@@ -326,7 +326,7 @@ final class OperationDetailsViewModelFactory {
             value: difference
         ).value(for: locale)
 
-        return "\(amountIn) = \(amountOut)"
+        return "\(amountIn) ≈ \(amountOut)"
     }
 
     private func createContentViewModel(
