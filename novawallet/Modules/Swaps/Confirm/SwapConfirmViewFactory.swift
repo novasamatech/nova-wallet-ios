@@ -4,21 +4,21 @@ import RobinHood
 
 struct SwapConfirmViewFactory {
     static func createView(
-        initState: SwapConfirmInitState
+        initState: SwapConfirmInitState,
+        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
     ) -> SwapConfirmViewProtocol? {
-        let accountRequest = initState.chainAssetIn.chain.accountRequest()
-
-        guard let currencyManager = CurrencyManager.shared,
-              let wallet = SelectedWalletSettings.shared.value,
-              let chainAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest) else {
+        guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
+
         guard let interactor = createInteractor(
             wallet: wallet,
-            initState: initState
+            initState: initState,
+            generalSubscriptonFactory: generalSubscriptonFactory
         ) else {
             return nil
         }
+
         let wireframe = SwapConfirmWireframe()
 
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
@@ -26,10 +26,10 @@ struct SwapConfirmViewFactory {
         )
 
         let viewModelFactory = SwapConfirmViewModelFactory(
-            locale: LocalizationManager.shared.selectedLocale,
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             networkViewModelFactory: NetworkViewModelFactory(),
-            percentForamatter: NumberFormatter.percentSingle.localizableResource()
+            percentForamatter: NumberFormatter.percentSingle.localizableResource(),
+            priceDifferenceConfig: .defaultConfig
         )
 
         let dataValidatingFactory = SwapDataValidatorFactory(
@@ -40,11 +40,13 @@ struct SwapConfirmViewFactory {
         let presenter = SwapConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            initState: initState,
+            selectedWallet: wallet,
             viewModelFactory: viewModelFactory,
-            chainAccountResponse: chainAccountResponse,
-            localizationManager: LocalizationManager.shared,
+            slippageBounds: .init(config: SlippageConfig.defaultConfig),
             dataValidatingFactory: dataValidatingFactory,
-            initState: initState
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = SwapConfirmViewController(
@@ -61,7 +63,8 @@ struct SwapConfirmViewFactory {
 
     private static func createInteractor(
         wallet: MetaAccountModel,
-        initState: SwapConfirmInitState
+        initState: SwapConfirmInitState,
+        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
     ) -> SwapConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
@@ -99,15 +102,23 @@ struct SwapConfirmViewFactory {
             accountResponse: selectedAccount.chainAccount
         )
 
+        let assetStorageFactory = AssetStorageInfoOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         let interactor = SwapConfirmInteractor(
             initState: initState,
             assetConversionFeeService: feeService,
             assetConversionAggregator: assetConversionAggregator,
             assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chain),
+            chainRegistry: chainRegistry,
+            assetStorageFactory: assetStorageFactory,
             runtimeService: runtimeService,
             extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            generalLocalSubscriptionFactory: generalSubscriptonFactory,
             currencyManager: currencyManager,
             selectedWallet: wallet,
             operationQueue: operationQueue,

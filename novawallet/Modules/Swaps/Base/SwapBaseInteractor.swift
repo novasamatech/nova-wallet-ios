@@ -6,8 +6,11 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
     let assetConversionAggregator: AssetConversionAggregationFactoryProtocol
     let assetConversionFeeService: AssetConversionFeeServiceProtocol
+    let chainRegistry: ChainRegistryProtocol
+    let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let selectedWallet: MetaAccountModel
     let operationQueue: OperationQueue
@@ -17,21 +20,29 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var feeModelBuilder: AssetHubFeeModelBuilder?
-    private var currentChain: ChainModel?
+    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+
+    var currentChain: ChainModel?
 
     init(
         assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        generalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue
     ) {
         self.assetConversionAggregator = assetConversionAggregator
         self.assetConversionFeeService = assetConversionFeeService
+        self.chainRegistry = chainRegistry
+        self.assetStorageFactory = assetStorageFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        generalLocalSubscriptionFactory = generalSubscriptionFactory
         self.currencyManager = currencyManager
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
@@ -39,6 +50,39 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     deinit {
         quoteCall.cancel()
+    }
+
+    private func provideAssetBalanceExistense(for chainAsset: ChainAsset) {
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let error = ChainRegistryError.runtimeMetadaUnavailable
+            basePresenter?.didReceive(baseError: .assetBalanceExistense(error, chainAsset))
+            return
+        }
+
+        let wrapper = assetStorageFactory.createAssetBalanceExistenceOperation(
+            chainId: chainAsset.chain.chainId,
+            asset: chainAsset.asset,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(existense):
+                self?.basePresenter?.didReceiveAssetBalance(
+                    existense: existense,
+                    chainAssetId: chainAsset.chainAssetId
+                )
+            case let .failure(error):
+                self?.basePresenter?.didReceive(
+                    baseError: .assetBalanceExistense(error, chainAsset)
+                )
+            }
+        }
     }
 
     func updateFeeModelBuilder(for chain: ChainModel) {
@@ -53,12 +97,31 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         ) { [weak self] feeModel, callArgs, feeChainAssetId in
             self?.basePresenter?.didReceive(
                 fee: feeModel,
-                transactionId: callArgs.identifier,
+                transactionFeeId: callArgs.identifier,
                 feeChainAssetId: feeChainAssetId
             )
         }
 
         assetBalanceProviders[utilityAsset.chainAssetId] = assetBalanceSubscription(chainAsset: utilityAsset)
+    }
+
+    func updateChain(with newChain: ChainModel) {
+        let oldChainId = currentChain?.chainId
+        currentChain = newChain
+
+        if newChain.chainId != oldChainId {
+            updateAccountInfoProvider(for: newChain)
+        }
+    }
+
+    func updateAccountInfoProvider(for chain: ChainModel) {
+        clear(dataProvider: &accountInfoProvider)
+
+        guard let accountId = selectedWallet.fetch(for: chain.accountRequest())?.accountId else {
+            return
+        }
+
+        accountInfoProvider = subscribeAccountInfo(for: accountId, chainId: chain.chainId)
     }
 
     func updateSubscriptions(activeChainAssets: Set<ChainAssetId>) {
@@ -153,16 +216,18 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func set(receiveChainAsset chainAsset: ChainAsset) {
-        currentChain = chainAsset.chain
+        updateChain(with: chainAsset.chain)
 
         updateFeeModelBuilder(for: chainAsset.chain)
+
+        provideAssetBalanceExistense(for: chainAsset)
 
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
     func set(payChainAsset chainAsset: ChainAsset) {
-        currentChain = chainAsset.chain
+        updateChain(with: chainAsset.chain)
 
         updateFeeModelBuilder(for: chainAsset.chain)
 
@@ -170,19 +235,21 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             feeModelBuilder?.apply(feeAsset: utilityAsset)
         }
 
-        guard let chainAccount = chainAccountResponse(for: chainAsset) else {
-            basePresenter?.didReceive(payAccountId: nil)
-            return
-        }
+        provideAssetBalanceExistense(for: chainAsset)
+
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
-
-        basePresenter?.didReceive(payAccountId: chainAccount.accountId)
     }
 
     func set(feeChainAsset chainAsset: ChainAsset) {
         updateFeeModelBuilder(for: chainAsset.chain)
         feeModelBuilder?.apply(feeAsset: chainAsset)
+
+        provideAssetBalanceExistense(for: chainAsset)
+
+        if let utilityAsset = chainAsset.chain.utilityChainAsset(), !chainAsset.isUtilityAsset {
+            provideAssetBalanceExistense(for: utilityAsset)
+        }
 
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
@@ -202,9 +269,53 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         fee(args: args)
     }
 
+    func retryAssetBalanceSubscription(for chainAsset: ChainAsset) {
+        clear(streamableProvider: &assetBalanceProviders[chainAsset.chainAssetId])
+        assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
+    }
+
     func remakePriceSubscription(for chainAsset: ChainAsset) {
+        clear(streamableProvider: &priceProviders[chainAsset.chainAssetId])
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
     }
+
+    func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset) {
+        provideAssetBalanceExistense(for: chainAsset)
+    }
+
+    func retryAccountInfoSubscription() {
+        guard let chain = currentChain else {
+            return
+        }
+
+        updateAccountInfoProvider(for: chain)
+    }
+
+    func requestValidatingQuote(
+        for args: AssetConversion.QuoteArgs,
+        completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
+    ) {
+        guard let chain = currentChain else {
+            completion(.failure(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
+    }
+
+    // MARK: Overridable General Subscription Handlers
+
+    func handleBlockNumber(
+        result _: Result<BlockNumber?, Error>,
+        chainId _: ChainModel.Id
+    ) {}
 }
 
 extension SwapBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -237,14 +348,25 @@ extension SwapBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
                 feeModelBuilder?.apply(recepientUtilityBalance: balance)
             }
 
-            basePresenter?.didReceive(
-                balance: balance,
-                for: chainAssetId,
-                accountId: accountId
-            )
+            basePresenter?.didReceive(balance: balance, for: chainAssetId)
 
         case let .failure(error):
             basePresenter?.didReceive(baseError: .assetBalance(error, chainAssetId, accountId))
+        }
+    }
+}
+
+extension SwapBaseInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleAccountInfo(
+        result: Result<AccountInfo?, Error>,
+        accountId _: AccountId,
+        chainId: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(accountInfo):
+            basePresenter?.didReceive(accountInfo: accountInfo, chainId: chainId)
+        case let .failure(error):
+            basePresenter?.didReceive(baseError: .accountInfo(error))
         }
     }
 }

@@ -2,12 +2,12 @@ import Foundation
 import BigInt
 
 extension AssetConversion {
-    struct AmountWithNative {
+    struct AmountWithNative: Equatable {
         let targetAmount: BigUInt
         let nativeAmount: BigUInt
     }
 
-    struct FeeModel {
+    struct FeeModel: Equatable {
         let totalFee: AmountWithNative
         let networkFeeAddition: AmountWithNative?
 

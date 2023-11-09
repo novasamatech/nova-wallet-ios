@@ -111,7 +111,16 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
         let fetchWrapper: CompoundOperationWrapper<[StorageResponse<PalletAssets.Details>]> = requestFactory.queryItems(
             engine: connection,
-            keyParams: { [StringScaleMapper(value: extras.assetId)] },
+            keyParams: {
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let param = try StatemineAssetSerializer.decode(
+                    assetId: extras.assetId,
+                    palletName: extras.palletName,
+                    codingFactory: codingFactory
+                )
+
+                return [param]
+            },
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
             storagePath: assetsDetailsPath
         )

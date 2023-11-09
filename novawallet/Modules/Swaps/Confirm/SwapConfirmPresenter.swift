@@ -2,52 +2,187 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-final class SwapConfirmPresenter {
+final class SwapConfirmPresenter: SwapBasePresenter {
     weak var view: SwapConfirmViewProtocol?
     let wireframe: SwapConfirmWireframeProtocol
     let interactor: SwapConfirmInteractorInputProtocol
-    let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let initState: SwapConfirmInitState
-    let slippageBounds = SlippageBounds()
+    let slippageBounds: SlippageBounds
+
+    var accountId: AccountId? {
+        selectedWallet.fetch(for: initState.chainAssetOut.chain.accountRequest())?.accountId
+    }
 
     private var viewModelFactory: SwapConfirmViewModelFactoryProtocol
-    private var feePriceData: PriceData?
-    private var chainAssetInPriceData: PriceData?
-    private var chainAssetOutPriceData: PriceData?
-    private var quote: AssetConversion.Quote?
-    private var fee: AssetConversion.FeeModel?
-    private var payAccountId: AccountId?
-    private var chainAccountResponse: MetaChainAccountResponse
-    private var balances: [ChainAssetId: AssetBalance?] = [:]
+
+    private var quoteArgs: AssetConversion.QuoteArgs
 
     init(
         interactor: SwapConfirmInteractorInputProtocol,
         wireframe: SwapConfirmWireframeProtocol,
+        initState: SwapConfirmInitState,
+        selectedWallet: MetaAccountModel,
         viewModelFactory: SwapConfirmViewModelFactoryProtocol,
-        chainAccountResponse: MetaChainAccountResponse,
-        localizationManager: LocalizationManagerProtocol,
+        slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
-        initState: SwapConfirmInitState
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.slippageBounds = slippageBounds
         self.initState = initState
-        quote = initState.quote
-        self.chainAccountResponse = chainAccountResponse
-        self.dataValidatingFactory = dataValidatingFactory
+        quoteArgs = initState.quoteArgs
+
+        super.init(
+            selectedWallet: selectedWallet,
+            dataValidatingFactory: dataValidatingFactory,
+            logger: logger
+        )
+
+        quoteResult = .success(initState.quote)
         self.localizationManager = localizationManager
     }
 
+    override func getSpendingInputAmount() -> Decimal? {
+        quote?.amountIn.decimal(precision: initState.chainAssetIn.asset.precision)
+    }
+
+    override func getQuoteArgs() -> AssetConversion.QuoteArgs? {
+        quoteArgs
+    }
+
+    override func getSlippage() -> BigRational {
+        initState.slippage
+    }
+
+    override func getPayChainAsset() -> ChainAsset? {
+        initState.chainAssetIn
+    }
+
+    override func getReceiveChainAsset() -> ChainAsset? {
+        initState.chainAssetOut
+    }
+
+    override func getFeeChainAsset() -> ChainAsset? {
+        initState.feeChainAsset
+    }
+
+    override func shouldHandleQuote(for quoteArgs: AssetConversion.QuoteArgs?) -> Bool {
+        self.quoteArgs == quoteArgs
+    }
+
+    override func shouldHandleFee(for _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) -> Bool {
+        true
+    }
+
+    override func estimateFee() {
+        guard let quote = quote,
+              let accountId = selectedWallet.fetch(
+                  for: initState.chainAssetOut.chain.accountRequest()
+              )?.accountId else {
+            return
+        }
+
+        fee = nil
+        provideFeeViewModel()
+
+        interactor.calculateFee(
+            args: .init(
+                assetIn: quote.assetIn,
+                amountIn: quote.amountIn,
+                assetOut: quote.assetOut,
+                amountOut: quote.amountOut,
+                receiver: accountId,
+                direction: quoteArgs.direction,
+                slippage: initState.slippage
+            )
+        )
+    }
+
+    override func applySwapMax() {
+        guard
+            let maxAmount = getMaxModel()?.calculate(),
+            maxAmount > 0,
+            let maxAmountInPlank = maxAmount.toSubstrateAmount(
+                precision: initState.chainAssetIn.assetDisplayInfo.assetPrecision
+            ) else {
+            return
+        }
+
+        quoteArgs = AssetConversion.QuoteArgs(
+            assetIn: initState.quoteArgs.assetIn,
+            assetOut: initState.quoteArgs.assetOut,
+            amount: maxAmountInPlank,
+            direction: .sell
+        )
+
+        view?.didReceiveStartLoading()
+
+        interactor.calculateQuote(for: quoteArgs)
+    }
+
+    override func handleBaseError(_ error: SwapBaseError) {
+        handleBaseError(
+            error,
+            view: view,
+            interactor: interactor,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
+
+        if case .quote = error {
+            view?.didReceiveStopLoading()
+        }
+    }
+
+    override func handleNewQuote(_ quote: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {
+        quoteResult = .success(quote)
+
+        updateViews()
+        estimateFee()
+    }
+
+    override func handleNewFee(
+        _: AssetConversion.FeeModel?,
+        transactionFeeId _: TransactionFeeId,
+        feeChainAssetId _: ChainAssetId?
+    ) {
+        provideFeeViewModel()
+        provideNotificationViewModel()
+    }
+
+    override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
+        if initState.chainAssetIn.chainAssetId == chainAssetId {
+            provideAssetInViewModel()
+            providePriceDifferenceViewModel()
+        }
+
+        if initState.chainAssetOut.chainAssetId == chainAssetId {
+            provideAssetOutViewModel()
+            providePriceDifferenceViewModel()
+        }
+
+        if initState.feeChainAsset.chainAssetId == chainAssetId {
+            provideFeeViewModel()
+        }
+    }
+}
+
+extension SwapConfirmPresenter {
     private func provideAssetInViewModel() {
         guard let quote = quote else {
             return
         }
+
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetIn,
             amount: quote.amountIn,
-            priceData: chainAssetInPriceData
+            priceData: payAssetPriceData,
+            locale: selectedLocale
         )
+
         view?.didReceiveAssetIn(viewModel: viewModel)
     }
 
@@ -58,7 +193,8 @@ final class SwapConfirmPresenter {
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
             amount: quote.amountOut,
-            priceData: chainAssetOutPriceData
+            priceData: receiveAssetPriceData,
+            locale: selectedLocale
         )
         view?.didReceiveAssetOut(viewModel: viewModel)
     }
@@ -75,7 +211,7 @@ final class SwapConfirmPresenter {
             amountIn: quote.amountIn,
             amountOut: quote.amountOut
         )
-        let viewModel = viewModelFactory.rateViewModel(from: params)
+        let viewModel = viewModelFactory.rateViewModel(from: params, locale: selectedLocale)
 
         view?.didReceiveRate(viewModel: .loaded(value: viewModel))
     }
@@ -95,8 +231,9 @@ final class SwapConfirmPresenter {
 
         if let viewModel = viewModelFactory.priceDifferenceViewModel(
             rateParams: params,
-            priceIn: chainAssetInPriceData,
-            priceOut: chainAssetOutPriceData
+            priceIn: payAssetPriceData,
+            priceOut: receiveAssetPriceData,
+            locale: selectedLocale
         ) {
             view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))
         } else {
@@ -105,13 +242,30 @@ final class SwapConfirmPresenter {
     }
 
     private func provideSlippageViewModel() {
-        let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage)
+        let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage, locale: selectedLocale)
         view?.didReceiveSlippage(viewModel: viewModel)
-        let warning = slippageBounds.warning(
-            for: initState.slippage.toPercents().decimalValue,
+        let warning = slippageBounds.warning(for: initState.slippage.decimalValue, locale: selectedLocale)
+        view?.didReceiveWarning(viewModel: warning)
+    }
+
+    private func provideNotificationViewModel() {
+        guard
+            let networkFeeAddition = fee?.networkFeeAddition,
+            !initState.feeChainAsset.isUtilityAsset,
+            let utilityChainAsset = initState.feeChainAsset.chain.utilityChainAsset() else {
+            view?.didReceiveNotification(viewModel: nil)
+            return
+        }
+
+        let message = viewModelFactory.minimalBalanceSwapForFeeMessage(
+            for: networkFeeAddition,
+            feeChainAsset: initState.feeChainAsset,
+            utilityChainAsset: utilityChainAsset,
+            utilityPriceData: prices[utilityChainAsset.chainAssetId],
             locale: selectedLocale
         )
-        view?.didReceiveWarning(viewModel: warning)
+
+        view?.didReceiveNotification(viewModel: message)
     }
 
     private func provideFeeViewModel() {
@@ -119,16 +273,24 @@ final class SwapConfirmPresenter {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
+
         let viewModel = viewModelFactory.feeViewModel(
             fee: fee.networkFee.targetAmount,
             chainAsset: initState.feeChainAsset,
-            priceData: feePriceData
+            priceData: feeAssetPriceData,
+            locale: selectedLocale
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
     }
 
     private func provideWalletViewModel() {
+        guard let chainAccountResponse = selectedWallet.fetchMetaChainAccount(
+            for: initState.chainAssetOut.chain.accountRequest()
+        ) else {
+            return
+        }
+
         guard let walletAddress = WalletDisplayAddress(response: chainAccountResponse) else {
             view?.didReceiveWallet(viewModel: nil)
             return
@@ -144,83 +306,16 @@ final class SwapConfirmPresenter {
         provideRateViewModel()
         providePriceDifferenceViewModel()
         provideSlippageViewModel()
+        provideNotificationViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
     }
 
-    private func estimateFee() {
-        guard let quote = quote,
-              let accountId = payAccountId else {
-            return
-        }
-
-        fee = nil
-        provideFeeViewModel()
-
-        interactor.calculateFee(args: .init(
-            assetIn: quote.assetIn,
-            amountIn: quote.amountIn,
-            assetOut: quote.assetOut,
-            amountOut: quote.amountOut,
-            receiver: accountId,
-            direction: initState.quoteArgs.direction,
-            slippage: initState.slippage
-        )
-        )
-    }
-
-    private func validators(
-        spendingAmount: Decimal?
-    ) -> [DataValidating] {
-        let feeDecimal = fee.map { Decimal.fromSubstrateAmount(
-            $0.totalFee.targetAmount,
-            precision: Int16(initState.feeChainAsset.asset.precision)
-        ) } ?? nil
-
-        let feeInPayAsset = initState.chainAssetIn.chainAssetId == initState.feeChainAsset.chainAssetId ?
-            fee?.totalFee.targetAmount : 0
-
-        let payAssetBalance = balances[initState.chainAssetIn.chainAssetId]
-
-        let validators: [DataValidating] = [
-            dataValidatingFactory.has(fee: feeDecimal, locale: selectedLocale) { [weak self] in
-                self?.estimateFee()
-            },
-            dataValidatingFactory.canSpendAmountInPlank(
-                balance: payAssetBalance??.transferable,
-                spendingAmount: spendingAmount,
-                asset: initState.chainAssetIn.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
-                balance: payAssetBalance??.transferable,
-                fee: feeInPayAsset,
-                spendingAmount: spendingAmount,
-                asset: initState.feeChainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.has(
-                quote: quote,
-                payChainAssetId: initState.chainAssetIn.chainAssetId,
-                receiveChainAssetId: initState.chainAssetOut.chainAssetId,
-                locale: selectedLocale,
-                onError: { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    self.interactor.calculateQuote(for: self.initState.quoteArgs)
-                }
-            )
-        ]
-
-        return validators
-    }
-
     private func submit() {
-        guard let quote = quote,
-              let accountId = payAccountId else {
+        guard let quote = quote, let accountId = accountId else {
             return
         }
+
         let args = AssetConversion.CallArgs(
             assetIn: quote.assetIn,
             amountIn: quote.amountIn,
@@ -231,59 +326,9 @@ final class SwapConfirmPresenter {
             slippage: initState.slippage
         )
 
+        view?.didReceiveStartLoading()
+
         interactor.submit(args: args)
-    }
-
-    private func checkRateChanged(
-        oldValue: AssetConversion.Quote,
-        newValue: AssetConversion.Quote,
-        confirmClosure: @escaping () -> Void
-    ) {
-        guard oldValue != newValue else {
-            confirmClosure()
-            return
-        }
-        let oldRateParams = RateParams(
-            assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
-            assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
-            amountIn: oldValue.amountIn,
-            amountOut: oldValue.amountOut
-        )
-        let newRateParams = RateParams(
-            assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
-            assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
-            amountIn: newValue.amountIn,
-            amountOut: newValue.amountOut
-        )
-
-        let oldRate = viewModelFactory.rateViewModel(from: oldRateParams)
-        let newRate = viewModelFactory.rateViewModel(from: newRateParams)
-
-        let title = R.string.localizable.swapsSetupErrorRateWasUpdatedTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let message = R.string.localizable.swapsSetupErrorRateWasUpdatedMessage(
-            oldRate,
-            newRate,
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let confirmTitle = R.string.localizable.commonConfirm(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let cancelTitle = R.string.localizable.commonCancel(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let confirmAction = AlertPresentableAction(title: confirmTitle, handler: confirmClosure)
-        wireframe.present(
-            viewModel: .init(
-                title: title,
-                message: message,
-                actions: [confirmAction],
-                closeAction: cancelTitle
-            ),
-            style: .alert,
-            from: view
-        )
     }
 }
 
@@ -328,7 +373,8 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
         guard let view = view else {
             return
         }
-        guard let address = chainAccountResponse.chainAccount.toAddress() else {
+
+        guard let address = try? accountId?.toAddress(using: initState.chainAssetOut.chain.chainFormat) else {
             return
         }
 
@@ -341,94 +387,31 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func confirm() {
-        view?.didReceiveStartLoading()
-        let spendingAmount = quote?.amountIn.decimal(precision: initState.chainAssetIn.asset.precision)
-
-        let validators = validators(spendingAmount: spendingAmount)
-
-        DataValidationRunner(validators: validators).runValidation { [weak self] in
-            self?.submit()
+        guard let swapModel = getSwapModel() else {
+            return
         }
+
+        let validators = getBaseValidations(
+            for: swapModel,
+            interactor: interactor,
+            locale: selectedLocale
+        )
+
+        DataValidationRunner(validators: validators).runValidation(
+            notifyingOnSuccess: { [weak self] in
+                self?.submit()
+            },
+            notifyingOnStop: { [weak self] _ in
+                self?.view?.didReceiveStopLoading()
+            },
+            notifyingOnResume: { [weak self] _ in
+                self?.view?.didReceiveStartLoading()
+            }
+        )
     }
 }
 
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
-    func didReceive(quote: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {
-        checkRateChanged(
-            oldValue: self.quote ?? initState.quote,
-            newValue: quote
-        ) { [weak self] in
-            self?.quote = quote
-            self?.provideAssetInViewModel()
-            self?.provideAssetOutViewModel()
-            self?.provideRateViewModel()
-            self?.providePriceDifferenceViewModel()
-            self?.estimateFee()
-        }
-    }
-
-    func didReceive(
-        fee: AssetConversion.FeeModel?,
-        transactionId _: TransactionFeeId,
-        feeChainAssetId _: ChainAssetId?
-    ) {
-        self.fee = fee
-        provideFeeViewModel()
-    }
-
-    func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        if priceId == initState.chainAssetIn.asset.priceId {
-            chainAssetInPriceData = price
-            provideAssetInViewModel()
-            providePriceDifferenceViewModel()
-        }
-        if priceId == initState.chainAssetOut.asset.priceId {
-            chainAssetOutPriceData = price
-            provideAssetOutViewModel()
-            providePriceDifferenceViewModel()
-        }
-        if priceId == initState.feeChainAsset.asset.priceId {
-            feePriceData = price
-            provideFeeViewModel()
-        }
-    }
-
-    func didReceive(payAccountId: AccountId?) {
-        self.payAccountId = payAccountId
-        estimateFee()
-    }
-
-    func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId, accountId _: AccountId) {
-        balances[chainAsset] = balance
-    }
-
-    func didReceive(baseError: SwapBaseError) {
-        switch baseError {
-        case let .quote(_, args):
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.calculateQuote(for: args)
-            }
-        case .fetchFeeFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.estimateFee()
-            }
-        case let .price(_, priceId):
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                [self.initState.chainAssetIn, self.initState.chainAssetOut, self.initState.feeChainAsset]
-                    .compactMap { $0 }
-                    .filter { $0.asset.priceId == priceId }
-                    .forEach(self.interactor.remakePriceSubscription)
-            }
-        case .assetBalance:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.setup()
-            }
-        }
-    }
-
     func didReceive(error: SwapConfirmError) {
         view?.didReceiveStopLoading()
         switch error {
@@ -450,7 +433,6 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
 extension SwapConfirmPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            viewModelFactory.locale = selectedLocale
             updateViews()
         }
     }

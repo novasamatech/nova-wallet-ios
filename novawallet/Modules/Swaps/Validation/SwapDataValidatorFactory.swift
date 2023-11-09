@@ -2,17 +2,27 @@ import Foundation
 import BigInt
 import SoraFoundation
 
+typealias SwapRemoteValidatingClosure = (AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void
+
 protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
-    func has(
-        quote: AssetConversion.Quote?,
-        payChainAssetId: ChainAssetId?,
-        receiveChainAssetId: ChainAssetId?,
-        locale: Locale,
-        onError: (() -> Void)?
+    func hasSufficientBalance(
+        params: SwapModel,
+        swapMaxAction: @escaping () -> Void,
+        locale: Locale
     ) -> DataValidating
-    func canPayFeeSpendingAmount(
-        params: SwapFeeParams,
-        swapAmount: Decimal?,
+
+    func canReceive(params: SwapModel, locale: Locale) -> DataValidating
+
+    func noDustRemains(
+        params: SwapModel,
+        swapMaxAction: @escaping () -> Void,
+        locale: Locale
+    ) -> DataValidating
+
+    func passesRealtimeQuoteValidation(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
+        onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
         locale: Locale
     ) -> DataValidating
 }
@@ -33,97 +43,289 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 
-    func has(
-        quote: AssetConversion.Quote?,
-        payChainAssetId: ChainAssetId?,
-        receiveChainAssetId: ChainAssetId?,
-        locale: Locale,
-        onError: (() -> Void)?
+    // swiftlint:disable:next function_body_length
+    func hasSufficientBalance(
+        params: SwapModel,
+        swapMaxAction: @escaping () -> Void,
+        locale: Locale
     ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            defer {
-                onError?()
-            }
+        let insufficientReason = params.checkBalanceSufficiency()
 
-            guard let view = self?.view else {
+        return ErrorConditionViolation(onError: { [weak self] in
+            guard
+                let view = self?.view,
+                let reason = insufficientReason,
+                let viewModelFactory = self?.balanceViewModelFactoryFacade else {
                 return
             }
+
+            switch reason {
+            case .amountToHigh:
+                self?.presentable.presentAmountTooHigh(from: view, locale: locale)
+            case let .feeInNativeAsset(model):
+                let params = SwapDisplayError.InsufficientBalanceDueFeeNativeAsset(
+                    available: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.available
+                    ).value(for: locale),
+                    fee: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        value: model.fee
+                    ).value(for: locale)
+                )
+
+                self?.presentable.presentInsufficientBalance(
+                    from: view,
+                    reason: .dueFeeNativeAsset(params),
+                    action: swapMaxAction,
+                    locale: locale
+                )
+            case let .feeInPayAsset(model):
+                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
+
+                let params = SwapDisplayError.InsufficientBalanceDueFeePayAsset(
+                    available: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.available
+                    ).value(for: locale),
+                    fee: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        value: model.feeInPayAsset
+                    ).value(for: locale),
+                    minBalanceInPayAsset: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.minBalanceInPayAsset
+                    ).value(for: locale),
+                    minBalanceInUtilityAsset: viewModelFactory.amountFromValue(
+                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        value: model.minBalanceInNativeAsset
+                    ).value(for: locale),
+                    tokenSymbol: utilityChainAsset.asset.symbol
+                )
+
+                self?.presentable.presentInsufficientBalance(
+                    from: view,
+                    reason: .dueFeePayAsset(params),
+                    action: swapMaxAction,
+                    locale: locale
+                )
+            case let .violatingConsumers(model):
+                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
+
+                let params = SwapDisplayError.InsufficientBalanceDueConsumers(
+                    minBalance: viewModelFactory.amountFromValue(
+                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        value: model.minBalance
+                    ).value(for: locale),
+                    fee: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        value: model.fee
+                    ).value(for: locale)
+                )
+
+                self?.presentable.presentInsufficientBalance(
+                    from: view,
+                    reason: .dueConsumers(params),
+                    action: swapMaxAction,
+                    locale: locale
+                )
+            }
+
             self?.presentable.presentNotEnoughLiquidity(from: view, locale: locale)
         }, preservesCondition: {
-            guard let quote = quote else {
-                return false
-            }
-            return quote.assetIn == payChainAssetId && quote.assetOut == receiveChainAssetId
+            insufficientReason == nil
         })
     }
 
-    func canPayFeeSpendingAmount(
-        params: SwapFeeParams,
-        swapAmount: Decimal?,
-        locale: Locale
-    ) -> DataValidating {
-        let preparedValues = params.prepare(swapAmount: swapAmount)
+    func canReceive(params: SwapModel, locale: Locale) -> DataValidating {
+        let cantReceiveReason = params.checkCanReceive()
 
-        return WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let self = self, let view = self.view else {
+        return ErrorConditionViolation(onError: { [weak self] in
+            guard
+                let view = self?.view,
+                let reason = cantReceiveReason,
+                let viewModelFactory = self?.balanceViewModelFactoryFacade else {
                 return
             }
-            let availableToPayString = self.balanceViewModelFactoryFacade.amountFromValue(
-                targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                value: preparedValues.availableToPay
-            ).value(for: locale)
-            let feeString = self.balanceViewModelFactoryFacade.amountFromValue(
-                targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                value: preparedValues.feeDecimal
-            ).value(for: locale)
-            let errorParams: SwapMaxErrorParams
 
-            if preparedValues.toBuyED != 0 {
-                let diffString = self.balanceViewModelFactoryFacade.amountFromValue(
-                    targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                    value: preparedValues.diff
-                ).value(for: locale)
-                let edDepositInFeeTokenString = self.balanceViewModelFactoryFacade.amountFromValue(
-                    targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
-                    value: preparedValues.edDepositInFeeTokenDecimal
-                ).value(for: locale)
-                let edString = self.balanceViewModelFactoryFacade.amountFromValue(
-                    targetAssetInfo: params.edChainAsset.assetDisplayInfo,
-                    value: preparedValues.edDecimal
-                ).value(for: locale)
-                let edToken = params.edChainAsset.asset.symbol
-                errorParams = .init(
-                    maxSwap: availableToPayString,
-                    fee: feeString,
-                    existentialDeposit: SwapMaxErrorParams.ExistensialDepositErrorParams(
-                        fee: diffString,
-                        value: edString,
-                        token: edToken
-                    )
+            switch reason {
+            case let .existense(model):
+                self?.presentable.presentMinBalanceViolatedToReceive(
+                    from: view,
+                    minBalance: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.receiveChainAsset.assetDisplayInfo,
+                        value: model.minBalance
+                    ).value(for: locale),
+                    locale: locale
                 )
-            } else {
-                errorParams = .init(
-                    maxSwap: availableToPayString,
-                    fee: feeString,
-                    existentialDeposit: nil
+            case let .noProvider(model):
+                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
+
+                self?.presentable.presentNoProviderForNonSufficientToken(
+                    from: view,
+                    utilityMinBalance: viewModelFactory.amountFromValue(
+                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        value: model.minBalance
+                    ).value(for: locale),
+                    token: params.receiveChainAsset.asset.symbol,
+                    locale: locale
                 )
             }
 
-            let action = { [preparedValues] in
-                if preparedValues.availableToPay > 0 {
-                    params.amountUpdateClosure(preparedValues.availableToPay)
-                    delegate.didCompleteWarningHandling()
-                }
+        }, preservesCondition: {
+            cantReceiveReason == nil
+        })
+    }
+
+    // swiftlint:disable:next function_body_length
+    func noDustRemains(
+        params: SwapModel,
+        swapMaxAction: @escaping () -> Void,
+        locale: Locale
+    ) -> DataValidating {
+        let dustReason = params.checkDustAfterSwap()
+
+        return WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard
+                let view = self?.view,
+                let viewModelFactory = self?.balanceViewModelFactoryFacade,
+                let reason = dustReason else {
+                return
             }
 
-            self.presentable.presentSwapAll(
+            let errorReason: SwapDisplayError.DustRemains
+
+            switch reason {
+            case let .swap(model):
+                let params = SwapDisplayError.DustRemainsDueNativeSwap(
+                    remaining: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.dust
+                    ).value(for: locale),
+                    minBalance: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.minBalance
+                    ).value(for: locale)
+                )
+
+                errorReason = .dueNativeSwap(params)
+            case let .swapAndFee(model):
+                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
+
+                let params = SwapDisplayError.DustRemainsDueFeeSwap(
+                    remaining: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.dust
+                    ).value(for: locale),
+                    minBalanceOfPayAsset: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.minBalance
+                    ).value(for: locale),
+                    fee: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        value: model.fee
+                    ).value(for: locale),
+                    minBalanceInPayAsset: viewModelFactory.amountFromValue(
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                        value: model.minBalanceInPayAsset
+                    ).value(for: locale),
+                    minBalanceInUtilityAsset: viewModelFactory.amountFromValue(
+                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        value: model.minBalanceInNativeAsset
+                    ).value(for: locale),
+                    utilitySymbol: utilityChainAsset.asset.symbol
+                )
+
+                errorReason = .dueFeeSwap(params)
+            }
+
+            self?.presentable.presentDustRemains(
                 from: view,
-                errorParams: errorParams,
-                action: action,
+                reason: errorReason,
+                swapMaxAction: swapMaxAction,
+                proceedAction: {
+                    delegate.didCompleteWarningHandling()
+                },
                 locale: locale
             )
+
         }, preservesCondition: {
-            preparedValues.feeTokenBalanceDecimal >= preparedValues.swapAmountInFeeToken + preparedValues.feeDecimal + preparedValues.toBuyED
+            dustReason == nil
         })
+    }
+
+    // swiftlint:disable:next function_body_length
+    func passesRealtimeQuoteValidation(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
+        onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
+        locale: Locale
+    ) -> DataValidating {
+        var reason: SwapModel.InvalidQuoteReason?
+
+        return AsyncWarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                guard
+                    let reason = reason,
+                    let view = self?.view,
+                    let viewModelFactory = self?.balanceViewModelFactoryFacade else {
+                    return
+                }
+
+                switch reason {
+                case let .rateChange(rateUpdate):
+                    let oldRate = Decimal.rateFromSubstrate(
+                        amount1: rateUpdate.oldQuote.amountIn,
+                        amount2: rateUpdate.oldQuote.amountOut,
+                        precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
+                        precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
+                    ) ?? 0
+
+                    let oldRateString = viewModelFactory.rateFromValue(
+                        mainSymbol: params.payChainAsset.asset.symbol,
+                        targetAssetInfo: params.receiveChainAsset.assetDisplayInfo,
+                        value: oldRate
+                    ).value(for: locale)
+
+                    let newRate = Decimal.rateFromSubstrate(
+                        amount1: rateUpdate.newQuote.amountIn,
+                        amount2: rateUpdate.newQuote.amountOut,
+                        precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
+                        precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
+                    ) ?? 0
+
+                    let newRateString = viewModelFactory.rateFromValue(
+                        mainSymbol: params.payChainAsset.asset.symbol,
+                        targetAssetInfo: params.receiveChainAsset.assetDisplayInfo,
+                        value: newRate
+                    ).value(for: locale)
+
+                    self?.presentable.presentRateUpdated(
+                        from: view,
+                        oldRate: oldRateString,
+                        newRate: newRateString,
+                        onConfirm: {
+                            onQuoteUpdate(rateUpdate.newQuote)
+                            delegate.didCompleteAsyncHandling()
+                        },
+                        locale: locale
+                    )
+
+                case .noLiqudity:
+                    self?.presentable.presentNotEnoughLiquidity(
+                        from: view,
+                        locale: locale
+                    )
+                }
+            },
+            preservesCondition: { preservationCallback in
+                params.asyncCheckQuoteValidity(remoteValidatingClosure) { result in
+                    let preserves = result == nil
+                    reason = result
+
+                    preservationCallback(preserves)
+                }
+            }
+        )
     }
 }
