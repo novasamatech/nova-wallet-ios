@@ -41,7 +41,7 @@ struct SwapSetupViewFactory {
             issuesViewModelFactory: issuesViewModelFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             percentForamatter: NumberFormatter.percentSingle.localizableResource(),
-            locale: LocalizationManager.shared.selectedLocale
+            priceDifferenceConfig: .defaultConfig
         )
 
         let dataValidatingFactory = SwapDataValidatorFactory(

@@ -71,4 +71,23 @@ extension InlineAlertView {
         view.contentView.stackView.alignment = .top
         return view
     }
+
+    static func inline(for style: InlineAlertView.Style) -> InlineAlertView {
+        switch style {
+        case .error:
+            return InlineAlertView.error()
+        case .warning:
+            return InlineAlertView.warning()
+        case .info:
+            return InlineAlertView.info()
+        }
+    }
+}
+
+extension InlineAlertView {
+    enum Style {
+        case error
+        case warning
+        case info
+    }
 }

@@ -58,15 +58,16 @@ class ScrollableContainerLayoutView: UIView {
         }
     }
 
-    func applyWarning(
-        on warningView: inout InlineAlertView?,
+    func applyInline(
+        on inlineView: inout InlineAlertView?,
+        style: InlineAlertView.Style,
         after view: UIView?,
         text: String?,
         spacing: CGFloat = 0
     ) {
         if let text = text {
-            if warningView == nil {
-                let newView = InlineAlertView.warning()
+            if inlineView == nil {
+                let newView = InlineAlertView.inline(for: style)
 
                 if let afterView = view {
                     insertArrangedSubview(newView, after: afterView, spacingAfter: spacing)
@@ -74,16 +75,46 @@ class ScrollableContainerLayoutView: UIView {
                     addArrangedSubview(newView, spacingAfter: spacing)
                 }
 
-                warningView = newView
+                inlineView = newView
             }
 
-            warningView?.contentView.detailsLabel.text = text
+            inlineView?.contentView.detailsLabel.text = text
         } else {
-            warningView?.removeFromSuperview()
-            warningView = nil
+            inlineView?.removeFromSuperview()
+            inlineView = nil
         }
 
         setNeedsLayout()
+    }
+
+    func applyWarning(
+        on warningView: inout InlineAlertView?,
+        after view: UIView?,
+        text: String?,
+        spacing: CGFloat = 0
+    ) {
+        applyInline(
+            on: &warningView,
+            style: .warning,
+            after: view,
+            text: text,
+            spacing: spacing
+        )
+    }
+
+    func applyInfo(
+        on infoView: inout InlineAlertView?,
+        after view: UIView?,
+        text: String?,
+        spacing: CGFloat = 0
+    ) {
+        applyInline(
+            on: &infoView,
+            style: .info,
+            after: view,
+            text: text,
+            spacing: spacing
+        )
     }
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 import BigInt
+import SoraFoundation
 
 struct RateParams {
     let assetDisplayInfoIn: AssetBalanceDisplayInfo
@@ -10,6 +11,13 @@ struct RateParams {
 
 protocol SwapBaseViewModelFactoryProtocol {
     func rateViewModel(from params: RateParams, locale: Locale) -> String
+
+    func priceDifferenceViewModel(
+        rateParams: RateParams,
+        priceIn: PriceData?,
+        priceOut: PriceData?,
+        locale: Locale
+    ) -> DifferenceViewModel?
 
     func minimalBalanceSwapForFeeMessage(
         for networkFeeAddition: AssetConversion.AmountWithNative,
@@ -22,9 +30,17 @@ protocol SwapBaseViewModelFactoryProtocol {
 
 class SwapBaseViewModelFactory {
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+    let percentForamatter: LocalizableResource<NumberFormatter>
+    let priceDifferenceConfig: SwapPriceDifferenceConfig
 
-    init(balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol) {
+    init(
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        percentForamatter: LocalizableResource<NumberFormatter>,
+        priceDifferenceConfig: SwapPriceDifferenceConfig
+    ) {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.percentForamatter = percentForamatter
+        self.priceDifferenceConfig = priceDifferenceConfig
     }
 }
 
@@ -91,5 +107,47 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
             utilityChainAsset.asset.symbol,
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    func priceDifferenceViewModel(
+        rateParams params: RateParams,
+        priceIn: PriceData?,
+        priceOut: PriceData?,
+        locale: Locale
+    ) -> DifferenceViewModel? {
+        guard let priceIn = priceIn?.decimalRate, let priceOut = priceOut?.decimalRate else {
+            return nil
+        }
+
+        guard
+            let amountOutDecimal = Decimal.fromSubstrateAmount(
+                params.amountOut,
+                precision: params.assetDisplayInfoOut.assetPrecision
+            ),
+            let amountInDecimal = Decimal.fromSubstrateAmount(
+                params.amountIn,
+                precision: params.assetDisplayInfoIn.assetPrecision
+            ) else {
+            return nil
+        }
+
+        let amountPriceIn = amountInDecimal * priceIn
+        let amountPriceOut = amountOutDecimal * priceOut
+
+        guard amountPriceIn != 0, amountPriceIn > amountPriceOut else {
+            return nil
+        }
+
+        let diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
+        let diffString = percentForamatter.value(for: locale).stringFromDecimal(diff)?.inParenthesis() ?? ""
+
+        switch diff {
+        case _ where diff > priceDifferenceConfig.warningMax:
+            return .init(details: diffString, attention: .high)
+        case priceDifferenceConfig.warningMin ... priceDifferenceConfig.warningMax:
+            return .init(details: diffString, attention: .medium)
+        default:
+            return .init(details: diffString, attention: .low)
+        }
     }
 }

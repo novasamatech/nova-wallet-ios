@@ -380,7 +380,8 @@ extension SwapSetupPresenter {
             differenceViewModel = viewModelFactory.priceDifferenceViewModel(
                 rateParams: params,
                 priceIn: payAssetPriceData,
-                priceOut: receiveAssetPriceData
+                priceOut: receiveAssetPriceData,
+                locale: selectedLocale
             )
         } else {
             differenceViewModel = nil

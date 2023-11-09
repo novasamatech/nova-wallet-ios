@@ -7,8 +7,6 @@ struct SwapConfirmViewFactory {
         initState: SwapConfirmInitState,
         generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
     ) -> SwapConfirmViewProtocol? {
-        let accountRequest = initState.chainAssetIn.chain.accountRequest()
-
         guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -28,10 +26,10 @@ struct SwapConfirmViewFactory {
         )
 
         let viewModelFactory = SwapConfirmViewModelFactory(
-            locale: LocalizationManager.shared.selectedLocale,
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             networkViewModelFactory: NetworkViewModelFactory(),
-            percentForamatter: NumberFormatter.percentSingle.localizableResource()
+            percentForamatter: NumberFormatter.percentSingle.localizableResource(),
+            priceDifferenceConfig: .defaultConfig
         )
 
         let dataValidatingFactory = SwapDataValidatorFactory(

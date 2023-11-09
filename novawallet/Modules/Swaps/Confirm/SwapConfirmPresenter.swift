@@ -150,6 +150,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {
         provideFeeViewModel()
+        provideNotificationViewModel()
     }
 
     override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
@@ -178,7 +179,8 @@ extension SwapConfirmPresenter {
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetIn,
             amount: quote.amountIn,
-            priceData: payAssetPriceData
+            priceData: payAssetPriceData,
+            locale: selectedLocale
         )
 
         view?.didReceiveAssetIn(viewModel: viewModel)
@@ -191,7 +193,8 @@ extension SwapConfirmPresenter {
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
             amount: quote.amountOut,
-            priceData: receiveAssetPriceData
+            priceData: receiveAssetPriceData,
+            locale: selectedLocale
         )
         view?.didReceiveAssetOut(viewModel: viewModel)
     }
@@ -208,7 +211,7 @@ extension SwapConfirmPresenter {
             amountIn: quote.amountIn,
             amountOut: quote.amountOut
         )
-        let viewModel = viewModelFactory.rateViewModel(from: params)
+        let viewModel = viewModelFactory.rateViewModel(from: params, locale: selectedLocale)
 
         view?.didReceiveRate(viewModel: .loaded(value: viewModel))
     }
@@ -229,7 +232,8 @@ extension SwapConfirmPresenter {
         if let viewModel = viewModelFactory.priceDifferenceViewModel(
             rateParams: params,
             priceIn: payAssetPriceData,
-            priceOut: receiveAssetPriceData
+            priceOut: receiveAssetPriceData,
+            locale: selectedLocale
         ) {
             view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))
         } else {
@@ -238,13 +242,30 @@ extension SwapConfirmPresenter {
     }
 
     private func provideSlippageViewModel() {
-        let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage)
+        let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage, locale: selectedLocale)
         view?.didReceiveSlippage(viewModel: viewModel)
-        let warning = slippageBounds.warning(
-            for: initState.slippage.decimalValue,
+        let warning = slippageBounds.warning(for: initState.slippage.decimalValue, locale: selectedLocale)
+        view?.didReceiveWarning(viewModel: warning)
+    }
+
+    private func provideNotificationViewModel() {
+        guard
+            let networkFeeAddition = fee?.networkFeeAddition,
+            !initState.feeChainAsset.isUtilityAsset,
+            let utilityChainAsset = initState.feeChainAsset.chain.utilityChainAsset() else {
+            view?.didReceiveNotification(viewModel: nil)
+            return
+        }
+
+        let message = viewModelFactory.minimalBalanceSwapForFeeMessage(
+            for: networkFeeAddition,
+            feeChainAsset: initState.feeChainAsset,
+            utilityChainAsset: utilityChainAsset,
+            utilityPriceData: prices[utilityChainAsset.chainAssetId],
             locale: selectedLocale
         )
-        view?.didReceiveWarning(viewModel: warning)
+
+        view?.didReceiveNotification(viewModel: message)
     }
 
     private func provideFeeViewModel() {
@@ -256,7 +277,8 @@ extension SwapConfirmPresenter {
         let viewModel = viewModelFactory.feeViewModel(
             fee: fee.networkFee.targetAmount,
             chainAsset: initState.feeChainAsset,
-            priceData: feeAssetPriceData
+            priceData: feeAssetPriceData,
+            locale: selectedLocale
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
@@ -284,6 +306,7 @@ extension SwapConfirmPresenter {
         provideRateViewModel()
         providePriceDifferenceViewModel()
         provideSlippageViewModel()
+        provideNotificationViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
     }
@@ -410,7 +433,6 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
 extension SwapConfirmPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            viewModelFactory.locale = selectedLocale
             updateViews()
         }
     }

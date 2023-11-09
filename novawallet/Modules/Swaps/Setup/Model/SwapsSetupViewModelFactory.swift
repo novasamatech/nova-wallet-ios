@@ -1,9 +1,7 @@
 import SoraFoundation
 import BigInt
 
-protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol,
-    SwapPriceDifferenceViewModelFactoryProtocol,
-    SwapIssueViewModelFactoryProtocol {
+protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, SwapIssueViewModelFactoryProtocol {
     func buttonState(for issueParams: SwapIssueCheckParams, locale: Locale) -> ButtonState
 
     func payTitleViewModel(
@@ -44,21 +42,22 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol,
 final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    let percentForamatter: LocalizableResource<NumberFormatter>
-
-    private(set) var priceDifferenceWarningRange: (start: Decimal, end: Decimal) = (start: 0.1, end: 0.2)
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        percentForamatter: LocalizableResource<NumberFormatter>
+        percentForamatter: LocalizableResource<NumberFormatter>,
+        priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
         self.issuesViewModelFactory = issuesViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
-        self.percentForamatter = percentForamatter
 
-        super.init(balanceViewModelFactoryFacade: balanceViewModelFactoryFacade)
+        super.init(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            percentForamatter: percentForamatter,
+            priceDifferenceConfig: priceDifferenceConfig
+        )
     }
 
     private static func buttonTitle(
