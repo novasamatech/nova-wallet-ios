@@ -20,10 +20,13 @@ struct SwapMaxModel {
             return false
         }
 
-        let receiveSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
+        guard let receiveAssetExistense = receiveAssetExistense else {
+            return false
+        }
+
         let hasConsumers = (accountInfo?.hasConsumers ?? false)
 
-        return (!receiveSelfSufficient || hasConsumers)
+        return (!receiveAssetExistense.isSelfSufficient || hasConsumers)
     }
 
     private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {

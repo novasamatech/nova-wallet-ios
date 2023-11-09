@@ -152,7 +152,7 @@ struct SwapModel {
 
             if
                 isFeeInPayToken,
-                let addition = feeModel?.networkFeeAddition,
+                let addition = feeModel?.networkNativeFeeAddition,
                 let utilityAsset = feeChainAsset.chain.utilityAsset() {
                 return .feeInPayAsset(
                     .init(
@@ -235,7 +235,7 @@ struct SwapModel {
         if
             isFeeInPayToken, !payChainAsset.isUtilityAsset,
             let networkFee = feeModel?.networkFee,
-            let feeAdditions = feeModel?.networkFeeAddition,
+            let feeAdditions = feeModel?.networkNativeFeeAddition,
             let utilityAsset = feeChainAsset.chain.utilityAsset() {
             return .swapAndFee(
                 .init(

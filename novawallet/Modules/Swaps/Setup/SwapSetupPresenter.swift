@@ -475,7 +475,7 @@ extension SwapSetupPresenter {
 
     private func provideNotification() {
         guard
-            let networkFeeAddition = fee?.networkFeeAddition,
+            let networkFeeAddition = fee?.networkNativeFeeAddition,
             let feeChainAsset = feeChainAsset,
             !feeChainAsset.isUtilityAsset,
             let utilityChainAsset = feeChainAsset.chain.utilityChainAsset() else {
