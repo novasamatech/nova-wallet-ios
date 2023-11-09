@@ -1,6 +1,8 @@
 import Foundation
 
 typealias DataValidationRunnerCompletion = () -> Void
+typealias DataValidationRunnerStopClosure = (DataValidationProblem) -> Void
+typealias DataValidationRunnerResumeClosure = (Int) -> Void
 
 enum DataValidationProblem {
     case warning
@@ -18,5 +20,19 @@ protocol DataValidating {
 }
 
 protocol DataValidationRunnerProtocol {
-    func runValidation(notifyingOnSuccess closure: @escaping DataValidationRunnerCompletion)
+    func runValidation(
+        notifyingOnSuccess completionClosure: @escaping DataValidationRunnerCompletion,
+        notifyingOnStop stopClosure: DataValidationRunnerStopClosure?,
+        notifyingOnResume resumeClosure: DataValidationRunnerResumeClosure?
+    )
+}
+
+extension DataValidationRunnerProtocol {
+    func runValidation(notifyingOnSuccess closure: @escaping DataValidationRunnerCompletion) {
+        runValidation(
+            notifyingOnSuccess: closure,
+            notifyingOnStop: nil,
+            notifyingOnResume: nil
+        )
+    }
 }

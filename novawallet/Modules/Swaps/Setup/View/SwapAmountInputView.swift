@@ -114,8 +114,12 @@ final class SwapAmountInputView: RoundedView {
         )
     }
 
-    @objc private func actionEditingDidBeginEnd() {
+    private func updateFocusState() {
         strokeWidth = textInputView.textField.isFirstResponder ? 0.5 : 0.0
+    }
+
+    @objc private func actionEditingDidBeginEnd() {
+        updateFocusState()
     }
 }
 
@@ -157,4 +161,32 @@ extension SwapAmountInputView {
             textInputView.textField.resignFirstResponder()
         }
     }
+}
+
+extension SwapAmountInputView {
+    struct Style {
+        let contentStyle: RoundedView.Style
+        let textColor: UIColor?
+    }
+
+    func applyInput(style: Style) {
+        apply(style: style.contentStyle)
+
+        textInputView.textField.textColor = style.textColor
+        textInputView.textField.tintColor = style.textColor
+
+        updateFocusState()
+    }
+}
+
+extension SwapAmountInputView.Style {
+    static let normal = SwapAmountInputView.Style(
+        contentStyle: .strokeOnEditing,
+        textColor: R.color.colorTextPrimary()
+    )
+
+    static let error = SwapAmountInputView.Style(
+        contentStyle: .strokeOnError,
+        textColor: R.color.colorTextNegative()
+    )
 }

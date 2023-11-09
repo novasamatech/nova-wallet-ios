@@ -125,6 +125,10 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
         rootView.set(warning: viewModel)
     }
 
+    func didReceiveNotification(viewModel: String?) {
+        rootView.set(notification: viewModel)
+    }
+
     func didReceiveStartLoading() {
         rootView.loadableActionView.startLoading()
     }

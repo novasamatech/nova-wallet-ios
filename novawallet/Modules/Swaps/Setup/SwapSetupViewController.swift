@@ -6,6 +6,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     let presenter: SwapSetupPresenterProtocol
 
+    private var toggledDetailsManually: Bool = false
+
     init(
         presenter: SwapSetupPresenterProtocol,
         localizationManager: LocalizationManager
@@ -89,6 +91,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(depositTokenAction),
             for: .touchUpInside
         )
+
+        rootView.detailsView.delegate = self
     }
 
     private func setupLocalization() {
@@ -234,6 +238,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveDetailsState(isAvailable: Bool) {
         rootView.detailsView.isHidden = !isAvailable
+
+        if !isAvailable {
+            toggledDetailsManually = false
+        }
     }
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {
@@ -242,6 +250,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
+
+        if !toggledDetailsManually, !rootView.detailsView.expanded {
+            rootView.detailsView.setExpanded(true, animated: true)
+        }
     }
 
     func didReceiveSettingsState(isAvailable: Bool) {
@@ -260,12 +272,63 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         }
     }
 
-    func didReceive(errors: [SwapSetupViewError]) {
-        if errors.contains(.insufficientToken) {
-            rootView.changeDepositTokenButtonVisibility(hidden: false)
-        } else {
-            rootView.changeDepositTokenButtonVisibility(hidden: true)
+    func didReceive(issues: [SwapSetupViewIssue]) {
+        rootView.hideIssues()
+        rootView.changeDepositTokenButtonVisibility(hidden: true)
+
+        issues.forEach { issue in
+            switch issue {
+            case .zeroBalance:
+                rootView.changeDepositTokenButtonVisibility(hidden: false)
+            case .insufficientBalance:
+                rootView.changeDepositTokenButtonVisibility(hidden: false)
+
+                let message = R.string.localizable.swapsNotEnoughTokens(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayPayIssue(with: message)
+            case let .minBalanceViolation(minBalance):
+                let message = R.string.localizable.commonReceiveAtLeastEdError(
+                    minBalance,
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayReceiveIssue(with: message)
+            case .noLiqudity:
+                let message = R.string.localizable.swapsNotEnoughLiquidity(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayPayIssue(with: message)
+            }
         }
+    }
+
+    func didSetNotification(message: String?) {
+        if let message = message {
+            rootView.displayInfoNotification(with: message)
+        } else {
+            rootView.hideNotification()
+        }
+    }
+
+    func didStartLoading() {
+        rootView.loadableActionView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.loadableActionView.stopLoading()
+    }
+}
+
+extension SwapSetupViewController: CollapsableContainerViewDelegate {
+    func animateAlongsideWithInfo(sender _: AnyObject?) {
+        rootView.containerView.scrollView.layoutIfNeeded()
+    }
+
+    func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {
+        toggledDetailsManually = true
     }
 }
 

@@ -40,7 +40,7 @@ extension SwapPriceDifferenceViewModelFactoryProtocol {
             return nil
         }
 
-        var diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
+        let diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
         let diffString = localizedPercentForamatter.stringFromDecimal(diff)?.inParenthesis() ?? ""
 
         switch diff {
