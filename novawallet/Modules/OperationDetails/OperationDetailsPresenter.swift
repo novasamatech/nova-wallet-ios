@@ -165,7 +165,24 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
     }
 
     func repeatOperation() {
-        // TODO: Show swap
+        guard case let .swap(swapModel) = model?.operation else {
+            return
+        }
+        let payChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetIn)
+        let receiveChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetOut)
+        let feeChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.feeAsset)
+        let amount = swapModel.direction == .sell ?
+            swapModel.amountIn.decimal(precision: payChainAsset.asset.precision) :
+            swapModel.amountOut.decimal(precision: receiveChainAsset.asset.precision)
+        let swapSetupInitState = SwapSetupInitState(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: feeChainAsset,
+            amount: amount,
+            direction: swapModel.direction
+        )
+
+        wireframe.showSwapSetup(from: view, state: swapSetupInitState)
     }
 }
 

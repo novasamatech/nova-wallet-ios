@@ -29,4 +29,9 @@ protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         displayAddress: DisplayAddress,
         chainAsset: ChainAsset
     )
+
+    func showSwapSetup(
+        from: OperationDetailsViewProtocol?,
+        state: SwapSetupInitState
+    )
 }

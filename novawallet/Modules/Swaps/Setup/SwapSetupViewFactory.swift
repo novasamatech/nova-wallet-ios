@@ -7,6 +7,16 @@ struct SwapSetupViewFactory {
         assetListObservable: AssetListModelObservable,
         payChainAsset: ChainAsset
     ) -> SwapSetupViewProtocol? {
+        createView(
+            assetListObservable: assetListObservable,
+            initState: .init(payChainAsset: payChainAsset)
+        )
+    }
+
+    static func createView(
+        assetListObservable: AssetListModelObservable,
+        initState: SwapSetupInitState
+    ) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
             let selectedWallet = SelectedWalletSettings.shared.value else {
@@ -50,7 +60,7 @@ struct SwapSetupViewFactory {
         )
 
         let presenter = SwapSetupPresenter(
-            payChainAsset: payChainAsset,
+            initState: initState,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,

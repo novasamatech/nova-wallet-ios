@@ -2,9 +2,14 @@ import UIKit
 
 final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     let chainAsset: ChainAsset
+    let assetListObservable: AssetListModelObservable
 
-    init(chainAsset: ChainAsset) {
+    init(
+        chainAsset: ChainAsset,
+        assetListObservable: AssetListModelObservable
+    ) {
         self.chainAsset = chainAsset
+        self.assetListObservable = assetListObservable
     }
 
     func showFilter(
@@ -28,7 +33,8 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     ) {
         guard let operationDetailsView = OperationDetailsViewFactory.createView(
             for: operation,
-            chainAsset: chainAsset
+            chainAsset: chainAsset,
+            assetListObservable: assetListObservable
         ) else {
             return
         }

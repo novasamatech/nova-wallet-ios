@@ -31,7 +31,8 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
         guard let history = TransactionHistoryViewFactory.createView(
-            chainAsset: .init(chain: chain, asset: asset)
+            chainAsset: .init(chain: chain, asset: asset),
+            assetListObservable: assetListModelObservable
         ) else {
             return
         }
