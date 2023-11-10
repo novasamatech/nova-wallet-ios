@@ -50,6 +50,18 @@ extension ExtrinsicServiceFactoryProtocol {
             extensions: DefaultExtrinsicExtension.extensions()
         )
     }
+
+    func createOperationFactory(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        feeAssetConversionId: AssetConversionPallet.AssetId
+    ) -> ExtrinsicOperationFactoryProtocol {
+        createOperationFactory(
+            account: account,
+            chain: chain,
+            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetConversionId)
+        )
+    }
 }
 
 final class ExtrinsicServiceFactory {

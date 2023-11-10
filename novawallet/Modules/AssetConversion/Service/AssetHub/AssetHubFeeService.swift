@@ -4,7 +4,7 @@ import BigInt
 
 final class AssetHubFeeService: AnyCancellableCleaning {
     struct ChainOperationFactory {
-        let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
+        let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
         let conversionOperationFactory: AssetConversionOperationFactoryProtocol
         let conversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     }
@@ -28,19 +28,13 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         self.operationQueue = operationQueue
     }
 
-    private func updateFactories(for asset: ChainAsset) throws -> ChainOperationFactory {
-        if asset.chainAssetId.chainId == chainId, let factories = factories {
+    private func updateFactories(for chain: ChainModel) throws -> ChainOperationFactory {
+        if chain.chainId == chainId, let factories = factories {
             return factories
         }
 
         factories = nil
         chainId = nil
-
-        let chain = asset.chain
-
-        guard let account = wallet.fetch(for: chain.accountRequest()) else {
-            throw AssetConversionFeeServiceError.accountMissing
-        }
 
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             throw AssetConversionFeeServiceError.chainConnectionMissing
@@ -50,13 +44,10 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             throw AssetConversionFeeServiceError.chainRuntimeMissing
         }
 
-        let extrinsicOperationFactory = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
-        ).createOperationFactory(
-            account: account,
-            chain: chain
         )
 
         let conversionOperationFactory = AssetHubSwapOperationFactory(
@@ -69,13 +60,13 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         let conversionExtrinsicService = AssetHubExtrinsicService(chain: chain)
 
         let factories = ChainOperationFactory(
-            extrinsicOperationFactory: extrinsicOperationFactory,
+            extrinsicServiceFactory: extrinsicServiceFactory,
             conversionOperationFactory: conversionOperationFactory,
             conversionExtrinsicService: conversionExtrinsicService
         )
 
         self.factories = factories
-        chainId = asset.chainAssetId.chainId
+        chainId = chain.chainId
 
         return factories
     }
@@ -96,13 +87,15 @@ final class AssetHubFeeService: AnyCancellableCleaning {
 
         let utilityChainAsset = ChainAsset(chain: asset.chain, asset: utilityAsset)
 
-        let factories = try updateFactories(for: asset)
+        let factories = try updateFactories(for: asset.chain)
 
         let nativeFeeWrapper = createNativeFeeWrapper(
             for: callArgs,
             runtimeProvider: runtimeProvider,
-            extrinsicOperationFactory: factories.extrinsicOperationFactory,
-            conversionExtrinsicService: factories.conversionExtrinsicService
+            extrinsicServiceFactory: factories.extrinsicServiceFactory,
+            conversionExtrinsicService: factories.conversionExtrinsicService,
+            wallet: wallet,
+            asset: asset
         )
 
         let universalFeeWrapper: CompoundOperationWrapper<AssetConversion.FeeModel>
@@ -141,27 +134,66 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         operationQueue.addOperations(universalFeeWrapper.allOperations, waitUntilFinished: false)
     }
 
+    // swiftlint:disable:next function_parameter_count
     private func createNativeFeeWrapper(
         for callArgs: AssetConversion.CallArgs,
         runtimeProvider: RuntimeProviderProtocol,
-        extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol,
-        conversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        conversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
+        wallet: MetaAccountModel,
+        asset: ChainAsset
     ) -> CompoundOperationWrapper<BigUInt> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let feeWrapper = extrinsicOperationFactory.estimateFeeOperation { builder in
-            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+        let mainFeeOperation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            guard let account = wallet.fetch(for: asset.chain.accountRequest()) else {
+                throw AssetConversionFeeServiceError.accountMissing
+            }
 
-            let builderSetupClosure = conversionExtrinsicService.fetchExtrinsicBuilderClosure(
-                for: callArgs,
-                codingFactory: codingFactory
-            )
+            let coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
 
-            return try builderSetupClosure(builder)
-        }
+            let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
+
+            if asset.isUtilityAsset {
+                extrinsicOperationFactory = extrinsicServiceFactory.createOperationFactory(
+                    account: account,
+                    chain: asset.chain
+                )
+            } else {
+                guard let assetId = AssetHubTokensConverter.convertToMultilocation(
+                    chainAsset: asset,
+                    codingFactory: coderFactory
+                ) else {
+                    throw AssetConversionFeeServiceError.feeAssetConversionFailed
+                }
+
+                extrinsicOperationFactory = extrinsicServiceFactory.createOperationFactory(
+                    account: account,
+                    chain: asset.chain,
+                    feeAssetConversionId: assetId
+                )
+            }
+
+            let feeWrapper = extrinsicOperationFactory.estimateFeeOperation { builder in
+                let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+
+                let builderSetupClosure = conversionExtrinsicService.fetchExtrinsicBuilderClosure(
+                    for: callArgs,
+                    codingFactory: codingFactory
+                )
+
+                return try builderSetupClosure(builder)
+            }
+
+            return [feeWrapper]
+        }.longrunOperation()
 
         let mappingOperation = ClosureOperation<BigUInt> {
-            let feeModel = try feeWrapper.targetOperation.extractNoCancellableResultData()
+            guard let feeModel = try mainFeeOperation.extractNoCancellableResultData().first else {
+                throw CommonError.dataCorruption
+            }
 
             guard let fee = BigUInt(feeModel.fee) else {
                 throw CommonError.dataCorruption
@@ -170,12 +202,13 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             return fee
         }
 
-        feeWrapper.addDependency(operations: [coderFactoryOperation])
-        mappingOperation.addDependency(feeWrapper.targetOperation)
+        mainFeeOperation.addDependency(coderFactoryOperation)
+        mappingOperation.addDependency(mainFeeOperation)
 
-        return feeWrapper
-            .insertingHead(operations: [coderFactoryOperation])
-            .insertingTail(operation: mappingOperation)
+        return .init(
+            targetOperation: mappingOperation,
+            dependencies: [coderFactoryOperation, mainFeeOperation]
+        )
     }
 
     private func createNativeTokenFeeCalculationWrapper(
@@ -184,13 +217,9 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         let resultOperation = ClosureOperation<AssetConversion.FeeModel> {
             let feeAmount = try nativeFeeWrapper.targetOperation.extractNoCancellableResultData()
 
-            return .init(
-                totalFee: .init(
-                    targetAmount: feeAmount,
-                    nativeAmount: feeAmount
-                ),
-                networkFeeAddition: nil
-            )
+            let model = AssetConversion.AmountWithNative(targetAmount: feeAmount, nativeAmount: feeAmount)
+
+            return .init(totalFee: model, networkFee: model)
         }
 
         resultOperation.addDependency(nativeFeeWrapper.targetOperation)
@@ -244,9 +273,9 @@ final class AssetHubFeeService: AnyCancellableCleaning {
                     targetAmount: quotes[0].amountIn,
                     nativeAmount: feeAmount + edAmount
                 ),
-                networkFeeAddition: .init(
+                networkFee: .init(
                     targetAmount: quotes[1].amountIn,
-                    nativeAmount: edAmount
+                    nativeAmount: feeAmount
                 )
             )
         }
@@ -280,16 +309,16 @@ final class AssetHubFeeService: AnyCancellableCleaning {
                 )
             )
 
-            let edQuoteWrapper = conversionOperationFactory.quote(
+            let feeQuoteWrapper = conversionOperationFactory.quote(
                 for: .init(
                     assetIn: feeAsset.chainAssetId,
                     assetOut: utilityAsset.chainAssetId,
-                    amount: edAmount,
+                    amount: fee,
                     direction: .buy
                 )
             )
 
-            return [feeWithAdditionsQuoteWrapper, edQuoteWrapper]
+            return [feeWithAdditionsQuoteWrapper, feeQuoteWrapper]
         }.longrunOperation()
     }
 

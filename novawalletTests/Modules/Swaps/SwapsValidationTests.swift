@@ -34,11 +34,11 @@ final class SwapsValidationTests: XCTestCase {
             feeModel: .init(
                 totalFee: .init(
                     targetAmount: fee + existentialDepositInFeeToken,
-                    nativeAmount: (fee + existentialDepositInFeeToken) / 100
+                    nativeAmount: (fee + existentialDeposit) / 100
                 ),
-                networkFeeAddition: .init(
-                    targetAmount: existentialDepositInFeeToken,
-                    nativeAmount: existentialDeposit
+                networkFee: .init(
+                    targetAmount: fee,
+                    nativeAmount: fee / 100
                 )
             ),
             payAssetExistense: nil,
@@ -78,7 +78,10 @@ final class SwapsValidationTests: XCTestCase {
                     targetAmount: fee,
                     nativeAmount: fee
                 ),
-                networkFeeAddition: nil
+                networkFee: .init(
+                    targetAmount: fee,
+                    nativeAmount: fee
+                )
             ),
             payAssetExistense: nil,
             receiveAssetExistense: nil,
