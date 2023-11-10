@@ -9,7 +9,11 @@ struct TransferSetupViewFactory {
         recepient: DisplayAddress?,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        createView(from: chainAsset, recepient: recepient, transferCompletion: transferCompletion) { factory, state, view in
+        createView(
+            from: chainAsset,
+            recepient: recepient,
+            transferCompletion: transferCompletion
+        ) { factory, state, view in
             factory.createOnChainPresenter(for: chainAsset, initialState: state, view: view)
         }
     }
@@ -21,7 +25,11 @@ struct TransferSetupViewFactory {
         recepient: DisplayAddress?,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        createView(from: chainAsset, recepient: recepient, transferCompletion: transferCompletion) { factory, state, view in
+        createView(
+            from: chainAsset,
+            recepient: recepient,
+            transferCompletion: transferCompletion
+        ) { factory, state, view in
             factory.createCrossChainPresenter(
                 for: chainAsset,
                 destinationChainAsset: destinationChainAsset,
