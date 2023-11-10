@@ -14,5 +14,5 @@ struct OperationSwapModel {
     let feePrice: PriceData?
     let feeAsset: AssetModel
     let wallet: WalletDisplayAddress
-    let isOutgoing: Bool
+    let direction: AssetConversion.Direction
 }

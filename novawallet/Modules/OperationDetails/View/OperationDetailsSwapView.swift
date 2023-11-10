@@ -69,10 +69,11 @@ final class OperationDetailsSwapView: LocalizableView {
         ))
         transactionHashView.bind(details: viewModel.transactionHash)
 
-        if viewModel.isOutgoing {
+        switch viewModel.direction {
+        case .sell:
             pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPositive()
             pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPrimary()
-        } else {
+        case .buy:
             pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPrimary()
             pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPositive()
         }

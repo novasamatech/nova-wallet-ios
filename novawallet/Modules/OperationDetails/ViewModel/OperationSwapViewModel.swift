@@ -1,7 +1,7 @@
 import Foundation
 
 struct OperationSwapViewModel {
-    let isOutgoing: Bool
+    let direction: AssetConversion.Direction
     let assetIn: SwapAssetAmountViewModel
     let assetOut: SwapAssetAmountViewModel
     let rate: String

@@ -101,12 +101,13 @@ final class OperationDetailsViewModelFactory {
             priceData = model.priceData
             prefix = "-"
         case let .swap(model):
-            if model.isOutgoing {
+            switch model.direction {
+            case .sell:
                 amount = model.amountIn
                 priceData = model.priceIn
                 prefix = "-"
                 precision = model.assetIn.displayInfo.assetPrecision
-            } else {
+            case .buy:
                 amount = model.amountOut
                 priceData = model.priceOut
                 prefix = "+"
@@ -264,7 +265,7 @@ final class OperationDetailsViewModelFactory {
         let walletViewModel = try? walletViewModelFactory.createViewModel(from: model.wallet)
 
         return OperationSwapViewModel(
-            isOutgoing: model.isOutgoing,
+            direction: model.direction,
             assetIn: assetInViewModel,
             assetOut: assetOutViewModel,
             rate: rateViewModel,
@@ -314,19 +315,13 @@ final class OperationDetailsViewModelFactory {
             amountInDecimal != 0 else {
             return ""
         }
-
         let difference = amountOutDecimal / amountInDecimal
 
-        let amountIn = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: params.assetDisplayInfoIn,
-            value: 1
-        ).value(for: locale)
-        let amountOut = balanceViewModelFactoryFacade.amountFromValue(
+        return balanceViewModelFactoryFacade.rateFromValue(
+            mainSymbol: params.assetDisplayInfoIn.symbol,
             targetAssetInfo: params.assetDisplayInfoOut,
             value: difference
         ).value(for: locale)
-
-        return "\(amountIn) ≈ \(amountOut)"
     }
 
     private func createContentViewModel(

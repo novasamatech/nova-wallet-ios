@@ -35,7 +35,7 @@ extension OperationDetailsSwapProvider: OperationDetailsDataProviderProtocol {
             return
         }
 
-        let isOutgoing = assetIn.assetId == chainAsset.asset.assetId
+        let direction: AssetConversion.Direction = assetIn.assetId == chainAsset.asset.assetId ? .sell : .buy
         let timestamp = UInt64(bitPattern: transaction.timestamp)
 
         let priceIn = calculatePrice(
@@ -72,7 +72,7 @@ extension OperationDetailsSwapProvider: OperationDetailsDataProviderProtocol {
             feePrice: feePriceData,
             feeAsset: feeAsset,
             wallet: wallet,
-            isOutgoing: isOutgoing
+            direction: direction
         )
         progressClosure(.swap(model))
     }

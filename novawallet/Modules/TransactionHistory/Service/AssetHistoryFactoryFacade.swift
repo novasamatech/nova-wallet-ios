@@ -31,12 +31,12 @@ final class AssetHistoryFacade {
 
             // we support only transfers for non utility assets
 
-            let mappedFilter = asset.isUtility ? filter : .transfers
-
+            let mappedFilter = asset.isUtility ? filter : [.transfers, .swaps]
             return SubqueryHistoryOperationFactory(
                 url: url,
                 filter: mappedFilter,
                 assetId: historyAssetId,
+                isUtilityAsset: asset.isUtility,
                 hasPoolStaking: asset.hasPoolStaking,
                 hasSwaps: chainAsset.chain.hasSwaps
             )

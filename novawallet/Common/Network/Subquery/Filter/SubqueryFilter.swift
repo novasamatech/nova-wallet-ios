@@ -35,11 +35,54 @@ struct SubqueryLessThanOrEqualToFilter<T: SubqueryFilterValue>: SubqueryFilter {
     }
 }
 
+struct SubqueryValueFilter<T: SubqueryFilterValue>: SubqueryFilter {
+    let fieldName: String
+    let value: T
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): \(value.rawSubqueryFilter())"
+    }
+}
+
 struct SubqueryIsNotNullFilter: SubqueryFilter {
     let fieldName: String
 
     func rawSubqueryFilter() -> String {
         "\(fieldName): { isNull: false }"
+    }
+}
+
+struct SubqueryNotFilter: SubqueryFilter {
+    let fieldName: String
+    let inner: SubqueryFilter
+
+    func rawSubqueryFilter() -> String {
+        "not: { \(fieldName): { \(inner.rawSubqueryFilter()) }}"
+    }
+}
+
+struct SubqueryContainsFilter: SubqueryFilter {
+    let fieldName: String
+    let inner: SubqueryFilter
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): { contains: { \(inner.rawSubqueryFilter()) } }"
+    }
+}
+
+struct SubqueryContainsKeyFilter: SubqueryFilter {
+    let fieldName: String
+
+    func rawSubqueryFilter() -> String {
+        "containsKey: \(fieldName.rawSubqueryFilter())"
+    }
+}
+
+struct SubqueryIsNullFilter: SubqueryFilter {
+    let fieldName: String
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): { isNull: true }"
     }
 }
 

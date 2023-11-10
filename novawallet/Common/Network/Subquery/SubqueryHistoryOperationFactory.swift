@@ -16,13 +16,22 @@ final class SubqueryHistoryOperationFactory {
     let assetId: String?
     let hasPoolStaking: Bool
     let hasSwaps: Bool
+    let isUtilityAsset: Bool
 
-    init(url: URL, filter: WalletHistoryFilter, assetId: String?, hasPoolStaking: Bool, hasSwaps: Bool) {
+    init(
+        url: URL,
+        filter: WalletHistoryFilter,
+        assetId: String?,
+        isUtilityAsset: Bool,
+        hasPoolStaking: Bool,
+        hasSwaps: Bool
+    ) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
         self.hasPoolStaking = hasPoolStaking
         self.hasSwaps = hasSwaps
+        self.isUtilityAsset = isUtilityAsset
     }
 
     private func prepareExtrinsicInclusionFilter() -> String {
@@ -61,6 +70,37 @@ final class SubqueryHistoryOperationFactory {
         """
     }
 
+    private func prepareSwapAssetIdFilter(_ assetId: String?) -> String {
+        let filters: [SubqueryFilter]
+        if let assetId = assetId {
+            filters = [
+                SubqueryContainsFilter(
+                    fieldName: "swap",
+                    inner: SubqueryValueFilter(fieldName: "assetIdIn", value: assetId)
+                ),
+                SubqueryContainsFilter(
+                    fieldName: "swap",
+                    inner: SubqueryValueFilter(fieldName: "assetIdOut", value: assetId)
+                )
+            ]
+        } else {
+            filters = [
+                SubqueryContainsFilter(
+                    fieldName: "swap",
+                    inner: SubqueryIsNullFilter(fieldName: "assetIdIn")
+                ),
+                SubqueryContainsFilter(
+                    fieldName: "swap",
+                    inner: SubqueryIsNullFilter(fieldName: "assetIdOut")
+                ),
+                SubqueryNotFilter(fieldName: "swap", inner: SubqueryContainsKeyFilter(fieldName: "assetIdIn")),
+                SubqueryNotFilter(fieldName: "swap", inner: SubqueryContainsKeyFilter(fieldName: "assetIdOut"))
+            ]
+        }
+
+        return SubqueryInnerFilter(inner: SubqueryCompoundFilter.or(filters)).rawSubqueryFilter()
+    }
+
     private func prepareFilter() -> String {
         var filterStrings: [String] = []
 
@@ -91,7 +131,9 @@ final class SubqueryHistoryOperationFactory {
 
         if filter.contains(.swaps), hasSwaps {
             if let assetId = assetId {
-                filterStrings.append(prepareAssetIdFilter(assetId))
+                filterStrings.append(prepareSwapAssetIdFilter(assetId))
+            } else if isUtilityAsset {
+                filterStrings.append(prepareSwapAssetIdFilter(nil))
             } else {
                 filterStrings.append("{ swap: { isNull: false } }")
             }
