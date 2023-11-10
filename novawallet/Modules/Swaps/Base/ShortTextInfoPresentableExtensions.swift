@@ -3,7 +3,7 @@ import SoraFoundation
 extension ShortTextInfoPresentable {
     func showFeeInfo(from view: ControllerBackedProtocol?) {
         let title = LocalizableResource {
-            R.string.localizable.commonNetwork(
+            R.string.localizable.commonNetworkFee(
                 preferredLanguages: $0.rLanguages
             )
         }

@@ -49,6 +49,10 @@ extension String {
     func estimatedEqual(to other: String) -> String {
         "\(self) ≈ \(other)"
     }
+
+    func approximately() -> String {
+        "~\(self)"
+    }
 }
 
 extension Optional where Wrapped == String {
