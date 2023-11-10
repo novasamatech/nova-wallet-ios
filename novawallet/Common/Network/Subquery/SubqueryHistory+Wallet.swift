@@ -50,7 +50,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         } else if let swap = swap {
             return createTransactionFromSwap(
                 swap,
-                chainAssetId: chainAsset.chainAssetId,
+                chainAsset: chainAsset,
                 chainFormat: chainAsset.chain.chainFormat
             )
         } else if let reward = reward {
@@ -112,16 +112,18 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
 
     private func createTransactionFromSwap(
         _ swap: SubquerySwap,
-        chainAssetId: ChainAssetId,
+        chainAsset: ChainAsset,
         chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
         let source = TransactionHistoryItemSource.substrate
         let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
+        let assetIdIn = chainAsset.chain.asset(byHistoryAssetId: swap.assetIdIn) ?? chainAsset.chain.utilityAsset()
+        let direction: AssetConversion.Direction = assetIdIn?.assetId == chainAsset.asset.assetId ? .sell : .buy
         return .init(
             identifier: remoteIdentifier,
             source: source,
-            chainId: chainAssetId.chainId,
-            assetId: chainAssetId.assetId,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId,
             sender: swap.sender.normalize(for: chainFormat) ?? swap.sender,
             receiver: swap.receiver.normalize(for: chainFormat) ?? swap.receiver,
             amountInPlank: nil,
@@ -134,7 +136,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: UInt16(swap.eventIdx),
-            callPath: CallCodingPath.swap,
+            callPath: CallCodingPath.swap(direction: direction),
             call: nil,
             swap: .init(
                 amountIn: swap.amountIn,

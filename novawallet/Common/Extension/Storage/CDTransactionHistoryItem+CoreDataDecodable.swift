@@ -51,12 +51,15 @@ extension CDTransactionItem: CoreDataCodable {
             txIndex = nil
         }
         if let swapContainer = try? container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap) {
-            let newSwap = CDTransactionSwapItem(context: context)
-            newSwap.amountIn = try swapContainer.decode(String.self, forKey: .amountIn)
-            newSwap.amountOut = try swapContainer.decode(String.self, forKey: .amountOut)
-            newSwap.assetIdIn = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdIn)
-            newSwap.assetIdOut = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdOut)
-            swap = newSwap
+            if swap == nil {
+                let newSwap = CDTransactionSwapItem(context: context)
+                newSwap.transaction = self
+                swap = newSwap
+            }
+            swap?.amountIn = try swapContainer.decode(String.self, forKey: .amountIn)
+            swap?.amountOut = try swapContainer.decode(String.self, forKey: .amountOut)
+            swap?.assetIdIn = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdIn)
+            swap?.assetIdOut = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdOut)
         }
     }
 

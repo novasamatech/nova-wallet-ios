@@ -414,10 +414,10 @@ extension TransactionHistoryItem {
             return .poolReward
         case .poolSlash:
             return .poolSlash
-        case .swap:
-            return .swap
         default:
-            if callPath.isSubstrateOrEvmTransfer {
+            if callPath.isSwap {
+                return .swap
+            } else if callPath.isSubstrateOrEvmTransfer {
                 return sender == address ? .outgoing : .incoming
             } else {
                 return TransactionType.extrinsic
