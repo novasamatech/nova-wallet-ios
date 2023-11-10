@@ -106,6 +106,10 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             subtitle: R.string.localizable.swapsSetupAssetSelectSubtitle(preferredLanguages: locale.rLanguages)
         )
     }
+
+    override func formatPriceDifference(amount: Decimal, locale: Locale) -> String {
+        percentForamatter.value(for: locale).stringFromDecimal(amount)?.inParenthesis() ?? ""
+    }
 }
 
 extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
