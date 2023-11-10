@@ -566,19 +566,8 @@ extension UIFactory {
             title: doneTitle,
             selector: selector
         )
-        let toolbarStyle = ToolBarStyle(
-            backgroundColor: nil,
-            isTranslucent: true,
-            doneAttributes: [
-                .foregroundColor: R.color.colorButtonTextAccent()!,
-                .font: UIFont.p0Paragraph
-            ],
-            actionAttributes: [:]
-        )
-
         return createActionsAccessoryView(
             for: toolBar,
-            style: toolbarStyle,
             actions: [],
             doneAction: doneAction,
             target: target,
