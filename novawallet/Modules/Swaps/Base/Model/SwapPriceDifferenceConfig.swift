@@ -1,15 +1,17 @@
 import Foundation
 
 struct SwapPriceDifferenceConfig {
-    let warningMin: Decimal
-    let warningMax: Decimal
+    let high: Decimal
+    let medium: Decimal
+    let low: Decimal
 }
 
 extension SwapPriceDifferenceConfig {
     static var defaultConfig: SwapPriceDifferenceConfig {
         .init(
-            warningMin: 0.1,
-            warningMax: 0.2
+            high: 0.15,
+            medium: 0.05,
+            low: 0.01
         )
     }
 }

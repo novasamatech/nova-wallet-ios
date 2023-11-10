@@ -146,12 +146,14 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         let diffString = formatPriceDifference(amount: diff, locale: locale)
 
         switch diff {
-        case _ where diff > priceDifferenceConfig.warningMax:
+        case _ where diff >= priceDifferenceConfig.high:
             return .init(details: diffString, attention: .high)
-        case priceDifferenceConfig.warningMin ... priceDifferenceConfig.warningMax:
+        case priceDifferenceConfig.medium ... priceDifferenceConfig.high:
             return .init(details: diffString, attention: .medium)
-        default:
+        case priceDifferenceConfig.low ... priceDifferenceConfig.medium:
             return .init(details: diffString, attention: .low)
+        default:
+            return nil
         }
     }
 }

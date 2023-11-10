@@ -167,6 +167,8 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
             }
             payAmountInput = payAmount.map { .absolute($0) }
             providePayAmountInputViewModel()
+            providePayInputPriceViewModel()
+            provideReceiveInputPriceViewModel()
         case .sell:
             receiveAmountInput = receiveChainAsset.map {
                 Decimal.fromSubstrateAmount(
@@ -176,6 +178,7 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
             }
             provideReceiveAmountInputViewModel()
             provideReceiveInputPriceViewModel()
+            providePayInputPriceViewModel()
         }
 
         provideRateViewModel()
@@ -192,8 +195,8 @@ final class SwapSetupPresenter: SwapBasePresenter, PurchaseFlowManaging {
         provideFeeViewModel()
 
         if case .rate = payAmountInput {
-            providePayInputPriceViewModel()
             providePayAmountInputViewModel()
+            providePayInputPriceViewModel()
 
             // as fee changes the max amount we might also refresh the quote
             refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
@@ -664,6 +667,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func updatePayAmount(_ amount: Decimal?) {
         payAmountInput = amount.map { .absolute($0) }
         refreshQuote(direction: .sell)
+        providePayInputPriceViewModel()
+        provideReceiveInputPriceViewModel()
         provideButtonState()
         provideIssues()
         provideNotification()
@@ -672,6 +677,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func updateReceiveAmount(_ amount: Decimal?) {
         receiveAmountInput = amount
         refreshQuote(direction: .buy)
+        provideReceiveInputPriceViewModel()
+        providePayInputPriceViewModel()
         provideButtonState()
         provideIssues()
         provideNotification()
@@ -697,15 +704,17 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             newFocus = nil
         }
 
-        switch quoteArgs?.direction {
+        let previousDirection = quoteArgs?.direction
+
+        switch previousDirection {
         case .sell:
             receiveAmountInput = payAmount
             payAmountInput = nil
-            refreshQuote(direction: .buy, forceUpdate: false)
+            refreshQuote(direction: .buy, forceUpdate: true)
         case .buy:
             payAmountInput = receiveAmount
             receiveAmountInput = nil
-            refreshQuote(direction: .sell, forceUpdate: false)
+            refreshQuote(direction: .sell, forceUpdate: true)
         case .none:
             payAmountInput = nil
             receiveAmountInput = nil
