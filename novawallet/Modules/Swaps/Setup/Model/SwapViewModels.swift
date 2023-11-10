@@ -33,8 +33,8 @@ struct SwapPriceDifferenceViewModel {
 }
 
 enum FeeSelectionViewModel: Int, CaseIterable {
-    case payAsset
     case utilityAsset
+    case payAsset
 }
 
 extension FeeSelectionViewModel {

@@ -44,7 +44,13 @@ final class SwapAssetControl: BackgroundedContentControl {
             assetView.intrinsicContentSize.height
         )
 
-        let iconWidth = lazyIconView.map { $0.intrinsicContentSize.width + horizontalSpacing } ?? 0
+        let iconWidth: CGFloat
+        if lazyIconView == nil {
+            iconWidth = 0
+        } else {
+            iconWidth = 2 * iconRadius + horizontalSpacing
+        }
+
         let contentWidth = iconWidth + assetView.intrinsicContentSize.width
 
         let height = contentInsets.top + contentHeight + contentInsets.bottom

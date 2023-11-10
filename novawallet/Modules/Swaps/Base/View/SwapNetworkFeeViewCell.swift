@@ -11,7 +11,7 @@ final class SwapNetworkFeeViewCell: RowView<SwapNetworkFeeView>, StackTableViewC
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let pointInContentViewSpace = convert(point, to: rowContentView)
-        if rowContentView.valueView.frame.contains(pointInContentViewSpace) {
+        if valueTopButton.isUserInteractionEnabled, rowContentView.valueView.frame.contains(pointInContentViewSpace) {
             return valueTopButton
         } else {
             return super.hitTest(point, with: event)
