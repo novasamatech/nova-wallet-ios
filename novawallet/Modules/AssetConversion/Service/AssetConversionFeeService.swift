@@ -9,20 +9,20 @@ extension AssetConversion {
 
     struct FeeModel: Equatable {
         let totalFee: AmountWithNative
-        let networkFeeAddition: AmountWithNative?
+        let networkFee: AmountWithNative
 
-        var networkFee: AmountWithNative {
-            guard let addition = networkFeeAddition else {
-                return totalFee
+        var networkNativeFeeAddition: AmountWithNative? {
+            let targetAmount = totalFee.targetAmount > networkFee.targetAmount ?
+                totalFee.targetAmount - networkFee.targetAmount : 0
+
+            guard targetAmount > 0 else {
+                return nil
             }
 
-            let feeInTargetToken = totalFee.targetAmount >= addition.targetAmount ?
-                totalFee.targetAmount - addition.targetAmount : totalFee.targetAmount
+            let nativeAmount = totalFee.nativeAmount > networkFee.nativeAmount ?
+                totalFee.nativeAmount - networkFee.nativeAmount : 0
 
-            let feeInNativeToken = totalFee.nativeAmount >= addition.nativeAmount ?
-                totalFee.nativeAmount - addition.nativeAmount : totalFee.nativeAmount
-
-            return .init(targetAmount: feeInTargetToken, nativeAmount: feeInNativeToken)
+            return .init(targetAmount: targetAmount, nativeAmount: nativeAmount)
         }
     }
 
@@ -45,6 +45,7 @@ enum AssetConversionFeeServiceError: Error {
     case chainRuntimeMissing
     case chainConnectionMissing
     case utilityAssetMissing
+    case feeAssetConversionFailed
     case setupFailed(String)
     case calculationFailed(String)
 }
