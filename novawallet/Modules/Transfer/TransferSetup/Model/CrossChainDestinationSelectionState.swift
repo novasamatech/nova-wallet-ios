@@ -1,13 +1,13 @@
 import Foundation
 
 class CrossChainDestinationSelectionState {
-    let originChain: ChainModel
-    let availableDestChains: [ChainModel]
+    let chain: ChainModel
+    let availablePeerChains: [ChainModel]
     let selectedChainId: ChainModel.Id
 
-    init(originChain: ChainModel, availableDestChains: [ChainModel], selectedChainId: ChainModel.Id) {
-        self.originChain = originChain
-        self.availableDestChains = availableDestChains
+    init(chain: ChainModel, availablePeerChains: [ChainModel], selectedChainId: ChainModel.Id) {
+        self.chain = chain
+        self.availablePeerChains = availablePeerChains
         self.selectedChainId = selectedChainId
     }
 }

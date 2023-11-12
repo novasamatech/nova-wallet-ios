@@ -15,8 +15,8 @@ protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
 }
 
 protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
-    func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?)
-    func didCompleteDestinationSelection()
+    func didReceiveSelection(viewModel: TransferNetworkContainerViewModel)
+    func didCompleteChainSelection()
     func didSwitchCrossChain()
     func didSwitchOnChain()
     func changeYourWalletsViewState(_ state: YourWalletsControl.State)
@@ -39,7 +39,7 @@ protocol TransferSetupChildPresenterProtocol: TransferSetupCommonPresenterProtoc
 }
 
 protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
-    func changeDestinationChain()
+    func selectChain()
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
@@ -48,13 +48,13 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
-    func setup(destinationChainAsset: ChainAsset)
-    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset)
+    func setup(peerChainAsset: ChainAsset)
+    func peerChainAssetDidChanged(_ chainAsset: ChainAsset)
     func search(web3Name: String)
 }
 
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
-    func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
+    func didReceiveAvailableXcm(peerChainAssets: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
     func didReceive(recipients: [Web3TransferRecipient], for name: String)

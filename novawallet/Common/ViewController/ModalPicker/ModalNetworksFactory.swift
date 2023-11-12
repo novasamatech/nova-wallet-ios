@@ -54,7 +54,7 @@ enum ModalNetworksFactory {
         let networkViewModelFactory = NetworkViewModelFactory()
 
         let onChainViewModel = LocalizableResource { _ in
-            networkViewModelFactory.createViewModel(from: selectionState.originChain)
+            networkViewModelFactory.createViewModel(from: selectionState.chain)
         }
 
         let onChainTitle = LocalizableResource { locale in
@@ -63,7 +63,7 @@ enum ModalNetworksFactory {
 
         viewController.addSection(viewModels: [onChainViewModel], title: onChainTitle)
 
-        let crossChainViewModels = selectionState.availableDestChains.map { chain in
+        let crossChainViewModels = selectionState.availablePeerChains.map { chain in
             LocalizableResource { _ in networkViewModelFactory.createViewModel(from: chain) }
         }
 
@@ -73,10 +73,10 @@ enum ModalNetworksFactory {
 
         viewController.addSection(viewModels: crossChainViewModels, title: crossChainTitle)
 
-        if selectionState.selectedChainId == selectionState.originChain.chainId {
+        if selectionState.selectedChainId == selectionState.chain.chainId {
             viewController.selectedIndex = 0
             viewController.selectedSection = 0
-        } else if let index = selectionState.availableDestChains.firstIndex(
+        } else if let index = selectionState.availablePeerChains.firstIndex(
             where: { selectionState.selectedChainId == $0.chainId }
         ) {
             viewController.selectedIndex = index

@@ -71,7 +71,12 @@ extension GetTokenOptionsPresenter: GetTokenOptionsPresenterProtocol {
 
         switch allOperations[index] {
         case .crosschain:
-            wireframe.complete(on: view, result: .crosschains(model.availableXcmOrigins))
+            if let xcmTransfers = model.xcmTransfers {
+                wireframe.complete(
+                    on: view,
+                    result: .crosschains(model.availableXcmOrigins, xcmTransfers)
+                )
+            }
         case .receive:
             if let account = model.receiveAccount {
                 wireframe.complete(on: view, result: .receive(account))

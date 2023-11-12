@@ -1,7 +1,7 @@
 import Foundation
 
 enum GetTokenOptionsResult {
-    case crosschains(Set<ChainAssetId>)
+    case crosschains([ChainAsset], XcmTransfers)
     case receive(MetaChainAccountResponse)
     case buy([PurchaseAction])
 }

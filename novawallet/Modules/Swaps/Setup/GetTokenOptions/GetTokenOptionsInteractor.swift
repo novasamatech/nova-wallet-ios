@@ -59,6 +59,7 @@ final class GetTokenOptionsInteractor {
 
         let model = GetTokenOptionsModel(
             availableXcmOrigins: availableXcmOrigins,
+            xcmTransfers: xcmTransfers,
             receiveAccount: receiveAvailable ? selectedAccount : nil,
             buyOptions: buyAvailable ? purchaseActions : []
         )
@@ -66,24 +67,33 @@ final class GetTokenOptionsInteractor {
         presenter?.didReceive(model: model)
     }
 
-    private func determineAvailableXcmOrigins() -> Set<ChainAssetId> {
+    private func determineAvailableXcmOrigins() -> [ChainAsset] {
         guard let xcmTransfers = xcmTransfers else {
             return []
         }
 
         let balances = assetModelObservable.state.value.balances
+        let chains = assetModelObservable.state.value.allChains
 
         let availableOrigins = xcmTransfers
             .transferChainAssets(to: destinationChainAsset.chainAssetId)
-            .filter { chainAssetId in
-                if case let .success(balance) = balances[chainAssetId], balance.transferable > 0 {
-                    return true
+            .compactMap { chainAssetId in
+                if
+                    case let .success(balance) = balances[chainAssetId],
+                    balance.transferable > 0,
+                    let chain = chains[chainAssetId.chainId],
+                    let asset = chain.asset(for: chainAssetId.assetId) {
+                    return (ChainAsset(chain: chain, asset: asset), balance.transferable)
                 } else {
-                    return false
+                    return nil
                 }
             }
+            .sorted { balance1, balance2 in
+                balance1.1 > balance2.1
+            }
+            .map(\.0)
 
-        return Set(availableOrigins)
+        return availableOrigins
     }
 
     private func setupBalances() {

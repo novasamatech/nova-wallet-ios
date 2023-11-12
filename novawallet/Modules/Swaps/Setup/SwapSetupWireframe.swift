@@ -114,11 +114,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             }
 
             switch result {
-            case let .crosschains(origins):
+            case let .crosschains(origins, xcmTransfers):
                 self.showGetTokensByCrosschain(
                     from: view,
                     origins: origins,
-                    destination: destinationChainAsset
+                    destination: destinationChainAsset,
+                    xcmTransfers: xcmTransfers
                 )
             case let .receive(account):
                 self.showGetTokensByReceive(
@@ -149,13 +150,14 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showGetTokensByCrosschain(
         from view: ControllerBackedProtocol?,
-        origins: Set<ChainAssetId>,
-        destination: ChainAsset
+        origins: [ChainAsset],
+        destination: ChainAsset,
+        xcmTransfers: XcmTransfers
     ) {
         guard let transferView = TransferSetupViewFactory.createCrosschainView(
-            from: destination,
+            from: origins,
             to: destination,
-            origins: origins,
+            xcmTransfers: xcmTransfers,
             transferCompletion: nil
         ) else {
             return
