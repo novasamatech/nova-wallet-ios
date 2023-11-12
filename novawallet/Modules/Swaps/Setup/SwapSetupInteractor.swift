@@ -4,17 +4,14 @@ import BigInt
 import SubstrateSdk
 
 final class SwapSetupInteractor: SwapBaseInteractor {
-    let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let storageRepository: AnyDataProviderRepository<ChainStorageItem>
 
-    private var xcmTransfers: XcmTransfers?
     private var canPayFeeInAssetCall = CancellableCallStore()
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
     init(
-        xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
         assetConversionFeeService: AssetConversionFeeServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
@@ -27,7 +24,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue
     ) {
-        self.xcmTransfersSyncService = xcmTransfersSyncService
         self.storageRepository = storageRepository
 
         super.init(
@@ -78,51 +74,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     }
 
     deinit {
-        xcmTransfersSyncService.throttle()
         canPayFeeInAssetCall.cancel()
         clearRemoteSubscription()
-    }
-
-    private func setupXcmTransfersSyncService() {
-        xcmTransfersSyncService.notificationCallback = { [weak self] result in
-            switch result {
-            case let .success(xcmTransfers):
-                self?.xcmTransfers = xcmTransfers
-                self?.provideAvailableTransfers()
-            case let .failure(error):
-                self?.presenter?.didReceive(setupError: .xcm(error))
-            }
-        }
-
-        xcmTransfersSyncService.setup()
-    }
-
-    private func provideAvailableTransfers() {
-        guard let xcmTransfers = xcmTransfers, let payChainAsset = payChainAsset else {
-            presenter?.didReceiveAvailableXcm(origins: [], xcmTransfers: nil)
-            return
-        }
-
-        let chainAssets = xcmTransfers.transferChainAssets(to: payChainAsset.chainAssetId)
-
-        guard !chainAssets.isEmpty else {
-            presenter?.didReceiveAvailableXcm(origins: [], xcmTransfers: xcmTransfers)
-            return
-        }
-
-        let origins: [ChainAsset] = chainAssets.compactMap { chainAsset in
-            guard
-                chainAsset != payChainAsset.chainAssetId,
-                let chain = chainRegistry.getChain(for: chainAsset.chainId),
-                let asset = chain.asset(for: chainAsset.assetId)
-            else {
-                return nil
-            }
-
-            return ChainAsset(chain: chain, asset: asset)
-        }
-
-        presenter?.didReceiveAvailableXcm(origins: origins, xcmTransfers: xcmTransfers)
     }
 
     private func provideCanPayFee(for asset: ChainAsset) {
@@ -228,11 +181,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         }
     }
 
-    override func setup() {
-        super.setup()
-        setupXcmTransfersSyncService()
-    }
-
     override func handleBlockNumber(
         result: Result<BlockNumber?, Error>,
         chainId: ChainModel.Id
@@ -247,10 +195,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 }
 
 extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
-    func setupXcm() {
-        setupXcmTransfersSyncService()
-    }
-
     func update(receiveChainAsset: ChainAsset?) {
         self.receiveChainAsset = receiveChainAsset
         receiveChainAsset.map {
@@ -265,8 +209,6 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
             set(payChainAsset: payChainAsset)
             provideCanPayFee(for: payChainAsset)
         }
-
-        provideAvailableTransfers()
     }
 
     func update(feeChainAsset: ChainAsset?) {

@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol PurchaseFlowManaging {
+protocol PurchaseFlowManaging: AnyObject {
     func startPuchaseFlow(
         from view: ControllerBackedProtocol?,
         purchaseActions: [PurchaseAction],

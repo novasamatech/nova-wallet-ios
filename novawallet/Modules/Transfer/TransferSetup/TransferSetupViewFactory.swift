@@ -18,26 +18,13 @@ struct TransferSetupViewFactory {
         }
     }
 
-    static func createCrossChainView(
-        from chainAsset: ChainAsset,
-        to destinationChainAsset: ChainAsset,
-        xcmTransfers: XcmTransfers,
-        recepient: DisplayAddress?,
-        transferCompletion: TransferCompletionClosure? = nil
+    static func createCrosschainView(
+        from _: ChainAsset,
+        to _: ChainAsset,
+        origins _: Set<ChainAssetId>,
+        transferCompletion _: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        createView(
-            from: chainAsset,
-            recepient: recepient,
-            transferCompletion: transferCompletion
-        ) { factory, state, view in
-            factory.createCrossChainPresenter(
-                for: chainAsset,
-                destinationChainAsset: destinationChainAsset,
-                xcmTransfers: xcmTransfers,
-                initialState: state,
-                view: view
-            )
-        }
+        nil
     }
 
     static func createView(
