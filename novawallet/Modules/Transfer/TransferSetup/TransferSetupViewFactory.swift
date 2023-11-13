@@ -36,16 +36,18 @@ enum TransferSetupViewFactory {
         assetListObservable: AssetListModelObservable,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        guard !origins.isEmpty else {
+        guard let originChainAsset = origins.first, let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
+
+        let recepient = try? wallet.fetch(for: originChainAsset.chain.accountRequest())?.toDisplayAddress()
 
         return createView(
             from: .init(
                 chainAsset: destination,
                 whoChainAssetPeer: .origin,
                 chainAssetPeers: origins,
-                recepient: nil,
+                recepient: recepient,
                 xcmTransfers: xcmTransfers
             ),
             wireframe: TransferSetupOriginSelectionWireframe(assetListObservable: assetListObservable),
