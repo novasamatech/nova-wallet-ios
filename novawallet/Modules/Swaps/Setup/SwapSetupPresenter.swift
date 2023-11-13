@@ -11,7 +11,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
-            provideDetailsViewModel(isAvailable: quoteArgs != nil)
+            provideDetailsViewModel()
         }
     }
 
@@ -25,6 +25,15 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private var feeIdentifier: SwapSetupFeeIdentifier?
     private var slippage: BigRational
+    private var issues: [SwapSetupViewIssue] = [] {
+        didSet {
+            provideDetailsViewModel()
+        }
+    }
+
+    private var detailsAvailable: Bool {
+        !issues.contains(.noLiqudity) && quoteArgs != nil
+    }
 
     init(
         payChainAsset: ChainAsset?,
@@ -419,8 +428,8 @@ extension SwapSetupPresenter {
         view?.didReceiveSettingsState(isAvailable: payChainAsset != nil)
     }
 
-    private func provideDetailsViewModel(isAvailable: Bool) {
-        view?.didReceiveDetailsState(isAvailable: isAvailable)
+    private func provideDetailsViewModel() {
+        view?.didReceiveDetailsState(isAvailable: detailsAvailable)
     }
 
     private func provideRateViewModel() {
@@ -466,6 +475,7 @@ extension SwapSetupPresenter {
 
     private func provideIssues() {
         let issues = viewModelFactory.detectIssues(in: getIssueParams(), locale: selectedLocale)
+        self.issues = issues
         view?.didReceive(issues: issues)
     }
 
@@ -591,7 +601,7 @@ extension SwapSetupPresenter {
     private func updateViews() {
         providePayAssetViews()
         provideReceiveAssetViews()
-        provideDetailsViewModel(isAvailable: quoteArgs != nil)
+        provideDetailsViewModel()
         provideButtonState()
         provideSettingsState()
         provideIssues()

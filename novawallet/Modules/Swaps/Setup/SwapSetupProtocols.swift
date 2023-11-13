@@ -98,7 +98,7 @@ enum SwapSetupError: Error {
     case blockNumber(Error)
 }
 
-enum SwapSetupViewIssue {
+enum SwapSetupViewIssue: Equatable {
     case zeroBalance
     case insufficientBalance
     case minBalanceViolation(String)

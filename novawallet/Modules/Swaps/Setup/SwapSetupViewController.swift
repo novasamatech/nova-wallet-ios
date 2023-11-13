@@ -7,6 +7,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     let presenter: SwapSetupPresenterProtocol
 
     private var toggledDetailsManually: Bool = false
+    private var depositTokenSymbol: String = ""
 
     init(
         presenter: SwapSetupPresenterProtocol,
@@ -99,6 +100,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         title = R.string.localizable.commonSwap(preferredLanguages: selectedLocale.rLanguages)
         rootView.setup(locale: selectedLocale)
         setupAccessoryView()
+        setupDepositTokenButton()
     }
 
     private func setupAccessoryView() {
@@ -118,6 +120,13 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             style: .plain,
             target: self,
             action: #selector(settingsAction)
+        )
+    }
+
+    private func setupDepositTokenButton() {
+        rootView.depositTokenButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDepositButtonTitle(
+            depositTokenSymbol,
+            preferredLanguages: selectedLocale.rLanguages
         )
     }
 
@@ -200,7 +209,8 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         switch viewModel {
         case let .asset(assetViewModel):
             rootView.payAmountInputView.bind(assetViewModel: assetViewModel)
-            rootView.depositTokenButton.imageWithTitleView?.title = "Get \(assetViewModel.symbol)"
+            depositTokenSymbol = assetViewModel.symbol
+            setupDepositTokenButton()
         case let .empty(emptySwapsAssetViewModel):
             rootView.payAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
             rootView.depositTokenButton.imageWithTitleView?.title = nil
