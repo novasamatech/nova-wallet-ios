@@ -11,3 +11,13 @@ class CrossChainDestinationSelectionState {
         self.selectedChainId = selectedChainId
     }
 }
+
+class CrossChainOriginSelectionState {
+    let availablePeerChainAssets: [ChainAsset]
+    let selectedChainAssetId: ChainAssetId
+
+    init(availablePeerChainAssets: [ChainAsset], selectedChainAssetId: ChainAssetId) {
+        self.availablePeerChainAssets = availablePeerChainAssets
+        self.selectedChainAssetId = selectedChainAssetId
+    }
+}

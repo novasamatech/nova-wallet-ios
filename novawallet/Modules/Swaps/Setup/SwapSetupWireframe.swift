@@ -158,6 +158,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             from: origins,
             to: destination,
             xcmTransfers: xcmTransfers,
+            assetListObservable: assetListObservable,
             transferCompletion: nil
         ) else {
             return

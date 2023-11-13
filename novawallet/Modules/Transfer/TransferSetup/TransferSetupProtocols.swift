@@ -65,8 +65,14 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
+        delegate: ModalPickerViewControllerDelegate
+    )
+
+    func showOriginChainSelection(
+        from view: TransferSetupViewProtocol?,
+        chainAsset: ChainAsset,
+        selectionState: CrossChainOriginSelectionState,
+        delegate: ModalPickerViewControllerDelegate
     )
 
     func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate)

@@ -24,6 +24,7 @@ enum TransferSetupViewFactory {
                 recepient: recepient,
                 xcmTransfers: nil
             ),
+            wireframe: TransferSetupWireframe(),
             transferCompletion: transferCompletion
         )
     }
@@ -32,6 +33,7 @@ enum TransferSetupViewFactory {
         from origins: [ChainAsset],
         to destination: ChainAsset,
         xcmTransfers: XcmTransfers?,
+        assetListObservable: AssetListModelObservable,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
         guard !origins.isEmpty else {
@@ -46,12 +48,14 @@ enum TransferSetupViewFactory {
                 recepient: nil,
                 xcmTransfers: xcmTransfers
             ),
+            wireframe: TransferSetupOriginSelectionWireframe(assetListObservable: assetListObservable),
             transferCompletion: transferCompletion
         )
     }
 
     static func createView(
         from params: TransferSetupViewParams,
+        wireframe: TransferSetupWireframeProtocol,
         transferCompletion: TransferCompletionClosure?
     ) -> TransferSetupViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
@@ -67,8 +71,6 @@ enum TransferSetupViewFactory {
         let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
 
         let localizationManager = LocalizationManager.shared
-
-        let wireframe = TransferSetupWireframe()
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)

@@ -231,6 +231,61 @@ final class TransferSetupPresenter {
             break
         }
     }
+
+    private func selectDestinationChain() {
+        let chain = chainAsset.chain
+        let selectedChainId = peerChainAsset?.chain.chainId ?? chain.chainId
+
+        let availablePeerChains = availablePeers?.map(\.chain) ?? []
+
+        let selectionState = CrossChainDestinationSelectionState(
+            chain: chain,
+            availablePeerChains: availablePeerChains,
+            selectedChainId: selectedChainId
+        )
+
+        wireframe.showDestinationChainSelection(
+            from: view,
+            selectionState: selectionState,
+            delegate: self
+        )
+    }
+
+    private func selectOriginChain() {
+        let selectedChainAssetId = peerChainAsset?.chainAssetId ?? chainAsset.chainAssetId
+
+        let selectionState = CrossChainOriginSelectionState(
+            availablePeerChainAssets: availablePeers ?? [],
+            selectedChainAssetId: selectedChainAssetId
+        )
+
+        wireframe.showOriginChainSelection(
+            from: view,
+            chainAsset: chainAsset,
+            selectionState: selectionState,
+            delegate: self
+        )
+    }
+
+    private func handleNewChainAssetSelection(_ newPeerChainAsset: ChainAsset?) {
+        if recipientAddress?.isExternal == true {
+            recipientAddress = nil
+            childPresenter?.updateRecepient(partialAddress: "")
+        }
+
+        peerChainAsset = newPeerChainAsset
+
+        provideChainsViewModel()
+        updateYourWalletsButton()
+
+        if let peerChainAsset = peerChainAsset {
+            setupCrossChainChildPresenter()
+            interactor.peerChainAssetDidChanged(peerChainAsset)
+        } else {
+            setupOnChainChildPresenter()
+            interactor.peerChainAssetDidChanged(chainAsset)
+        }
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -288,23 +343,12 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func selectChain() {
-        let chain = chainAsset.chain
-        let selectedChainId = peerChainAsset?.chain.chainId ?? chain.chainId
-
-        let availablePeerChains = availablePeers?.map(\.chain) ?? []
-
-        let selectionState = CrossChainDestinationSelectionState(
-            chain: chain,
-            availablePeerChains: availablePeerChains,
-            selectedChainId: selectedChainId
-        )
-
-        wireframe.showDestinationChainSelection(
-            from: view,
-            selectionState: selectionState,
-            delegate: self,
-            context: selectionState
-        )
+        switch whoChainAssetPeer {
+        case .destination:
+            selectDestinationChain()
+        case .origin:
+            selectOriginChain()
+        }
     }
 
     func didTapOnYourWallets() {
@@ -405,33 +449,19 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModel(at index: Int, section: Int, context: AnyObject?) {
         view?.didCompleteChainSelection()
 
-        guard let selectionState = context as? CrossChainDestinationSelectionState else {
-            return
-        }
+        if let selectionState = context as? CrossChainDestinationSelectionState {
+            if section == 0 {
+                handleNewChainAssetSelection(nil)
+            } else {
+                let selectedChain = selectionState.availablePeerChains[index]
+                let selectedChainId = selectedChain.chainId
 
-        if recipientAddress?.isExternal == true {
-            recipientAddress = nil
-            childPresenter?.updateRecepient(partialAddress: "")
-        }
+                let newPeerChainAsset = availablePeers?.first { $0.chain.chainId == selectedChainId }
 
-        if section == 0 {
-            peerChainAsset = nil
-        } else {
-            let selectedChain = selectionState.availablePeerChains[index]
-            let selectedChainId = selectedChain.chainId
-
-            peerChainAsset = availablePeers?.first { $0.chain.chainId == selectedChainId }
-        }
-
-        provideChainsViewModel()
-        updateYourWalletsButton()
-
-        if let peerChainAsset = peerChainAsset {
-            setupCrossChainChildPresenter()
-            interactor.peerChainAssetDidChanged(peerChainAsset)
-        } else {
-            setupOnChainChildPresenter()
-            interactor.peerChainAssetDidChanged(chainAsset)
+                handleNewChainAssetSelection(newPeerChainAsset)
+            }
+        } else if let selectionState = context as? CrossChainOriginSelectionState {
+            handleNewChainAssetSelection(selectionState.availablePeerChainAssets[index])
         }
     }
 
@@ -445,7 +475,7 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidCancel(context: AnyObject?) {
-        if context is CrossChainDestinationSelectionState {
+        if context is CrossChainDestinationSelectionState || context is CrossChainOriginSelectionState {
             view?.didCompleteChainSelection()
         } else if context is Web3NameAddressesSelectionState {
             view?.didReceiveRecipientInputState(focused: true, empty: nil)
