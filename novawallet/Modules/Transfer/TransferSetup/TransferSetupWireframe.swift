@@ -2,22 +2,38 @@ import Foundation
 import SoraFoundation
 import SoraUI
 
-final class TransferSetupWireframe: TransferSetupWireframeProtocol {
+class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
+        delegate: ModalPickerViewControllerDelegate
     ) {
-        guard let viewController = ModalNetworksFactory.createNetworkSelectionList(
+        showChainSelection(
+            from: view,
             selectionState: selectionState,
             delegate: delegate,
-            context: context
-        ) else {
-            return
-        }
+            context: selectionState
+        )
+    }
 
-        view?.controller.present(viewController, animated: true, completion: nil)
+    func showOriginChainSelection(
+        from view: TransferSetupViewProtocol?,
+        chainAsset: ChainAsset,
+        selectionState: CrossChainOriginSelectionState,
+        delegate: ModalPickerViewControllerDelegate
+    ) {
+        let mappedState = CrossChainDestinationSelectionState(
+            chain: chainAsset.chain,
+            availablePeerChains: selectionState.availablePeerChainAssets.map(\.chain),
+            selectedChainId: selectionState.selectedChainAssetId.chainId
+        )
+
+        showChainSelection(
+            from: view,
+            selectionState: mappedState,
+            delegate: delegate,
+            context: selectionState
+        )
     }
 
     func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate) {
@@ -67,5 +83,22 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
 
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
         view?.controller.navigationController?.isBeingDismissed ?? true
+    }
+
+    private func showChainSelection(
+        from view: TransferSetupViewProtocol?,
+        selectionState: CrossChainDestinationSelectionState,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    ) {
+        guard let viewController = ModalNetworksFactory.createNetworkSelectionList(
+            selectionState: selectionState,
+            delegate: delegate,
+            context: context
+        ) else {
+            return
+        }
+
+        view?.controller.present(viewController, animated: true, completion: nil)
     }
 }

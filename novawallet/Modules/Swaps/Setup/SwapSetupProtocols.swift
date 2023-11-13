@@ -43,13 +43,11 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
-    func setupXcm()
     func retryRemoteSubscription()
     func retryBlockNumberSubscription()
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
-    func didReceiveAvailableXcm(origins: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?, chainId: ChainModel.Id)
     func didReceive(setupError: SwapSetupError)
@@ -85,28 +83,16 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol, ShortTextInfoPre
         form view: ControllerBackedProtocol?,
         viewModel: SwapNetworkFeeSheetViewModel
     )
-    func showTokenDepositOptions(
+
+    func showGetTokenOptions(
         form view: ControllerBackedProtocol?,
-        operations: [DepositOperationModel],
-        token: String,
-        delegate: ModalPickerViewControllerDelegate?
-    )
-    func showDepositTokensByReceive(
-        from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset,
-        metaChainAccountResponse: MetaChainAccountResponse
-    )
-    func showDepositTokensBySend(
-        from view: ControllerBackedProtocol?,
-        origin: ChainAsset,
-        destination: ChainAsset,
-        recepient: DisplayAddress?,
-        xcmTransfers: XcmTransfers
+        purchaseHadler: PurchaseFlowManaging,
+        destinationChainAsset: ChainAsset,
+        locale: Locale
     )
 }
 
 enum SwapSetupError: Error {
-    case xcm(Error)
     case payAssetSetFailed(Error)
     case remoteSubscription(Error)
     case blockNumber(Error)

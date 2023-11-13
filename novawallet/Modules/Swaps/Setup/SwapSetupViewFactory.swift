@@ -58,7 +58,6 @@ struct SwapSetupViewFactory {
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,
-            purchaseProvider: PurchaseAggregator.defaultAggregator(),
             logger: Logger.shared
         )
 
@@ -96,18 +95,12 @@ struct SwapSetupViewFactory {
             operationQueue: operationQueue
         )
 
-        let xcmTransfersSyncService = XcmTransfersSyncService(
-            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
-            operationQueue: operationQueue
-        )
-
         let assetStorageFactory = AssetStorageInfoOperationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
         let interactor = SwapSetupInteractor(
-            xcmTransfersSyncService: xcmTransfersSyncService,
             assetConversionAggregatorFactory: assetConversionAggregator,
             assetConversionFeeService: feeService,
             chainRegistry: ChainRegistryFacade.sharedRegistry,

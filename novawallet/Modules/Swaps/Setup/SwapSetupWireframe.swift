@@ -102,44 +102,74 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         view?.controller.present(bottomSheet.controller, animated: true)
     }
 
-    func showTokenDepositOptions(
+    func showGetTokenOptions(
         form view: ControllerBackedProtocol?,
-        operations: [DepositOperationModel],
-        token: String,
-        delegate: ModalPickerViewControllerDelegate?
+        purchaseHadler: PurchaseFlowManaging,
+        destinationChainAsset: ChainAsset,
+        locale: Locale
     ) {
-        guard let bottomSheet = ModalPickerFactory.createPickerListForOperations(
-            operations: operations,
-            delegate: delegate,
-            token: token,
-            context: nil
+        let completion: GetTokenOptionsCompletion = { [weak self, weak purchaseHadler] result in
+            guard let self = self else {
+                return
+            }
+
+            switch result {
+            case let .crosschains(origins, xcmTransfers):
+                self.showGetTokensByCrosschain(
+                    from: view,
+                    origins: origins,
+                    destination: destinationChainAsset,
+                    xcmTransfers: xcmTransfers
+                )
+            case let .receive(account):
+                self.showGetTokensByReceive(
+                    from: view,
+                    chainAsset: destinationChainAsset,
+                    metaChainAccountResponse: account
+                )
+            case let .buy(actions):
+                purchaseHadler?.startPuchaseFlow(
+                    from: view,
+                    purchaseActions: actions,
+                    wireframe: self,
+                    locale: locale
+                )
+            }
+        }
+
+        guard let bottomSheet = GetTokenOptionsViewFactory.createView(
+            from: destinationChainAsset,
+            assetModelObservable: assetListObservable,
+            completion: completion
         ) else {
             return
         }
 
-        view?.controller.present(bottomSheet, animated: true)
+        view?.controller.present(bottomSheet.controller, animated: true)
     }
 
-    func showDepositTokensBySend(
+    func showGetTokensByCrosschain(
         from view: ControllerBackedProtocol?,
-        origin: ChainAsset,
+        origins: [ChainAsset],
         destination: ChainAsset,
-        recepient: DisplayAddress?,
         xcmTransfers: XcmTransfers
     ) {
-        guard let transferSetupView = TransferSetupViewFactory.createCrossChainView(
-            from: origin,
+        guard let transferView = TransferSetupViewFactory.createCrosschainView(
+            from: origins,
             to: destination,
             xcmTransfers: xcmTransfers,
-            recepient: recepient
+            assetListObservable: assetListObservable,
+            transferCompletion: nil
         ) else {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(transferSetupView.controller, animated: true)
+        let navigationController = NovaNavigationController(rootViewController: transferView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 
-    func showDepositTokensByReceive(
+    func showGetTokensByReceive(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
@@ -151,6 +181,8 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(receiveTokensView.controller, animated: true)
+        let navigationController = NovaNavigationController(rootViewController: receiveTokensView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 }

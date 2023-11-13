@@ -192,8 +192,8 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         presenter.proceed()
     }
 
-    @objc func actionChangeDestination() {
-        presenter.changeDestinationChain()
+    @objc func actionChangeChain() {
+        presenter.selectChain()
     }
 
     @objc func actionSendMyself() {
@@ -219,25 +219,18 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         rootView.yourWalletsControl.apply(state: state)
     }
 
-    func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {
-        let assetViewModel = originChain.assetViewModel
-        let viewModel = TransferNetworkContainerViewModel(
-            assetSymbol: assetViewModel.symbol,
-            originNetwork: originChain.networkViewModel,
-            destNetwork: destinationChain
-        )
-
+    func didReceiveSelection(viewModel: TransferNetworkContainerViewModel) {
         rootView.networkContainerView.bind(viewModel: viewModel)
 
-        rootView.networkContainerView.destinationNetworkView?.actionControl.addTarget(
+        rootView.networkContainerView.selectableNetworkView?.actionControl.addTarget(
             self,
-            action: #selector(actionChangeDestination),
+            action: #selector(actionChangeChain),
             for: .touchUpInside
         )
     }
 
-    func didCompleteDestinationSelection() {
-        rootView.networkContainerView.destinationNetworkView?.actionControl.deactivate(animated: true)
+    func didCompleteChainSelection() {
+        rootView.networkContainerView.selectableNetworkView?.actionControl.deactivate(animated: true)
     }
 
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel) {
