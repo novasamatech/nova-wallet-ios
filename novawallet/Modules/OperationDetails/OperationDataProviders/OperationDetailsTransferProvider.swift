@@ -27,7 +27,7 @@ final class OperationDetailsTransferProvider: OperationDetailsBaseProvider, Acco
 extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {

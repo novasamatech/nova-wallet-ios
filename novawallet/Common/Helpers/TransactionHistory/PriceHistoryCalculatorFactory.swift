@@ -1,9 +1,14 @@
-protocol CalculatorFactoryProtocol {
+protocol PriceHistoryCalculatorFactoryProtocol {
     func createPriceCalculator(for priceId: String?) -> TokenPriceCalculatorProtocol?
+    func replace(history: PriceHistory, priceId: AssetModel.PriceId)
 }
 
-final class CalculatorFactory: CalculatorFactoryProtocol {
-    var priceHistory: [AssetModel.PriceId: PriceHistory?] = [:]
+final class PriceHistoryCalculatorFactory: PriceHistoryCalculatorFactoryProtocol {
+    let priceHistory: [AssetModel.PriceId: PriceHistory?] = [:]
+    
+    func replace(history: PriceHistory, priceId: AssetModel.PriceId) {
+        priceHistory[priceId] = history
+    }
 
     func createPriceCalculator(for priceId: String?) -> TokenPriceCalculatorProtocol? {
         guard let priceId = priceId,

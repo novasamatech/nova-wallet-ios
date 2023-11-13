@@ -22,14 +22,14 @@ final class OperationDetailsSwapProvider {
 extension OperationDetailsSwapProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard
             let swap = transaction.swap,
             let assetIn = chain.asset(byHistoryAssetId: swap.assetIdIn) ?? chain.utilityAsset(),
             let assetOut = chain.asset(byHistoryAssetId: swap.assetIdOut) ?? chain.utilityAsset(),
-            let feeAsset = chain.asset(byHistoryAssetId: transaction.feeAssetId) ?? chain.utilityAsset(),
+            let feeAsset = transaction.feeAssetId.flatMap({ chain.asset(for: $0) }) ?? chain.utilityAsset(),
             let wallet = WalletDisplayAddress(response: selectedAccount) else {
             progressClosure(nil)
             return
@@ -78,7 +78,7 @@ extension OperationDetailsSwapProvider: OperationDetailsDataProviderProtocol {
     }
 
     private func calculatePrice(
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         assetModel: AssetModel?,
         timestamp: UInt64
     ) -> PriceData? {

@@ -810,7 +810,7 @@
 		77AAE2202AFB00CB006872CC /* OperationSwapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE21F2AFB00CB006872CC /* OperationSwapModel.swift */; };
 		77AAE2222AFB026E006872CC /* OperationDetailsSwapProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2212AFB026E006872CC /* OperationDetailsSwapProvider.swift */; };
 		77AAE2242AFB67BE006872CC /* OperationSwapDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2232AFB67BE006872CC /* OperationSwapDetailsInteractor.swift */; };
-		77AAE2262AFC10EE006872CC /* CalculatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2252AFC10EE006872CC /* CalculatorFactory.swift */; };
+		77AAE2262AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2252AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift */; };
 		77AAE2282AFC1167006872CC /* ChainModel+historyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2272AFC1167006872CC /* ChainModel+historyId.swift */; };
 		77AAE22A2AFC36EE006872CC /* OperationDetailsBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2292AFC36EE006872CC /* OperationDetailsBaseInteractor.swift */; };
 		77AB55592AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */; };
@@ -4886,7 +4886,7 @@
 		77AAE21F2AFB00CB006872CC /* OperationSwapModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapModel.swift; sourceTree = "<group>"; };
 		77AAE2212AFB026E006872CC /* OperationDetailsSwapProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsSwapProvider.swift; sourceTree = "<group>"; };
 		77AAE2232AFB67BE006872CC /* OperationSwapDetailsInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapDetailsInteractor.swift; sourceTree = "<group>"; };
-		77AAE2252AFC10EE006872CC /* CalculatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorFactory.swift; sourceTree = "<group>"; };
+		77AAE2252AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryCalculatorFactory.swift; sourceTree = "<group>"; };
 		77AAE2272AFC1167006872CC /* ChainModel+historyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+historyId.swift"; sourceTree = "<group>"; };
 		77AAE2292AFC36EE006872CC /* OperationDetailsBaseInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsBaseInteractor.swift; sourceTree = "<group>"; };
 		77AAE22B2AFCD7AA006872CC /* SubstrateDataModel21.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel21.xcdatamodel; sourceTree = "<group>"; };
@@ -14354,7 +14354,7 @@
 			children = (
 				84FD3DB02540C09800A234E3 /* TransactionHistoryMergeManager.swift */,
 				849B036F2A15EE39009624D9 /* TokenPriceCalculator.swift */,
-				77AAE2252AFC10EE006872CC /* CalculatorFactory.swift */,
+				77AAE2252AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift */,
 				77AAE2272AFC1167006872CC /* ChainModel+historyId.swift */,
 			);
 			path = TransactionHistory;
@@ -22204,7 +22204,7 @@
 				AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */,
 				885A6C3229A374B600B65C1A /* ReferendumVotersLocalWrapperFactory.swift in Sources */,
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
-				77AAE2262AFC10EE006872CC /* CalculatorFactory.swift in Sources */,
+				77AAE2262AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
 				849C7BDB2A1B236900434621 /* GladingBaseView.swift in Sources */,
 				84EE2FB32891442F00A98816 /* WalletManageViewFactory.swift in Sources */,

@@ -66,6 +66,8 @@ extension CDTransactionItem: CoreDataCodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        let feeAssetId = feeAssetId.map { UInt32(bitPattern: $0.int32Value) }
+
         try container.encodeIfPresent(identifier, forKey: .identifier)
         try container.encodeIfPresent(TransactionHistoryItemSource(rawValue: source), forKey: .source)
         try container.encodeIfPresent(chainId, forKey: .chainId)
@@ -77,6 +79,7 @@ extension CDTransactionItem: CoreDataCodable {
         try container.encodeIfPresent(status, forKey: .status)
         try container.encodeIfPresent(timestamp, forKey: .timestamp)
         try container.encodeIfPresent(fee, forKey: .fee)
+        try container.encodeIfPresent(feeAssetId, forKey: .feeAssetId)
         try container.encodeIfPresent(blockNumber?.uint64Value, forKey: .blockNumber)
         try container.encodeIfPresent(txIndex?.int16Value, forKey: .txIndex)
 

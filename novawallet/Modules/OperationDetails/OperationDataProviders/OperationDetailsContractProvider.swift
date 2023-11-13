@@ -6,7 +6,7 @@ final class OperationDetailsContractProvider: OperationDetailsBaseProvider {}
 extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)

@@ -21,7 +21,7 @@ class OperationDetailsBaseInteractor: AccountFetching, AnyCancellableCleaning {
 
     private var transactionProvider: StreamableProvider<TransactionHistoryItem>?
     private var priceCalculators: [AssetModel.PriceId: TokenPriceCalculatorProtocol] = [:]
-    private var calculatorFactory = CalculatorFactory()
+    private var calculatorFactory = PriceHistoryCalculatorFactory()
 
     init(
         transaction: TransactionHistoryItem,
@@ -141,7 +141,8 @@ extension OperationDetailsBaseInteractor: PriceLocalStorageSubscriber, PriceLoca
     ) {
         switch result {
         case let .success(history):
-            calculatorFactory.priceHistory[priceId] = history
+            calculatorFactory.replace(history: history, priceId: priceId)
+            provideModel(overridingBy: nil, newFee: nil)
         case let .failure(error):
             presenter?.didReceiveDetails(result: .failure(error))
         }

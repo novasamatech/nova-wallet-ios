@@ -118,7 +118,15 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         let source = TransactionHistoryItemSource.substrate
         let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
         let assetIdIn = chainAsset.chain.asset(byHistoryAssetId: swap.assetIdIn) ?? chainAsset.chain.utilityAsset()
-        let direction: AssetConversion.Direction = assetIdIn?.assetId == chainAsset.asset.assetId ? .sell : .buy
+
+        let feeAsset: AssetModel?
+
+        if swap.isFeeNative {
+            feeAsset = chainAsset.chain.utilityAsset()
+        } else {
+            feeAsset = chainAsset.chain.asset(byHistoryAssetId: swap.assetIdFee)
+        }
+
         return .init(
             identifier: remoteIdentifier,
             source: source,
@@ -127,22 +135,20 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             sender: swap.sender.normalize(for: chainFormat) ?? swap.sender,
             receiver: swap.receiver.normalize(for: chainFormat) ?? swap.receiver,
             amountInPlank: nil,
-            // TODO: Status decoding
-            status: .success,
+            status: swap.success ? .success : .failed,
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: swap.fee,
-            // TODO: feeAssetId decoding
-            feeAssetId: nil,
+            feeAssetId: feeAsset?.assetId,
             blockNumber: blockNumber,
-            txIndex: UInt16(swap.eventIdx),
-            callPath: CallCodingPath.swap(direction: direction),
+            txIndex: nil,
+            callPath: CallCodingPath.swap(direction: .sell),
             call: nil,
             swap: .init(
                 amountIn: swap.amountIn,
-                assetIdIn: swap.assetIdIn,
+                assetIdIn: swap.assetIdIn == SubqueryHistoryElement.nativeFeeAssetId ? nil : swap.assetIdIn,
                 amountOut: swap.amountOut,
-                assetIdOut: swap.assetIdOut
+                assetIdOut: swap.assetIdOut == SubqueryHistoryElement.nativeFeeAssetId ? nil : swap.assetIdOut
             )
         )
     }

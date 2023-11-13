@@ -9,7 +9,7 @@ final class OperationSwapDetailsInteractor: OperationDetailsBaseInteractor {
         }
         let priceAssetIn = chain.asset(byHistoryAssetId: swap.assetIdIn)?.priceId
         let priceAssetOut = chain.asset(byHistoryAssetId: swap.assetIdOut)?.priceId
-        let feeAsset = chain.asset(byHistoryAssetId: transaction.feeAssetId) ?? chain.utilityAsset()
+        let feeAsset = transaction.feeAssetId.flatMap { chain.asset(for: $0) } ?? chain.utilityAsset()
         let feePriceId = feeAsset?.priceId
         let prices = [
             priceAssetIn,
