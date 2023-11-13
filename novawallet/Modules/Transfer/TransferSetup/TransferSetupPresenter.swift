@@ -254,8 +254,10 @@ final class TransferSetupPresenter {
     private func selectOriginChain() {
         let selectedChainAssetId = peerChainAsset?.chainAssetId ?? chainAsset.chainAssetId
 
+        let peers = availablePeers ?? []
+
         let selectionState = CrossChainOriginSelectionState(
-            availablePeerChainAssets: availablePeers ?? [],
+            availablePeerChainAssets: peers,
             selectedChainAssetId: selectedChainAssetId
         )
 
@@ -460,18 +462,16 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
                 handleNewChainAssetSelection(newPeerChainAsset)
             }
-        } else if let selectionState = context as? CrossChainOriginSelectionState {
-            handleNewChainAssetSelection(selectionState.availablePeerChainAssets[index])
         }
     }
 
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard let selectionState = context as? Web3NameAddressesSelectionState else {
-            return
+        if let selectionState = context as? Web3NameAddressesSelectionState {
+            let selectedAccount = selectionState.accounts[index]
+            provideWeb3NameRecipientViewModel(selectedAccount, name: selectionState.name)
+        } else if let selectionState = context as? CrossChainOriginSelectionState {
+            handleNewChainAssetSelection(selectionState.availablePeerChainAssets[index])
         }
-
-        let selectedAccount = selectionState.accounts[index]
-        provideWeb3NameRecipientViewModel(selectedAccount, name: selectionState.name)
     }
 
     func modalPickerDidCancel(context: AnyObject?) {
