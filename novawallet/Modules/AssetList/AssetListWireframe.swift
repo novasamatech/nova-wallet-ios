@@ -15,10 +15,15 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+        let swapCompletionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+            self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
+        }
+
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             assetListObservable: assetListModelObservable,
             chain: chain,
-            asset: asset
+            asset: asset,
+            swapCompletionClosure: swapCompletionClosure
         ),
             let navigationController = view?.controller.navigationController else {
             return
@@ -30,9 +35,14 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+        let swapCompletionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+            self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
+        }
+
         guard let history = TransactionHistoryViewFactory.createView(
             chainAsset: .init(chain: chain, asset: asset),
-            assetListObservable: assetListModelObservable
+            assetListObservable: assetListModelObservable,
+            swapCompletionClosure: swapCompletionClosure
         ) else {
             return
         }
@@ -130,10 +140,16 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
-        let selectClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
-            self?.showSwapTokens(from: view, payAsset: chainAsset)
+        let completionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+            self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
-
+        let selectClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+            self?.showSwapTokens(
+                from: view,
+                payAsset: chainAsset,
+                swapCompletionClosure: completionClosure
+            )
+        }
         guard let swapDirectionsView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
             for: assetListModelObservable,
             selectClosureStrategy: .callbackAfterDismissal,
@@ -190,10 +206,15 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         tabBarController.selectedIndex = MainTabBarIndex.staking
     }
 
-    private func showSwapTokens(from view: AssetListViewProtocol?, payAsset: ChainAsset) {
+    private func showSwapTokens(
+        from view: AssetListViewProtocol?,
+        payAsset: ChainAsset,
+        swapCompletionClosure: SwapCompletionClosure?
+    ) {
         guard let swapTokensView = SwapSetupViewFactory.createView(
             assetListObservable: assetListModelObservable,
-            payChainAsset: payAsset
+            payChainAsset: payAsset,
+            swapCompletionClosure: swapCompletionClosure
         ) else {
             return
         }

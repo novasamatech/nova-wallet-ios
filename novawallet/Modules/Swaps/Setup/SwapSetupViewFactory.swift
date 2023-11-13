@@ -5,17 +5,20 @@ import RobinHood
 struct SwapSetupViewFactory {
     static func createView(
         assetListObservable: AssetListModelObservable,
-        payChainAsset: ChainAsset
+        payChainAsset: ChainAsset,
+        swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
         createView(
             assetListObservable: assetListObservable,
-            initState: .init(payChainAsset: payChainAsset)
+            initState: .init(payChainAsset: payChainAsset),
+            swapCompletionClosure: swapCompletionClosure
         )
     }
 
     static func createView(
         assetListObservable: AssetListModelObservable,
-        initState: SwapSetupInitState
+        initState: SwapSetupInitState,
+        swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -39,7 +42,8 @@ struct SwapSetupViewFactory {
 
         let wireframe = SwapSetupWireframe(
             assetListObservable: assetListObservable,
-            state: generalLocalSubscriptionFactory
+            state: generalLocalSubscriptionFactory,
+            swapCompletionClosure: swapCompletionClosure
         )
 
         let issuesViewModelFactory = SwapIssueViewModelFactory(

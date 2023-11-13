@@ -5,7 +5,8 @@ import RobinHood
 struct SwapConfirmViewFactory {
     static func createView(
         initState: SwapConfirmInitState,
-        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
+        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol,
+        completionClosure: SwapCompletionClosure?
     ) -> SwapConfirmViewProtocol? {
         guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -19,7 +20,7 @@ struct SwapConfirmViewFactory {
             return nil
         }
 
-        let wireframe = SwapConfirmWireframe()
+        let wireframe = SwapConfirmWireframe(completionClosure: completionClosure)
 
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)

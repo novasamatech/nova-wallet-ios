@@ -4,17 +4,20 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
     static func createView(
         assetListObservable: AssetListModelObservable,
         chain: ChainModel,
-        asset: AssetModel
+        asset: AssetModel,
+        swapCompletionClosure: SwapCompletionClosure?
     ) -> AssetDetailsContainerViewProtocol? {
         guard
             let accountView = AssetDetailsViewFactory.createView(
                 assetListObservable: assetListObservable,
                 chain: chain,
-                asset: asset
+                asset: asset,
+                swapCompletionClosure: swapCompletionClosure
             ),
             let historyView = TransactionHistoryViewFactory.createView(
                 chainAsset: .init(chain: chain, asset: asset),
-                assetListObservable: assetListObservable
+                assetListObservable: assetListObservable,
+                swapCompletionClosure: swapCompletionClosure
             ) else {
             return nil
         }

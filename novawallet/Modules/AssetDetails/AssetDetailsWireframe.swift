@@ -5,9 +5,14 @@ import SoraFoundation
 
 final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     let assetListObservable: AssetListModelObservable
+    let swapCompletionClosure: SwapCompletionClosure?
 
-    init(assetListObservable: AssetListModelObservable) {
+    init(
+        assetListObservable: AssetListModelObservable,
+        swapCompletionClosure: SwapCompletionClosure?
+    ) {
         self.assetListObservable = assetListObservable
+        self.swapCompletionClosure = swapCompletionClosure
     }
 
     func showPurchaseTokens(
@@ -102,7 +107,8 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
         guard let swapsView = SwapSetupViewFactory.createView(
             assetListObservable: assetListObservable,
-            payChainAsset: chainAsset
+            payChainAsset: chainAsset,
+            swapCompletionClosure: swapCompletionClosure
         ) else {
             return
         }

@@ -2,9 +2,14 @@ import Foundation
 
 final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
     let assetListObservable: AssetListModelObservable
+    let swapCompletionClosure: SwapCompletionClosure?
 
-    init(assetListObservable: AssetListModelObservable) {
+    init(
+        assetListObservable: AssetListModelObservable,
+        swapCompletionClosure: SwapCompletionClosure?
+    ) {
         self.assetListObservable = assetListObservable
+        self.swapCompletionClosure = swapCompletionClosure
     }
 
     func showSend(
@@ -28,7 +33,8 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
     ) {
         guard let swapView = SwapSetupViewFactory.createView(
             assetListObservable: assetListObservable,
-            initState: state
+            initState: state,
+            swapCompletionClosure: swapCompletionClosure
         ) else {
             return
         }
