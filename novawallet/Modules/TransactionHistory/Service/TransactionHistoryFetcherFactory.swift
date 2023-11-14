@@ -88,7 +88,25 @@ final class TransactionHistoryFetcherFactory {
     ) -> TransactionHistoryHybridFetcher {
         let localProvider = createLocalProvider(from: address, chainAsset: chainAsset, filter: .all)
 
-        let repository = repositoryFactory.createTxRepository()
+        let source = TransactionHistoryItemSource(assetTypeString: chainAsset.asset.type)
+
+        let repository: AnyDataProviderRepository<TransactionHistoryItem>
+
+        if chainAsset.isUtilityAsset {
+            repository = repositoryFactory.createUtilityAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId,
+                source: source
+            )
+        } else {
+            repository = repositoryFactory.createCustomAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId,
+                source: source
+            )
+        }
 
         return .init(
             address: address,

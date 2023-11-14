@@ -60,11 +60,13 @@ extension NSPredicate {
         let receiverPredicate = filterTransactionsByReceiver(address: address)
         let chainPredicate = filterTransactionsByChainId(chainId)
         let assetPredicate = filterTransactionsByAssetId(assetId)
+        let swapPredicate = filterSwapTransactionsByAssetId(assetId)
 
         let orPredicates = [senderPredicate, receiverPredicate]
+        let assetsAndSwapsPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [assetPredicate, swapPredicate])
         let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             chainPredicate,
-            assetPredicate,
+            assetsAndSwapsPredicate,
             NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
         ])
 
@@ -109,6 +111,7 @@ extension NSPredicate {
         let receiverPredicate = filterTransactionsByReceiver(address: address)
         let chainPredicate = filterTransactionsByChainId(chainId)
         let assetPredicate = filterTransactionsByAssetId(utilityAssetId)
+        let swapPredicate = filterSwapTransactionsByAssetId(utilityAssetId)
 
         let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             chainPredicate,
@@ -117,6 +120,10 @@ extension NSPredicate {
                     senderPredicate,
                     NSCompoundPredicate(andPredicateWithSubpredicates: [
                         assetPredicate,
+                        receiverPredicate
+                    ]),
+                    NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        swapPredicate,
                         receiverPredicate
                     ])
                 ]
@@ -159,6 +166,20 @@ extension NSPredicate {
         NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.source), source.rawValue)
     }
 
+    static func filterSwapTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
+        let assetIdIn = NSPredicate(
+            format: "%K == %d", #keyPath(CDTransactionItem.swap.assetIdIn),
+            Int32(bitPattern: assetId)
+        )
+
+        let assetIdOut = NSPredicate(
+            format: "%K == %d", #keyPath(CDTransactionItem.swap.assetIdOut),
+            Int32(bitPattern: assetId)
+        )
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [assetIdIn, assetIdOut])
+    }
+
     static func filterTransactionsByType(_ type: WalletHistoryFilter) -> NSPredicate {
         var orPredicates: [NSPredicate] = []
 
@@ -172,6 +193,10 @@ extension NSPredicate {
 
         if type.contains(.extrinsics) {
             orPredicates.append(filterExtrinsicTransactions())
+        }
+
+        if type.contains(.swaps) {
+            orPredicates.append(filterSwapTransactions())
         }
 
         return NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
@@ -194,6 +219,10 @@ extension NSPredicate {
         let predicates = paths.map { filterTransactionsByCodingPath($0) }
 
         return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+    }
+
+    static func filterSwapTransactions() -> NSPredicate {
+        NSPredicate(format: "%K != nil", #keyPath(CDTransactionItem.swap))
     }
 
     static func filterRewardOrSlashTransactions() -> NSPredicate {

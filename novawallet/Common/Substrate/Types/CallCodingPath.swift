@@ -26,6 +26,13 @@ extension CallCodingPath {
         PalletAssets.possibleTransferCallPaths().contains(self)
     }
 
+    var isSwap: Bool {
+        [
+            Self.swap(direction: .buy),
+            Self.swap(direction: .sell)
+        ].contains(self)
+    }
+
     var isTokensTransfer: Bool {
         [
             .tokensTransfer,
@@ -98,6 +105,15 @@ extension CallCodingPath {
     static var ethereumTransact: CallCodingPath {
         CallCodingPath(moduleName: "Ethereum", callName: "transact")
     }
+
+    static func swap(direction: AssetConversion.Direction) -> CallCodingPath {
+        switch direction {
+        case .sell:
+            return CallCodingPath(moduleName: AssetConversionPallet.name, callName: "swap_exact_tokens_for_tokens")
+        case .buy:
+            return CallCodingPath(moduleName: AssetConversionPallet.name, callName: "swap_tokens_for_exact_tokens")
+        }
+    }
 }
 
 // MARK: Syntetic keys
@@ -137,6 +153,10 @@ extension CallCodingPath {
         }
 
         if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isAnyStakingRewardOrSlash {
+            return false
+        }
+
+        if !filter.contains(.swaps), !isSwap {
             return false
         }
 

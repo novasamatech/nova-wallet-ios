@@ -6,6 +6,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     weak var view: SwapSetupViewProtocol?
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
+    let initState: SwapSetupInitState
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
 
@@ -31,7 +32,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     init(
-        payChainAsset: ChainAsset?,
+        initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
         wireframe: SwapSetupWireframeProtocol,
         viewModelFactory: SwapsSetupViewModelFactoryProtocol,
@@ -41,8 +42,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
         slippageConfig: SlippageConfig,
         logger: LoggerProtocol
     ) {
-        self.payChainAsset = payChainAsset
-        feeChainAsset = payChainAsset?.chain.utilityChainAsset()
+        self.initState = initState
+        payChainAsset = initState.payChainAsset
+        feeChainAsset = initState.feeChainAsset ?? payChainAsset?.chain.utilityChainAsset()
+        receiveChainAsset = initState.receiveChainAsset
+
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -610,6 +614,17 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         interactor.setup()
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(feeChainAsset: feeChainAsset)
+
+        if let amount = initState.amount, let direction = initState.direction {
+            switch direction {
+            case .sell:
+                updatePayAmount(amount)
+                providePayAssetViews()
+            case .buy:
+                updateReceiveAmount(amount)
+                provideReceiveAssetViews()
+            }
+        }
     }
 
     func selectPayToken() {

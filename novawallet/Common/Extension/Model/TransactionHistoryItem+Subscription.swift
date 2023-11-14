@@ -55,10 +55,12 @@ extension TransactionHistoryItem {
                 txHash: txHash,
                 timestamp: timestamp,
                 fee: maybeFee,
+                feeAssetId: nil,
                 blockNumber: result.blockNumber,
                 txIndex: result.txIndex,
                 callPath: result.processingResult.callPath,
-                call: encodedCall
+                call: encodedCall,
+                swap: nil
             )
 
         } catch {

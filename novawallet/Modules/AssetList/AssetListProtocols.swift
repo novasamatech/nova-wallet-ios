@@ -89,3 +89,4 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError
 typealias TransferCompletionClosure = (ChainAsset) -> Void
 typealias BuyTokensClosure = () -> Void
+typealias SwapCompletionClosure = (ChainAsset) -> Void

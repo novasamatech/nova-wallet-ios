@@ -133,14 +133,14 @@ final class OperationDetailsPoolStakingProvider: OperationDetailsBaseProvider, A
 extension OperationDetailsPoolStakingProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith _: BigUInt?,
-        priceCalculator: TokenPriceCalculatorProtocol?,
-        feePriceCalculator _: TokenPriceCalculatorProtocol?,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let optContext = try? transaction.call.map {
             try JSONDecoder().decode(HistoryPoolRewardContext.self, from: $0)
         }
 
+        let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
         let eventId = getEventId(from: optContext) ?? transaction.txHash
         let amount = transaction.amountInPlankIntOrZero
         let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {

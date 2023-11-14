@@ -31,6 +31,8 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             return .rewards
         } else if poolReward != nil {
             return .poolRewards
+        } else if swap != nil {
+            return .swaps
         } else {
             return .extrinsics
         }
@@ -43,6 +45,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             return createTransactionFromTransfer(
                 transfer,
                 chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
+            )
+        } else if let swap = swap {
+            return createTransactionFromSwap(
+                swap,
+                chainAsset: chainAsset,
                 chainFormat: chainAsset.chain.chainFormat
             )
         } else if let reward = reward {
@@ -93,11 +101,57 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: transfer.fee,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: CallCodingPath.transfer,
-            call: nil
+            call: nil,
+            swap: nil
         )
+    }
+
+    private func createTransactionFromSwap(
+        _ swap: SubquerySwap,
+        chainAsset: ChainAsset,
+        chainFormat: ChainFormat
+    ) -> TransactionHistoryItem {
+        let source = TransactionHistoryItemSource.substrate
+        let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
+
+        let feeAsset = mapFromSwapHistoryAssetId(swap.assetIdFee, chain: chainAsset.chain)
+
+        return .init(
+            identifier: remoteIdentifier,
+            source: source,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId,
+            sender: swap.sender.normalize(for: chainFormat) ?? swap.sender,
+            receiver: swap.receiver.normalize(for: chainFormat) ?? swap.receiver,
+            amountInPlank: nil,
+            status: swap.success ? .success : .failed,
+            txHash: extrinsicHash ?? identifier,
+            timestamp: itemTimestamp,
+            fee: swap.fee,
+            feeAssetId: feeAsset?.assetId,
+            blockNumber: blockNumber,
+            txIndex: nil,
+            callPath: CallCodingPath.swap(direction: .sell),
+            call: nil,
+            swap: .init(
+                amountIn: swap.amountIn,
+                assetIdIn: mapFromSwapHistoryAssetId(swap.assetIdIn, chain: chainAsset.chain)?.assetId,
+                amountOut: swap.amountOut,
+                assetIdOut: mapFromSwapHistoryAssetId(swap.assetIdOut, chain: chainAsset.chain)?.assetId
+            )
+        )
+    }
+
+    private func mapFromSwapHistoryAssetId(_ assetId: String, chain: ChainModel) -> AssetModel? {
+        if assetId == SubqueryHistoryElement.nativeFeeAssetId {
+            return chain.utilityAsset()
+        } else {
+            return chain.asset(byHistoryAssetId: assetId)
+        }
     }
 
     private func createTransactionFromReward(
@@ -126,10 +180,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: nil,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: reward.isReward ? .reward : .slash,
-            call: try? JSONEncoder().encode(context)
+            call: try? JSONEncoder().encode(context),
+            swap: nil
         )
     }
 
@@ -158,10 +214,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: nil,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: reward.isReward ? .poolReward : .poolSlash,
-            call: try? JSONEncoder().encode(context)
+            call: try? JSONEncoder().encode(context),
+            swap: nil
         )
     }
 
@@ -185,10 +243,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
             fee: extrinsic.fee,
+            feeAssetId: nil,
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: CallCodingPath(moduleName: extrinsic.module, callName: extrinsic.call),
-            call: extrinsic.call.data(using: .utf8)
+            call: extrinsic.call.data(using: .utf8),
+            swap: nil
         )
     }
 
