@@ -810,6 +810,7 @@
 		77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */; };
 		77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */; };
 		77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */; };
+		77A4F4032B036615006294BC /* Optional+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4022B036615006294BC /* Optional+Result.swift */; };
 		77A6F5AB2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5AA2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift */; };
 		77A6F5AE2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5AD2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift */; };
 		77A6F5B92A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5B72A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift */; };
@@ -4894,6 +4895,7 @@
 		77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsViewModelFactory.swift; sourceTree = "<group>"; };
 		77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionCollectionViewCell.swift; sourceTree = "<group>"; };
 		77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsSection.swift; sourceTree = "<group>"; };
+		77A4F4022B036615006294BC /* Optional+Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Result.swift"; sourceTree = "<group>"; };
 		77A6F5AA2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiveAssetOperationPresenter.swift; sourceTree = "<group>"; };
 		77A6F5AD2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetOperationWireframe.swift; sourceTree = "<group>"; };
 		77A6F5B72A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuyAssetOperationPresenter.swift; sourceTree = "<group>"; };
@@ -13751,6 +13753,7 @@
 			isa = PBXGroup;
 			children = (
 				8490146C24A9487A008F705E /* ErrorPresentable+AlertText.swift */,
+				77A4F4022B036615006294BC /* Optional+Result.swift */,
 			);
 			path = Error;
 			sourceTree = "<group>";
@@ -22152,6 +22155,7 @@
 				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				0C0CB3822AC545A800EAC516 /* AssetConversionExtrinsicService.swift in Sources */,
+				77A4F4032B036615006294BC /* Optional+Result.swift in Sources */,
 				849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */,
 				D3B48F82A875E301D749AC0B /* StakingUnbondConfirmViewController.swift in Sources */,
 				842AEB81292F34B600C61B0C /* RemoteChainExternalApi.swift in Sources */,

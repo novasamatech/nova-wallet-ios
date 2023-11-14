@@ -25,14 +25,9 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private var feeIdentifier: SwapSetupFeeIdentifier?
     private var slippage: BigRational
-    private var issues: [SwapSetupViewIssue] = [] {
-        didSet {
-            provideDetailsViewModel()
-        }
-    }
 
     private var detailsAvailable: Bool {
-        !issues.contains(.noLiqudity) && quoteArgs != nil
+        !quoteResult.hasError() && quoteArgs != nil
     }
 
     init(
@@ -185,7 +180,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         provideRateViewModel()
         provideButtonState()
-
+        provideDetailsViewModel()
         estimateFee()
     }
 
@@ -475,7 +470,6 @@ extension SwapSetupPresenter {
 
     private func provideIssues() {
         let issues = viewModelFactory.detectIssues(in: getIssueParams(), locale: selectedLocale)
-        self.issues = issues
         view?.didReceive(issues: issues)
     }
 
