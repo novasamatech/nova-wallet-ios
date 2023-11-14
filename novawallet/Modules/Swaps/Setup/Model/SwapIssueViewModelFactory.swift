@@ -19,6 +19,14 @@ final class SwapIssueViewModelFactory {
         }
     }
 
+    func detectZeroReceiveAmount(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
+        if let receiveAmount = model.receiveAmount, receiveAmount == 0 {
+            return .zeroReceiveAmount
+        } else {
+            return nil
+        }
+    }
+
     func detectInsufficientBalance(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
         if let payAmount = model.payAmount,
            let payChainAsset = model.payChainAsset,
@@ -68,6 +76,7 @@ extension SwapIssueViewModelFactory: SwapIssueViewModelFactoryProtocol {
     func detectIssues(in model: SwapIssueCheckParams, locale: Locale) -> [SwapSetupViewIssue] {
         [
             detectZeroBalance(in: model),
+            detectZeroReceiveAmount(in: model),
             detectInsufficientBalance(in: model),
             detectMinBalanceViolationOnReceive(in: model, locale: locale),
             detectNoLiquidity(in: model)

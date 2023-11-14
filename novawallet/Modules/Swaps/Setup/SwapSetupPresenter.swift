@@ -12,7 +12,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
-            provideDetailsViewModel(isAvailable: quoteArgs != nil)
+            provideDetailsViewModel()
         }
     }
 
@@ -26,6 +26,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private var feeIdentifier: SwapSetupFeeIdentifier?
     private var slippage: BigRational
+
+    private var detailsAvailable: Bool {
+        !quoteResult.hasError() && quoteArgs != nil
+    }
 
     init(
         initState: SwapSetupInitState,
@@ -149,6 +153,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         )
 
         provideIssues()
+        provideDetailsViewModel()
     }
 
     override func handleNewQuote(_ quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
@@ -180,7 +185,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         provideRateViewModel()
         provideButtonState()
-
+        provideDetailsViewModel()
         estimateFee()
     }
 
@@ -423,8 +428,8 @@ extension SwapSetupPresenter {
         view?.didReceiveSettingsState(isAvailable: payChainAsset != nil)
     }
 
-    private func provideDetailsViewModel(isAvailable: Bool) {
-        view?.didReceiveDetailsState(isAvailable: isAvailable)
+    private func provideDetailsViewModel() {
+        view?.didReceiveDetailsState(isAvailable: detailsAvailable)
     }
 
     private func provideRateViewModel() {
@@ -595,7 +600,7 @@ extension SwapSetupPresenter {
     private func updateViews() {
         providePayAssetViews()
         provideReceiveAssetViews()
-        provideDetailsViewModel(isAvailable: quoteArgs != nil)
+        provideDetailsViewModel()
         provideButtonState()
         provideSettingsState()
         provideIssues()

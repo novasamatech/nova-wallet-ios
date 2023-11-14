@@ -200,7 +200,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         switch viewModel {
         case let .asset(assetViewModel):
             rootView.payAmountInputView.bind(assetViewModel: assetViewModel)
-            rootView.depositTokenButton.imageWithTitleView?.title = "Get \(assetViewModel.symbol)"
+            rootView.depositTokenButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDepositButtonTitle(
+                assetViewModel.symbol,
+                preferredLanguages: selectedLocale.rLanguages
+            )
         case let .empty(emptySwapsAssetViewModel):
             rootView.payAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
             rootView.depositTokenButton.imageWithTitleView?.title = nil
@@ -280,6 +283,12 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
             switch issue {
             case .zeroBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
+            case .zeroReceiveAmount:
+                let message = R.string.localizable.commonPositiveAmount(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayReceiveIssue(with: message)
             case .insufficientBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
 

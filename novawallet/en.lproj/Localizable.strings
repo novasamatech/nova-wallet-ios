@@ -1426,3 +1426,5 @@
 "swaps.not.enough.tokens" = "Not enough tokens to swap";
 "swaps.not.enough.liquidity" = "Not enough liquidity";
 "swaps.pay.asset.fee.ed.message" = "To pay network fee with %@, Nova will automatically swap %@ for %@ to maintain your account's minimum %@ balance.";
+"swaps.setup.deposit.button.title" = "Get %@";
+"common.positive.amount" = "Amount must be positive";
