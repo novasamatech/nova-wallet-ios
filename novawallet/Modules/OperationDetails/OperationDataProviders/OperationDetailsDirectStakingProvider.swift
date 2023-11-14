@@ -52,7 +52,7 @@ final class OperationDetailsDirectStakingProvider: OperationDetailsBaseProvider,
 extension OperationDetailsDirectStakingProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith _: BigUInt?,
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let context = try? transaction.call.map {

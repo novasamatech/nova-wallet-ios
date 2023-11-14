@@ -332,24 +332,24 @@ final class UIFactory: UIFactoryProtocol {
 
     private func createActionsAccessoryView(
         for toolBar: UIToolbar,
+        style: ToolBarStyle = .defaultSyle,
         actions: [ViewSelectorAction],
         doneAction: ViewSelectorAction,
         target: Any?,
         spacing: CGFloat
     ) -> UIToolbar {
-        toolBar.isTranslucent = false
+        toolBar.isTranslucent = style.isTranslucent
 
-        let background = UIImage.background(from: .clear)
-        toolBar.setBackgroundImage(
-            background,
-            forToolbarPosition: .any,
-            barMetrics: .default
-        )
+        if let backgroundColor = style.backgroundColor {
+            let background = UIImage.background(from: backgroundColor)
+            toolBar.setBackgroundImage(
+                background,
+                forToolbarPosition: .any,
+                barMetrics: .default
+            )
+        }
 
-        let actionAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorTextPrimary()!,
-            .font: UIFont.p1Paragraph
-        ]
+        let actionAttributes = style.actionAttributes
 
         let barItems = actions.reduce([UIBarButtonItem]()) { result, action in
             let barItem = UIBarButtonItem(
@@ -388,10 +388,7 @@ final class UIFactory: UIFactoryProtocol {
             action: doneAction.selector
         )
 
-        let doneAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorTextPrimary()!,
-            .font: UIFont.h5Title
-        ]
+        let doneAttributes = style.doneAttributes
 
         doneItem.setTitleTextAttributes(doneAttributes, for: .normal)
         doneItem.setTitleTextAttributes(doneAttributes, for: .highlighted)
@@ -569,13 +566,34 @@ extension UIFactory {
             title: doneTitle,
             selector: selector
         )
-
         return createActionsAccessoryView(
             for: toolBar,
             actions: [],
             doneAction: doneAction,
             target: target,
             spacing: 0
+        )
+    }
+}
+
+extension UIFactory {
+    struct ToolBarStyle {
+        let backgroundColor: UIColor?
+        let isTranslucent: Bool
+        let doneAttributes: [NSAttributedString.Key: Any]
+        let actionAttributes: [NSAttributedString.Key: Any]
+
+        static var defaultSyle = ToolBarStyle(
+            backgroundColor: .clear,
+            isTranslucent: false,
+            doneAttributes: [
+                .foregroundColor: R.color.colorTextPrimary()!,
+                .font: UIFont.h5Title
+            ],
+            actionAttributes: [
+                .foregroundColor: R.color.colorTextPrimary()!,
+                .font: UIFont.p1Paragraph
+            ]
         )
     }
 }

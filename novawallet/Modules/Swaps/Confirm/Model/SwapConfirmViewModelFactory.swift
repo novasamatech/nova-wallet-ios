@@ -61,11 +61,14 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
             amount: amountDecimal,
             priceData: priceData
         ).value(for: locale)
-
+        let price = balanceViewModel.price.map { $0.approximately() }
         return .init(
             imageViewModel: assetIcon,
             hub: networkViewModel,
-            balance: balanceViewModel
+            balance: BalanceViewModel(
+                amount: balanceViewModel.amount,
+                price: price
+            )
         )
     }
 

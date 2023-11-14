@@ -7,10 +7,9 @@ final class OperationSwapDetailsInteractor: OperationDetailsBaseInteractor {
         guard let swap = transaction.swap else {
             return
         }
-        let priceAssetIn = chain.asset(byHistoryAssetId: swap.assetIdIn)?.priceId
-        let priceAssetOut = chain.asset(byHistoryAssetId: swap.assetIdOut)?.priceId
-        let feeAsset = chain.asset(byHistoryAssetId: transaction.feeAssetId) ?? chain.utilityAsset()
-        let feePriceId = feeAsset?.priceId
+        let priceAssetIn = chain.assetOrNil(for: swap.assetIdIn)?.priceId
+        let priceAssetOut = chain.assetOrNil(for: swap.assetIdOut)?.priceId
+        let feePriceId = chain.assetOrNative(for: transaction.feeAssetId)?.priceId
         let prices = [
             priceAssetIn,
             priceAssetOut,

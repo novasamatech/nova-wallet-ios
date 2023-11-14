@@ -49,17 +49,25 @@ struct SubqueryPoolRewardOrSlash: Codable {
 }
 
 struct SubquerySwap: Codable {
-    let assetIdIn: String?
+    let assetIdIn: String
     let amountIn: String
-    let assetIdOut: String?
+    let assetIdOut: String
     let amountOut: String
     let sender: String
     let receiver: String
+    let assetIdFee: String
     let fee: String
     let eventIdx: Int
+    let success: Bool
+
+    var isFeeNative: Bool {
+        assetIdFee == SubqueryHistoryElement.nativeFeeAssetId
+    }
 }
 
 struct SubqueryHistoryElement: Decodable {
+    static let nativeFeeAssetId = "native"
+
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
         case blockNumber

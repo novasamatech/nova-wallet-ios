@@ -103,8 +103,8 @@ final class TransactionHistoryViewModelFactory {
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let assetIn = chainAsset.chain.asset(byHistoryAssetId: data.swap?.assetIdIn) ?? chainAsset.chain.utilityAsset()
-        let assetOut = chainAsset.chain.asset(byHistoryAssetId: data.swap?.assetIdOut) ?? chainAsset.chain.utilityAsset()
+        let assetIn = chainAsset.chain.assetOrNil(for: data.swap?.assetIdIn)
+        let assetOut = chainAsset.chain.assetOrNil(for: data.swap?.assetIdOut)
         let isOutgoing = assetIn?.assetId == chainAsset.asset.assetId
         let optAmountInPlank = isOutgoing ? data.swap?.amountIn : data.swap?.amountOut
         let amountInPlank = optAmountInPlank.map { BigUInt($0) ?? 0 } ?? 0
@@ -121,7 +121,7 @@ final class TransactionHistoryViewModelFactory {
             timestamp: data.timestamp,
             locale: locale
         )
-        let icon = R.image.iconSwap()
+        let icon = R.image.iconSwapHistory()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
         let subtitle = [assetIn?.symbol, assetOut?.symbol].compactMap { $0 }.joined(separator: " → ")

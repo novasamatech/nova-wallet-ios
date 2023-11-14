@@ -250,7 +250,7 @@ extension SwapConfirmPresenter {
 
     private func provideNotificationViewModel() {
         guard
-            let networkFeeAddition = fee?.networkFeeAddition,
+            let networkFeeAddition = fee?.networkNativeFeeAddition,
             !initState.feeChainAsset.isUtilityAsset,
             let utilityChainAsset = initState.feeChainAsset.chain.utilityChainAsset() else {
             view?.didReceiveNotification(viewModel: nil)

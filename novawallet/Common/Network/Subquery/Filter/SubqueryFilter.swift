@@ -61,6 +61,14 @@ struct SubqueryNotFilter: SubqueryFilter {
     }
 }
 
+struct SubqueryNotWithCompoundFilter: SubqueryFilter {
+    let inner: SubqueryCompoundFilter
+
+    func rawSubqueryFilter() -> String {
+        "not: { \(inner.rawSubqueryFilter()) }"
+    }
+}
+
 struct SubqueryContainsFilter: SubqueryFilter {
     let fieldName: String
     let inner: SubqueryFilter

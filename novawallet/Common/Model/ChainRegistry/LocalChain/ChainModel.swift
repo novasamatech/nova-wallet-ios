@@ -110,6 +110,22 @@ struct ChainModel: Equatable, Codable, Hashable {
         assets.first { $0.assetId == assetId }
     }
 
+    func assetOrNil(for assetId: AssetModel.Id?) -> AssetModel? {
+        guard let assetId = assetId else {
+            return nil
+        }
+
+        return assets.first { $0.assetId == assetId }
+    }
+
+    func assetOrNative(for assetId: AssetModel.Id?) -> AssetModel? {
+        guard let assetId = assetId else {
+            return utilityAsset()
+        }
+
+        return assets.first { $0.assetId == assetId }
+    }
+
     func hasEnabledAsset() -> Bool {
         assets.contains { $0.enabled }
     }

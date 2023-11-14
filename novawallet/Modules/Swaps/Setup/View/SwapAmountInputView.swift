@@ -68,12 +68,13 @@ final class SwapAmountInputView: RoundedView {
         bounds: CGRect,
         assetControlFrame: CGRect
     ) -> CGRect {
-        let estimatedInputViewWidth = bounds.maxX - contentInsets.right - assetControlFrame.maxX - horizontalSpacing
+        let estimatedInputViewWidth = bounds.width - contentInsets.left - assetControlFrame.width - contentInsets.right - horizontalSpacing
+
         let inputWidth = max(estimatedInputViewWidth, 0)
         let inputSize = textInputView.intrinsicContentSize
 
         return CGRect(
-            x: bounds.maxX - contentInsets.right - inputWidth,
+            x: assetControlFrame.maxX + horizontalSpacing,
             y: bounds.midY - inputSize.height / 2.0,
             width: inputWidth,
             height: inputSize.height

@@ -6,7 +6,7 @@ final class OperationDetailsExtrinsicProvider: OperationDetailsBaseProvider {}
 extension OperationDetailsExtrinsicProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {

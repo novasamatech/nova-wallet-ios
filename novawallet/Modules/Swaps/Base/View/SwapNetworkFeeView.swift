@@ -56,6 +56,7 @@ final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPair
         valueBottomLabel.textAlignment = .right
 
         valueView.makeVertical()
+        valueTopButton.contentInsets = .zero
     }
 }
 

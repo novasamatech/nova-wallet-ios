@@ -133,7 +133,7 @@ final class OperationDetailsPoolStakingProvider: OperationDetailsBaseProvider, A
 extension OperationDetailsPoolStakingProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith _: BigUInt?,
-        calculatorFactory: CalculatorFactoryProtocol,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let optContext = try? transaction.call.map {

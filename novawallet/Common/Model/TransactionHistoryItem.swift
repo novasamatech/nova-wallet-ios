@@ -46,7 +46,7 @@ struct TransactionHistoryItem: Codable {
     let txHash: String
     let timestamp: Int64
     let fee: String?
-    let feeAssetId: String?
+    let feeAssetId: UInt32?
     let blockNumber: UInt64?
     let txIndex: UInt16?
     let callPath: CallCodingPath
@@ -97,7 +97,7 @@ struct SwapHistoryData: Codable {
     }
 
     let amountIn: String
-    let assetIdIn: String?
+    let assetIdIn: AssetModel.Id?
     let amountOut: String
-    let assetIdOut: String?
+    let assetIdOut: AssetModel.Id?
 }

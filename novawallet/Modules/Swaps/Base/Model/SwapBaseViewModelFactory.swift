@@ -42,6 +42,10 @@ class SwapBaseViewModelFactory {
         self.percentForamatter = percentForamatter
         self.priceDifferenceConfig = priceDifferenceConfig
     }
+
+    func formatPriceDifference(amount: Decimal, locale: Locale) -> String {
+        percentForamatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    }
 }
 
 extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
@@ -139,15 +143,17 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         }
 
         let diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
-        let diffString = percentForamatter.value(for: locale).stringFromDecimal(diff)?.inParenthesis() ?? ""
+        let diffString = formatPriceDifference(amount: diff, locale: locale)
 
         switch diff {
-        case _ where diff > priceDifferenceConfig.warningMax:
+        case _ where diff >= priceDifferenceConfig.high:
             return .init(details: diffString, attention: .high)
-        case priceDifferenceConfig.warningMin ... priceDifferenceConfig.warningMax:
+        case priceDifferenceConfig.medium ... priceDifferenceConfig.high:
             return .init(details: diffString, attention: .medium)
-        default:
+        case priceDifferenceConfig.low ... priceDifferenceConfig.medium:
             return .init(details: diffString, attention: .low)
+        default:
+            return nil
         }
     }
 }

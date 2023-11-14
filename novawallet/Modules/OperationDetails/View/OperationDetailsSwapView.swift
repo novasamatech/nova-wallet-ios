@@ -69,20 +69,14 @@ final class OperationDetailsSwapView: LocalizableView {
         ))
         transactionHashView.bind(details: viewModel.transactionHash)
 
-        switch viewModel.direction {
-        case .sell:
-            pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPositive()
-            pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPrimary()
-        case .buy:
-            pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPrimary()
-            pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPositive()
-        }
+        pairsView.leftAssetView.valueLabel.textColor = R.color.colorTextPrimary()
+        pairsView.rigthAssetView.valueLabel.textColor = R.color.colorTextPositive()
     }
 
     private func setup(locale: Locale) {
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
             preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetwork(
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
             preferredLanguages: locale.rLanguages)
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
