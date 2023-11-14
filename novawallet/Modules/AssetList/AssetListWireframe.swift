@@ -39,31 +39,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        let swapCompletionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
-            self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
-        }
-        let operationState = AssetOperationState(
-            assetListObservable: assetListModelObservable,
-            swapCompletionClosure: swapCompletionClosure
-        )
-
-        guard let history = TransactionHistoryViewFactory.createView(
-            chainAsset: .init(chain: chain, asset: asset),
-            operationState: operationState
-        ) else {
-            return
-        }
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-
-        navigationController.pushViewController(
-            history.controller,
-            animated: true
-        )
-    }
-
     func showAssetsSettings(from view: AssetListViewProtocol?) {
         guard let assetsManageView = AssetsSettingsViewFactory.createView() else {
             return
