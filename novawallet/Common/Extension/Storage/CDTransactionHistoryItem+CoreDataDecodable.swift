@@ -58,8 +58,12 @@ extension CDTransactionItem: CoreDataCodable {
             }
             swap?.amountIn = try swapContainer.decode(String.self, forKey: .amountIn)
             swap?.amountOut = try swapContainer.decode(String.self, forKey: .amountOut)
-            swap?.assetIdIn = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdIn)
-            swap?.assetIdOut = try swapContainer.decodeIfPresent(String.self, forKey: .assetIdOut)
+
+            let assetIdIn = try swapContainer.decodeIfPresent(UInt32.self, forKey: .assetIdIn)
+            swap?.assetIdIn = assetIdIn.map { NSNumber(value: Int32(bitPattern: $0)) }
+
+            let assetIdOut = try swapContainer.decodeIfPresent(UInt32.self, forKey: .assetIdOut)
+            swap?.assetIdOut = assetIdOut.map { NSNumber(value: Int32(bitPattern: $0)) }
         }
     }
 
@@ -94,8 +98,15 @@ extension CDTransactionItem: CoreDataCodable {
             var nestedSwap = container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap)
             try nestedSwap.encode(swap.amountIn, forKey: .amountIn)
             try nestedSwap.encode(swap.amountOut, forKey: .amountOut)
-            try nestedSwap.encodeIfPresent(swap.assetIdIn, forKey: .assetIdIn)
-            try nestedSwap.encodeIfPresent(swap.assetIdOut, forKey: .assetIdOut)
+            try nestedSwap.encodeIfPresent(
+                swap.assetIdIn.map { UInt32(bitPattern: $0.int32Value) },
+                forKey: .assetIdIn
+            )
+
+            try nestedSwap.encodeIfPresent(
+                swap.assetIdOut.map { UInt32(bitPattern: $0.int32Value) },
+                forKey: .assetIdOut
+            )
         }
     }
 }

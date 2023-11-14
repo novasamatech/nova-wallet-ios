@@ -141,8 +141,10 @@ extension OperationDetailsBaseInteractor: PriceLocalStorageSubscriber, PriceLoca
     ) {
         switch result {
         case let .success(history):
-            calculatorFactory.replace(history: history, priceId: priceId)
-            provideModel(overridingBy: nil, newFee: nil)
+            if let history = history {
+                calculatorFactory.replace(history: history, priceId: priceId)
+                provideModel(overridingBy: nil, newFee: nil)
+            }
         case let .failure(error):
             presenter?.didReceiveDetails(result: .failure(error))
         }

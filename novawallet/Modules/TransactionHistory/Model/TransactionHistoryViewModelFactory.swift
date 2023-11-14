@@ -103,8 +103,8 @@ final class TransactionHistoryViewModelFactory {
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let assetIn = chainAsset.chain.asset(byHistoryAssetId: data.swap?.assetIdIn) ?? chainAsset.chain.utilityAsset()
-        let assetOut = chainAsset.chain.asset(byHistoryAssetId: data.swap?.assetIdOut) ?? chainAsset.chain.utilityAsset()
+        let assetIn = chainAsset.chain.assetOrNil(for: data.swap?.assetIdIn)
+        let assetOut = chainAsset.chain.assetOrNil(for: data.swap?.assetIdOut)
         let isOutgoing = assetIn?.assetId == chainAsset.asset.assetId
         let optAmountInPlank = isOutgoing ? data.swap?.amountIn : data.swap?.amountOut
         let amountInPlank = optAmountInPlank.map { BigUInt($0) ?? 0 } ?? 0

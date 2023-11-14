@@ -117,15 +117,8 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
     ) -> TransactionHistoryItem {
         let source = TransactionHistoryItemSource.substrate
         let remoteIdentifier = TransactionHistoryItem.createIdentifier(from: identifier, source: source)
-        let assetIdIn = chainAsset.chain.asset(byHistoryAssetId: swap.assetIdIn) ?? chainAsset.chain.utilityAsset()
 
-        let feeAsset: AssetModel?
-
-        if swap.isFeeNative {
-            feeAsset = chainAsset.chain.utilityAsset()
-        } else {
-            feeAsset = chainAsset.chain.asset(byHistoryAssetId: swap.assetIdFee)
-        }
+        let feeAsset = mapFromSwapHistoryAssetId(swap.assetIdFee, chain: chainAsset.chain)
 
         return .init(
             identifier: remoteIdentifier,
@@ -146,11 +139,19 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             call: nil,
             swap: .init(
                 amountIn: swap.amountIn,
-                assetIdIn: swap.assetIdIn == SubqueryHistoryElement.nativeFeeAssetId ? nil : swap.assetIdIn,
+                assetIdIn: mapFromSwapHistoryAssetId(swap.assetIdIn, chain: chainAsset.chain)?.assetId,
                 amountOut: swap.amountOut,
-                assetIdOut: swap.assetIdOut == SubqueryHistoryElement.nativeFeeAssetId ? nil : swap.assetIdOut
+                assetIdOut: mapFromSwapHistoryAssetId(swap.assetIdOut, chain: chainAsset.chain)?.assetId
             )
         )
+    }
+
+    private func mapFromSwapHistoryAssetId(_ assetId: String, chain: ChainModel) -> AssetModel? {
+        if assetId == SubqueryHistoryElement.nativeFeeAssetId {
+            return chain.utilityAsset()
+        } else {
+            return chain.asset(byHistoryAssetId: assetId)
+        }
     }
 
     private func createTransactionFromReward(

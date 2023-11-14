@@ -4,8 +4,8 @@ protocol PriceHistoryCalculatorFactoryProtocol {
 }
 
 final class PriceHistoryCalculatorFactory: PriceHistoryCalculatorFactoryProtocol {
-    let priceHistory: [AssetModel.PriceId: PriceHistory?] = [:]
-    
+    private var priceHistory: [AssetModel.PriceId: PriceHistory?] = [:]
+
     func replace(history: PriceHistory, priceId: AssetModel.PriceId) {
         priceHistory[priceId] = history
     }

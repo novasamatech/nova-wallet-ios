@@ -97,7 +97,7 @@ struct SwapHistoryData: Codable {
     }
 
     let amountIn: String
-    let assetIdIn: String?
+    let assetIdIn: AssetModel.Id?
     let amountOut: String
-    let assetIdOut: String?
+    let assetIdOut: AssetModel.Id?
 }

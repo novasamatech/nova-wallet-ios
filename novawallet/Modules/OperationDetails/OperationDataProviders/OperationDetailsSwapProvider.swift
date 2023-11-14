@@ -27,9 +27,9 @@ extension OperationDetailsSwapProvider: OperationDetailsDataProviderProtocol {
     ) {
         guard
             let swap = transaction.swap,
-            let assetIn = chain.asset(byHistoryAssetId: swap.assetIdIn) ?? chain.utilityAsset(),
-            let assetOut = chain.asset(byHistoryAssetId: swap.assetIdOut) ?? chain.utilityAsset(),
-            let feeAsset = transaction.feeAssetId.flatMap({ chain.asset(for: $0) }) ?? chain.utilityAsset(),
+            let assetIn = chain.assetOrNil(for: swap.assetIdIn),
+            let assetOut = chain.assetOrNil(for: swap.assetIdOut),
+            let feeAsset = chain.assetOrNative(for: transaction.feeAssetId),
             let wallet = WalletDisplayAddress(response: selectedAccount) else {
             progressClosure(nil)
             return
