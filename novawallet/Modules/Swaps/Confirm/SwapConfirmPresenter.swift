@@ -425,10 +425,11 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
     }
 
     func didReceiveConfirmation(hash _: String) {
+        view?.didReceiveStopLoading()
+
         guard let payChainAsset = getPayChainAsset() else {
             return
         }
-        view?.didReceiveStopLoading()
         wireframe.complete(
             on: view,
             payChainAsset: payChainAsset,

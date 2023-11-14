@@ -19,11 +19,15 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
 
-        guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
+        let operationState = AssetOperationState(
             assetListObservable: assetListModelObservable,
+            swapCompletionClosure: swapCompletionClosure
+        )
+
+        guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             chain: chain,
             asset: asset,
-            swapCompletionClosure: swapCompletionClosure
+            operationState: operationState
         ),
             let navigationController = view?.controller.navigationController else {
             return
@@ -38,11 +42,14 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         let swapCompletionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
             self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
+        let operationState = AssetOperationState(
+            assetListObservable: assetListModelObservable,
+            swapCompletionClosure: swapCompletionClosure
+        )
 
         guard let history = TransactionHistoryViewFactory.createView(
             chainAsset: .init(chain: chain, asset: asset),
-            assetListObservable: assetListModelObservable,
-            swapCompletionClosure: swapCompletionClosure
+            operationState: operationState
         ) else {
             return
         }

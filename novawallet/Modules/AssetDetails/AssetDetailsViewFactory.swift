@@ -3,10 +3,9 @@ import SoraFoundation
 
 struct AssetDetailsViewFactory {
     static func createView(
-        assetListObservable: AssetListModelObservable,
         chain: ChainModel,
         asset: AssetModel,
-        swapCompletionClosure: SwapCompletionClosure?
+        operationState: AssetOperationState
     ) -> AssetDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -34,10 +33,7 @@ struct AssetDetailsViewFactory {
             currencyManager: currencyManager
         )
 
-        let wireframe = AssetDetailsWireframe(
-            assetListObservable: assetListObservable,
-            swapCompletionClosure: swapCompletionClosure
-        )
+        let wireframe = AssetDetailsWireframe(operationState: operationState)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetDetailsViewModelFactory(

@@ -8,10 +8,9 @@ protocol OperationDetailsPresenterProtocol: AnyObject {
     func showSenderActions()
     func showRecepientActions()
     func showOperationActions()
-    func send()
+    func repeatOperation()
     func showRateInfo()
     func showNetworkFeeInfo()
-    func repeatOperation()
 }
 
 protocol OperationDetailsInteractorInputProtocol: AnyObject {

@@ -144,8 +144,9 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
         }
     }
 
-    func send() {
-        if case let .transfer(transferModel) = model?.operation {
+    func repeatOperation() {
+        switch model?.operation {
+        case let .transfer(transferModel):
             let peer = transferModel.outgoing ? transferModel.receiver : transferModel.sender
 
             wireframe.showSend(
@@ -153,6 +154,24 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
                 displayAddress: peer,
                 chainAsset: chainAsset
             )
+        case let .swap(swapModel):
+            let payChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetIn)
+            let receiveChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetOut)
+            let feeChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.feeAsset)
+            let amount = swapModel.direction == .sell ?
+                swapModel.amountIn.decimal(precision: payChainAsset.asset.precision) :
+                swapModel.amountOut.decimal(precision: receiveChainAsset.asset.precision)
+            let swapSetupInitState = SwapSetupInitState(
+                payChainAsset: payChainAsset,
+                receiveChainAsset: receiveChainAsset,
+                feeChainAsset: feeChainAsset,
+                amount: amount,
+                direction: swapModel.direction
+            )
+
+            wireframe.showSwapSetup(from: view, state: swapSetupInitState)
+        default:
+            break
         }
     }
 
@@ -162,27 +181,6 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
 
     func showNetworkFeeInfo() {
         wireframe.showFeeInfo(from: view)
-    }
-
-    func repeatOperation() {
-        guard case let .swap(swapModel) = model?.operation else {
-            return
-        }
-        let payChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetIn)
-        let receiveChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetOut)
-        let feeChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.feeAsset)
-        let amount = swapModel.direction == .sell ?
-            swapModel.amountIn.decimal(precision: payChainAsset.asset.precision) :
-            swapModel.amountOut.decimal(precision: receiveChainAsset.asset.precision)
-        let swapSetupInitState = SwapSetupInitState(
-            payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset,
-            feeChainAsset: feeChainAsset,
-            amount: amount,
-            direction: swapModel.direction
-        )
-
-        wireframe.showSwapSetup(from: view, state: swapSetupInitState)
     }
 }
 

@@ -2,22 +2,19 @@ import SoraFoundation
 
 final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryProtocol {
     static func createView(
-        assetListObservable: AssetListModelObservable,
         chain: ChainModel,
         asset: AssetModel,
-        swapCompletionClosure: SwapCompletionClosure?
+        operationState: AssetOperationState
     ) -> AssetDetailsContainerViewProtocol? {
         guard
             let accountView = AssetDetailsViewFactory.createView(
-                assetListObservable: assetListObservable,
                 chain: chain,
                 asset: asset,
-                swapCompletionClosure: swapCompletionClosure
+                operationState: operationState
             ),
             let historyView = TransactionHistoryViewFactory.createView(
                 chainAsset: .init(chain: chain, asset: asset),
-                assetListObservable: assetListObservable,
-                swapCompletionClosure: swapCompletionClosure
+                operationState: operationState
             ) else {
             return nil
         }

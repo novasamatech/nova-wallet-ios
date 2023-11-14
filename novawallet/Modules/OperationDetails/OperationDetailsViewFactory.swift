@@ -7,8 +7,7 @@ struct OperationDetailsViewFactory {
     static func createView(
         for transaction: TransactionHistoryItem,
         chainAsset: ChainAsset,
-        assetListObservable: AssetListModelObservable,
-        swapCompletionClosure: SwapCompletionClosure?
+        operationState: AssetOperationState
     ) -> OperationDetailsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -62,8 +61,7 @@ struct OperationDetailsViewFactory {
         }
 
         let wireframe = OperationDetailsWireframe(
-            assetListObservable: assetListObservable,
-            swapCompletionClosure: swapCompletionClosure
+            operationState: operationState
         )
 
         let localizationManager = LocalizationManager.shared

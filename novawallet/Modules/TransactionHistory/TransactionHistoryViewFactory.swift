@@ -6,8 +6,7 @@ import RobinHood
 struct TransactionHistoryViewFactory {
     static func createView(
         chainAsset: ChainAsset,
-        assetListObservable: AssetListModelObservable,
-        swapCompletionClosure: SwapCompletionClosure?
+        operationState: AssetOperationState
     ) -> TransactionHistoryViewProtocol? {
         guard
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
@@ -25,8 +24,7 @@ struct TransactionHistoryViewFactory {
 
         let wireframe = TransactionHistoryWireframe(
             chainAsset: chainAsset,
-            assetListObservable: assetListObservable,
-            swapCompletionClosure: swapCompletionClosure
+            operationState: operationState
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(

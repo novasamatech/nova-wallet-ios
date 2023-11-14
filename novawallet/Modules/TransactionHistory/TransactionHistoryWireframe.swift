@@ -2,17 +2,14 @@ import UIKit
 
 final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     let chainAsset: ChainAsset
-    let assetListObservable: AssetListModelObservable
-    let swapCompletionClosure: SwapCompletionClosure?
+    let operationState: AssetOperationState
 
     init(
         chainAsset: ChainAsset,
-        assetListObservable: AssetListModelObservable,
-        swapCompletionClosure: SwapCompletionClosure?
+        operationState: AssetOperationState
     ) {
         self.chainAsset = chainAsset
-        self.assetListObservable = assetListObservable
-        self.swapCompletionClosure = swapCompletionClosure
+        self.operationState = operationState
     }
 
     func showFilter(
@@ -37,8 +34,7 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
         guard let operationDetailsView = OperationDetailsViewFactory.createView(
             for: operation,
             chainAsset: chainAsset,
-            assetListObservable: assetListObservable,
-            swapCompletionClosure: swapCompletionClosure
+            operationState: operationState
         ) else {
             return
         }
