@@ -15,7 +15,8 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        let swapCompletionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+        let swapCompletionClosure: (ChainAsset) -> Void = { [weak self, weak view] chainAsset in
+            view?.controller.navigationController?.popToRootViewController(animated: false)
             self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
 
