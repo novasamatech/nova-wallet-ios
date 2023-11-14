@@ -127,7 +127,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
 
         sendButton.addTarget(
             self,
-            action: #selector(actionSend),
+            action: #selector(actionRepeatOperation),
             for: .touchUpInside
         )
     }
@@ -297,7 +297,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         )
         repeatOperationButton.addTarget(
             self,
-            action: #selector(actionRepeatSwapOperation),
+            action: #selector(actionRepeatOperation),
             for: .touchUpInside
         )
     }
@@ -314,8 +314,8 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         presenter.showRecepientActions()
     }
 
-    @objc func actionSend() {
-        presenter.send()
+    @objc func actionRepeatOperation() {
+        presenter.repeatOperation()
     }
 
     @objc func actionRate() {
@@ -324,10 +324,6 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
 
     @objc func actionNetworkFee() {
         presenter.showNetworkFeeInfo()
-    }
-
-    @objc func actionRepeatSwapOperation() {
-        presenter.repeatOperation()
     }
 }
 

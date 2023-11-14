@@ -35,7 +35,11 @@ protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
 
 protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptionsPresentable,
     ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable {
-    func complete(on view: ControllerBackedProtocol?, locale: Locale)
+    func complete(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        locale: Locale
+    )
 }
 
 enum SwapConfirmError: Error {

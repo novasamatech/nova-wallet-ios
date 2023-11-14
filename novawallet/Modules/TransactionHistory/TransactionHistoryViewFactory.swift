@@ -4,7 +4,10 @@ import SoraFoundation
 import RobinHood
 
 struct TransactionHistoryViewFactory {
-    static func createView(chainAsset: ChainAsset) -> TransactionHistoryViewProtocol? {
+    static func createView(
+        chainAsset: ChainAsset,
+        operationState: AssetOperationState
+    ) -> TransactionHistoryViewProtocol? {
         guard
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
             let accountId = selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId,
@@ -19,7 +22,10 @@ struct TransactionHistoryViewFactory {
             currencyManager: currencyManager
         )
 
-        let wireframe = TransactionHistoryWireframe(chainAsset: chainAsset)
+        let wireframe = TransactionHistoryWireframe(
+            chainAsset: chainAsset,
+            operationState: operationState
+        )
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
