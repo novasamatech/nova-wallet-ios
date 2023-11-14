@@ -26,13 +26,6 @@ extension CallCodingPath {
         PalletAssets.possibleTransferCallPaths().contains(self)
     }
 
-    var isSwap: Bool {
-        [
-            Self.swap(direction: .buy),
-            Self.swap(direction: .sell)
-        ].contains(self)
-    }
-
     var isTokensTransfer: Bool {
         [
             .tokensTransfer,
@@ -137,29 +130,5 @@ extension CallCodingPath {
 
     var isAnyStakingRewardOrSlash: Bool {
         [.slash, .reward, .poolReward, .poolSlash].contains(self)
-    }
-}
-
-// MARK: Filter
-
-extension CallCodingPath {
-    func matches(filter: WalletHistoryFilter) -> Bool {
-        if !filter.contains(.transfers), isSubstrateOrEvmTransfer {
-            return false
-        }
-
-        if !filter.contains(.rewardsAndSlashes), isAnyStakingRewardOrSlash {
-            return false
-        }
-
-        if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isAnyStakingRewardOrSlash {
-            return false
-        }
-
-        if !filter.contains(.swaps), !isSwap {
-            return false
-        }
-
-        return true
     }
 }

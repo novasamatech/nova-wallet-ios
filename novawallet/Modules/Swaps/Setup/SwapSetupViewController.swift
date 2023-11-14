@@ -283,6 +283,12 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
             switch issue {
             case .zeroBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
+            case .zeroReceiveAmount:
+                let message = R.string.localizable.commonPositiveAmount(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                rootView.displayReceiveIssue(with: message)
             case .insufficientBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
 

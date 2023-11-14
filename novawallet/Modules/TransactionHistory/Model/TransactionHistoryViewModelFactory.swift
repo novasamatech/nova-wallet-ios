@@ -405,6 +405,10 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
 
 extension TransactionHistoryItem {
     func type(for address: AccountAddress) -> TransactionType? {
+        if swap != nil {
+            return .swap
+        }
+
         switch callPath {
         case .slash:
             return .slash
@@ -415,9 +419,7 @@ extension TransactionHistoryItem {
         case .poolSlash:
             return .poolSlash
         default:
-            if callPath.isSwap {
-                return .swap
-            } else if callPath.isSubstrateOrEvmTransfer {
+            if callPath.isSubstrateOrEvmTransfer {
                 return sender == address ? .outgoing : .incoming
             } else {
                 return TransactionType.extrinsic

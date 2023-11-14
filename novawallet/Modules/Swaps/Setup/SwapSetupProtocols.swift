@@ -103,4 +103,5 @@ enum SwapSetupViewIssue: Equatable {
     case insufficientBalance
     case minBalanceViolation(String)
     case noLiqudity
+    case zeroReceiveAmount
 }

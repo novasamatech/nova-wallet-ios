@@ -1427,3 +1427,4 @@
 "swaps.not.enough.liquidity" = "Недостаточно ликвидности";
 "swaps.pay.asset.fee.ed.message" = "Для оплаты комиссии сети %@ токеном, Nova автоматически поменяет %@ в %@ для сохранения минимального %@ баланса аккаунта.";
 "swaps.setup.deposit.button.title" = "Пополнить %@";
+"common.positive.amount" = "Значение должно быть положительным";
