@@ -78,10 +78,12 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
             txHash: txHash,
             timestamp: timeStamp,
             fee: String(feeInPlank),
+            feeAssetId: nil,
             blockNumber: itemBlockNumber,
             txIndex: itemExtrinsicIndex,
             callPath: .erc20Tranfer,
-            call: nil
+            call: nil,
+            swap: nil
         )
     }
 }

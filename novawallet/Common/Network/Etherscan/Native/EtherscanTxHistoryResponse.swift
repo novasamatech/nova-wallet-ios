@@ -98,10 +98,12 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
             txHash: txHash,
             timestamp: timeStamp,
             fee: String(feeInPlank),
+            feeAssetId: nil,
             blockNumber: itemBlockNumber,
             txIndex: itemExtrinsicIndex,
             callPath: isTransfer ? .evmNativeTransfer : .evmNativeTransaction,
-            call: callData
+            call: callData,
+            swap: nil
         )
     }
 }

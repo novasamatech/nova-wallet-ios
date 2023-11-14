@@ -62,14 +62,12 @@ class OperationDetailsTests: XCTestCase {
             operationDataProvider: operationDataProvider
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
         let viewModelFactory = OperationDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory,
-            feeViewModelFactory: nil
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
         let presenter = OperationDetailsPresenter(

@@ -9,6 +9,9 @@ protocol OperationDetailsPresenterProtocol: AnyObject {
     func showRecepientActions()
     func showOperationActions()
     func send()
+    func showRateInfo()
+    func showNetworkFeeInfo()
+    func repeatOperation()
 }
 
 protocol OperationDetailsInteractorInputProtocol: AnyObject {
@@ -20,7 +23,7 @@ protocol OperationDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, OperationIdOptionsPresentable {
+    AddressOptionsPresentable, OperationIdOptionsPresentable, ShortTextInfoPresentable {
     func showSend(
         from view: OperationDetailsViewProtocol?,
         displayAddress: DisplayAddress,

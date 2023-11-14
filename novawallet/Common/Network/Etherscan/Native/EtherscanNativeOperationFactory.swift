@@ -63,6 +63,8 @@ final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
                     return filter.contains(.extrinsics)
                 case .rewards, .poolRewards:
                     return filter.contains(.rewardsAndSlashes)
+                case .swaps:
+                    return filter.contains(.swaps)
                 }
             }
 

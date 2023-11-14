@@ -105,6 +105,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
                 return
             }
             presentAddressOptions(address)
+        case let .swap(model):
+            presentAddressOptions(model.wallet.address)
         case .none:
             break
         }
@@ -135,6 +137,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             presentTransactionHashOptions(contractModel.txHash)
         case let .poolReward(poolRewardOrSlashModel), let .poolSlash(poolRewardOrSlashModel):
             presentEventIdOptions(poolRewardOrSlashModel.eventId)
+        case let .swap(swapModel):
+            presentTransactionHashOptions(swapModel.txHash)
         case .none:
             break
         }
@@ -150,6 +154,18 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
                 chainAsset: chainAsset
             )
         }
+    }
+
+    func showRateInfo() {
+        wireframe.showRateInfo(from: view)
+    }
+
+    func showNetworkFeeInfo() {
+        wireframe.showFeeInfo(from: view)
+    }
+
+    func repeatOperation() {
+        // TODO: Show swap
     }
 }
 

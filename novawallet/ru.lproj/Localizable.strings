@@ -1410,7 +1410,8 @@
 "swaps.setup.network.fee.token.hint" = "Комиссия сети добавляется к введенной сумме.";
 "swaps.setup.price.difference.description" = "Разница в цене относится к разнице в цене между двумя различными активами. При совершении обмена в криптовалюте разница в цене обычно представляет собой разницу между ценой актива, на который вы меняете, и ценой актива, на который вы меняетесь.";
 "swaps.setup.error.rate.was.updated.title" = "Обменный курс был обновлен";
-"swaps.setup.error.rate.was.updated.message" = "Было: %@.\nСтало: %@";
+"swaps.setup.error.rate.was.updated.message" = "Было: %@.\nСтало:%@";
+"common.action.repeat.operation" = "Повторить операцию";
 "swaps.setup.deposit.by.cross.chain.transfer.title" = "Перевод между сетями";
 "swaps.setup.deposit.by.cross.chain.transfer.subtitle" = "Перевести %@ из другой сети";
 "swaps.setup.deposit.by.receive.subtitle" = "Получить %@ используя QR-код или адрес";

@@ -37,42 +37,37 @@ struct OperationDetailsViewFactory {
             storageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+        let interactor: OperationDetailsBaseInteractor
 
-        let interactor = OperationDetailsInteractor(
-            transaction: transaction,
-            chainAsset: chainAsset,
-            transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
-            currencyManager: currencyManager,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            operationDataProvider: operationDetailsDataProvider
-        )
+        if transaction.swap != nil {
+            interactor = createSwapInteractor(
+                transaction: transaction,
+                chainAsset: chainAsset,
+                transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
+                currencyManager: currencyManager,
+                priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+                operationDataProvider: operationDetailsDataProvider
+            )
+        } else {
+            interactor = createInteractor(
+                transaction: transaction,
+                chainAsset: chainAsset,
+                transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
+                currencyManager: currencyManager,
+                priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+                operationDataProvider: operationDetailsDataProvider
+            )
+        }
 
         let wireframe = OperationDetailsWireframe()
 
         let localizationManager = LocalizationManager.shared
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
-
-        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
-
-        if
-            let utilityAsset = chainAsset.chain.utilityAssets().first,
-            utilityAsset.assetId != chainAsset.asset.assetId {
-            feeViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAsset.displayInfo(with: chainAsset.chain.icon),
-                priceAssetInfoFactory: priceAssetInfoFactory
-            )
-        } else {
-            feeViewModelFactory = nil
-        }
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let viewModelFactory = OperationDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory,
-            feeViewModelFactory: feeViewModelFactory
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
         let presenter = OperationDetailsPresenter(
@@ -92,5 +87,41 @@ struct OperationDetailsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    static func createSwapInteractor(
+        transaction: TransactionHistoryItem,
+        chainAsset: ChainAsset,
+        transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        operationDataProvider: OperationDetailsDataProviderProtocol
+    ) -> OperationDetailsBaseInteractor {
+        OperationSwapDetailsInteractor(
+            transaction: transaction,
+            chainAsset: chainAsset,
+            transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            operationDataProvider: operationDataProvider
+        )
+    }
+
+    static func createInteractor(
+        transaction: TransactionHistoryItem,
+        chainAsset: ChainAsset,
+        transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        operationDataProvider: OperationDetailsDataProviderProtocol
+    ) -> OperationDetailsBaseInteractor {
+        OperationDetailsInteractor(
+            transaction: transaction,
+            chainAsset: chainAsset,
+            transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            operationDataProvider: operationDataProvider
+        )
     }
 }

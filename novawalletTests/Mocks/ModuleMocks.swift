@@ -17485,6 +17485,51 @@ import Cuckoo
         
     }
     
+    
+    
+     func showRateInfo()  {
+        
+    return cuckoo_manager.call("showRateInfo()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showRateInfo())
+        
+    }
+    
+    
+    
+     func showNetworkFeeInfo()  {
+        
+    return cuckoo_manager.call("showNetworkFeeInfo()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showNetworkFeeInfo())
+        
+    }
+    
+    
+    
+     func repeatOperation()  {
+        
+    return cuckoo_manager.call("repeatOperation()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.repeatOperation())
+        
+    }
+    
 
 	 struct __StubbingProxy_OperationDetailsPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -17517,6 +17562,21 @@ import Cuckoo
 	    func send() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "send()", parameterMatchers: matchers))
+	    }
+	    
+	    func showRateInfo() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "showRateInfo()", parameterMatchers: matchers))
+	    }
+	    
+	    func showNetworkFeeInfo() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "showNetworkFeeInfo()", parameterMatchers: matchers))
+	    }
+	    
+	    func repeatOperation() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "repeatOperation()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -17565,6 +17625,24 @@ import Cuckoo
 	        return cuckoo_manager.verify("send()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func showRateInfo() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("showRateInfo()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showNetworkFeeInfo() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("showNetworkFeeInfo()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func repeatOperation() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("repeatOperation()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -17601,6 +17679,24 @@ import Cuckoo
     
     
      func send()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showRateInfo()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showNetworkFeeInfo()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func repeatOperation()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

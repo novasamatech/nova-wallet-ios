@@ -46,10 +46,12 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
+            feeAssetId: nil,
             blockNumber: nil,
             txIndex: nil,
             callPath: details.callPath,
-            call: nil
+            call: nil,
+            swap: nil
         )
 
         let operation = repository.saveOperation({ [transferItem] }, { [] })
@@ -80,10 +82,12 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
+            feeAssetId: nil,
             blockNumber: nil,
             txIndex: nil,
             callPath: details.callPath,
-            call: nil
+            call: nil,
+            swap: nil
         )
 
         let operation = repository.saveOperation({ [item] }, { [] })

@@ -85,10 +85,12 @@ final class ContractTransactionHistoryUpdater {
                 txHash: transactionHashString,
                 timestamp: Int64(Date().timeIntervalSince1970),
                 fee: fee,
+                feeAssetId: nil,
                 blockNumber: UInt64(event.blockNumber),
                 txIndex: nil,
                 callPath: CallCodingPath.erc20Tranfer,
-                call: nil
+                call: nil,
+                swap: nil
             )
 
             return [historyItem]
