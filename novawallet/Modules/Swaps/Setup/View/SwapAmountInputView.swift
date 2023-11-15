@@ -3,6 +3,7 @@ import SoraUI
 final class SwapAmountInputView: RoundedView {
     let assetControl = SwapAssetControl()
     let textInputView = SwapAmountInput()
+    private var style: Style = .normal
 
     var contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 16) {
         didSet {
@@ -116,7 +117,12 @@ final class SwapAmountInputView: RoundedView {
     }
 
     private func updateFocusState() {
-        strokeWidth = textInputView.textField.isFirstResponder ? 0.5 : 0.0
+        switch style {
+        case .error:
+            strokeWidth = 0.5
+        case .normal:
+            strokeWidth = textInputView.textField.isFirstResponder ? 0.5 : 0.0
+        }
     }
 
     @objc private func actionEditingDidBeginEnd() {
@@ -165,29 +171,24 @@ extension SwapAmountInputView {
 }
 
 extension SwapAmountInputView {
-    struct Style {
-        let contentStyle: RoundedView.Style
-        let textColor: UIColor?
+    enum Style {
+        case normal
+        case error
     }
 
     func applyInput(style: Style) {
-        apply(style: style.contentStyle)
-
-        textInputView.textField.textColor = style.textColor
-        textInputView.textField.tintColor = style.textColor
+        switch style {
+        case .error:
+            apply(style: .strokeOnError)
+            textInputView.textField.textColor = R.color.colorTextNegative()
+            textInputView.textField.tintColor = R.color.colorTextNegative()
+        case .normal:
+            apply(style: .strokeOnEditing)
+            textInputView.textField.textColor = R.color.colorTextPrimary()
+            textInputView.textField.tintColor = R.color.colorTextPrimary()
+        }
+        self.style = style
 
         updateFocusState()
     }
-}
-
-extension SwapAmountInputView.Style {
-    static let normal = SwapAmountInputView.Style(
-        contentStyle: .strokeOnEditing,
-        textColor: R.color.colorTextPrimary()
-    )
-
-    static let error = SwapAmountInputView.Style(
-        contentStyle: .strokeOnError,
-        textColor: R.color.colorTextNegative()
-    )
 }
