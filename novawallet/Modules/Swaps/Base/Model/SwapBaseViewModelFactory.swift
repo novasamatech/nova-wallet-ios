@@ -138,7 +138,7 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         let amountPriceIn = amountInDecimal * priceIn
         let amountPriceOut = amountOutDecimal * priceOut
 
-        guard amountPriceIn != 0, amountPriceIn > amountPriceOut else {
+        guard amountPriceIn > 0, amountPriceOut > 0, amountPriceIn > amountPriceOut else {
             return nil
         }
 
