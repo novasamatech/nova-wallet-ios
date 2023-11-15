@@ -810,8 +810,8 @@
 		77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */; };
 		77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */; };
 		77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */; };
-		77A4F4032B036615006294BC /* Optional+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4022B036615006294BC /* Optional+Result.swift */; };
 		77A4F4012B035027006294BC /* AssetOperationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4002B035027006294BC /* AssetOperationState.swift */; };
+		77A4F4032B036615006294BC /* Optional+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4022B036615006294BC /* Optional+Result.swift */; };
 		77A6F5AB2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5AA2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift */; };
 		77A6F5AE2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5AD2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift */; };
 		77A6F5B92A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5B72A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift */; };
@@ -856,6 +856,8 @@
 		77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */; };
 		77CC82A52A984EDA002D022F /* UINavigaionController+Pop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */; };
 		77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */; };
+		77D2E2712B05416E0098F188 /* AssetListGroupModelCompator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */; };
+		77D2E2732B0542A50098F188 /* AmountPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2E2722B0542A50098F188 /* AmountPair.swift */; };
 		77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */; };
 		77E255672A16145500B644C3 /* StakingRewardsFilterMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */; };
 		77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255682A16148000B644C3 /* StakingRewardsFilter.swift */; };
@@ -4904,8 +4906,8 @@
 		77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsViewModelFactory.swift; sourceTree = "<group>"; };
 		77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionCollectionViewCell.swift; sourceTree = "<group>"; };
 		77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsSection.swift; sourceTree = "<group>"; };
-		77A4F4022B036615006294BC /* Optional+Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Result.swift"; sourceTree = "<group>"; };
 		77A4F4002B035027006294BC /* AssetOperationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationState.swift; sourceTree = "<group>"; };
+		77A4F4022B036615006294BC /* Optional+Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Result.swift"; sourceTree = "<group>"; };
 		77A6F5AA2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiveAssetOperationPresenter.swift; sourceTree = "<group>"; };
 		77A6F5AD2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetOperationWireframe.swift; sourceTree = "<group>"; };
 		77A6F5B72A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuyAssetOperationPresenter.swift; sourceTree = "<group>"; };
@@ -4951,6 +4953,8 @@
 		77CC82A22A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingSelectedValidatorsListWireframe.swift; sourceTree = "<group>"; };
 		77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigaionController+Pop.swift"; sourceTree = "<group>"; };
 		77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectValidatorsDelegate.swift; sourceTree = "<group>"; };
+		77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListGroupModelCompator.swift; sourceTree = "<group>"; };
+		77D2E2722B0542A50098F188 /* AmountPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountPair.swift; sourceTree = "<group>"; };
 		77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Helpers.swift"; sourceTree = "<group>"; };
 		77E255652A16059A00B644C3 /* MultiassetUserDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilterMapper.swift; sourceTree = "<group>"; };
@@ -12879,6 +12883,7 @@
 				0C83775C2A4EEB380072102D /* AssetListState.swift */,
 				0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */,
 				77CBD39B2ABBA98900D646D6 /* AssetListModel.swift */,
+				77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -13471,6 +13476,7 @@
 				0C3205EB2A8A122D002EB914 /* FeeOutputModel.swift */,
 				0C59E8D02AA5FAC5001E11F3 /* PooledAssetBalance.swift */,
 				0CD352942ACAF59900B3E446 /* BigRational.swift */,
+				77D2E2722B0542A50098F188 /* AmountPair.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -20222,6 +20228,7 @@
 				848DAF042822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift in Sources */,
 				8846F72529D6BA4400B8B776 /* Data+base8.swift in Sources */,
 				840689FC26321F2700A017B1 /* StorageQuery.swift in Sources */,
+				77D2E2732B0542A50098F188 /* AmountPair.swift in Sources */,
 				8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */,
 				887AFC8E28BCB314002A0422 /* SelectableIconSubtitleView.swift in Sources */,
 				849A4EF8279ABBDD00AB6709 /* AssetBalance.swift in Sources */,
@@ -21408,6 +21415,7 @@
 				847999A9288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift in Sources */,
 				8496ADD7276AFEED00306B24 /* DAppBrowserModel.swift in Sources */,
 				8473B4782A207FE0003DE213 /* StakingDashboardOffchainMapper.swift in Sources */,
+				77D2E2712B05416E0098F188 /* AssetListGroupModelCompator.swift in Sources */,
 				84F4386625D9B8C600AEDA56 /* TypeRegistryPrepared.swift in Sources */,
 				84282298289BC50A00163031 /* SwitchAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				AE805FC526B3DF8B00007CE9 /* ValidatorInfoInteractorBase.swift in Sources */,

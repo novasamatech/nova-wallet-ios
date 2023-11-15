@@ -19,23 +19,24 @@ enum AssetListModelHelpers {
         from chain: ChainModel,
         assets: [AssetListAssetModel]
     ) -> AssetListGroupModel {
-        let value: Decimal = assets.reduce(0) { result, asset in
-            result + (asset.totalValue ?? 0)
+        let amountValue: AmountPair<BigUInt, Decimal> = assets.reduce(.init(amount: 0, value: 0)) { result, asset in
+            .init(
+                amount: result.amount + (asset.totalAmount ?? 0),
+                value: result.value + (asset.totalValue ?? 0)
+            )
         }
 
-        return AssetListGroupModel(chain: chain, chainValue: value)
+        return AssetListGroupModel(chain: chain, chainValue: amountValue.value, chainAmount: amountValue.amount)
     }
 
     static func createGroupsDiffCalculator(
         from groups: [AssetListGroupModel]
     ) -> ListDifferenceCalculator<AssetListGroupModel> {
         let sortingBlock: (AssetListGroupModel, AssetListGroupModel) -> Bool = { model1, model2 in
-            if model1.chainValue > 0, model2.chainValue > 0 {
-                return model1.chainValue > model2.chainValue
-            } else if model1.chainValue > 0 {
-                return true
-            } else if model2.chainValue > 0 {
-                return false
+            if let result = AssetListGroupModelComparator.byValue(model1, model2) {
+                return result
+            } else if let result = AssetListGroupModelComparator.byTotalAmount(model1, model2) {
+                return result
             } else {
                 return ChainModelCompator.defaultComparator(chain1: model1.chain, chain2: model2.chain)
             }
