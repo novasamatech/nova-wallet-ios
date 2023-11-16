@@ -612,6 +612,8 @@ extension SwapSetupPresenter {
             let feeChainAsset = getFeeChainAsset(),
             feeChainAsset.chainAssetId == payChainAsset.chain.utilityChainAssetId(),
             let feeAssetBalance = feeAssetBalance,
+            let payAssetBalance = payAssetBalance,
+            payAssetBalance.transferable > 0,
             let fee = fee?.totalFee.nativeAmount else {
             return
         }
