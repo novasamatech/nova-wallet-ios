@@ -114,6 +114,7 @@
 "settings.preferences" = "Preferences";
 "settings.security" = "Security";
 "settings.community" = "Community";
+"settings.wiki" = "Wiki";
 "confirmation.skip.action" = "Skip process";
 "account.info.title" = "Account";
 "account.info.name.title" = "Name";
