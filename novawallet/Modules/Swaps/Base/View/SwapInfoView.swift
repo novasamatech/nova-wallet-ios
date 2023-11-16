@@ -32,9 +32,7 @@ final class SwapInfoView: GenericTitleValueView<RoundedButton, UILabel>, Skeleto
 
     private func configure() {
         titleButton.applyIconStyle()
-        titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilled()?.tinted(
-            with: R.color.colorIconSecondary()!
-        )
+        titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
         titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         titleButton.imageWithTitleView?.titleFont = .regularFootnote
         titleButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 4

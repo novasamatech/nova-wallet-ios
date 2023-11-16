@@ -47,9 +47,7 @@ final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsV
     private func updateSelection() {
         if canSelect {
             isUserInteractionEnabled = true
-            rowContentView.titleView.imageView.image = R.image.iconInfoFilled()?.tinted(
-                with: R.color.colorIconSecondary()!
-            )
+            rowContentView.titleView.imageView.image = R.image.iconInfoFilled()
         } else {
             isUserInteractionEnabled = false
             rowContentView.titleView.imageView.image = nil

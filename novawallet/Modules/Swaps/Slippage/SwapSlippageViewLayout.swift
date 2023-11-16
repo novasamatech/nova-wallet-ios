@@ -4,9 +4,7 @@ import SoraUI
 final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
     let slippageButton: RoundedButton = .create {
         $0.applyIconStyle()
-        $0.imageWithTitleView?.iconImage = R.image.iconInfoFilled()?.tinted(
-            with: R.color.colorIconSecondary()!
-        )
+        $0.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
         $0.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
         $0.imageWithTitleView?.titleFont = .semiBoldBody
         $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 4
