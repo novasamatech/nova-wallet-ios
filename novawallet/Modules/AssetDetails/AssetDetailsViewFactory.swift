@@ -2,14 +2,25 @@ import Foundation
 import SoraFoundation
 
 struct AssetDetailsViewFactory {
-    static func createView(chain: ChainModel, asset: AssetModel) -> AssetDetailsViewProtocol? {
+    static func createView(
+        chain: ChainModel,
+        asset: AssetModel,
+        operationState: AssetOperationState
+    ) -> AssetDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
         guard let selectedAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
+
         let chainAsset = ChainAsset(chain: chain, asset: asset)
+
+        let assetConversionAggregator = AssetConversionAggregationFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
@@ -17,9 +28,12 @@ struct AssetDetailsViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            assetConvertionAggregator: assetConversionAggregator,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
-        let wireframe = AssetDetailsWireframe()
+
+        let wireframe = AssetDetailsWireframe(operationState: operationState)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetDetailsViewModelFactory(

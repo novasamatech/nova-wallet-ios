@@ -4,8 +4,7 @@ import BigInt
 protocol OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        priceCalculator: TokenPriceCalculatorProtocol?,
-        feePriceCalculator: TokenPriceCalculatorProtocol?,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     )
 }

@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct AssetBalanceExistence {
+struct AssetBalanceExistence: Equatable {
     let minBalance: BigUInt
     let isSelfSufficient: Bool
 }

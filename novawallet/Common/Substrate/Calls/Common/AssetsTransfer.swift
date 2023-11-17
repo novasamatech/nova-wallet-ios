@@ -9,7 +9,7 @@ struct AssetsTransfer: Codable {
         case amount
     }
 
-    let assetId: String
+    let assetId: JSON
     let target: MultiAddress
     @StringCodable var amount: BigUInt
 }

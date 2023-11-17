@@ -5,7 +5,8 @@ import SubstrateSdk
 final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
-    let originChainAssetId: ChainAssetId
+    let chainAsset: ChainAsset
+    let whoChainAssetPeer: TransferSetupPeer
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
@@ -13,17 +14,32 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let web3NamesService: Web3NameServiceProtocol?
 
     private var xcmTransfers: XcmTransfers?
-    private var destinationChainAsset: ChainAsset?
+    private var peerChainAsset: ChainAsset?
+    private var restrictedChainAssetPeers: [ChainAsset]?
+
+    var destinationChainAsset: ChainAsset? {
+        switch whoChainAssetPeer {
+        case .origin:
+            return chainAsset
+        case .destination:
+            return peerChainAsset
+        }
+    }
 
     init(
-        originChainAssetId: ChainAssetId,
+        chainAsset: ChainAsset,
+        whoChainAssetPeer: TransferSetupPeer,
+        restrictedChainAssetPeers: [ChainAsset]?,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         web3NamesService: Web3NameServiceProtocol?,
         operationManager: OperationManagerProtocol
     ) {
-        self.originChainAssetId = originChainAssetId
+        self.chainAsset = chainAsset
+        self.whoChainAssetPeer = whoChainAssetPeer
+        peerChainAsset = restrictedChainAssetPeers?.first
+        self.restrictedChainAssetPeers = restrictedChainAssetPeers
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
@@ -57,14 +73,23 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
 
     private func provideAvailableTransfers() {
         guard let xcmTransfers = xcmTransfers else {
-            presenter?.didReceiveAvailableXcm(destinations: [], xcmTransfers: nil)
+            presenter?.didReceiveAvailableXcm(peerChainAssets: [], xcmTransfers: nil)
             return
         }
 
-        let transfers = xcmTransfers.transfers(from: originChainAssetId)
+        switch whoChainAssetPeer {
+        case .origin:
+            provideAvailableOrigins(for: xcmTransfers)
+        case .destination:
+            provideAvailableDestinations(for: xcmTransfers)
+        }
+    }
+
+    private func provideAvailableDestinations(for xcmTransfers: XcmTransfers) {
+        let transfers = xcmTransfers.transfers(from: chainAsset.chainAssetId)
 
         guard !transfers.isEmpty else {
-            presenter?.didReceiveAvailableXcm(destinations: [], xcmTransfers: xcmTransfers)
+            presenter?.didReceiveAvailableXcm(peerChainAssets: [], xcmTransfers: xcmTransfers)
             return
         }
 
@@ -79,10 +104,54 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
             return ChainAsset(chain: chain, asset: asset)
         }
 
-        presenter?.didReceiveAvailableXcm(destinations: destinations, xcmTransfers: xcmTransfers)
+        providePeerChainAssets(for: destinations, xcmTransfers: xcmTransfers)
     }
 
-    private func fetchAccounts(for chain: ChainModel) {
+    private func provideAvailableOrigins(for xcmTransfers: XcmTransfers) {
+        let transfers = xcmTransfers.transferChainAssets(to: chainAsset.chainAssetId)
+
+        guard !transfers.isEmpty else {
+            presenter?.didReceiveAvailableXcm(peerChainAssets: [], xcmTransfers: xcmTransfers)
+            return
+        }
+
+        let origins: [ChainAsset] = transfers.compactMap { chainAssetId in
+            guard
+                let chain = chainsStore.getChain(for: chainAssetId.chainId),
+                let asset = chain.asset(for: chainAssetId.assetId)
+            else {
+                return nil
+            }
+
+            return ChainAsset(chain: chain, asset: asset)
+        }
+
+        providePeerChainAssets(for: origins, xcmTransfers: xcmTransfers)
+    }
+
+    private func providePeerChainAssets(for foundChainAssets: [ChainAsset], xcmTransfers: XcmTransfers) {
+        guard let restrictedChainAssetPeers = restrictedChainAssetPeers else {
+            presenter?.didReceiveAvailableXcm(peerChainAssets: foundChainAssets, xcmTransfers: xcmTransfers)
+            return
+        }
+
+        let chainAssetIds = Set(foundChainAssets.map(\.chainAssetId))
+
+        let availableChainAssets = restrictedChainAssetPeers.filter { chainAssetIds.contains($0.chainAssetId) }
+
+        presenter?.didReceiveAvailableXcm(peerChainAssets: availableChainAssets, xcmTransfers: xcmTransfers)
+    }
+
+    private func fetchAccounts(for peerChain: ChainModel) {
+        let chain: ChainModel
+
+        switch whoChainAssetPeer {
+        case .origin:
+            chain = chainAsset.chain
+        case .destination:
+            chain = peerChain
+        }
+
         fetchAllMetaAccountChainResponses(
             for: chain.accountRequest(),
             repository: accountRepository,
@@ -107,17 +176,17 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup(destinationChainAsset: ChainAsset) {
+    func setup(peerChainAsset: ChainAsset) {
         setupChainsStore()
         setupXcmTransfersSyncService()
-        fetchAccounts(for: destinationChainAsset.chain)
+        fetchAccounts(for: peerChainAsset.chain)
         web3NamesService?.setup()
-        self.destinationChainAsset = destinationChainAsset
+        self.peerChainAsset = peerChainAsset
     }
 
-    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset) {
+    func peerChainAssetDidChanged(_ chainAsset: ChainAsset) {
         fetchAccounts(for: chainAsset.chain)
-        destinationChainAsset = chainAsset
+        peerChainAsset = chainAsset
     }
 
     func search(web3Name: String) {

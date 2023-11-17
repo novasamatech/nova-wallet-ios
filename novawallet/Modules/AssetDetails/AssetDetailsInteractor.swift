@@ -1,20 +1,23 @@
 import UIKit
 import RobinHood
 
-final class AssetDetailsInteractor {
+final class AssetDetailsInteractor: AnyCancellableCleaning {
     weak var presenter: AssetDetailsInteractorOutputProtocol?
     let chainAsset: ChainAsset
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
+    let assetConvertionAggregator: AssetConversionAggregationFactoryProtocol
     let purchaseProvider: PurchaseProviderProtocol
     let assetMapper: CustomAssetMapper
+    let operationQueue: OperationQueue
 
     private var assetLocksSubscription: StreamableProvider<AssetLock>?
     private var priceSubscription: StreamableProvider<PriceData>?
     private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
     private var externalBalanceSubscription: StreamableProvider<ExternalAssetBalance>?
+    private var swapsCall = CancellableCallStore()
 
     private var accountId: AccountId? {
         selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
@@ -27,6 +30,8 @@ final class AssetDetailsInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
+        assetConvertionAggregator: AssetConversionAggregationFactoryProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -35,11 +40,17 @@ final class AssetDetailsInteractor {
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
         self.purchaseProvider = purchaseProvider
+        self.assetConvertionAggregator = assetConvertionAggregator
+        self.operationQueue = operationQueue
         assetMapper = CustomAssetMapper(
             type: chainAsset.asset.type,
             typeExtras: chainAsset.asset.typeExtras
         )
         self.currencyManager = currencyManager
+    }
+
+    deinit {
+        swapsCall.cancel()
     }
 
     private func subscribePrice() {
@@ -50,7 +61,36 @@ final class AssetDetailsInteractor {
         }
     }
 
-    private func setAvailableOperations() {
+    private func fetchSwapsAndProvideOperations() {
+        swapsCall.cancel()
+
+        guard chainAsset.chain.hasSwaps else {
+            return
+        }
+
+        let wrapper = assetConvertionAggregator.createAvailableDirectionsWrapper(for: chainAsset)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: swapsCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self = self else {
+                return
+            }
+
+            switch result {
+            case let .success(directions):
+                let hasSwaps = !directions.isEmpty
+                self.setAvailableOperations(hasSwaps: hasSwaps)
+            case let .failure(error):
+                self.presenter?.didReceive(error: .swaps(error))
+            }
+        }
+    }
+
+    private func setAvailableOperations(hasSwaps: Bool) {
         guard let accountId = accountId else {
             return
         }
@@ -70,6 +110,10 @@ final class AssetDetailsInteractor {
         }
 
         operations.insert(.receive)
+
+        if hasSwaps {
+            operations.insert(.swap)
+        }
 
         presenter?.didReceive(purchaseActions: actions)
         presenter?.didReceive(availableOperations: operations)
@@ -102,7 +146,11 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
             externalBalanceSubscription = nil
         }
 
-        setAvailableOperations()
+        setAvailableOperations(hasSwaps: false)
+
+        if chainAsset.chain.hasSwaps {
+            fetchSwapsAndProvideOperations()
+        }
     }
 }
 
@@ -126,7 +174,7 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
                 accountId: accountId
             ))
         case let .failure(error):
-            presenter?.didReceive(error: .accountBalance(error))
+            presenter?.didReceive(error: .swaps(error))
         }
     }
 

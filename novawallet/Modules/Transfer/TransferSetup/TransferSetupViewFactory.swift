@@ -1,29 +1,78 @@
 import Foundation
 import SoraFoundation
-
 import RobinHood
 
-struct TransferSetupViewFactory {
+struct TransferSetupViewParams {
+    let chainAsset: ChainAsset
+    let whoChainAssetPeer: TransferSetupPeer
+    let chainAssetPeers: [ChainAsset]?
+    let recepient: DisplayAddress?
+    let xcmTransfers: XcmTransfers?
+}
+
+enum TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
+        createView(
+            from: .init(
+                chainAsset: chainAsset,
+                whoChainAssetPeer: .destination,
+                chainAssetPeers: nil,
+                recepient: recepient,
+                xcmTransfers: nil
+            ),
+            wireframe: TransferSetupWireframe(),
+            transferCompletion: transferCompletion
+        )
+    }
+
+    static func createCrosschainView(
+        from origins: [ChainAsset],
+        to destination: ChainAsset,
+        xcmTransfers: XcmTransfers?,
+        assetListObservable: AssetListModelObservable,
+        transferCompletion: TransferCompletionClosure? = nil
+    ) -> TransferSetupViewProtocol? {
+        guard let originChainAsset = origins.first, let wallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
+        let recepient = try? wallet.fetch(for: originChainAsset.chain.accountRequest())?.toDisplayAddress()
+
+        return createView(
+            from: .init(
+                chainAsset: destination,
+                whoChainAssetPeer: .origin,
+                chainAssetPeers: origins,
+                recepient: recepient,
+                xcmTransfers: xcmTransfers
+            ),
+            wireframe: TransferSetupOriginSelectionWireframe(assetListObservable: assetListObservable),
+            transferCompletion: transferCompletion
+        )
+    }
+
+    static func createView(
+        from params: TransferSetupViewParams,
+        wireframe: TransferSetupWireframeProtocol,
+        transferCompletion: TransferCompletionClosure?
+    ) -> TransferSetupViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
-        guard let interactor = createInteractor(for: chainAsset) else {
+        guard let interactor = createInteractor(for: params) else {
             return nil
         }
 
-        let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
+        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: nil)
 
         let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
 
         let localizationManager = LocalizationManager.shared
-
-        let wireframe = TransferSetupWireframe()
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
@@ -35,7 +84,9 @@ struct TransferSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             wallet: wallet,
-            originChainAsset: chainAsset,
+            chainAsset: params.chainAsset,
+            whoChainAssetPeer: params.whoChainAssetPeer,
+            chainAssetPeers: params.chainAssetPeers,
             childPresenterFactory: presenterFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
@@ -48,11 +99,36 @@ struct TransferSetupViewFactory {
             localizationManager: localizationManager
         )
 
-        presenter.childPresenter = presenterFactory.createOnChainPresenter(
-            for: chainAsset,
-            initialState: initPresenterState,
-            view: view
-        )
+        if
+            let peerChainAsset = params.chainAssetPeers?.first,
+            peerChainAsset.chainAssetId != params.chainAsset.chainAssetId,
+            let xcmTransfers = params.xcmTransfers {
+            let origin: ChainAsset
+            let destination: ChainAsset
+
+            switch params.whoChainAssetPeer {
+            case .origin:
+                origin = peerChainAsset
+                destination = params.chainAsset
+            case .destination:
+                origin = params.chainAsset
+                destination = peerChainAsset
+            }
+
+            presenter.childPresenter = presenterFactory.createCrossChainPresenter(
+                for: origin,
+                destinationChainAsset: destination,
+                xcmTransfers: xcmTransfers,
+                initialState: initPresenterState,
+                view: view
+            )
+        } else {
+            presenter.childPresenter = presenterFactory.createOnChainPresenter(
+                for: params.chainAsset,
+                initialState: initPresenterState,
+                view: view
+            )
+        }
 
         presenter.view = view
         interactor.presenter = presenter
@@ -74,9 +150,7 @@ struct TransferSetupViewFactory {
         )
     }
 
-    private static func createInteractor(
-        for chainAsset: ChainAsset
-    ) -> TransferSetupInteractor? {
+    private static func createInteractor(for params: TransferSetupViewParams) -> TransferSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let syncService = XcmTransfersSyncService(
@@ -93,7 +167,9 @@ struct TransferSetupViewFactory {
         let web3NameService = createWeb3NameService()
 
         return TransferSetupInteractor(
-            originChainAssetId: chainAsset.chainAssetId,
+            chainAsset: params.chainAsset,
+            whoChainAssetPeer: params.whoChainAssetPeer,
+            restrictedChainAssetPeers: params.chainAssetPeers,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,

@@ -15,40 +15,66 @@ final class SubqueryHistoryOperationFactory {
     let filter: WalletHistoryFilter
     let assetId: String?
     let hasPoolStaking: Bool
+    let hasSwaps: Bool
 
-    init(url: URL, filter: WalletHistoryFilter, assetId: String?, hasPoolStaking: Bool) {
+    init(
+        url: URL,
+        filter: WalletHistoryFilter,
+        assetId: String?,
+        hasPoolStaking: Bool,
+        hasSwaps: Bool
+    ) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
         self.hasPoolStaking = hasPoolStaking
+        self.hasSwaps = hasSwaps
     }
 
     private func prepareExtrinsicInclusionFilter() -> String {
-        """
-        {
-          and: [
-            {
-                  extrinsic: {isNull: false}
-            },
-            {
-              not: {
-                and: [
-                    { extrinsic: { contains: {module: "balances"} } },
-                    {
-                        or: [
-                         { extrinsic: {contains: {call: "transfer"} } },
-                         { extrinsic: {contains: {call: "transferKeepAlive"} } },
-                         { extrinsic: {contains: {call: "forceTransfer"} } },
-                         { extrinsic: {contains: {call: "transferAll"} } },
-                         { extrinsic: {contains: {call: "transferAllowDeath"} } }
-                      ]
-                    }
-                ]
-               }
-            }
-          ]
+        let transferCallNames = ["transfer", "transferKeepAlive", "forceTransfer", "transferAll", "transferAllowDeath"]
+
+        let transferFilters = transferCallNames.map { transferCallName in
+            SubqueryContainsFilter(
+                fieldName: "extrinsic",
+                inner: SubqueryValueFilter(fieldName: "call", value: transferCallName)
+            )
         }
-        """
+
+        let swapCallNames = ["swapExactTokensForTokens", "swapTokensForExactTokens"]
+
+        let swapFilters = swapCallNames.map { swapCallName in
+            SubqueryContainsFilter(
+                fieldName: "extrinsic",
+                inner: SubqueryValueFilter(fieldName: "call", value: swapCallName)
+            )
+        }
+
+        return SubqueryInnerFilter(
+            inner: SubqueryCompoundFilter.and(
+                [
+                    SubqueryIsNotNullFilter(fieldName: "extrinsic"),
+                    SubqueryNotWithCompoundFilter(
+                        inner: .or([
+                            SubqueryCompoundFilter.and([
+                                SubqueryContainsFilter(
+                                    fieldName: "extrinsic",
+                                    inner: SubqueryValueFilter(fieldName: "module", value: "balances")
+                                ),
+                                SubqueryCompoundFilter.or(transferFilters)
+                            ]),
+                            SubqueryCompoundFilter.and([
+                                SubqueryContainsFilter(
+                                    fieldName: "extrinsic",
+                                    inner: SubqueryValueFilter(fieldName: "module", value: "assetConversion")
+                                ),
+                                SubqueryCompoundFilter.or(swapFilters)
+                            ])
+                        ])
+                    )
+                ]
+            )
+        ).rawSubqueryFilter()
     }
 
     private func prepareAssetIdFilter(_ assetId: String) -> String {
@@ -57,6 +83,23 @@ final class SubqueryHistoryOperationFactory {
             assetTransfer: { contains: {assetId: \"\(assetId)\"} }
         }
         """
+    }
+
+    private func prepareSwapAssetIdFilter(_ assetId: String?) -> String {
+        let assetIdOrNative = assetId ?? SubqueryHistoryElement.nativeFeeAssetId
+
+        let filters = [
+            SubqueryContainsFilter(
+                fieldName: "swap",
+                inner: SubqueryValueFilter(fieldName: "assetIdIn", value: assetIdOrNative)
+            ),
+            SubqueryContainsFilter(
+                fieldName: "swap",
+                inner: SubqueryValueFilter(fieldName: "assetIdOut", value: assetIdOrNative)
+            )
+        ]
+
+        return SubqueryInnerFilter(inner: SubqueryCompoundFilter.or(filters)).rawSubqueryFilter()
     }
 
     private func prepareFilter() -> String {
@@ -87,6 +130,10 @@ final class SubqueryHistoryOperationFactory {
             }
         }
 
+        if filter.contains(.swaps), hasSwaps {
+            filterStrings.append(prepareSwapAssetIdFilter(assetId))
+        }
+
         return filterStrings.joined(separator: ",")
     }
 
@@ -99,6 +146,7 @@ final class SubqueryHistoryOperationFactory {
         let transferField = assetId != nil ? "assetTransfer" : "transfer"
         let filterString = prepareFilter()
         let poolRewardField = hasPoolStaking ? "poolReward" : ""
+        let swapField = hasSwaps ? "swap" : ""
         return """
         {
             historyElements(
@@ -127,6 +175,7 @@ final class SubqueryHistoryOperationFactory {
                      extrinsic
                      \(transferField)
                      \(poolRewardField)
+                     \(swapField)
                  }
              }
         }

@@ -9,8 +9,8 @@ final class TransferNetworkContainerView: UIView {
     var horizontalSpacing: CGFloat = 6.0
     var verticalSpacing: CGFloat = 7.0
 
-    let originNetworkView = AssetListChainView()
-    private(set) var destinationNetworkView: AssetListChainControlView?
+    let staticNetworkView = AssetListChainView()
+    private(set) var selectableNetworkView: AssetListChainControlView?
 
     var locale = Locale.current {
         didSet {
@@ -24,14 +24,14 @@ final class TransferNetworkContainerView: UIView {
 
     private var viewModel: TransferNetworkContainerViewModel?
 
-    private var isCrossChain: Bool { viewModel?.destNetwork != nil }
+    private var isCrossChain: Bool { viewModel?.isCrosschain ?? false }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         addSubview(tokenLabel)
         addSubview(fromLabel)
-        addSubview(originNetworkView)
+        addSubview(staticNetworkView)
     }
 
     @available(*, unavailable)
@@ -72,29 +72,36 @@ final class TransferNetworkContainerView: UIView {
     func bind(viewModel: TransferNetworkContainerViewModel) {
         self.viewModel = viewModel
 
-        originNetworkView.bind(viewModel: viewModel.originNetwork)
+        switch viewModel.mode {
+        case let .onchain(networkViewModel):
+            setupOnChain()
 
-        if let destViewModel = viewModel.destNetwork {
+            staticNetworkView.bind(viewModel: networkViewModel)
+        case let .selectableOrigin(origin, destination):
             setupCrossChain()
 
-            destinationNetworkView?.bind(viewModel: destViewModel)
-        } else {
-            setupOnChain()
+            staticNetworkView.bind(viewModel: destination)
+            selectableNetworkView?.bind(viewModel: origin)
+        case let .selectableDestination(origin, destination):
+            setupCrossChain()
+
+            staticNetworkView.bind(viewModel: origin)
+            selectableNetworkView?.bind(viewModel: destination)
         }
 
         setupLocalization()
     }
 
     private func setupOnChain() {
-        destinationNetworkView?.removeFromSuperview()
-        destinationNetworkView = nil
+        selectableNetworkView?.removeFromSuperview()
+        selectableNetworkView = nil
 
         toLabel?.removeFromSuperview()
         toLabel = nil
     }
 
     private func setupCrossChain() {
-        guard destinationNetworkView == nil else {
+        guard selectableNetworkView == nil else {
             return
         }
 
@@ -102,9 +109,9 @@ final class TransferNetworkContainerView: UIView {
         addSubview(label)
         toLabel = label
 
-        let destNetworkView = AssetListChainControlView()
-        addSubview(destNetworkView)
-        destinationNetworkView = destNetworkView
+        let networkView = AssetListChainControlView()
+        addSubview(networkView)
+        selectableNetworkView = networkView
     }
 
     override var intrinsicContentSize: CGSize {
@@ -114,9 +121,20 @@ final class TransferNetworkContainerView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        let originView: UIView?
+        let destinationView: UIView?
+
+        if case .selectableOrigin = viewModel?.mode, let selectableNetworkView = selectableNetworkView {
+            originView = selectableNetworkView
+            destinationView = staticNetworkView
+        } else {
+            originView = staticNetworkView
+            destinationView = selectableNetworkView
+        }
+
         let tokenLabelSize = tokenLabel.intrinsicContentSize
         let fromLabelSize = fromLabel.intrinsicContentSize
-        let originViewSize = originNetworkView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        let originViewSize = originView?.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize) ?? .zero
 
         let totalOneLineWidth = tokenLabelSize.width + horizontalSpacing + fromLabelSize.width + horizontalSpacing +
             originViewSize.width
@@ -133,7 +151,7 @@ final class TransferNetworkContainerView: UIView {
                 height: fromLabelSize.height
             )
 
-            originNetworkView.frame = CGRect(
+            originView?.frame = CGRect(
                 x: fromLabel.frame.maxX + horizontalSpacing,
                 y: tokenLabel.frame.midY - originViewSize.height / 2.0,
                 width: originViewSize.width,
@@ -149,7 +167,7 @@ final class TransferNetworkContainerView: UIView {
                 height: fromLabelSize.height
             )
 
-            originNetworkView.frame = CGRect(
+            originView?.frame = CGRect(
                 x: fromLabel.frame.maxX + horizontalSpacing,
                 y: fromLabel.frame.midY - originViewSize.height / 2.0,
                 width: originViewSize.width,
@@ -160,9 +178,9 @@ final class TransferNetworkContainerView: UIView {
                 max(fromLabelSize.height, originViewSize.height)
         }
 
-        if let destinationNetworkView = destinationNetworkView, let toLabel = toLabel {
+        if let destinationView = destinationView, let toLabel = toLabel {
             let toLabelSize = toLabel.intrinsicContentSize
-            let destViewSize = destinationNetworkView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+            let destViewSize = destinationView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
 
             toLabel.frame = CGRect(
                 x: bounds.minX,
@@ -171,7 +189,7 @@ final class TransferNetworkContainerView: UIView {
                 height: toLabelSize.height
             )
 
-            destinationNetworkView.frame = CGRect(
+            destinationView.frame = CGRect(
                 x: toLabel.frame.maxX + horizontalSpacing,
                 y: toLabel.frame.midY - originViewSize.height / 2.0,
                 width: destViewSize.width,

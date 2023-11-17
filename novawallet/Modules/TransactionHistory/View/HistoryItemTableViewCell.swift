@@ -168,16 +168,15 @@ extension HistoryItemTableViewCell {
         subtitleLabel.text = transactionModel.subtitle
         amountDetailsLabel.text = transactionModel.amountDetails
 
-        switch transactionModel.type {
-        case .incoming, .reward, .poolReward:
+        if transactionModel.typeViewModel.isIncome {
             amountLabel.text = "+ \(transactionModel.amount)"
             amountLabel.textColor = R.color.colorTextPositive()!
-        case .outgoing, .slash, .poolSlash, .extrinsic:
+        } else {
             amountLabel.text = "- \(transactionModel.amount)"
             amountLabel.textColor = R.color.colorTextPrimary()!
         }
 
-        switch transactionModel.type {
+        switch transactionModel.typeViewModel.type {
         case .incoming, .outgoing, .extrinsic:
             subtitleLabel.lineBreakMode = .byTruncatingMiddle
 
@@ -186,7 +185,7 @@ extension HistoryItemTableViewCell {
                     .offset(-Constants.titleSpacingForTransfer)
             }
 
-        case .slash, .reward, .poolReward, .poolSlash:
+        case .slash, .reward, .poolReward, .poolSlash, .swap:
             subtitleLabel.lineBreakMode = .byTruncatingTail
 
             subtitleLabel.snp.updateConstraints { make in

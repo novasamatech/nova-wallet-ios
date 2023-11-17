@@ -38,12 +38,30 @@ struct MapSubscriptionRequest<T: Encodable>: SubscriptionRequestProtocol {
     let storagePath: StorageCodingPath
     let localKey: String
     let keyParamClosure: () throws -> T
+    let paramEncoder: ((T) throws -> Data)?
+
+    init(
+        storagePath: StorageCodingPath,
+        localKey: String,
+        keyParamClosure: @escaping () throws -> T,
+        paramEncoder: ((T) throws -> Data)? = nil
+    ) {
+        self.storagePath = storagePath
+        self.localKey = localKey
+        self.keyParamClosure = keyParamClosure
+        self.paramEncoder = paramEncoder
+    }
 
     func createKeyEncodingWrapper(
         using storageKeyFactory: StorageKeyFactoryProtocol,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
     ) -> CompoundOperationWrapper<Data> {
-        let encodingOperation = MapKeyEncodingOperation<T>(path: storagePath, storageKeyFactory: storageKeyFactory)
+        let encodingOperation = MapKeyEncodingOperation<T>(
+            path: storagePath,
+            storageKeyFactory: storageKeyFactory,
+            paramEncoder: paramEncoder
+        )
+
         encodingOperation.configurationBlock = {
             do {
                 let keyParam = try keyParamClosure()

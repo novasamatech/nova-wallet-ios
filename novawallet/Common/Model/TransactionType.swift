@@ -8,4 +8,5 @@ enum TransactionType: String, CaseIterable, Equatable {
     case extrinsic = "EXTRINSIC"
     case poolReward = "POOL REWARD"
     case poolSlash = "POOL SLASH"
+    case swap = "SWAP"
 }

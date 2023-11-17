@@ -23,9 +23,9 @@ final class OperationDetailsViewLayout: UIView {
     }()
 
     let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: false)
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.alignment = .center
-        view.stackView.layoutMargins = UIEdgeInsets(top: 10.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0.0, bottom: 0.0, right: 0.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         return view
     }()

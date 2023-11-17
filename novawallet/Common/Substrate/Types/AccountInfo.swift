@@ -4,7 +4,12 @@ import BigInt
 
 struct AccountInfo: Codable, Equatable {
     @StringCodable var nonce: UInt32
+    @OptionStringCodable var consumers: UInt32?
     let data: AccountData
+
+    var hasConsumers: Bool {
+        (consumers ?? 0) > 0
+    }
 }
 
 struct AccountData: Codable, Equatable {

@@ -14,7 +14,7 @@ private typealias AssetsParsingResult = (
     callPath: CallCodingPath,
     isAccountMatched: Bool,
     callAccountId: AccountId?,
-    callAssetId: String,
+    callAssetId: JSON,
     callAmount: BigUInt
 )
 
@@ -296,10 +296,12 @@ extension ExtrinsicProcessor {
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol,
+        codingFactory: RuntimeCoderFactoryProtocol,
         context: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
+            let metadata = codingFactory.metadata
+
             let rawContext = context.toRawContext()
             let maybeAddress = extrinsic.signature?.address
             let maybeSender = try maybeAddress?.map(to: MultiAddress.self, with: rawContext).accountId
@@ -307,7 +309,6 @@ extension ExtrinsicProcessor {
             let result = try parseAssetsExtrinsic(extrinsic, sender: maybeSender, context: context)
 
             guard
-                result.callPath.isAssetsTransfer,
                 result.isAccountMatched,
                 let sender = maybeSender else {
                 return nil
@@ -329,6 +330,13 @@ extension ExtrinsicProcessor {
 
             let peerId = accountId == sender ? result.callAccountId : sender
 
+            let remotePalletName = result.callPath.moduleName
+            let remoteAssetId = try StatemineAssetSerializer.encode(
+                assetId: result.callAssetId,
+                palletName: remotePalletName,
+                codingFactory: codingFactory
+            )
+
             let maybeAsset = chain.assets.first { asset in
                 guard
                     asset.type == AssetType.statemine.rawValue,
@@ -336,7 +344,9 @@ extension ExtrinsicProcessor {
                     return false
                 }
 
-                return typeExtra.assetId == result.callAssetId
+                let localPalletName = typeExtra.palletName ?? PalletAssets.name
+
+                return remotePalletName == localPalletName && typeExtra.assetId == remoteAssetId
             }
 
             guard let asset = maybeAsset else {

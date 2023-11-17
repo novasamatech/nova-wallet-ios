@@ -25,6 +25,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func send()
     func receive()
     func buy()
+    func swap()
     func presentWalletConnect()
     func selectPromotion()
     func closePromotion()
@@ -80,9 +81,12 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
 
     func showBuyTokens(from view: AssetListViewProtocol?)
 
+    func showSwapTokens(from view: AssetListViewProtocol?)
+
     func showStaking(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError
 typealias TransferCompletionClosure = (ChainAsset) -> Void
 typealias BuyTokensClosure = () -> Void
+typealias SwapCompletionClosure = (ChainAsset) -> Void

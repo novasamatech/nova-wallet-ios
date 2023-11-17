@@ -105,6 +105,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
                 return
             }
             presentAddressOptions(address)
+        case let .swap(model):
+            presentAddressOptions(model.wallet.address)
         case .none:
             break
         }
@@ -135,13 +137,16 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             presentTransactionHashOptions(contractModel.txHash)
         case let .poolReward(poolRewardOrSlashModel), let .poolSlash(poolRewardOrSlashModel):
             presentEventIdOptions(poolRewardOrSlashModel.eventId)
+        case let .swap(swapModel):
+            presentTransactionHashOptions(swapModel.txHash)
         case .none:
             break
         }
     }
 
-    func send() {
-        if case let .transfer(transferModel) = model?.operation {
+    func repeatOperation() {
+        switch model?.operation {
+        case let .transfer(transferModel):
             let peer = transferModel.outgoing ? transferModel.receiver : transferModel.sender
 
             wireframe.showSend(
@@ -149,7 +154,33 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
                 displayAddress: peer,
                 chainAsset: chainAsset
             )
+        case let .swap(swapModel):
+            let payChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetIn)
+            let receiveChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.assetOut)
+            let feeChainAsset = ChainAsset(chain: swapModel.chain, asset: swapModel.feeAsset)
+            let amount = swapModel.direction == .sell ?
+                swapModel.amountIn.decimal(precision: payChainAsset.asset.precision) :
+                swapModel.amountOut.decimal(precision: receiveChainAsset.asset.precision)
+            let swapSetupInitState = SwapSetupInitState(
+                payChainAsset: payChainAsset,
+                receiveChainAsset: receiveChainAsset,
+                feeChainAsset: feeChainAsset,
+                amount: amount,
+                direction: swapModel.direction
+            )
+
+            wireframe.showSwapSetup(from: view, state: swapSetupInitState)
+        default:
+            break
         }
+    }
+
+    func showRateInfo() {
+        wireframe.showRateInfo(from: view)
+    }
+
+    func showNetworkFeeInfo() {
+        wireframe.showFeeInfo(from: view)
     }
 }
 

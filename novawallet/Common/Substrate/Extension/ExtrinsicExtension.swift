@@ -2,9 +2,15 @@ import Foundation
 import SubstrateSdk
 
 enum DefaultExtrinsicExtension {
-    static var extensions: [ExtrinsicExtension] {
+    static func extensions() -> [ExtrinsicExtension] {
         [
             ChargeAssetTxPayment()
+        ]
+    }
+
+    static func extensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicExtension] {
+        [
+            AssetConversionTxPayment(assetId: assetId)
         ]
     }
 

@@ -37,6 +37,22 @@ extension String {
             return self
         }
     }
+
+    func inParenthesis() -> String {
+        guard !isEmpty else {
+            return ""
+        }
+
+        return "(\(self))"
+    }
+
+    func estimatedEqual(to other: String) -> String {
+        "\(self) ≈ \(other)"
+    }
+
+    func approximately() -> String {
+        "~\(self)"
+    }
 }
 
 extension Optional where Wrapped == String {

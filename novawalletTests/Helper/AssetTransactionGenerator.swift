@@ -22,9 +22,11 @@ enum AssetTransactionGenerator {
             txHash: hash,
             timestamp: Int64(Date().timeIntervalSince1970),
             fee: nil,
+            feeAssetId: nil,
             blockNumber: 100, txIndex: 0,
             callPath: .transfer,
-            call: nil
+            call: nil,
+            swap: nil
         )
     }
 }

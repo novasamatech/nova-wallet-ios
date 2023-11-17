@@ -70,10 +70,12 @@ final class EvmNativeTransactionHistoryUpdater {
                 txHash: txHash,
                 timestamp: timestamp,
                 fee: fee,
+                feeAssetId: nil,
                 blockNumber: UInt64(blockNumber),
                 txIndex: nil,
                 callPath: transaction.isNativeTransfer ? .evmNativeTransfer : .evmNativeTransaction,
-                call: nil
+                call: nil,
+                swap: nil
             )
 
             return [historyItem]

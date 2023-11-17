@@ -5,13 +5,63 @@ import SubstrateSdk
 protocol ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        extensions: [ExtrinsicExtension]
     ) -> ExtrinsicServiceProtocol
 
     func createOperationFactory(
         account: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        extensions: [ExtrinsicExtension]
     ) -> ExtrinsicOperationFactoryProtocol
+}
+
+extension ExtrinsicServiceFactoryProtocol {
+    func createService(
+        account: ChainAccountResponse,
+        chain: ChainModel
+    ) -> ExtrinsicServiceProtocol {
+        createService(
+            account: account,
+            chain: chain,
+            extensions: DefaultExtrinsicExtension.extensions()
+        )
+    }
+
+    func createService(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        feeAssetConversionId: AssetConversionPallet.AssetId
+    ) -> ExtrinsicServiceProtocol {
+        createService(
+            account: account,
+            chain: chain,
+            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetConversionId)
+        )
+    }
+
+    func createOperationFactory(
+        account: ChainAccountResponse,
+        chain: ChainModel
+    ) -> ExtrinsicOperationFactoryProtocol {
+        createOperationFactory(
+            account: account,
+            chain: chain,
+            extensions: DefaultExtrinsicExtension.extensions()
+        )
+    }
+
+    func createOperationFactory(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        feeAssetConversionId: AssetConversionPallet.AssetId
+    ) -> ExtrinsicOperationFactoryProtocol {
+        createOperationFactory(
+            account: account,
+            chain: chain,
+            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetConversionId)
+        )
+    }
 }
 
 final class ExtrinsicServiceFactory {
@@ -33,7 +83,8 @@ final class ExtrinsicServiceFactory {
 extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        extensions: [ExtrinsicExtension]
     ) -> ExtrinsicServiceProtocol {
         ExtrinsicService(
             accountId: account.accountId,
@@ -41,6 +92,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             cryptoType: account.cryptoType,
             walletType: account.type,
             runtimeRegistry: runtimeRegistry,
+            extensions: extensions,
             engine: engine,
             operationManager: operationManager
         )
@@ -48,7 +100,8 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
 
     func createOperationFactory(
         account: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        extensions: [ExtrinsicExtension]
     ) -> ExtrinsicOperationFactoryProtocol {
         ExtrinsicOperationFactory(
             accountId: account.accountId,
@@ -56,7 +109,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             cryptoType: account.cryptoType,
             signaturePayloadFormat: account.type.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
-            customExtensions: DefaultExtrinsicExtension.extensions,
+            customExtensions: extensions,
             engine: engine,
             operationManager: operationManager
         )

@@ -57,6 +57,7 @@ class ExtrinsicServiceTests: XCTestCase {
             cryptoType: .sr25519,
             walletType: .secrets,
             runtimeRegistry: runtimeService,
+            extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
         )
@@ -102,6 +103,7 @@ class ExtrinsicServiceTests: XCTestCase {
             cryptoType: .sr25519,
             walletType: .secrets,
             runtimeRegistry: runtimeService,
+            extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
         )
