@@ -28,6 +28,7 @@ final class MercuryoProvider: PurchaseProviderProtocol {
     #endif
 
     private var callbackUrl: URL?
+    private let displayURL = "mercuryo.io"
 
     func with(callbackUrl: URL) -> Self {
         self.callbackUrl = callbackUrl
@@ -51,7 +52,12 @@ final class MercuryoProvider: PurchaseProviderProtocol {
         }
 
         return [
-            PurchaseAction(title: "Mercuryo", url: url, icon: R.image.iconMercuryo()!)
+            PurchaseAction(
+                title: "Mercuryo",
+                url: url,
+                icon: R.image.iconMercuryo()!,
+                displayURL: displayURL
+            )
         ]
     }
 

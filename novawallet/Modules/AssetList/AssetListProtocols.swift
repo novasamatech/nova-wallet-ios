@@ -7,6 +7,8 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveNft(viewModel: AssetListNftsViewModel?)
+    func didReceivePromotion(viewModel: PromotionBannerView.ViewModel)
+    func didClosePromotion()
     func didCompleteRefreshing()
 }
 
@@ -24,6 +26,8 @@ protocol AssetListPresenterProtocol: AnyObject {
     func receive()
     func buy()
     func presentWalletConnect()
+    func selectPromotion()
+    func closePromotion()
 }
 
 protocol AssetListInteractorInputProtocol {
@@ -32,6 +36,7 @@ protocol AssetListInteractorInputProtocol {
     func refresh()
     func connectWalletConnect(uri: String)
     func retryFetchWalletConnectSessionsCount()
+    func markPolkadotStakingPromotionSeen()
 }
 
 protocol AssetListInteractorOutputProtocol {
@@ -48,6 +53,7 @@ protocol AssetListInteractorOutputProtocol {
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
     func didCompleteRefreshing()
+    func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool)
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
@@ -73,6 +79,8 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     )
 
     func showBuyTokens(from view: AssetListViewProtocol?)
+
+    func showStaking(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

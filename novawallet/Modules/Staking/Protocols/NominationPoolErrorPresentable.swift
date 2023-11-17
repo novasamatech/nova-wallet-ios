@@ -1,6 +1,6 @@
 import Foundation
 
-protocol NominationPoolErrorPresentable: BaseErrorPresentable {
+protocol NominationPoolErrorPresentable: StakingBaseErrorPresentable {
     func presentNominationPoolHasNoApy(
         from view: ControllerBackedProtocol,
         action: @escaping () -> Void,
@@ -20,14 +20,6 @@ protocol NominationPoolErrorPresentable: BaseErrorPresentable {
     func presentNoUnstakeSpace(
         from view: ControllerBackedProtocol?,
         unstakeAfter: String,
-        locale: Locale
-    )
-
-    func presentCrossedMinStake(
-        from view: ControllerBackedProtocol?,
-        minStake: String,
-        remaining: String,
-        action: @escaping () -> Void,
         locale: Locale
     )
 
@@ -127,39 +119,6 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
             closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
             from: view
         )
-    }
-
-    func presentCrossedMinStake(
-        from view: ControllerBackedProtocol?,
-        minStake: String,
-        remaining: String,
-        action: @escaping () -> Void,
-        locale: Locale
-    ) {
-        let title = R.string.localizable.stakingUnstakeCrossedMinTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingUnstakeCrossedMinMessage(
-            minStake,
-            remaining,
-            preferredLanguages: locale.rLanguages
-        )
-
-        let cancelAction = AlertPresentableAction(
-            title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
-        )
-
-        let unstakeAllAction = AlertPresentableAction(
-            title: R.string.localizable.stakingUnstakeAll(preferredLanguages: locale.rLanguages),
-            handler: action
-        )
-
-        let viewModel = AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [cancelAction, unstakeAllAction],
-            closeAction: nil
-        )
-
-        present(viewModel: viewModel, style: .alert, from: view)
     }
 
     func presentNoProfitAfterClaimRewards(

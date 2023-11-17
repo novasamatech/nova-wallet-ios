@@ -1,6 +1,6 @@
 import Foundation
 
-enum SelectedStakingOption {
+enum SelectedStakingOption: Equatable {
     case direct(PreparedValidators)
     case pool(NominationPools.SelectedPool)
 

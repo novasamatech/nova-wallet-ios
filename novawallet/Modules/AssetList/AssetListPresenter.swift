@@ -20,6 +20,7 @@ final class AssetListPresenter {
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
+    private var shouldShowPolkadotPromotion: Bool = true
 
     private(set) var walletConnectSessionsCount: Int = 0
 
@@ -35,6 +36,16 @@ final class AssetListPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
+    }
+
+    private func providePolkadotStakingPromotion() {
+        guard shouldShowPolkadotPromotion else {
+            return
+        }
+
+        let viewModel = PromotionViewModelFactory.createPolkadotStakingPromotion(for: selectedLocale)
+
+        view?.didReceivePromotion(viewModel: viewModel)
     }
 
     private func provideHeaderViewModel() {
@@ -436,6 +447,22 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             wireframe.showScan(from: view, delegate: self)
         }
     }
+
+    func selectPromotion() {
+        shouldShowPolkadotPromotion = false
+        interactor.markPolkadotStakingPromotionSeen()
+
+        wireframe.showStaking(from: view)
+
+        view?.didClosePromotion()
+    }
+
+    func closePromotion() {
+        shouldShowPolkadotPromotion = false
+        interactor.markPolkadotStakingPromotionSeen()
+
+        view?.didClosePromotion()
+    }
 }
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
@@ -502,6 +529,11 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
     func didCompleteRefreshing() {
         view?.didCompleteRefreshing()
     }
+
+    func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool) {
+        shouldShowPolkadotPromotion = shouldShowPolkadotStaking
+        providePolkadotStakingPromotion()
+    }
 }
 
 extension AssetListPresenter: Localizable {
@@ -509,6 +541,7 @@ extension AssetListPresenter: Localizable {
         if let view = view, view.isSetup {
             updateAssetsView()
             updateNftView()
+            providePolkadotStakingPromotion()
         }
     }
 }

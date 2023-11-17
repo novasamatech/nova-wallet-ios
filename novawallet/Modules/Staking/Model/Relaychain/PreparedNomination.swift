@@ -6,7 +6,7 @@ struct PreparedNomination<T> {
     let maxTargets: Int
 }
 
-struct PreparedValidators {
+struct PreparedValidators: Equatable {
     let targets: [SelectedValidatorInfo]
     let maxTargets: Int
     let electedAndPrefValidators: ElectedAndPrefValidators

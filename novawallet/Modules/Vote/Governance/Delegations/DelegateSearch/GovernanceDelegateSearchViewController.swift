@@ -97,7 +97,7 @@ extension GovernanceDelegateSearchViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
         guard headerViewModel != nil else { return 0 }
 
-        return 26.0
+        return 29
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
@@ -158,7 +158,7 @@ extension GovernanceDelegateSearchViewController: EmptyStateDataSource {
     }
 
     var contentViewForEmptyState: UIView {
-        rootView.emptyStateContainer
+        rootView.contentView
     }
 
     var verticalSpacingForEmptyState: CGFloat? { 0 }

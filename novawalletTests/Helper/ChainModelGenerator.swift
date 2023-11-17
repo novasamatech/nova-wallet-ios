@@ -361,9 +361,11 @@ enum ChainModelGenerator {
                        icon: nil,
                        instances: [
                         .init(chainId: chainId1,
-                              contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73"),
+                              contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
+                              buyProviders: nil),
                         .init(chainId: chainId2,
-                              contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C")
+                              contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+                              buyProviders: nil)
                        ])
     }
 }

@@ -225,7 +225,7 @@
 "staking.recommended.custom.title" = "Choose custom validators ";
 "fee.not.yet.loaded.title" = "Fee calculation is in progress";
 "fee.not.yet.loaded.message" = "Please wait until fee is calculated";
-"staking.setup.amount.too.low" = "You can\'t stake less than the minimal value (%@)";
+"staking.setup.amount.too.low" = "You can\'t stake less than the network minimum value (%@)";
 "common.confirm.title" = "Confirmation";
 "staking.stash.title" = "Wallet account";
 "staking.setup.sent.message" = "Staking setup transaction sent";
@@ -303,8 +303,6 @@
 "staking.your.nominated.format" = "Nominated: %@";
 "staking.your.validators.changing.title" = "Your validators will change in the next era.";
 "staking.validator.info.nominators" = "%@ (max %@)";
-"staking.unbonding.all.title" = "Stop staking";
-"staking.unbonding.all.message" = "Remaining staking balance will drop under minimum value and also will be added to unstaking amount";
 "staking.unbonding.hint" = "Your tokens will be available to redeem after the unstaking period.";
 "staking.unbond.payee.reset.message" = "The reward destination will be changed to your account to avoid a bonded remnant since staking will be stopped";
 "staking.redeemable.format" = "Redeemable: %@";
@@ -414,8 +412,7 @@
 "staking.custom.header.validators.title" = "Validators: %li of %li";
 "staking.set.validators.title" = "Select validators to start staking";
 "staking.set.validators.message" = "Validators are not selected";
-"staking.max.nominators.reached.title" = "Cannot start staking";
-"staking.max.nominators.reached.message" = "Maximum number of nominators has been reached";
+"staking.max.nominators.reached.message" = "The maximum number of nominators has been reached. Try again later";
 "staking.custom.blocked.warning" = "This validator is not accepting nominations at this moment. Please, try again in the next era.";
 "staking.alert.start.next.era.message" = "Please wait for the next era to start.";
 "staking.custom.proceed.button.disabled.title" = "Select validators (max %li)";
@@ -668,7 +665,6 @@
 "dapp.search.query.section" = "Search";
 "dapp.search.app.section" = "DApps";
 "wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\"\nfilter is turned off";
-"wallet.list.empty.action.title" = "Buy tokens";
 "assets.manage.hide.zero.balances" = "Hide assets with zero balances";
 "wallet.send.dead.recipient.commission.asset.title" = "Recipient is not able to accept transfer";
 "wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
@@ -1334,6 +1330,7 @@
 "staking.claim.rewards" = "Claim rewards";
 "common.recommended" = "Recommended";
 "staking.setup.amount.direct.type.subtitle" = "Selected: %d (max %d)";
+"staking.is.not.available.title" = "%@ is currently unavailable";
 "staking.locked.pool.violation.error" = "You have locked tokens on your balance due to %@. In order to continue you should enter less than %@ or more than %@. To stake another amount you should remove your %@ locks.";
 "staking.locked.pool.violation.title" = "You can\'t stake the specified amount";
 "staking.pool.has.no.apy.message" = "The pool you have selected is inactive due to no validators selected or its stake is less than the minimum.\nAre you sure you want to proceed with the selected Pool?";
@@ -1360,7 +1357,7 @@
 "staking.select.pool.members" = "members";
 "staking.select.pool.count" = "active pools: %d";
 "staking.select.pool.title" = "Select pool";
-"staking.search.pool.empty" = "No pool with entered name or pool ID were found. Make sure you entered correct data";
+"staking.search.pool.empty" = "No pool with entered name or pool\nID were found. Make sure you\nentered correct data";
 "staking.start.balance.with.fiat" = "Available balance: %1$@ (%2$@)";
 "staking.pool.is.not.open.message" = "You cannot join pool that is not open. Please, contact the pool owner.";
 "staking.pool.is.not.open.title" = "Pool is not open";
@@ -1371,8 +1368,13 @@
 "common.time.period.after" = "after";
 "common.time.period.every" = "every";
 "staking.search.pool.placeholder" = "Search by name or pool ID";
-"staking.pool.is.full.title" = "Selected pool is full";
+"staking.pool.is.full.title" = "Pool is full";
 "staking.pool.is.full.message" = "You cannot join selected pool since it reached maximum number of members";
 "common.back" = "Back";
+"wallet.list.empty.action.title" = "Buy tokens";
 "asset.operation.send.empty.state.message" = "You don’t have tokens to send.\nBuy or Receive tokens to your\naccount.";
 "governance.referendums.status.deciding" = "Deciding";
+"common.alert.external.link.disclaimer.title" = "Continue in browser?";
+"common.alert.external.link.disclaimer.message" = "To continue the purchase you will be redirected from Nova Wallet app to %@";
+"polkadot.staking.promotion.title" = "Boost your DOT 🚀";
+"polkadot.staking.promotion.message" = "Received your DOT back from crowdloans? Start staking your DOT today to get the maximum possible rewards!";

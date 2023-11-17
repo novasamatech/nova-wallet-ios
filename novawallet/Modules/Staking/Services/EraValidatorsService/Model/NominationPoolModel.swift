@@ -28,7 +28,7 @@ extension NominationPools {
         let state: PoolState?
     }
 
-    struct SelectedPool {
+    struct SelectedPool: Equatable {
         let poolId: PoolId
         let bondedAccountId: AccountId
         let metadata: Data?
