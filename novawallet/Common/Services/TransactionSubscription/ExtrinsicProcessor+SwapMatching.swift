@@ -52,9 +52,22 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            if let customFee = swapResult.customFee {
+            if
+                let customFee = swapResult.customFee,
+                let remoteAssetId = try? customFee.assetId.map(
+                    to: AssetConversionPallet.AssetId.self,
+                    with: context.toRawContext()
+                ),
+                let localAsset = AssetHubTokensConverter.convertFromMultilocationToLocal(
+                    remoteAssetId,
+                    chain: chain,
+                    conversionClosure: AssetHubTokensConverter.createPoolAssetToLocalClosure(
+                        for: chain,
+                        codingFactory: codingFactory
+                    )
+                ) {
                 fee = customFee.actualFee
-                feeAssetId = customFee.assetId
+                feeAssetId = localAsset.asset.assetId
             } else {
                 let optNativeFee = findFee(
                     for: extrinsicIndex,
