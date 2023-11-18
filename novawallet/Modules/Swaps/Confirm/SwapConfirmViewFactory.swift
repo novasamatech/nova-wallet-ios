@@ -108,6 +108,12 @@ struct SwapConfirmViewFactory {
             operationQueue: operationQueue
         )
 
+        let transactionStorage = SubstrateRepositoryFactory().createTxRepository()
+        let persistExtrinsicService = PersistentExtrinsicService(
+            repository: transactionStorage,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let interactor = SwapConfirmInteractor(
             initState: initState,
             assetConversionFeeService: feeService,
@@ -120,6 +126,8 @@ struct SwapConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             generalLocalSubscriptionFactory: generalSubscriptonFactory,
+            persistExtrinsicService: persistExtrinsicService,
+            eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             selectedWallet: wallet,
             operationQueue: operationQueue,

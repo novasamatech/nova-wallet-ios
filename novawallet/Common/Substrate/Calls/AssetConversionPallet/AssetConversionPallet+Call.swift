@@ -18,6 +18,15 @@ extension AssetConversionPallet {
         ].contains(callPath)
     }
 
+    static func callPath(for direction: AssetConversion.Direction) -> CallCodingPath {
+        switch direction {
+        case .sell:
+            return AssetConversionPallet.swapExactTokenForTokensPath
+        case .buy:
+            return AssetConversionPallet.swapTokenForExactTokens
+        }
+    }
+
     struct SwapExactTokensForTokensCall: Codable {
         enum CodingKeys: String, CodingKey {
             case path

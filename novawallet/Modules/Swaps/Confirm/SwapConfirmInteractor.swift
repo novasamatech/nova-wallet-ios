@@ -1,11 +1,15 @@
 import UIKit
 import RobinHood
+import IrohaCrypto
+import BigInt
 
 final class SwapConfirmInteractor: SwapBaseInteractor {
     var presenter: SwapConfirmInteractorOutputProtocol? {
         basePresenter as? SwapConfirmInteractorOutputProtocol
     }
 
+    let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let eventCenter: EventCenterProtocol
     let initState: SwapConfirmInitState
     let runtimeService: RuntimeProviderProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
@@ -24,6 +28,8 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        persistExtrinsicService: PersistentExtrinsicServiceProtocol,
+        eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue,
@@ -34,6 +40,8 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         self.runtimeService = runtimeService
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.assetConversionExtrinsicService = assetConversionExtrinsicService
+        self.persistExtrinsicService = persistExtrinsicService
+        self.eventCenter = eventCenter
 
         super.init(
             assetConversionAggregator: assetConversionAggregator,
@@ -49,6 +57,44 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         )
     }
 
+    private func persistSwapAndComplete(txHash: String, args: AssetConversion.CallArgs, lastFee: BigUInt?) {
+        do {
+            let chainIn = initState.chainAssetIn.chain
+
+            guard let sender = selectedWallet.fetch(for: chainIn.accountRequest())?.toAddress() else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            let receiver = try args.receiver.toAddress(using: initState.chainAssetOut.chain.chainFormat)
+
+            let details = PersistSwapDetails(
+                txHash: try Data(hexString: txHash),
+                sender: sender,
+                receive: receiver,
+                assetIdIn: args.assetIn,
+                amountIn: args.amountIn,
+                assetIdOut: args.assetOut,
+                amountOut: args.amountOut,
+                fee: lastFee,
+                feeAssetId: initState.feeChainAsset.asset.assetId,
+                callPath: AssetConversionPallet.callPath(for: args.direction)
+            )
+
+            persistExtrinsicService.saveSwap(
+                source: .substrate,
+                chainAssetId: details.assetIdIn,
+                details: details,
+                runningIn: .main
+            ) { [weak self] _ in
+                self?.eventCenter.notify(with: WalletTransactionListUpdated())
+                self?.presenter?.didReceiveConfirmation(hash: txHash)
+            }
+        } catch {
+            // complete successfully as we don't want a user to think tx is failed
+            presenter?.didReceiveConfirmation(hash: txHash)
+        }
+    }
+
     override func setup() {
         super.setup()
 
@@ -57,7 +103,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         set(feeChainAsset: initState.feeChainAsset)
     }
 
-    func submitExtrinsic(args: AssetConversion.CallArgs) {
+    func submitExtrinsic(args: AssetConversion.CallArgs, lastFee: BigUInt?) {
         let runtimeCoderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         runtimeCoderFactoryOperation.completionBlock = { [weak self] in
@@ -71,7 +117,12 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
                         for: args,
                         codingFactory: runtimeCoderFactory
                     )
-                    try self.submitClosure(builder: builder, runtimeCoderFactory: runtimeCoderFactory)
+                    try self.submitClosure(
+                        builder: builder,
+                        runtimeCoderFactory: runtimeCoderFactory,
+                        args: args,
+                        lastFee: lastFee
+                    )
                 } catch {
                     self.presenter?.didReceive(error: .submit(error))
                 }
@@ -83,7 +134,9 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
 
     private func submitClosure(
         builder: @escaping ExtrinsicBuilderClosure,
-        runtimeCoderFactory: RuntimeCoderFactoryProtocol
+        runtimeCoderFactory: RuntimeCoderFactoryProtocol,
+        args: AssetConversion.CallArgs,
+        lastFee: BigUInt?
     ) throws {
         let extrinsicService: ExtrinsicServiceProtocol
 
@@ -118,7 +171,11 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(hash):
-                self?.presenter?.didReceiveConfirmation(hash: hash)
+                self?.persistSwapAndComplete(
+                    txHash: hash,
+                    args: args,
+                    lastFee: lastFee
+                )
             case let .failure(error):
                 self?.presenter?.didReceive(error: .submit(error))
             }
@@ -127,7 +184,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
 }
 
 extension SwapConfirmInteractor: SwapConfirmInteractorInputProtocol {
-    func submit(args: AssetConversion.CallArgs) {
-        submitExtrinsic(args: args)
+    func submit(args: AssetConversion.CallArgs, lastFee: BigUInt?) {
+        submitExtrinsic(args: args, lastFee: lastFee)
     }
 }
