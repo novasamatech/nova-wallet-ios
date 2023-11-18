@@ -10,7 +10,18 @@ enum AssetTxPaymentPallet {
     }
 
     struct AssetTxFeePaid: Codable {
-        @StringCodable var actualFee: BigUInt
+        let who: AccountId
+        let tip: BigUInt
+        let actualFee: BigUInt
         let assetId: JSON
+
+        init(from decoder: Decoder) throws {
+            var unkeyedContainer = try decoder.unkeyedContainer()
+
+            who = try unkeyedContainer.decode(BytesCodable.self).wrappedValue
+            actualFee = try unkeyedContainer.decode(StringScaleMapper<BigUInt>.self).value
+            tip = try unkeyedContainer.decode(StringScaleMapper<BigUInt>.self).value
+            assetId = try unkeyedContainer.decode(JSON.self)
+        }
     }
 }
