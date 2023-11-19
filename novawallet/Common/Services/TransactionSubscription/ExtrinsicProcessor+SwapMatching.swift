@@ -171,14 +171,12 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            return try? record.event.params.map(
-                to: AssetConversionPallet.SwapExecutedEvent.self,
-                with: context.toRawContext()
-            )
+            let type = AssetConversionPallet.SwapExecutedEvent.self
+            return try? record.event.params.map(to: type, with: context.toRawContext())
         }
 
         guard
-            let swap = try findSwap(swapEvents, customFee: customFee),
+            let swap = findSwap(swapEvents, customFee: customFee),
             let remoteAssetIn = swap.path.first,
             let remoteAssetOut = swap.path.last
         else {
