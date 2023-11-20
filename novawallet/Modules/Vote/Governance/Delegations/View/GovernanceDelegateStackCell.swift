@@ -36,9 +36,7 @@ final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, 
         rowContentView.valueView.detailsView.makeHorizontal()
         rowContentView.valueView.detailsView.spacing = 8
         rowContentView.valueView.spacing = 8
-        rowContentView.valueView.imageView.image = R.image.iconInfoFilled()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorIconSecondary()!)
+        rowContentView.valueView.imageView.image = R.image.iconInfoFilled()
     }
 
     private func setupLayout() {

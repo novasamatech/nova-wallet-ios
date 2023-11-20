@@ -63,6 +63,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             ]),
             (.support, [
                 createCommonViewViewModel(row: .rateUs, locale: locale),
+                createCommonViewViewModel(row: .wiki, locale: locale),
                 createCommonViewViewModel(row: .email, locale: locale)
             ]),
             (.about, [

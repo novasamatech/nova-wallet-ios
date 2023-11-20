@@ -38,7 +38,7 @@ final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPair
     private func configure() {
         titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilledAccent()
+        titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
         titleButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 4
         titleButton.imageWithTitleView?.layoutType = .horizontalLabelFirst
         titleButton.applyIconStyle()

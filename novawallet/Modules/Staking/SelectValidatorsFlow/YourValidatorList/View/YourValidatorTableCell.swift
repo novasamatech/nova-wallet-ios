@@ -44,7 +44,7 @@ class YourValidatorTableCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        imageView.image = R.image.iconInfoFilled()
         return imageView
     }()
 

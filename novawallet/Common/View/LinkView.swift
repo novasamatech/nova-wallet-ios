@@ -18,7 +18,7 @@ final class LinkView: IconDetailsGenericView<RoundedButton> {
         let blueColor = R.color.colorButtonTextAccent()!
 
         mode = .iconDetails
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: blueColor)
+        imageView.image = R.image.iconInfoAccent()
         spacing = 5.0
 
         actionButton.applyIconStyle()

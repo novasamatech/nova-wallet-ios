@@ -114,6 +114,7 @@
 "settings.preferences" = "Предпочтения";
 "settings.security" = "Безопасность";
 "settings.community" = "Сообщество";
+"settings.wiki" = "Вики";
 "confirmation.skip.action" = "Пропустить";
 "account.info.title" = "Аккаунт";
 "account.info.name.title" = "Имя";

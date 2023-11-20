@@ -7,14 +7,14 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
     let ayeVotesView: VoteRowView = .create {
         $0.apply(style: .init(
             color: R.color.colorIconPositive()!,
-            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!))!
+            accessoryImage: R.image.iconInfoFilled()!
         ))
     }
 
     let nayVotesView: VoteRowView = .create {
         $0.apply(style: .init(
             color: R.color.colorIconNegative()!,
-            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!))!
+            accessoryImage: R.image.iconInfoFilled()!
         ))
     }
 

@@ -56,9 +56,7 @@ final class StackAddressCell: RowView<GenericTitleValueView<LoadableIconDetailsV
         titleView.imageView.contentMode = .scaleAspectFit
         titleView.detailsLabel.numberOfLines = 1
 
-        indicatorView.image = R.image.iconInfoFilled()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorIconSecondary()!)
+        indicatorView.image = R.image.iconInfoFilled()
     }
 }
 

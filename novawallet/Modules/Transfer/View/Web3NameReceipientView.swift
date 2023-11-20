@@ -71,7 +71,7 @@ extension Web3NameReceipientView {
                 accountSelected.isHidden = false
                 accountSelected.detailsView.detailsLabel.text = value
                 accountSelected.detailsView.imageView.image = R.image.iconAlgoItem()
-                accountSelected.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+                accountSelected.imageView.image = R.image.iconInfoFilled()
             } else {
                 accountSelected.detailsView.detailsLabel.text = ""
                 accountSelected.detailsView.imageView.image = nil

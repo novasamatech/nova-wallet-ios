@@ -75,7 +75,7 @@ final class VotesContentView: GenericTitleValueView<IconDetailsGenericView<IconD
 
         nameLabel.numberOfLines = 1
         nameLabel.apply(style: .footnotePrimary)
-        indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        indicatorView.image = R.image.iconInfoFilled()
 
         votesLabel.apply(style: .footnotePrimary)
         detailsLabel.apply(style: .caption1Secondary)

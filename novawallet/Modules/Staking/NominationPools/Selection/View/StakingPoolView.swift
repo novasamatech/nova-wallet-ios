@@ -42,7 +42,7 @@ final class StakingPoolView: GenericTitleValueView<SelectPoolAccountView, Select
         poolName.setContentHuggingPriority(.defaultLow, for: .horizontal)
         iconView.setContentHuggingPriority(.defaultLow, for: .vertical)
 
-        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        let icon = R.image.iconInfoFilled()
         infoButton.setImage(icon, for: .normal)
         iconView.snp.makeConstraints {
             $0.size.equalTo(Constants.iconSize)
