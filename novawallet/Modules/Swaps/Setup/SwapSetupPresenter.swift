@@ -726,10 +726,12 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         let receiveAmount = receiveAmountInput.map { AmountInputResult.absolute($0) }
 
         Swift.swap(&payChainAsset, &receiveChainAsset)
+        feeChainAsset = payChainAsset?.chain.utilityChainAsset()
         canPayFeeInPayAsset = false
 
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
+        interactor.update(feeChainAsset: feeChainAsset)
         let newFocus: TextFieldFocus?
 
         switch currentFocus {
