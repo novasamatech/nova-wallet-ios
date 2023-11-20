@@ -19,14 +19,18 @@ enum AssetListModelHelpers {
         from chain: ChainModel,
         assets: [AssetListAssetModel]
     ) -> AssetListGroupModel {
-        let amountValue: AmountPair<BigUInt, Decimal> = assets.reduce(.init(amount: 0, value: 0)) { result, asset in
+        let amountValue: AmountPair<Decimal, Decimal> = assets.reduce(.init(amount: 0, value: 0)) { result, asset in
             .init(
-                amount: result.amount + (asset.totalAmount ?? 0),
+                amount: result.amount + asset.totalAmount.decimalOrZero(precision: asset.assetModel.precision),
                 value: result.value + (asset.totalValue ?? 0)
             )
         }
 
-        return AssetListGroupModel(chain: chain, chainValue: amountValue.value, chainAmount: amountValue.amount)
+        return AssetListGroupModel(
+            chain: chain,
+            chainValue: amountValue.value,
+            chainAmount: amountValue.amount
+        )
     }
 
     static func createGroupsDiffCalculator(

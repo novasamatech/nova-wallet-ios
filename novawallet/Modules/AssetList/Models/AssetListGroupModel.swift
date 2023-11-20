@@ -7,9 +7,9 @@ struct AssetListGroupModel: Identifiable {
 
     let chain: ChainModel
     let chainValue: Decimal
-    let chainAmount: BigUInt
+    let chainAmount: Decimal
 
-    init(chain: ChainModel, chainValue: Decimal, chainAmount: BigUInt) {
+    init(chain: ChainModel, chainValue: Decimal, chainAmount: Decimal) {
         self.chain = chain
         self.chainValue = chainValue
         self.chainAmount = chainAmount

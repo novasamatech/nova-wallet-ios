@@ -9,3 +9,12 @@ extension BigUInt {
         ) ?? 0
     }
 }
+
+extension Optional where Wrapped == BigUInt {
+    func decimalOrZero(precision: UInt16) -> Decimal {
+        guard let self = self, self != 0 else {
+            return 0
+        }
+        return self.decimal(precision: precision)
+    }
+}
