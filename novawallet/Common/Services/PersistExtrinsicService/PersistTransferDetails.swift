@@ -16,3 +16,16 @@ struct PersistExtrinsicDetails {
     let callPath: CallCodingPath
     let fee: BigUInt?
 }
+
+struct PersistSwapDetails {
+    let txHash: Data
+    let sender: AccountAddress
+    let receiver: AccountAddress
+    let assetIdIn: ChainAssetId
+    let amountIn: BigUInt
+    let assetIdOut: ChainAssetId
+    let amountOut: BigUInt
+    let fee: BigUInt?
+    let feeAssetId: AssetModel.Id
+    let callPath: CallCodingPath
+}

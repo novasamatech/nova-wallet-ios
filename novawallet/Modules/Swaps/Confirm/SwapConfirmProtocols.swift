@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel)
@@ -25,7 +26,7 @@ protocol SwapConfirmPresenterProtocol: AnyObject {
 }
 
 protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {
-    func submit(args: AssetConversion.CallArgs)
+    func submit(args: AssetConversion.CallArgs, lastFee: BigUInt?)
 }
 
 protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {

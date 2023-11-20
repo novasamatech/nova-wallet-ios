@@ -55,6 +55,16 @@ enum AssetHubTokensConverter {
         }
     }
 
+    static func convertFromMultilocationToLocal(
+        _ assetId: AssetConversionPallet.AssetId,
+        chain: ChainModel,
+        conversionClosure: (AssetConversionPallet.PoolAsset) -> ChainAsset?
+    ) -> ChainAsset? {
+        let poolAsset = convertFromMultilocation(assetId, chain: chain)
+
+        return conversionClosure(poolAsset)
+    }
+
     static func convertToMultilocation(
         chainAsset: ChainAsset,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -98,6 +108,57 @@ enum AssetHubTokensConverter {
             }
         default:
             return nil
+        }
+    }
+
+    static func createPoolAssetToLocalClosure(
+        for chain: ChainModel,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> (AssetConversionPallet.PoolAsset) -> ChainAsset? {
+        let initAssetsStore = [JSON: (AssetModel, AssetsPalletStorageInfo)]()
+        let assetsPalletTokens = chain.assets.reduce(into: initAssetsStore) { store, asset in
+            let optStorageInfo = try? AssetStorageInfo.extract(from: asset, codingFactory: codingFactory)
+            guard case let .statemine(info) = optStorageInfo else {
+                return
+            }
+
+            store[info.assetId] = (asset, info)
+        }
+
+        return { remoteAsset in
+            switch remoteAsset {
+            case .native:
+                return chain.utilityChainAsset()
+            case let .assets(pallet, index):
+                guard let localToken = assetsPalletTokens[.stringValue(String(index))] else {
+                    return nil
+                }
+
+                let palletName = localToken.1.palletName ?? PalletAssets.name
+
+                guard
+                    let moduleIndex = codingFactory.metadata.getModuleIndex(palletName),
+                    moduleIndex == pallet else {
+                    // only Assets pallet currently supported
+                    return nil
+                }
+
+                return chain.asset(for: localToken.0.assetId).map { asset in
+                    ChainAsset(chain: chain, asset: asset)
+                }
+            case let .foreign(remoteId):
+                guard
+                    let json = try? remoteId.toScaleCompatibleJSON(),
+                    let localToken = assetsPalletTokens[json] else {
+                    return nil
+                }
+
+                return chain.asset(for: localToken.0.assetId).map { asset in
+                    ChainAsset(chain: chain, asset: asset)
+                }
+            default:
+                return nil
+            }
         }
     }
 }
