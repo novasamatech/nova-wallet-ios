@@ -123,7 +123,8 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         )
 
         return consensusDependingFactory.createNetworkInfoOperationFactory(
-            for: durationFactory,
+            for: stakingOption.chainAsset.chain,
+            durationFactory: durationFactory,
             operationQueue: operationQueue
         )
     }
