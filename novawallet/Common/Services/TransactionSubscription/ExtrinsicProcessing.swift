@@ -2,18 +2,6 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-struct ExtrinsicProcessingResult {
-    let sender: AccountId
-    let callPath: CallCodingPath
-    let call: JSON
-    let extrinsicHash: Data?
-    let fee: BigUInt?
-    let peerId: AccountId?
-    let amount: BigUInt?
-    let isSuccess: Bool
-    let assetId: UInt32
-}
-
 protocol ExtrinsicProcessing {
     func process(
         extrinsicIndex: UInt32,
@@ -76,6 +64,15 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
             }
 
             if let processingResult = matchEquilibriumTransfer(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchAssetHubSwap(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,

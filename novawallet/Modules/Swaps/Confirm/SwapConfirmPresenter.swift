@@ -328,7 +328,7 @@ extension SwapConfirmPresenter {
 
         view?.didReceiveStartLoading()
 
-        interactor.submit(args: args)
+        interactor.submit(args: args, lastFee: fee?.networkFee.targetAmount)
     }
 }
 

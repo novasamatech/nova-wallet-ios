@@ -135,7 +135,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             feeAssetId: feeAsset?.assetId,
             blockNumber: blockNumber,
             txIndex: nil,
-            callPath: CallCodingPath.swap(direction: .sell),
+            callPath: AssetConversionPallet.swapExactTokenForTokensPath,
             call: nil,
             swap: .init(
                 amountIn: swap.amountIn,

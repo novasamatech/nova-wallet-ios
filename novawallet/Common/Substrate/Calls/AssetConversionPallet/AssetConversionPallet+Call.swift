@@ -3,6 +3,30 @@ import SubstrateSdk
 import BigInt
 
 extension AssetConversionPallet {
+    static var swapExactTokenForTokensPath: CallCodingPath {
+        CallCodingPath(moduleName: AssetConversionPallet.name, callName: "swap_exact_tokens_for_tokens")
+    }
+
+    static var swapTokenForExactTokens: CallCodingPath {
+        CallCodingPath(moduleName: AssetConversionPallet.name, callName: "swap_tokens_for_exact_tokens")
+    }
+
+    static func isSwap(_ callPath: CallCodingPath) -> Bool {
+        [
+            AssetConversionPallet.swapExactTokenForTokensPath,
+            AssetConversionPallet.swapTokenForExactTokens
+        ].contains(callPath)
+    }
+
+    static func callPath(for direction: AssetConversion.Direction) -> CallCodingPath {
+        switch direction {
+        case .sell:
+            return AssetConversionPallet.swapExactTokenForTokensPath
+        case .buy:
+            return AssetConversionPallet.swapTokenForExactTokens
+        }
+    }
+
     struct SwapExactTokensForTokensCall: Codable {
         enum CodingKeys: String, CodingKey {
             case path

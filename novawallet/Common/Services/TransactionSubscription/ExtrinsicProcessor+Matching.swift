@@ -100,10 +100,12 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee,
+                feeAssetId: nil,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: status,
-                assetId: asset.assetId
+                assetId: asset.assetId,
+                swap: nil
             )
 
         } catch {
@@ -225,10 +227,12 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: executedValue.transactionHash,
                 fee: fee,
+                feeAssetId: nil,
                 peerId: executedValue.to,
                 amount: nil,
                 isSuccess: executedValue.isSuccess,
-                assetId: assetId
+                assetId: assetId,
+                swap: nil
             )
         } catch {
             return nil
@@ -281,10 +285,12 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee,
+                feeAssetId: nil,
                 peerId: nil,
                 amount: nil,
                 isSuccess: isSuccess,
-                assetId: assetId
+                assetId: assetId,
+                swap: nil
             )
 
         } catch {
@@ -359,10 +365,12 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee,
+                feeAssetId: nil,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: isSuccess,
-                assetId: asset.assetId
+                assetId: asset.assetId,
+                swap: nil
             )
 
         } catch {
@@ -441,10 +449,12 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee,
+                feeAssetId: nil,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: isSuccess,
-                assetId: assetId
+                assetId: assetId,
+                swap: nil
             )
 
         } catch {
@@ -580,10 +590,12 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee,
+                feeAssetId: nil,
                 peerId: peerId,
                 amount: call.args.value,
                 isSuccess: status,
-                assetId: assetId
+                assetId: assetId,
+                swap: nil
             )
 
         } catch {
