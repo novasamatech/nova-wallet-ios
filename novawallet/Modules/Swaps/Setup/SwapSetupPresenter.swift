@@ -609,16 +609,18 @@ extension SwapSetupPresenter {
         guard
             !isManualFeeSet,
             let payChainAsset = getPayChainAsset(),
+            !payChainAsset.isUtilityAsset,
             let feeChainAsset = getFeeChainAsset(),
-            feeChainAsset.chainAssetId == payChainAsset.chain.utilityChainAssetId(),
+            feeChainAsset.isUtilityAsset,
             let feeAssetBalance = feeAssetBalance,
             let payAssetBalance = payAssetBalance,
             payAssetBalance.transferable > 0,
-            let fee = fee?.totalFee.nativeAmount else {
+            let fee = fee?.totalFee.nativeAmount,
+            let nativeMinBalance = utilityAssetBalanceExistense?.minBalance else {
             return
         }
 
-        if feeAssetBalance.transferable < fee {
+        if feeAssetBalance.freeInPlank < fee + nativeMinBalance {
             updateFeeChainAsset(payChainAsset)
         }
     }
