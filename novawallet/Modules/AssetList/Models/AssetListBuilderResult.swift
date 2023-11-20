@@ -50,7 +50,19 @@ struct AssetListBuilderResult {
         }
 
         func hasSwaps() -> Bool {
-            allChains.values.contains { $0.hasSwaps }
+            allChains.values.contains { chain in
+                guard chain.hasSwaps else {
+                    return false
+                }
+                return chain.assets.contains { asset in
+                    let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+                    if case .success = balanceResults[chainAssetId] {
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+            }
         }
     }
 

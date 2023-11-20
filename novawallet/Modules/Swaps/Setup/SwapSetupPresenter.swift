@@ -26,6 +26,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private var feeIdentifier: SwapSetupFeeIdentifier?
     private var slippage: BigRational
+    private var isManualFeeSet: Bool = false
 
     private var detailsAvailable: Bool {
         !quoteResult.hasError() && quoteArgs != nil
@@ -207,6 +208,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideButtonState()
         provideIssues()
         provideNotification()
+        switchFeeChainAssetIfNecessary()
     }
 
     override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
@@ -237,6 +239,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         }
 
         provideIssues()
+        switchFeeChainAssetIfNecessary()
     }
 
     override func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {
@@ -606,6 +609,26 @@ extension SwapSetupPresenter {
         provideIssues()
         provideNotification()
     }
+
+    private func switchFeeChainAssetIfNecessary() {
+        guard
+            !isManualFeeSet,
+            let payChainAsset = getPayChainAsset(),
+            !payChainAsset.isUtilityAsset,
+            let feeChainAsset = getFeeChainAsset(),
+            feeChainAsset.isUtilityAsset,
+            let feeAssetBalance = feeAssetBalance,
+            let payAssetBalance = payAssetBalance,
+            payAssetBalance.transferable > 0,
+            let fee = fee?.totalFee.nativeAmount,
+            let nativeMinBalance = utilityAssetBalanceExistense?.minBalance else {
+            return
+        }
+
+        if feeAssetBalance.freeInPlank < fee + nativeMinBalance {
+            updateFeeChainAsset(payChainAsset)
+        }
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
@@ -647,6 +670,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
             self?.interactor.update(payChainAsset: chainAsset)
             self?.interactor.update(feeChainAsset: feeChainAsset)
+            self?.isManualFeeSet = false
 
             if let direction = self?.quoteArgs?.direction {
                 self?.refreshQuote(direction: direction, forceUpdate: false)
@@ -764,6 +788,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             },
             action: { [weak self] in
                 let chainAsset = FeeSelectionViewModel(rawValue: $0) == .utilityAsset ? utilityAsset : payChainAsset
+                if chainAsset.chainAssetId != self?.feeChainAsset?.chainAssetId {
+                    self?.isManualFeeSet = true
+                }
                 self?.updateFeeChainAsset(chainAsset)
             },
             selectedIndex: payAssetSelected ? FeeSelectionViewModel.payAsset.rawValue :
