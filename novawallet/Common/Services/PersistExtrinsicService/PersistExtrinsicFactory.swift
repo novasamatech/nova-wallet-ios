@@ -125,7 +125,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: details.sender,
-            receiver: details.receive,
+            receiver: details.receiver,
             amountInPlank: nil,
             status: .pending,
             txHash: txHash,

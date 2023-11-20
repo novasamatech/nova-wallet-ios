@@ -20,7 +20,7 @@ struct PersistExtrinsicDetails {
 struct PersistSwapDetails {
     let txHash: Data
     let sender: AccountAddress
-    let receive: AccountAddress
+    let receiver: AccountAddress
     let assetIdIn: ChainAssetId
     let amountIn: BigUInt
     let assetIdOut: ChainAssetId

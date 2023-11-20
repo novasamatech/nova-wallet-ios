@@ -70,7 +70,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
             let details = PersistSwapDetails(
                 txHash: try Data(hexString: txHash),
                 sender: sender,
-                receive: receiver,
+                receiver: receiver,
                 assetIdIn: args.assetIn,
                 amountIn: args.amountIn,
                 assetIdOut: args.assetOut,
