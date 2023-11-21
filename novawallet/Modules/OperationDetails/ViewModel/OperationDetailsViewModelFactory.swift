@@ -56,7 +56,7 @@ final class OperationDetailsViewModelFactory {
                 return nil
             }
         case .swap:
-            let image = R.image.iconSwapOnDetails()!
+            let image = R.image.iconSwap()!
             return StaticImageViewModel(image: image)
         }
     }
