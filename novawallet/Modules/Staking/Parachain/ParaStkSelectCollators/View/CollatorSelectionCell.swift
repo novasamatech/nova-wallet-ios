@@ -55,7 +55,7 @@ class CollatorSelectionCell: UITableViewCell {
 
     let infoButton: UIButton = {
         let button = UIButton()
-        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        let icon = R.image.iconInfoFilled()
         button.setImage(icon, for: .normal)
         return button
     }()

@@ -31,6 +31,7 @@ enum ModalNetworksFactory {
         viewController.footerHeight = 0.0
         viewController.sectionHeaderHeight = 32
         viewController.sectionFooterHeight = 32
+        viewController.isScrollEnabled = true
 
         return viewController
     }

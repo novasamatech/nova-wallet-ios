@@ -10,7 +10,7 @@ final class HintView: UIView {
     }()
 
     let iconView: UIImageView = {
-        let view = UIImageView(image: R.image.iconInfoFilled()?.withRenderingMode(.alwaysTemplate))
+        let view = UIImageView(image: R.image.iconInfoFilled())
         view.tintColor = R.color.colorIconInactive()
         return view
     }()

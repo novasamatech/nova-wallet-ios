@@ -38,7 +38,7 @@ final class AcalaContributionSetupViewLayout: CrowdloanContributionSetupViewLayo
         }
 
         let iconView = UIImageView()
-        let iconimage = R.image.iconInfoFilled()!.withRenderingMode(.alwaysTemplate)
+        let iconimage = R.image.iconInfoFilled()
         iconView.image = iconimage
         iconView.tintColor = R.color.colorButtonTextAccent()!
         iconView.contentMode = .scaleAspectFit

@@ -56,7 +56,7 @@ final class OperationDetailsViewModelFactory {
                 return nil
             }
         case .swap:
-            let image = R.image.iconSwapOnDetails()!
+            let image = R.image.iconSwap()!
             return StaticImageViewModel(image: image)
         }
     }
@@ -298,7 +298,8 @@ final class OperationDetailsViewModelFactory {
         return .init(
             imageViewModel: assetIcon,
             hub: networkViewModel,
-            balance: balanceViewModel
+            amount: balanceViewModel.amount,
+            price: balanceViewModel.price.map { $0.approximately() }
         )
     }
 

@@ -10,7 +10,6 @@ class CollapsableContainerView: UIView {
     private enum Constants {
         static let headerHeight: CGFloat = 32
         static let rowHeight: CGFloat = 44
-        static let stackViewBottomInset: CGFloat = 4
     }
 
     let backgroundView = BlockBackgroundView()
@@ -115,9 +114,7 @@ class CollapsableContainerView: UIView {
 
         contentView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(Constants.stackViewBottomInset)
+            make.edges.equalToSuperview()
         }
 
         rows.forEach { view in
@@ -164,7 +161,7 @@ class CollapsableContainerView: UIView {
         } else {
             contentView.snp.updateConstraints { make in
                 make.top.equalToSuperview().offset(
-                    -CGFloat(stackView.arrangedSubviews.count) * Constants.rowHeight - Constants.stackViewBottomInset
+                    -CGFloat(stackView.arrangedSubviews.count) * Constants.rowHeight
                 )
             }
             layoutIfNeeded()

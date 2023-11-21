@@ -121,7 +121,7 @@ final class TransactionHistoryViewModelFactory {
             timestamp: data.timestamp,
             locale: locale
         )
-        let icon = R.image.iconSwapHistory()
+        let icon = R.image.iconSwap()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
         let amountDetails = amountDetails(price: balance.price, time: time, locale: locale)
         let subtitle = [assetIn?.symbol, assetOut?.symbol].compactMap { $0 }.joined(separator: " → ")

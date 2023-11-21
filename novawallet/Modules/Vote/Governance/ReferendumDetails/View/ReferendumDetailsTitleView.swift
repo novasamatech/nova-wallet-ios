@@ -21,7 +21,7 @@ final class ReferendumDetailsTitleView: UIView {
         view.rowContentView.iconWidth = 16.0
         view.rowContentView.spacing = 6
         view.contentInsets = UIEdgeInsets(top: 9, left: 0, bottom: 9, right: 0)
-        view.rowContentView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        view.rowContentView.imageView.image = R.image.iconInfoFilled()
 
         let addressView = view.rowContentView.detailsView
         addressView.spacing = 7

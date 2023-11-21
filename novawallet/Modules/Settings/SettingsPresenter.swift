@@ -198,6 +198,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             } else {
                 wireframe.showScan(from: view, delegate: self)
             }
+        case .wiki:
+            show(url: config.wikiURL)
         }
     }
 
