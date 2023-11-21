@@ -208,7 +208,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             logger: logger
         )
 
-        presenter.referendumId = referendumsInitState?.referendumId
+        presenter.referendumId = referendumsInitState?.referendumIndex
         presenter.view = view
         view.presenter = presenter
         interactor.presenter = presenter

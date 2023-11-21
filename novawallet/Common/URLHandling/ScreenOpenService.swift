@@ -13,7 +13,7 @@ enum UrlHandlingScreen {
 
 struct ReferendumsInitState {
     let chainId: ChainModel.Id
-    let referendumId: UInt
+    let referendumIndex: UInt
     let governance: GovernanceType
 }
 
@@ -29,13 +29,13 @@ final class ScreenOpenService {
     private var pendingScreen: UrlHandlingScreen?
 
     let logger: LoggerProtocol
-    let factory: DeeplinkOpenScreenParsingServiceFactoryProtocol
+    let parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol
 
     init(
-        factory: DeeplinkOpenScreenParsingServiceFactoryProtocol,
+        parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol,
         logger: LoggerProtocol
     ) {
-        self.factory = factory
+        self.parsingFactory = parsingFactory
         self.logger = logger
     }
 }
@@ -53,17 +53,17 @@ extension ScreenOpenService: ScreenOpenServiceProtocol {
         }
 
         let screen: UrlHandlingScreen
-        guard let handler = factory.createUrlHandler(screen: pathComponents[2]) else {
+        guard let handler = parsingFactory.createUrlHandler(screen: pathComponents[2]) else {
             logger.warning("unsupported screen: \(pathComponents[2])")
             return false
         }
         let parsingResult = handler.parse(url: url)
 
         switch parsingResult {
-        case let .success(parsedScreen):
-            screen = parsedScreen
+        case let .success(preparedScreen):
+            screen = preparedScreen
         case let .failure(error):
-            logger.warning("error occurs while parse url: \(error)")
+            logger.error("error occurs: \(error) while parse url: \(url.absoluteString)")
             screen = .error(error)
         }
 
