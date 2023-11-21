@@ -36,11 +36,11 @@ enum TransferSetupViewFactory {
         assetListObservable: AssetListModelObservable,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        guard let originChainAsset = origins.first, let wallet = SelectedWalletSettings.shared.value else {
+        guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
-        let recepient = try? wallet.fetch(for: originChainAsset.chain.accountRequest())?.toDisplayAddress()
+        let recepient = try? wallet.fetch(for: destination.chain.accountRequest())?.toDisplayAddress()
 
         return createView(
             from: .init(
