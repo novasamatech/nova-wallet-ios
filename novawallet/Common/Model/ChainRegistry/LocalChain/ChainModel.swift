@@ -239,6 +239,14 @@ struct ChainModel: Equatable, Codable, Hashable {
     var isUtilityTokenOnRelaychain: Bool {
         additional?.relaychainAsNative?.boolValue ?? false
     }
+
+    var stakingMaxElectingVoters: UInt32? {
+        guard let value = additional?.stakingMaxElectingVoters?.unsignedIntValue else {
+            return nil
+        }
+
+        return UInt32(value)
+    }
 }
 
 extension ChainModel: Identifiable {

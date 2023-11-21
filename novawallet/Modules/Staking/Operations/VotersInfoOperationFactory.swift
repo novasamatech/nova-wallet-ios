@@ -11,9 +11,11 @@ protocol VotersInfoOperationFactoryProtocol {
 
 final class VotersInfoOperationFactory {
     let operationManager: OperationManagerProtocol
+    let chain: ChainModel
 
-    init(operationManager: OperationManagerProtocol) {
+    init(chain: ChainModel, operationManager: OperationManagerProtocol) {
         self.operationManager = operationManager
+        self.chain = chain
     }
 
     private func createBagsListResolutionOperation(
@@ -54,6 +56,10 @@ final class VotersInfoOperationFactory {
     private func createMaxElectingVotersOperation(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> BaseOperation<UInt32> {
+        if let maxElectingVoter = chain.stakingMaxElectingVoters {
+            return BaseOperation.createWithResult(maxElectingVoter)
+        }
+
         let valueOperation = PrimitiveConstantOperation<UInt32>(
             path: ElectionProviderMultiPhase.maxElectingVoters,
             fallbackValue: UInt32.max

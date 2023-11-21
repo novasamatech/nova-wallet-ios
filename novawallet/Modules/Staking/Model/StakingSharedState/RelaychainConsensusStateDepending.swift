@@ -4,7 +4,8 @@ import SubstrateSdk
 
 protocol RelaychainConsensusStateDepending {
     func createNetworkInfoOperationFactory(
-        for durationFactory: StakingDurationOperationFactoryProtocol,
+        for chain: ChainModel,
+        durationFactory: StakingDurationOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) -> NetworkStakingInfoOperationFactoryProtocol
 
@@ -22,10 +23,12 @@ protocol RelaychainConsensusStateDepending {
 
 final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDepending {
     func createNetworkInfoOperationFactory(
-        for durationFactory: StakingDurationOperationFactoryProtocol,
+        for chain: ChainModel,
+        durationFactory: StakingDurationOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) -> NetworkStakingInfoOperationFactoryProtocol {
         let votersInfoOperationFactory = VotersInfoOperationFactory(
+            chain: chain,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
