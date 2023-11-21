@@ -55,6 +55,35 @@ final class GovernanceSharedState {
         self.operationQueue = operationQueue
     }
 
+    convenience init(
+        chainId: ChainModel.Id,
+        type: GovernanceType,
+        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
+        substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
+        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol? = nil,
+        blockTimeService: BlockTimeEstimationServiceProtocol? = nil,
+        internalSettings: SettingsManagerProtocol = SettingsManager.shared,
+        requestFactory: StorageRequestFactoryProtocol = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue)
+        ),
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        logger: LoggerProtocol = Logger.shared
+    ) {
+        internalSettings.governanceChainId = chainId
+        internalSettings.governanceType = type
+        self.init(
+            chainRegistry: chainRegistry,
+            substrateStorageFacade: substrateStorageFacade,
+            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
+            blockTimeService: blockTimeService,
+            internalSettings: internalSettings,
+            requestFactory: requestFactory,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
     func replaceBlockTimeService(_ newService: BlockTimeEstimationServiceProtocol?) {
         blockTimeService = newService
     }

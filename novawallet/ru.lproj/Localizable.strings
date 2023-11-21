@@ -1241,6 +1241,7 @@
 "governance.referendums.search.empty" = "Не найдены референдумы\nс таким названием или ID";
 "governance.referendums.settings.title" = "Референдумы";
 "wallet.send.recipient.blocked.title" = "Получатель не может принять перевод";
+"governance.referendum.not.found.message" = "Референдум не найден";
 "wallet.send.recipient.blocked.message" = "Получатель был заблокирован владельцем токена и в настоящее время не может принимать входящие переводы";
 "staking.reward.filters.period.date.end" = "Конец";
 "staking.reward.filters.period.end.date.open" = "Конечная дата всегда текущая";

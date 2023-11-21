@@ -44,7 +44,11 @@ final class RootInteractor {
             eventCenter: eventCenter
         )
 
-        let screenOpenService = ScreenOpenService(logger: Logger.shared)
+        let factory = DeeplinkOpenScreenParsingServiceFactory(registryClosure: chainRegistryClosure)
+        let screenOpenService = ScreenOpenService(
+            factory: factory,
+            logger: Logger.shared
+        )
 
         URLHandlingService.shared.setup(children: [screenOpenService, purchaseHandler, keystoreImportService])
     }

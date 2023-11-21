@@ -57,13 +57,13 @@ extension VotePresenter: VotePresenterProtocol {
         wireframe.showWalletSwitch(from: view)
     }
 
-    func switchToGovernance(_ view: ReferendumsViewProtocol) {
+    func switchToGovernance(_ view: ReferendumsViewProtocol, state: ReferendumsInitState?) {
         guard let wallet = wallet else {
             return
         }
 
         childPresenter?.putOffline()
-        childPresenter = childPresenterFactory.createGovernancePresenter(from: view, wallet: wallet)
+        childPresenter = childPresenterFactory.createGovernancePresenter(from: view, wallet: wallet, state: state)
         childPresenter?.setup()
     }
 

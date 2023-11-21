@@ -754,6 +754,8 @@
 		774091FE2ACC054B00172516 /* SwapAssetControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FD2ACC054B00172516 /* SwapAssetControl.swift */; };
 		774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FF2ACC1BE400172516 /* SwapAmountInput.swift */; };
 		774A481129F8BFB70094635B /* OperationAuthPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A481029F8BFB70094635B /* OperationAuthPresentable.swift */; };
+		774A980D2B0D0873009146CA /* DeeplinkOpenScreenParsingServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A980C2B0D0873009146CA /* DeeplinkOpenScreenParsingServiceProtocol.swift */; };
+		774A980F2B0D08A6009146CA /* DeeplinkOpenScreenParsingServiceFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A980E2B0D08A6009146CA /* DeeplinkOpenScreenParsingServiceFactoryProtocol.swift */; };
 		7756927D2A20B88200220756 /* TokenOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7756927C2A20B88200220756 /* TokenOperation.swift */; };
 		775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */; };
 		775F19512A5811FA009915B6 /* StartStakingParachainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */; };
@@ -810,8 +812,8 @@
 		77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */; };
 		77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */; };
 		77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */; };
-		77A4F4032B036615006294BC /* Optional+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4022B036615006294BC /* Optional+Result.swift */; };
 		77A4F4012B035027006294BC /* AssetOperationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4002B035027006294BC /* AssetOperationState.swift */; };
+		77A4F4032B036615006294BC /* Optional+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4F4022B036615006294BC /* Optional+Result.swift */; };
 		77A6F5AB2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5AA2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift */; };
 		77A6F5AE2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5AD2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift */; };
 		77A6F5B92A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5B72A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift */; };
@@ -4848,6 +4850,8 @@
 		774091FD2ACC054B00172516 /* SwapAssetControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetControl.swift; sourceTree = "<group>"; };
 		774091FF2ACC1BE400172516 /* SwapAmountInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAmountInput.swift; sourceTree = "<group>"; };
 		774A481029F8BFB70094635B /* OperationAuthPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationAuthPresentable.swift; sourceTree = "<group>"; };
+		774A980C2B0D0873009146CA /* DeeplinkOpenScreenParsingServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkOpenScreenParsingServiceProtocol.swift; sourceTree = "<group>"; };
+		774A980E2B0D08A6009146CA /* DeeplinkOpenScreenParsingServiceFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkOpenScreenParsingServiceFactoryProtocol.swift; sourceTree = "<group>"; };
 		7756927C2A20B88200220756 /* TokenOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperation.swift; sourceTree = "<group>"; };
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
@@ -4904,8 +4908,8 @@
 		77A0B2F22A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsViewModelFactory.swift; sourceTree = "<group>"; };
 		77A0B2F42A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionCollectionViewCell.swift; sourceTree = "<group>"; };
 		77A0B2F82A3CA40E00CBF653 /* StakingMoreOptionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsSection.swift; sourceTree = "<group>"; };
-		77A4F4022B036615006294BC /* Optional+Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Result.swift"; sourceTree = "<group>"; };
 		77A4F4002B035027006294BC /* AssetOperationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationState.swift; sourceTree = "<group>"; };
+		77A4F4022B036615006294BC /* Optional+Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Result.swift"; sourceTree = "<group>"; };
 		77A6F5AA2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiveAssetOperationPresenter.swift; sourceTree = "<group>"; };
 		77A6F5AD2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetOperationWireframe.swift; sourceTree = "<group>"; };
 		77A6F5B72A2E2AAD004AFD1A /* BuyAssetOperationPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuyAssetOperationPresenter.swift; sourceTree = "<group>"; };
@@ -12243,6 +12247,8 @@
 				8467FCFD24E5C50B005D486C /* KeystoreImportService.swift */,
 				0C21D77B2AB42A3500EB2DBD /* ScreenOpenService.swift */,
 				0C21D77D2AB42D4100EB2DBD /* UrlHandlingAction.swift */,
+				774A980C2B0D0873009146CA /* DeeplinkOpenScreenParsingServiceProtocol.swift */,
+				774A980E2B0D08A6009146CA /* DeeplinkOpenScreenParsingServiceFactoryProtocol.swift */,
 			);
 			path = URLHandling;
 			sourceTree = "<group>";
@@ -22095,6 +22101,7 @@
 				8499FED627BFB12600712589 /* UniquesSyncService.swift in Sources */,
 				841E556B282EAC3600C8438F /* ParachainStakingDelegatorState.swift in Sources */,
 				880E40FF298CF1ED0077B18B /* VotesProtocols.swift in Sources */,
+				774A980D2B0D0873009146CA /* DeeplinkOpenScreenParsingServiceProtocol.swift in Sources */,
 				84FEF3E528089FFB0042CBE7 /* TextInputField.swift in Sources */,
 				0CEB4ED32AF1689D0048FD84 /* AssetConversionAggregationFactory.swift in Sources */,
 				84D17EE12805A62600F7BAFF /* DAppAlertPresentable.swift in Sources */,
@@ -23413,6 +23420,7 @@
 				DB8AD60FE397F764623A566F /* StartStakingConfirmViewLayout.swift in Sources */,
 				772540382AC45D22002B3FD4 /* PurchasePresentable.swift in Sources */,
 				A428E022070EF536D4B0B5EC /* StartStakingConfirmViewFactory.swift in Sources */,
+				774A980F2B0D08A6009146CA /* DeeplinkOpenScreenParsingServiceFactoryProtocol.swift in Sources */,
 				AD36A601830C69DA003B3B01 /* StakingSelectPoolProtocols.swift in Sources */,
 				141BF00B1B59940711773726 /* StakingSelectPoolWireframe.swift in Sources */,
 				37FB290D01ADAA67155C9755 /* StakingSelectPoolPresenter.swift in Sources */,

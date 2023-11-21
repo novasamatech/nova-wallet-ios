@@ -356,4 +356,18 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         operationQueue.addOperations(votingWrapper.allOperations, waitUntilFinished: false)
     }
+
+    func governanceType(for chain: ChainModel, type: GovernanceType?) -> GovernanceType? {
+        switch type {
+        case .governanceV1:
+            return chain.hasGovernanceV1 ? .governanceV1 : nil
+        case .governanceV2:
+            return chain.hasGovernanceV2 ? .governanceV2 : nil
+        case .none:
+            if chain.hasGovernanceV1, chain.hasGovernanceV2 {
+                return nil
+            }
+            return chain.hasGovernanceV2 ? .governanceV2 : .governanceV1
+        }
+    }
 }

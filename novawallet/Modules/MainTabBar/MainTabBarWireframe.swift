@@ -30,8 +30,18 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         switch screen {
+        case .error:
+            // TODO: filter error
+            break
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking
+        case let .gov(params):
+            controller.selectedIndex = MainTabBarIndex.vote
+            let govViewController = controller.viewControllers?[MainTabBarIndex.vote]
+            (govViewController as? UINavigationController)?.popToRootViewController(animated: true)
+            if let govController: VoteViewProtocol = govViewController?.contentViewController() {
+                govController.showReferendumsDetails(params)
+            }
         }
     }
 
@@ -44,7 +54,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         if
-            let navigationController = tabBarController.selectedViewController as? UINavigationController,
+            let navigationController = tabBarController.selectedViewController as? ImportantFlowNavigationController,
             navigationController.viewControllers.count > 1 {
             // some flow is in progress in the navigation
             return false
