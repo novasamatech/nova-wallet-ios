@@ -1,7 +1,8 @@
 struct SwapAssetAmountViewModel {
     let imageViewModel: ImageViewModelProtocol?
     let hub: NetworkViewModel
-    let balance: BalanceViewModelProtocol
+    let amount: String
+    let price: String?
 }
 
 struct DifferenceViewModel {

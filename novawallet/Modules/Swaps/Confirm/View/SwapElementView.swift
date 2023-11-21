@@ -118,7 +118,7 @@ extension SwapElementView {
             animated: true
         )
         hubIconNameView.detailsLabel.text = viewModel.hub.name
-        valueLabel.text = viewModel.balance.amount
-        priceLabel.text = viewModel.balance.price ?? " "
+        valueLabel.text = viewModel.amount
+        priceLabel.text = viewModel.price ?? " "
     }
 }
