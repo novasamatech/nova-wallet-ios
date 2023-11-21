@@ -298,7 +298,8 @@ final class OperationDetailsViewModelFactory {
         return .init(
             imageViewModel: assetIcon,
             hub: networkViewModel,
-            balance: balanceViewModel
+            amount: balanceViewModel.amount,
+            price: balanceViewModel.price.map { $0.approximately() }
         )
     }
 
