@@ -59,10 +59,10 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         switch type {
         case "0":
             return chain.hasGovernanceV2 ? .success(.governanceV2) :
-                .failure(.chainNotSupportedType(type: GovernanceType.governanceV2.rawValue))
+                .failure(.chainNotSupportsGovType(type: GovernanceType.governanceV2.rawValue))
         case "1":
             return chain.hasGovernanceV1 ? .success(.governanceV1) :
-                .failure(.chainNotSupportedType(type: GovernanceType.governanceV1.rawValue))
+                .failure(.chainNotSupportsGovType(type: GovernanceType.governanceV1.rawValue))
         default:
             if chain.hasGovernanceV1, chain.hasGovernanceV2 {
                 return .failure(.govTypeIsAmbiguous)

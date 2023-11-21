@@ -31,7 +31,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
 
         switch screen {
         case .error:
-            // TODO: filter error
+            // TODO: filter and show error
             break
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking

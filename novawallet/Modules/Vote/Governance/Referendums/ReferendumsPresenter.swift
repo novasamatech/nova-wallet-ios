@@ -37,7 +37,7 @@ final class ReferendumsPresenter {
 
     private var filter = ReferendumsFilter.all
     let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
-    var referendumId: UInt?
+    var referendumIndex: UInt?
 
     private var chain: ChainModel? {
         selectedOption?.chain
@@ -333,13 +333,13 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func showReferendumDetailsIfNeeded() {
-        guard let referendumId = referendumId,
+        guard let referendumIndex = referendumIndex,
               let referendums = referendums,
               !referendums.isEmpty else {
             return
         }
-        self.referendumId = nil
-        if let referendum = referendums.first(where: { $0.index == referendumId }) {
+        self.referendumIndex = nil
+        if let referendum = referendums.first(where: { $0.index == referendumIndex }) {
             showDetails(referendum: referendum)
         } else {
             let message = R.string.localizable.governanceReferendumNotFoundMessage(

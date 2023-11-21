@@ -12,7 +12,7 @@ protocol VoteChildPresenterFactoryProtocol {
     func createGovernancePresenter(
         from view: ReferendumsViewProtocol,
         wallet: MetaAccountModel,
-        state: ReferendumsInitState?
+        initState: ReferendumsInitState?
     ) -> VoteChildPresenterProtocol?
 }
 
@@ -164,10 +164,10 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
     func createGovernancePresenter(
         from view: ReferendumsViewProtocol,
         wallet: MetaAccountModel,
-        state referendumsInitState: ReferendumsInitState?
+        initState: ReferendumsInitState?
     ) -> VoteChildPresenterProtocol? {
         let state: GovernanceSharedState
-        if let initState = referendumsInitState {
+        if let initState = initState {
             state = GovernanceSharedState(chainId: initState.chainId, type: initState.governance)
         } else {
             state = GovernanceSharedState()
@@ -208,7 +208,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             logger: logger
         )
 
-        presenter.referendumId = referendumsInitState?.referendumIndex
+        presenter.referendumIndex = initState?.referendumIndex
         presenter.view = view
         view.presenter = presenter
         interactor.presenter = presenter

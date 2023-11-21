@@ -63,7 +63,7 @@ extension VotePresenter: VotePresenterProtocol {
         }
 
         childPresenter?.putOffline()
-        childPresenter = childPresenterFactory.createGovernancePresenter(from: view, wallet: wallet, state: state)
+        childPresenter = childPresenterFactory.createGovernancePresenter(from: view, wallet: wallet, initState: state)
         childPresenter?.setup()
     }
 

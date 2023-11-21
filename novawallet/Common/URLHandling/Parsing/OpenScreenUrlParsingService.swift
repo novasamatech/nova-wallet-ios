@@ -12,7 +12,7 @@ enum DeeplinkParseError: Error {
         case emptyQueryParameters
         case invalidChainId
         case invalidReferendumId
-        case chainNotSupportedType(type: String)
+        case chainNotSupportsGovType(type: String)
         case chainNotFound
     }
 }
