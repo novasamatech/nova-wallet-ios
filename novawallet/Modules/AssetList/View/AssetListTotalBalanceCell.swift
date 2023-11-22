@@ -54,7 +54,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         icon: R.image.iconReceive()
     )
     lazy var swapButton = createActionButton(
-        title: R.string.localizable.commonSwap(
+        title: R.string.localizable.commonSwapAction(
             preferredLanguages: locale.rLanguages
         ),
         icon: R.image.iconActionChange()
@@ -217,7 +217,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
             preferredLanguages: locale.rLanguages
         )
-        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwap(
+        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwapAction(
             preferredLanguages: locale.rLanguages
         )
     }
