@@ -12,14 +12,31 @@ struct AssetListAssetModel: Identifiable {
     let externalBalancesResult: Result<BigUInt, Error>?
     let externalBalancesValue: Decimal?
 
-    var totalAmount: BigUInt? {
+    let totalAmountDecimal: Decimal?
+    let totalAmount: BigUInt?
+
+    init(
+        assetModel: AssetModel,
+        balanceResult: Result<BigUInt, Error>?,
+        balanceValue: Decimal?,
+        externalBalancesResult: Result<BigUInt, Error>?,
+        externalBalancesValue: Decimal?
+    ) {
+        self.assetModel = assetModel
+        self.balanceResult = balanceResult
+        self.balanceValue = balanceValue
+        self.externalBalancesResult = externalBalancesResult
+        self.externalBalancesValue = externalBalancesValue
+
         let maybeBalanceAmount = try? balanceResult?.get()
         let maybeExternalBalances = try? externalBalancesResult?.get()
         if let balanceAmount = maybeBalanceAmount, let externalBalancesAmount = maybeExternalBalances {
-            return balanceAmount + externalBalancesAmount
+            totalAmount = balanceAmount + externalBalancesAmount
         } else {
-            return maybeBalanceAmount ?? maybeExternalBalances
+            totalAmount = maybeBalanceAmount ?? maybeExternalBalances
         }
+
+        totalAmountDecimal = totalAmount?.decimal(precision: assetModel.precision)
     }
 
     var totalValue: Decimal? {

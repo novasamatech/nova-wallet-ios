@@ -55,8 +55,8 @@ enum AssetListModelHelpers {
         from assets: [AssetListAssetModel]
     ) -> ListDifferenceCalculator<AssetListAssetModel> {
         let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { model1, model2 in
-            let balance1 = (try? model1.balanceResult?.get()) ?? 0
-            let balance2 = (try? model2.balanceResult?.get()) ?? 0
+            let balance1 = model1.totalAmountDecimal ?? 0
+            let balance2 = model2.totalAmountDecimal ?? 0
 
             let assetValue1 = model1.totalValue ?? 0
             let assetValue2 = model2.totalValue ?? 0
@@ -68,7 +68,7 @@ enum AssetListModelHelpers {
             } else if assetValue2 > 0 {
                 return false
             } else if balance1 > 0, balance2 > 0 {
-                return model1.assetModel.assetId < model2.assetModel.assetId
+                return balance1 > balance2
             } else if balance1 > 0 {
                 return true
             } else if balance2 > 0 {
