@@ -1,9 +1,8 @@
 import Foundation
 import RobinHood
 
-final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyCancellableCleaning {
+final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     private let dAppProvider: AnySingleValueProvider<DAppList>
-    private var fetchListCall: CancellableCall?
 
     enum Key {
         static let url = "url"
@@ -22,10 +21,6 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyC
     }
 
     func parse(url: URL) -> Result<UrlHandlingScreen, DeeplinkParseError> {
-        if fetchListCall != nil {
-            clear(cancellable: &fetchListCall)
-        }
-
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
             return .failure(.openGovScreen(.emptyQueryParameters))
@@ -44,7 +39,7 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyC
         let semaphore = DispatchSemaphore(value: 0)
 
         var result: Result<UrlHandlingScreen, DeeplinkParseError>?
-        fetchListCall = dAppProvider.fetch { fetchingResult in
+        _ = dAppProvider.fetch { fetchingResult in
             switch fetchingResult {
             case let .success(list):
                 if let dApp = list?.dApps.first(where: { $0.url == dAppUrl }) {
