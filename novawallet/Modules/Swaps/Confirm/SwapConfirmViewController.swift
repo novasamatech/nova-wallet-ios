@@ -35,7 +35,7 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         rootView.setup(locale: selectedLocale)
-        title = R.string.localizable.commonSwap(
+        title = R.string.localizable.commonSwapTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
