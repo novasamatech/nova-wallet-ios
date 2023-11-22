@@ -22,6 +22,18 @@ struct ReferendumActionLocal {
         }
     }
 
-    let amountSpendDetails: AmountSpendDetails?
+    let amountSpendDetailsList: [AmountSpendDetails]
     let call: Call<RuntimeCall<JSON>>?
+
+    func spentAmount() -> BigUInt? {
+        guard !amountSpendDetailsList.isEmpty else {
+            return nil
+        }
+
+        return amountSpendDetailsList.reduce(BigUInt(0)) { $0 + $1.amount }
+    }
+
+    var beneficiary: MultiAddress? {
+        amountSpendDetailsList.first?.beneficiary
+    }
 }
