@@ -8,6 +8,7 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
     enum Screen: String {
         case staking
         case governance = "gov"
+        case dApp = "dapp"
     }
 
     init(chainRegistryClosure: @escaping ChainRegistryLazyClosure) {
@@ -20,6 +21,8 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
             return OpenStakingUrlParsingService()
         case .governance:
             return OpenGovernanceUrlParsingService(chainRegistryClosure: chainRegistryClosure)
+        case .dApp:
+            return OpenDAppUrlParsingService()
         default:
             return nil
         }

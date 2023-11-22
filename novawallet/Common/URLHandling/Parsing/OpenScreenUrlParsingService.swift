@@ -6,6 +6,7 @@ protocol OpenScreenUrlParsingServiceProtocol {
 
 enum DeeplinkParseError: Error {
     case openGovScreen(GovScreenError)
+    case openDAppScreen(DAppError)
 
     enum GovScreenError: Error {
         case govTypeIsAmbiguous
@@ -14,5 +15,11 @@ enum DeeplinkParseError: Error {
         case invalidReferendumId
         case chainNotSupportsGovType(type: String)
         case chainNotFound
+    }
+
+    enum DAppError: Error {
+        case invalidURL
+        case loadListFailed
+        case unknownURL
     }
 }

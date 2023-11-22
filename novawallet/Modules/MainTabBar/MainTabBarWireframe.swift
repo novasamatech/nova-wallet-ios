@@ -42,6 +42,13 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             if let govController: VoteViewProtocol = govViewController?.contentViewController() {
                 govController.showReferendumsDetails(params)
             }
+        case let .dApp(dApp):
+            controller.selectedIndex = MainTabBarIndex.dapps
+            let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
+            (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
+            if let dappView: DAppListViewProtocol = dappViewController?.contentViewController() {
+                dappView.didReceive(dApp: dApp)
+            }
         }
     }
 
