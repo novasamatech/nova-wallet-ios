@@ -1,12 +1,17 @@
 import Foundation
 import SubstrateSdk
 
+enum KeystoreImportDefinition {
+    case json(KeystoreDefinition)
+    case mnemonic(ImportWalletInitState)
+}
+
 protocol KeystoreImportObserver: AnyObject {
-    func didUpdateDefinition(from oldDefinition: KeystoreDefinition?)
+    func didUpdateDefinition(from oldDefinition: KeystoreImportDefinition?)
 }
 
 protocol KeystoreImportServiceProtocol: URLHandlingServiceProtocol {
-    var definition: KeystoreDefinition? { get }
+    var definition: KeystoreImportDefinition? { get }
 
     func add(observer: KeystoreImportObserver)
 
@@ -22,7 +27,7 @@ final class KeystoreImportService {
 
     private var observers: [ObserverWrapper] = []
 
-    private(set) var definition: KeystoreDefinition?
+    private(set) var definition: KeystoreImportDefinition?
 
     let logger: LoggerProtocol
 
@@ -33,19 +38,54 @@ final class KeystoreImportService {
 
 extension KeystoreImportService: KeystoreImportServiceProtocol {
     func handle(url: URL) -> Bool {
+        if !handleDeeplink(url: url) {
+            return handleKeystore(url: url)
+        } else {
+            return true
+        }
+    }
+
+    private func handleDeeplink(url: URL) -> Bool {
+        let pathComponents = url.pathComponents
+        guard pathComponents.count == 3 else {
+            return false
+        }
+        guard UrlHandlingAction(rawValue: pathComponents[1]) == .create else {
+            return false
+        }
+        let screen = pathComponents[2].lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard screen == "wallet" else {
+            return false
+        }
+
+        switch ImportWalletUrlParsingService().parse(url: url) {
+        case .failure:
+            return false
+        case let .success(state):
+            let oldDefinition = definition
+            definition = .mnemonic(state)
+            observers.forEach { wrapper in
+                wrapper.observer?.didUpdateDefinition(from: oldDefinition)
+            }
+            logger.debug("Imported keystore from deeplink")
+            return true
+        }
+    }
+
+    private func handleKeystore(url: URL) -> Bool {
         do {
             let data = try Data(contentsOf: url)
 
             let oldDefinition = definition
-            let definition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
+            let keystoreDefinition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
 
-            self.definition = definition
+            definition = .json(keystoreDefinition)
 
             observers.forEach { wrapper in
                 wrapper.observer?.didUpdateDefinition(from: oldDefinition)
             }
 
-            let address = definition.address ?? "no address"
+            let address = keystoreDefinition.address ?? "no address"
             logger.debug("Imported keystore for address: \(address)")
 
             return true

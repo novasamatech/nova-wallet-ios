@@ -71,7 +71,7 @@ extension MainTabBarInteractor: EventVisitorProtocol {
 }
 
 extension MainTabBarInteractor: KeystoreImportObserver {
-    func didUpdateDefinition(from _: KeystoreDefinition?) {
+    func didUpdateDefinition(from _: KeystoreImportDefinition?) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             guard self?.keystoreImportService.definition != nil else {
                 return
