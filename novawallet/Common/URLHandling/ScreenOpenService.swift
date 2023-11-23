@@ -28,6 +28,7 @@ final class ScreenOpenService {
     weak var delegate: ScreenOpenDelegate?
 
     private var pendingScreen: UrlHandlingScreen?
+    private var processingHandler: OpenScreenUrlParsingServiceProtocol?
 
     let logger: LoggerProtocol
     let parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol
@@ -53,30 +54,37 @@ extension ScreenOpenService: ScreenOpenServiceProtocol {
             return false
         }
 
-        let screen: UrlHandlingScreen
+        processingHandler?.cancel()
+
         guard let handler = parsingFactory.createUrlHandler(screen: pathComponents[2]) else {
             logger.warning("unsupported screen: \(pathComponents[2])")
             return false
         }
-        let parsingResult = handler.parse(url: url)
+        processingHandler = handler
 
-        switch parsingResult {
-        case let .success(preparedScreen):
-            screen = preparedScreen
-        case let .failure(error):
-            logger.error("error occurs: \(error) while parse url: \(url.absoluteString)")
-            screen = .error(error)
-        }
+        handler.parse(url: url) { [weak self] result in
+            guard handler === self?.processingHandler else {
+                return
+            }
 
-        DispatchQueue.main.async { [weak self] in
-            if let delegate = self?.delegate {
-                self?.pendingScreen = nil
-                delegate.didAskScreenOpen(screen)
-            } else {
-                self?.pendingScreen = screen
+            let screen: UrlHandlingScreen
+            switch result {
+            case let .success(preparedScreen):
+                screen = preparedScreen
+            case let .failure(error):
+                self?.logger.error("error occurs: \(error) while parse url: \(url.absoluteString)")
+                screen = .error(error)
+            }
+
+            DispatchQueue.main.async {
+                if let delegate = self?.delegate {
+                    self?.pendingScreen = nil
+                    delegate.didAskScreenOpen(screen)
+                } else {
+                    self?.pendingScreen = screen
+                }
             }
         }
-
         return true
     }
 

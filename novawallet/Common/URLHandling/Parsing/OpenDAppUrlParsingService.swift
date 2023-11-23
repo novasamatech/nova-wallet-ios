@@ -1,8 +1,8 @@
 import Foundation
 import RobinHood
 
-final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
-    private let dAppProvider: AnySingleValueProvider<DAppList>
+final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyProviderAutoCleaning {
+    private var dAppProvider: AnySingleValueProvider<DAppList>?
 
     enum Key {
         static let url = "url"
@@ -20,10 +20,18 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         self.dAppProvider = dAppProvider
     }
 
-    func parse(url: URL) -> Result<UrlHandlingScreen, DeeplinkParseError> {
+    func cancel() {
+        clear(singleValueProvider: &dAppProvider)
+    }
+
+    func parse(
+        url: URL,
+        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+    ) {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
-            return .failure(.openGovScreen(.emptyQueryParameters))
+            completion(.failure(.openGovScreen(.emptyQueryParameters)))
+            return
         }
 
         let dAppUrl = query.first(where: {
@@ -33,29 +41,50 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         })?.value.map { URL(string: $0) }
 
         guard let dAppUrl = dAppUrl else {
-            return .failure(.openDAppScreen(.invalidURL))
+            completion(.failure(.openDAppScreen(.invalidURL)))
+            return
         }
 
-        let semaphore = DispatchSemaphore(value: 0)
-
-        var result: Result<UrlHandlingScreen, DeeplinkParseError>?
-        _ = dAppProvider.fetch { fetchingResult in
-            switch fetchingResult {
+        subscribeDApps { result in
+            switch result {
             case let .success(list):
                 if let dApp = list?.dApps.first(where: { $0.url == dAppUrl }) {
-                    result = .success(.dApp(dApp))
+                    completion(.success(.dApp(dApp)))
                 } else {
-                    result = .failure(.openDAppScreen(.unknownURL))
+                    completion(.failure(.openDAppScreen(.unknownURL)))
                 }
-            case .failure, .none:
-                result = .failure(.openDAppScreen(.loadListFailed))
+            case .failure:
+                completion(.failure(.openDAppScreen(.loadListFailed)))
             }
+        }
+    }
 
-            semaphore.signal()
+    private func subscribeDApps(completion: @escaping (Result<DAppList?, Error>) -> Void) {
+        let updateClosure: ([DataProviderChange<DAppList>]) -> Void = { changes in
+            if let result = changes.reduceToLastChange() {
+                completion(.success(result))
+            } else {
+                completion(.success(nil))
+            }
         }
 
-        semaphore.wait()
+        let failureClosure: (Error) -> Void = { error in
+            completion(.failure(error))
+        }
 
-        return result ?? .failure(.openDAppScreen(.loadListFailed))
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        dAppProvider?.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        dAppProvider?.refresh()
     }
 }
