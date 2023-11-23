@@ -1,6 +1,5 @@
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
 
 protocol ScreenOpenDelegate: AnyObject {
     func didAskScreenOpen(_ screen: UrlHandlingScreen)
@@ -17,24 +16,6 @@ struct ReferendumsInitState {
     let chainId: ChainModel.Id
     let referendumIndex: UInt
     let governance: GovernanceType
-}
-
-struct ImportWalletInitState {
-    let mnemonic: IRMnemonicProtocol
-    let cryptoType: MultiassetCryptoType
-    let substrateDerivationPath: String?
-    let evmDerivationPath: String
-
-    var prefferedInfo: MetaAccountImportPreferredInfo? {
-        MetaAccountImportPreferredInfo(
-            username: nil,
-            cryptoType: cryptoType,
-            genesisHash: nil,
-            substrateDeriviationPath: substrateDerivationPath,
-            evmDeriviationPath: evmDerivationPath,
-            source: .mnemonic
-        )
-    }
 }
 
 protocol ScreenOpenServiceProtocol: URLHandlingServiceProtocol {

@@ -19,7 +19,7 @@ final class ImportWalletUrlParsingService {
         static let evmDeriviationPath = "evmdp"
     }
 
-    func parse(url: URL) -> Result<ImportWalletInitState, CreateWalletError> {
+    func parse(url: URL) -> Result<MnemonicDefinition, CreateWalletError> {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
             return .failure(.emptyQueryParameters)
@@ -34,7 +34,7 @@ final class ImportWalletUrlParsingService {
         }
         let type = queryItems[Key.type].map { UInt8($0) ?? 0 } ?? 0
         guard let cryptoType = MultiassetCryptoType(rawValue: type),
-                MultiassetCryptoType.substrateTypeList.contains(cryptoType) else {
+              MultiassetCryptoType.substrateTypeList.contains(cryptoType) else {
             return .failure(.invalidCryptoType)
         }
 
@@ -54,7 +54,7 @@ final class ImportWalletUrlParsingService {
 
         do {
             let mnemonic = try IRMnemonicCreator().mnemonic(fromEntropy: entropy)
-            let state = ImportWalletInitState(
+            let state = MnemonicDefinition(
                 mnemonic: mnemonic,
                 cryptoType: cryptoType,
                 substrateDerivationPath: substrateDeriviationPath,
@@ -75,10 +75,13 @@ final class ImportWalletUrlParsingService {
     }
 
     func deriviationPathPredicate(for cryptoType: MultiassetCryptoType) -> NSPredicate {
-        if cryptoType == .sr25519 {
+        switch cryptoType {
+        case .sr25519:
             return NSPredicate.deriviationPathHardSoftPassword
-        } else {
+        case .ed25519, .substrateEcdsa:
             return NSPredicate.deriviationPathHardPassword
+        case .ethereumEcdsa:
+            return NSPredicate.deriviationPathHardSoftNumericPassword
         }
     }
 }

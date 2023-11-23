@@ -1,9 +1,28 @@
 import Foundation
 import SubstrateSdk
+import IrohaCrypto
 
 enum KeystoreImportDefinition {
     case json(KeystoreDefinition)
-    case mnemonic(ImportWalletInitState)
+    case mnemonic(MnemonicDefinition)
+}
+
+struct MnemonicDefinition {
+    let mnemonic: IRMnemonicProtocol
+    let cryptoType: MultiassetCryptoType
+    let substrateDerivationPath: String?
+    let evmDerivationPath: String
+
+    var prefferedInfo: MetaAccountImportPreferredInfo? {
+        MetaAccountImportPreferredInfo(
+            username: nil,
+            cryptoType: cryptoType,
+            genesisHash: nil,
+            substrateDeriviationPath: substrateDerivationPath,
+            evmDeriviationPath: evmDerivationPath,
+            source: .mnemonic
+        )
+    }
 }
 
 protocol KeystoreImportObserver: AnyObject {
