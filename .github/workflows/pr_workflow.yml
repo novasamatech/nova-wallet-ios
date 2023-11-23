@@ -9,7 +9,7 @@ on:
  
 jobs:
   make-or-update-pr:
-    if: github.event.pull_request.base.ref == 'develop' || github.event_name == 'pull_request'
+    if: github.event.pull_request.base.ref == 'main' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions: write-all
 
