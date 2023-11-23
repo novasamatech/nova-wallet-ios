@@ -8,33 +8,10 @@ on:
     types: [created, edited, deleted]
  
 jobs:
-  checkRef:
-    if: github.event.pull_request.base.ref == 'main' || github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    outputs:
-      is_rc: ${{ steps.check_ref.outputs.ref_contains_rc }}
-    
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check if "rc" is present in github.ref
-        id: check_ref
-        run: |
-          echo ${{ github.head_ref || github.ref_name }}
-          if [[ "${{ github.head_ref || github.ref_name }}" == *"rc"* ]]; then
-            echo "ref_contains_rc=1" >> $GITHUB_OUTPUT
-          else
-            echo "ref_contains_rc=0" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Output check result
-        run: |
-          echo "Output: ${{ steps.check_ref.outputs.ref_contains_rc }}"
-
   make-or-update-pr:
+    if: github.event.pull_request.base.ref == 'develop' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions: write-all
-    needs: checkRef
-    if: needs.checkRef.outputs.is_rc == '1'
 
     steps:
       - name: Find Comment
@@ -49,12 +26,6 @@ jobs:
         run: |
           echo "COMMENT_LINK=https://api.github.com/repos/${{ github.repository }}/issues/comments/${{ steps.fc.outputs.comment-id }}" >> $GITHUB_ENV
         shell: bash
-
-      - name: Extract version from branch name
-        id: extract_version
-        run: |
-          VERSION=${{ github.head_ref }}
-          echo "::set-output name=version::${VERSION#*rc/}"
 
       - uses: tibdex/github-app-token@v1
         id: generate-token
@@ -73,9 +44,10 @@ jobs:
             try:
               lines = response["body"].split("\n")
             except:
-              print("Please, create a comment with 'Release time: YYYY-MM-DDTHH:MM:SSZ', 'Release severity: Major | Critical | Normal' and 'Release notes:'")
+              print("Please, create a comment with 'Release time: YYYY-MM-DDTHH:MM:SSZ', 'Release severity: Major | Critical | Normal', 'Release version: 1.2.3' and 'Release notes:'")
               exit(1)
             time = next((s.split(': ')[1] for s in lines if s.startswith('Release time: ')), '').strip()
+            version = next((s.split(': ')[1] for s in lines if s.startswith('Release version: ')), '').strip()
             severity = next((s.split(': ')[1] for s in lines if s.startswith('Release severity: ')), '').strip()
 
             if not time or not severity:
@@ -86,6 +58,7 @@ jobs:
             with open(os.getenv('GITHUB_ENV'), 'a') as f:
                 f.write(f'TIME={time}\n')
                 f.write(f'SEVERITY={severity}\n')
+                f.write(f'VERSION={version}\n')
           parse_base_params(os.getenv("COMMENT_LINK"))
         shell: python
 
@@ -95,4 +68,4 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           repository: novasamatech/nova-wallet-android-releases
           event-type: create-pr
-          client-payload: '{"version": "${{ steps.extract_version.outputs.version }}", "comment_link": "${{ env.COMMENT_LINK }}", "time": "${{ env.TIME }}", "severity": "${{ env.SEVERITY }}"}'
+          client-payload: '{"version": "${{ env.VERSION }}", "comment_link": "${{ env.COMMENT_LINK }}", "time": "${{ env.TIME }}", "severity": "${{ env.SEVERITY }}"}'
