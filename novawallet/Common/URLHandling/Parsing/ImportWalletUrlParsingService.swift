@@ -33,7 +33,8 @@ final class ImportWalletUrlParsingService {
             return .failure(.emptyMnemonic)
         }
         let type = queryItems[Key.type].map { UInt8($0) ?? 0 } ?? 0
-        guard let cryptoType = MultiassetCryptoType(rawValue: type), cryptoType != .ethereumEcdsa else {
+        guard let cryptoType = MultiassetCryptoType(rawValue: type),
+                MultiassetCryptoType.substrateTypeList.contains(cryptoType) else {
             return .failure(.invalidCryptoType)
         }
 
@@ -43,7 +44,7 @@ final class ImportWalletUrlParsingService {
         }
 
         let evmDeriviationPath = queryItems[Key.evmDeriviationPath]
-        if !validateDeriviationPath(evmDeriviationPath, cryptoType: cryptoType) {
+        if !validateDeriviationPath(evmDeriviationPath, cryptoType: .ethereumEcdsa) {
             return .failure(.invalidEvmDerivationPath)
         }
 
