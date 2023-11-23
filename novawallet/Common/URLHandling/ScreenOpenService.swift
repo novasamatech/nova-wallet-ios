@@ -8,6 +8,7 @@ protocol ScreenOpenDelegate: AnyObject {
 enum UrlHandlingScreen {
     case staking
     case gov(ReferendumsInitState)
+    case dApp(DApp)
     case error(DeeplinkParseError)
 }
 
