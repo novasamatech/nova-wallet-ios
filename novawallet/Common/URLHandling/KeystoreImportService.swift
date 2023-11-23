@@ -10,16 +10,16 @@ enum KeystoreImportDefinition {
 struct MnemonicDefinition {
     let mnemonic: IRMnemonicProtocol
     let cryptoType: MultiassetCryptoType
-    let substrateDerivationPath: String?
-    let evmDerivationPath: String
+    let substrateDeriviationPath: String?
+    let evmDeriviationPath: String
 
     var prefferedInfo: MetaAccountImportPreferredInfo? {
         MetaAccountImportPreferredInfo(
             username: nil,
             cryptoType: cryptoType,
             genesisHash: nil,
-            substrateDeriviationPath: substrateDerivationPath,
-            evmDeriviationPath: evmDerivationPath,
+            substrateDeriviationPath: substrateDeriviationPath,
+            evmDeriviationPath: evmDeriviationPath,
             source: .mnemonic
         )
     }
@@ -86,7 +86,7 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
             observers.forEach { wrapper in
                 wrapper.observer?.didUpdateDefinition(from: oldDefinition)
             }
-            logger.debug("Imported keystore from deeplink")
+            logger.debug("Imported mnemonic from deeplink")
             return true
         }
     }

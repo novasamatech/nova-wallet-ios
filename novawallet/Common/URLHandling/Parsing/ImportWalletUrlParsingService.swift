@@ -57,8 +57,8 @@ final class ImportWalletUrlParsingService {
             let state = MnemonicDefinition(
                 mnemonic: mnemonic,
                 cryptoType: cryptoType,
-                substrateDerivationPath: substrateDeriviationPath,
-                evmDerivationPath: evmDeriviationPath ?? DerivationPathConstants.defaultEthereum
+                substrateDeriviationPath: substrateDeriviationPath,
+                evmDeriviationPath: evmDeriviationPath ?? DerivationPathConstants.defaultEthereum
             )
             return .success(state)
         } catch {

@@ -23,11 +23,8 @@ extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
 
 extension OnboardingMainInteractor: KeystoreImportObserver {
     func didUpdateDefinition(from definition: KeystoreImportDefinition?) {
-        switch definition {
-        case .json:
+        if definition != nil {
             presenter?.didSuggestKeystoreImport()
-        default:
-            break
         }
     }
 }
