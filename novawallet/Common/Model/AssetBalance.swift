@@ -8,14 +8,47 @@ struct AssetBalance: Equatable {
     let freeInPlank: BigUInt
     let reservedInPlank: BigUInt
     let frozenInPlank: BigUInt
+    let edCountMode: ExistentialDepositCountMode
+    let transferrableMode: TransferrableMode
     let blocked: Bool
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
-    var transferable: BigUInt { freeInPlank > frozenInPlank ? freeInPlank - frozenInPlank : 0 }
+    
+    var transferable: BigUInt {
+        switch transferrableMode {
+        case .regular:
+            return freeInPlank > frozenInPlank ? freeInPlank - frozenInPlank : 0
+        case .fungibleTrait:
+            let locked = frozenInPlank > reservedInPlank ? frozenInPlank - reservedInPlank : 0
+            return freeInPlank > locked ? freeInPlank - locked : 0
+        }
+    }
+    
     var locked: BigUInt { frozenInPlank + reservedInPlank }
+    
+    var balanceCountingEd: BigUInt {
+        switch edCountMode {
+        case .basedOnTotal:
+            return totalInPlank
+        case .basedOnFree:
+            return freeInPlank
+        }
+    }
 
     func newTransferable(for frozen: BigUInt) -> BigUInt {
         freeInPlank > frozen ? freeInPlank - frozen : 0
+    }
+}
+
+extension AssetBalance {
+    enum ExistentialDepositCountMode: UInt8 {
+        case basedOnTotal
+        case basedOnFree
+    }
+    
+    enum TransferrableMode {
+        case regular
+        case fungibleTrait
     }
 }
 
