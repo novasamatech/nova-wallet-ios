@@ -1,61 +1,84 @@
 import Foundation
 import RobinHood
 
-final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
-    private let dAppProvider: AnySingleValueProvider<DAppList>
+final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyProviderAutoCleaning {
+    private let dAppsProvider: AnySingleValueProvider<DAppList>
 
-    enum Key {
+    enum QueryKey {
         static let url = "url"
     }
 
-    convenience init() {
-        let dAppsUrl = ApplicationConfig.shared.dAppsListURL
-        let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
-            for: dAppsUrl
-        )
-        self.init(dAppProvider: dAppProvider)
+    init(dAppsProvider: AnySingleValueProvider<DAppList>) {
+        self.dAppsProvider = dAppsProvider
     }
 
-    init(dAppProvider: AnySingleValueProvider<DAppList>) {
-        self.dAppProvider = dAppProvider
+    func cancel() {
+        dAppsProvider.removeObserver(self)
     }
 
-    func parse(url: URL) -> Result<UrlHandlingScreen, DeeplinkParseError> {
+    func parse(
+        url: URL,
+        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+    ) {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
-            return .failure(.openGovScreen(.emptyQueryParameters))
+            completion(.failure(.openGovScreen(.emptyQueryParameters)))
+            return
         }
 
         let dAppUrl = query.first(where: {
             $0.name
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-                .caseInsensitiveCompare(Key.url) == .orderedSame
+                .caseInsensitiveCompare(QueryKey.url) == .orderedSame
         })?.value.map { URL(string: $0) }
 
         guard let dAppUrl = dAppUrl else {
-            return .failure(.openDAppScreen(.invalidURL))
+            completion(.failure(.openDAppScreen(.invalidURL)))
+            return
         }
 
-        let semaphore = DispatchSemaphore(value: 0)
-
-        var result: Result<UrlHandlingScreen, DeeplinkParseError>?
-        _ = dAppProvider.fetch { fetchingResult in
-            switch fetchingResult {
+        subscribeDApps { [weak self] result in
+            guard let self = self else {
+                return
+            }
+            switch result {
             case let .success(list):
                 if let dApp = list?.dApps.first(where: { $0.url == dAppUrl }) {
-                    result = .success(.dApp(dApp))
+                    self.dAppsProvider.removeObserver(self)
+                    completion(.success(.dApp(dApp)))
                 } else {
-                    result = .failure(.openDAppScreen(.unknownURL))
+                    completion(.failure(.openDAppScreen(.unknownURL)))
                 }
-            case .failure, .none:
-                result = .failure(.openDAppScreen(.loadListFailed))
+            case .failure:
+                completion(.failure(.openDAppScreen(.loadListFailed)))
             }
+        }
+    }
 
-            semaphore.signal()
+    private func subscribeDApps(completion: @escaping (Result<DAppList?, Error>) -> Void) {
+        let updateClosure: ([DataProviderChange<DAppList>]) -> Void = { changes in
+            if let result = changes.reduceToLastChange() {
+                completion(.success(result))
+            } else {
+                completion(.success(nil))
+            }
         }
 
-        semaphore.wait()
+        let failureClosure: (Error) -> Void = { error in
+            completion(.failure(error))
+        }
 
-        return result ?? .failure(.openDAppScreen(.loadListFailed))
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        dAppsProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
     }
 }

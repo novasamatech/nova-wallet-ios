@@ -1,7 +1,11 @@
 import Foundation
 
-protocol OpenScreenUrlParsingServiceProtocol {
-    func parse(url: URL) -> Result<UrlHandlingScreen, DeeplinkParseError>
+protocol OpenScreenUrlParsingServiceProtocol: AnyObject {
+    func parse(
+        url: URL,
+        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+    )
+    func cancel()
 }
 
 enum DeeplinkParseError: Error {

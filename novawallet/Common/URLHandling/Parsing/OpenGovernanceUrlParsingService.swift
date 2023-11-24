@@ -1,66 +1,93 @@
 import Foundation
 
 final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol {
-    private let chainRegistryClosure: ChainRegistryLazyClosure
+    private let chainRegistry: ChainRegistryProtocol
 
-    enum Key {
+    enum QueryKey {
         static let chainid = "chainid"
         static let referendumIndex = "id"
         static let governanceType = "type"
     }
 
-    init(chainRegistryClosure: @escaping ChainRegistryLazyClosure) {
-        self.chainRegistryClosure = chainRegistryClosure
+    enum ParsingGovernanceType: UInt8 {
+        case openGov = 0
+        case democracy = 1
     }
 
-    func parse(url: URL) -> Result<UrlHandlingScreen, DeeplinkParseError> {
+    init(chainRegistry: ChainRegistryProtocol) {
+        self.chainRegistry = chainRegistry
+    }
+
+    func cancel() {
+        chainRegistry.chainsUnsubscribe(self)
+    }
+
+    func parse(
+        url: URL,
+        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+    ) {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
-            return .failure(.openGovScreen(.emptyQueryParameters))
+            completion(.failure(.openGovScreen(.emptyQueryParameters)))
+            return
         }
 
         let queryItems = query.reduce(into: [String: String]()) {
             $0[$1.name.lowercased()] = $1.value ?? ""
         }
 
-        guard let chainId = queryItems[Key.chainid],
+        guard let chainId = queryItems[QueryKey.chainid],
               !chainId.isEmpty else {
-            return .failure(.openGovScreen(.invalidChainId))
+            completion(.failure(.openGovScreen(.invalidChainId)))
+            return
         }
 
-        guard let referendumIndexString = queryItems[Key.referendumIndex],
+        guard let referendumIndexString = queryItems[QueryKey.referendumIndex],
               let referendumIndex = UInt(referendumIndexString) else {
-            return .failure(.openGovScreen(.invalidReferendumId))
+            completion(.failure(.openGovScreen(.invalidReferendumId)))
+            return
         }
 
-        guard let chainModel = chainRegistryClosure().getChain(for: chainId) else {
-            return .failure(.openGovScreen(.invalidChainId))
-        }
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main
+        ) { [weak self] changes in
+            guard let self = self else {
+                return
+            }
+            let chains: [ChainModel] = changes.allChangedItems()
 
-        let type = queryItems[Key.governanceType]?.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let chainModel = chains.first(where: { $0.chainId == chainId }) else {
+                completion(.failure(.openGovScreen(.invalidChainId)))
+                return
+            }
 
-        switch governanceType(for: chainModel, type: type) {
-        case let .failure(error):
-            return .failure(.openGovScreen(error))
-        case let .success(type):
-            let state = ReferendumsInitState(
-                chainId: chainId,
-                referendumIndex: referendumIndex,
-                governance: type
-            )
-            return .success(.gov(state))
+            self.chainRegistry.chainsUnsubscribe(self)
+            let type = queryItems[QueryKey.governanceType]
+            switch Self.governanceType(for: chainModel, type: type) {
+            case let .failure(error):
+                completion(.failure(.openGovScreen(error)))
+            case let .success(type):
+                let state = ReferendumsInitState(
+                    chainId: chainId,
+                    referendumIndex: referendumIndex,
+                    governance: type
+                )
+                completion(.success(.gov(state)))
+            }
         }
     }
 
-    private func governanceType(
+    private static func governanceType(
         for chain: ChainModel,
         type: String?
     ) -> Result<GovernanceType, DeeplinkParseError.GovScreenError> {
-        switch type {
-        case "0":
+        let governanceType = type.map { UInt8($0) }?.map { ParsingGovernanceType(rawValue: $0) }
+        switch governanceType {
+        case .openGov:
             return chain.hasGovernanceV2 ? .success(.governanceV2) :
                 .failure(.chainNotSupportsGovType(type: GovernanceType.governanceV2.rawValue))
-        case "1":
+        case .democracy:
             return chain.hasGovernanceV1 ? .success(.governanceV1) :
                 .failure(.chainNotSupportsGovType(type: GovernanceType.governanceV1.rawValue))
         default:
