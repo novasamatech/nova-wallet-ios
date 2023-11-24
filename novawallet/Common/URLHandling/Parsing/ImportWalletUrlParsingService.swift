@@ -1,14 +1,27 @@
 import Foundation
 import RobinHood
 import IrohaCrypto
+import SoraFoundation
 
-enum CreateWalletError: Error {
+enum CreateWalletError: Error, ErrorContentConvertible {
     case emptyMnemonic
     case invalidMnemonic
     case invalidCryptoType
     case invalidSubstrateDerivationPath
     case invalidEvmDerivationPath
     case emptyQueryParameters
+
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        let locale = locale ?? .current
+        switch self {
+        case .emptyMnemonic, .invalidMnemonic, .emptyQueryParameters:
+            return .init(title: "", message: "")
+        case .invalidCryptoType:
+            return .init(title: "", message: "")
+        case .invalidSubstrateDerivationPath, .invalidEvmDerivationPath:
+            return .init(title: "", message: "")
+        }
+    }
 }
 
 final class ImportWalletUrlParsingService {

@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import IrohaCrypto
+import SoraFoundation
 
 enum SecretImportDefinition {
     case keystore(KeystoreDefinition)
@@ -27,6 +28,7 @@ struct MnemonicDefinition {
 
 protocol KeystoreImportObserver: AnyObject {
     func didUpdateDefinition(from oldDefinition: SecretImportDefinition?)
+    func didReceiveError(secretImportError: ErrorContentConvertible & Error)
 }
 
 protocol KeystoreImportServiceProtocol: URLHandlingServiceProtocol {
@@ -78,8 +80,10 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
         }
 
         switch ImportWalletUrlParsingService().parse(url: url) {
-        case .failure:
-            return false
+        case let .failure(error):
+            observers.forEach { wrapper in
+                wrapper.observer?.didReceiveError(secretImportError: error)
+            }
         case let .success(state):
             let oldDefinition = definition
             definition = .mnemonic(state)
@@ -87,8 +91,9 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
                 wrapper.observer?.didUpdateDefinition(from: oldDefinition)
             }
             logger.debug("Imported mnemonic from deeplink")
-            return true
         }
+
+        return true
     }
 
     private func handleKeystore(url: URL) -> Bool {

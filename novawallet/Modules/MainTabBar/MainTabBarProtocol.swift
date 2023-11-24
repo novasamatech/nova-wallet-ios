@@ -20,7 +20,11 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible {
     func presentAccountImport(on view: MainTabBarViewProtocol?)
-    func presentScreenIfNeeded(on view: MainTabBarViewProtocol?, screen: UrlHandlingScreen)
+    func presentScreenIfNeeded(
+        on view: MainTabBarViewProtocol?,
+        screen: UrlHandlingScreen,
+        locale: Locale
+    )
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {

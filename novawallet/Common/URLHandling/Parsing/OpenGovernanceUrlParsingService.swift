@@ -28,7 +28,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
     ) {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
-            completion(.failure(.openGovScreen(.emptyQueryParameters)))
+            completion(.failure(.openGovScreen(.invalidChainId)))
             return
         }
 

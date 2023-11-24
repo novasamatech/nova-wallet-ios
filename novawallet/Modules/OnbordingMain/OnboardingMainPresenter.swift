@@ -114,6 +114,10 @@ extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
     func didSuggestKeystoreImport() {
         wireframe.showKeystoreImport(from: view)
     }
+
+    func didReceiveError(_ error: Error) {
+        wireframe.present(error: error, from: view, locale: locale)
+    }
 }
 
 extension OnboardingMainPresenter: ModalPickerViewControllerDelegate {

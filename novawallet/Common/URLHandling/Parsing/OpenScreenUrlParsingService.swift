@@ -14,7 +14,6 @@ enum DeeplinkParseError: Error {
 
     enum GovScreenError: Error {
         case govTypeIsAmbiguous
-        case emptyQueryParameters
         case invalidChainId
         case invalidReferendumId
         case chainNotSupportsGovType(type: String)
@@ -25,5 +24,50 @@ enum DeeplinkParseError: Error {
         case invalidURL
         case loadListFailed
         case unknownURL
+    }
+
+    func message(locale: Locale) -> String? {
+        switch self {
+        case let .openGovScreen(govScreenError):
+            return govScreenError.message(locale: locale)
+        case let .openDAppScreen(dAppError):
+            return dAppError.message(locale: locale)
+        }
+    }
+}
+
+extension DeeplinkParseError.GovScreenError {
+    func message(locale: Locale) -> String {
+        let languages = locale.rLanguages
+        switch self {
+        case .govTypeIsAmbiguous:
+            return R.string.localizable.deeplinkErrorNoGovernanceTypeMessage(
+                preferredLanguages: languages)
+        case .invalidChainId:
+            return R.string.localizable.deeplinkErrorInvalidChainIdMessage(
+                preferredLanguages: languages)
+        case .invalidReferendumId:
+            return R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
+                preferredLanguages: languages)
+        case let .chainNotSupportsGovType:
+            return R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
+                preferredLanguages: languages)
+        case .chainNotFound:
+            return R.string.localizable.deeplinkErrorInvalidChainIdMessage(
+                preferredLanguages: languages)
+        }
+    }
+}
+
+extension DeeplinkParseError.DAppError {
+    func message(locale: Locale) -> String? {
+        let languages = locale.rLanguages
+        switch self {
+        case .invalidURL:
+            return R.string.localizable.deeplinkErrorInvalidDappUrlMessage(
+                preferredLanguages: languages)
+        case .loadListFailed, .unknownURL:
+            return nil
+        }
     }
 }
