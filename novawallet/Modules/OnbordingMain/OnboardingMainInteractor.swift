@@ -22,7 +22,7 @@ extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
 }
 
 extension OnboardingMainInteractor: KeystoreImportObserver {
-    func didUpdateDefinition(from _: KeystoreImportDefinition?) {
+    func didUpdateDefinition(from _: SecretImportDefinition?) {
         if keystoreImportService.definition != nil {
             presenter?.didSuggestKeystoreImport()
         }

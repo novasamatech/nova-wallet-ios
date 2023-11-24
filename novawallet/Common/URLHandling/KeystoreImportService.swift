@@ -2,8 +2,8 @@ import Foundation
 import SubstrateSdk
 import IrohaCrypto
 
-enum KeystoreImportDefinition {
-    case json(KeystoreDefinition)
+enum SecretImportDefinition {
+    case keystore(KeystoreDefinition)
     case mnemonic(MnemonicDefinition)
 }
 
@@ -26,11 +26,11 @@ struct MnemonicDefinition {
 }
 
 protocol KeystoreImportObserver: AnyObject {
-    func didUpdateDefinition(from oldDefinition: KeystoreImportDefinition?)
+    func didUpdateDefinition(from oldDefinition: SecretImportDefinition?)
 }
 
 protocol KeystoreImportServiceProtocol: URLHandlingServiceProtocol {
-    var definition: KeystoreImportDefinition? { get }
+    var definition: SecretImportDefinition? { get }
 
     func add(observer: KeystoreImportObserver)
 
@@ -46,7 +46,7 @@ final class KeystoreImportService {
 
     private var observers: [ObserverWrapper] = []
 
-    private(set) var definition: KeystoreImportDefinition?
+    private(set) var definition: SecretImportDefinition?
 
     let logger: LoggerProtocol
 
@@ -98,7 +98,7 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
             let oldDefinition = definition
             let keystoreDefinition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
 
-            definition = .json(keystoreDefinition)
+            definition = .keystore(keystoreDefinition)
 
             observers.forEach { wrapper in
                 wrapper.observer?.didUpdateDefinition(from: oldDefinition)

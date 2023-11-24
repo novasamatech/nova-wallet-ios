@@ -44,7 +44,7 @@ class BaseAccountImportInteractor {
 
             do {
                 switch definition {
-                case let .json(keystoreDefinition):
+                case let .keystore(keystoreDefinition):
                     let jsonData = try JSONEncoder().encode(keystoreDefinition)
                     let info = try AccountImportJsonFactory().createInfo(from: keystoreDefinition)
 
@@ -159,7 +159,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
 }
 
 extension BaseAccountImportInteractor: KeystoreImportObserver {
-    func didUpdateDefinition(from _: KeystoreImportDefinition?) {
+    func didUpdateDefinition(from _: SecretImportDefinition?) {
         handleIfNeededKeystoreImport()
     }
 }
