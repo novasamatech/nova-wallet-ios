@@ -4,6 +4,8 @@ protocol OpenScreenUrlParsingServiceFactoryProtocol {
 
 final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFactoryProtocol {
     private let chainRegistryClosure: ChainRegistryLazyClosure
+    private let settings: ApplicationConfigProtocol
+    private let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
 
     enum Screen: String {
         case staking
@@ -11,8 +13,14 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
         case dApp = "dapp"
     }
 
-    init(chainRegistryClosure: @escaping ChainRegistryLazyClosure) {
+    init(
+        chainRegistryClosure: @escaping ChainRegistryLazyClosure,
+        settings: ApplicationConfigProtocol = ApplicationConfig.shared,
+        jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared
+    ) {
         self.chainRegistryClosure = chainRegistryClosure
+        self.settings = settings
+        self.jsonDataProviderFactory = jsonDataProviderFactory
     }
 
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol? {
@@ -20,9 +28,12 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
         case .staking:
             return OpenStakingUrlParsingService()
         case .governance:
-            return OpenGovernanceUrlParsingService(chainRegistryClosure: chainRegistryClosure)
+            let chainRegistry = chainRegistryClosure()
+            return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry)
         case .dApp:
-            return OpenDAppUrlParsingService()
+            let dAppsProvider: AnySingleValueProvider<DAppList> = jsonDataProviderFactory.getJson(
+                for: settings.dAppsListURL)
+            return OpenDAppUrlParsingService(dAppsProvider: dAppsProvider)
         default:
             return nil
         }

@@ -2,26 +2,18 @@ import Foundation
 import RobinHood
 
 final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyProviderAutoCleaning {
-    private var dAppProvider: AnySingleValueProvider<DAppList>?
+    private let dAppsProvider: AnySingleValueProvider<DAppList>
 
-    enum Key {
+    enum QueryKey {
         static let url = "url"
     }
 
-    convenience init() {
-        let dAppsUrl = ApplicationConfig.shared.dAppsListURL
-        let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
-            for: dAppsUrl
-        )
-        self.init(dAppProvider: dAppProvider)
-    }
-
-    init(dAppProvider: AnySingleValueProvider<DAppList>) {
-        self.dAppProvider = dAppProvider
+    init(dAppsProvider: AnySingleValueProvider<DAppList>) {
+        self.dAppsProvider = dAppsProvider
     }
 
     func cancel() {
-        clear(singleValueProvider: &dAppProvider)
+        dAppsProvider.removeObserver(self)
     }
 
     func parse(
@@ -37,7 +29,7 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
         let dAppUrl = query.first(where: {
             $0.name
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-                .caseInsensitiveCompare(Key.url) == .orderedSame
+                .caseInsensitiveCompare(QueryKey.url) == .orderedSame
         })?.value.map { URL(string: $0) }
 
         guard let dAppUrl = dAppUrl else {
@@ -45,10 +37,14 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
             return
         }
 
-        subscribeDApps { result in
+        subscribeDApps { [weak self] result in
+            guard let self = self else {
+                return
+            }
             switch result {
             case let .success(list):
                 if let dApp = list?.dApps.first(where: { $0.url == dAppUrl }) {
+                    self.dAppsProvider.removeObserver(self)
                     completion(.success(.dApp(dApp)))
                 } else {
                     completion(.failure(.openDAppScreen(.unknownURL)))
@@ -77,14 +73,12 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
             waitsInProgressSyncOnAdd: false
         )
 
-        dAppProvider?.addObserver(
+        dAppsProvider.addObserver(
             self,
             deliverOn: .main,
             executing: updateClosure,
             failing: failureClosure,
             options: options
         )
-
-        dAppProvider?.refresh()
     }
 }
