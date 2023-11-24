@@ -13,14 +13,23 @@ enum CreateWalletError: Error, ErrorContentConvertible {
 
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         let locale = locale ?? .current
+        let message: String
         switch self {
         case .emptyMnemonic, .invalidMnemonic, .emptyQueryParameters:
-            return .init(title: "", message: "")
+            message = R.string.localizable.deeplinkErrorInvalidMnemonicMessage(
+                preferredLanguages: locale.rLanguages
+            )
         case .invalidCryptoType:
-            return .init(title: "", message: "")
+            message = R.string.localizable.deeplinkErrorInvalidCryptoTypeMessage(
+                preferredLanguages: locale.rLanguages
+            )
         case .invalidSubstrateDerivationPath, .invalidEvmDerivationPath:
-            return .init(title: "", message: "")
+            message = R.string.localizable.deeplinkErrorInvalidDerivationPathMessage(
+                preferredLanguages: locale.rLanguages
+            )
         }
+
+        return .init(title: "", message: message)
     }
 }
 
