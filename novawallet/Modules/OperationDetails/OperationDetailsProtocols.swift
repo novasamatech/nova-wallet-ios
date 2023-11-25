@@ -8,7 +8,9 @@ protocol OperationDetailsPresenterProtocol: AnyObject {
     func showSenderActions()
     func showRecepientActions()
     func showOperationActions()
-    func send()
+    func repeatOperation()
+    func showRateInfo()
+    func showNetworkFeeInfo()
 }
 
 protocol OperationDetailsInteractorInputProtocol: AnyObject {
@@ -20,10 +22,15 @@ protocol OperationDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, OperationIdOptionsPresentable {
+    AddressOptionsPresentable, OperationIdOptionsPresentable, ShortTextInfoPresentable {
     func showSend(
         from view: OperationDetailsViewProtocol?,
         displayAddress: DisplayAddress,
         chainAsset: ChainAsset
+    )
+
+    func showSwapSetup(
+        from: OperationDetailsViewProtocol?,
+        state: SwapSetupInitState
     )
 }

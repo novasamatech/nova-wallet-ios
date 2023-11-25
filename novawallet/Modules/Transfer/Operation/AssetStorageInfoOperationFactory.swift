@@ -16,6 +16,52 @@ protocol AssetStorageInfoOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<AssetBalanceExistence>
 }
 
+extension AssetStorageInfoOperationFactoryProtocol {
+    func createAssetBalanceExistenceOperation(
+        chainId: ChainModel.Id,
+        asset: AssetModel,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
+        let storageInfoWrapper = createStorageInfoWrapper(
+            from: asset,
+            runtimeProvider: runtimeProvider
+        )
+
+        let existenseBalanceOperation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let storageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
+
+            let wrapper = self.createAssetBalanceExistenceOperation(
+                for: storageInfo,
+                chainId: chainId,
+                asset: asset
+            )
+
+            return [wrapper]
+        }.longrunOperation()
+
+        existenseBalanceOperation.addDependency(storageInfoWrapper.targetOperation)
+
+        let mappingOperation = ClosureOperation<AssetBalanceExistence> {
+            let models = try existenseBalanceOperation.extractNoCancellableResultData()
+
+            guard let model = models.first else {
+                throw CommonError.dataCorruption
+            }
+
+            return model
+        }
+
+        mappingOperation.addDependency(existenseBalanceOperation)
+
+        let dependencies = storageInfoWrapper.allOperations + [existenseBalanceOperation]
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+}
+
 final class AssetStorageInfoOperationFactory {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -65,7 +111,16 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
         let fetchWrapper: CompoundOperationWrapper<[StorageResponse<PalletAssets.Details>]> = requestFactory.queryItems(
             engine: connection,
-            keyParams: { [StringScaleMapper(value: extras.assetId)] },
+            keyParams: {
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let param = try StatemineAssetSerializer.decode(
+                    assetId: extras.assetId,
+                    palletName: extras.palletName,
+                    codingFactory: codingFactory
+                )
+
+                return [param]
+            },
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
             storagePath: assetsDetailsPath
         )
@@ -137,7 +192,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
             }
 
             return createNativeAssetExistenceOperation(for: runtimeService)
-        case let .statemine(extras):
+        case let .statemine(info):
             guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
                 return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
             }
@@ -147,7 +202,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
             }
 
             return createAssetsExistenceOperation(
-                for: extras,
+                for: .init(info: info),
                 connection: connection,
                 runtimeService: runtimeService
             )

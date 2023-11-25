@@ -55,14 +55,29 @@ extension TransactionHistoryItem {
                 txHash: txHash,
                 timestamp: timestamp,
                 fee: maybeFee,
+                feeAssetId: extrinsic.feeAssetId,
                 blockNumber: result.blockNumber,
                 txIndex: result.txIndex,
                 callPath: result.processingResult.callPath,
-                call: encodedCall
+                call: encodedCall,
+                swap: createSwapIfNeeded(from: extrinsic)
             )
 
         } catch {
             return nil
         }
+    }
+
+    private static func createSwapIfNeeded(from subscription: ExtrinsicProcessingResult) -> SwapHistoryData? {
+        guard let remoteSwap = subscription.swap else {
+            return nil
+        }
+
+        return .init(
+            amountIn: String(remoteSwap.amountIn),
+            assetIdIn: remoteSwap.assetIdIn,
+            amountOut: String(remoteSwap.amountOut),
+            assetIdOut: remoteSwap.assetIdOut
+        )
     }
 }

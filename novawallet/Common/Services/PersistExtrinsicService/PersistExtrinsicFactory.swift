@@ -14,6 +14,12 @@ protocol PersistExtrinsicFactoryProtocol {
         chainAssetId: ChainAssetId,
         details: PersistExtrinsicDetails
     ) -> CompoundOperationWrapper<Void>
+
+    func createSwapSaveOperation(
+        source: TransactionHistoryItemSource,
+        chainAssetId: ChainAssetId,
+        details: PersistSwapDetails
+    ) -> CompoundOperationWrapper<Void>
 }
 
 final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
@@ -46,10 +52,12 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
+            feeAssetId: nil,
             blockNumber: nil,
             txIndex: nil,
             callPath: details.callPath,
-            call: nil
+            call: nil,
+            swap: nil
         )
 
         let operation = repository.saveOperation({ [transferItem] }, { [] })
@@ -80,10 +88,55 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
+            feeAssetId: nil,
             blockNumber: nil,
             txIndex: nil,
             callPath: details.callPath,
-            call: nil
+            call: nil,
+            swap: nil
+        )
+
+        let operation = repository.saveOperation({ [item] }, { [] })
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func createSwapSaveOperation(
+        source: TransactionHistoryItemSource,
+        chainAssetId: ChainAssetId,
+        details: PersistSwapDetails
+    ) -> CompoundOperationWrapper<Void> {
+        let timestamp = Int64(Date().timeIntervalSince1970)
+        let feeString = details.fee.map { String($0) }
+
+        let txHash = details.txHash.toHex(includePrefix: true)
+        let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+
+        let swap = SwapHistoryData(
+            amountIn: String(details.amountIn),
+            assetIdIn: details.assetIdIn.assetId,
+            amountOut: String(details.amountOut),
+            assetIdOut: details.assetIdOut.assetId
+        )
+
+        let item = TransactionHistoryItem(
+            identifier: identifier,
+            source: source,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: details.sender,
+            receiver: details.receiver,
+            amountInPlank: nil,
+            status: .pending,
+            txHash: txHash,
+            timestamp: timestamp,
+            fee: feeString,
+            feeAssetId: details.feeAssetId,
+            blockNumber: nil,
+            txIndex: nil,
+            callPath: details.callPath,
+            call: nil,
+            swap: swap
         )
 
         let operation = repository.saveOperation({ [item] }, { [] })

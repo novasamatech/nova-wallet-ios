@@ -29,15 +29,15 @@ final class AssetHistoryFacade {
             let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
             let historyAssetId = try assetMapper.historyAssetId()
 
-            // we support only transfers for non utility assets
+            // we support only transfers and swaps for non utility assets
 
-            let mappedFilter = asset.isUtility ? filter : .transfers
-
+            let mappedFilter = asset.isUtility ? filter : [.transfers, .swaps]
             return SubqueryHistoryOperationFactory(
                 url: url,
                 filter: mappedFilter,
                 assetId: historyAssetId,
-                hasPoolStaking: asset.hasPoolStaking
+                hasPoolStaking: asset.hasPoolStaking,
+                hasSwaps: chainAsset.chain.hasSwaps
             )
         } catch {
             return nil

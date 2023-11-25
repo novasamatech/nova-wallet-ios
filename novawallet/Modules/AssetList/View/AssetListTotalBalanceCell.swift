@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import Kingfisher
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
@@ -8,6 +9,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
         static let elementMovingMotion: CGFloat = 5
         static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        static let infoIconSize = CGSize(width: 12, height: 12)
     }
 
     let backgroundBlurView = GladingCardView()
@@ -35,7 +37,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             contentView.spacing = 4
             contentView.detailsView.spacing = 4
             contentView.detailsView.mode = .detailsIcon
-            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconChip()!)
+            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.kf.resize(to: Constants.infoIconSize)
         }
 
         $0.isHidden = true
@@ -51,6 +53,12 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         R.string.localizable.walletAssetReceive(preferredLanguages: locale.rLanguages),
         icon: R.image.iconReceive()
     )
+    lazy var swapButton = createActionButton(
+        title: R.string.localizable.commonSwapAction(
+            preferredLanguages: locale.rLanguages
+        ),
+        icon: R.image.iconActionChange()
+    )
     lazy var buyButton = createActionButton(
         title: R.string.localizable.walletAssetBuy(
             preferredLanguages: locale.rLanguages
@@ -63,6 +71,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         [
             sendButton,
             receiveButton,
+            swapButton,
             buyButton
         ]
     )
@@ -144,6 +153,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
             setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
+
+        swapButton.isEnabled = viewModel.hasSwaps
     }
 
     private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
@@ -204,6 +215,9 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
             preferredLanguages: locale.rLanguages)
         buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
+            preferredLanguages: locale.rLanguages
+        )
+        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwapAction(
             preferredLanguages: locale.rLanguages
         )
     }

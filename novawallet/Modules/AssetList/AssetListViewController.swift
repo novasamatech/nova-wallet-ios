@@ -124,6 +124,10 @@ final class AssetListViewController: UIViewController, ViewHolder {
     @objc private func actionBuy() {
         presenter.buy()
     }
+
+    @objc private func actionSwap() {
+        presenter.swap()
+    }
 }
 
 extension AssetListViewController: UICollectionViewDelegateFlowLayout {
@@ -272,6 +276,11 @@ extension AssetListViewController: UICollectionViewDataSource {
         totalBalanceCell.buyButton.addTarget(
             self,
             action: #selector(actionBuy),
+            for: .touchUpInside
+        )
+        totalBalanceCell.swapButton.addTarget(
+            self,
+            action: #selector(actionSwap),
             for: .touchUpInside
         )
         if let viewModel = headerViewModel {

@@ -48,6 +48,22 @@ struct AssetListBuilderResult {
                 locksResult: locksResult
             )
         }
+
+        func hasSwaps() -> Bool {
+            allChains.values.contains { chain in
+                guard chain.hasSwaps else {
+                    return false
+                }
+                return chain.assets.contains { asset in
+                    let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+                    if case .success = balanceResults[chainAssetId] {
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+            }
+        }
     }
 
     enum ChangeKind {

@@ -100,7 +100,7 @@ class GovernanceActionOperationFactory {
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         connection: JSONRPCEngine,
         requestFactory: StorageRequestFactoryProtocol
-    ) -> CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?> {
+    ) -> CompoundOperationWrapper<[ReferendumActionLocal.AmountSpendDetails]> {
         let operationManager = OperationManager(operationQueue: operationQueue)
         let fetchService = OperationCombiningService<ReferendumActionLocal.AmountSpendDetails?>(
             operationManager: operationManager
@@ -110,59 +110,24 @@ class GovernanceActionOperationFactory {
             }
 
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            let context = codingFactory.createRuntimeJsonContext()
+            let context = GovSpentAmount.Context(
+                codingFactory: codingFactory,
+                connection: connection,
+                requestFactory: requestFactory
+            )
 
-            let codingPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-
-            if codingPath == Treasury.spendCallPath {
-                let spendCall = try call.args.map(to: Treasury.SpendCall.self, with: context.toRawContext())
-
-                let details = ReferendumActionLocal.AmountSpendDetails(
-                    amount: spendCall.amount,
-                    beneficiary: spendCall.beneficiary
-                )
-
-                return [CompoundOperationWrapper.createWithResult(details)]
-            }
-
-            if codingPath == Treasury.approveProposalCallPath {
-                let approveCall = try call.args.map(to: Treasury.ApproveProposal.self, with: context.toRawContext())
-
-                let keyClosure: () throws -> [StringScaleMapper<Treasury.ProposalIndex>] = {
-                    [StringScaleMapper(value: approveCall.proposalId)]
-                }
-
-                let wrapper: CompoundOperationWrapper<[StorageResponse<Treasury.Proposal>]> = requestFactory.queryItems(
-                    engine: connection,
-                    keyParams: keyClosure,
-                    factory: { codingFactory },
-                    storagePath: Treasury.proposalsStoragePath
-                )
-
-                let mapOperation = ClosureOperation<ReferendumActionLocal.AmountSpendDetails?> {
-                    let responses = try wrapper.targetOperation.extractNoCancellableResultData()
-                    guard let proposal = responses.first?.value else {
-                        return nil
-                    }
-
-                    return ReferendumActionLocal.AmountSpendDetails(
-                        amount: proposal.value,
-                        beneficiary: .accoundId(proposal.beneficiary)
-                    )
-                }
-
-                mapOperation.addDependency(wrapper.targetOperation)
-
-                return [CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)]
-            }
-
-            return [CompoundOperationWrapper.createWithResult(nil)]
+            return try GovSpentAmount.Extractor.defaultExtractor.createExtractionWrappers(
+                from: call,
+                context: context
+            ) ?? []
         }
 
         let fetchOperation = fetchService.longrunOperation()
 
-        let mapOperation = ClosureOperation<ReferendumActionLocal.AmountSpendDetails?> {
-            try fetchOperation.extractNoCancellableResultData().first ?? nil
+        let mapOperation = ClosureOperation<[ReferendumActionLocal.AmountSpendDetails]> {
+            let details = try fetchOperation.extractNoCancellableResultData()
+
+            return details.compactMap { $0 }
         }
 
         mapOperation.addDependency(fetchOperation)
@@ -199,9 +164,9 @@ extension GovernanceActionOperationFactory: ReferendumActionOperationFactoryProt
 
         let mapOperation = ClosureOperation<ReferendumActionLocal> {
             let call = try callFetchWrapper.targetOperation.extractNoCancellableResultData()
-            let amountDetails = try amountDetailsWrapper.targetOperation.extractNoCancellableResultData()
+            let amountDetailsList = try amountDetailsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return ReferendumActionLocal(amountSpendDetails: amountDetails, call: call)
+            return ReferendumActionLocal(amountSpendDetailsList: amountDetailsList, call: call)
         }
 
         mapOperation.addDependency(callFetchWrapper.targetOperation)

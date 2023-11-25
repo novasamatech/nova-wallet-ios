@@ -1,10 +1,23 @@
 import Foundation
 import UIKit
+import SoraUI
 
-final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsView, MultiValueView>> {
+final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsView, MultiValueView>>, SkeletonableView {
     var titleLabel: UILabel { rowContentView.titleView.detailsLabel }
     var topValueLabel: UILabel { rowContentView.valueView.valueTop }
     var bottomValueLabel: UILabel { rowContentView.valueView.valueBottom }
+    var skeletonView: SkrullableView?
+
+    private var isLoading: Bool = false
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
+    }
 
     convenience init() {
         self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
@@ -34,9 +47,7 @@ final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsV
     private func updateSelection() {
         if canSelect {
             isUserInteractionEnabled = true
-            rowContentView.titleView.imageView.image = R.image.iconInfoFilled()?.tinted(
-                with: R.color.colorIconSecondary()!
-            )
+            rowContentView.titleView.imageView.image = R.image.iconInfoFilled()
         } else {
             isUserInteractionEnabled = false
             rowContentView.titleView.imageView.image = nil
@@ -69,5 +80,53 @@ extension StackTitleMultiValueCell {
             topValue: viewModel.amount,
             bottomValue: viewModel.price
         )
+    }
+
+    func bind(loadableViewModel: LoadableViewModelState<String>) {
+        switch loadableViewModel {
+        case let .cached(value), let .loaded(value):
+            isLoading = false
+            rowContentView.valueView.valueTop.text = value
+            invalidateLayout()
+        case .loading:
+            isLoading = true
+            invalidateLayout()
+        }
+    }
+}
+
+extension StackTitleMultiValueCell {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let size = CGSize(width: 68, height: 8)
+        let offset = CGPoint(
+            x: spaceSize.width - size.width,
+            y: spaceSize.height / 2.0 - size.height / 2.0
+        )
+
+        let row = SingleSkeleton.createRow(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: offset,
+            size: size
+        )
+
+        return [row]
+    }
+
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [rowContentView.valueView]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }

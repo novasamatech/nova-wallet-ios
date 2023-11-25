@@ -25,6 +25,7 @@ enum KnowChainId {
     static let ethereum = "eip155:1"
     static let rococo = "a84b46a3e602245284bb9a72c4abd58ee979aa7a5d7f8c4dfdddfaaf0665a4ae"
     static let westend = "e143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e"
+    static let westmint = "67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
 
     static var kiltOnEnviroment: String {
         #if F_DEV

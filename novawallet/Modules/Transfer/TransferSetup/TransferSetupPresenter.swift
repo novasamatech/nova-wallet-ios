@@ -11,15 +11,16 @@ final class TransferSetupPresenter {
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
     let wallet: MetaAccountModel
-    let originChainAsset: ChainAsset
+    let chainAsset: ChainAsset
+    let whoChainAssetPeer: TransferSetupPeer
     let childPresenterFactory: TransferSetupPresenterFactoryProtocol
     let logger: LoggerProtocol
     let web3NameViewModelFactory: Web3NameViewModelFactoryProtocol
 
     var childPresenter: TransferSetupChildPresenterProtocol?
 
-    private(set) var destinationChainAsset: ChainAsset?
-    private(set) var availableDestinations: [ChainAsset]?
+    private(set) var peerChainAsset: ChainAsset?
+    private(set) var availablePeers: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
     private(set) var recipientAddress: TransferSetupRecipientAccount? {
         didSet {
@@ -35,19 +36,40 @@ final class TransferSetupPresenter {
     }
 
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
+
+    private var originChainAsset: ChainAsset? {
+        switch whoChainAssetPeer {
+        case .origin:
+            return peerChainAsset
+        case .destination:
+            return chainAsset
+        }
+    }
+
+    private var destinationChainAsset: ChainAsset? {
+        switch whoChainAssetPeer {
+        case .origin:
+            return chainAsset
+        case .destination:
+            return peerChainAsset
+        }
+    }
+
     private var destinationChainName: String {
         destinationChainAsset?.chain.name ?? ""
     }
 
     private var isOnChainTransfer: Bool {
-        destinationChainAsset == nil
+        peerChainAsset == nil
     }
 
     init(
         interactor: TransferSetupInteractorIntputProtocol,
         wireframe: TransferSetupWireframeProtocol,
         wallet: MetaAccountModel,
-        originChainAsset: ChainAsset,
+        chainAsset: ChainAsset,
+        whoChainAssetPeer: TransferSetupPeer,
+        chainAssetPeers: [ChainAsset]?,
         childPresenterFactory: TransferSetupPresenterFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
@@ -57,7 +79,10 @@ final class TransferSetupPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.wallet = wallet
-        self.originChainAsset = originChainAsset
+        self.chainAsset = chainAsset
+        self.whoChainAssetPeer = whoChainAssetPeer
+        peerChainAsset = chainAssetPeers?.first
+        availablePeers = chainAssetPeers
         self.childPresenterFactory = childPresenterFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
@@ -73,7 +98,7 @@ final class TransferSetupPresenter {
         let initialState = childPresenter?.inputState ?? TransferSetupInputState()
 
         childPresenter = childPresenterFactory.createOnChainPresenter(
-            for: originChainAsset,
+            for: chainAsset,
             initialState: initialState,
             view: view
         )
@@ -86,6 +111,7 @@ final class TransferSetupPresenter {
     private func setupCrossChainChildPresenter() {
         guard
             let view = view,
+            let originChainAsset = originChainAsset,
             let destinationChainAsset = destinationChainAsset,
             let xcmTransfers = xcmTransfers else {
             return
@@ -107,19 +133,33 @@ final class TransferSetupPresenter {
     }
 
     private func provideChainsViewModel() {
-        let originViewModel = chainAssetViewModelFactory.createViewModel(from: originChainAsset)
+        let mode: TransferNetworkContainerViewModel.Mode
+        let chainAssetViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
 
-        let destinationViewModel: NetworkViewModel?
+        let optPeerChainAsset: ChainAsset?
 
-        if let destinationChainAsset = destinationChainAsset {
-            destinationViewModel = networkViewModelFactory.createViewModel(from: destinationChainAsset.chain)
-        } else if let availableDestinations = availableDestinations, !availableDestinations.isEmpty {
-            destinationViewModel = networkViewModelFactory.createViewModel(from: originChainAsset.chain)
+        if let availablePeers = availablePeers, !availablePeers.isEmpty {
+            optPeerChainAsset = peerChainAsset ?? chainAsset
         } else {
-            destinationViewModel = nil
+            optPeerChainAsset = peerChainAsset
         }
 
-        view?.didReceiveOriginChain(originViewModel, destinationChain: destinationViewModel)
+        if let peerChainAsset = optPeerChainAsset {
+            let peerAssetViewModel = networkViewModelFactory.createViewModel(from: peerChainAsset.chain)
+
+            switch whoChainAssetPeer {
+            case .origin:
+                mode = .selectableOrigin(peerAssetViewModel, chainAssetViewModel)
+            case .destination:
+                mode = .selectableDestination(chainAssetViewModel, peerAssetViewModel)
+            }
+        } else {
+            mode = .onchain(chainAssetViewModel)
+        }
+
+        let viewModel = TransferNetworkContainerViewModel(assetSymbol: chainAsset.asset.symbol, mode: mode)
+
+        view?.didReceiveSelection(viewModel: viewModel)
     }
 
     private func getYourWallets() -> [MetaAccountChainResponse] {
@@ -141,7 +181,7 @@ final class TransferSetupPresenter {
             return
         }
 
-        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
+        let chain = destinationChainAsset?.chain ?? chainAsset.chain
         view.didReceiveWeb3NameRecipient(viewModel: .cached(value: nil))
         let viewModel = web3NameViewModelFactory.recipientListViewModel(
             recipients: recipients,
@@ -162,7 +202,7 @@ final class TransferSetupPresenter {
             return
         }
 
-        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
+        let chain = destinationChainAsset?.chain ?? chainAsset.chain
 
         if let account = recipient.normalizedAddress(for: chain.chainFormat) {
             let recipientViewModel = TransferSetupRecipientAccount.ExternalAccountValue(
@@ -191,6 +231,63 @@ final class TransferSetupPresenter {
             break
         }
     }
+
+    private func selectDestinationChain() {
+        let chain = chainAsset.chain
+        let selectedChainId = peerChainAsset?.chain.chainId ?? chain.chainId
+
+        let availablePeerChains = availablePeers?.map(\.chain) ?? []
+
+        let selectionState = CrossChainDestinationSelectionState(
+            chain: chain,
+            availablePeerChains: availablePeerChains,
+            selectedChainId: selectedChainId
+        )
+
+        wireframe.showDestinationChainSelection(
+            from: view,
+            selectionState: selectionState,
+            delegate: self
+        )
+    }
+
+    private func selectOriginChain() {
+        let selectedChainAssetId = peerChainAsset?.chainAssetId ?? chainAsset.chainAssetId
+
+        let peers = availablePeers ?? []
+
+        let selectionState = CrossChainOriginSelectionState(
+            availablePeerChainAssets: peers,
+            selectedChainAssetId: selectedChainAssetId
+        )
+
+        wireframe.showOriginChainSelection(
+            from: view,
+            chainAsset: chainAsset,
+            selectionState: selectionState,
+            delegate: self
+        )
+    }
+
+    private func handleNewChainAssetSelection(_ newPeerChainAsset: ChainAsset?) {
+        if recipientAddress?.isExternal == true {
+            recipientAddress = nil
+            childPresenter?.updateRecepient(partialAddress: "")
+        }
+
+        peerChainAsset = newPeerChainAsset
+
+        provideChainsViewModel()
+        updateYourWalletsButton()
+
+        if let peerChainAsset = peerChainAsset {
+            setupCrossChainChildPresenter()
+            interactor.peerChainAssetDidChanged(peerChainAsset)
+        } else {
+            setupOnChainChildPresenter()
+            interactor.peerChainAssetDidChanged(chainAsset)
+        }
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -198,7 +295,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideChainsViewModel()
         childPresenter?.setup()
 
-        interactor.setup(destinationChainAsset: destinationChainAsset ?? originChainAsset)
+        interactor.setup(peerChainAsset: peerChainAsset ?? chainAsset)
     }
 
     func updateRecepient(partialAddress: String) {
@@ -247,24 +344,13 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         }
     }
 
-    func changeDestinationChain() {
-        let originChain = originChainAsset.chain
-        let selectedChainId = destinationChainAsset?.chain.chainId ?? originChain.chainId
-
-        let availableDestinationChains = availableDestinations?.map(\.chain) ?? []
-
-        let selectionState = CrossChainDestinationSelectionState(
-            originChain: originChain,
-            availableDestChains: availableDestinationChains,
-            selectedChainId: selectedChainId
-        )
-
-        wireframe.showDestinationChainSelection(
-            from: view,
-            selectionState: selectionState,
-            delegate: self,
-            context: selectionState
-        )
+    func selectChain() {
+        switch whoChainAssetPeer {
+        case .destination:
+            selectDestinationChain()
+        case .origin:
+            selectOriginChain()
+        }
     }
 
     func didTapOnYourWallets() {
@@ -296,7 +382,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             return
         }
 
-        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
+        let chain = destinationChainAsset?.chain ?? chainAsset.chain
 
         wireframe.presentAccountOptions(
             from: view,
@@ -308,18 +394,18 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
-    func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?) {
-        let symbol = originChainAsset.asset.symbol
-        let chainName = originChainAsset.chain.name
-        logger.debug("(\(chainName) \(symbol) Available destinations: \(destinations.count)")
+    func didReceiveAvailableXcm(peerChainAssets: [ChainAsset], xcmTransfers: XcmTransfers?) {
+        let symbol = chainAsset.asset.symbol
+        let chainName = chainAsset.chain.name
+        logger.debug("(\(chainName) \(symbol) Available peers: \(peerChainAssets.count)")
 
-        availableDestinations = destinations
+        availablePeers = peerChainAssets
         self.xcmTransfers = xcmTransfers
 
         if
-            let destinationChainAsset = destinationChainAsset,
-            !destinations.contains(where: { $0.chainAssetId == destinationChainAsset.chainAssetId }) {
-            self.destinationChainAsset = nil
+            let peerChainAsset = peerChainAsset,
+            !peerChainAssets.contains(where: { $0.chainAssetId == peerChainAsset.chainAssetId }) {
+            self.peerChainAsset = nil
 
             setupOnChainChildPresenter()
         }
@@ -363,50 +449,34 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
 extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModel(at index: Int, section: Int, context: AnyObject?) {
-        view?.didCompleteDestinationSelection()
+        view?.didCompleteChainSelection()
 
-        guard let selectionState = context as? CrossChainDestinationSelectionState else {
-            return
-        }
+        if let selectionState = context as? CrossChainDestinationSelectionState {
+            if section == 0 {
+                handleNewChainAssetSelection(nil)
+            } else {
+                let selectedChain = selectionState.availablePeerChains[index]
+                let selectedChainId = selectedChain.chainId
 
-        if recipientAddress?.isExternal == true {
-            recipientAddress = nil
-            childPresenter?.updateRecepient(partialAddress: "")
-        }
+                let newPeerChainAsset = availablePeers?.first { $0.chain.chainId == selectedChainId }
 
-        if section == 0 {
-            destinationChainAsset = nil
-        } else {
-            let selectedChain = selectionState.availableDestChains[index]
-            let selectedChainId = selectedChain.chainId
-
-            destinationChainAsset = availableDestinations?.first { $0.chain.chainId == selectedChainId }
-        }
-
-        provideChainsViewModel()
-        updateYourWalletsButton()
-
-        if let destinationChainAsset = destinationChainAsset {
-            setupCrossChainChildPresenter()
-            interactor.destinationChainAssetDidChanged(destinationChainAsset)
-        } else {
-            setupOnChainChildPresenter()
-            interactor.destinationChainAssetDidChanged(originChainAsset)
+                handleNewChainAssetSelection(newPeerChainAsset)
+            }
         }
     }
 
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard let selectionState = context as? Web3NameAddressesSelectionState else {
-            return
+        if let selectionState = context as? Web3NameAddressesSelectionState {
+            let selectedAccount = selectionState.accounts[index]
+            provideWeb3NameRecipientViewModel(selectedAccount, name: selectionState.name)
+        } else if let selectionState = context as? CrossChainOriginSelectionState {
+            handleNewChainAssetSelection(selectionState.availablePeerChainAssets[index])
         }
-
-        let selectedAccount = selectionState.accounts[index]
-        provideWeb3NameRecipientViewModel(selectedAccount, name: selectionState.name)
     }
 
     func modalPickerDidCancel(context: AnyObject?) {
-        if context is CrossChainDestinationSelectionState {
-            view?.didCompleteDestinationSelection()
+        if context is CrossChainDestinationSelectionState || context is CrossChainOriginSelectionState {
+            view?.didCompleteChainSelection()
         } else if context is Web3NameAddressesSelectionState {
             view?.didReceiveRecipientInputState(focused: true, empty: nil)
         }

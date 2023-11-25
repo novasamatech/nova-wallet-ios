@@ -18,6 +18,7 @@ enum SettingsRow {
     case terms
     case privacyPolicy
     case walletConnect
+    case wiki
 }
 
 extension SettingsRow {
@@ -56,6 +57,8 @@ extension SettingsRow {
             return R.string.localizable.aboutPrivacy(preferredLanguages: locale.rLanguages)
         case .walletConnect:
             return R.string.localizable.commonWalletConnect(preferredLanguages: locale.rLanguages)
+        case .wiki:
+            return R.string.localizable.settingsWiki(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -93,6 +96,8 @@ extension SettingsRow {
             return R.image.iconTerms()!
         case .walletConnect:
             return R.image.iconWalletConnect()!
+        case .wiki:
+            return R.image.iconWiki()!
         }
     }
 }

@@ -9,6 +9,7 @@ struct OperationDetailsViewModel {
         case contract(_ viewModel: OperationContractCallViewModel)
         case poolReward(_ viewModel: OperationPoolRewardOrSlashViewModel)
         case poolSlash(_ viewModel: OperationPoolRewardOrSlashViewModel)
+        case swap(_ viewModel: OperationSwapViewModel)
     }
 
     let time: String

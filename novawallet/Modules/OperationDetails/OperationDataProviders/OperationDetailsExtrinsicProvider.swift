@@ -6,8 +6,7 @@ final class OperationDetailsExtrinsicProvider: OperationDetailsBaseProvider {}
 extension OperationDetailsExtrinsicProvider: OperationDetailsDataProviderProtocol {
     func extractOperationData(
         replacingWith newFee: BigUInt?,
-        priceCalculator _: TokenPriceCalculatorProtocol?,
-        feePriceCalculator: TokenPriceCalculatorProtocol?,
+        calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
@@ -15,6 +14,7 @@ extension OperationDetailsExtrinsicProvider: OperationDetailsDataProviderProtoco
             return
         }
 
+        let feePriceCalculator = calculatorFactory.createPriceCalculator(for: chain.utilityAsset()?.priceId)
         let fee = newFee ?? transaction.feeInPlankIntOrZero
         let feePriceData = feePriceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
             PriceData.amount($0)

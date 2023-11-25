@@ -92,7 +92,7 @@ final class DelegateInfoView: UIView {
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         nameLabel.setContentHuggingPriority(.required, for: .horizontal)
 
-        indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        indicatorView.image = R.image.iconInfoFilled()
         typeView.setContentHuggingPriority(.required, for: .horizontal)
         detailsView.sView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         detailsView.sView.sView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)

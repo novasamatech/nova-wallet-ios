@@ -92,6 +92,12 @@ extension OperationDetailsDataProviderFactory: OperationDetailsDataProviderFacto
                 runtimeService: runtimeService,
                 operationQueue: operationQueue
             )
+        case .swap:
+            return OperationDetailsSwapProvider(
+                selectedAccount: selectedAccount,
+                chainAsset: chainAsset,
+                transaction: transaction
+            )
         }
     }
 }

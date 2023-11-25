@@ -89,10 +89,7 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         accessoryView.mode = .detailsIcon
         accessoryView.iconWidth = 16.0
         accessoryView.spacing = 8.0
-        accessoryView.imageView.image = R.image.iconInfoFilled()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorIconSecondary()!)
-
+        accessoryView.imageView.image = R.image.iconInfoFilled()
         preferredHeight = 44.0
         borderView.strokeColor = R.color.colorDivider()!
 
@@ -108,9 +105,7 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
 
         if canSelect {
             isUserInteractionEnabled = true
-            accessoryView.imageView.image = R.image.iconInfoFilled()?.tinted(
-                with: R.color.colorIconSecondary()!
-            )
+            accessoryView.imageView.image = R.image.iconInfoFilled()
             accessoryView.spacing = 8
             accessoryView.iconWidth = 16
         } else {

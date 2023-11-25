@@ -110,6 +110,22 @@ struct ChainModel: Equatable, Codable, Hashable {
         assets.first { $0.assetId == assetId }
     }
 
+    func assetOrNil(for assetId: AssetModel.Id?) -> AssetModel? {
+        guard let assetId = assetId else {
+            return nil
+        }
+
+        return assets.first { $0.assetId == assetId }
+    }
+
+    func assetOrNative(for assetId: AssetModel.Id?) -> AssetModel? {
+        guard let assetId = assetId else {
+            return utilityAsset()
+        }
+
+        return assets.first { $0.assetId == assetId }
+    }
+
     func hasEnabledAsset() -> Bool {
         assets.contains { $0.enabled }
     }
@@ -136,6 +152,14 @@ struct ChainModel: Equatable, Codable, Hashable {
 
     var hasGovernanceV2: Bool {
         options?.contains(where: { $0 == .governance }) ?? false
+    }
+
+    var hasSwapHub: Bool {
+        options?.contains(where: { $0 == .swapHub }) ?? false
+    }
+
+    var hasSwaps: Bool {
+        hasSwapHub
     }
 
     var noSubstrateRuntime: Bool {
@@ -184,6 +208,14 @@ struct ChainModel: Equatable, Codable, Hashable {
         return ChainAssetId(chainId: chainId, assetId: utilityAsset.assetId)
     }
 
+    func utilityChainAsset() -> ChainAsset? {
+        guard let utilityAsset = utilityAssets().first else {
+            return nil
+        }
+
+        return ChainAsset(chain: self, asset: utilityAsset)
+    }
+
     var typesUsage: TypesUsage {
         if let types = types {
             return types.overridesCommon ? .onlyOwn : .both
@@ -203,6 +235,18 @@ struct ChainModel: Equatable, Codable, Hashable {
     var defaultBlockTimeMillis: BlockTime? {
         additional?.defaultBlockTime?.unsignedIntValue
     }
+
+    var isUtilityTokenOnRelaychain: Bool {
+        additional?.relaychainAsNative?.boolValue ?? false
+    }
+
+    var stakingMaxElectingVoters: UInt32? {
+        guard let value = additional?.stakingMaxElectingVoters?.unsignedIntValue else {
+            return nil
+        }
+
+        return UInt32(value)
+    }
 }
 
 extension ChainModel: Identifiable {
@@ -216,6 +260,7 @@ enum ChainOptions: String, Codable {
     case governance
     case governanceV1 = "governance-v1"
     case noSubstrateRuntime
+    case swapHub = "swap-hub"
 }
 
 extension ChainModel {

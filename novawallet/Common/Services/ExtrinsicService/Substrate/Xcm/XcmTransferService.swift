@@ -77,7 +77,7 @@ final class XcmTransferService {
             cryptoType: cryptoType,
             signaturePayloadFormat: signaturePayloadFormat,
             runtimeRegistry: runtimeProvider,
-            customExtensions: DefaultExtrinsicExtension.extensions,
+            customExtensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
         )

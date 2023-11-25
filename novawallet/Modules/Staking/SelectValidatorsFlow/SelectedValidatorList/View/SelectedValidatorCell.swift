@@ -37,7 +37,7 @@ class SelectedValidatorCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        imageView.image = R.image.iconInfoFilled()!
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return imageView

@@ -43,7 +43,7 @@ extension PurchasePresentable {
         guard let pickerView = ModalPickerFactory.createPickerForList(
             actions,
             delegate: delegate,
-            context: nil
+            context: actions as NSArray
         ) else {
             return
         }

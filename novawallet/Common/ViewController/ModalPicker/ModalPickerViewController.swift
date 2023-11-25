@@ -106,6 +106,10 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
         sectionFooters[lastSectionIndex] = footer
     }
 
+    func reload() {
+        tableView.reloadData()
+    }
+
     private func configure() {
         if let cellNib = cellNib {
             tableView.register(cellNib, forCellReuseIdentifier: cellIdentifier)

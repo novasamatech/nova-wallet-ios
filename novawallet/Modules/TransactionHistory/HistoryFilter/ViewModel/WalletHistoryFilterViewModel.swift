@@ -3,6 +3,7 @@ import SoraFoundation
 
 enum WalletHistoryFilterRow: Int, CaseIterable {
     case transfers
+    case swaps
     case rewardsAndSlashes
     case extrinsics
 
@@ -21,6 +22,10 @@ enum WalletHistoryFilterRow: Int, CaseIterable {
             return LocalizableResource { locale in
                 R.string.localizable.walletFiltersExtrinsics(preferredLanguages: locale.rLanguages)
             }
+        case .swaps:
+            return LocalizableResource { locale in
+                R.string.localizable.commonSwapTitle(preferredLanguages: locale.rLanguages)
+            }
         }
     }
 
@@ -32,6 +37,8 @@ enum WalletHistoryFilterRow: Int, CaseIterable {
             return .rewardsAndSlashes
         case .extrinsics:
             return .extrinsics
+        case .swaps:
+            return .swaps
         }
     }
 }

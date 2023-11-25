@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-protocol GeneralLocalStorageSubscriber where Self: AnyObject {
+protocol GeneralLocalStorageSubscriber: LocalStorageProviderObserving {
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
 
     var generalLocalSubscriptionHandler: GeneralLocalStorageHandler { get }
@@ -9,6 +9,11 @@ protocol GeneralLocalStorageSubscriber where Self: AnyObject {
     func subscribeToBlockNumber(
         for chainId: ChainModel.Id
     ) -> AnyDataProvider<DecodedBlockNumber>?
+
+    func subscribeAccountInfo(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedAccountInfo>?
 }
 
 extension GeneralLocalStorageSubscriber {
@@ -50,6 +55,39 @@ extension GeneralLocalStorageSubscriber {
         )
 
         return blockNumberProvider
+    }
+
+    func subscribeAccountInfo(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedAccountInfo>? {
+        guard
+            let provider = try? generalLocalSubscriptionFactory.getAccountInfoProvider(
+                for: accountId,
+                chainId: chainId
+            ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] accountInfo in
+                self?.generalLocalSubscriptionHandler.handleAccountInfo(
+                    result: .success(accountInfo),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.generalLocalSubscriptionHandler.handleAccountInfo(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            }
+        )
+
+        return provider
     }
 }
 

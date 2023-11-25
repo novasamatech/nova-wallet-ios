@@ -17472,16 +17472,46 @@ import Cuckoo
     
     
     
-     func send()  {
+     func repeatOperation()  {
         
-    return cuckoo_manager.call("send()",
+    return cuckoo_manager.call("repeatOperation()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.send())
+            defaultCall: __defaultImplStub!.repeatOperation())
+        
+    }
+    
+    
+    
+     func showRateInfo()  {
+        
+    return cuckoo_manager.call("showRateInfo()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showRateInfo())
+        
+    }
+    
+    
+    
+     func showNetworkFeeInfo()  {
+        
+    return cuckoo_manager.call("showNetworkFeeInfo()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showNetworkFeeInfo())
         
     }
     
@@ -17514,9 +17544,19 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "showOperationActions()", parameterMatchers: matchers))
 	    }
 	    
-	    func send() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func repeatOperation() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "send()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "repeatOperation()", parameterMatchers: matchers))
+	    }
+	    
+	    func showRateInfo() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "showRateInfo()", parameterMatchers: matchers))
+	    }
+	    
+	    func showNetworkFeeInfo() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsPresenterProtocol.self, method: "showNetworkFeeInfo()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -17560,9 +17600,21 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func send() -> Cuckoo.__DoNotUse<(), Void> {
+	    func repeatOperation() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("send()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("repeatOperation()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showRateInfo() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("showRateInfo()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showNetworkFeeInfo() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("showNetworkFeeInfo()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -17600,7 +17652,19 @@ import Cuckoo
     
     
     
-     func send()   {
+     func repeatOperation()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showRateInfo()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showNetworkFeeInfo()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17834,6 +17898,21 @@ import Cuckoo
     
     
     
+     func showSwapSetup(from: OperationDetailsViewProtocol?, state: SwapSetupInitState)  {
+        
+    return cuckoo_manager.call("showSwapSetup(from: OperationDetailsViewProtocol?, state: SwapSetupInitState)",
+            parameters: (from, state),
+            escapingParameters: (from, state),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showSwapSetup(from: from, state: state))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -17876,6 +17955,11 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsWireframeProtocol.self, method: "showSend(from: OperationDetailsViewProtocol?, displayAddress: DisplayAddress, chainAsset: ChainAsset)", parameterMatchers: matchers))
 	    }
 	    
+	    func showSwapSetup<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from: M1, state: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OperationDetailsViewProtocol?, SwapSetupInitState)> where M1.OptionalMatchedType == OperationDetailsViewProtocol, M2.MatchedType == SwapSetupInitState {
+	        let matchers: [Cuckoo.ParameterMatcher<(OperationDetailsViewProtocol?, SwapSetupInitState)>] = [wrap(matchable: from) { $0.0 }, wrap(matchable: state) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsWireframeProtocol.self, method: "showSwapSetup(from: OperationDetailsViewProtocol?, state: SwapSetupInitState)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOperationDetailsWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -17909,6 +17993,12 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
+	    func showSwapSetup<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from: M1, state: M2) -> Cuckoo.__DoNotUse<(OperationDetailsViewProtocol?, SwapSetupInitState), Void> where M1.OptionalMatchedType == OperationDetailsViewProtocol, M2.MatchedType == SwapSetupInitState {
+	        let matchers: [Cuckoo.ParameterMatcher<(OperationDetailsViewProtocol?, SwapSetupInitState)>] = [wrap(matchable: from) { $0.0 }, wrap(matchable: state) { $0.1 }]
+	        return cuckoo_manager.verify("showSwapSetup(from: OperationDetailsViewProtocol?, state: SwapSetupInitState)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -17932,6 +18022,12 @@ import Cuckoo
     
     
      func showSend(from view: OperationDetailsViewProtocol?, displayAddress: DisplayAddress, chainAsset: ChainAsset)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showSwapSetup(from: OperationDetailsViewProtocol?, state: SwapSetupInitState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

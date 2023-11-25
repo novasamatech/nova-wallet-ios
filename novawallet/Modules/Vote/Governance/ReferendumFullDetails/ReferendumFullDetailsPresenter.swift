@@ -88,10 +88,10 @@ final class ReferendumFullDetailsPresenter {
     private func provideBeneficiaryViewModel() {
         guard
             let beneficiary = getAccountViewModel(
-                actionDetails.amountSpendDetails?.beneficiary.accountId
+                actionDetails.beneficiary?.accountId
             ),
             let amount = getBalanceViewModel(
-                actionDetails.amountSpendDetails?.amount,
+                actionDetails.spentAmount(),
                 locale: selectedLocale
             ) else {
             view?.didReceive(beneficiary: nil)
@@ -172,7 +172,7 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
 
     func presentBeneficiary() {
         guard
-            let address = try? actionDetails.amountSpendDetails?.beneficiary.accountId?.toAddress(
+            let address = try? actionDetails.beneficiary?.accountId?.toAddress(
                 using: chain.chainFormat
             ) else {
             return

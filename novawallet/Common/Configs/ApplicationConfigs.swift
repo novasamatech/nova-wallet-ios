@@ -38,6 +38,7 @@ protocol ApplicationConfigProtocol {
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
+    var wikiURL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -129,9 +130,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v15/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v16/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v15/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v16/chains_dev.json")!
         #endif
     }
 
@@ -250,6 +251,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var slip44URL: URL {
         URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/slip44.json")!
+    }
+
+    var wikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki")!
     }
 
     // swiftlint:enable line_length

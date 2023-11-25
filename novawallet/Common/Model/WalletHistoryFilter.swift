@@ -6,7 +6,8 @@ struct WalletHistoryFilter: OptionSet {
     static let transfers = WalletHistoryFilter(rawValue: 1 << 0)
     static let rewardsAndSlashes = WalletHistoryFilter(rawValue: 1 << 1)
     static let extrinsics = WalletHistoryFilter(rawValue: 1 << 2)
-    static let all: WalletHistoryFilter = [.transfers, .rewardsAndSlashes, .extrinsics]
+    static let swaps = WalletHistoryFilter(rawValue: 1 << 3)
+    static let all: WalletHistoryFilter = [.transfers, .rewardsAndSlashes, .extrinsics, .swaps]
 
     let rawValue: UInt8
 

@@ -213,4 +213,14 @@ extension AssetSearchBuilder {
             self.rebuildResult(for: self.query, filter: self.filter)
         }
     }
+
+    func reload() {
+        workingQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            self.rebuildResult(for: self.query, filter: self.filter)
+        }
+    }
 }

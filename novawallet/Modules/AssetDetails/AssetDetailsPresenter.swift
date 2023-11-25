@@ -195,6 +195,10 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         )
         wireframe.showLocks(from: view, model: model)
     }
+
+    func handleSwap() {
+        wireframe.showSwaps(from: view, chainAsset: chainAsset)
+    }
 }
 
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
@@ -229,7 +233,7 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     }
 
     func didReceive(error: AssetDetailsError) {
-        logger?.error(error.localizedDescription)
+        logger?.error("Did receive error: \(error)")
     }
 }
 

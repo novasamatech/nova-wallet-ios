@@ -211,7 +211,8 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         )
 
         return consensusDependingFactory.createNetworkInfoOperationFactory(
-            for: durationFactory,
+            for: chainAsset.chain,
+            durationFactory: durationFactory,
             operationQueue: operationQueue
         )
     }
