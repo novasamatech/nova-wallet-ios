@@ -75,9 +75,9 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
         }
         let fee = fee?.decimal(precision: chainAsset.asset.precision) ?? 0
         let transferable = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) ?? 0
-        let total = assetBalance?.totalInPlank.decimal(precision: chainAsset.asset.precision) ?? 0
+        let balanceCountingEd = assetBalance?.balanceCountingEd.decimal(precision: chainAsset.asset.precision) ?? 0
         let existentialDeposit = assetBalanceExistance?.minBalance.decimal(precision: chainAsset.asset.precision) ?? 0
-        let value = max(min(transferable - fee, total - fee - existentialDeposit), 0)
+        let value = max(min(transferable - fee, balanceCountingEd - fee - existentialDeposit), 0)
         return inputResult.absoluteValue(from: value)
     }
 

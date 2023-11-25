@@ -338,7 +338,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
                 fee: isUtilityTransfer ? fee?.value : 0,
-                totalAmount: senderSendingAssetBalance?.totalInPlank,
+                totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             )
