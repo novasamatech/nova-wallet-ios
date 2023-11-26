@@ -14,12 +14,12 @@ protocol MainTabBarInteractorInputProtocol: AnyObject {
 }
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
-    func didRequestImportAccount()
+    func didRequestImportAccount(source: SecretSource)
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible {
-    func presentAccountImport(on view: MainTabBarViewProtocol?)
+    func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
         screen: UrlHandlingScreen,

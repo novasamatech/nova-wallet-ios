@@ -9,23 +9,31 @@ final class OnboardingMainInteractor {
     init(keystoreImportService: KeystoreImportServiceProtocol) {
         self.keystoreImportService = keystoreImportService
     }
+
+    private func suggestSecretImportIfNeeded() {
+        guard let definition = keystoreImportService.definition else {
+            return
+        }
+
+        switch definition {
+        case .keystore:
+            presenter?.didSuggestSecretImport(source: .keystore)
+        case .mnemonic:
+            presenter?.didSuggestSecretImport(source: .mnemonic)
+        }
+    }
 }
 
 extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     func setup() {
         keystoreImportService.add(observer: self)
-
-        if keystoreImportService.definition != nil {
-            presenter?.didSuggestKeystoreImport()
-        }
+        suggestSecretImportIfNeeded()
     }
 }
 
 extension OnboardingMainInteractor: KeystoreImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
-        if keystoreImportService.definition != nil {
-            presenter?.didSuggestKeystoreImport()
-        }
+        suggestSecretImportIfNeeded()
     }
 
     func didReceiveError(secretImportError: Error & ErrorContentConvertible) {

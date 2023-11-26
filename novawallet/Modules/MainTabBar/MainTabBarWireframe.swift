@@ -1,7 +1,7 @@
 import UIKit
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
-    func presentAccountImport(on view: MainTabBarViewProtocol?) {
+    func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
         guard let tabBarController = view?.controller else {
             return
         }
@@ -11,7 +11,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         guard let importController = AccountImportViewFactory
-            .createViewForAdding(for: .keystore)?.controller
+            .createViewForAdding(for: source)?.controller
         else {
             return
         }

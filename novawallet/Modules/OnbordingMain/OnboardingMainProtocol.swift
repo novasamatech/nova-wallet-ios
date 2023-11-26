@@ -15,7 +15,7 @@ protocol OnboardingMainPresenterProtocol: AnyObject {
 protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, ActionsManagePresentable {
     func showSignup(from view: OnboardingMainViewProtocol?)
     func showAccountRestore(from view: OnboardingMainViewProtocol?)
-    func showKeystoreImport(from view: OnboardingMainViewProtocol?)
+    func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)
     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)
     func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType)
     func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?)
@@ -26,7 +26,7 @@ protocol OnboardingMainInteractorInputProtocol: AnyObject {
 }
 
 protocol OnboardingMainInteractorOutputProtocol: AnyObject {
-    func didSuggestKeystoreImport()
+    func didSuggestSecretImport(source: SecretSource)
     func didReceiveError(_ error: Error)
 }
 

@@ -21,8 +21,8 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
-    func didRequestImportAccount() {
-        wireframe.presentAccountImport(on: view)
+    func didRequestImportAccount(source: SecretSource) {
+        wireframe.presentAccountImport(on: view, source: source)
     }
 
     func didRequestScreenOpen(_ screen: UrlHandlingScreen) {
