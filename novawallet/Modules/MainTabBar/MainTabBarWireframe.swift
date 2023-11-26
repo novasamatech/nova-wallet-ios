@@ -102,7 +102,10 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         return topNavigationController?.viewControllers.contains {
-            if ($0 as? OnboardingMainViewProtocol) != nil || ($0 as? AccountImportViewProtocol) != nil {
+            if
+                ($0 as? OnboardingMainViewProtocol) != nil ||
+                ($0 as? AccountImportViewProtocol) != nil ||
+                ($0 as? AdvancedWalletViewProtocol) != nil {
                 return true
             } else {
                 return false
