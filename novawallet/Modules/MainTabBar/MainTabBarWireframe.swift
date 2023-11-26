@@ -1,7 +1,7 @@
 import UIKit
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
-    func presentAccountImport(on view: MainTabBarViewProtocol?) {
+    func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
         guard let tabBarController = view?.controller else {
             return
         }
@@ -11,7 +11,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         guard let importController = AccountImportViewFactory
-            .createViewForAdding(for: .keystore)?.controller
+            .createViewForAdding(for: source)?.controller
         else {
             return
         }
@@ -22,7 +22,11 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         presentingController.present(navigationController, animated: true, completion: nil)
     }
 
-    func presentScreenIfNeeded(on view: MainTabBarViewProtocol?, screen: UrlHandlingScreen) {
+    func presentScreenIfNeeded(
+        on view: MainTabBarViewProtocol?,
+        screen: UrlHandlingScreen,
+        locale: Locale
+    ) {
         guard
             let controller = view?.controller as? UITabBarController,
             canPresentScreenWithoutBreakingFlow(on: controller) else {
@@ -30,9 +34,16 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         switch screen {
-        case .error:
-            // TODO: filter and show error
-            break
+        case let .error(error):
+            if let errorContent = error.content(for: locale) {
+                let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
+                present(
+                    message: errorContent.message,
+                    title: errorContent.title,
+                    closeAction: closeAction,
+                    from: view
+                )
+            }
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking
         case let .gov(params):
@@ -91,7 +102,10 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         return topNavigationController?.viewControllers.contains {
-            if ($0 as? OnboardingMainViewProtocol) != nil || ($0 as? AccountImportViewProtocol) != nil {
+            if
+                ($0 as? OnboardingMainViewProtocol) != nil ||
+                ($0 as? AccountImportViewProtocol) != nil ||
+                ($0 as? AdvancedWalletViewProtocol) != nil {
                 return true
             } else {
                 return false

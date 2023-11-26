@@ -5,7 +5,7 @@ final class OpenStakingUrlParsingService: OpenScreenUrlParsingServiceProtocol {
 
     func parse(
         url _: URL,
-        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+        completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
     ) {
         completion(.success(.staking))
     }
