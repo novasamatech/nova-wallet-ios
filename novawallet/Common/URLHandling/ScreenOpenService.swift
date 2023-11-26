@@ -9,13 +9,30 @@ enum UrlHandlingScreen {
     case staking
     case gov(ReferendumsInitState)
     case dApp(DApp)
-    case error(DeeplinkParseError)
+    case error(UrlHandlingScreenError)
 }
 
 struct ReferendumsInitState {
     let chainId: ChainModel.Id
     let referendumIndex: UInt
     let governance: GovernanceType
+}
+
+enum UrlHandlingScreenError {
+    case deeplink(OpenScreenUrlParsingError)
+    case content(ErrorContentConvertible & Error)
+
+    func content(for locale: Locale?) -> ErrorContent? {
+        let locale = locale ?? .current
+        switch self {
+        case let .deeplink(deeplinkParseError):
+            return deeplinkParseError.message(locale: locale).map {
+                ErrorContent(title: "", message: $0)
+            }
+        case let .content(contentError):
+            return contentError.toErrorContent(for: locale)
+        }
+    }
 }
 
 protocol ScreenOpenServiceProtocol: URLHandlingServiceProtocol {
@@ -73,7 +90,7 @@ extension ScreenOpenService: ScreenOpenServiceProtocol {
                 screen = preparedScreen
             case let .failure(error):
                 self?.logger.error("error occurs: \(error) while parse url: \(url.absoluteString)")
-                screen = .error(error)
+                screen = .error(.deeplink(error))
             }
 
             DispatchQueue.main.async {

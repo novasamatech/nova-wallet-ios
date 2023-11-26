@@ -22,7 +22,11 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         presentingController.present(navigationController, animated: true, completion: nil)
     }
 
-    func presentScreenIfNeeded(on view: MainTabBarViewProtocol?, screen: UrlHandlingScreen) {
+    func presentScreenIfNeeded(
+        on view: MainTabBarViewProtocol?,
+        screen: UrlHandlingScreen,
+        locale: Locale
+    ) {
         guard
             let controller = view?.controller as? UITabBarController,
             canPresentScreenWithoutBreakingFlow(on: controller) else {
@@ -30,9 +34,16 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         switch screen {
-        case .error:
-            // TODO: filter and show error
-            break
+        case let .error(error):
+            if let errorContent = error.content(for: locale) {
+                let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
+                present(
+                    message: errorContent.message,
+                    title: errorContent.title,
+                    closeAction: closeAction,
+                    from: view
+                )
+            }
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking
         case let .gov(params):

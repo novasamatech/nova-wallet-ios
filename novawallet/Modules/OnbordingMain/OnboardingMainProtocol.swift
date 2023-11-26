@@ -27,6 +27,7 @@ protocol OnboardingMainInteractorInputProtocol: AnyObject {
 
 protocol OnboardingMainInteractorOutputProtocol: AnyObject {
     func didSuggestKeystoreImport()
+    func didReceiveError(_ error: Error)
 }
 
 protocol OnboardingMainViewFactoryProtocol {

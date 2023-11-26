@@ -80,6 +80,12 @@ extension MainTabBarInteractor: KeystoreImportObserver {
             self?.presenter?.didRequestImportAccount()
         }
     }
+
+    func didReceiveError(secretImportError error: Error & ErrorContentConvertible) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didRequestScreenOpen(.error(.content(error)))
+        }
+    }
 }
 
 extension MainTabBarInteractor: ScreenOpenDelegate {

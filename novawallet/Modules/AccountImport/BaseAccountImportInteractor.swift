@@ -162,4 +162,8 @@ extension BaseAccountImportInteractor: KeystoreImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
         handleIfNeededKeystoreImport()
     }
+
+    func didReceiveError(secretImportError: ErrorContentConvertible & Error) {
+        presenter.didReceiveAccountImport(error: secretImportError)
+    }
 }

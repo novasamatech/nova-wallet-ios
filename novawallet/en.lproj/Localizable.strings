@@ -1430,3 +1430,11 @@
 "swaps.pay.asset.fee.ed.message" = "To pay network fee with %@, Nova will automatically swap %@ for %@ to maintain your account's minimum %@ balance.";
 "swaps.setup.deposit.button.title" = "Get %@";
 "common.positive.amount" = "Amount must be positive";
+"deeplink.error.invalid.chainId.message" = "Chain is not found";
+"deeplink.error.invalid.referendum.id.message" = "Referendum is not found";
+"deeplink.error.invalid.governance.type.message" = "Governance type is not supported";
+"deeplink.error.no.governance.type.message" = "Governance type is not specified";
+"deeplink.error.invalid.dapp.url.message" = "Invalid url";
+"deeplink.error.invalid.mnemonic.message" = "Mnemonic is not valid";
+"deeplink.error.invalid.crypto.type.message" = "Crypto type is invalid";
+"deeplink.error.invalid.derivation.path.message" = "Invalid derivation path";

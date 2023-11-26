@@ -27,4 +27,8 @@ extension OnboardingMainInteractor: KeystoreImportObserver {
             presenter?.didSuggestKeystoreImport()
         }
     }
+
+    func didReceiveError(secretImportError: Error & ErrorContentConvertible) {
+        presenter?.didReceiveError(secretImportError)
+    }
 }
