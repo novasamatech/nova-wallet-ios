@@ -3,12 +3,12 @@ import Foundation
 protocol OpenScreenUrlParsingServiceProtocol: AnyObject {
     func parse(
         url: URL,
-        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+        completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
     )
     func cancel()
 }
 
-enum DeeplinkParseError: Error {
+enum OpenScreenUrlParsingError: Error {
     case openGovScreen(GovScreenError)
     case openDAppScreen(DAppError)
 
@@ -36,7 +36,7 @@ enum DeeplinkParseError: Error {
     }
 }
 
-extension DeeplinkParseError.GovScreenError {
+extension OpenScreenUrlParsingError.GovScreenError {
     func message(locale: Locale) -> String {
         let languages = locale.rLanguages
         switch self {
@@ -49,7 +49,7 @@ extension DeeplinkParseError.GovScreenError {
         case .invalidReferendumId:
             return R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
                 preferredLanguages: languages)
-        case let .chainNotSupportsGovType:
+        case .chainNotSupportsGovType:
             return R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
                 preferredLanguages: languages)
         case .chainNotFound:
@@ -59,7 +59,7 @@ extension DeeplinkParseError.GovScreenError {
     }
 }
 
-extension DeeplinkParseError.DAppError {
+extension OpenScreenUrlParsingError.DAppError {
     func message(locale: Locale) -> String? {
         let languages = locale.rLanguages
         switch self {

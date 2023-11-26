@@ -9,7 +9,7 @@ enum UrlHandlingScreen {
     case staking
     case gov(ReferendumsInitState)
     case dApp(DApp)
-    case error(ErrorScreen)
+    case error(UrlHandlingScreenError)
 }
 
 struct ReferendumsInitState {
@@ -18,8 +18,8 @@ struct ReferendumsInitState {
     let governance: GovernanceType
 }
 
-enum ErrorScreen {
-    case deeplink(DeeplinkParseError)
+enum UrlHandlingScreenError {
+    case deeplink(OpenScreenUrlParsingError)
     case content(ErrorContentConvertible & Error)
 
     func content(for locale: Locale?) -> ErrorContent? {

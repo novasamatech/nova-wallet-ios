@@ -24,7 +24,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
 
     func parse(
         url: URL,
-        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+        completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
     ) {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
@@ -81,7 +81,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
     private static func governanceType(
         for chain: ChainModel,
         type: String?
-    ) -> Result<GovernanceType, DeeplinkParseError.GovScreenError> {
+    ) -> Result<GovernanceType, OpenScreenUrlParsingError.GovScreenError> {
         let governanceType = type.map { UInt8($0) }?.map { ParsingGovernanceType(rawValue: $0) }
         switch governanceType {
         case .openGov:

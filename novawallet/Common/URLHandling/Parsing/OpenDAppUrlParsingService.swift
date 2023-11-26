@@ -18,7 +18,7 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
 
     func parse(
         url: URL,
-        completion: @escaping (Result<UrlHandlingScreen, DeeplinkParseError>) -> Void
+        completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
     ) {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
