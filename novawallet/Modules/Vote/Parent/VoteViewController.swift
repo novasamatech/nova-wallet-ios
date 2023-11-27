@@ -92,43 +92,35 @@ final class VoteViewController: UIViewController, ViewHolder {
     }
 
     private func setupChildView() {
+        childView?.unbind()
+        childView = nil
+
         switch selectedType {
         case .governance:
-            setupGovernanceView()
+            let governanceChildView = ReferendumsViewManager(
+                tableView: rootView.tableView,
+                chainSelectionView: rootView.headerView,
+                parent: self
+            )
+
+            childView = governanceChildView
+            childView?.bind()
+            childView?.locale = selectedLocale
+
+            presenter.switchToGovernance(governanceChildView)
         case .crowdloan:
-            setupCrowdloanView()
+            let crowdloanChildView = CrowdloanListViewManager(
+                tableView: rootView.tableView,
+                chainSelectionView: rootView.headerView,
+                parent: self
+            )
+
+            childView = crowdloanChildView
+            childView?.bind()
+            childView?.locale = selectedLocale
+
+            presenter.switchToCrowdloans(crowdloanChildView)
         }
-    }
-
-    private func setupGovernanceView() {
-        childView?.unbind()
-        childView = nil
-        let governanceChildView = ReferendumsViewManager(
-            tableView: rootView.tableView,
-            chainSelectionView: rootView.headerView,
-            parent: self
-        )
-
-        childView = governanceChildView
-        childView?.bind()
-        childView?.locale = selectedLocale
-        presenter.switchToGovernance(governanceChildView)
-    }
-
-    private func setupCrowdloanView() {
-        childView?.unbind()
-        childView = nil
-        let crowdloanChildView = CrowdloanListViewManager(
-            tableView: rootView.tableView,
-            chainSelectionView: rootView.headerView,
-            parent: self
-        )
-
-        childView = crowdloanChildView
-        childView?.bind()
-        childView?.locale = selectedLocale
-
-        presenter.switchToCrowdloans(crowdloanChildView)
     }
 }
 
@@ -141,6 +133,7 @@ extension VoteViewController: VoteViewProtocol {
 
     func didReceive(voteType: VoteType) {
         rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(voteType.rawValue)
+
         setupChildView()
     }
 

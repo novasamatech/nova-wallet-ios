@@ -16809,16 +16809,16 @@ import Foundation
     
     
     
-     func showKeystoreImport(from view: OnboardingMainViewProtocol?)  {
+     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)  {
         
-    return cuckoo_manager.call("showKeystoreImport(from: OnboardingMainViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
+    return cuckoo_manager.call("showAccountSecretImport(from: OnboardingMainViewProtocol?, source: SecretSource)",
+            parameters: (view, source),
+            escapingParameters: (view, source),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showKeystoreImport(from: view))
+            defaultCall: __defaultImplStub!.showAccountSecretImport(from: view, source: source))
         
     }
     
@@ -16931,9 +16931,9 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showAccountRestore(from: OnboardingMainViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func showKeystoreImport<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?)> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showKeystoreImport(from: OnboardingMainViewProtocol?)", parameterMatchers: matchers))
+	    func showAccountSecretImport<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, source: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?, SecretSource)> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == SecretSource {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, SecretSource)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: source) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showAccountSecretImport(from: OnboardingMainViewProtocol?, source: SecretSource)", parameterMatchers: matchers))
 	    }
 	    
 	    func showWatchOnlyCreate<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?)> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
@@ -16995,9 +16995,9 @@ import Foundation
 	    }
 	    
 	    @discardableResult
-	    func showKeystoreImport<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("showKeystoreImport(from: OnboardingMainViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showAccountSecretImport<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, source: M2) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?, SecretSource), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == SecretSource {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, SecretSource)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: source) { $0.1 }]
+	        return cuckoo_manager.verify("showAccountSecretImport(from: OnboardingMainViewProtocol?, source: SecretSource)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -17059,7 +17059,7 @@ import Foundation
     
     
     
-     func showKeystoreImport(from view: OnboardingMainViewProtocol?)   {
+     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17221,16 +17221,31 @@ import Foundation
     
     
     
-     func didSuggestKeystoreImport()  {
+     func didSuggestSecretImport(source: SecretSource)  {
         
-    return cuckoo_manager.call("didSuggestKeystoreImport()",
-            parameters: (),
-            escapingParameters: (),
+    return cuckoo_manager.call("didSuggestSecretImport(source: SecretSource)",
+            parameters: (source),
+            escapingParameters: (source),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didSuggestKeystoreImport())
+            defaultCall: __defaultImplStub!.didSuggestSecretImport(source: source))
+        
+    }
+    
+    
+    
+     func didReceiveError(_ error: Error)  {
+        
+    return cuckoo_manager.call("didReceiveError(_: Error)",
+            parameters: (error),
+            escapingParameters: (error),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveError(error))
         
     }
     
@@ -17243,9 +17258,14 @@ import Foundation
 	    }
 	    
 	    
-	    func didSuggestKeystoreImport() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didSuggestKeystoreImport()", parameterMatchers: matchers))
+	    func didSuggestSecretImport<M1: Cuckoo.Matchable>(source: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SecretSource)> where M1.MatchedType == SecretSource {
+	        let matchers: [Cuckoo.ParameterMatcher<(SecretSource)>] = [wrap(matchable: source) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didSuggestSecretImport(source: SecretSource)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didReceiveError(_: Error)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -17265,9 +17285,15 @@ import Foundation
 	
 	    
 	    @discardableResult
-	    func didSuggestKeystoreImport() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("didSuggestKeystoreImport()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSuggestSecretImport<M1: Cuckoo.Matchable>(source: M1) -> Cuckoo.__DoNotUse<(SecretSource), Void> where M1.MatchedType == SecretSource {
+	        let matchers: [Cuckoo.ParameterMatcher<(SecretSource)>] = [wrap(matchable: source) { $0 }]
+	        return cuckoo_manager.verify("didSuggestSecretImport(source: SecretSource)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
+	        return cuckoo_manager.verify("didReceiveError(_: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -17281,7 +17307,13 @@ import Foundation
     
     
     
-     func didSuggestKeystoreImport()   {
+     func didSuggestSecretImport(source: SecretSource)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveError(_ error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
