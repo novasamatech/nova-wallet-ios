@@ -317,7 +317,7 @@
 "staking.account.is.used.as.controller" = "Выбранный аккаунт уже используется в качестве контроллера.";
 "staking.month.period.format" = "%@ ежемесячно";
 "staking.year.period.format" = "%@ ежегодно";
-"staking.reward.info.title" = "Доходно��ть с реинвестированием";
+"staking.reward.info.title" = "Доходность с реинвестированием";
 "staking.reward.info.max" = "Максимальный APY";
 "staking.reward.info.avg" = "Средний APY";
 "staking.alerts.title" = "Предупреждения";
@@ -460,7 +460,7 @@
 "staking.hint.rewards.format" = "Застейканые токены приносят награду каждую эру (%@).";
 "staking.hint.unstake.format" = "Для вывода токенов из стейкинга потребуется %@.";
 "staking.hint.no.rewards" = "Во время вывода токены не приносят наград.";
-"staking.hint.redeem" = "После вывода токенов из с��ейкинга не забудьте их забрать.";
+"staking.hint.redeem" = "После вывода токенов из стейкинга не забудьте их забрать.";
 "staking.hint.reward.bond.more" = "Ваши вознаграждения увеличатся со следующей эры.";
 "staking.hint.unbond.kills.stash" = "Nova wallet изменит назначение вознаграждений \nна ваш аккаунт, чтобы избежать остатка в стейкинге.";
 "staking.story.staking.title" = "Что такое стейкинг?";
@@ -853,7 +853,7 @@
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
-"common.signing.not.supported.title" = "Подписани�� не поддерживается";
+"common.signing.not.supported.title" = "Подписание не поддерживается";
 "common.parity.signer.not.supported.message" = "%@ не поддерживает подписание произвольных сообщений — только транзакции";
 "parity.signer.tx.scan.invalid.title" = "QR-код недействителен";
 "parity.signer.tx.scan.invalid.message" = "Убедитесь, что вы сканируете QR-код для текущей подписываемой операции.";
@@ -1149,7 +1149,7 @@
 "gov.tracks" = "Треки";
 "gov.remove.votes" = "Удалить голоса";
 "delegations.list.multiple.tracks" = "В %@ треках";
-"gov.undelegating.period" = "Период выхода из делегац��и";
+"gov.undelegating.period" = "Период выхода из делегации";
 "gov.add.delegate.self.error.message" = "Вы не можете делегировать голоса себе, пожалуйста, выберите другой адрес";
 "gov.add.delegate.self.error.title" = "Нельзя делегировать себе";
 "gov.add.delegate.hint2" = "Период выхода из делегации начнется после ее отмены";
