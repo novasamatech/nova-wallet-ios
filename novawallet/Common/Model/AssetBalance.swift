@@ -8,14 +8,66 @@ struct AssetBalance: Equatable {
     let freeInPlank: BigUInt
     let reservedInPlank: BigUInt
     let frozenInPlank: BigUInt
+    let edCountMode: ExistentialDepositCountMode
+    let transferrableMode: TransferrableMode
     let blocked: Bool
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
-    var transferable: BigUInt { freeInPlank > frozenInPlank ? freeInPlank - frozenInPlank : 0 }
+
+    var transferable: BigUInt {
+        Self.transferrableBalance(
+            from: freeInPlank,
+            frozen: frozenInPlank,
+            reserved: reservedInPlank,
+            mode: transferrableMode
+        )
+    }
+
     var locked: BigUInt { frozenInPlank + reservedInPlank }
 
+    var balanceCountingEd: BigUInt {
+        switch edCountMode {
+        case .basedOnTotal:
+            return totalInPlank
+        case .basedOnFree:
+            return freeInPlank
+        }
+    }
+
     func newTransferable(for frozen: BigUInt) -> BigUInt {
-        freeInPlank > frozen ? freeInPlank - frozen : 0
+        Self.transferrableBalance(
+            from: freeInPlank,
+            frozen: frozen,
+            reserved: reservedInPlank,
+            mode: transferrableMode
+        )
+    }
+
+    static func transferrableBalance(
+        from free: BigUInt,
+        frozen: BigUInt,
+        reserved: BigUInt,
+        mode: TransferrableMode
+    ) -> BigUInt {
+        switch mode {
+        case .regular:
+            return free > frozen ? free - frozen : 0
+        case .fungibleTrait:
+            let locked = frozen > reserved ? frozen - reserved : 0
+            return free > locked ? free - locked : 0
+        }
+    }
+}
+
+extension AssetBalance {
+    enum ExistentialDepositCountMode {
+        case basedOnTotal
+        case basedOnFree
+    }
+
+    enum TransferrableMode {
+        case regular
+        case fungibleTrait
     }
 }
 
@@ -34,6 +86,8 @@ extension AssetBalance: Identifiable {
             freeInPlank: 0,
             reservedInPlank: 0,
             frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .regular,
             blocked: false
         )
     }

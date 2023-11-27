@@ -61,6 +61,8 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
                 freeInPlank: newBalance,
                 reservedInPlank: 0,
                 frozenInPlank: 0,
+                edCountMode: .basedOnFree,
+                transferrableMode: .regular,
                 blocked: false
             )
 
