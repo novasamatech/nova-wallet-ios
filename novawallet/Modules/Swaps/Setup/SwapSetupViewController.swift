@@ -96,7 +96,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSwap(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.commonSwapTitle(preferredLanguages: selectedLocale.rLanguages)
         rootView.setup(locale: selectedLocale)
         setupAccessoryView()
     }

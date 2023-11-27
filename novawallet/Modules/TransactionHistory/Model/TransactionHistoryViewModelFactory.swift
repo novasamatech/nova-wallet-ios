@@ -129,7 +129,7 @@ final class TransactionHistoryViewModelFactory {
         return .init(
             identifier: data.identifier,
             timestamp: data.timestamp,
-            title: R.string.localizable.commonSwap(preferredLanguages: locale.rLanguages),
+            title: R.string.localizable.commonSwapTitle(preferredLanguages: locale.rLanguages),
             subtitle: subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,

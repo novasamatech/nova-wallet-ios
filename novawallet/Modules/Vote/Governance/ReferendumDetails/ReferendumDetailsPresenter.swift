@@ -136,7 +136,7 @@ final class ReferendumDetailsPresenter {
 
     private func provideRequestedAmount() {
         guard
-            let requestedAmount = actionDetails?.amountSpendDetails?.amount,
+            let requestedAmount = actionDetails?.spentAmount(),
             let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
             let decimalAmount = Decimal.fromSubstrateAmount(requestedAmount, precision: precision) else {
             view?.didReceive(requestedAmount: nil)
@@ -355,7 +355,7 @@ final class ReferendumDetailsPresenter {
             accountIds.insert(proposer)
         }
 
-        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
+        if let beneficiary = actionDetails?.beneficiary?.accountId {
             accountIds.insert(beneficiary)
         }
 

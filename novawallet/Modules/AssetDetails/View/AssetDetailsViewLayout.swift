@@ -182,7 +182,7 @@ final class AssetDetailsViewLayout: UIView {
         )
         receiveButton.invalidateLayout()
 
-        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwap(
+        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwapAction(
             preferredLanguages: languages
         )
         swapButton.invalidateLayout()

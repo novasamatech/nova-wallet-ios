@@ -24,7 +24,7 @@ enum WalletHistoryFilterRow: Int, CaseIterable {
             }
         case .swaps:
             return LocalizableResource { locale in
-                R.string.localizable.commonSwap(preferredLanguages: locale.rLanguages)
+                R.string.localizable.commonSwapTitle(preferredLanguages: locale.rLanguages)
             }
         }
     }
