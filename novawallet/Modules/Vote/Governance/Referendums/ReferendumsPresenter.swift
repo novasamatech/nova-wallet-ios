@@ -37,6 +37,7 @@ final class ReferendumsPresenter {
 
     private var filter = ReferendumsFilter.all
     let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
+    var referendumIndex: Referenda.ReferendumIndex?
 
     private var chain: ChainModel? {
         selectedOption?.chain
@@ -293,6 +294,10 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
+        showDetails(referendum: referendum)
+    }
+
+    func showDetails(referendum: ReferendumLocal) {
         let accountVotes = voting?.value?.votes.votes[referendum.index]
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
@@ -324,6 +329,29 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             wireframe.showAddDelegation(from: view)
         } else {
             wireframe.showYourDelegations(from: view)
+        }
+    }
+
+    func showReferendumDetailsIfNeeded() {
+        guard let referendumIndex = referendumIndex,
+              let referendums = referendums,
+              !referendums.isEmpty else {
+            return
+        }
+        self.referendumIndex = nil
+        if let referendum = referendums.first(where: { $0.index == referendumIndex }) {
+            showDetails(referendum: referendum)
+        } else {
+            let message = R.string.localizable.governanceReferendumNotFoundMessage(
+                preferredLanguages: selectedLocale.rLanguages)
+            let closeAction = R.string.localizable.commonOk(
+                preferredLanguages: selectedLocale.rLanguages)
+            wireframe.present(
+                message: message,
+                title: nil,
+                closeAction: closeAction,
+                from: view
+            )
         }
     }
 }
@@ -401,6 +429,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()
+        showReferendumDetailsIfNeeded()
     }
 
     func didReceiveSelectedOption(_ option: GovernanceSelectedOption) {

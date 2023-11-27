@@ -45,6 +45,19 @@ final class MainTabBarInteractor {
         serviceCoordinator.throttle()
         inAppUpdatesService.stopSyncUp()
     }
+
+    private func suggestSecretImportIfNeeded() {
+        guard let definition = keystoreImportService.definition else {
+            return
+        }
+
+        switch definition {
+        case .keystore:
+            presenter?.didRequestImportAccount(source: .keystore)
+        case .mnemonic:
+            presenter?.didRequestImportAccount(source: .mnemonic)
+        }
+    }
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
@@ -52,9 +65,7 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         eventCenter.add(observer: self, dispatchIn: .main)
         keystoreImportService.add(observer: self)
 
-        if keystoreImportService.definition != nil {
-            presenter?.didRequestImportAccount()
-        }
+        suggestSecretImportIfNeeded()
 
         screenOpenService.delegate = self
 
@@ -71,13 +82,15 @@ extension MainTabBarInteractor: EventVisitorProtocol {
 }
 
 extension MainTabBarInteractor: KeystoreImportObserver {
-    func didUpdateDefinition(from _: KeystoreDefinition?) {
+    func didUpdateDefinition(from _: SecretImportDefinition?) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            guard self?.keystoreImportService.definition != nil else {
-                return
-            }
+            self?.suggestSecretImportIfNeeded()
+        }
+    }
 
-            self?.presenter?.didRequestImportAccount()
+    func didReceiveError(secretImportError error: Error & ErrorContentConvertible) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didRequestScreenOpen(.error(.content(error)))
         }
     }
 }

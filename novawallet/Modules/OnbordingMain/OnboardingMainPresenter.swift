@@ -111,8 +111,12 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
 }
 
 extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
-    func didSuggestKeystoreImport() {
-        wireframe.showKeystoreImport(from: view)
+    func didSuggestSecretImport(source: SecretSource) {
+        wireframe.showAccountSecretImport(from: view, source: source)
+    }
+
+    func didReceiveError(_ error: Error) {
+        _ = wireframe.present(error: error, from: view, locale: locale)
     }
 }
 

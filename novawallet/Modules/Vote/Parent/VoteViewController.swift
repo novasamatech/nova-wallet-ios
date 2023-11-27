@@ -130,6 +130,16 @@ extension VoteViewController: VoteViewProtocol {
 
         setupChildView()
     }
+
+    func didReceive(voteType: VoteType) {
+        rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(voteType.rawValue)
+
+        setupChildView()
+    }
+
+    func showReferendumsDetails(_ index: Referenda.ReferendumIndex) {
+        presenter.showReferendumsDetails(index)
+    }
 }
 
 extension VoteViewController: Localizable {

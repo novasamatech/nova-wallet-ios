@@ -1,9 +1,15 @@
 import Foundation
+import SoraFoundation
 
 final class MainTabBarPresenter {
     weak var view: MainTabBarViewProtocol?
     var interactor: MainTabBarInteractorInputProtocol!
     var wireframe: MainTabBarWireframeProtocol!
+    let localizationManager: LocalizationManagerProtocol
+
+    init(localizationManager: LocalizationManagerProtocol) {
+        self.localizationManager = localizationManager
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarPresenterProtocol {
@@ -15,11 +21,15 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
-    func didRequestImportAccount() {
-        wireframe.presentAccountImport(on: view)
+    func didRequestImportAccount(source: SecretSource) {
+        wireframe.presentAccountImport(on: view, source: source)
     }
 
     func didRequestScreenOpen(_ screen: UrlHandlingScreen) {
-        wireframe.presentScreenIfNeeded(on: view, screen: screen)
+        wireframe.presentScreenIfNeeded(
+            on: view,
+            screen: screen,
+            locale: localizationManager.selectedLocale
+        )
     }
 }

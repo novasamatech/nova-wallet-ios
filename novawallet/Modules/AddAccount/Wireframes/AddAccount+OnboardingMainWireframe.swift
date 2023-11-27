@@ -18,12 +18,12 @@ extension AddAccount {
             }
         }
 
-        func showKeystoreImport(from view: OnboardingMainViewProtocol?) {
+        func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource) {
             if
                 let navigationController = view?.controller.navigationController,
                 navigationController.topViewController == view?.controller,
                 navigationController.presentedViewController == nil {
-                showAccountRestore(from: view)
+                presentAccountRestore(from: view, secretSource: source)
             }
         }
 

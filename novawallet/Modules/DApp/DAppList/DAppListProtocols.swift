@@ -4,6 +4,7 @@ import RobinHood
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceiveWalletSwitch(viewModel: WalletSwitchViewModel)
     func didReceive(state: DAppListState)
+    func didReceive(dApp: DApp)
     func didCompleteRefreshing()
 }
 
@@ -22,6 +23,7 @@ protocol DAppListPresenterProtocol: AnyObject {
     func dApp(at index: Int) -> DAppViewModel
     func selectDApp(at index: Int)
     func toogleFavoriteForDApp(at index: Int)
+    func selectDApp(_ dapp: DApp)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {
