@@ -30,7 +30,7 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
             $0.name
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .caseInsensitiveCompare(QueryKey.url) == .orderedSame
-        })?.value.map { URL(string: $0) }
+        })?.value.map { URL(string: $0) } ?? nil
 
         guard let dAppUrl = dAppUrl else {
             completion(.failure(.openDAppScreen(.invalidURL)))
@@ -43,11 +43,9 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
             }
             switch result {
             case let .success(list):
-                if let dApp = list?.dApps.first(where: { $0.url == dAppUrl }) {
+                if let dApp = list?.dApps.first(where: { URL.hostsEqual($0.url, dAppUrl) }) {
                     self.dAppsProvider.removeObserver(self)
                     completion(.success(.dApp(dApp)))
-                } else {
-                    completion(.failure(.openDAppScreen(.unknownURL)))
                 }
             case .failure:
                 completion(.failure(.openDAppScreen(.loadListFailed)))

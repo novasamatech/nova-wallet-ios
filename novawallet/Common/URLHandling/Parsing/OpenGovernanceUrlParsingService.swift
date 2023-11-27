@@ -58,7 +58,6 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             let chains: [ChainModel] = changes.allChangedItems()
 
             guard let chainModel = chains.first(where: { $0.chainId == chainId }) else {
-                completion(.failure(.openGovScreen(.invalidChainId)))
                 return
             }
 
@@ -66,7 +65,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             let type = queryItems[QueryKey.governanceType]
             switch Self.governanceType(for: chainModel, type: type) {
             case let .failure(error):
-                completion(.failure(.openGovScreen(error)))
+                break
             case let .success(type):
                 let state = ReferendumsInitState(
                     chainId: chainId,
