@@ -94,13 +94,13 @@ final class VoteViewController: UIViewController, ViewHolder {
     private func setupChildView() {
         switch selectedType {
         case .governance:
-            setupGovernanceView(state: nil)
+            setupGovernanceView()
         case .crowdloan:
             setupCrowdloanView()
         }
     }
 
-    private func setupGovernanceView(state: ReferendumsInitState?) {
+    private func setupGovernanceView() {
         childView?.unbind()
         childView = nil
         let governanceChildView = ReferendumsViewManager(
@@ -112,7 +112,7 @@ final class VoteViewController: UIViewController, ViewHolder {
         childView = governanceChildView
         childView?.bind()
         childView?.locale = selectedLocale
-        presenter.switchToGovernance(governanceChildView, state: state)
+        presenter.switchToGovernance(governanceChildView)
     }
 
     private func setupCrowdloanView() {
@@ -139,8 +139,13 @@ extension VoteViewController: VoteViewProtocol {
         setupChildView()
     }
 
-    func showReferendumsDetails(_ state: ReferendumsInitState) {
-        setupGovernanceView(state: state)
+    func didReceive(voteType: VoteType) {
+        rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(voteType.rawValue)
+        setupChildView()
+    }
+
+    func showReferendumsDetails(_ index: Referenda.ReferendumIndex) {
+        presenter.showReferendumsDetails(index)
     }
 }
 

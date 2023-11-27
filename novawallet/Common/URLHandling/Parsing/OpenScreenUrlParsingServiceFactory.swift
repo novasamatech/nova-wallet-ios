@@ -1,11 +1,14 @@
+import SoraKeystore
+
 protocol OpenScreenUrlParsingServiceFactoryProtocol {
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol?
 }
 
 final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFactoryProtocol {
     private let chainRegistryClosure: ChainRegistryLazyClosure
-    private let settings: ApplicationConfigProtocol
+    private let applicationConfig: ApplicationConfigProtocol
     private let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
+    private let settings: SettingsManagerProtocol
 
     enum Screen: String {
         case staking
@@ -15,12 +18,14 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
 
     init(
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
-        settings: ApplicationConfigProtocol = ApplicationConfig.shared,
-        jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared
+        applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared,
+        jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
+        settings: SettingsManagerProtocol = SettingsManager.shared
     ) {
         self.chainRegistryClosure = chainRegistryClosure
-        self.settings = settings
+        self.applicationConfig = applicationConfig
         self.jsonDataProviderFactory = jsonDataProviderFactory
+        self.settings = settings
     }
 
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol? {
@@ -29,10 +34,10 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
             return OpenStakingUrlParsingService()
         case .governance:
             let chainRegistry = chainRegistryClosure()
-            return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry)
+            return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry, settings: settings)
         case .dApp:
             let dAppsProvider: AnySingleValueProvider<DAppList> = jsonDataProviderFactory.getJson(
-                for: settings.dAppsListURL)
+                for: applicationConfig.dAppsListURL)
             return OpenDAppUrlParsingService(dAppsProvider: dAppsProvider)
         default:
             return nil

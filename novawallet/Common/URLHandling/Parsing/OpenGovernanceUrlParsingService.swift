@@ -1,7 +1,10 @@
 import Foundation
+import SoraFoundation
+import SoraKeystore
 
 final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     private let chainRegistry: ChainRegistryProtocol
+    private let settings: SettingsManagerProtocol
 
     enum QueryKey {
         static let chainid = "chainid"
@@ -14,8 +17,12 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         case democracy = 1
     }
 
-    init(chainRegistry: ChainRegistryProtocol) {
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        settings: SettingsManagerProtocol
+    ) {
         self.chainRegistry = chainRegistry
+        self.settings = settings
     }
 
     func cancel() {
@@ -43,7 +50,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         }
 
         guard let referendumIndexString = queryItems[QueryKey.referendumIndex],
-              let referendumIndex = UInt(referendumIndexString) else {
+              let referendumIndex = UInt32(referendumIndexString) else {
             completion(.failure(.openGovScreen(.invalidReferendumId)))
             return
         }
@@ -67,12 +74,9 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             case let .failure(error):
                 break
             case let .success(type):
-                let state = ReferendumsInitState(
-                    chainId: chainId,
-                    referendumIndex: referendumIndex,
-                    governance: type
-                )
-                completion(.success(.gov(state)))
+                self.settings.governanceChainId = chainId
+                self.settings.governanceType = type
+                completion(.success(.gov(referendumIndex)))
             }
         }
     }

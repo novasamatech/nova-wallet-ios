@@ -7,15 +7,9 @@ protocol ScreenOpenDelegate: AnyObject {
 
 enum UrlHandlingScreen {
     case staking
-    case gov(ReferendumsInitState)
+    case gov(Referenda.ReferendumIndex)
     case dApp(DApp)
     case error(UrlHandlingScreenError)
-}
-
-struct ReferendumsInitState {
-    let chainId: ChainModel.Id
-    let referendumIndex: UInt
-    let governance: GovernanceType
 }
 
 enum UrlHandlingScreenError {

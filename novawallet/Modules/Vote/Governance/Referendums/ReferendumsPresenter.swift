@@ -37,7 +37,7 @@ final class ReferendumsPresenter {
 
     private var filter = ReferendumsFilter.all
     let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
-    var referendumIndex: UInt?
+    var referendumIndex: Referenda.ReferendumIndex?
 
     private var chain: ChainModel? {
         selectedOption?.chain

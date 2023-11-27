@@ -46,12 +46,12 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             }
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking
-        case let .gov(params):
+        case let .gov(rederendumIndex):
             controller.selectedIndex = MainTabBarIndex.vote
             let govViewController = controller.viewControllers?[MainTabBarIndex.vote]
             (govViewController as? UINavigationController)?.popToRootViewController(animated: true)
             if let govController: VoteViewProtocol = govViewController?.contentViewController() {
-                govController.showReferendumsDetails(params)
+                govController.showReferendumsDetails(rederendumIndex)
             }
         case let .dApp(dApp):
             controller.selectedIndex = MainTabBarIndex.dapps
