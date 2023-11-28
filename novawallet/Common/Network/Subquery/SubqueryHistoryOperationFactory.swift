@@ -205,22 +205,69 @@ extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtoc
             return request
         }
 
-        let resultFactory = AnyNetworkResultFactory<SubqueryHistoryData> { data in
-            let response = try JSONDecoder().decode(
-                SubqueryResponse<SubqueryHistoryData>.self,
-                from: data
-            )
+        let processResultBlock = createProcessingBlock()
 
-            switch response {
-            case let .errors(error):
-                throw error
-            case let .data(response):
-                return response
-            }
-        }
+        let resultFactory = AnyNetworkResultFactory(block: processResultBlock)
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
 
         return operation
+    }
+
+    private func createProcessingBlock() -> NetworkResultFactoryBlock<SubqueryHistoryData> {
+        { data, response, error in
+            if let connectionError = error {
+                return .failure(connectionError)
+            }
+
+            if let error = Self.createError(from: response) {
+                return .failure(error)
+            }
+
+            guard let data = data else {
+                return .failure(NetworkBaseError.unexpectedEmptyData)
+            }
+
+            do {
+                let history = try Self.decodeHistory(from: data)
+                return .success(history)
+            } catch {
+                return .failure(error)
+            }
+        }
+    }
+
+    private static func decodeHistory(from data: Data) throws -> SubqueryHistoryData {
+        let response = try JSONDecoder().decode(
+            SubqueryResponse<SubqueryHistoryData>.self,
+            from: data
+        )
+        switch response {
+        case let .errors(error):
+            throw error
+        case let .data(response):
+            return response
+        }
+    }
+
+    private static func createError(from response: URLResponse?) -> Error? {
+        guard let httpUrlResponse = response as? HTTPURLResponse else {
+            return NetworkBaseError.unexpectedResponseObject
+        }
+
+        switch httpUrlResponse.statusCode {
+        case 200, 201:
+            return nil
+        case 400:
+            return NetworkResponseError.invalidParameters
+        case 401:
+            return NetworkResponseError.authorizationError
+        case 404:
+            return NetworkResponseError.resourceNotFound
+        case 500:
+            return NetworkResponseError.internalServerError
+        default:
+            return NetworkResponseError.unexpectedStatusCode
+        }
     }
 }
