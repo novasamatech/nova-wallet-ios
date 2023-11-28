@@ -760,6 +760,8 @@
 		772B1C7D2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772B1C7C2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift */; };
 		7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */; };
 		7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */; };
+		773BA0782B15F52200929BD4 /* Proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0772B15F52200929BD4 /* Proxy.swift */; };
+		773BA07A2B15F9DA00929BD4 /* Proxy+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */; };
 		774091F92ACB1F4B00172516 /* SwapAmountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091F82ACB1F4B00172516 /* SwapAmountInputView.swift */; };
 		774091FC2ACC053000172516 /* SwapAssetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FB2ACC053000172516 /* SwapAssetView.swift */; };
 		774091FE2ACC054B00172516 /* SwapAssetControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FD2ACC054B00172516 /* SwapAssetControl.swift */; };
@@ -4866,6 +4868,8 @@
 		772B1C7C2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingCustomValidatorListWireframe.swift; sourceTree = "<group>"; };
 		7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedActionControlView.swift; sourceTree = "<group>"; };
 		7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingRelaychainInteractor.swift; sourceTree = "<group>"; };
+		773BA0772B15F52200929BD4 /* Proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxy.swift; sourceTree = "<group>"; };
+		773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Proxy+CodingPath.swift"; sourceTree = "<group>"; };
 		774091F82ACB1F4B00172516 /* SwapAmountInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAmountInputView.swift; sourceTree = "<group>"; };
 		774091FB2ACC053000172516 /* SwapAssetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetView.swift; sourceTree = "<group>"; };
 		774091FD2ACC054B00172516 /* SwapAssetControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetControl.swift; sourceTree = "<group>"; };
@@ -9933,6 +9937,15 @@
 			path = RelaychainStaking;
 			sourceTree = "<group>";
 		};
+		773BA0762B15F50700929BD4 /* Proxy */ = {
+			isa = PBXGroup;
+			children = (
+				773BA0772B15F52200929BD4 /* Proxy.swift */,
+				773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */,
+			);
+			path = Proxy;
+			sourceTree = "<group>";
+		};
 		774091FA2ACC052400172516 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -11400,6 +11413,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				773BA0762B15F50700929BD4 /* Proxy */,
 				0CFA16172B0CE6F6007AF885 /* UtilityPallet */,
 				0C500B202B05101100ABEE70 /* AssetTxPaymentPallet */,
 				0C0CB3862AC5686C00EAC516 /* AssetConversionPallet */,
@@ -20739,6 +20753,7 @@
 				77A6F5C92A2F1EFC004AFD1A /* AssetOperationViewFactory.swift in Sources */,
 				848E6BD92761CAC800C91022 /* StakingRewardView.swift in Sources */,
 				F4B39C592732712C00BB6E10 /* AcalaContributionMethod.swift in Sources */,
+				773BA0782B15F52200929BD4 /* Proxy.swift in Sources */,
 				0C13DFDF2AFA89EF00E5F355 /* Decimal+Percents.swift in Sources */,
 				AEA0C8BA268113F900F9666F /* YourValidatorList+RecommendedList.swift in Sources */,
 				88421056289BBA8D00306F2C /* CurrencyPresenter.swift in Sources */,
@@ -21351,6 +21366,7 @@
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
 				8846F74029D757FE00B8B776 /* Data+base64.swift in Sources */,
+				773BA07A2B15F9DA00929BD4 /* Proxy+CodingPath.swift in Sources */,
 				84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */,
 				F43A596A26D520E0005E973D /* EmptyStateViewCell.swift in Sources */,
 				0CA50CAF2AFE6094005668CD /* GetTokenOptionsViewController.swift in Sources */,
@@ -24001,7 +24017,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -24013,7 +24029,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 6.0;
+				MARKETING_VERSION = 7.4.2;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -24033,7 +24049,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -24045,12 +24061,12 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 6.0;
+				MARKETING_VERSION = 7.4.2;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-appstore";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-appstore";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-appstore-gulnaz";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -24179,7 +24195,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -24191,7 +24207,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 6.0;
+				MARKETING_VERSION = 7.4.2;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -24291,7 +24307,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -24303,7 +24319,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 6.0;
+				MARKETING_VERSION = 7.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-staging";
