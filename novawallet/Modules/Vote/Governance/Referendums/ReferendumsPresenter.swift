@@ -333,14 +333,15 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func showReferendumDetailsIfNeeded() {
-        guard let referendumsInitState = referendumsInitState,
+        guard let referendumsState = referendumsInitState,
               let referendums = referendums,
               !referendums.isEmpty else {
             return
         }
-        let referendumIndex = referendumsInitState.referendumIndex
-        referendumsInitState.completionHandler()
-        self.referendumsInitState = nil
+        let referendumIndex = referendumsState.referendumIndex
+        referendumsState.stateHandledClosure()
+        referendumsInitState = nil
+
         if let referendum = referendums.first(where: { $0.index == referendumIndex }) {
             showDetails(referendum: referendum)
         } else {

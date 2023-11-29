@@ -1,9 +1,9 @@
 final class ReferendumsInitState {
     let referendumIndex: Referenda.ReferendumIndex
-    let completionHandler: () -> Void
+    let stateHandledClosure: () -> Void
 
-    init(referendumIndex: Referenda.ReferendumIndex, completionHandler: @escaping () -> Void) {
+    init(referendumIndex: Referenda.ReferendumIndex, stateHandledClosure: @escaping () -> Void) {
         self.referendumIndex = referendumIndex
-        self.completionHandler = completionHandler
+        self.stateHandledClosure = stateHandledClosure
     }
 }
