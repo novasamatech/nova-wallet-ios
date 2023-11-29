@@ -13,10 +13,11 @@ enum OpenScreenUrlParsingError: Error {
     case openDAppScreen(DAppError)
 
     enum GovScreenError: Error {
-        case govTypeIsAmbiguous
+        case govTypeIsNotSpecified
         case invalidChainId
         case invalidReferendumId
         case chainNotSupportsGovType(type: String)
+        case chainNotSupportsGov
         case chainNotFound
     }
 
@@ -40,7 +41,7 @@ extension OpenScreenUrlParsingError.GovScreenError {
     func message(locale: Locale) -> String {
         let languages = locale.rLanguages
         switch self {
-        case .govTypeIsAmbiguous:
+        case .govTypeIsNotSpecified:
             return R.string.localizable.deeplinkErrorNoGovernanceTypeMessage(
                 preferredLanguages: languages)
         case .invalidChainId:
@@ -49,7 +50,7 @@ extension OpenScreenUrlParsingError.GovScreenError {
         case .invalidReferendumId:
             return R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
                 preferredLanguages: languages)
-        case .chainNotSupportsGovType:
+        case .chainNotSupportsGovType, .chainNotSupportsGov:
             return R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
                 preferredLanguages: languages)
         case .chainNotFound:

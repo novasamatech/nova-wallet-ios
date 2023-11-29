@@ -85,7 +85,11 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         for chain: ChainModel,
         type: String?
     ) -> Result<GovernanceType, OpenScreenUrlParsingError.GovScreenError> {
-        let governanceType = type.map { UInt8($0) }?.map { ParsingGovernanceType(rawValue: $0) }
+        guard chain.hasGovernance else {
+            return .failure(.chainNotSupportsGov)
+        }
+
+        let governanceType = type.map { UInt8($0) }?.map { ParsingGovernanceType(rawValue: $0) } ?? nil
         switch governanceType {
         case .openGov:
             return chain.hasGovernanceV2 ? .success(.governanceV2) :
@@ -93,11 +97,16 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         case .democracy:
             return chain.hasGovernanceV1 ? .success(.governanceV1) :
                 .failure(.chainNotSupportsGovType(type: GovernanceType.governanceV1.rawValue))
-        default:
-            if chain.hasGovernanceV1, chain.hasGovernanceV2 {
-                return .failure(.govTypeIsAmbiguous)
+        case nil:
+            if let type = type, !type.isEmpty {
+                return .failure(.chainNotSupportsGovType(type: type))
+            }
+            if chain.hasGovernanceV2 {
+                return .success(.governanceV2)
+            } else if chain.hasGovernanceV1 {
+                return .success(.governanceV1)
             } else {
-                return .success(chain.hasGovernanceV2 ? .governanceV2 : .governanceV1)
+                return .failure(.govTypeIsNotSpecified)
             }
         }
     }
