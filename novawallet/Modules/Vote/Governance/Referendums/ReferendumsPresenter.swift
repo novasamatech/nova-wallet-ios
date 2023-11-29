@@ -37,7 +37,7 @@ final class ReferendumsPresenter {
 
     private var filter = ReferendumsFilter.all
     let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
-    var referendumIndex: Referenda.ReferendumIndex?
+    var referendumsInitState: ReferendumsInitState?
 
     private var chain: ChainModel? {
         selectedOption?.chain
@@ -333,12 +333,15 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func showReferendumDetailsIfNeeded() {
-        guard let referendumIndex = referendumIndex,
+        guard let referendumsState = referendumsInitState,
               let referendums = referendums,
               !referendums.isEmpty else {
             return
         }
-        self.referendumIndex = nil
+        let referendumIndex = referendumsState.referendumIndex
+        referendumsState.stateHandledClosure()
+        referendumsInitState = nil
+
         if let referendum = referendums.first(where: { $0.index == referendumIndex }) {
             showDetails(referendum: referendum)
         } else {

@@ -11,7 +11,7 @@ final class VotePresenter {
     private var wallet: MetaAccountModel?
 
     private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
-    private var referendumIndex: Referenda.ReferendumIndex?
+    private var referendumsState: ReferendumsInitState?
 
     init(
         interactor: VoteInteractorInputProtocol,
@@ -67,9 +67,8 @@ extension VotePresenter: VotePresenterProtocol {
         childPresenter = childPresenterFactory.createGovernancePresenter(
             from: view,
             wallet: wallet,
-            referendumIndex: referendumIndex
+            referendumsInitState: referendumsState
         )
-        referendumIndex = nil
         childPresenter?.setup()
     }
 
@@ -84,8 +83,12 @@ extension VotePresenter: VotePresenterProtocol {
     }
 
     func showReferendumsDetails(_ referendumIndex: Referenda.ReferendumIndex) {
-        self.referendumIndex = referendumIndex
-        view?.didReceive(voteType: .governance)
+        referendumsState = .init(referendumIndex: referendumIndex) { [weak self] in
+            self?.referendumsState = nil
+        }
+        if view?.isSetup == true {
+            view?.didReceive(voteType: .governance)
+        }
     }
 }
 
