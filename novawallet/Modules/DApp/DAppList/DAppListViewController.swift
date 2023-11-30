@@ -306,6 +306,10 @@ extension DAppListViewController: DAppListViewProtocol {
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
     }
+
+    func didReceive(dApp: DApp) {
+        presenter.selectDApp(dApp)
+    }
 }
 
 extension DAppListViewController: DAppItemViewDelegate {

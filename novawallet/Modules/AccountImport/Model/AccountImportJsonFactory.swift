@@ -20,7 +20,10 @@ final class AccountImportJsonFactory {
         return MetaAccountImportPreferredInfo(
             username: info.meta?.name,
             cryptoType: MultiassetCryptoType(secretType: info.secretType),
-            genesisHash: genesisHash
+            genesisHash: genesisHash,
+            substrateDeriviationPath: nil,
+            evmDeriviationPath: nil,
+            source: .keystore
         )
     }
 }

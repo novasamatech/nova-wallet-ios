@@ -26,7 +26,7 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(1)).showSignup(from: any())
         verify(wireframe, times(0)).showAccountRestore(from: any())
         verify(wireframe, times(0)).showWeb(url: any(), from: any(), style: any())
-        verify(wireframe, times(0)).showKeystoreImport(from: any())
+        verify(wireframe, times(0)).showAccountSecretImport(from: any(), source: any())
     }
 
     func testAccountRestore() {
@@ -47,7 +47,7 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(0)).showSignup(from: any())
         verify(wireframe, times(1)).showAccountRestore(from: any())
         verify(wireframe, times(0)).showWeb(url: any(), from: any(), style: any())
-        verify(wireframe, times(0)).showKeystoreImport(from: any())
+        verify(wireframe, times(0)).showAccountSecretImport(from: any(), source: any())
     }
 
     func testTermsAndConditions() {
@@ -70,7 +70,7 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(1)).showWeb(url: ParameterMatcher { $0 == self.dummyLegalData.termsUrl },
                                             from: any(),
                                             style: any())
-        verify(wireframe, times(0)).showKeystoreImport(from: any())
+        verify(wireframe, times(0)).showAccountSecretImport(from: any(), source: any())
     }
 
     func testPrivacyPolicy() {
@@ -93,7 +93,7 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(1)).showWeb(url: ParameterMatcher { $0 == self.dummyLegalData.privacyPolicyUrl },
                                             from: any(),
                                             style: any())
-        verify(wireframe, times(0)).showKeystoreImport(from: any())
+        verify(wireframe, times(0)).showAccountSecretImport(from: any(), source: any())
     }
 
     func testKeystoreImportSuggestion() {
@@ -122,7 +122,7 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(0)).showWeb(url: any(),
                                             from: any(),
                                             style: any())
-        verify(wireframe, times(1)).showKeystoreImport(from: any())
+        verify(wireframe, times(1)).showAccountSecretImport(from: any(), source: any())
     }
 
     // MARK: Private
@@ -153,7 +153,7 @@ class OnboardingMainTests: XCTestCase {
             when(stub).showAccountRestore(from: any()).thenDoNothing()
             when(stub).showSignup(from: any()).thenDoNothing()
             when(stub).showWeb(url: any(), from: any(), style: any()).thenDoNothing()
-            when(stub).showKeystoreImport(from: any()).thenDoNothing()
+            when(stub).showAccountSecretImport(from: any(), source: any()).thenDoNothing()
         }
 
         return presenter
