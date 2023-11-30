@@ -32,7 +32,8 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
                 .caseInsensitiveCompare(QueryKey.url) == .orderedSame
         })?.value.map { URL(string: $0) } ?? nil
 
-        guard let dAppUrl = dAppUrl else {
+        guard let dAppUrl = dAppUrl,
+              dAppUrl.host != nil else {
             completion(.failure(.openDAppScreen(.invalidURL)))
             return
         }
