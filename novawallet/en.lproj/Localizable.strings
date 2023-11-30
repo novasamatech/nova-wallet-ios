@@ -1240,6 +1240,7 @@
 "governance.referendums.search.field.placeholder" = "Search by referendum title or ID";
 "governance.referendums.search.empty" = "No referenda with entered title or ID\nwere found";
 "governance.referendums.settings.title" = "Referenda";
+"governance.referendum.not.found.message" = "Referendum is not found";
 "wallet.send.recipient.blocked.title" = "Recipient cannot accept transfer";
 "wallet.send.recipient.blocked.message" = "Recipient has been blocked by token owner and cannot currently accept incoming transfers";
 "staking.reward.filters.period.date.end" = "Ends";
@@ -1402,6 +1403,15 @@
 "swaps.setup.deposit.by.receive.subtitle" = "Receive %@ with QR or your address";
 "swaps.setup.deposit.by.buy.subtitle" = "Instantly buy %@ with a credit card";
 "swaps.setup.deposit.button.title" = "Get %@";
+"common.positive.amount" = "Amount must be positive";
+"deeplink.error.invalid.chainId.message" = "Chain is not found";
+"deeplink.error.invalid.referendum.id.message" = "Referendum is not found";
+"deeplink.error.invalid.governance.type.message" = "Governance type is not supported";
+"deeplink.error.no.governance.type.message" = "Governance type is not specified";
+"deeplink.error.invalid.dapp.url.message" = "Invalid url";
+"deeplink.error.invalid.mnemonic.message" = "Mnemonic is not valid";
+"deeplink.error.invalid.crypto.type.message" = "Crypto type is invalid";
+"deeplink.error.invalid.derivation.path.message" = "Invalid derivation path";
 "swaps.setup.network.fee.token.title" = "Token for paying network fee";
 "swaps.setup.network.fee.token.hint" = "Network fee is added on top of entered amount";
 "swaps.pay.asset.fee.ed.message" = "To pay network fee with %@, Nova will automatically swap %@ for %@ to maintain your account\'s minimum %@ balance.";

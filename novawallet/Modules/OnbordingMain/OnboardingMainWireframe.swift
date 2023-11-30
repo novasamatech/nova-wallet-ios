@@ -17,12 +17,12 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
         }
     }
 
-    func showKeystoreImport(from view: OnboardingMainViewProtocol?) {
+    func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource) {
         if
             let navigationController = view?.controller.navigationController,
             navigationController.viewControllers.count == 1,
             navigationController.presentedViewController == nil {
-            presentAccountRestore(from: view, secretSource: .keystore)
+            presentAccountRestore(from: view, secretSource: source)
         }
     }
 
