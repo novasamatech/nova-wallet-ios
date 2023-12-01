@@ -1,7 +1,7 @@
 import Foundation
 
 extension Proxy {
-    static func proxyList(for moduleName: String) -> ConstantCodingPath {
-        .init(moduleName: moduleName, constantName: "proxies")
+    static var proxyList: StorageCodingPath {
+        .init(moduleName: "Proxy", itemName: "Proxies")
     }
 }

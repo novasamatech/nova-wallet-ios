@@ -871,6 +871,11 @@
 		77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */; };
 		77D2E2712B05416E0098F188 /* AssetListGroupModelCompator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */; };
 		77D2E2732B0542A50098F188 /* AmountPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2E2722B0542A50098F188 /* AmountPair.swift */; };
+		77D2ED5F2B18A50200A0E58C /* ProxySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED5E2B18A50200A0E58C /* ProxySyncService.swift */; };
+		77D2ED612B18A5BF00A0E58C /* SyncChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED602B18A5BF00A0E58C /* SyncChanges.swift */; };
+		77D2ED632B192D5B00A0E58C /* ProxyOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED622B192D5B00A0E58C /* ProxyOperationFactoryTests.swift */; };
+		77D2ED652B19C42D00A0E58C /* ProxyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED642B19C42D00A0E58C /* ProxyModels.swift */; };
+		77D2ED672B19C44900A0E58C /* ProxyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED662B19C44900A0E58C /* ProxyOperationFactory.swift */; };
 		77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */; };
 		77E255672A16145500B644C3 /* StakingRewardsFilterMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */; };
 		77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E255682A16148000B644C3 /* StakingRewardsFilter.swift */; };
@@ -4980,6 +4985,11 @@
 		77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectValidatorsDelegate.swift; sourceTree = "<group>"; };
 		77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListGroupModelCompator.swift; sourceTree = "<group>"; };
 		77D2E2722B0542A50098F188 /* AmountPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountPair.swift; sourceTree = "<group>"; };
+		77D2ED5E2B18A50200A0E58C /* ProxySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySyncService.swift; sourceTree = "<group>"; };
+		77D2ED602B18A5BF00A0E58C /* SyncChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncChanges.swift; sourceTree = "<group>"; };
+		77D2ED622B192D5B00A0E58C /* ProxyOperationFactoryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyOperationFactoryTests.swift; sourceTree = "<group>"; };
+		77D2ED642B19C42D00A0E58C /* ProxyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyModels.swift; sourceTree = "<group>"; };
+		77D2ED662B19C44900A0E58C /* ProxyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyOperationFactory.swift; sourceTree = "<group>"; };
 		77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Helpers.swift"; sourceTree = "<group>"; };
 		77E255652A16059A00B644C3 /* MultiassetUserDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsFilterMapper.swift; sourceTree = "<group>"; };
@@ -10169,6 +10179,17 @@
 			path = Integrity;
 			sourceTree = "<group>";
 		};
+		77D2ED5D2B18A4E200A0E58C /* Proxy */ = {
+			isa = PBXGroup;
+			children = (
+				77D2ED5E2B18A50200A0E58C /* ProxySyncService.swift */,
+				77D2ED602B18A5BF00A0E58C /* SyncChanges.swift */,
+				77D2ED642B19C42D00A0E58C /* ProxyModels.swift */,
+				77D2ED662B19C44900A0E58C /* ProxyOperationFactory.swift */,
+			);
+			path = Proxy;
+			sourceTree = "<group>";
+		};
 		77D9A8552D1961A00A3683BE /* SelectValidatorsConfirm */ = {
 			isa = PBXGroup;
 			children = (
@@ -10639,6 +10660,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				77D2ED5D2B18A4E200A0E58C /* Proxy */,
 				0C500B252B0730FC00ABEE70 /* TransactionSubscription */,
 				0C59E8CA2AA5D621001E11F3 /* ExternalBalanceUpdater */,
 				8455F1912A1DC631003F072D /* Multistaking */,
@@ -11398,6 +11420,7 @@
 				843B6F4E28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift */,
 				840874DF2978882700ACFA55 /* Gov2DelegationTests.swift */,
 				8813702B29C13E7900829458 /* Web3NamesOperationFactoryTests.swift */,
+				77D2ED622B192D5B00A0E58C /* ProxyOperationFactoryTests.swift */,
 				8455F1992A1DEEAF003F072D /* SubqueryMultistakingTests.swift */,
 				844304662A28F7A500DE36DE /* MultistakingSyncTests.swift */,
 				0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */,
@@ -19735,6 +19758,7 @@
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
 				84BB3CE9267C9ADE00676FFE /* CrowdloanTests.swift in Sources */,
 				8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */,
+				77D2ED632B192D5B00A0E58C /* ProxyOperationFactoryTests.swift in Sources */,
 				0CD352982ACB01FD00B3E446 /* AccountGenerator.swift in Sources */,
 				844304672A28F7A500DE36DE /* MultistakingSyncTests.swift in Sources */,
 				84E8AC7727BBC8E400402635 /* NFTIntegrationTests.swift in Sources */,
@@ -20217,6 +20241,7 @@
 				847999B42888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift in Sources */,
 				841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */,
 				84EBC55024F660A700459D15 /* EventCenter.swift in Sources */,
+				77D2ED612B18A5BF00A0E58C /* SyncChanges.swift in Sources */,
 				849014CB24AA8B75008F705E /* RootControllerAnimationCoordinator.swift in Sources */,
 				84DED3FC266651EB00A153BB /* ReferralCrowdloanViewModel.swift in Sources */,
 				8428766924ADF27D00D91AD8 /* AuthorizationPresentable.swift in Sources */,
@@ -22338,6 +22363,7 @@
 				844A539529BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift in Sources */,
 				84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */,
 				EB5F587A71CCE1F0F86154CF /* ControllerAccountViewFactory.swift in Sources */,
+				77D2ED5F2B18A50200A0E58C /* ProxySyncService.swift in Sources */,
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,
 				84C9CF3B291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift in Sources */,
@@ -22406,6 +22432,7 @@
 				883DB180297A546800EFB7D8 /* GovernanceDelegateActionControl.swift in Sources */,
 				AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */,
 				885A6C3229A374B600B65C1A /* ReferendumVotersLocalWrapperFactory.swift in Sources */,
+				77D2ED672B19C44900A0E58C /* ProxyOperationFactory.swift in Sources */,
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
 				77AAE2262AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
@@ -23339,6 +23366,7 @@
 				A9A4846AB91BCB88E0416E38 /* CommonDelegationTracksViewLayout.swift in Sources */,
 				0754911527A21957BD25A1DA /* CommonDelegationTracksViewFactory.swift in Sources */,
 				849F33BA29F7BA86001AEFA4 /* DAppInteractionMediator.swift in Sources */,
+				77D2ED652B19C42D00A0E58C /* ProxyModels.swift in Sources */,
 				845B823629C8FF2900D187CB /* EtherscanBaseOperationFactory.swift in Sources */,
 				473EDA64B1A18BA80189142D /* GovernanceRemoveVotesConfirmProtocols.swift in Sources */,
 				590717389ECBA34FA08F247B /* GovernanceRemoveVotesConfirmWireframe.swift in Sources */,
