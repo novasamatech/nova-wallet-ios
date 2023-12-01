@@ -17,12 +17,17 @@ final class SwapsValidationTests: XCTestCase {
         let accountId = try WestendStub.address.toAccountId()
         
         let freeBalance = amountInPlank(50, payChainAsset)
-        let payAssetBalance = AssetBalance(chainAssetId: payChainAsset.chainAssetId,
-                                           accountId: accountId,
-                                           freeInPlank: freeBalance,
-                                           reservedInPlank: 0,
-                                           frozenInPlank: 0,
-                                           blocked: false)
+        let payAssetBalance = AssetBalance(
+            chainAssetId: payChainAsset.chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeBalance,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
+            blocked: false
+        )
+        
         let existentialDeposit = amountInPlank(1, utilityChainAsset)
         let fee = amountInPlank(0.1, payChainAsset)
         let existentialDepositInFeeToken = amountInPlank(0.01, payChainAsset)
@@ -65,6 +70,8 @@ final class SwapsValidationTests: XCTestCase {
                                            freeInPlank: freeBalance,
                                            reservedInPlank: 0,
                                            frozenInPlank: 0,
+                                           edCountMode: .basedOnFree,
+                                           transferrableMode: .fungibleTrait,
                                            blocked: false)
         
         let fee = amountInPlank(0.1, payChainAsset)

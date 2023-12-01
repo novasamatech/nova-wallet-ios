@@ -181,6 +181,8 @@ final class AssetsBalanceUpdater {
                 freeInPlank: balance,
                 reservedInPlank: 0,
                 frozenInPlank: isFrozen ? balance : 0,
+                edCountMode: .basedOnTotal,
+                transferrableMode: .regular,
                 blocked: isBlocked
             )
 

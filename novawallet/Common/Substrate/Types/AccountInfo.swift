@@ -18,6 +18,7 @@ struct AccountData: Codable, Equatable {
     @OptionStringCodable var frozen: BigUInt?
     @OptionStringCodable var miscFrozen: BigUInt?
     @OptionStringCodable var feeFrozen: BigUInt?
+    @OptionStringCodable var flags: BigUInt?
 }
 
 extension AccountData {
@@ -32,4 +33,24 @@ extension AccountData {
     }
 
     var available: BigUInt { free > locked ? free - locked : 0 }
+}
+
+extension AccountData {
+    static let fungibleTraitLogic = BigUInt(1) << 127
+
+    var isFungibleTraitLogic: Bool {
+        guard let flags = flags else {
+            return false
+        }
+
+        return (flags & Self.fungibleTraitLogic) == Self.fungibleTraitLogic
+    }
+
+    var edCountMode: AssetBalance.ExistentialDepositCountMode {
+        isFungibleTraitLogic ? .basedOnFree : .basedOnTotal
+    }
+
+    var transferrableModel: AssetBalance.TransferrableMode {
+        isFungibleTraitLogic ? .fungibleTrait : .regular
+    }
 }

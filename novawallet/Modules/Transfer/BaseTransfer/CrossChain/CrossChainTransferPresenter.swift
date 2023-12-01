@@ -20,9 +20,9 @@ class CrossChainTransferPresenter {
     private(set) var destSendingExistence: AssetBalanceExistence?
     private(set) var destUtilityMinBalance: BigUInt?
 
-    var senderUtilityAssetTotal: BigUInt? {
-        isOriginUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
-            senderUtilityAssetBalance?.totalInPlank
+    var senderUtilityBalanceCountingEd: BigUInt? {
+        isOriginUtilityTransfer ? senderSendingAssetBalance?.balanceCountingEd :
+            senderUtilityAssetBalance?.balanceCountingEd
     }
 
     var senderUtilityAssetTransferable: BigUInt? {
@@ -152,7 +152,7 @@ class CrossChainTransferPresenter {
 
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: originFee,
-                total: senderUtilityAssetTotal,
+                total: senderUtilityBalanceCountingEd,
                 minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
                 locale: selectedLocale
             ),
@@ -168,7 +168,7 @@ class CrossChainTransferPresenter {
 
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
-                totalAmount: recepientSendingAssetBalance?.totalInPlank,
+                totalAmount: recepientSendingAssetBalance?.balanceCountingEd,
                 minBalance: destSendingExistence?.minBalance,
                 locale: selectedLocale
             ),

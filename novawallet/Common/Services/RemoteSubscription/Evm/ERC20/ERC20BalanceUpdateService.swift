@@ -70,6 +70,8 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                     freeInPlank: newBalance,
                     reservedInPlank: 0,
                     frozenInPlank: 0,
+                    edCountMode: .basedOnFree,
+                    transferrableMode: .regular,
                     blocked: false
                 )
             }

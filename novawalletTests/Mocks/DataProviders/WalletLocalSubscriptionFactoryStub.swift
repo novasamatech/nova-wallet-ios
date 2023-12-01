@@ -25,6 +25,8 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
                 freeInPlank: balance,
                 reservedInPlank: 0,
                 frozenInPlank: 0,
+                edCountMode: .basedOnFree,
+                transferrableMode: .fungibleTrait,
                 blocked: false
             )
         } else {

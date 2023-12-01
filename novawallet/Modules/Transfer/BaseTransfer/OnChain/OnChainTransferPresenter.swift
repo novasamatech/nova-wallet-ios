@@ -19,9 +19,9 @@ class OnChainTransferPresenter {
     private(set) var sendingAssetExistence: AssetBalanceExistence?
     private(set) var utilityAssetMinBalance: BigUInt?
 
-    var senderUtilityAssetTotal: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
-            senderUtilityAssetBalance?.totalInPlank
+    var senderUtilityBalanceCountingEd: BigUInt? {
+        isUtilityTransfer ? senderSendingAssetBalance?.balanceCountingEd :
+            senderUtilityAssetBalance?.balanceCountingEd
     }
 
     var senderUtilityAssetTransferable: BigUInt? {
@@ -122,14 +122,14 @@ class OnChainTransferPresenter {
 
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee?.value,
-                total: senderUtilityAssetTotal,
+                total: senderUtilityBalanceCountingEd,
                 minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
-                totalAmount: recepientSendingAssetBalance?.totalInPlank,
+                totalAmount: recepientSendingAssetBalance?.balanceCountingEd,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             ),
