@@ -1,7 +1,7 @@
 import UIKit
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
-    func presentAccountImport(on view: MainTabBarViewProtocol?) {
+    func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
         guard let tabBarController = view?.controller else {
             return
         }
@@ -11,7 +11,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         guard let importController = AccountImportViewFactory
-            .createViewForAdding(for: .keystore)?.controller
+            .createViewForAdding(for: source)?.controller
         else {
             return
         }
@@ -22,7 +22,11 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         presentingController.present(navigationController, animated: true, completion: nil)
     }
 
-    func presentScreenIfNeeded(on view: MainTabBarViewProtocol?, screen: UrlHandlingScreen) {
+    func presentScreenIfNeeded(
+        on view: MainTabBarViewProtocol?,
+        screen: UrlHandlingScreen,
+        locale: Locale
+    ) {
         guard
             let controller = view?.controller as? UITabBarController,
             canPresentScreenWithoutBreakingFlow(on: controller) else {
@@ -30,8 +34,32 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         switch screen {
+        case let .error(error):
+            if let errorContent = error.content(for: locale) {
+                let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
+                present(
+                    message: errorContent.message,
+                    title: errorContent.title,
+                    closeAction: closeAction,
+                    from: view
+                )
+            }
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking
+        case let .gov(rederendumIndex):
+            controller.selectedIndex = MainTabBarIndex.vote
+            let govViewController = controller.viewControllers?[MainTabBarIndex.vote]
+            (govViewController as? UINavigationController)?.popToRootViewController(animated: true)
+            if let govController: VoteViewProtocol = govViewController?.contentViewController() {
+                govController.showReferendumsDetails(rederendumIndex)
+            }
+        case let .dApp(dApp):
+            controller.selectedIndex = MainTabBarIndex.dapps
+            let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
+            (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
+            if let dappView: DAppListViewProtocol = dappViewController?.contentViewController() {
+                dappView.didReceive(dApp: dApp)
+            }
         }
     }
 
@@ -44,7 +72,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         if
-            let navigationController = tabBarController.selectedViewController as? UINavigationController,
+            let navigationController = tabBarController.selectedViewController as? ImportantFlowNavigationController,
             navigationController.viewControllers.count > 1 {
             // some flow is in progress in the navigation
             return false
@@ -74,7 +102,10 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         return topNavigationController?.viewControllers.contains {
-            if ($0 as? OnboardingMainViewProtocol) != nil || ($0 as? AccountImportViewProtocol) != nil {
+            if
+                ($0 as? OnboardingMainViewProtocol) != nil ||
+                ($0 as? AccountImportViewProtocol) != nil ||
+                ($0 as? AdvancedWalletViewProtocol) != nil {
                 return true
             } else {
                 return false

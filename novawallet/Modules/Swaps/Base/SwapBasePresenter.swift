@@ -262,7 +262,7 @@ class SwapBasePresenter {
             ),
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.totalFee.targetAmount : 0,
-                total: swapModel.utilityAssetBalance?.freeInPlank,
+                total: swapModel.utilityAssetBalance?.balanceCountingEd,
                 minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
                 locale: locale
             ),

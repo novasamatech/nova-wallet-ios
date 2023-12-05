@@ -11,6 +11,7 @@ final class VotePresenter {
     private var wallet: MetaAccountModel?
 
     private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
+    private var referendumsState: ReferendumsInitState?
 
     init(
         interactor: VoteInteractorInputProtocol,
@@ -63,7 +64,11 @@ extension VotePresenter: VotePresenterProtocol {
         }
 
         childPresenter?.putOffline()
-        childPresenter = childPresenterFactory.createGovernancePresenter(from: view, wallet: wallet)
+        childPresenter = childPresenterFactory.createGovernancePresenter(
+            from: view,
+            wallet: wallet,
+            referendumsInitState: referendumsState
+        )
         childPresenter?.setup()
     }
 
@@ -75,6 +80,15 @@ extension VotePresenter: VotePresenterProtocol {
         childPresenter?.putOffline()
         childPresenter = childPresenterFactory.createCrowdloanPresenter(from: view, wallet: wallet)
         childPresenter?.setup()
+    }
+
+    func showReferendumsDetails(_ referendumIndex: Referenda.ReferendumIndex) {
+        referendumsState = .init(referendumIndex: referendumIndex) { [weak self] in
+            self?.referendumsState = nil
+        }
+        if view?.isSetup == true {
+            view?.didReceive(voteType: .governance)
+        }
     }
 }
 

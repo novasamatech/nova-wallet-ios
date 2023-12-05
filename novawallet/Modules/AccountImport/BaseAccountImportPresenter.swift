@@ -39,6 +39,8 @@ class BaseAccountImportPresenter {
     ) {
         if let preferredInfo = preferredInfo {
             selectedCryptoType = preferredInfo.cryptoType
+            substrateDerivationPath = preferredInfo.substrateDeriviationPath
+            ethereumDerivationPath = preferredInfo.evmDeriviationPath ?? DerivationPathConstants.defaultEthereum
         } else {
             selectedCryptoType = selectedCryptoType ?? metadata?.defaultCryptoType
         }
@@ -287,7 +289,7 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
     }
 
     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
-        selectedSourceType = .keystore
+        selectedSourceType = preferredInfo?.source ?? .keystore
 
         applySourceType(text, preferredInfo: preferredInfo)
     }

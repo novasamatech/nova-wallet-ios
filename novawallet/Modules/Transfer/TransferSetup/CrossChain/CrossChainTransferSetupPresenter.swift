@@ -404,7 +404,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
                 fee: isOriginUtilityTransfer ? originFee : 0,
-                totalAmount: senderSendingAssetBalance?.totalInPlank,
+                totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: originSendingMinBalance,
                 locale: selectedLocale
             )

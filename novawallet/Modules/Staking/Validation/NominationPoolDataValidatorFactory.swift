@@ -328,8 +328,8 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return
             }
 
-            let maxStake = assetBalance.totalInPlank > feeAndMinBalance ?
-                assetBalance.totalInPlank - feeAndMinBalance : 0
+            let maxStake = assetBalance.balanceCountingEd > feeAndMinBalance ?
+                assetBalance.balanceCountingEd - feeAndMinBalance : 0
             let maxStakeDecimal = maxStake.decimal(precision: precision)
             let maxStakeString = balanceFactory.amountFromValue(
                 maxStakeDecimal
@@ -381,7 +381,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 return true
             }
 
-            return stakingAmountInPlank + fee + minBalance <= assetBalance.totalInPlank
+            return stakingAmountInPlank + fee + minBalance <= assetBalance.balanceCountingEd
         })
     }
 }

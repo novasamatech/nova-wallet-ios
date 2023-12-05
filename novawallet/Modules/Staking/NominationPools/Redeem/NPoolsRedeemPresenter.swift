@@ -135,7 +135,7 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
             ),
             dataValidatorFactory.notViolatingMinBalancePaying(
                 fee: fee,
-                total: assetBalance?.totalInPlank,
+                total: assetBalance?.balanceCountingEd,
                 minBalance: existentialDeposit,
                 locale: selectedLocale
             )
