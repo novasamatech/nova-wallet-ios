@@ -1,12 +1,201 @@
-import SubstrateSdk
+import Foundation
 import RobinHood
-import BigInt
 
-class ProxySyncService: BaseSyncService {
-    let repository: AnyDataProviderRepository<ChainModel>
-    
-    override func performSyncUp() {}
+typealias ProxySyncServiceState = [ChainModel.Id: Bool]
 
-    override func stopSyncUp() {}
+protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
+    func subscribeSyncState(
+        _ target: AnyObject,
+        queue: DispatchQueue?,
+        closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void
+    )
+
+    func unsubscribeSyncState(_ target: AnyObject)
 }
 
+final class ProxySyncService {
+    let chainRegistry: ChainRegistryProtocol
+    let operationQueue: OperationQueue
+    let workingQueue: DispatchQueue
+    let logger: LoggerProtocol
+    let userDataStorageFacade: StorageFacadeProtocol
+    let proxyOperationFactory: ProxyOperationFactoryProtocol
+
+    private(set) var isActive: Bool = false
+
+    private(set) var updaters: [ChainModel.Id: ObservableSyncServiceProtocol & ApplicationServiceProtocol] = [:]
+    private let mutex = NSLock()
+
+    private var stateObserver = Observable<ProxySyncServiceState>(state: [:])
+
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        userDataStorageFacade: StorageFacadeProtocol,
+        proxyOperationFactory: ProxyOperationFactoryProtocol,
+        operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
+        workingQueue: DispatchQueue = DispatchQueue(
+            label: "com.nova.wallet.proxy.sync",
+            qos: .userInitiated,
+            attributes: .concurrent
+        ),
+        logger: LoggerProtocol = Logger.shared
+    ) {
+        self.chainRegistry = chainRegistry
+        self.userDataStorageFacade = userDataStorageFacade
+        self.proxyOperationFactory = proxyOperationFactory
+        self.workingQueue = workingQueue
+        self.operationQueue = operationQueue
+        self.logger = logger
+
+        subscribeChains()
+    }
+
+    private func subscribeChains() {
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: workingQueue
+        ) { [weak self] changes in
+            guard let self = self else {
+                return
+            }
+
+            self.mutex.lock()
+
+            handleChain(changes: changes)
+
+            self.mutex.unlock()
+        }
+    }
+
+    private func handleChain(changes: [DataProviderChange<ChainModel>]) {
+        changes.forEach { change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                setupSyncService(for: newItem)
+            case let .delete(deletedIdentifier):
+                stopSyncSevice(for: deletedIdentifier)
+            }
+        }
+    }
+
+    private func stopSyncSevice(for chainId: ChainModel.Id) {
+        updaters[chainId]?.stopSyncUp()
+        updaters[chainId] = nil
+    }
+
+    private func setupSyncService(for chain: ChainModel) {
+        guard chain.hasProxy else {
+            stopSyncSevice(for: chain.chainId)
+            return
+        }
+
+        let mapper = AnyCoreDataMapper(MetaAccountMapper())
+        let repository = userDataStorageFacade.createRepository(mapper: mapper)
+
+        let service = ChainProxySyncService(
+            chainModel: chain,
+            metaAccountsRepository: AnyDataProviderRepository(repository),
+            chainRegistry: chainRegistry,
+            proxyOperationFactory: proxyOperationFactory,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue
+        )
+
+        updaters[chain.chainId] = service
+        addSyncHandler(for: service)
+
+        if isActive {
+            service.setup()
+        }
+    }
+
+    private func removeOnchainSyncHandler() {
+        updaters.values.forEach { $0.unsubscribeSyncState(self) }
+    }
+
+    private func addSyncHandler(for service: ObservableSyncServiceProtocol) {
+        service.subscribeSyncState(
+            self,
+            queue: workingQueue
+        ) { [weak self] _, _ in
+            guard let self = self else {
+                return
+            }
+
+            self.mutex.lock()
+
+            self.updateSyncState()
+
+            self.mutex.unlock()
+        }
+    }
+
+    private func updateSyncState() {
+        let newState = updaters.mapValues { $0.getIsSyncing() }
+        stateObserver.state = newState
+    }
+}
+
+extension ProxySyncService: ProxySyncServiceProtocol {
+    func subscribeSyncState(
+        _ target: AnyObject,
+        queue: DispatchQueue?,
+        closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let state = stateObserver.state
+
+        dispatchInQueueWhenPossible(queue) {
+            closure(state, state)
+        }
+
+        stateObserver.addObserver(with: target, queue: queue, closure: closure)
+    }
+
+    func unsubscribeSyncState(_ target: AnyObject) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        stateObserver.removeObserver(by: target)
+    }
+
+    func setup() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard !isActive else {
+            return
+        }
+
+        isActive = true
+
+        updaters.values.forEach { $0.setup() }
+    }
+
+    func throttle() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        isActive = false
+
+        updaters.values.forEach { $0.throttle() }
+    }
+}

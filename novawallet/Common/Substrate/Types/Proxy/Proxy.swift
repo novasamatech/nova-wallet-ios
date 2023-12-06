@@ -13,7 +13,7 @@ enum Proxy {
         @StringCodable var delay: BlockNumber
     }
 
-    enum ProxyType: Decodable {
+    enum ProxyType: String, Hashable, Decodable {
         case any
         case nonTransfer
         case governance

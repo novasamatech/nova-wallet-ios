@@ -21,7 +21,8 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
                 chainId: chainAccontEntity.chainId!,
                 accountId: accountId,
                 publicKey: chainAccontEntity.publicKey!,
-                cryptoType: UInt8(bitPattern: Int8(chainAccontEntity.cryptoType))
+                cryptoType: UInt8(bitPattern: Int8(chainAccontEntity.cryptoType)),
+                proxieds: []
             )
         } ?? []
 

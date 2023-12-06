@@ -64,7 +64,7 @@ final class YourWalletsPresenter {
 
     private func header(metaAccountType: MetaAccountModelType) -> YourWalletsViewSectionModel.HeaderViewModel? {
         switch metaAccountType {
-        case .watchOnly, .secrets:
+        case .watchOnly, .secrets, .proxy:
             return nil
         case .paritySigner:
             let type = ParitySignerType.legacy

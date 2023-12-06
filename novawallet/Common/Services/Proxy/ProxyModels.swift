@@ -1,6 +1,8 @@
-struct ProxyAccounts {
+import SubstrateSdk
+
+struct ProxiedAccount {
     let accountId: AccountId
-    let role: Proxy.ProxyType
+    let type: Proxy.ProxyType
 }
 
 struct AccountIdKey: JSONListConvertible, Hashable {
@@ -32,4 +34,3 @@ struct ProxyDefinition: Decodable {
         definition = try container.decode([Proxy.ProxyDefinition].self)
     }
 }
-

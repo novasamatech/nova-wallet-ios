@@ -162,6 +162,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         hasSwapHub
     }
 
+    var hasProxy: Bool {
+        options?.contains(where: { $0 == .proxy }) ?? false
+    }
+
     var noSubstrateRuntime: Bool {
         options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
     }
@@ -261,6 +265,7 @@ enum ChainOptions: String, Codable {
     case governanceV1 = "governance-v1"
     case noSubstrateRuntime
     case swapHub = "swap-hub"
+    case proxy
 }
 
 extension ChainModel {

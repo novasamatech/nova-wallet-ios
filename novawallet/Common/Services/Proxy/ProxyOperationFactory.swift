@@ -1,9 +1,20 @@
-final class ProxyOperationFactory {
+import SubstrateSdk
+import RobinHood
+
+protocol ProxyOperationFactoryProtocol {
     func fetchProxyList(
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[AccountId: [ProxyAccounts]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [ProxiedAccount]]>
+}
+
+final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
+    func fetchProxyList(
+        requestFactory: StorageRequestFactoryProtocol,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> {
         let request = UnkeyedRemoteStorageRequest(storagePath: Proxy.proxyList)
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -15,10 +26,21 @@ final class ProxyOperationFactory {
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() }
             )
 
-        let mapper = ClosureOperation<[AccountId: [ProxyAccounts]]> {
+        let mapper = ClosureOperation<[AccountId: [ProxiedAccount]]> {
             let proxyResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-            return proxyResult.map { key, value in
-                (key.accountId, value.definition.map { ProxyAccounts(accountId: $0.delegate, role: $0.proxyType) })
+
+            return proxyResult.reduce(into: [AccountId: [ProxiedAccount]]()) { result, nextPart in
+                nextPart.value.definition.forEach { proxy in
+                    guard proxy.delay == 0 else {
+                        return
+                    }
+                    let newProxied = ProxiedAccount(accountId: nextPart.key.accountId, type: proxy.proxyType)
+                    if let delegate = result[proxy.delegate] {
+                        result[proxy.delegate]?.append(newProxied)
+                    } else {
+                        result[proxy.delegate] = [newProxied]
+                    }
+                }
             }
         }
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
@@ -27,16 +49,5 @@ final class ProxyOperationFactory {
         let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
 
         return .init(targetOperation: mapper, dependencies: dependencies)
-    }
-}
-
-public extension Dictionary {
-    func map<T: Hashable, U>(transform: (Key, Value) -> (T, U)) -> [T: U] {
-        var result: [T: U] = [:]
-        for (key, value) in self {
-            let (transformedKey, transformedValue) = transform(key, value)
-            result[transformedKey] = transformedValue
-        }
-        return result
     }
 }

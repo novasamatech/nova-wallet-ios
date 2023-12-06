@@ -211,7 +211,8 @@ extension MetaAccountOperationFactory {
                 chainId: chainId,
                 accountId: accountId,
                 publicKey: publicKey,
-                cryptoType: request.cryptoType.rawValue
+                cryptoType: request.cryptoType.rawValue,
+                proxieds: []
             )
 
             return metaAccount.replacingChainAccount(chainAccount)
@@ -266,7 +267,8 @@ extension MetaAccountOperationFactory {
                 chainId: chainId,
                 accountId: accountId,
                 publicKey: publicKey,
-                cryptoType: request.cryptoType.rawValue
+                cryptoType: request.cryptoType.rawValue,
+                proxieds: []
             )
 
             return metaAccount.replacingChainAccount(chainAccount)
@@ -324,7 +326,8 @@ extension MetaAccountOperationFactory {
                 chainId: chainId,
                 accountId: accountId,
                 publicKey: publicKey.rawData(),
-                cryptoType: request.cryptoType.rawValue
+                cryptoType: request.cryptoType.rawValue,
+                proxieds: []
             )
 
             try self.saveSecretKey(keystore.secretKeyData, metaId: metaId, ethereumBased: false)
