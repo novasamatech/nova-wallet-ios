@@ -8,10 +8,6 @@ class ProxySyncIntegrationTests: XCTestCase {
         let storageFacade = SubstrateStorageTestFacade()
         let userStorageFacade = UserDataStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        
-        let connection = chainRegistry.getConnection(for: chainId)!
-        let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
-        
         let substrateAccountId = try? "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ".toAccountId()
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         
@@ -34,6 +30,12 @@ class ProxySyncIntegrationTests: XCTestCase {
             proxyOperationFactory: ProxyOperationFactory()
         )
         
+        let chainsStore = ChainsStore(chainRegistry: chainRegistry)
+        let allProxyChains = chainsStore.availableChainIds().compactMap {
+            let chain = chainsStore.getChain(for: $0)
+            return chain?.hasProxy == true ? chain : nil
+        }
+        
         let completionExpectation = XCTestExpectation()
 
         syncService.setup()
@@ -46,7 +48,7 @@ class ProxySyncIntegrationTests: XCTestCase {
              
             Logger.shared.info("State change: \(state)")
             
-            if allSynced {
+            if state.values.count == allProxyChains.count, allSynced {
                 completionExpectation.fulfill()
             }
         }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F66" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22E261" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CDAsset" representedClassName="CDAsset" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="buyProviders" optional="YES" attributeType="Binary"/>
@@ -42,6 +42,7 @@
         <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasGovernance" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="hasGovernanceV1" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasProxy" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="hasSwapHub" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="icon" attributeType="URI"/>
         <attribute name="isEthereumBased" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
