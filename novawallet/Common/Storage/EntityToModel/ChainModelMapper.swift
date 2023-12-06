@@ -3,6 +3,10 @@ import CoreData
 import RobinHood
 import SubstrateSdk
 
+enum ChainModelMapperError: Error {
+    case unexpectedSyncMode(Int16)
+}
+
 final class ChainModelMapper {
     var entityIdentifierFieldName: String { #keyPath(CDChain.chainId) }
 
@@ -346,6 +350,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             try jsonDecoder.decode(JSON.self, from: $0)
         }
 
+        guard let syncMode = ChainSyncMode(entityValue: entity.syncMode) else {
+            throw ChainModelMapperError.unexpectedSyncMode(entity.syncMode)
+        }
+
         return ChainModel(
             chainId: entity.chainId!,
             parentId: entity.parentId,
@@ -360,7 +368,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             externalApis: externalApiSet,
             explorers: explorers,
             order: entity.order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -389,6 +398,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }
+
+        entity.syncMode = model.syncMode.toEntityValue()
 
         try updateEntityAssets(for: entity, from: model, context: context)
 

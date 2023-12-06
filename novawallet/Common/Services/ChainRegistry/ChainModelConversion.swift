@@ -32,7 +32,12 @@ final class ChainModelConverter: ChainModelConversionProtocol {
         }
 
         let newAssets = Set(chainAssets).union(localUserAssets)
-        let newChainModel = ChainModel(remoteModel: remoteModel, assets: newAssets, order: order)
+        let newChainModel = ChainModel(
+            remoteModel: remoteModel,
+            assets: newAssets,
+            syncMode: localModel?.syncMode ?? .light,
+            order: order
+        )
 
         return newChainModel != localModel ? newChainModel : nil
     }

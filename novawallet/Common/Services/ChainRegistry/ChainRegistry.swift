@@ -8,7 +8,9 @@ protocol ChainRegistryProtocol: AnyObject {
     func getChain(for chainId: ChainModel.Id) -> ChainModel?
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
     func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine?
+
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?
+    func switchSync(mode: ChainSyncMode, chainId: ChainModel.Id) throws
 
     func chainsSubscribe(
         _ target: AnyObject,
@@ -103,9 +105,11 @@ final class ChainRegistry {
                     availableChains.insert(newChain)
 
                     let connection = try connectionPool.setupConnection(for: newChain)
-
-                    setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
-                    setupRuntimeVersionSubscriptionIfNeeded(for: newChain, connection: connection)
+                    
+                    if newChain.isReadyForOnchainRequests {
+                        setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
+                        setupRuntimeVersionSubscriptionIfNeeded(for: newChain, connection: connection)
+                    }
                 case let .update(updatedChain):
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
                         availableChains.remove(at: currentChain)
@@ -114,9 +118,11 @@ final class ChainRegistry {
                     availableChains.insert(updatedChain)
 
                     let connection = try connectionPool.setupConnection(for: updatedChain)
-
-                    setupRuntimeHandlingIfNeeded(for: updatedChain, connection: connection)
-                    setupRuntimeVersionSubscriptionIfNeeded(for: updatedChain, connection: connection)
+                    
+                    if updatedChain.isReadyForOnchainRequests {
+                        setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
+                        setupRuntimeVersionSubscriptionIfNeeded(for: newChain, connection: connection)
+                    }
                 case let .delete(chainId):
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == chainId }) {
                         availableChains.remove(at: currentChain)
@@ -234,6 +240,36 @@ extension ChainRegistry: ChainRegistryProtocol {
         }
 
         return runtimeProviderPool.getRuntimeProvider(for: chainId)
+    }
+    
+    func switchSync(mode: ChainSyncMode, chainId: ChainModel.Id) throws {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+        
+        guard let chain = availableChainIds[chainId], chain.syncMode != mode else {
+            return
+        }
+        
+        let newChain = chain.updatingSyncMode(for: mode)
+        
+        switch mode {
+        case .full:
+            guard let connection = connectionPool.getConnection(for: chain.chainId) else {
+                throw ChainRegistryError.connectionUnavailable
+            }
+
+            setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
+            setupRuntimeVersionSubscriptionIfNeeded(for: newChain, connection: connection)
+            
+        case .disabled, .light:
+            clearRuntimeSubscriptionIfExists(for: chainId)
+            clearRuntimeHandlingIfNeeded(for: chainId)
+        }
+        
+        // TODO: save new chain sync mode to db
     }
 
     func chainsSubscribe(

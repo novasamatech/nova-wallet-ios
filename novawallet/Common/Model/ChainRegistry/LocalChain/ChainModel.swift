@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-struct ChainModel: Equatable, Codable, Hashable {
+struct ChainModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
 
@@ -48,6 +48,7 @@ struct ChainModel: Equatable, Codable, Hashable {
     let explorers: [Explorer]?
     let order: Int64
     let additional: JSON?
+    let syncMode: ChainSyncMode
 
     init(
         chainId: Id,
@@ -63,7 +64,8 @@ struct ChainModel: Equatable, Codable, Hashable {
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
         order: Int64,
-        additional: JSON?
+        additional: JSON?,
+        syncMode: ChainSyncMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -79,13 +81,15 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.explorers = explorers
         self.order = order
         self.additional = additional
+        self.syncMode = syncMode
     }
 
-    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, order: Int64) {
+    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, syncMode: ChainSyncMode, order: Int64) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
         self.assets = assets
+        self.syncMode = syncMode
 
         let nodeList = remoteModel.nodes.enumerated().map { index, node in
             ChainNodeModel(remoteModel: node, order: Int16(index))
@@ -247,6 +251,14 @@ struct ChainModel: Equatable, Codable, Hashable {
 
         return UInt32(value)
     }
+    
+    var isReadyForOnchainRequests: Bool {
+        !hasSubstrateRuntime || syncMode == .full
+    }
+    
+    var isLightSyncMode: Bool {
+        syncMode == .light
+    }
 }
 
 extension ChainModel: Identifiable {
@@ -279,7 +291,8 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -301,7 +314,8 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -323,7 +337,28 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
+        )
+    }
+
+    func updatingSyncMode(for newMode: ChainSyncMode) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: newMode
         )
     }
 }
