@@ -37,10 +37,10 @@ jobs:
       - name: Run Python script
         run: python .github/scripts/pr_comment_extract_data.py
 
-      - name: Create new branch and file in nova-wallet-android-releases repo
+      - name: Create new branch and file in novasamatech/nova-wallet-ios-releases repo
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          repository: novasamatech/nova-wallet-android-releases
+          repository: novasamatech/nova-wallet-ios-releases
           event-type: create-pr
           client-payload: '{"version": "${{ env.VERSION }}", "comment_link": "${{ env.COMMENT_LINK }}", "time": "${{ env.TIME }}", "severity": "${{ env.SEVERITY }}"}'
