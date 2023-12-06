@@ -102,7 +102,10 @@ struct ChainModel: Equatable, Hashable {
         addressPrefix = remoteModel.addressPrefix
         types = remoteModel.types
         icon = remoteModel.icon
-        options = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) }
+
+        let remoteOptions = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) } ?? []
+        options = !remoteOptions.isEmpty ? remoteOptions : nil
+
         externalApis = remoteModel.externalApi.map { LocalChainExternalApiSet(remoteApi: $0) }
         explorers = remoteModel.explorers
         additional = remoteModel.additional

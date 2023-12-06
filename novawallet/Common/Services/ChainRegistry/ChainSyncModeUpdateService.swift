@@ -85,7 +85,7 @@ extension ChainSyncModeUpdateService: ChainRemoteAccountDetectorDelegate {
         if account.exists {
             do {
                 try chainRegistry.switchSync(mode: .full, chainId: chain.chainId)
-                
+
                 logger.debug("Switch to full mode for \(chain.name)")
             } catch {
                 logger.error("Can't switch full sync \(chain.name) \(error)")

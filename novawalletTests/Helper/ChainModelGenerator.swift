@@ -84,7 +84,8 @@ enum ChainModelGenerator {
                 externalApis: externalApis,
                 explorers: explorers,
                 order: Int64(index),
-                additional: nil
+                additional: nil,
+                syncMode: .full
             )
         }
     }
@@ -94,7 +95,8 @@ enum ChainModelGenerator {
         withTypes: Bool = true,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasSubstrateRuntime: Bool = true
+        hasSubstrateRuntime: Bool = true,
+        fullSyncByDefault: Bool = true
     ) -> [RemoteChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -148,8 +150,12 @@ enum ChainModelGenerator {
                 )
             ]
 
-            let rawOptions = options.compactMap { $0.rawValue }
+            var rawOptions = options.compactMap { $0.rawValue }
 
+            if fullSyncByDefault {
+                rawOptions.append(ChainModelConverter.fullSyncByDefaultOption)
+            }
+            
             return RemoteChainModel(
                 chainId: chainId,
                 parentId: nil,
@@ -255,7 +261,8 @@ enum ChainModelGenerator {
             externalApis: externalApis,
             explorers: explorers,
             order: 0,
-            additional: nil
+            additional: nil,
+            syncMode: .full
         )
     }
 

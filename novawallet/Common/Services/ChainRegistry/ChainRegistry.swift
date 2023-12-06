@@ -198,6 +198,19 @@ final class ChainRegistry {
         chainSyncService.syncUp()
         commonTypesSyncService.syncUp()
     }
+
+    private func internalSwitchSync(mode: ChainSyncMode, chainId: ChainModel.Id) throws {
+        guard let chain = availableChains[chainId], chain.syncMode != mode else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+
+        let newChain = chain.updatingSyncMode(for: mode)
+
+        availableChains[chainId] = newChain
+        try updateSyncMode(for: newChain)
+
+        chainSyncService.updateLocal(chain: newChain)
+    }
 }
 
 extension ChainRegistry: ChainRegistryProtocol {
@@ -252,6 +265,18 @@ extension ChainRegistry: ChainRegistryProtocol {
             mutex.unlock()
         }
 
+        if let runtimeProvider = runtimeProviderPool.getRuntimeProvider(for: chainId) {
+            return runtimeProvider
+        }
+
+        guard let chain = availableChains[chainId], chain.isLightSyncMode else {
+            return nil
+        }
+
+        // switch to full sync if one need runtime for some reason in light sync mode
+
+        try? internalSwitchSync(mode: .full, chainId: chainId)
+
         return runtimeProviderPool.getRuntimeProvider(for: chainId)
     }
 
@@ -262,16 +287,7 @@ extension ChainRegistry: ChainRegistryProtocol {
             mutex.unlock()
         }
 
-        guard let chain = availableChains[chainId], chain.syncMode != mode else {
-            throw ChainRegistryError.noChain(chainId)
-        }
-
-        let newChain = chain.updatingSyncMode(for: mode)
-
-        availableChains[chainId] = newChain
-        try updateSyncMode(for: newChain)
-
-        chainSyncService.updateLocal(chain: newChain)
+        try internalSwitchSync(mode: mode, chainId: chainId)
     }
 
     func chainsSubscribe(
