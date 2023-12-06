@@ -3,14 +3,18 @@ import XCTest
 import RobinHood
 
 class ProxySyncIntegrationTests: XCTestCase {
-    func testSync() {
-        let chainId = KnowChainId.kusama
+    func testSync() throws {
         let storageFacade = SubstrateStorageTestFacade()
         let userStorageFacade = UserDataStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let substrateAccountId = try? "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ".toAccountId()
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let substrateAccountId = try? "G4qFCkKu7BiaWFNLXfcdZpY94hndyKnzqY1JtmiSBsTPSxC".toAccountId()
+        let operationQueue = OperationQueue()
         
+        let managedAccountRepository = AccountRepositoryFactory(storageFacade: userStorageFacade)
+            .createManagedMetaAccountRepository(
+                for: nil,
+                sortDescriptors: [NSSortDescriptor.accountsByOrder]
+            )
         let wallet = MetaAccountModel(
             metaId: UUID().uuidString,
             name: "test",
@@ -23,18 +27,31 @@ class ProxySyncIntegrationTests: XCTestCase {
             type: .watchOnly
         )
         
+        let accountItem = ManagedMetaAccountModel(
+            info: wallet,
+            isSelected: true,
+            order: 1
+        )
+
+        let saveWalletOperation = managedAccountRepository
+            .saveOperation({
+                [accountItem]
+            }, { [] })
+        
+        operationQueue.addOperations([saveWalletOperation], waitUntilFinished: true)
         
         let syncService = ProxySyncService(
             chainRegistry: chainRegistry,
             userDataStorageFacade: userStorageFacade,
-            proxyOperationFactory: ProxyOperationFactory()
+            proxyOperationFactory: ProxyOperationFactory(),
+            chainsFilter: { !$0.isTestnet }
         )
         
         let chainsStore = ChainsStore(chainRegistry: chainRegistry)
         let allProxyChains = chainsStore.availableChainIds().compactMap {
             let chain = chainsStore.getChain(for: $0)
             return chain?.hasProxy == true ? chain : nil
-        }
+        }.filter { !$0.isTestnet }
         
         let completionExpectation = XCTestExpectation()
 

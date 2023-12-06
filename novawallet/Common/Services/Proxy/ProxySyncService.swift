@@ -20,6 +20,7 @@ final class ProxySyncService {
     let logger: LoggerProtocol
     let userDataStorageFacade: StorageFacadeProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
+    let chainsFilter: ((ChainModel) -> Bool)?
 
     private(set) var isActive: Bool = false
 
@@ -38,7 +39,8 @@ final class ProxySyncService {
             qos: .userInitiated,
             attributes: .concurrent
         ),
-        logger: LoggerProtocol = Logger.shared
+        logger: LoggerProtocol = Logger.shared,
+        chainsFilter: ((ChainModel) -> Bool)? = nil
     ) {
         self.chainRegistry = chainRegistry
         self.userDataStorageFacade = userDataStorageFacade
@@ -46,6 +48,7 @@ final class ProxySyncService {
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
+        self.chainsFilter = chainsFilter
 
         subscribeChains()
     }
@@ -84,6 +87,9 @@ final class ProxySyncService {
     }
 
     private func setupSyncService(for chain: ChainModel) {
+        if let filter = chainsFilter, !filter(chain) {
+            return
+        }
         guard chain.hasProxy else {
             stopSyncSevice(for: chain.chainId)
             return
