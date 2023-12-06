@@ -178,7 +178,7 @@
 		0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */; };
 		0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */; };
 		0C66102F2A78E9D700E44634 /* RelaychainStartStakingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102E2A78E9D700E44634 /* RelaychainStartStakingState.swift */; };
-		0C6941BF2B1F247C00A7CF6D /* RuntimePolicyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6941BE2B1F247C00A7CF6D /* RuntimePolicyService.swift */; };
+		0C6941BF2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6941BE2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift */; };
 		0C6941C22B1F271A00A7CF6D /* ChainRemoteAccountDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6941C12B1F271A00A7CF6D /* ChainRemoteAccountDetector.swift */; };
 		0C6941C62B1F51FE00A7CF6D /* RawDataStorageSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6941C52B1F51FE00A7CF6D /* RawDataStorageSubscription.swift */; };
 		0C6941CB2B203F3300A7CF6D /* ChainSyncMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6941CA2B203F3300A7CF6D /* ChainSyncMode.swift */; };
@@ -4297,7 +4297,7 @@
 		0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSharedStateFactory.swift; sourceTree = "<group>"; };
 		0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingSharedState.swift; sourceTree = "<group>"; };
 		0C66102E2A78E9D700E44634 /* RelaychainStartStakingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStartStakingState.swift; sourceTree = "<group>"; };
-		0C6941BE2B1F247C00A7CF6D /* RuntimePolicyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimePolicyService.swift; sourceTree = "<group>"; };
+		0C6941BE2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainSyncModeUpdateService.swift; sourceTree = "<group>"; };
 		0C6941C12B1F271A00A7CF6D /* ChainRemoteAccountDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRemoteAccountDetector.swift; sourceTree = "<group>"; };
 		0C6941C52B1F51FE00A7CF6D /* RawDataStorageSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataStorageSubscription.swift; sourceTree = "<group>"; };
 		0C6941C92B203E2F00A7CF6D /* SubstrateDataModel23.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel23.xcdatamodel; sourceTree = "<group>"; };
@@ -12231,7 +12231,6 @@
 				8436E94526C85405003D4EA7 /* RuntimeSnapshot.swift */,
 				844CB57126F9EB2000396E13 /* RuntimeCodingService.swift */,
 				84452F4D25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift */,
-				0C6941BE2B1F247C00A7CF6D /* RuntimePolicyService.swift */,
 			);
 			path = RuntimeProviderPool;
 			sourceTree = "<group>";
@@ -16013,6 +16012,7 @@
 				84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */,
 				844CB57526FA064700396E13 /* ChainRegistryError.swift */,
 				84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */,
+				0C6941BE2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift */,
 			);
 			path = ChainRegistry;
 			sourceTree = "<group>";
@@ -21882,7 +21882,7 @@
 				84EBFCE9285E7C100006327E /* XcmInstruction.swift in Sources */,
 				2AFF4BA2274D1E5C00D790B4 /* UsernameSetupViewLayout.swift in Sources */,
 				2A66CF4F25D109780006E4C1 /* CDPhishingItem+CoreDataDecodable.swift in Sources */,
-				0C6941BF2B1F247C00A7CF6D /* RuntimePolicyService.swift in Sources */,
+				0C6941BF2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift in Sources */,
 				8496ADDE276B123200306B24 /* PolkadotExtentionMessage.swift in Sources */,
 				84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */,
 				8473D4212657FFFB00B394B2 /* Crowdloan.swift in Sources */,

@@ -2,20 +2,20 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-protocol RuntimePolicyServiceProtocol: ApplicationServiceProtocol {
-    func update(wallet: MetaAccountModel)
+protocol ChainSyncModeUpdateServiceProtocol: ApplicationServiceProtocol {
+    func update(selectedMetaAccount: MetaAccountModel)
 }
 
-final class RuntimePolicyService {
+final class ChainSyncModeUpdateService {
     let chainRegistry: ChainRegistryProtocol
     let logger: LoggerProtocol
     let accountDetector: ChainRemoteAccountDetecting
     let workingQueue = DispatchQueue.global(qos: .userInitiated)
 
-    private var selectedWallet: MetaAccountModel?
+    private var selectedMetaAccount: MetaAccountModel?
 
-    init(selectedWallet: MetaAccountModel?, chainRegistry: ChainRegistryProtocol, logger: LoggerProtocol) {
-        self.selectedWallet = selectedWallet
+    init(selectedMetaAccount: MetaAccountModel?, chainRegistry: ChainRegistryProtocol, logger: LoggerProtocol) {
+        self.selectedMetaAccount = selectedMetaAccount
         self.chainRegistry = chainRegistry
         self.logger = logger
 
@@ -29,13 +29,13 @@ final class RuntimePolicyService {
                 let request = chain.accountRequest()
 
                 // manage runtime sync only for substrate networks
-                guard !chain.isReadyForOnchainRequests && chain.isLightSyncMode else {
+                guard !chain.noSubstrateRuntime, chain.isLightSyncMode else {
                     accountDetector.stopTrackingAccount(for: chain.chainId)
                     return
                 }
 
-                guard let accountId = selectedWallet?.fetch(for: request)?.accountId else {
-                    logger.warning("No account for \(chain.name) \(chain.chainId)")
+                guard let accountId = selectedMetaAccount?.fetch(for: request)?.accountId else {
+                    logger.debug("No account to track for \(chain.name) \(chain.chainId)")
                     return
                 }
 
@@ -50,6 +50,8 @@ final class RuntimePolicyService {
                         chain: chain,
                         connection: connection
                     )
+
+                    logger.debug("Started tracking account for \(chain.name)")
                 } catch {
                     logger.error("Can't track account for \(chain.name) \(error)")
                 }
@@ -70,12 +72,12 @@ final class RuntimePolicyService {
     }
 }
 
-extension RuntimePolicyService: ChainRemoteAccountDetectorDelegate {
+extension ChainSyncModeUpdateService: ChainRemoteAccountDetectorDelegate {
     func didReceiveDetected(account: ChainRemoteDetectedAccount, accountId: AccountId, chain: ChainModel) {
         let request = chain.accountRequest()
 
         guard
-            let currentAccountId = selectedWallet?.fetch(for: request)?.accountId,
+            let currentAccountId = selectedMetaAccount?.fetch(for: request)?.accountId,
             currentAccountId == accountId else {
             return
         }
@@ -83,14 +85,16 @@ extension RuntimePolicyService: ChainRemoteAccountDetectorDelegate {
         if account.exists {
             do {
                 try chainRegistry.switchSync(mode: .full, chainId: chain.chainId)
+                
+                logger.debug("Switch to full mode for \(chain.name)")
             } catch {
-                logger.error("Can't switch full sync \(chain.name) \(chain.chainId)")
+                logger.error("Can't switch full sync \(chain.name) \(error)")
             }
         }
     }
 }
 
-extension RuntimePolicyService: RuntimePolicyServiceProtocol {
+extension ChainSyncModeUpdateService: ChainSyncModeUpdateServiceProtocol {
     func setup() {
         accountDetector.delegate = self
         accountDetector.callbackQueue = .global(qos: .userInitiated)
@@ -103,7 +107,9 @@ extension RuntimePolicyService: RuntimePolicyServiceProtocol {
         accountDetector.stopTrackingAll()
     }
 
-    func update(wallet _: MetaAccountModel) {
+    func update(selectedMetaAccount: MetaAccountModel) {
+        self.selectedMetaAccount = selectedMetaAccount
+
         unsubscribeChains()
         accountDetector.stopTrackingAll()
 

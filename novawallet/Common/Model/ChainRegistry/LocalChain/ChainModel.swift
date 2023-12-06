@@ -251,11 +251,15 @@ struct ChainModel: Equatable, Hashable {
 
         return UInt32(value)
     }
-    
-    var isReadyForOnchainRequests: Bool {
-        !hasSubstrateRuntime || syncMode == .full
+
+    var isDisabled: Bool {
+        syncMode == .disabled
     }
-    
+
+    var isFullSyncMode: Bool {
+        syncMode == .full
+    }
+
     var isLightSyncMode: Bool {
         syncMode == .light
     }

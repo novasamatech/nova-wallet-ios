@@ -50,7 +50,7 @@ extension SpecVersionSubscriptionFactory: SpecVersionSubscriptionFactoryProtocol
         for chain: ChainModel,
         connection: JSONRPCEngine
     ) -> SpecVersionSubscriptionProtocol {
-        if chain.hasSubstrateRuntime {
+        if chain.isFullSyncMode, chain.hasSubstrateRuntime {
             return SpecVersionSubscription(
                 chainId: chain.chainId,
                 runtimeSyncService: runtimeSyncService,

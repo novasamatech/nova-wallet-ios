@@ -85,7 +85,7 @@ final class AccountInfoUpdatingService {
 
     private func checkChainReadyForSubscription(_ chain: ChainModel) -> Bool {
         guard
-            chain.isReadyForOnchainRequests,
+            chain.isFullSyncMode,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return false
         }

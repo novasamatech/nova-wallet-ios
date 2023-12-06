@@ -84,7 +84,7 @@ final class AssetsUpdatingService {
 
     private func checkChainReadyForSubscription(_ chain: ChainModel) -> Bool {
         guard
-            chain.isReadyForOnchainRequests,
+            chain.isFullSyncMode,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return false
         }
@@ -94,6 +94,10 @@ final class AssetsUpdatingService {
 
     private func updateSubscription(for chain: ChainModel) {
         guard checkChainReadyForSubscription(chain) else {
+            chain.assets.forEach { asset in
+                dropSubscriptionIfNeeded(for: chain.chainId, assetId: asset.assetId)
+            }
+
             return
         }
 

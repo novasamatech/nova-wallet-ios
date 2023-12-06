@@ -10,6 +10,8 @@ protocol ChainModelConversionProtocol {
 }
 
 final class ChainModelConverter: ChainModelConversionProtocol {
+    static let fullSyncByDefaultOption = "fullSyncByDefault"
+
     func update(
         localModel: ChainModel?,
         remoteModel: RemoteChainModel,
@@ -32,13 +34,38 @@ final class ChainModelConverter: ChainModelConversionProtocol {
         }
 
         let newAssets = Set(chainAssets).union(localUserAssets)
+
+        let syncMode = determineSyncMode(basedOn: localModel, remoteModel: remoteModel)
+
         let newChainModel = ChainModel(
             remoteModel: remoteModel,
             assets: newAssets,
-            syncMode: localModel?.syncMode ?? .light,
+            syncMode: syncMode,
             order: order
         )
 
         return newChainModel != localModel ? newChainModel : nil
+    }
+
+    private func determineSyncMode(basedOn localModel: ChainModel?, remoteModel: RemoteChainModel) -> ChainSyncMode {
+        // if a user disabled network then keep it as it is
+        if let localModel = localModel, localModel.syncMode == .disabled {
+            return .disabled
+        }
+
+        let shouldFullSync = remoteModel.options?.contains(Self.fullSyncByDefaultOption) ?? false
+
+        if shouldFullSync {
+            return .full
+        }
+
+        let hasNoRuntime = remoteModel.options?.contains(ChainOptions.noSubstrateRuntime.rawValue) ?? false
+
+        // no runtime (e.g. evm) networks always work in full sync
+        if hasNoRuntime {
+            return .full
+        }
+
+        return localModel?.syncMode ?? .light
     }
 }
