@@ -21,6 +21,7 @@ final class ProxySyncService {
     let userDataStorageFacade: StorageFacadeProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
     let chainsFilter: ((ChainModel) -> Bool)?
+    let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
 
     private(set) var isActive: Bool = false
 
@@ -33,6 +34,7 @@ final class ProxySyncService {
         chainRegistry: ChainRegistryProtocol,
         userDataStorageFacade: StorageFacadeProtocol,
         proxyOperationFactory: ProxyOperationFactoryProtocol,
+        metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.proxy.sync",
@@ -49,6 +51,7 @@ final class ProxySyncService {
         self.operationQueue = operationQueue
         self.logger = logger
         self.chainsFilter = chainsFilter
+        self.metaAccountsRepository = metaAccountsRepository
 
         subscribeChains()
     }
@@ -95,12 +98,9 @@ final class ProxySyncService {
             return
         }
 
-        let mapper = AnyCoreDataMapper(MetaAccountMapper())
-        let repository = userDataStorageFacade.createRepository(mapper: mapper)
-
         let service = ChainProxySyncService(
             chainModel: chain,
-            metaAccountsRepository: AnyDataProviderRepository(repository),
+            metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
             proxyOperationFactory: proxyOperationFactory,
             operationQueue: operationQueue,

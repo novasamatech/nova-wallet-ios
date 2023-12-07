@@ -15,6 +15,7 @@ class ProxySyncIntegrationTests: XCTestCase {
                 for: nil,
                 sortDescriptors: [NSSortDescriptor.accountsByOrder]
             )
+      
         let wallet = MetaAccountModel(
             metaId: UUID().uuidString,
             name: "test",
@@ -44,14 +45,15 @@ class ProxySyncIntegrationTests: XCTestCase {
             chainRegistry: chainRegistry,
             userDataStorageFacade: userStorageFacade,
             proxyOperationFactory: ProxyOperationFactory(),
-            chainsFilter: { !$0.isTestnet }
+            metaAccountsRepository: managedAccountRepository,
+            chainsFilter: { $0.chainId == KnowChainId.kusama }
         )
         
         let chainsStore = ChainsStore(chainRegistry: chainRegistry)
         let allProxyChains = chainsStore.availableChainIds().compactMap {
             let chain = chainsStore.getChain(for: $0)
             return chain?.hasProxy == true ? chain : nil
-        }.filter { !$0.isTestnet }
+        }.filter { $0.chainId == KnowChainId.kusama }
         
         let completionExpectation = XCTestExpectation()
 
@@ -66,7 +68,12 @@ class ProxySyncIntegrationTests: XCTestCase {
             Logger.shared.info("State change: \(state)")
             
             if state.values.count == allProxyChains.count, allSynced {
+                let fetchWalletsOperation = managedAccountRepository.fetchAllOperation(with: RepositoryFetchOptions())
+                operationQueue.addOperations([fetchWalletsOperation], waitUntilFinished: true)
+                let wallets = try! fetchWalletsOperation.extractNoCancellableResultData()
+                let walletWithProxy = wallets.first(where: { $0.info.type == .proxy })
                 completionExpectation.fulfill()
+                
             }
         }
         

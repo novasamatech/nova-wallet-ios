@@ -44,8 +44,9 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
             }
         }
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
-        mapper.addDependency(fetchWrapper.targetOperation)
-
+        fetchWrapper.allOperations.forEach {
+            mapper.addDependency($0)
+        }
         let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
 
         return .init(targetOperation: mapper, dependencies: dependencies)

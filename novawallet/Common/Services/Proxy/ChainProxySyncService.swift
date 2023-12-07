@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 
 final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning {
-    let metaAccountsRepository: AnyDataProviderRepository<MetaAccountModel>
+    let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let chainRegistry: ChainRegistryProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
     let chainModel: ChainModel
@@ -15,7 +15,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
 
     init(
         chainModel: ChainModel,
-        metaAccountsRepository: AnyDataProviderRepository<MetaAccountModel>,
+        metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         chainRegistry: ChainRegistryProtocol,
         proxyOperationFactory: ProxyOperationFactoryProtocol,
         operationQueue: OperationQueue,
@@ -65,9 +65,14 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             runtimeProvider: runtimeProvider
         )
         let metaAccountsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+
         let changesOperation = changesOperation(
             proxyListWrapper: proxyListWrapper,
-            metaAccountsOperation: metaAccountsOperation
+            metaAccountsOperation: metaAccountsOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            identityOperationFactory: identityOperationFactory
         )
         let saveOperation = saveOperation(dependingOn: changesOperation)
         saveOperation.addDependency(changesOperation.targetOperation)
@@ -102,17 +107,13 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         operationQueue.addOperations(compoundWrapper.allOperations, waitUntilFinished: false)
     }
 
-    struct LocalProxy {
-        let metaAccount: MetaAccountModel
-        let chainAccount: ChainAccountModel
-    }
-
     private func updatedMetaAccounts(
-        metaAccounts: [MetaAccountModel],
+        metaAccounts: [ManagedMetaAccountModel],
         for accountId: AccountId,
-        proxieds: [ProxiedAccount]
-    ) -> [MetaAccountModel] {
-        guard metaAccounts.contains(where: { $0.has(accountId: accountId, chainId: chainModel.chainId) }) else {
+        proxieds: [ProxiedAccount],
+        identities: [AccountId: AccountIdentity]
+    ) -> [ManagedMetaAccountModel] {
+        guard metaAccounts.contains(where: { $0.info.has(accountId: accountId, chainId: chainModel.chainId) }) else {
             return []
         }
         let remoteProxieds = proxieds.map {
@@ -123,8 +124,8 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             )
         }
         let localProxieds = metaAccounts
-            .filter { $0.type == .proxy && $0.has(accountId: accountId, chainId: chainModel.chainId) }
-            .flatMap(\.chainAccounts)
+            .filter { $0.info.type == .proxy && $0.info.has(accountId: accountId, chainId: chainModel.chainId) }
+            .flatMap(\.info.chainAccounts)
             .compactMap(\.proxied)
 
         let difference = localProxieds.diff(from: remoteProxieds) { oldElement, newElement in
@@ -150,14 +151,19 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
                 cryptoType: MultiassetCryptoType.sr25519.rawValue,
                 proxied: item
             )
-            if let metaAccount = metaAccounts.first(where: { $0.has(accountId: accountId, chainId: chainModel.chainId) &&
-                    $0.has(proxiedAccountId: item.accountId, type: item.type)
+            if let metaAccount = metaAccounts.first(where: {
+                $0.info.has(accountId: accountId, chainId: chainModel.chainId) &&
+                    $0.info.has(proxiedAccountId: item.accountId, type: item.type)
             }) {
-                return metaAccount.replacingChainAccount(chainAccountModel)
+                return ManagedMetaAccountModel(
+                    info: metaAccount.info.replacingChainAccount(chainAccountModel),
+                    isSelected: metaAccount.isSelected,
+                    order: metaAccount.order
+                )
             } else {
-                return MetaAccountModel(
+                return .init(info: MetaAccountModel(
                     metaId: UUID().uuidString,
-                    name: accountId.toHexString(),
+                    name: identities[item.accountId]?.displayName ?? accountId.toHexString(),
                     substrateAccountId: accountId,
                     substrateCryptoType: MultiassetCryptoType.sr25519.rawValue,
                     substratePublicKey: nil,
@@ -165,43 +171,73 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
                     ethereumPublicKey: nil,
                     chainAccounts: [chainAccountModel],
                     type: .proxy
-                )
+                ))
             }
         }
     }
 
     private func changesOperation(
         proxyListWrapper: CompoundOperationWrapper<[AccountId: [ProxiedAccount]]>,
-        metaAccountsOperation: BaseOperation<[MetaAccountModel]>
-    ) -> CompoundOperationWrapper<[MetaAccountModel]> {
-        let updatingMetaAccountsOperation = ClosureOperation<[MetaAccountModel]> {
+        metaAccountsOperation: BaseOperation<[ManagedMetaAccountModel]>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        identityOperationFactory: IdentityOperationFactoryProtocol
+    ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
+        let metaAccountsOperations = OperationCombiningService(operationManager: operationManager) {
             let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
-            let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
-            let metaAccounts = proxyList.compactMap {
-                self.updatedMetaAccounts(
-                    metaAccounts: chainMetaAccounts,
-                    for: $0.key,
-                    proxieds: $0.value
-                )
-            }.flatMap { $0 }
+            let proxiedsAccounts = Array(Set(proxyList.values.flatMap { $0 }.map(\.accountId)))
+            let identityWrapper = identityOperationFactory.createIdentityWrapperByAccountId(
+                for: { proxiedsAccounts },
+                engine: connection,
+                runtimeService: runtimeProvider,
+                chainFormat: self.chainModel.chainFormat
+            )
+
+            let mapOperation = ClosureOperation<[ManagedMetaAccountModel]> {
+                let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
+                let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
+                let metaAccounts = proxyList.compactMap {
+                    self.updatedMetaAccounts(
+                        metaAccounts: chainMetaAccounts,
+                        for: $0.key,
+                        proxieds: $0.value,
+                        identities: identities
+                    )
+                }.flatMap { $0 } ?? []
+
+                return metaAccounts
+            }
+
+            mapOperation.addDependency(metaAccountsOperation)
+            mapOperation.addDependency(identityWrapper.targetOperation)
+
+            let wrapper = CompoundOperationWrapper(
+                targetOperation: mapOperation,
+                dependencies: [metaAccountsOperation] + identityWrapper.allOperations
+            )
+            return [wrapper]
+        }.longrunOperation()
+
+        metaAccountsOperations.addDependency(proxyListWrapper.targetOperation)
+
+        let mapOperation = ClosureOperation<[ManagedMetaAccountModel]> {
+            let metaAccounts = try metaAccountsOperations.extractNoCancellableResultData().first ?? []
+
             return metaAccounts
         }
+        mapOperation.addDependency(metaAccountsOperations)
 
-        updatingMetaAccountsOperation.addDependency(proxyListWrapper.targetOperation)
-        updatingMetaAccountsOperation.addDependency(metaAccountsOperation)
+        let dependencies = proxyListWrapper.allOperations + [metaAccountsOperations]
 
-        return CompoundOperationWrapper(
-            targetOperation: updatingMetaAccountsOperation,
-            dependencies: proxyListWrapper.allOperations + [metaAccountsOperation]
-        )
+        return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     private func saveOperation(
-        dependingOn updatingMetaAccountsOperation: CompoundOperationWrapper<[MetaAccountModel]>
+        dependingOn updatingMetaAccountsOperation: CompoundOperationWrapper<[ManagedMetaAccountModel]>
     ) -> BaseOperation<Void> {
         metaAccountsRepository.saveOperation({
-            let newOrUpdatedMetaAccounts = try updatingMetaAccountsOperation.targetOperation.extractNoCancellableResultData()
-            return newOrUpdatedMetaAccounts
+            let metaAccounts = try updatingMetaAccountsOperation.targetOperation.extractNoCancellableResultData()
+            return metaAccounts
         }, { [] })
     }
 
