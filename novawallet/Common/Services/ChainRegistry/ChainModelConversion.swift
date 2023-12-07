@@ -10,8 +10,6 @@ protocol ChainModelConversionProtocol {
 }
 
 final class ChainModelConverter: ChainModelConversionProtocol {
-    static let fullSyncByDefaultOption = "fullSyncByDefault"
-
     func update(
         localModel: ChainModel?,
         remoteModel: RemoteChainModel,
@@ -53,13 +51,13 @@ final class ChainModelConverter: ChainModelConversionProtocol {
             return .disabled
         }
 
-        let shouldFullSync = remoteModel.options?.contains(Self.fullSyncByDefaultOption) ?? false
+        let shouldFullSync = remoteModel.options?.contains(RemoteOnlyChainOptions.fullSyncByDefault.rawValue) ?? false
 
         if shouldFullSync {
             return .full
         }
 
-        let hasNoRuntime = remoteModel.options?.contains(ChainOptions.noSubstrateRuntime.rawValue) ?? false
+        let hasNoRuntime = remoteModel.options?.contains(LocalChainOptions.noSubstrateRuntime.rawValue) ?? false
 
         // no runtime (e.g. evm) networks always work in full sync
         if hasNoRuntime {

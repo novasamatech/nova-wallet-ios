@@ -13,6 +13,7 @@ final class ChainSyncModeUpdateService {
     let workingQueue = DispatchQueue.global(qos: .userInitiated)
 
     private var selectedMetaAccount: MetaAccountModel?
+    private var mutex = NSLock()
 
     init(selectedMetaAccount: MetaAccountModel?, chainRegistry: ChainRegistryProtocol, logger: LoggerProtocol) {
         self.selectedMetaAccount = selectedMetaAccount
@@ -63,7 +64,11 @@ final class ChainSyncModeUpdateService {
 
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(self, runningInQueue: workingQueue) { [weak self] changes in
+            self?.mutex.lock()
+
             self?.handle(changes: changes)
+
+            self?.mutex.unlock()
         }
     }
 
@@ -96,6 +101,12 @@ extension ChainSyncModeUpdateService: ChainRemoteAccountDetectorDelegate {
 
 extension ChainSyncModeUpdateService: ChainSyncModeUpdateServiceProtocol {
     func setup() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         accountDetector.delegate = self
         accountDetector.callbackQueue = .global(qos: .userInitiated)
 
@@ -103,11 +114,23 @@ extension ChainSyncModeUpdateService: ChainSyncModeUpdateServiceProtocol {
     }
 
     func throttle() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         unsubscribeChains()
         accountDetector.stopTrackingAll()
     }
 
     func update(selectedMetaAccount: MetaAccountModel) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         self.selectedMetaAccount = selectedMetaAccount
 
         unsubscribeChains()

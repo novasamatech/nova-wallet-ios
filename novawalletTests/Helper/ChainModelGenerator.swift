@@ -41,7 +41,7 @@ enum ChainModelGenerator {
                 overridesCommon: false
             ) : nil
 
-            var options: [ChainOptions] = []
+            var options: [LocalChainOptions] = []
 
             if hasCrowdloans {
                 options.append(.crowdloans)
@@ -125,14 +125,18 @@ enum ChainModelGenerator {
                 overridesCommon: false
             ) : nil
 
-            var options: [ChainOptions] = []
+            var options: [String] = []
 
             if hasCrowdloans {
-                options.append(.crowdloans)
+                options.append(LocalChainOptions.crowdloans.rawValue)
             }
 
             if !hasSubstrateRuntime {
-                options.append(.noSubstrateRuntime)
+                options.append(LocalChainOptions.noSubstrateRuntime.rawValue)
+            }
+            
+            if fullSyncByDefault {
+                options.append(RemoteOnlyChainOptions.fullSyncByDefault.rawValue)
             }
 
             let externalApi = generateRemoteExternaApis(
@@ -149,12 +153,6 @@ enum ChainModelGenerator {
                     event: nil
                 )
             ]
-
-            var rawOptions = options.compactMap { $0.rawValue }
-
-            if fullSyncByDefault {
-                rawOptions.append(ChainModelConverter.fullSyncByDefaultOption)
-            }
             
             return RemoteChainModel(
                 chainId: chainId,
@@ -166,7 +164,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
-                options: rawOptions.isEmpty ? nil : rawOptions,
+                options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers,
                 additional: nil
@@ -222,7 +220,7 @@ enum ChainModelGenerator {
             features: nil
         )
 
-        var options: [ChainOptions] = []
+        var options: [LocalChainOptions] = []
 
         if hasCrowdloans {
             options.append(.crowdloans)

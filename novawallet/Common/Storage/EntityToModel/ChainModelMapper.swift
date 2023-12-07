@@ -278,8 +278,8 @@ final class ChainModelMapper {
         }
     }
 
-    private func createChainOptions(from entity: CDChain) -> [ChainOptions]? {
-        var options: [ChainOptions] = []
+    private func createChainOptions(from entity: CDChain) -> [LocalChainOptions]? {
+        var options: [LocalChainOptions] = []
 
         if entity.isEthereumBased {
             options.append(.ethereumBased)

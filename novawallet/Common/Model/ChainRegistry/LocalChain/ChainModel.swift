@@ -42,7 +42,7 @@ struct ChainModel: Equatable, Hashable {
     let addressPrefix: UInt16
     let types: TypesSettings?
     let icon: URL
-    let options: [ChainOptions]?
+    let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
     let explorers: [Explorer]?
@@ -60,7 +60,7 @@ struct ChainModel: Equatable, Hashable {
         addressPrefix: UInt16,
         types: TypesSettings?,
         icon: URL,
-        options: [ChainOptions]?,
+        options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
         order: Int64,
@@ -103,7 +103,7 @@ struct ChainModel: Equatable, Hashable {
         types = remoteModel.types
         icon = remoteModel.icon
 
-        let remoteOptions = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) } ?? []
+        let remoteOptions = remoteModel.options?.compactMap { LocalChainOptions(rawValue: $0) } ?? []
         options = !remoteOptions.isEmpty ? remoteOptions : nil
 
         externalApis = remoteModel.externalApi.map { LocalChainExternalApiSet(remoteApi: $0) }
@@ -272,7 +272,7 @@ extension ChainModel: Identifiable {
     var identifier: String { chainId }
 }
 
-enum ChainOptions: String, Codable {
+enum LocalChainOptions: String, Codable {
     case ethereumBased
     case testnet
     case crowdloans
