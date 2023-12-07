@@ -27,7 +27,7 @@ enum AccountGenerator {
             accountId: Data.random(of: 32)!,
             publicKey: Data.random(of: 32)!,
             cryptoType: 0,
-            proxieds: []
+            proxied: nil
         )
     }
 }

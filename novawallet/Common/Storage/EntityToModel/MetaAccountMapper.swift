@@ -38,20 +38,17 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
     }
 
     func transform(chainAccountEntity: CDChainAccount) throws -> ChainAccountModel {
-        let proxieds: [ProxiedAccountModel] = try chainAccountEntity.proxieds?.compactMap { entity in
-            guard let proxiedEntity = entity as? CDProxied else {
-                return nil
-            }
-
-            let accountId = try Data(hexString: proxiedEntity.proxiedAccountId!)
-            let type = Proxy.ProxyType(rawValue: proxiedEntity.type!) ?? .other
+        let proxiedModel = try chainAccountEntity.proxied.map {
+            let accountId = try Data(hexString: $0.proxiedAccountId!)
+            let type = Proxy.ProxyType(rawValue: $0.type!) ?? .other
 
             return ProxiedAccountModel(
                 type: type,
                 accountId: accountId,
-                status: ProxiedAccountModel.Status(rawValue: proxiedEntity.status!)!
+                status: ProxiedAccountModel.Status(rawValue: $0.status!)!
             )
-        } ?? []
+        }
+
         let accountId = try Data(hexString: chainAccountEntity.accountId!)
 
         return ChainAccountModel(
@@ -59,7 +56,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             accountId: accountId,
             publicKey: chainAccountEntity.publicKey!,
             cryptoType: UInt8(chainAccountEntity.cryptoType),
-            proxieds: Set(proxieds)
+            proxied: proxiedModel
         )
     }
 
@@ -107,23 +104,14 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         chainAccounEntity.cryptoType = Int16(bitPattern: UInt16(model.cryptoType))
         chainAccounEntity.publicKey = model.publicKey
 
-        for proxied in model.proxieds {
-            let accountId = proxied.accountId.toHex()
-            var proxiedAccountEntity = chainAccounEntity.proxieds?.first {
-                if let entity = $0 as? CDProxied,
-                   entity.type == proxied.type.rawValue,
-                   entity.proxiedAccountId == accountId {
-                    return true
-                } else {
-                    return false
-                }
-            } as? CDProxied
-
-            if proxiedAccountEntity == nil {
-                let newEntity = CDProxied(context: context)
-                chainAccounEntity.addToProxieds(newEntity)
-                proxiedAccountEntity = newEntity
+        if let proxied = model.proxied {
+            if chainAccounEntity.proxied == nil {
+                chainAccounEntity.proxied = CDProxied(context: context)
             }
+            chainAccounEntity.proxied?.type = proxied.type.rawValue
+            chainAccounEntity.proxied?.proxiedAccountId = proxied.accountId.toHex()
+        } else {
+            chainAccounEntity.proxied = nil
         }
     }
 }

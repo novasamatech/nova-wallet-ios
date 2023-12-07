@@ -102,13 +102,18 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         operationQueue.addOperations(compoundWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func proxyMetaAccount(
+    struct LocalProxy {
+        let metaAccount: MetaAccountModel
+        let chainAccount: ChainAccountModel
+    }
+
+    private func updatedMetaAccounts(
         metaAccounts: [MetaAccountModel],
         for accountId: AccountId,
         proxieds: [ProxiedAccount]
-    ) -> MetaAccountModel? {
+    ) -> [MetaAccountModel] {
         guard metaAccounts.contains(where: { $0.has(accountId: accountId, chainId: chainModel.chainId) }) else {
-            return nil
+            return []
         }
         let remoteProxieds = proxieds.map {
             ProxiedAccountModel(
@@ -117,52 +122,51 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
                 status: .new
             )
         }
-        let substrateCryptoType = MultiassetCryptoType.sr25519.rawValue
-        if let metaAccount = metaAccounts.first { $0.type == .proxy },
-           let chainAccountModel = metaAccount.chainAccounts.first { $0.chainId == chainModel.chainId && $0.accountId == accountId } {
-            let localProxieds: [ProxiedAccountModel] = Array(chainAccountModel.proxieds ?? [])
-            let difference = localProxieds.diff(from: remoteProxieds) { oldElement, newElement in
-                oldElement.accountId == newElement.accountId &&
-                    oldElement.type == newElement.type &&
-                    (oldElement.status == .new || oldElement.status == .active)
-            }
+        let localProxieds = metaAccounts
+            .filter { $0.type == .proxy && $0.has(accountId: accountId, chainId: chainModel.chainId) }
+            .flatMap(\.chainAccounts)
+            .compactMap(\.proxied)
 
-            let newProxied = difference.newOrUpdatedItems + difference.removedItems.map {
-                ProxiedAccountModel(
-                    type: $0.type,
-                    accountId: $0.accountId,
-                    status: .revoked
+        let difference = localProxieds.diff(from: remoteProxieds) { oldElement, newElement in
+            oldElement.accountId == newElement.accountId &&
+                oldElement.type == newElement.type &&
+                (oldElement.status == .new || oldElement.status == .active)
+        }
+
+        let markAsDeletedItems = difference.removedItems.map {
+            ProxiedAccountModel(
+                type: $0.type,
+                accountId: $0.accountId,
+                status: .revoked
+            )
+        }
+        let newOrUpdatedItems = difference.newOrUpdatedItems + markAsDeletedItems
+
+        return newOrUpdatedItems.map { item in
+            let chainAccountModel = ChainAccountModel(
+                chainId: chainModel.chainId,
+                accountId: accountId,
+                publicKey: Data(),
+                cryptoType: MultiassetCryptoType.sr25519.rawValue,
+                proxied: item
+            )
+            if let metaAccount = metaAccounts.first(where: { $0.has(accountId: accountId, chainId: chainModel.chainId) &&
+                    $0.has(proxiedAccountId: item.accountId, type: item.type)
+            }) {
+                return metaAccount.replacingChainAccount(chainAccountModel)
+            } else {
+                return MetaAccountModel(
+                    metaId: UUID().uuidString,
+                    name: accountId.toHexString(),
+                    substrateAccountId: accountId,
+                    substrateCryptoType: MultiassetCryptoType.sr25519.rawValue,
+                    substratePublicKey: nil,
+                    ethereumAddress: nil,
+                    ethereumPublicKey: nil,
+                    chainAccounts: [chainAccountModel],
+                    type: .proxy
                 )
             }
-            let chainAccountModel = ChainAccountModel(
-                chainId: chainModel.chainId,
-                accountId: accountId,
-                publicKey: Data(),
-                cryptoType: substrateCryptoType,
-                proxieds: Set(newProxied)
-            )
-            return metaAccount.replacingChainAccount(chainAccountModel)
-        } else {
-            let chainAccountModel = ChainAccountModel(
-                chainId: chainModel.chainId,
-                accountId: accountId,
-                publicKey: Data(),
-                cryptoType: substrateCryptoType,
-                proxieds: Set(remoteProxieds)
-            )
-
-            let metaAccount = MetaAccountModel(
-                metaId: UUID().uuidString,
-                name: "",
-                substrateAccountId: accountId,
-                substrateCryptoType: substrateCryptoType,
-                substratePublicKey: nil,
-                ethereumAddress: nil,
-                ethereumPublicKey: nil,
-                chainAccounts: [chainAccountModel],
-                type: .proxy
-            )
-            return metaAccount
         }
     }
 
@@ -174,13 +178,12 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
             let metaAccounts = proxyList.compactMap {
-                self.proxyMetaAccount(
+                self.updatedMetaAccounts(
                     metaAccounts: chainMetaAccounts,
                     for: $0.key,
                     proxieds: $0.value
                 )
-            }
-
+            }.flatMap { $0 }
             return metaAccounts
         }
 

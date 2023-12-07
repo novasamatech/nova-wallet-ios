@@ -275,6 +275,10 @@ extension MetaAccountModel {
             return substrateAccountId == accountId || ethereumAddress == accountId
         }
     }
+
+    func has(proxiedAccountId: AccountId, type: Proxy.ProxyType) -> Bool {
+        chainAccounts.contains { $0.proxied?.accountId == proxiedAccountId && $0.proxied?.type == type }
+    }
 }
 
 extension ChainModel {

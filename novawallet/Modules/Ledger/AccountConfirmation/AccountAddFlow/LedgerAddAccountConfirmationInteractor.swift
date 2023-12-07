@@ -53,7 +53,7 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
             accountId: info.accountId,
             publicKey: info.publicKey,
             cryptoType: info.cryptoType.rawValue,
-            proxieds: []
+            proxied: nil
         )
 
         let newAccountItem = wallet.replacingChainAccount(chainAccount)
