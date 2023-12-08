@@ -33,8 +33,6 @@ extension DelegatedAccountsUpdateInteractor: DelegatedAccountsUpdateInteractorIn
         subscribeWallets()
         subscribeChains()
     }
-
-    func updateWalletsStatuses() {}
 }
 
 extension DelegatedAccountsUpdateInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {

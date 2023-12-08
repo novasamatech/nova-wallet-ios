@@ -60,7 +60,6 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProt
     }
 
     func done() {
-        interactor.updateWalletsStatuses()
         wireframe.close(from: view)
     }
 

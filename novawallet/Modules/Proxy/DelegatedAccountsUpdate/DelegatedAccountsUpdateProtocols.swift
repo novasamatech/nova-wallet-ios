@@ -15,7 +15,6 @@ protocol DelegatedAccountsUpdatePresenterProtocol: AnyObject {
 
 protocol DelegatedAccountsUpdateInteractorInputProtocol: AnyObject {
     func setup()
-    func updateWalletsStatuses()
 }
 
 protocol DelegatedAccountsUpdateInteractorOutputProtocol: AnyObject {
