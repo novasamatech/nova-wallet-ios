@@ -66,7 +66,7 @@ final class ProxySyncService {
 
             self.mutex.lock()
 
-            handleChain(changes: changes)
+            self.handleChain(changes: changes)
 
             self.mutex.unlock()
         }
@@ -129,7 +129,7 @@ final class ProxySyncService {
 
             self.mutex.lock()
 
-            stateObserver.state.updateValue(newState, forKey: chainId)
+            self.stateObserver.state.updateValue(newState, forKey: chainId)
 
             self.mutex.unlock()
         }
