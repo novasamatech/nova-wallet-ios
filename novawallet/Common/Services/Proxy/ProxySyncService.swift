@@ -107,7 +107,7 @@ final class ProxySyncService {
         )
 
         updaters[chain.chainId] = service
-        addSyncHandler(for: service)
+        addSyncHandler(for: service, chainId: chain.chainId)
 
         if isActive {
             service.setup()
@@ -118,26 +118,21 @@ final class ProxySyncService {
         updaters.values.forEach { $0.unsubscribeSyncState(self) }
     }
 
-    private func addSyncHandler(for service: ObservableSyncServiceProtocol) {
+    private func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
         service.subscribeSyncState(
             self,
             queue: workingQueue
-        ) { [weak self] _, _ in
+        ) { [weak self] _, newState in
             guard let self = self else {
                 return
             }
 
             self.mutex.lock()
 
-            self.updateSyncState()
+            stateObserver.state.updateValue(newState, forKey: chainId)
 
             self.mutex.unlock()
         }
-    }
-
-    private func updateSyncState() {
-        let newState = updaters.mapValues { $0.getIsSyncing() }
-        stateObserver.state = newState
     }
 }
 
