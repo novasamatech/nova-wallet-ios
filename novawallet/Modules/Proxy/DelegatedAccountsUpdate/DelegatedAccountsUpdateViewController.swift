@@ -46,8 +46,8 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
             switch model {
             case .info:
                 let cell: ProxyInfoTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                let text = "Nova Wallet automatically adds delegated authorities (Proxy) to a separate category for you. You can always manage wallets in Settings."
-                let link = "What is a Proxy?"
+                let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
+                let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: selectedLocale.rLanguages)
                 cell.bind(text: text, link: link)
                 cell.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
                 return cell
@@ -79,7 +79,6 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
         rootView.doneButton.imageWithTitleView?.title = R.string.localizable.commonDone(
             preferredLanguages: selectedLocale.rLanguages)
         rootView.tableView.reloadData()
-        title = "Delegated accounts update"
     }
 
     @objc private func didTapOnDoneButton() {
@@ -120,6 +119,17 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
         }
         dataSource?.apply(snapshot, animatingDifferences: [delegatedModels + revokedModels].count > 1)
     }
+    
+    func preferredContentHeight(
+        delegatedModels: [ProxyWalletView.ViewModel],
+        revokedModels: [ProxyWalletView.ViewModel]
+    ) -> CGFloat {
+        let delegatedModelsHeaderHeight = delegatedModels.isEmpty ? 0 : Constants.heightSectionHeader
+        let revokedModelsHeaderHeight = revokedModels.isEmpty ? 0 : Constants.heightSectionHeader
+        let delegatedAccountsContentHeight = Constants.accountCellHeight * delegatedModels.count
+        let revokedAccountsContentHeight = Constants.accountCellHeight * revokedModels.count
+        
+    }
 }
 
 extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
@@ -128,7 +138,7 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
         case .info:
             return UITableView.automaticDimension
         case .delegated, .revoked:
-            return 48
+            return Constants.accountCellHeight
         default:
             return 0
         }
@@ -141,12 +151,12 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
         case .delegated:
             let header = UILabel()
             header.apply(style: .caption2Secondary)
-            header.text = "DELEGATED TO YOU (PROXIEDS)"
+            header.text = R.string.localizable.commonProxieds(preferredLanguages: selectedLocale.rLanguages)
             return header
         case .revoked:
             let header = UILabel()
             header.apply(style: .caption2Secondary)
-            header.text = "Access was revoked".uppercased()
+            header.text = R.string.localizable.proxyUpdatesProxyRevoked(preferredLanguages: selectedLocale.rLanguages)
             return header
         default:
             return nil
@@ -158,7 +168,7 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
         case .info:
             return 0
         case .delegated, .revoked:
-            return 25
+            return Constants.heightSectionHeader
         default:
             return 0
         }
@@ -183,5 +193,12 @@ extension DelegatedAccountsUpdateViewController {
     enum Row: Hashable {
         case info
         case proxied(ProxyWalletView.ViewModel)
+    }
+}
+
+extension DelegatedAccountsUpdateViewController {
+    enum Constants {
+        static let heightSectionHeader: CGFloat = 37
+        static let accountCellHeight: CGFloat = 48
     }
 }

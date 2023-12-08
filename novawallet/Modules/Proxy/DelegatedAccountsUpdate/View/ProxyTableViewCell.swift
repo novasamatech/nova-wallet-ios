@@ -20,47 +20,6 @@ final class ProxyTableViewCell: PlainBaseTableViewCell<ProxyWalletView> {
     }
 }
 
-final class ProxyInfoTableViewCell: PlainBaseTableViewCell<ProxyInfoView> {
-    var actionButton: RoundedButton { contentDisplayView.linkView.actionButton }
-
-    override func setupStyle() {
-        super.setupStyle()
-
-        backgroundColor = .clear
-    }
-
-    func bind(text: String, link: String) {
-        contentDisplayView.bind(text: text, link: link)
-    }
-}
-
-final class ProxyInfoView: GenericPairValueView<UILabel, GenericPairValueView<LinkView, FlexibleSpaceView>> {
-    var infoLabel: UILabel { fView }
-    var linkView: LinkView { sView.fView }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupStyle()
-    }
-
-    func setupStyle() {
-        makeVertical()
-        spacing = 8
-        infoLabel.apply(style: .footnoteSecondary)
-        infoLabel.numberOfLines = 0
-        linkView.setContentHuggingPriority(.required, for: .horizontal)
-        linkView.actionButton.imageWithTitleView?.contentMode = .left
-        stackView.layoutMargins = .init(top: 0, left: 0, bottom: 8, right: 0)
-        sView.makeHorizontal()
-    }
-
-    func bind(text: String, link: String) {
-        infoLabel.text = text
-        linkView.actionButton.imageWithTitleView?.title = link
-    }
-}
-
 final class ProxyWalletView: GenericTitleValueView<ProxyIconView, GenericPairValueView<IconDetailsView, GenericPairValueView<UILabel, IconDetailsView>>> {
     private var viewModel: ViewModel?
 
@@ -91,20 +50,20 @@ final class ProxyWalletView: GenericTitleValueView<ProxyIconView, GenericPairVal
         indicatorImageView.backgroundColor = R.color.colorIconAccent()!
         indicatorImageView.isHidden = true
         typeLabel.apply(style: .footnoteSecondary)
-        typeLabel.numberOfLines = 1
+        //      typeLabel.numberOfLines = 1
 
         valueView.sView.sView.iconWidth = 16
         proxyName.apply(style: .footnotePrimary)
-        proxyName.numberOfLines = 1
+        //     proxyName.numberOfLines = 1
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4
-        titleLabel.textAlignment = .left
-        typeLabel.textAlignment = .left
-        proxyName.textAlignment = .left
-        titleLabel.setContentHuggingPriority(.low, for: .horizontal)
-        typeLabel.setContentHuggingPriority(.low, for: .horizontal)
-        iconImageView.setContentHuggingPriority(.high, for: .horizontal)
+//        titleLabel.textAlignment = .left
+//        typeLabel.textAlignment = .left
+//        proxyName.textAlignment = .left
+//        titleLabel.setContentHuggingPriority(.low, for: .horizontal)
+//        typeLabel.setContentHuggingPriority(.low, for: .horizontal)
+//        iconImageView.setContentHuggingPriority(.high, for: .horizontal)
     }
 }
 
@@ -173,32 +132,5 @@ extension ProxyWalletView {
         proxyName.text = viewModel.subtitleDetails
 
         self.viewModel = viewModel
-    }
-}
-
-import RobinHood
-typealias IdentifiableImageViewModelProtocol = ImageViewModelProtocol & Identifiable
-
-extension RemoteImageViewModel: Identifiable {
-    var identifier: String {
-        url.absoluteString
-    }
-}
-
-final class IdentifiableDrawableIconViewModel: IdentifiableImageViewModelProtocol {
-    let drawableIcon: DrawableIconViewModel
-    let identifier: String
-
-    init(_ drawableIcon: DrawableIconViewModel, identifier: String) {
-        self.drawableIcon = drawableIcon
-        self.identifier = identifier
-    }
-
-    func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool) {
-        drawableIcon.loadImage(on: imageView, settings: settings, animated: animated)
-    }
-
-    func cancel(on imageView: UIImageView) {
-        drawableIcon.cancel(on: imageView)
     }
 }

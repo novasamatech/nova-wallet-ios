@@ -5,6 +5,10 @@ protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
         delegatedModels: [ProxyWalletView.ViewModel],
         revokedModels: [ProxyWalletView.ViewModel]
     )
+    func preferredContentHeight(
+        delegatedModels: [ProxyWalletView.ViewModel],
+        revokedModels: [ProxyWalletView.ViewModel]
+    ) -> CGFloat
 }
 
 protocol DelegatedAccountsUpdatePresenterProtocol: AnyObject {

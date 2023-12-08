@@ -4,7 +4,7 @@ import SubstrateSdk
 protocol DelegatedAccountsUpdateFactoryProtocol {
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
-        statuses: [ProxiedAccountModel.Status],
+        statuses: [ProxyAccountModel.Status],
         chainModelProvider: (ChainModel.Id) -> ChainModel?,
         locale: Locale
     ) -> [ProxyWalletView.ViewModel]
@@ -15,23 +15,25 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
 
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
-        statuses: [ProxiedAccountModel.Status],
+        statuses: [ProxyAccountModel.Status],
         chainModelProvider: (ChainModel.Id) -> ChainModel?,
-        locale _: Locale
+        locale: Locale
     ) -> [ProxyWalletView.ViewModel] {
         let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxy }.compactMap { wallet in
-            guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxied != nil }),
-                  let proxied = chainAccount.proxied,
-                  statuses.contains(proxied.status),
+            guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
+                  let proxy = chainAccount.proxy,
+                  statuses.contains(proxy.status),
                   let proxyWallet = wallets.first(where: { $0.info.has(
-                      accountId: chainAccount.accountId,
+                      accountId: proxy.accountId,
                       chainId: chainAccount.chainId
                   ) && $0.info.type != .proxy })
             else {
                 return nil
             }
 
-            let optIcon = try? iconGenerator.generateFromAccountId(proxied.accountId)
+            let optIcon = wallet.info.walletIdenticonData().flatMap {
+                try? iconGenerator.generateFromAccountId($0)
+            }
             let iconViewModel = optIcon.map {
                 IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
             }
@@ -48,7 +50,7 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
                 icon: iconViewModel,
                 networkIcon: chainIcon,
                 name: wallet.info.name,
-                subtitle: proxied.type.rawValue.firstLetterCapitalized() + "proxy: ",
+                subtitle: proxy.type.subtitle(locale: locale),
                 subtitleDetailsIcon: subtitleDetailsIconViewModel,
                 subtitleDetails: proxyWallet.info.name
             )

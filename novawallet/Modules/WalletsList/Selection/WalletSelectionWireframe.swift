@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWireframeProtocol {
     func close(view: WalletsListViewProtocol?) {
@@ -28,5 +29,17 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         manageView.controller.hidesBottomBarWhenPushed = true
 
         navigationController?.pushViewController(manageView.controller, animated: true)
+    }
+    
+    func showDelegateUpdates(from view: ControllerBackedProtocol?, initState: DelegatedAccountsUpdateState?) {
+        guard let delegateUpdatesView = DelegatedAccountsUpdateViewFactory.createView(initState: initState) else {
+            return
+        }
+        
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        delegateUpdatesView.controller.modalTransitioningFactory = factory
+        delegateUpdatesView.controller.modalPresentationStyle = .custom
+    
+        view?.controller.present(delegateUpdatesView.controller, animated: true)
     }
 }

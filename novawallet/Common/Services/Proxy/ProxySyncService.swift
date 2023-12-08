@@ -42,7 +42,7 @@ final class ProxySyncService {
             attributes: .concurrent
         ),
         logger: LoggerProtocol = Logger.shared,
-        chainsFilter: ((ChainModel) -> Bool)?
+        chainsFilter: ((ChainModel) -> Bool)? = nil
     ) {
         self.chainRegistry = chainRegistry
         self.userDataStorageFacade = userDataStorageFacade

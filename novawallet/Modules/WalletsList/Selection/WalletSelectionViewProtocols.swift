@@ -16,4 +16,5 @@ protocol WalletSelectionInteractorOutputProtocol: WalletsListInteractorOutputPro
 protocol WalletSelectionWireframeProtocol: WalletsListWireframeProtocol {
     func close(view: WalletsListViewProtocol?)
     func showSettings(from view: WalletsListViewProtocol?)
+    func showDelegateUpdates(from view: ControllerBackedProtocol?, initState: DelegatedAccountsUpdateState?)
 }

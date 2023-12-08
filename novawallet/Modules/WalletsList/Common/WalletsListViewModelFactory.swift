@@ -62,8 +62,8 @@ class WalletsListViewModelFactory {
     ) -> WalletsListSectionViewModel? {
         let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
             WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxy
-        }.compactMap { wallet in
-            guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxied != nil }), let proxied = chainAccount.proxied else {
+        }.compactMap { wallet -> WalletsListViewModel? in
+            guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }), let proxied = chainAccount.proxy else {
                 return nil
             }
             let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
@@ -72,7 +72,7 @@ class WalletsListViewModelFactory {
             let detailsViewModel = WalletTotalAmountView.ViewModel(
                 icon: iconViewModel,
                 name: wallet.info.name,
-                amount: proxied.type.rawValue + " in " + chainAccount.chainId
+                amount: proxied.type.id + " in " + chainAccount.chainId
             )
             return WalletsListViewModel(
                 identifier: wallet.identifier,

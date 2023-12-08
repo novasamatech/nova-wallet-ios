@@ -40,7 +40,7 @@ final class ProxyIconView: UIView {
             height: height
         )
 
-        iconViewImageView.makeRoundedRectangularHole(
+        iconViewImageView.cutHole(
             roundedRect: frame,
             cornerRadii: CGSize(
                 width: Constants.radius + Constants.holeWidth / 2,
@@ -72,25 +72,5 @@ final class ProxyIconView: UIView {
             width: Constants.networkIconOffset.x + Constants.iconSize.width,
             height: Constants.networkIconOffset.y + Constants.iconSize.height
         )
-    }
-}
-
-extension UIView {
-    func makeRoundedRectangularHole(roundedRect: CGRect, cornerRadii: CGSize) {
-        let entireViewPath = UIBezierPath(rect: bounds)
-
-        let roundedRectPath = UIBezierPath(
-            roundedRect: roundedRect,
-            byRoundingCorners: .allCorners,
-            cornerRadii: cornerRadii
-        )
-        entireViewPath.append(roundedRectPath)
-        entireViewPath.usesEvenOddFillRule = true
-
-        let maskLayer = CAShapeLayer()
-        maskLayer.path = entireViewPath.cgPath
-        maskLayer.fillRule = CAShapeLayerFillRule.evenOdd
-        maskLayer.fillColor = UIColor.black.cgColor
-        layer.mask = maskLayer
     }
 }
