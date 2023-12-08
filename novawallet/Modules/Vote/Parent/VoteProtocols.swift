@@ -7,6 +7,8 @@ enum VoteType: UInt8 {
 
 protocol VoteViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didSwitchWallet(with viewModel: WalletSwitchViewModel)
+    func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
+    func didReceive(voteType: VoteType)
 }
 
 protocol VoteChainViewProtocol {
@@ -21,6 +23,7 @@ protocol VotePresenterProtocol: AnyObject {
     func selectWallet()
     func switchToGovernance(_ view: ReferendumsViewProtocol)
     func switchToCrowdloans(_ view: CrowdloansViewProtocol)
+    func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
 }
 
 protocol VoteInteractorInputProtocol: AnyObject {

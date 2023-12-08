@@ -60,6 +60,8 @@ class StakingBondMoreTests: XCTestCase {
             freeInPlank: 100000000000000,
             reservedInPlank: 0,
             frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
             blocked: false
         )
 

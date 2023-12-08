@@ -70,7 +70,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let view = MainTabBarViewController()
         view.viewControllers = indexedControllers.map(\.1)
 
-        let presenter = MainTabBarPresenter()
+        let presenter = MainTabBarPresenter(localizationManager: LocalizationManager.shared)
 
         let wireframe = MainTabBarWireframe()
 

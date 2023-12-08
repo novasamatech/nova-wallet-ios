@@ -43,13 +43,21 @@ class BaseAccountImportInteractor {
             keystoreImportService.clear()
 
             do {
-                let jsonData = try JSONEncoder().encode(definition)
-                let info = try AccountImportJsonFactory().createInfo(from: definition)
+                switch definition {
+                case let .keystore(keystoreDefinition):
+                    let jsonData = try JSONEncoder().encode(keystoreDefinition)
+                    let info = try AccountImportJsonFactory().createInfo(from: keystoreDefinition)
 
-                if let text = String(data: jsonData, encoding: .utf8) {
-                    presenter.didSuggestKeystore(text: text, preferredInfo: info)
+                    if let text = String(data: jsonData, encoding: .utf8) {
+                        presenter.didSuggestKeystore(text: text, preferredInfo: info)
+                    }
+                case let .mnemonic(mnemonicDefinition):
+                    let text = mnemonicDefinition.mnemonic.toString()
+                    presenter.didSuggestKeystore(
+                        text: text,
+                        preferredInfo: mnemonicDefinition.prefferedInfo
+                    )
                 }
-
             } catch {
                 presenter.didReceiveAccountImport(error: error)
             }
@@ -151,7 +159,11 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
 }
 
 extension BaseAccountImportInteractor: KeystoreImportObserver {
-    func didUpdateDefinition(from _: KeystoreDefinition?) {
+    func didUpdateDefinition(from _: SecretImportDefinition?) {
         handleIfNeededKeystoreImport()
+    }
+
+    func didReceiveError(secretImportError: ErrorContentConvertible & Error) {
+        presenter.didReceiveAccountImport(error: secretImportError)
     }
 }

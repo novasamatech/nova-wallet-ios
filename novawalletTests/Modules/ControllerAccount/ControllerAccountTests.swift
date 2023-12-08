@@ -112,6 +112,8 @@ class ControllerAccountTests: XCTestCase {
             freeInPlank: 100000000000000,
             reservedInPlank: 0,
             frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
             blocked: false
         )
 
@@ -143,6 +145,8 @@ class ControllerAccountTests: XCTestCase {
             freeInPlank: 10,
             reservedInPlank: 0,
             frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
             blocked: false
         )
 

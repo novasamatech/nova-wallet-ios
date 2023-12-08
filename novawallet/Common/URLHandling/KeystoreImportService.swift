@@ -1,12 +1,38 @@
 import Foundation
 import SubstrateSdk
+import IrohaCrypto
+import SoraFoundation
+
+enum SecretImportDefinition {
+    case keystore(KeystoreDefinition)
+    case mnemonic(MnemonicDefinition)
+}
+
+struct MnemonicDefinition {
+    let mnemonic: IRMnemonicProtocol
+    let cryptoType: MultiassetCryptoType
+    let substrateDeriviationPath: String?
+    let evmDeriviationPath: String
+
+    var prefferedInfo: MetaAccountImportPreferredInfo? {
+        MetaAccountImportPreferredInfo(
+            username: nil,
+            cryptoType: cryptoType,
+            genesisHash: nil,
+            substrateDeriviationPath: substrateDeriviationPath,
+            evmDeriviationPath: evmDeriviationPath,
+            source: .mnemonic
+        )
+    }
+}
 
 protocol KeystoreImportObserver: AnyObject {
-    func didUpdateDefinition(from oldDefinition: KeystoreDefinition?)
+    func didUpdateDefinition(from oldDefinition: SecretImportDefinition?)
+    func didReceiveError(secretImportError: ErrorContentConvertible & Error)
 }
 
 protocol KeystoreImportServiceProtocol: URLHandlingServiceProtocol {
-    var definition: KeystoreDefinition? { get }
+    var definition: SecretImportDefinition? { get }
 
     func add(observer: KeystoreImportObserver)
 
@@ -22,7 +48,7 @@ final class KeystoreImportService {
 
     private var observers: [ObserverWrapper] = []
 
-    private(set) var definition: KeystoreDefinition?
+    private(set) var definition: SecretImportDefinition?
 
     let logger: LoggerProtocol
 
@@ -33,19 +59,57 @@ final class KeystoreImportService {
 
 extension KeystoreImportService: KeystoreImportServiceProtocol {
     func handle(url: URL) -> Bool {
+        if !handleDeeplink(url: url) {
+            return handleKeystore(url: url)
+        } else {
+            return true
+        }
+    }
+
+    private func handleDeeplink(url: URL) -> Bool {
+        let pathComponents = url.pathComponents
+        guard pathComponents.count == 3 else {
+            return false
+        }
+        guard UrlHandlingAction(rawValue: pathComponents[1]) == .create else {
+            return false
+        }
+        let screen = pathComponents[2].lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard screen == "wallet" else {
+            return false
+        }
+
+        switch ImportWalletUrlParsingService().parse(url: url) {
+        case let .failure(error):
+            observers.forEach { wrapper in
+                wrapper.observer?.didReceiveError(secretImportError: error)
+            }
+        case let .success(state):
+            let oldDefinition = definition
+            definition = .mnemonic(state)
+            observers.forEach { wrapper in
+                wrapper.observer?.didUpdateDefinition(from: oldDefinition)
+            }
+            logger.debug("Imported mnemonic from deeplink")
+        }
+
+        return true
+    }
+
+    private func handleKeystore(url: URL) -> Bool {
         do {
             let data = try Data(contentsOf: url)
 
             let oldDefinition = definition
-            let definition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
+            let keystoreDefinition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
 
-            self.definition = definition
+            definition = .keystore(keystoreDefinition)
 
             observers.forEach { wrapper in
                 wrapper.observer?.didUpdateDefinition(from: oldDefinition)
             }
 
-            let address = definition.address ?? "no address"
+            let address = keystoreDefinition.address ?? "no address"
             logger.debug("Imported keystore for address: \(address)")
 
             return true
