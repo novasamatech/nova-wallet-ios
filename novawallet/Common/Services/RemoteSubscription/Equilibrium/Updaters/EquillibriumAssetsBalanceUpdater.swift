@@ -188,6 +188,8 @@ final class EquillibriumAssetsBalanceUpdater {
                         freeInPlank: freeInPlank,
                         reservedInPlank: reservedInPlank,
                         frozenInPlank: frozenInPlank,
+                        edCountMode: .basedOnTotal,
+                        transferrableMode: .regular,
                         blocked: false
                     )
                 }

@@ -13,12 +13,12 @@ enum Proxy {
         @StringCodable var delay: BlockNumber
     }
 
-    enum ProxyType: String, Hashable, Decodable {
+    enum ProxyType: Hashable, Decodable {
         case any
         case nonTransfer
         case governance
         case staking
-        case other
+        case other(String)
 
         enum Field {
             static let any = "Any"
@@ -41,7 +41,37 @@ enum Proxy {
             case Field.staking:
                 self = .staking
             default:
-                self = .other
+                self = .other(type)
+            }
+        }
+
+        init(id: String) {
+            switch id {
+            case "any":
+                self = .any
+            case "nonTransfer":
+                self = .nonTransfer
+            case "governance":
+                self = .governance
+            case "staking":
+                self = .staking
+            default:
+                self = .other(id)
+            }
+        }
+
+        var id: String {
+            switch self {
+            case .any:
+                return "any"
+            case .nonTransfer:
+                return "nonTransfer"
+            case .governance:
+                return "governance"
+            case .staking:
+                return "staking"
+            case let .other(value):
+                return value
             }
         }
     }

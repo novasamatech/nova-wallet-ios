@@ -20,7 +20,7 @@ final class ProxySyncService {
     let logger: LoggerProtocol
     let userDataStorageFacade: StorageFacadeProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
-    let chainsFilter: ((ChainModel) -> Bool)?
+    let chainsFilter: (ChainModel) -> Bool
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
 
     private(set) var isActive: Bool = false
@@ -42,7 +42,7 @@ final class ProxySyncService {
             attributes: .concurrent
         ),
         logger: LoggerProtocol = Logger.shared,
-        chainsFilter: ((ChainModel) -> Bool)? = nil
+        chainsFilter: ((ChainModel) -> Bool)?
     ) {
         self.chainRegistry = chainRegistry
         self.userDataStorageFacade = userDataStorageFacade
@@ -50,9 +50,8 @@ final class ProxySyncService {
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
-        self.chainsFilter = chainsFilter
         self.metaAccountsRepository = metaAccountsRepository
-
+        self.chainsFilter = chainsFilter ?? { $0.hasProxy }
         subscribeChains()
     }
 
@@ -90,11 +89,11 @@ final class ProxySyncService {
     }
 
     private func setupSyncService(for chain: ChainModel) {
-        if let filter = chainsFilter, !filter(chain) {
+        if !chainsFilter(chain) {
+            stopSyncSevice(for: chain.chainId)
             return
         }
-        guard chain.hasProxy else {
-            stopSyncSevice(for: chain.chainId)
+        guard updaters[chain.chainId] == nil else {
             return
         }
 
@@ -108,7 +107,7 @@ final class ProxySyncService {
         )
 
         updaters[chain.chainId] = service
-        addSyncHandler(for: service)
+        addSyncHandler(for: service, chainId: chain.chainId)
 
         if isActive {
             service.setup()
@@ -119,26 +118,21 @@ final class ProxySyncService {
         updaters.values.forEach { $0.unsubscribeSyncState(self) }
     }
 
-    private func addSyncHandler(for service: ObservableSyncServiceProtocol) {
+    private func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
         service.subscribeSyncState(
             self,
             queue: workingQueue
-        ) { [weak self] _, _ in
+        ) { [weak self] _, newState in
             guard let self = self else {
                 return
             }
 
             self.mutex.lock()
 
-            self.updateSyncState()
+            stateObserver.state.updateValue(newState, forKey: chainId)
 
             self.mutex.unlock()
         }
-    }
-
-    private func updateSyncState() {
-        let newState = updaters.mapValues { $0.getIsSyncing() }
-        stateObserver.state = newState
     }
 }
 

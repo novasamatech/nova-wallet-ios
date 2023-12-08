@@ -312,6 +312,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             }
         }
     }
+
+    func selectDApp(_ dapp: DApp) {
+        wireframe.showBrowser(from: view, for: .dApp(model: dapp))
+    }
 }
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {

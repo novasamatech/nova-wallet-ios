@@ -89,6 +89,8 @@ final class AccountInfoSubscription {
                 freeInPlank: account?.data.free ?? 0,
                 reservedInPlank: account?.data.reserved ?? 0,
                 frozenInPlank: account?.data.locked ?? 0,
+                edCountMode: account?.data.edCountMode ?? .basedOnFree,
+                transferrableMode: account?.data.transferrableModel ?? .regular,
                 blocked: false
             )
 

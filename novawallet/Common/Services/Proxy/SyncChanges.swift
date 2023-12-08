@@ -1,6 +1,4 @@
 struct SyncChanges<Item> {
-    let newOrUpdatedItems: [Item]
-    let removedItems: [Item]
+    var newOrUpdatedItems: [Item] = []
+    var removedItems: [Item] = []
 }
-
-typealias ChainAccountChanges = SyncChanges<ChainAccountModel>

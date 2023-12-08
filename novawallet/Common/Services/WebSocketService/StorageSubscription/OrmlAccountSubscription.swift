@@ -89,6 +89,8 @@ final class OrmlAccountSubscription {
                 freeInPlank: account?.free ?? 0,
                 reservedInPlank: account?.reserved ?? 0,
                 frozenInPlank: account?.frozen ?? 0,
+                edCountMode: .basedOnTotal,
+                transferrableMode: .regular,
                 blocked: false
             )
 
