@@ -1,5 +1,6 @@
 import SubstrateSdk
 import RobinHood
+import Foundation
 
 protocol ProxyOperationFactoryProtocol {
     func fetchProxyList(
@@ -35,7 +36,7 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
                         return
                     }
                     let newProxied = ProxiedAccount(accountId: nextPart.key.accountId, type: proxy.proxyType)
-                    if let delegate = result[proxy.delegate] {
+                    if let delegate = result[proxy.delegate], !delegate.contains(element: newProxied) {
                         result[proxy.delegate]?.append(newProxied)
                     } else {
                         result[proxy.delegate] = [newProxied]
@@ -50,5 +51,11 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
         let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
 
         return .init(targetOperation: mapper, dependencies: dependencies)
+    }
+}
+
+extension Array where Element: Equatable {
+    func contains(element: Element) -> Bool {
+        firstIndex(where: { $0 == element }) != nil
     }
 }

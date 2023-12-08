@@ -852,6 +852,7 @@
 "common.address.scan.title" = "Scan QR";
 "common.address.scan.message" = "Scan QR code with the address";
 "common.watch.only" = "Watch-only";
+"common.proxieds" = "DELEGATED TO YOU (PROXIEDS)";
 "common.invalid.address.format" = "Invalid %@ address";
 "common.signing.not.supported.title" = "Signing is not supported";
 "common.parity.signer.not.supported.message" = "%@ does not support signing arbitrary messages — only transactions";

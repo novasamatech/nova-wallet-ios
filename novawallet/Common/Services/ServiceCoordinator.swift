@@ -19,6 +19,7 @@ final class ServiceCoordinator {
     let githubPhishingService: ApplicationServiceProtocol
     let equilibriumService: AssetsUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
+    let proxySyncService: ProxySyncServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -28,6 +29,7 @@ final class ServiceCoordinator {
         evmNativeService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
         equilibriumService: AssetsUpdatingServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol,
         dappMediator: DAppInteractionMediating
     ) {
         self.walletSettings = walletSettings
@@ -37,6 +39,7 @@ final class ServiceCoordinator {
         self.evmNativeService = evmNativeService
         self.equilibriumService = equilibriumService
         self.githubPhishingService = githubPhishingService
+        self.proxySyncService = proxySyncService
         self.dappMediator = dappMediator
     }
 }
@@ -59,6 +62,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.setup()
         evmNativeService.setup()
         equilibriumService.setup()
+        proxySyncService.setup()
         dappMediator.setup()
     }
 
@@ -69,6 +73,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.throttle()
         evmNativeService.throttle()
         equilibriumService.throttle()
+        proxySyncService.throttle()
         dappMediator.throttle()
     }
 }
@@ -96,6 +101,10 @@ extension ServiceCoordinator {
             remoteFactory: StorageKeyFactory(),
             operationManager: assetsSyncOperationManager
         )
+
+        let userDataStorageFacade = UserDataStorageFacade.shared
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
 
         let accountInfoService = AccountInfoUpdatingService(
             selectedAccount: walletSettings.value,
@@ -154,6 +163,13 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let proxySyncService = ProxySyncService(
+            chainRegistry: chainRegistry,
+            userDataStorageFacade: userDataStorageFacade,
+            proxyOperationFactory: ProxyOperationFactory(),
+            metaAccountsRepository: metaAccountsRepository
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
@@ -162,6 +178,7 @@ extension ServiceCoordinator {
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,
             equilibriumService: equilibriumService,
+            proxySyncService: proxySyncService,
             dappMediator: DAppInteractionFactory.createMediator()
         )
     }

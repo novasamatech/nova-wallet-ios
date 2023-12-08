@@ -852,6 +852,7 @@
 "common.address.scan.title" = "Сканировать QR";
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "common.watch.only" = "Watch-only";
+"common.proxieds" = "Делегированные вам (PROXIEDS)";
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
 "common.signing.not.supported.title" = "Подписание не поддерживается";
 "common.parity.signer.not.supported.message" = "%@ не поддерживает подписание произвольных сообщений — только транзакции";

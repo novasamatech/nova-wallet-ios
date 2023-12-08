@@ -163,7 +163,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             } else {
                 return .init(info: MetaAccountModel(
                     metaId: UUID().uuidString,
-                    name: identities[item.accountId]?.displayName ?? accountId.toHexString(),
+                    name: identities[item.accountId]?.displayName ?? item.accountId.toHexString(),
                     substrateAccountId: accountId,
                     substrateCryptoType: MultiassetCryptoType.sr25519.rawValue,
                     substratePublicKey: nil,

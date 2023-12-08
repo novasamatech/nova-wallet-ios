@@ -1,6 +1,6 @@
 import SubstrateSdk
 
-struct ProxiedAccount {
+struct ProxiedAccount: Equatable {
     let accountId: AccountId
     let type: Proxy.ProxyType
 }

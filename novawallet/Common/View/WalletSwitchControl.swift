@@ -95,6 +95,13 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconLedger()
+        case .proxy:
+            controlBackgroundView.fillColor = .clear
+            controlBackgroundView.highlightedFillColor = .clear
+            controlBackgroundView.strokeColor = .clear
+            controlBackgroundView.highlightedStrokeColor = .clear
+
+            typeImageView.image = nil
         }
     }
 
