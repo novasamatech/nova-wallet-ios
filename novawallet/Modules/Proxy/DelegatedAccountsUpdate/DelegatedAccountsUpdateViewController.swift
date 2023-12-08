@@ -33,6 +33,7 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
 
         setupTableView()
         setupDoneButton()
+        setupLocalization()
         presenter.setup()
     }
 
@@ -44,7 +45,12 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
 
             switch model {
             case .info:
-                return UITableViewCell()
+                let cell: ProxyInfoTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                let text = "Nova Wallet automatically adds delegated authorities (Proxy) to a separate category for you. You can always manage wallets in Settings."
+                let link = "What is a Proxy?"
+                cell.bind(text: text, link: link)
+                cell.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
+                return cell
             case let .proxied(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.bind(viewModel: viewModel)
@@ -78,6 +84,10 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
 
     @objc private func didTapOnDoneButton() {
         presenter.done()
+    }
+
+    @objc private func didTapOnInfoButton() {
+        presenter.showInfo()
     }
 }
 
@@ -116,7 +126,7 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch Section(rawValue: indexPath.section) {
         case .info:
-            return 102
+            return UITableView.automaticDimension
         case .delegated, .revoked:
             return 48
         default:

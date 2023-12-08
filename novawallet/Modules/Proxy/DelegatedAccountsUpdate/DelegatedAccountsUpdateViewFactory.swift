@@ -13,7 +13,8 @@ struct DelegatedAccountsUpdateViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelsFactory: DelegatedAccountsUpdateFactory(),
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            applicationConfig: ApplicationConfig.shared
         )
 
         let view = DelegatedAccountsUpdateViewController(presenter: presenter, localizationManager: LocalizationManager.shared)

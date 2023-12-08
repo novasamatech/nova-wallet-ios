@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SoraUI
 
 final class ProxyTableViewCell: PlainBaseTableViewCell<ProxyWalletView> {
     override func prepareForReuse() {
@@ -16,6 +17,47 @@ final class ProxyTableViewCell: PlainBaseTableViewCell<ProxyWalletView> {
 
     func bind(viewModel: ProxyWalletView.ViewModel) {
         contentDisplayView.bind(viewModel: viewModel)
+    }
+}
+
+final class ProxyInfoTableViewCell: PlainBaseTableViewCell<ProxyInfoView> {
+    var actionButton: RoundedButton { contentDisplayView.linkView.actionButton }
+
+    override func setupStyle() {
+        super.setupStyle()
+
+        backgroundColor = .clear
+    }
+
+    func bind(text: String, link: String) {
+        contentDisplayView.bind(text: text, link: link)
+    }
+}
+
+final class ProxyInfoView: GenericPairValueView<UILabel, GenericPairValueView<LinkView, FlexibleSpaceView>> {
+    var infoLabel: UILabel { fView }
+    var linkView: LinkView { sView.fView }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupStyle()
+    }
+
+    func setupStyle() {
+        makeVertical()
+        spacing = 8
+        infoLabel.apply(style: .footnoteSecondary)
+        infoLabel.numberOfLines = 0
+        linkView.setContentHuggingPriority(.required, for: .horizontal)
+        linkView.actionButton.imageWithTitleView?.contentMode = .left
+        stackView.layoutMargins = .init(top: 0, left: 0, bottom: 8, right: 0)
+        sView.makeHorizontal()
+    }
+
+    func bind(text: String, link: String) {
+        infoLabel.text = text
+        linkView.actionButton.imageWithTitleView?.title = link
     }
 }
 

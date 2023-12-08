@@ -14,6 +14,7 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         view.sectionHeaderHeight = 0
         view.sectionFooterHeight = 0
         view.registerClassForCell(ProxyTableViewCell.self)
+        view.registerClassForCell(ProxyInfoTableViewCell.self)
         return view
     }()
 

@@ -8,6 +8,7 @@ final class DelegatedAccountsUpdatePresenter {
     let interactor: DelegatedAccountsUpdateInteractorInputProtocol
     let viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol
     let logger: LoggerProtocol
+    let applicationConfig: ApplicationConfigProtocol
 
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var walletsList: ListDifferenceCalculator<ManagedMetaAccountModel> = {
@@ -25,12 +26,14 @@ final class DelegatedAccountsUpdatePresenter {
         wireframe: DelegatedAccountsUpdateWireframeProtocol,
         viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelsFactory = viewModelsFactory
         self.logger = logger
+        self.applicationConfig = applicationConfig
         self.localizationManager = localizationManager
     }
 
@@ -59,6 +62,14 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProt
     func done() {
         interactor.updateWalletsStatuses()
         wireframe.close(from: view)
+    }
+
+    func showInfo() {
+        guard let view = view else {
+            return
+        }
+        let wikiUrl = applicationConfig.wikiURL
+        wireframe.showWeb(url: wikiUrl, from: view, style: .automatic)
     }
 }
 

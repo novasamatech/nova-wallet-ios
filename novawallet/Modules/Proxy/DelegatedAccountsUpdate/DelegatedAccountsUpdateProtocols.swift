@@ -10,6 +10,7 @@ protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
 protocol DelegatedAccountsUpdatePresenterProtocol: AnyObject {
     func setup()
     func done()
+    func showInfo()
 }
 
 protocol DelegatedAccountsUpdateInteractorInputProtocol: AnyObject {
@@ -23,7 +24,7 @@ protocol DelegatedAccountsUpdateInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: DelegatedAccountsUpdateError)
 }
 
-protocol DelegatedAccountsUpdateWireframeProtocol: AnyObject {
+protocol DelegatedAccountsUpdateWireframeProtocol: AnyObject, WebPresentable {
     func close(from view: ControllerBackedProtocol?)
 }
 

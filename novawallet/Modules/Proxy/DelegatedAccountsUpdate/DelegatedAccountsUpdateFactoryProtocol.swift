@@ -31,9 +31,7 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
                 return nil
             }
 
-            let optIcon = wallet.info.walletIdenticonData().flatMap {
-                try? iconGenerator.generateFromAccountId($0)
-            }
+            let optIcon = try? iconGenerator.generateFromAccountId(proxied.accountId)
             let iconViewModel = optIcon.map {
                 IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
             }
