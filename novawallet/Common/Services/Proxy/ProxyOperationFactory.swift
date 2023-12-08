@@ -1,12 +1,14 @@
 import SubstrateSdk
 import RobinHood
 
+typealias ProxiedAccountId = AccountId
+
 protocol ProxyOperationFactoryProtocol {
     func fetchProxyList(
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[AccountId: [ProxiedAccount]]>
+    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>
 }
 
 final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
@@ -14,7 +16,7 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> {
+    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]> {
         let request = UnkeyedRemoteStorageRequest(storagePath: Proxy.proxyList)
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -26,27 +28,17 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() }
             )
 
-        let mapper = ClosureOperation<[AccountId: [ProxiedAccount]]> {
+        let mapper = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
             let proxyResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-
-            return proxyResult.reduce(into: [AccountId: [ProxiedAccount]]()) { result, nextPart in
-                nextPart.value.definition.forEach { proxy in
-                    guard proxy.delay == 0 else {
-                        return
-                    }
-                    let newProxied = ProxiedAccount(accountId: nextPart.key.accountId, type: proxy.proxyType)
-                    if let delegate = result[proxy.delegate] {
-                        result[proxy.delegate]?.append(newProxied)
-                    } else {
-                        result[proxy.delegate] = [newProxied]
-                    }
+            return proxyResult.reduce(into: [AccountId: [ProxyAccount]]()) { result, nextPart in
+                result[nextPart.key.accountId] = nextPart.value.definition.map {
+                    ProxyAccount(accountId: $0.delegate, type: $0.proxyType)
                 }
             }
         }
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
-        fetchWrapper.allOperations.forEach {
-            mapper.addDependency($0)
-        }
+        mapper.addDependency(fetchWrapper.targetOperation)
+
         let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
 
         return .init(targetOperation: mapper, dependencies: dependencies)

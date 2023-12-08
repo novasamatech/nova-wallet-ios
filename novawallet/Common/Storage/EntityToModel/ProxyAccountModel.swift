@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-struct ProxiedAccountModel: Hashable {
+struct ProxyAccountModel: Hashable {
     let type: Proxy.ProxyType
     let accountId: AccountId
     let status: Status
@@ -13,8 +13,8 @@ struct ProxiedAccountModel: Hashable {
     }
 }
 
-extension ProxiedAccountModel: Identifiable {
+extension ProxyAccountModel: Identifiable {
     var identifier: String {
-        type.rawValue + "-" + accountId.toHexString()
+        type.id + "-" + accountId.toHexString()
     }
 }

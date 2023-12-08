@@ -72,7 +72,8 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             metaAccountsOperation: metaAccountsOperation,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityOperationFactory: identityOperationFactory
+            identityOperationFactory: identityOperationFactory,
+            chainModel: chainModel
         )
         let saveOperation = saveOperation(dependingOn: changesOperation)
         saveOperation.addDependency(changesOperation.targetOperation)
@@ -107,138 +108,176 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         operationQueue.addOperations(compoundWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func updatedMetaAccounts(
+    private static func metaAccountsUpdates(
         metaAccounts: [ManagedMetaAccountModel],
-        for accountId: AccountId,
-        proxieds: [ProxiedAccount],
-        identities: [AccountId: AccountIdentity]
-    ) -> [ManagedMetaAccountModel] {
-        guard metaAccounts.contains(where: { $0.info.has(accountId: accountId, chainId: chainModel.chainId) }) else {
-            return []
-        }
-        let remoteProxieds = proxieds.map {
-            ProxiedAccountModel(
+        accountId: ProxiedAccountId,
+        proxies: [ProxyAccount],
+        identities: [ProxiedAccountId: AccountIdentity],
+        chainModel: ChainModel
+    ) -> SyncChanges<ManagedMetaAccountModel> {
+        let cryptoType = !chainModel.isEthereumBased ? MultiassetCryptoType.sr25519 : MultiassetCryptoType.ethereumEcdsa
+
+        let remoteProxies = proxies.map {
+            ProxyAccountModel(
                 type: $0.type,
                 accountId: $0.accountId,
                 status: .new
             )
         }
-        let localProxieds = metaAccounts
+        let localProxies = metaAccounts
             .filter { $0.info.type == .proxy && $0.info.has(accountId: accountId, chainId: chainModel.chainId) }
             .flatMap(\.info.chainAccounts)
-            .compactMap(\.proxied)
+            .compactMap(\.proxy)
 
-        let difference = localProxieds.diff(from: remoteProxieds) { oldElement, newElement in
+        let diffCalculator = DataChangesDiffCalculator<ProxyAccountModel>()
+        let difference = diffCalculator.diff(newItems: localProxies, oldItems: remoteProxies) { oldElement, newElement in
             oldElement.accountId == newElement.accountId &&
                 oldElement.type == newElement.type &&
                 (oldElement.status == .new || oldElement.status == .active)
         }
 
         let markAsDeletedItems = difference.removedItems.map {
-            ProxiedAccountModel(
+            ProxyAccountModel(
                 type: $0.type,
                 accountId: $0.accountId,
                 status: .revoked
             )
         }
-        let newOrUpdatedItems = difference.newOrUpdatedItems + markAsDeletedItems
 
-        return newOrUpdatedItems.map { item in
+        let updatedItems = difference.newOrUpdatedItems + markAsDeletedItems
+
+        return updatedItems.reduce(into: SyncChanges<ManagedMetaAccountModel>()) { result, proxy in
+            if let metaAccount = metaAccounts.first(where: { $0.info.type == .proxy && $0.info.has(accountId: accountId, chainId: chainModel.chainId) }) {
+                let proxyWalletExists = metaAccounts.contains(where: { $0.info.has(accountId: proxy.accountId, chainId: chainModel.chainId) })
+                guard proxyWalletExists else {
+                    result.removedItems.append(metaAccount)
+                    return
+                }
+
+                if var proxyChainAccount = metaAccount.info.proxyChainAccount(proxyAccountId: proxy.accountId, type: proxy.type) {
+                    let chainAccountModel = ChainAccountModel(
+                        chainId: proxyChainAccount.chainId,
+                        accountId: proxyChainAccount.accountId,
+                        publicKey: proxyChainAccount.publicKey,
+                        cryptoType: proxyChainAccount.cryptoType,
+                        proxy: proxy
+                    )
+
+                    result.newOrUpdatedItems.append(ManagedMetaAccountModel(
+                        info: metaAccount.info.replacingChainAccount(chainAccountModel),
+                        isSelected: metaAccount.isSelected,
+                        order: metaAccount.order
+                    ))
+                    return
+                } else {
+                    result.removedItems.append(metaAccount)
+                    return
+                }
+            }
+
             let chainAccountModel = ChainAccountModel(
                 chainId: chainModel.chainId,
                 accountId: accountId,
-                publicKey: Data(),
-                cryptoType: MultiassetCryptoType.sr25519.rawValue,
-                proxied: item
+                publicKey: accountId,
+                cryptoType: cryptoType.rawValue,
+                proxy: proxy
             )
-            if let metaAccount = metaAccounts.first(where: {
-                $0.info.has(accountId: accountId, chainId: chainModel.chainId) &&
-                    $0.info.has(proxiedAccountId: item.accountId, type: item.type)
-            }) {
-                return ManagedMetaAccountModel(
-                    info: metaAccount.info.replacingChainAccount(chainAccountModel),
-                    isSelected: metaAccount.isSelected,
-                    order: metaAccount.order
-                )
-            } else {
-                return .init(info: MetaAccountModel(
-                    metaId: UUID().uuidString,
-                    name: identities[item.accountId]?.displayName ?? accountId.toHexString(),
-                    substrateAccountId: accountId,
-                    substrateCryptoType: MultiassetCryptoType.sr25519.rawValue,
-                    substratePublicKey: nil,
-                    ethereumAddress: nil,
-                    ethereumPublicKey: nil,
-                    chainAccounts: [chainAccountModel],
-                    type: .proxy
-                ))
-            }
+
+            let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
+                metaId: UUID().uuidString,
+                name: identities[accountId]?.displayName ?? accountId.toHexString(),
+                substrateAccountId: accountId,
+                substrateCryptoType: cryptoType.rawValue,
+                substratePublicKey: nil,
+                ethereumAddress: nil,
+                ethereumPublicKey: nil,
+                chainAccounts: [chainAccountModel],
+                type: .proxy
+            ))
+
+            result.newOrUpdatedItems.append(newWallet)
         }
     }
 
     private func changesOperation(
-        proxyListWrapper: CompoundOperationWrapper<[AccountId: [ProxiedAccount]]>,
+        proxyListWrapper: CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>,
         metaAccountsOperation: BaseOperation<[ManagedMetaAccountModel]>,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol
-    ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
+        identityOperationFactory: IdentityOperationFactoryProtocol,
+        chainModel: ChainModel
+    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let metaAccountsOperations = OperationCombiningService(operationManager: operationManager) {
             let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
-            let proxiedsAccounts = Array(Set(proxyList.values.flatMap { $0 }.map(\.accountId)))
+            let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
+
+            let proxies = proxyList.compactMapValues { accounts in
+                accounts.filter { account in
+                    chainMetaAccounts.contains {
+                        $0.info.has(accountId: account.accountId, chainId: self.chainModel.chainId)
+                    }
+                }
+            }.filter { !$0.value.isEmpty }
+
             let identityWrapper = identityOperationFactory.createIdentityWrapperByAccountId(
-                for: { proxiedsAccounts },
+                for: { Array(proxies.keys) },
                 engine: connection,
                 runtimeService: runtimeProvider,
-                chainFormat: self.chainModel.chainFormat
+                chainFormat: chainModel.chainFormat
             )
 
-            let mapOperation = ClosureOperation<[ManagedMetaAccountModel]> {
-                let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
+            let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
                 let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
-                let metaAccounts = proxyList.compactMap {
-                    self.updatedMetaAccounts(
+                let changes = proxies.map {
+                    Self.metaAccountsUpdates(
                         metaAccounts: chainMetaAccounts,
-                        for: $0.key,
-                        proxieds: $0.value,
-                        identities: identities
+                        accountId: $0.key,
+                        proxies: $0.value,
+                        identities: identities,
+                        chainModel: chainModel
                     )
-                }.flatMap { $0 } ?? []
+                }
 
-                return metaAccounts
+                return SyncChanges(
+                    newOrUpdatedItems: changes.flatMap(\.newOrUpdatedItems),
+                    removedItems: changes.flatMap(\.removedItems)
+                )
             }
 
-            mapOperation.addDependency(metaAccountsOperation)
             mapOperation.addDependency(identityWrapper.targetOperation)
 
             let wrapper = CompoundOperationWrapper(
                 targetOperation: mapOperation,
-                dependencies: [metaAccountsOperation] + identityWrapper.allOperations
+                dependencies: identityWrapper.allOperations
             )
             return [wrapper]
         }.longrunOperation()
 
         metaAccountsOperations.addDependency(proxyListWrapper.targetOperation)
+        metaAccountsOperations.addDependency(metaAccountsOperation)
 
-        let mapOperation = ClosureOperation<[ManagedMetaAccountModel]> {
-            let metaAccounts = try metaAccountsOperations.extractNoCancellableResultData().first ?? []
+        let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
+            let metaAccounts = try metaAccountsOperations.extractNoCancellableResultData().first ?? SyncChanges<ManagedMetaAccountModel>()
 
             return metaAccounts
         }
         mapOperation.addDependency(metaAccountsOperations)
 
-        let dependencies = proxyListWrapper.allOperations + [metaAccountsOperations]
+        let dependencies = proxyListWrapper.allOperations + [metaAccountsOperation, metaAccountsOperations]
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     private func saveOperation(
-        dependingOn updatingMetaAccountsOperation: CompoundOperationWrapper<[ManagedMetaAccountModel]>
+        dependingOn updatingMetaAccountsOperation: CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>>
     ) -> BaseOperation<Void> {
         metaAccountsRepository.saveOperation({
             let metaAccounts = try updatingMetaAccountsOperation.targetOperation.extractNoCancellableResultData()
-            return metaAccounts
-        }, { [] })
+            return metaAccounts.newOrUpdatedItems
+        }, {
+            let metaAccounts = try updatingMetaAccountsOperation.targetOperation.extractNoCancellableResultData()
+            return metaAccounts.removedItems.map(\.identifier)
+        })
     }
 
     override func stopSyncUp() {

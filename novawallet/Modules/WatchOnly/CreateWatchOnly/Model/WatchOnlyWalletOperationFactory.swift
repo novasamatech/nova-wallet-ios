@@ -48,7 +48,7 @@ final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProt
                 accountId: accountId,
                 publicKey: accountId,
                 cryptoType: cryptoType.rawValue,
-                proxied: nil
+                proxy: nil
             )
 
             return wallet.replacingChainAccount(chainAccount)

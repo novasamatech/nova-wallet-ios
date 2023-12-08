@@ -6,7 +6,7 @@ struct ChainAccountModel: Hashable {
     let accountId: Data
     let publicKey: Data
     let cryptoType: UInt8
-    let proxied: ProxiedAccountModel?
+    let proxy: ProxyAccountModel?
 
     var isEthereumBased: Bool {
         cryptoType == MultiassetCryptoType.ethereumEcdsa.rawValue

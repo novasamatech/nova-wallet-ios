@@ -38,14 +38,14 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
     }
 
     func transform(chainAccountEntity: CDChainAccount) throws -> ChainAccountModel {
-        let proxiedModel = try chainAccountEntity.proxied.map {
-            let accountId = try Data(hexString: $0.proxiedAccountId!)
-            let type = Proxy.ProxyType(rawValue: $0.type!) ?? .other
+        let proxyModel = try chainAccountEntity.proxy.map {
+            let accountId = try Data(hexString: $0.proxyAccountId!)
+            let type = Proxy.ProxyType(id: $0.type!)
 
-            return ProxiedAccountModel(
+            return ProxyAccountModel(
                 type: type,
                 accountId: accountId,
-                status: ProxiedAccountModel.Status(rawValue: $0.status!)!
+                status: ProxyAccountModel.Status(rawValue: $0.status!)!
             )
         }
 
@@ -56,7 +56,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             accountId: accountId,
             publicKey: chainAccountEntity.publicKey!,
             cryptoType: UInt8(chainAccountEntity.cryptoType),
-            proxied: proxiedModel
+            proxy: proxyModel
         )
     }
 
@@ -104,15 +104,15 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         chainAccounEntity.cryptoType = Int16(bitPattern: UInt16(model.cryptoType))
         chainAccounEntity.publicKey = model.publicKey
 
-        if let proxied = model.proxied {
-            if chainAccounEntity.proxied == nil {
-                chainAccounEntity.proxied = CDProxied(context: context)
+        if let proxy = model.proxy {
+            if chainAccounEntity.proxy == nil {
+                chainAccounEntity.proxy = CDProxy(context: context)
             }
-            chainAccounEntity.proxied?.type = proxied.type.rawValue
-            chainAccounEntity.proxied?.proxiedAccountId = proxied.accountId.toHex()
-            chainAccounEntity.proxied?.status = proxied.status.rawValue
+            chainAccounEntity.proxy?.type = proxy.type.id
+            chainAccounEntity.proxy?.proxyAccountId = proxy.accountId.toHex()
+            chainAccounEntity.proxy?.status = proxy.status.rawValue
         } else {
-            chainAccounEntity.proxied = nil
+            chainAccounEntity.proxy = nil
         }
     }
 }

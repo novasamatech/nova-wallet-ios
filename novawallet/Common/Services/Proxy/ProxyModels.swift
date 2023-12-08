@@ -1,6 +1,6 @@
 import SubstrateSdk
 
-struct ProxiedAccount {
+struct ProxyAccount {
     let accountId: AccountId
     let type: Proxy.ProxyType
 }
