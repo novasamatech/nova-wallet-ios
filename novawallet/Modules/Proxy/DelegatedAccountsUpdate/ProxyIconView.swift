@@ -61,10 +61,17 @@ final class ProxyIconView: UIView {
         addSubview(networkIconImageView)
 
         networkIconImageView.snp.makeConstraints {
-            $0.trailing.equalTo(networkIconImageView.snp.trailing).offset(Constants.networkIconOffset.x)
-            $0.bottom.equalTo(networkIconImageView.snp.bottom).offset(Constants.networkIconOffset.y)
+            $0.trailing.equalTo(iconViewImageView.snp.trailing).offset(Constants.networkIconOffset.x)
+            $0.bottom.equalTo(iconViewImageView.snp.bottom).offset(Constants.networkIconOffset.y)
             $0.size.equalTo(Constants.networkIconSize)
         }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        .init(
+            width: Constants.networkIconOffset.x + Constants.iconSize.width,
+            height: Constants.networkIconOffset.y + Constants.iconSize.height
+        )
     }
 }
 

@@ -42,6 +42,7 @@ final class ProxyWalletView: GenericTitleValueView<ProxyIconView, GenericPairVal
         titleLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byTruncatingTail
         spacing = 8
+        alignment = .left
         indicatorImageView.snp.makeConstraints {
             $0.height.width.equalTo(8)
         }

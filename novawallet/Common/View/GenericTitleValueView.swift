@@ -1,6 +1,11 @@
 import UIKit
 
 class GenericTitleValueView<T: UIView, V: UIView>: UIView {
+    enum Alignment {
+        case natural
+        case left
+    }
+
     let titleView: T
     let valueView: V
 
@@ -29,12 +34,13 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
 
     var spacing: CGFloat = 8.0 {
         didSet {
-            valueView.snp.remakeConstraints { make in
-                make.trailing.centerY.equalToSuperview()
-                make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
-            }
+            remakeConstraints()
+        }
+    }
 
-            setNeedsLayout()
+    var alignment: Alignment = .natural {
+        didSet {
+            remakeConstraints()
         }
     }
 
@@ -58,6 +64,26 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
         valueView.snp.makeConstraints { make in
             make.trailing.centerY.equalToSuperview()
             make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
+        }
+    }
+
+    private func remakeConstraints() {
+        switch alignment {
+        case .natural:
+            valueView.snp.remakeConstraints { make in
+                make.trailing.centerY.equalToSuperview()
+                make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
+            }
+
+            setNeedsLayout()
+        case .left:
+            valueView.snp.remakeConstraints { make in
+                make.leading.equalTo(titleView.snp.trailing).offset(spacing)
+                make.centerY.equalToSuperview()
+                make.trailing.lessThanOrEqualToSuperview()
+            }
+
+            setNeedsLayout()
         }
     }
 }
