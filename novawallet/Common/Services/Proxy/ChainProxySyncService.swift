@@ -121,8 +121,11 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             .compactMap(\.proxy)
 
         let diffCalculator = DataChangesDiffCalculator<ProxyAccountModel>()
-        let difference = diffCalculator.diff(newItems: localProxies, oldItems: remoteProxies) {
-            $0.accountId == $1.accountId && $0.type == $1.type && ($0.status == .new || $0.status == .active)
+        let difference = diffCalculator.diff(newItems: remoteProxies, oldItems: localProxies) {
+            let sameNewStatuses = $1.status == .new && ($0.status == .new || $0.status == .active)
+            let sameRevokedStatuses = $1.status == .revoked && $0.status == .revoked
+            let equalStatus = sameNewStatuses || sameRevokedStatuses
+            return $0.accountId == $1.accountId && $0.type == $1.type && equalStatus
         }
 
         let markAsDeletedItems = difference.removedItems.map {
