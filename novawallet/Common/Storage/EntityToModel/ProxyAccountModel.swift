@@ -6,7 +6,7 @@ struct ProxyAccountModel: Hashable {
     let accountId: AccountId
     let status: Status
 
-    enum Status: String {
+    enum Status: String, CaseIterable {
         case new
         case active
         case revoked

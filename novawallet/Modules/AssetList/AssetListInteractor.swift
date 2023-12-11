@@ -22,9 +22,11 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let settingsManager: SettingsManagerProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let assetListModelObservable: AssetListModelObservable
+    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
+    private var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
 
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private var locks: [ChainAssetId: [AssetLock]] = [:]
@@ -34,6 +36,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         chainRegistry: ChainRegistryProtocol,
         assetListModelObservable: AssetListModelObservable,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -48,7 +51,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.walletConnect = walletConnect
-
+        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         super.init(
             selectedWalletSettings: selectedWalletSettings,
             chainRegistry: chainRegistry,
@@ -164,6 +167,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         subscribeChains()
 
         eventCenter.add(observer: self, dispatchIn: .main)
+        walletListSubscription = subscribeNewProxyWallets()
     }
 
     private func updateLocksSubscription(from changes: [DataProviderChange<ChainModel>]) {
@@ -325,5 +329,16 @@ extension AssetListInteractor: WalletConnectDelegateOutputProtocol {
 
     func walletConnectDidChangeChains() {
         provideWalletConnectSessionsCount()
+    }
+}
+
+extension AssetListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+    func handleNewProxyWalletsUpdate(result: Result<Int, Error>) {
+        switch result {
+        case let .success(count):
+            presenter?.didReceiveWalletsState(hasUpdates: count > 0)
+        case let .failure(error):
+            logger?.error(error.localizedDescription)
+        }
     }
 }

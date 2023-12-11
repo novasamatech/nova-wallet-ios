@@ -2,14 +2,22 @@ import UIKit
 
 extension UIView {
     func cutHole(roundedRect: CGRect, cornerRadii: CGSize) {
-        let entireViewPath = UIBezierPath(rect: bounds)
-
         let roundedRectPath = UIBezierPath(
             roundedRect: roundedRect,
             byRoundingCorners: .allCorners,
             cornerRadii: cornerRadii
         )
-        entireViewPath.append(roundedRectPath)
+        cut(path: roundedRectPath)
+    }
+
+    func cutHole(ovalIn rect: CGRect) {
+        let ovalPath = UIBezierPath(ovalIn: rect)
+        cut(path: ovalPath)
+    }
+
+    private func cut(path: UIBezierPath) {
+        let entireViewPath = UIBezierPath(rect: bounds)
+        entireViewPath.append(path)
         entireViewPath.usesEvenOddFillRule = true
 
         let maskLayer = CAShapeLayer()

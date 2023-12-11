@@ -9,7 +9,8 @@ final class WalletSwitchViewModelFactory {
 
         return WalletSwitchViewModel(
             type: WalletsListSectionViewModel.SectionType(walletType: walletType),
-            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
+            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) },
+            hasNotification: false
         )
     }
 }

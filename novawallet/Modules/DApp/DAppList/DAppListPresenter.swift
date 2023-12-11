@@ -77,7 +77,8 @@ final class DAppListPresenter {
         let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
         let viewModel = WalletSwitchViewModel(
             type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
-            iconViewModel: iconViewModel
+            iconViewModel: iconViewModel,
+            hasNotification: false
         )
 
         view?.didReceiveWalletSwitch(viewModel: viewModel)

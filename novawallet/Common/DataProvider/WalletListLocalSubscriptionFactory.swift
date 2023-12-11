@@ -4,6 +4,7 @@ import RobinHood
 protocol WalletListLocalSubscriptionFactoryProtocol {
     func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel>
     func getWalletsProvider() throws -> StreamableProvider<ManagedMetaAccountModel>
+    func getProxyWalletsUpdatesProvider(statuses: [ProxyAccountModel.Status]) throws -> StreamableProvider<ManagedMetaAccountModel>
 }
 
 final class WalletListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -91,6 +92,54 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { _ in true }
+        )
+
+        observable.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Did receive error: \(error)")
+            }
+        }
+
+        let provider = StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: operationManager
+        )
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    func getProxyWalletsUpdatesProvider(statuses: [ProxyAccountModel.Status]) throws -> StreamableProvider<ManagedMetaAccountModel> {
+        clearIfNeeded()
+
+        let rawStatuses = statuses.map(\.rawValue).sorted()
+        let cacheKey = "proxy-wallets-\(rawStatuses.joined(separator: "-"))"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<ManagedMetaAccountModel> {
+            return provider
+        }
+
+        let source = EmptyStreamableSource<ManagedMetaAccountModel>()
+
+        let mapper = ManagedMetaAccountMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        let observable = CoreDataContextObservable(
+            service: storageFacade.databaseService,
+            mapper: AnyCoreDataMapper(mapper),
+            predicate: { entity in
+                guard entity.type == MetaAccountModelType.proxy.rawValue else {
+                    return false
+                }
+                guard let chainAccounts = entity.chainAccounts else {
+                    return false
+                }
+                return chainAccounts.compactMap { ($0 as? CDChainAccount)?.proxy }
+                    .contains { rawStatuses.contains($0.status ?? "") }
+            }
         )
 
         observable.start { [weak self] error in

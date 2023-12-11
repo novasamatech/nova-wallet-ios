@@ -13,6 +13,12 @@ final class WalletSwitchContentView: UIView {
         return imageView
     }()
 
+    let badgeView: UIView = .create {
+        $0.backgroundColor = R.color.colorIconAccent()!
+        $0.layer.cornerRadius = 5
+        $0.isHidden = true
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -24,6 +30,12 @@ final class WalletSwitchContentView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        layoutBadge()
     }
 
     private func setupLayout() {
@@ -39,6 +51,36 @@ final class WalletSwitchContentView: UIView {
             make.trailing.equalToSuperview()
             make.top.bottom.equalToSuperview()
             make.width.equalTo(iconView.snp.height)
+        }
+
+        addSubview(badgeView)
+
+        badgeView.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview()
+            make.width.height.equalTo(10)
+        }
+    }
+
+    func layoutBadge() {
+        if !badgeView.isHidden {
+            badgeView.layoutIfNeeded()
+
+            let holeWidth: CGFloat = 4
+
+            let width = badgeView.bounds.width + holeWidth * 2
+            let height = badgeView.bounds.height + holeWidth * 2
+            let origin = convert(badgeView.frame.origin, to: iconView)
+
+            let frame = CGRect(
+                x: origin.x - holeWidth,
+                y: origin.y - holeWidth,
+                width: width,
+                height: height
+            )
+
+            iconView.cutHole(ovalIn: frame)
+        } else {
+            iconView.layer.mask = nil
         }
     }
 }
@@ -103,6 +145,9 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
 
             typeImageView.image = nil
         }
+
+        controlContentView.badgeView.isHidden = !viewModel.hasNotification
+        controlContentView.setNeedsLayout()
     }
 
     private func applyCommonStyle(to backgroundView: RoundedView) {

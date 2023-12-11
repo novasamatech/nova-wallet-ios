@@ -18,6 +18,7 @@ struct AssetListViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetListModelObservable: assetListModelObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
