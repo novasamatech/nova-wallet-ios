@@ -203,7 +203,7 @@ extension DelegatedAccountsUpdateViewController {
 
 extension DelegatedAccountsUpdateViewController {
     enum Constants {
-        static let heightSectionHeader: CGFloat = 37
+        static let heightSectionHeader: CGFloat = 41
         static let accountCellHeight: CGFloat = 48
     }
 }
