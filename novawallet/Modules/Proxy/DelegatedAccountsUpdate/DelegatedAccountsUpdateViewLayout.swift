@@ -1,6 +1,11 @@
 import UIKit
 
 final class DelegatedAccountsUpdateViewLayout: UIView {
+    let titleLabel: UILabel = .create {
+        $0.apply(style: .bottomSheetTitle)
+        $0.numberOfLines = 0
+    }
+
     lazy var tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .grouped)
         view.separatorStyle = .none
@@ -15,6 +20,7 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         view.sectionFooterHeight = 0
         view.registerClassForCell(ProxyTableViewCell.self)
         view.registerClassForCell(ProxyInfoTableViewCell.self)
+        view.registerHeaderFooterView(withClass: SectionTextHeaderView.self)
         return view
     }()
 
@@ -24,7 +30,7 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = R.color.colorSecondaryScreenBackground()
+        backgroundColor = R.color.colorBottomSheetBackground()
 
         setupLayout()
     }
@@ -35,10 +41,16 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(10)
+            $0.leading.trailing.equalToSuperview().inset(16)
+        }
+
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide.snp.top).inset(12)
-            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview()
         }
 
         addSubview(doneButton)

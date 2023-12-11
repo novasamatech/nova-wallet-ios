@@ -76,6 +76,8 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     }
 
     private func setupLocalization() {
+        rootView.titleLabel.text = R.string.localizable.proxyUpdatesTitle(
+            preferredLanguages: selectedLocale.rLanguages)
         rootView.doneButton.imageWithTitleView?.title = R.string.localizable.commonDone(
             preferredLanguages: selectedLocale.rLanguages)
         rootView.tableView.reloadData()
@@ -146,19 +148,19 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch Section(rawValue: section) {
         case .info:
             return nil
         case .delegated:
-            let header = UILabel()
-            header.apply(style: .caption2Secondary)
-            header.text = R.string.localizable.commonProxieds(preferredLanguages: selectedLocale.rLanguages)
+            let title = R.string.localizable.commonProxieds(preferredLanguages: selectedLocale.rLanguages)
+            let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
+            header.bind(text: title)
             return header
         case .revoked:
-            let header = UILabel()
-            header.apply(style: .caption2Secondary)
-            header.text = R.string.localizable.proxyUpdatesProxyRevoked(preferredLanguages: selectedLocale.rLanguages)
+            let title = R.string.localizable.proxyUpdatesProxyRevoked(preferredLanguages: selectedLocale.rLanguages)
+            let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
+            header.bind(text: title)
             return header
         default:
             return nil
