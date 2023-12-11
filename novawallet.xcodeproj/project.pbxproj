@@ -18419,6 +18419,7 @@
 		B084A3FDB5B12737B254252D /* DelegatedAccountsUpdate */ = {
 			isa = PBXGroup;
 			children = (
+				777DC2DB2B2364150060CB2C /* View */,
 				8CFAB577B153EE2A72A06722 /* DelegatedAccountsUpdateProtocols.swift */,
 				11792935152E99A2FFE7E140 /* DelegatedAccountsUpdateWireframe.swift */,
 				D9EB3AE5724612E7F1BBA7CF /* DelegatedAccountsUpdatePresenter.swift */,
@@ -18427,7 +18428,6 @@
 				78A587DDD5C1D264A51AC9F9 /* DelegatedAccountsUpdateViewFactory.swift */,
 				94CC744168B32927A1763C8F /* DelegatedAccountsUpdateViewLayout.swift */,
 				7750D6D42B2272DC00E1ABD7 /* DelegatedAccountsUpdateFactory.swift */,
-				777DC2DB2B2364150060CB2C /* View */,
 			);
 			path = DelegatedAccountsUpdate;
 			sourceTree = "<group>";

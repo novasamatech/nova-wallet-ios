@@ -50,20 +50,11 @@ final class ProxyWalletView: GenericTitleValueView<ProxyIconView, GenericPairVal
         indicatorImageView.backgroundColor = R.color.colorIconAccent()!
         indicatorImageView.isHidden = true
         typeLabel.apply(style: .footnoteSecondary)
-        //      typeLabel.numberOfLines = 1
-
         valueView.sView.sView.iconWidth = 16
         proxyName.apply(style: .footnotePrimary)
-        //     proxyName.numberOfLines = 1
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4
-//        titleLabel.textAlignment = .left
-//        typeLabel.textAlignment = .left
-//        proxyName.textAlignment = .left
-//        titleLabel.setContentHuggingPriority(.low, for: .horizontal)
-//        typeLabel.setContentHuggingPriority(.low, for: .horizontal)
-//        iconImageView.setContentHuggingPriority(.high, for: .horizontal)
     }
 }
 

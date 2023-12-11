@@ -51,7 +51,7 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
                 cell.bind(text: text, link: link)
                 cell.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
                 return cell
-            case let .proxied(viewModel):
+            case let .delegated(viewModel), let .revoked(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.bind(viewModel: viewModel)
                 return cell
@@ -99,8 +99,8 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
         let delegatedSection: Section? = !delegatedModels.isEmpty ? Section.delegated : nil
         let revokedSection: Section? = !revokedModels.isEmpty ? Section.revoked : nil
 
-        let delegatedViewModels = delegatedModels.map { Row.proxied($0) }
-        let revokedViewModels = revokedModels.map { Row.proxied($0) }
+        let delegatedViewModels = delegatedModels.map { Row.delegated($0) }
+        let revokedViewModels = revokedModels.map { Row.revoked($0) }
         let infoViewModel = Row.info
 
         var snapshot = Snapshot()
@@ -119,16 +119,18 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
         }
         dataSource?.apply(snapshot, animatingDifferences: [delegatedModels + revokedModels].count > 1)
     }
-    
+
     func preferredContentHeight(
         delegatedModels: [ProxyWalletView.ViewModel],
         revokedModels: [ProxyWalletView.ViewModel]
     ) -> CGFloat {
         let delegatedModelsHeaderHeight = delegatedModels.isEmpty ? 0 : Constants.heightSectionHeader
         let revokedModelsHeaderHeight = revokedModels.isEmpty ? 0 : Constants.heightSectionHeader
-        let delegatedAccountsContentHeight = Constants.accountCellHeight * delegatedModels.count
-        let revokedAccountsContentHeight = Constants.accountCellHeight * revokedModels.count
-        
+        let delegatedAccountsContentHeight = Constants.accountCellHeight * CGFloat(delegatedModels.count)
+        let revokedAccountsContentHeight = Constants.accountCellHeight * CGFloat(revokedModels.count)
+
+        return delegatedModelsHeaderHeight + delegatedAccountsContentHeight +
+            revokedModelsHeaderHeight + revokedAccountsContentHeight
     }
 }
 
@@ -192,7 +194,8 @@ extension DelegatedAccountsUpdateViewController {
 
     enum Row: Hashable {
         case info
-        case proxied(ProxyWalletView.ViewModel)
+        case delegated(ProxyWalletView.ViewModel)
+        case revoked(ProxyWalletView.ViewModel)
     }
 }
 

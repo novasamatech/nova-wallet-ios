@@ -3,12 +3,15 @@ import SoraFoundation
 import SoraUI
 
 struct DelegatedAccountsUpdateViewFactory {
-    static func createView(initState: DelegatedAccountsUpdateState?) -> DelegatedAccountsUpdateViewProtocol? {
+    static func createView(
+        initWallets: [ManagedMetaAccountModel],
+        completion: @escaping () -> Void
+    ) -> DelegatedAccountsUpdateViewProtocol? {
         let interactor = DelegatedAccountsUpdateInteractor(
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry
         )
-        let wireframe = DelegatedAccountsUpdateWireframe()
+        let wireframe = DelegatedAccountsUpdateWireframe(completion: completion)
 
         let presenter = DelegatedAccountsUpdatePresenter(
             interactor: interactor,
@@ -16,14 +19,17 @@ struct DelegatedAccountsUpdateViewFactory {
             viewModelsFactory: DelegatedAccountsUpdateFactory(),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
-            initState: initState
+            initWallets: initWallets
         )
 
-        let view = DelegatedAccountsUpdateViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        let view = DelegatedAccountsUpdateViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
-        
+
         let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
         let contentHeight = presenter.preferredContentHeight()
         let preferredContentSize = min(0, maxHeight)

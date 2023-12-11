@@ -2,11 +2,6 @@ import Foundation
 import RobinHood
 import SoraFoundation
 
-struct DelegatedAccountsUpdateState {
-    let chains: [ChainModel.Id: ChainModel]
-    let walletsList: [ManagedMetaAccountModel]
-}
-
 final class DelegatedAccountsUpdatePresenter {
     weak var view: DelegatedAccountsUpdateViewProtocol?
     let wireframe: DelegatedAccountsUpdateWireframeProtocol
@@ -14,18 +9,14 @@ final class DelegatedAccountsUpdatePresenter {
     let viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol
     let logger: LoggerProtocol
     let applicationConfig: ApplicationConfigProtocol
-    let initState: DelegatedAccountsUpdateState?
-    
-    private var chains: [ChainModel.Id: ChainModel] = [:]
-    private var walletsList: ListDifferenceCalculator<ManagedMetaAccountModel> = {
-        let calculator = ListDifferenceCalculator<ManagedMetaAccountModel>(
-            initialItems: []
-        ) { item1, item2 in
-            item1.order < item2.order
-        }
 
-        return calculator
-    }()
+    private var chains: [ChainModel.Id: ChainModel] = [:]
+    private let initWallets: [ManagedMetaAccountModel]
+    private lazy var walletsList = ListDifferenceCalculator<ManagedMetaAccountModel>(
+        initialItems: []
+    ) { item1, item2 in
+        item1.order < item2.order
+    }
 
     init(
         interactor: DelegatedAccountsUpdateInteractorInputProtocol,
@@ -33,7 +24,7 @@ final class DelegatedAccountsUpdatePresenter {
         viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        initState: DelegatedAccountsUpdateState?,
+        initWallets: [ManagedMetaAccountModel],
         logger: LoggerProtocol = Logger.shared
     ) {
         self.interactor = interactor
@@ -41,30 +32,30 @@ final class DelegatedAccountsUpdatePresenter {
         self.viewModelsFactory = viewModelsFactory
         self.logger = logger
         self.applicationConfig = applicationConfig
-        self.initState = initState
+        self.initWallets = initWallets
         self.localizationManager = localizationManager
     }
 
     private func updateView() {
-        let delegatedViewModels = viewModels([.new, .active])
-        let revokedViewModels = viewModels([.revoked])
-        
+        let delegatedViewModels = viewModels([.new], wallets: walletsList.allItems)
+        let revokedViewModels = viewModels([.revoked], wallets: walletsList.allItems)
+
         view?.didReceive(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels)
     }
-    
-    private func viewModels(_ statuses: [ProxyAccountModel.Status], wallets: [ManagedMetaAccountModel]) {
+
+    private func viewModels(_ statuses: [ProxyAccountModel.Status], wallets: [ManagedMetaAccountModel]) -> [ProxyWalletView.ViewModel] {
         viewModelsFactory.createViewModels(
-            for: walletsList.allItems,
-            statuses: [.revoked],
+            for: wallets,
+            statuses: statuses,
             chainModelProvider: { [weak self] in self?.chains[$0] },
             locale: selectedLocale
         )
     }
 
     func preferredContentHeight() -> CGFloat {
-        let delegatedViewModels = viewModels([.new, .active], wallets: initState?.walletsList ?? [])
-        let revokedViewModels = viewModels([.revoked], wallets: initState?.walletsList ?? [])
-        
+        let delegatedViewModels = viewModels([.new], wallets: initWallets)
+        let revokedViewModels = viewModels([.revoked], wallets: initWallets)
+
         return view?.preferredContentHeight(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels) ?? 0
     }
 }
@@ -72,13 +63,6 @@ final class DelegatedAccountsUpdatePresenter {
 extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProtocol {
     func setup() {
         interactor.setup()
-        if let state = initState {
-            walletsList = .init(initialItems: initState?.walletsList, sortBlock: { item1, item2 in
-                item1.order < item2.order
-            })
-            chains = state.chains
-            updateView()
-        }
     }
 
     func done() {

@@ -39,14 +39,14 @@ final class ProxyInfoView: GenericPairValueView<UILabel, GenericPairValueView<Li
         infoLabel.text = text
         linkView.actionButton.imageWithTitleView?.title = link
     }
-    
+
     static func defaultHeight(text: String, link: String) -> CGFloat {
-        let textHeight = height(for: Style.footnoteSecondary.font, with: text)
-        let linkHeight = height(for: Style.caption1.font, with: link)
-        
+        let textHeight = height(for: .regularFootnote, with: text)
+        let linkHeight = height(for: .caption1, with: link)
+
         return textHeight + 8 + linkHeight
     }
-    
+
     private static func height(for font: UIFont?, with text: String) -> CGFloat {
         guard let font = font else {
             return 0
