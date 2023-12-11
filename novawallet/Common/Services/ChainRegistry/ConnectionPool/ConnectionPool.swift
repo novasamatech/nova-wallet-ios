@@ -8,6 +8,7 @@ protocol ConnectionPoolProtocol {
     func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
     func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
     func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine?
+    func deactivateConnection(for chainId: ChainModel.Id)
 }
 
 protocol ConnectionStateSubscription: AnyObject {
@@ -89,6 +90,23 @@ extension ConnectionPool: ConnectionPoolProtocol {
         connections[chain.chainId] = WeakWrapper(target: connection)
 
         return connection
+    }
+
+    func deactivateConnection(for chainId: ChainModel.Id) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let optConnection = connections[chainId]
+        connections[chainId] = nil
+        oneShotConnections[chainId] = nil
+        stateSubscriptions[chainId] = nil
+
+        if let connection = optConnection as? ChainConnection {
+            connection.disconnect(true)
+        }
     }
 
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection? {

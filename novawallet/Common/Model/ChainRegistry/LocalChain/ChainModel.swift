@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-struct ChainModel: Equatable, Codable, Hashable {
+struct ChainModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
 
@@ -42,12 +42,13 @@ struct ChainModel: Equatable, Codable, Hashable {
     let addressPrefix: UInt16
     let types: TypesSettings?
     let icon: URL
-    let options: [ChainOptions]?
+    let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
     let explorers: [Explorer]?
     let order: Int64
     let additional: JSON?
+    let syncMode: ChainSyncMode
 
     init(
         chainId: Id,
@@ -59,11 +60,12 @@ struct ChainModel: Equatable, Codable, Hashable {
         addressPrefix: UInt16,
         types: TypesSettings?,
         icon: URL,
-        options: [ChainOptions]?,
+        options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
         order: Int64,
-        additional: JSON?
+        additional: JSON?,
+        syncMode: ChainSyncMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -79,13 +81,15 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.explorers = explorers
         self.order = order
         self.additional = additional
+        self.syncMode = syncMode
     }
 
-    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, order: Int64) {
+    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, syncMode: ChainSyncMode, order: Int64) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
         self.assets = assets
+        self.syncMode = syncMode
 
         let nodeList = remoteModel.nodes.enumerated().map { index, node in
             ChainNodeModel(remoteModel: node, order: Int16(index))
@@ -98,7 +102,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         addressPrefix = remoteModel.addressPrefix
         types = remoteModel.types
         icon = remoteModel.icon
-        options = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) }
+
+        let remoteOptions = remoteModel.options?.compactMap { LocalChainOptions(rawValue: $0) } ?? []
+        options = !remoteOptions.isEmpty ? remoteOptions : nil
+
         externalApis = remoteModel.externalApi.map { LocalChainExternalApiSet(remoteApi: $0) }
         explorers = remoteModel.explorers
         additional = remoteModel.additional
@@ -247,13 +254,25 @@ struct ChainModel: Equatable, Codable, Hashable {
 
         return UInt32(value)
     }
+
+    var isDisabled: Bool {
+        syncMode == .disabled
+    }
+
+    var isFullSyncMode: Bool {
+        syncMode == .full
+    }
+
+    var isLightSyncMode: Bool {
+        syncMode == .light
+    }
 }
 
 extension ChainModel: Identifiable {
     var identifier: String { chainId }
 }
 
-enum ChainOptions: String, Codable {
+enum LocalChainOptions: String, Codable {
     case ethereumBased
     case testnet
     case crowdloans
@@ -279,7 +298,8 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -301,7 +321,8 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -323,7 +344,28 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
+        )
+    }
+
+    func updatingSyncMode(for newMode: ChainSyncMode) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: newMode
         )
     }
 }

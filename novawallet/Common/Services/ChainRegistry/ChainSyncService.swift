@@ -4,6 +4,7 @@ import SubstrateSdk
 
 protocol ChainSyncServiceProtocol {
     func syncUp()
+    func updateLocal(chain: ChainModel)
 }
 
 final class ChainSyncService {
@@ -211,6 +212,18 @@ extension ChainSyncService: ChainSyncServiceProtocol {
         }
 
         performSyncUpIfNeeded()
+    }
+
+    func updateLocal(chain: ChainModel) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let operation = repository.saveOperation({ [chain] }, { [] })
+
+        operationQueue.addOperation(operation)
     }
 }
 
