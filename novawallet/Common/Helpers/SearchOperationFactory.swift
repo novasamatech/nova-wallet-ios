@@ -14,7 +14,7 @@ enum SearchOperationFactory {
 
     private static func pointsForPhrase(title: String, phrase: String) -> UInt {
         let pattern = phrase.replacingOccurrences(of: " ", with: ".*")
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else {
             return 0
         }
         let match = regex.firstMatch(
