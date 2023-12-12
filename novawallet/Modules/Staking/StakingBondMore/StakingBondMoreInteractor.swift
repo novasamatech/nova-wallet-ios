@@ -78,7 +78,7 @@ extension StakingBondMoreInteractor: StakingBondMoreInteractorInputProtocol {
     func estimateFee() {
         guard
             let extrinsicService = extrinsicService,
-            let amount = StakingConstants.maxAmount.toSubstrateAmount(
+            let amount = StakingConstants.feeEstimation.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
             return
