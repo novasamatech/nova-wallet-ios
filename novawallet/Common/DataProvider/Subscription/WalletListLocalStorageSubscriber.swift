@@ -83,7 +83,7 @@ extension WalletListLocalStorageSubscriber {
     }
 
     func subscribeNewProxyWallets() -> StreamableProvider<ManagedMetaAccountModel>? {
-        guard let provider = try? walletListLocalSubscriptionFactory.getProxyWalletsUpdatesProvider(statuses: [.new, .revoked]) else {
+        guard let provider = try? walletListLocalSubscriptionFactory.getProxyWalletsUpdatesProvider(statuses: [.new, .revoked, .active]) else {
             return nil
         }
 

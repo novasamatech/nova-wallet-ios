@@ -42,11 +42,12 @@ final class ProxyWalletView: GenericTitleValueView<ProxyIconView, GenericPairVal
         titleLabel.apply(style: .regularSubhedlinePrimary)
         titleLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byTruncatingTail
-        spacing = 8
+        spacing = 12
         alignment = .left
         indicatorImageView.snp.makeConstraints {
             $0.height.width.equalTo(8)
         }
+        indicatorImageView.layer.cornerRadius = 4
         indicatorImageView.backgroundColor = R.color.colorIconAccent()!
         indicatorImageView.isHidden = true
         typeLabel.apply(style: .footnoteSecondary)
@@ -65,7 +66,8 @@ extension ProxyWalletView {
         let name: String
         let subtitle: String
         let subtitleDetailsIcon: IdentifiableImageViewModelProtocol?
-        let subtitleDetails: String
+        let subtitleDetails: String?
+        let marked: Bool
 
         static func == (lhs: ViewModel, rhs: ViewModel) -> Bool {
             lhs.icon?.identifier == rhs.icon?.identifier &&
@@ -73,7 +75,8 @@ extension ProxyWalletView {
                 lhs.name == rhs.name &&
                 lhs.subtitle == rhs.subtitle &&
                 lhs.subtitleDetailsIcon?.identifier == rhs.subtitleDetailsIcon?.identifier &&
-                lhs.subtitleDetails == rhs.subtitleDetails
+                lhs.subtitleDetails == rhs.subtitleDetails &&
+                lhs.marked == rhs.marked
         }
 
         func hash(into hasher: inout Hasher) {
@@ -82,7 +85,8 @@ extension ProxyWalletView {
             hasher.combine(name)
             hasher.combine(subtitle)
             hasher.combine(subtitleDetailsIcon?.identifier ?? "")
-            hasher.combine(subtitleDetails)
+            hasher.combine(subtitleDetails ?? "")
+            hasher.combine(marked)
         }
     }
 
@@ -121,7 +125,9 @@ extension ProxyWalletView {
         titleLabel.text = viewModel.name
         typeLabel.text = viewModel.subtitle
         proxyName.text = viewModel.subtitleDetails
-
+        networkImageView.isHidden = viewModel.networkIcon == nil
+        proxyImage.isHidden = viewModel.subtitleDetailsIcon == nil
+        indicatorImageView.isHidden = !viewModel.marked
         self.viewModel = viewModel
     }
 }

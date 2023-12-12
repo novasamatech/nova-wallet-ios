@@ -27,6 +27,10 @@ final class ProxyIconView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        guard !networkIconImageView.isHidden else {
+            return
+        }
+
         iconViewImageView.layoutIfNeeded()
 
         let width = networkIconImageView.bounds.width + Constants.holeWidth * 2

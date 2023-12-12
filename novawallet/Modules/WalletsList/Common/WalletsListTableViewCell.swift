@@ -5,23 +5,24 @@ protocol WalletsListTableViewCellProtocol {
 }
 
 class WalletsListTableViewCell<V: UIView>: PlainBaseTableViewCell<
-    GenericTitleValueView<WalletTotalAmountView, V>
+    GenericTitleValueView<ProxyWalletView, V>
 >, WalletsListTableViewCellProtocol {
-    var infoView: WalletTotalAmountView { contentDisplayView.titleView }
+    var infoView: ProxyWalletView { contentDisplayView.titleView }
 
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        infoView.cancelImageLoading()
+        infoView.cancelImagesLoading()
     }
 
     override func setupStyle() {
         super.setupStyle()
 
         backgroundColor = .clear
+        contentDisplayView.spacing = 29
     }
 
     func bind(viewModel: WalletsListViewModel) {
-        infoView.bind(viewModel: viewModel.walletAmountViewModel)
+        infoView.bind(viewModel: viewModel.walletViewModel)
     }
 }

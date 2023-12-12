@@ -7,10 +7,12 @@ protocol WalletSelectionPresenterProtocol: WalletsListPresenterProtocol {
 
 protocol WalletSelectionInteractorInputProtocol: WalletsListInteractorInputProtocol {
     func select(item: ManagedMetaAccountModel)
+    func updateWalletsStatuses()
 }
 
 protocol WalletSelectionInteractorOutputProtocol: WalletsListInteractorOutputProtocol {
     func didCompleteSelection()
+    func didUpdateWallets()
 }
 
 protocol WalletSelectionWireframeProtocol: WalletsListWireframeProtocol {

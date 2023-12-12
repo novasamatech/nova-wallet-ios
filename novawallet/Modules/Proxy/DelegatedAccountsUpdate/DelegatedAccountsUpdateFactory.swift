@@ -52,7 +52,8 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
                 name: wallet.info.name,
                 subtitle: proxy.type.subtitle(locale: locale),
                 subtitleDetailsIcon: subtitleDetailsIconViewModel,
-                subtitleDetails: proxyWallet.info.name
+                subtitleDetails: proxyWallet.info.name,
+                marked: false
             )
         }
 

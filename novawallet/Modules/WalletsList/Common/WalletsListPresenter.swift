@@ -11,6 +11,7 @@ class WalletsListPresenter {
     let logger: LoggerProtocol
 
     private(set) var viewModels: [WalletsListSectionViewModel] = []
+    private var chains: [ChainModel.Id: ChainModel] = [:]
 
     let walletsList: ListDifferenceCalculator<ManagedMetaAccountModel> = {
         let calculator = ListDifferenceCalculator<ManagedMetaAccountModel>(
@@ -54,6 +55,7 @@ class WalletsListPresenter {
             viewModels = viewModelFactory.createSectionViewModels(
                 for: walletsList.allItems,
                 balancesCalculator: balancesCalculator,
+                chains: chains,
                 locale: selectedLocale
             )
         }
@@ -99,6 +101,21 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
         logger.error("Did receive error: \(error)")
 
         _ = baseWireframe.present(error: error, from: baseView, locale: selectedLocale)
+    }
+
+    func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
+        chains = changes.reduce(into: chains) { result, change in
+            switch change {
+            case let .insert(newItem):
+                result[newItem.chainId] = newItem
+            case let .update(newItem):
+                result[newItem.chainId] = newItem
+            case let .delete(deletedIdentifier):
+                result[deletedIdentifier] = nil
+            }
+        }
+
+        updateViewModels()
     }
 }
 

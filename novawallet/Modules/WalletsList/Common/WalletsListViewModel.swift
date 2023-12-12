@@ -3,7 +3,7 @@ import SubstrateSdk
 
 struct WalletsListViewModel {
     let identifier: String
-    let walletAmountViewModel: WalletTotalAmountView.ViewModel
+    let walletViewModel: ProxyWalletView.ViewModel
     let isSelected: Bool
 }
 

@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-struct ManagedMetaAccountModel: Equatable {
+struct ManagedMetaAccountModel: Equatable, Hashable {
     static let noOrder: UInt32 = 0
 
     let info: MetaAccountModel

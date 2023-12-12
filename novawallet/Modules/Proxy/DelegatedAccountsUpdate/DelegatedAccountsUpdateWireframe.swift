@@ -8,7 +8,6 @@ final class DelegatedAccountsUpdateWireframe: DelegatedAccountsUpdateWireframePr
     }
 
     func close(from view: ControllerBackedProtocol?) {
-        completion()
-        view?.controller.dismiss(animated: true)
+        view?.controller.dismiss(animated: true, completion: completion)
     }
 }

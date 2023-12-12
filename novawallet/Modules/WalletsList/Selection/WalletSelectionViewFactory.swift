@@ -40,11 +40,17 @@ struct WalletSelectionViewFactory {
             return nil
         }
 
+        let userDataStorageFacade = UserDataStorageFacade.shared
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
+
         return WalletSelectionInteractor(
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            metaAccountRepository: metaAccountsRepository,
             settings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }
