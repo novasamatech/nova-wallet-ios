@@ -32,7 +32,7 @@ struct DelegatedAccountsUpdateViewFactory {
 
         let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
         let contentHeight = presenter.preferredContentHeight()
-        let preferredContentSize = min(0, maxHeight)
+        let preferredContentSize = min(0, min(contentHeight, maxHeight))
 
         view.preferredContentSize = .init(
             width: 0,

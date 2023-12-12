@@ -46,10 +46,10 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
             switch model {
             case .info:
                 let cell: ProxyInfoTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
-                let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: selectedLocale.rLanguages)
+                let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: self.selectedLocale.rLanguages)
+                let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: self.selectedLocale.rLanguages)
                 cell.bind(text: text, link: link)
-                cell.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
+                cell.actionButton.addTarget(self, action: #selector(self.didTapOnInfoButton), for: .touchUpInside)
                 return cell
             case let .delegated(viewModel), let .revoked(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
