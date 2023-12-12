@@ -2,7 +2,6 @@ import Foundation
 
 struct StakingConstants {
     static let targetsClusterLimit = 2
-    static let maxAmount: Decimal = 1e+7
     static let maxUnlockingChunks: UInt32 = 32
 
     static let recommendedPoolIds: [ChainModel.Id: NominationPools.PoolId] = [
