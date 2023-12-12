@@ -23,7 +23,9 @@ struct AssetBalance: Equatable {
         )
     }
 
-    var locked: BigUInt { frozenInPlank + reservedInPlank }
+    var locked: BigUInt {
+        totalInPlank > transferable ? totalInPlank - transferable : 0
+    }
 
     var balanceCountingEd: BigUInt {
         switch edCountMode {
