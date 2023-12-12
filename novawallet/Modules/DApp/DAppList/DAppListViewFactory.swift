@@ -32,6 +32,7 @@ struct DAppListViewFactory {
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             operationQueue: sharedQueue,
             logger: logger
         )

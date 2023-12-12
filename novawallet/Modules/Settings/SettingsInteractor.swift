@@ -1,6 +1,7 @@
 import Foundation
 import SoraKeystore
 import IrohaCrypto
+import RobinHood
 
 enum ProfileInteractorError: Error {
     case noSelectedAccount
@@ -14,6 +15,9 @@ final class SettingsInteractor {
     let eventCenter: EventCenterProtocol
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
+    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+    let logger: LoggerProtocol
+    private var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -21,13 +25,17 @@ final class SettingsInteractor {
         walletConnect: WalletConnectDelegateInputProtocol,
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
-        biometryAuth: BiometryAuthProtocol
+        biometryAuth: BiometryAuthProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
+        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
+        self.logger = logger
         self.currencyManager = currencyManager
     }
 
@@ -72,6 +80,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
+        walletListSubscription = subscribeNewProxyWallets()
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {
@@ -123,5 +132,16 @@ extension SettingsInteractor: SelectedCurrencyDepending {
         }
 
         presenter.didReceive(currencyCode: currencyManager.selectedCurrency.code)
+    }
+}
+
+extension SettingsInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+    func handleNewProxyWalletsUpdate(result: Result<Int, Error>) {
+        switch result {
+        case let .success(count):
+            presenter?.didReceiveWalletsState(hasUpdates: count > 0)
+        case let .failure(error):
+            logger.error("Unexpected new proxy wallets update error: \(error)")
+        }
     }
 }

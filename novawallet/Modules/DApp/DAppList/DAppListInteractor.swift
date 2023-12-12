@@ -12,7 +12,9 @@ final class DAppListInteractor {
     let phishingSyncService: ApplicationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
 
+    private var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
     init(
@@ -22,6 +24,7 @@ final class DAppListInteractor {
         phishingSyncService: ApplicationServiceProtocol,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -31,6 +34,7 @@ final class DAppListInteractor {
         self.phishingSyncService = phishingSyncService
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
+        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -101,6 +105,8 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
         phishingSyncService.setup()
 
         eventCenter.add(observer: self, dispatchIn: .main)
+
+        walletListSubscription = subscribeNewProxyWallets()
     }
 
     func refresh() {
@@ -121,6 +127,17 @@ extension DAppListInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionH
             presenter?.didReceiveFavoriteDapp(changes: changes)
         case let .failure(error):
             logger.error("Unexpected favorites error: \(error)")
+        }
+    }
+}
+
+extension DAppListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+    func handleNewProxyWalletsUpdate(result: Result<Int, Error>) {
+        switch result {
+        case let .success(count):
+            presenter?.didReceiveWalletsState(hasUpdates: count > 0)
+        case let .failure(error):
+            logger.error("Unexpected new proxy wallets update error: \(error)")
         }
     }
 }

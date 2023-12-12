@@ -15,7 +15,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         self.quantityFormatter = quantityFormatter
     }
 
-    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel {
+    func createAccountViewModel(for wallet: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel {
         let icon = wallet.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }?
             .imageWithFillColor(
                 .clear,
@@ -26,7 +26,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         return SettingsAccountViewModel(
             name: wallet.name,
             icon: icon,
-            walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type)
+            walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
+            hasWalletNotification: hasWalletNotification
         )
     }
 

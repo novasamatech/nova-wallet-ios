@@ -32,6 +32,7 @@ protocol VoteInteractorInputProtocol: AnyObject {
 
 protocol VoteInteractorOutputProtocol: AnyObject {
     func didReceiveWallet(_ wallet: MetaAccountModel)
+    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
 protocol VoteWireframeProtocol: AlertPresentable, ErrorPresentable, WalletSwitchPresentable {}

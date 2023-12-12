@@ -75,6 +75,7 @@ struct StakingDashboardViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stateObserver: stateObserver,
             applicationHandler: ApplicationHandler(),
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             currencyManager: currencyManager
         )
     }

@@ -122,7 +122,7 @@ extension SettingsViewController: SettingsViewProtocol {
         let walletSwitchViewModel = WalletSwitchViewModel(
             type: userViewModel.walletType,
             iconViewModel: userViewModel.icon.map { StaticImageViewModel(image: $0) },
-            hasNotification: false
+            hasNotification: userViewModel.hasWalletNotification
         )
 
         rootView.headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
