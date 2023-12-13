@@ -9,8 +9,6 @@ protocol WalletListLocalStorageSubscriber where Self: AnyObject {
     func subscribeAllWalletsProvider() -> StreamableProvider<ManagedMetaAccountModel>?
 
     func subscribeWallet(by walletId: String) -> StreamableProvider<ManagedMetaAccountModel>?
-
-    func subscribeNewProxyWallets() -> StreamableProvider<ManagedMetaAccountModel>?
 }
 
 extension WalletListLocalStorageSubscriber {
@@ -61,39 +59,6 @@ extension WalletListLocalStorageSubscriber {
 
         let failureClosure = { [weak self] (error: Error) in
             self?.walletListLocalSubscriptionHandler.handleAllWallets(result: .failure(error))
-            return
-        }
-
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
-        provider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        return provider
-    }
-
-    func subscribeNewProxyWallets() -> StreamableProvider<ManagedMetaAccountModel>? {
-        guard let provider = try? walletListLocalSubscriptionFactory.getProxyWalletsUpdatesProvider(statuses: [.new, .revoked, .active]) else {
-            return nil
-        }
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<ManagedMetaAccountModel>]) in
-            self?.walletListLocalSubscriptionHandler.handleNewProxyWalletsUpdate(result: .success(changes.count))
-            return
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.walletListLocalSubscriptionHandler.handleNewProxyWalletsUpdate(result: .failure(error))
             return
         }
 

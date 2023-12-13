@@ -12,10 +12,11 @@ final class DAppListInteractor {
     let phishingSyncService: ApplicationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
-    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
 
-    private var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
+    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
+    private var proxies: [ProxyAccountModel] = []
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -24,7 +25,7 @@ final class DAppListInteractor {
         phishingSyncService: ApplicationServiceProtocol,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
-        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -34,7 +35,7 @@ final class DAppListInteractor {
         self.phishingSyncService = phishingSyncService
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
-        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
+        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -49,6 +50,10 @@ final class DAppListInteractor {
         }
 
         presenter?.didReceive(walletResult: .success(wallet))
+    }
+
+    private func provideWalletUpdates() {
+        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
     }
 
     private func subscribeDApps() {
@@ -106,7 +111,8 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        walletListSubscription = subscribeNewProxyWallets()
+        proxyListSubscription = subscribeAllProxies()
+        provideWalletUpdates()
     }
 
     func refresh() {
@@ -131,13 +137,14 @@ extension DAppListInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionH
     }
 }
 
-extension DAppListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleNewProxyWalletsUpdate(result: Result<Int, Error>) {
+extension DAppListInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
+    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
         switch result {
-        case let .success(count):
-            presenter?.didReceiveWalletsState(hasUpdates: count > 0)
+        case let .success(changes):
+            proxies = proxies.applying(changes: changes)
+            provideWalletUpdates()
         case let .failure(error):
-            logger.error("Unexpected new proxy wallets update error: \(error)")
+            logger.error(error.localizedDescription)
         }
     }
 }

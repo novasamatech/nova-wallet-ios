@@ -6,19 +6,20 @@ final class VoteInteractor {
 
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
-    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let logger: LoggerProtocol
-    private var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
+    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
+    private var proxies: [ProxyAccountModel] = []
 
     init(
         walletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
-        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
+        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
         self.logger = logger
     }
 
@@ -29,6 +30,10 @@ final class VoteInteractor {
 
         presenter?.didReceiveWallet(selectedWallet)
     }
+
+    private func provideWalletUpdates() {
+        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
+    }
 }
 
 extension VoteInteractor: VoteInteractorInputProtocol {
@@ -36,7 +41,8 @@ extension VoteInteractor: VoteInteractorInputProtocol {
         provideSelectedWallet()
 
         eventCenter.add(observer: self, dispatchIn: .main)
-        walletListSubscription = subscribeNewProxyWallets()
+        proxyListSubscription = subscribeAllProxies()
+        provideWalletUpdates()
     }
 }
 
@@ -50,13 +56,14 @@ extension VoteInteractor: EventVisitorProtocol {
     }
 }
 
-extension VoteInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleNewProxyWalletsUpdate(result: Result<Int, Error>) {
+extension VoteInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
+    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
         switch result {
-        case let .success(count):
-            presenter?.didReceiveWalletsState(hasUpdates: count > 0)
+        case let .success(changes):
+            proxies = proxies.applying(changes: changes)
+            provideWalletUpdates()
         case let .failure(error):
-            logger.error("Unexpected new proxy wallets update error: \(error)")
+            logger.error(error.localizedDescription)
         }
     }
 }

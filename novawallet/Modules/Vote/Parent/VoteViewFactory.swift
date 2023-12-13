@@ -10,7 +10,7 @@ enum VoteViewFactory {
         let interactor = VoteInteractor(
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
         )
 
         let wireframe = VoteWireframe()

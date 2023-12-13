@@ -28,7 +28,7 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
         )
 
         let wireframe = SettingsWireframe(dappMediator: dappMediator)

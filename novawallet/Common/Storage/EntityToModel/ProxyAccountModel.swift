@@ -18,3 +18,15 @@ extension ProxyAccountModel: Identifiable {
         type.id + "-" + accountId.toHexString()
     }
 }
+
+extension ProxyAccountModel {
+    var isNotActive: Bool {
+        status == .new || status == .revoked
+    }
+}
+
+extension Array where Element == ProxyAccountModel {
+    var hasNotActive: Bool {
+        contains { $0.isNotActive }
+    }
+}

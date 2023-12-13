@@ -113,6 +113,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             chainAccounEntity.proxy?.type = proxy.type.id
             chainAccounEntity.proxy?.proxyAccountId = proxy.accountId.toHex()
             chainAccounEntity.proxy?.status = proxy.status.rawValue
+            chainAccounEntity.proxy?.identifier = proxy.identifier
         } else {
             chainAccounEntity.proxy = nil
         }

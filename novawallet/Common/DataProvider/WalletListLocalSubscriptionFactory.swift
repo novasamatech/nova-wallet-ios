@@ -4,7 +4,6 @@ import RobinHood
 protocol WalletListLocalSubscriptionFactoryProtocol {
     func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel>
     func getWalletsProvider() throws -> StreamableProvider<ManagedMetaAccountModel>
-    func getProxyWalletsUpdatesProvider(statuses: [ProxyAccountModel.Status]) throws -> StreamableProvider<ManagedMetaAccountModel>
 }
 
 final class WalletListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -112,7 +111,9 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
         return provider
     }
 
-    func getProxyWalletsUpdatesProvider(statuses: [ProxyAccountModel.Status]) throws -> StreamableProvider<ManagedMetaAccountModel> {
+    func getProxyWalletsUpdatesProvider(
+        statuses: [ProxyAccountModel.Status]
+    ) throws -> StreamableProvider<ManagedMetaAccountModel> {
         clearIfNeeded()
 
         let rawStatuses = statuses.map(\.rawValue).sorted()

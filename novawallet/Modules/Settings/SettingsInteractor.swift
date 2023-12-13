@@ -15,9 +15,10 @@ final class SettingsInteractor {
     let eventCenter: EventCenterProtocol
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
-    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let logger: LoggerProtocol
-    private var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
+    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
+    private var proxies: [ProxyAccountModel] = []
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -26,7 +27,7 @@ final class SettingsInteractor {
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
-        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -34,7 +35,7 @@ final class SettingsInteractor {
         self.settingsManager = settingsManager
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
-        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
+        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
     }
@@ -70,6 +71,10 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
+
+    private func provideWalletUpdates() {
+        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -80,7 +85,8 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
-        walletListSubscription = subscribeNewProxyWallets()
+        proxyListSubscription = subscribeAllProxies()
+        provideWalletUpdates()
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {
@@ -135,13 +141,14 @@ extension SettingsInteractor: SelectedCurrencyDepending {
     }
 }
 
-extension SettingsInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleNewProxyWalletsUpdate(result: Result<Int, Error>) {
+extension SettingsInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
+    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
         switch result {
-        case let .success(count):
-            presenter?.didReceiveWalletsState(hasUpdates: count > 0)
+        case let .success(changes):
+            proxies = proxies.applying(changes: changes)
+            provideWalletUpdates()
         case let .failure(error):
-            logger.error("Unexpected new proxy wallets update error: \(error)")
+            logger.error(error.localizedDescription)
         }
     }
 }
