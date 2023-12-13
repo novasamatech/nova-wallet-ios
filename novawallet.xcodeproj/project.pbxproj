@@ -892,6 +892,7 @@
 		77DAFF682B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF672B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift */; };
 		77DAFF6B2B297CFE00D4220C /* ProxyListLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6A2B297CFE00D4220C /* ProxyListLocalSubscriptionFactory.swift */; };
 		77DAFF6D2B297DB500D4220C /* ProxyAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6C2B297DB500D4220C /* ProxyAccountMapper.swift */; };
+		77DAFF6F2B298FFF00D4220C /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6E2B298FFF00D4220C /* WalletView.swift */; };
 		77DC54842B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */; };
 		77DC54862B1FE5C100C7E45A /* ProxySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54852B1FE5C100C7E45A /* ProxySyncService.swift */; };
 		77DC54872B1FF31800C7E45A /* UserDataStorageTestFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */; };
@@ -946,7 +947,7 @@
 		77FDFC462B0DEB34005A3569 /* OpenDAppUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FDFC452B0DEB34005A3569 /* OpenDAppUrlParsingService.swift */; };
 		77FDFC482B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FDFC472B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift */; };
 		77FF02692B21ECB900B655BC /* ProxyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FF02682B21ECB900B655BC /* ProxyTableViewCell.swift */; };
-		77FF026B2B2253F800B655BC /* ProxyIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FF026A2B2253F800B655BC /* ProxyIconView.swift */; };
+		77FF026B2B2253F800B655BC /* WalletIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FF026A2B2253F800B655BC /* WalletIconView.swift */; };
 		77FFB2B12B0D392A00C7C879 /* OpenStakingUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FFB2B02B0D392A00C7C879 /* OpenStakingUrlParsingService.swift */; };
 		77FFB2B32B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FFB2B22B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift */; };
 		78D63EC7EC5F7427335A025E /* NPoolsClaimRewardsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7302440137F083F7AEC64E /* NPoolsClaimRewardsViewLayout.swift */; };
@@ -5037,6 +5038,7 @@
 		77DAFF672B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyListLocalStorageSubscriptionHandler.swift; sourceTree = "<group>"; };
 		77DAFF6A2B297CFE00D4220C /* ProxyListLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyListLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		77DAFF6C2B297DB500D4220C /* ProxyAccountMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyAccountMapper.swift; sourceTree = "<group>"; };
+		77DAFF6E2B298FFF00D4220C /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxySyncIntegrationTests.swift; sourceTree = "<group>"; };
 		77DC54852B1FE5C100C7E45A /* ProxySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySyncService.swift; sourceTree = "<group>"; };
 		77E0DC9D2A6940C400D03724 /* Calendar+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Helpers.swift"; sourceTree = "<group>"; };
@@ -5092,7 +5094,7 @@
 		77FDFC452B0DEB34005A3569 /* OpenDAppUrlParsingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenDAppUrlParsingService.swift; sourceTree = "<group>"; };
 		77FDFC472B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportWalletUrlParsingService.swift; sourceTree = "<group>"; };
 		77FF02682B21ECB900B655BC /* ProxyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyTableViewCell.swift; sourceTree = "<group>"; };
-		77FF026A2B2253F800B655BC /* ProxyIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyIconView.swift; sourceTree = "<group>"; };
+		77FF026A2B2253F800B655BC /* WalletIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletIconView.swift; sourceTree = "<group>"; };
 		77FF5ECE2B235331001C7B82 /* SubstrateDataModel23.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel23.xcdatamodel; sourceTree = "<group>"; };
 		77FFB2B02B0D392A00C7C879 /* OpenStakingUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStakingUrlParsingService.swift; sourceTree = "<group>"; };
 		77FFB2B22B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGovernanceUrlParsingService.swift; sourceTree = "<group>"; };
@@ -10123,7 +10125,6 @@
 			isa = PBXGroup;
 			children = (
 				77FF02682B21ECB900B655BC /* ProxyTableViewCell.swift */,
-				77FF026A2B2253F800B655BC /* ProxyIconView.swift */,
 				777DC2D92B2363FA0060CB2C /* ProxyInfoTableViewCell.swift */,
 				777DC2DC2B2364820060CB2C /* IdentifiableImageViewModelProtocol.swift */,
 				777DC2DE2B2364A90060CB2C /* UIView+cutting.swift */,
@@ -11274,6 +11275,8 @@
 				842EBB2828908ADB00B952D8 /* WalletsListTableViewCell.swift */,
 				84BFFA0B288FFFA100069846 /* WalletsListViewModel.swift */,
 				84BFFA0D2890014600069846 /* WalletsListViewModelFactory.swift */,
+				77DAFF6E2B298FFF00D4220C /* WalletView.swift */,
+				77FF026A2B2253F800B655BC /* WalletIconView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -21925,6 +21928,7 @@
 				84D2F1A5277437D30040C680 /* DAppIconView.swift in Sources */,
 				84A70D9F29CCEDA800C648AD /* GovV1SubsquareOperationFactory.swift in Sources */,
 				844DBC742750F12C009F8351 /* AdvancedWalletSettings.swift in Sources */,
+				77DAFF6F2B298FFF00D4220C /* WalletView.swift in Sources */,
 				8443CA4A289D04E900FA4A95 /* TransactionSigningPresenting.swift in Sources */,
 				8475B47B289870A4009B90BC /* ProcessStepView.swift in Sources */,
 				8465DA41298F05D500C7CFF1 /* GovernanceTrackViewModelFactory.swift in Sources */,
@@ -22321,7 +22325,7 @@
 				8473D4002657E8BB00B394B2 /* CrowdloanFunds.swift in Sources */,
 				845B08102918D65E005785D3 /* GovernanceExtrinsicFactory.swift in Sources */,
 				77895CA32A8F8CFD006870FB /* NominationPoolsFilters.swift in Sources */,
-				77FF026B2B2253F800B655BC /* ProxyIconView.swift in Sources */,
+				77FF026B2B2253F800B655BC /* WalletIconView.swift in Sources */,
 				7E1A03082260E0D31AD394CA /* StakingRewardDetailsProtocols.swift in Sources */,
 				77CBD39C2ABBA98900D646D6 /* AssetListModel.swift in Sources */,
 				65909D701527D99837B439D9 /* StakingRewardDetailsWireframe.swift in Sources */,

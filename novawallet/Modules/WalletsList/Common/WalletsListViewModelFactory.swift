@@ -105,7 +105,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             identifier: wallet.info.metaId
         ) }
 
-        let walletViewModel = ProxyWalletView.ViewModel(
+        let walletViewModel = WalletView.ViewModel(
             icon: iconViewModel,
             networkIcon: nil,
             name: wallet.info.name,
@@ -153,7 +153,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         let chainModel = chains[chainAccount.chainId]
         let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
 
-        let proxyModel = ProxyWalletView.ViewModel(
+        let proxyModel = WalletView.ViewModel(
             icon: iconViewModel,
             networkIcon: chainIcon,
             name: wallet.info.name,

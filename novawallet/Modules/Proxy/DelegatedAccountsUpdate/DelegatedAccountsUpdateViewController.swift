@@ -94,8 +94,8 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
 
 extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProtocol {
     func didReceive(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModels: [WalletView.ViewModel],
+        revokedModels: [WalletView.ViewModel]
     ) {
         let infoSection = Section.info
         let delegatedSection: Section? = !delegatedModels.isEmpty ? Section.delegated : nil
@@ -123,8 +123,8 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
     }
 
     func preferredContentHeight(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModels: [WalletView.ViewModel],
+        revokedModels: [WalletView.ViewModel]
     ) -> CGFloat {
         let delegatedModelsHeaderHeight = delegatedModels.isEmpty ? 0 : Constants.heightSectionHeader
         let revokedModelsHeaderHeight = revokedModels.isEmpty ? 0 : Constants.heightSectionHeader
@@ -196,8 +196,8 @@ extension DelegatedAccountsUpdateViewController {
 
     enum Row: Hashable {
         case info
-        case delegated(ProxyWalletView.ViewModel)
-        case revoked(ProxyWalletView.ViewModel)
+        case delegated(WalletView.ViewModel)
+        case revoked(WalletView.ViewModel)
     }
 }
 

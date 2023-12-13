@@ -7,7 +7,7 @@ protocol DelegatedAccountsUpdateFactoryProtocol {
         statuses: [ProxyAccountModel.Status],
         chainModelProvider: (ChainModel.Id) -> ChainModel?,
         locale: Locale
-    ) -> [ProxyWalletView.ViewModel]
+    ) -> [WalletView.ViewModel]
 }
 
 final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtocol {
@@ -18,8 +18,8 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
         statuses: [ProxyAccountModel.Status],
         chainModelProvider: (ChainModel.Id) -> ChainModel?,
         locale: Locale
-    ) -> [ProxyWalletView.ViewModel] {
-        let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxy }.compactMap { wallet in
+    ) -> [WalletView.ViewModel] {
+        let viewModels: [WalletView.ViewModel] = wallets.filter { $0.info.type == .proxy }.compactMap { wallet in
             guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
                   let proxy = chainAccount.proxy,
                   statuses.contains(proxy.status),
@@ -46,7 +46,7 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
             let chainModel = chainModelProvider(chainAccount.chainId)
             let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
 
-            return ProxyWalletView.ViewModel(
+            return WalletView.ViewModel(
                 icon: iconViewModel,
                 networkIcon: chainIcon,
                 name: wallet.info.name,

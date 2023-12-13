@@ -5,9 +5,9 @@ protocol WalletsListTableViewCellProtocol {
 }
 
 class WalletsListTableViewCell<V: UIView>: PlainBaseTableViewCell<
-    GenericTitleValueView<ProxyWalletView, V>
+    GenericTitleValueView<WalletView, V>
 >, WalletsListTableViewCellProtocol {
-    var infoView: ProxyWalletView { contentDisplayView.titleView }
+    var infoView: WalletView { contentDisplayView.titleView }
 
     override func prepareForReuse() {
         super.prepareForReuse()

@@ -2,12 +2,12 @@ import RobinHood
 
 protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
     func didReceive(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModels: [WalletView.ViewModel],
+        revokedModels: [WalletView.ViewModel]
     )
     func preferredContentHeight(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModels: [WalletView.ViewModel],
+        revokedModels: [WalletView.ViewModel]
     ) -> CGFloat
 }
 
