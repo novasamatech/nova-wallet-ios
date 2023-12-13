@@ -19,7 +19,7 @@ struct WalletsListSectionViewModel {
             switch walletType {
             case .secrets:
                 self = .secrets
-            case .watchOnly, .proxy:
+            case .watchOnly, .proxied:
                 self = .watchOnly
             case .paritySigner:
                 self = .paritySigner

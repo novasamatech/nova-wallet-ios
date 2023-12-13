@@ -27,7 +27,7 @@ extension NoAccountSupportPresentable where Self: AlertPresentable {
         let title: String
 
         switch walletType {
-        case .secrets, .watchOnly, .proxy:
+        case .secrets, .watchOnly, .proxied:
             let wallet = R.string.localizable.commonWallet(preferredLanguages: locale.rLanguages)
             title = R.string.localizable.commonWalletNotSupportChain(
                 wallet,

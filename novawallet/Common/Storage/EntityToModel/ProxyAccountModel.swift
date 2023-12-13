@@ -17,4 +17,14 @@ extension ProxyAccountModel: Identifiable {
     var identifier: String {
         type.id + "-" + accountId.toHexString()
     }
+
+    var isNotRevoked: Bool {
+        status == .new || status == .active
+    }
+}
+
+extension ProxyAccountModel {
+    func replacingStatus(_ newStatus: ProxyAccountModel.Status) -> ProxyAccountModel {
+        .init(type: type, accountId: accountId, status: newStatus)
+    }
 }

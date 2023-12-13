@@ -22,3 +22,15 @@ extension ChainAccountModel: Identifiable {
         ].joined(separator: "-")
     }
 }
+
+extension ChainAccountModel {
+    func replacingProxy(_ proxy: ProxyAccountModel?) -> ChainAccountModel {
+        .init(
+            chainId: chainId,
+            accountId: accountId,
+            publicKey: publicKey,
+            cryptoType: cryptoType,
+            proxy: proxy
+        )
+    }
+}

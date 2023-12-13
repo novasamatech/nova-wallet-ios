@@ -4,7 +4,7 @@ import SubstrateSdk
 extension MetaAccountModelType {
     var signaturePayloadFormat: ExtrinsicSignaturePayloadFormat {
         switch self {
-        case .secrets, .watchOnly, .proxy:
+        case .secrets, .watchOnly, .proxied:
             return .regular
         case .paritySigner, .polkadotVault:
             return .paritySigner
@@ -15,7 +15,7 @@ extension MetaAccountModelType {
 
     var notSupportedRawBytesSigner: NoSigningSupportType? {
         switch self {
-        case .secrets, .watchOnly, .proxy:
+        case .secrets, .watchOnly, .proxied:
             return nil
         case .paritySigner:
             return .paritySigner
