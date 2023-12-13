@@ -12,7 +12,7 @@ protocol WalletSelectionInteractorInputProtocol: WalletsListInteractorInputProto
 
 protocol WalletSelectionInteractorOutputProtocol: WalletsListInteractorOutputProtocol {
     func didCompleteSelection()
-    func didUpdateWallets()
+    func didReceive(saveError: Error)
 }
 
 protocol WalletSelectionWireframeProtocol: WalletsListWireframeProtocol {

@@ -66,16 +66,20 @@ extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
             !item.isSelected else {
             return
         }
-
+        shouldShowDelegatesUpdates = false
         interactor?.select(item: item)
     }
 
     func activateSettings() {
+        shouldShowDelegatesUpdates = false
         interactor?.updateWalletsStatuses()
         wireframe?.showSettings(from: baseView)
     }
 
-    func didUpdateWallets() {}
+    func didReceive(saveError: Error) {
+        super.didReceiveError(saveError)
+        shouldShowDelegatesUpdates = true
+    }
 }
 
 extension WalletSelectionPresenter: WalletSelectionInteractorOutputProtocol {

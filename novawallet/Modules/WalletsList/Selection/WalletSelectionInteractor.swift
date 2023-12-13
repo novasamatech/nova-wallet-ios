@@ -14,6 +14,8 @@ final class WalletSelectionInteractor: WalletsListInteractor {
 
     let settings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
+    let logger: LoggerProtocol
+
     private var proxies: [ManagedMetaAccountModel: ChainAccountModel] = [:]
     let metaAccountRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     private let operationQueue: OperationQueue
@@ -24,12 +26,14 @@ final class WalletSelectionInteractor: WalletsListInteractor {
         metaAccountRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
+        logger: LoggerProtocol = Logger.shared,
         operationQueue: OperationQueue
     ) {
         self.settings = settings
         self.eventCenter = eventCenter
         self.metaAccountRepository = metaAccountRepository
         self.operationQueue = operationQueue
+        self.logger = logger
         super.init(
             balancesStore: balancesStore,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
@@ -68,7 +72,7 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
                 self?.eventCenter.notify(with: SelectedAccountChanged())
                 self?.presenter?.didCompleteSelection()
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.presenter?.didReceive(saveError: error)
             }
         }
     }
@@ -82,10 +86,7 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
             .map(\.key.identifier)
             .compactMap { $0 }
 
-        let saveOperation = metaAccountRepository.saveOperation(
-            { newProxyWallets },
-            { revokedProxyWallets }
-        )
+        let saveOperation = metaAccountRepository.saveOperation({ newProxyWallets }, { revokedProxyWallets })
 
         execute(
             operation: saveOperation,
@@ -94,26 +95,10 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didUpdateWallets()
+                self?.logger.debug("Proxy statuses were updated")
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.logger.error(error.localizedDescription)
             }
         }
-    }
-}
-
-extension ChainAccountModel {
-    func replacingProxyStatus(_ status: ProxyAccountModel.Status) -> ChainAccountModel {
-        guard let proxy = self.proxy else {
-            return self
-        }
-
-        return .init(
-            chainId: chainId,
-            accountId: accountId,
-            publicKey: publicKey,
-            cryptoType: cryptoType,
-            proxy: .init(type: proxy.type, accountId: proxy.accountId, status: status)
-        )
     }
 }

@@ -8,9 +8,9 @@ final class WalletView: GenericTitleValueView<WalletIconView, GenericPairValueVi
 
     var titleLabel: UILabel { valueView.fView.detailsLabel }
     var indicatorImageView: UIImageView { valueView.fView.imageView }
-    var typeLabel: UILabel { valueView.sView.fView }
-    var proxyImage: UIImageView { valueView.sView.sView.imageView }
-    var proxyName: UILabel { valueView.sView.sView.detailsLabel }
+    var subtitleLabel: UILabel { valueView.sView.fView }
+    var subtitleDetailsImage: UIImageView { valueView.sView.sView.imageView }
+    var subtitleDetailsLabel: UILabel { valueView.sView.sView.detailsLabel }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,12 +30,13 @@ final class WalletView: GenericTitleValueView<WalletIconView, GenericPairValueVi
         indicatorImageView.layer.cornerRadius = 4
         indicatorImageView.backgroundColor = R.color.colorIconAccent()!
         indicatorImageView.isHidden = true
-        typeLabel.apply(style: .footnoteSecondary)
+        subtitleLabel.apply(style: .footnoteSecondary)
         valueView.sView.sView.iconWidth = 16
-        proxyName.apply(style: .footnotePrimary)
+        subtitleDetailsLabel.apply(style: .footnotePrimary)
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4
+        subtitleLabel.setContentCompressionResistancePriority(.high, for: .horizontal)
     }
 }
 
@@ -77,8 +78,8 @@ extension WalletView {
         viewModel?.networkIcon?.cancel(on: networkImageView)
         networkImageView.image = nil
 
-        viewModel?.subtitleDetailsIcon?.cancel(on: proxyImage)
-        proxyImage.image = nil
+        viewModel?.subtitleDetailsIcon?.cancel(on: subtitleDetailsImage)
+        subtitleDetailsImage.image = nil
     }
 
     func bind(viewModel: ViewModel) {
@@ -97,16 +98,16 @@ extension WalletView {
         )
 
         viewModel.subtitleDetailsIcon?.loadImage(
-            on: proxyImage,
+            on: subtitleDetailsImage,
             targetSize: .init(width: 16, height: 16),
             animated: true
         )
 
         titleLabel.text = viewModel.name
-        typeLabel.text = viewModel.subtitle
-        proxyName.text = viewModel.subtitleDetails
+        subtitleLabel.text = viewModel.subtitle
+        subtitleDetailsLabel.text = viewModel.subtitleDetails
         networkImageView.isHidden = viewModel.networkIcon == nil
-        proxyImage.isHidden = viewModel.subtitleDetailsIcon == nil
+        subtitleDetailsImage.isHidden = viewModel.subtitleDetailsIcon == nil
         indicatorImageView.isHidden = !viewModel.marked
         self.viewModel = viewModel
     }
