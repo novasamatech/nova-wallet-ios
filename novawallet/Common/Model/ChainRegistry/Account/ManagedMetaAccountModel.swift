@@ -32,3 +32,11 @@ extension ManagedMetaAccountModel {
         ManagedMetaAccountModel(info: info, isSelected: isSelected, order: order)
     }
 }
+
+extension Array where Element == ManagedMetaAccountModel {
+    func has(accountId: AccountId, in chainModel: ChainModel) -> Bool {
+        contains {
+            $0.info.has(accountId: accountId, chainId: chainModel.chainId)
+        }
+    }
+}
