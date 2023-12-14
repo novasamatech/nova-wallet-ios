@@ -132,7 +132,7 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconLedger()
 
             rootView.headerView.bindHint(text: text, icon: icon)
-        case .proxy:
+        case .proxied:
             rootView.headerView.showsHintView = false
         }
 

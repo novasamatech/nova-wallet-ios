@@ -1,8 +1,8 @@
 import UIKit
 import RobinHood
 
-final class DelegatedAccountsUpdateInteractor {
-    weak var presenter: DelegatedAccountsUpdateInteractorOutputProtocol?
+final class ProxiedsUpdateInteractor {
+    weak var presenter: ProxiedsUpdateInteractorOutputProtocol?
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
 
@@ -28,14 +28,14 @@ final class DelegatedAccountsUpdateInteractor {
     }
 }
 
-extension DelegatedAccountsUpdateInteractor: DelegatedAccountsUpdateInteractorInputProtocol {
+extension ProxiedsUpdateInteractor: ProxiedsUpdateInteractorInputProtocol {
     func setup() {
         subscribeWallets()
         subscribeChains()
     }
 }
 
-extension DelegatedAccountsUpdateInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+extension ProxiedsUpdateInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
         switch result {
         case let .success(changes):

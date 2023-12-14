@@ -852,7 +852,7 @@
 "common.address.scan.title" = "Scan QR";
 "common.address.scan.message" = "Scan QR code with the address";
 "common.watch.only" = "Watch-only";
-"common.proxieds" = "DELEGATED TO YOU (PROXIEDS)";
+"common.proxieds" = "Delegated to you (proxieds)";
 "common.invalid.address.format" = "Invalid %@ address";
 "common.signing.not.supported.title" = "Signing is not supported";
 "common.parity.signer.not.supported.message" = "%@ does not support signing arbitrary messages — only transactions";
@@ -1448,4 +1448,4 @@
 "proxy.updates.hint" = "Nova Wallet automatically adds delegated authorities (Proxy) to a separate category for you. You can always manage wallets in Settings.";
 "proxy.updates.hint.link" = "What is a Proxy?";
 "proxy.updates.title" = "Delegated accounts update";
-"proxy.updates.proxy.revoked" = "ACCESS WAS REVOKED";
+"proxy.updates.proxy.revoked" = "access was revoked";

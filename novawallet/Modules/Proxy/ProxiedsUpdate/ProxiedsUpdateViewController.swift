@@ -1,16 +1,16 @@
 import UIKit
 import SoraFoundation
 
-final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder {
-    typealias RootViewType = DelegatedAccountsUpdateViewLayout
+final class ProxiedsUpdateViewController: UIViewController, ViewHolder {
+    typealias RootViewType = ProxiedsUpdateViewLayout
     typealias DataSource = UITableViewDiffableDataSource<Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
 
-    let presenter: DelegatedAccountsUpdatePresenterProtocol
+    let presenter: ProxiedsUpdatePresenterProtocol
 
     init(
-        presenter: DelegatedAccountsUpdatePresenterProtocol,
+        presenter: ProxiedsUpdatePresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -25,7 +25,7 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     }
 
     override func loadView() {
-        view = DelegatedAccountsUpdateViewLayout()
+        view = ProxiedsUpdateViewLayout()
     }
 
     override func viewDidLoad() {
@@ -92,7 +92,7 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     }
 }
 
-extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProtocol {
+extension ProxiedsUpdateViewController: ProxiedsUpdateViewProtocol {
     func didReceive(
         delegatedModels: [ProxyWalletView.ViewModel],
         revokedModels: [ProxyWalletView.ViewModel]
@@ -136,7 +136,7 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
     }
 }
 
-extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
+extension ProxiedsUpdateViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch Section(rawValue: indexPath.section) {
         case .info:
@@ -179,7 +179,7 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
     }
 }
 
-extension DelegatedAccountsUpdateViewController: Localizable {
+extension ProxiedsUpdateViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -187,7 +187,7 @@ extension DelegatedAccountsUpdateViewController: Localizable {
     }
 }
 
-extension DelegatedAccountsUpdateViewController {
+extension ProxiedsUpdateViewController {
     enum Section: Int, Hashable {
         case info
         case delegated
@@ -201,7 +201,7 @@ extension DelegatedAccountsUpdateViewController {
     }
 }
 
-extension DelegatedAccountsUpdateViewController {
+extension ProxiedsUpdateViewController {
     enum Constants {
         static let heightSectionHeader: CGFloat = 41
         static let accountCellHeight: CGFloat = 48

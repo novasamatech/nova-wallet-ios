@@ -1,6 +1,6 @@
 import UIKit
 
-final class DelegatedAccountsUpdateViewLayout: UIView {
+final class ProxiedsUpdateViewLayout: UIView {
     let titleLabel: UILabel = .create {
         $0.apply(style: .bottomSheetTitle)
         $0.numberOfLines = 0

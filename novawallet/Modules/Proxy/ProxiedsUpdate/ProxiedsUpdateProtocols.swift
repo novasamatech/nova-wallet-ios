@@ -1,6 +1,6 @@
 import RobinHood
 
-protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
+protocol ProxiedsUpdateViewProtocol: ControllerBackedProtocol {
     func didReceive(
         delegatedModels: [ProxyWalletView.ViewModel],
         revokedModels: [ProxyWalletView.ViewModel]
@@ -11,26 +11,26 @@ protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
     ) -> CGFloat
 }
 
-protocol DelegatedAccountsUpdatePresenterProtocol: AnyObject {
+protocol ProxiedsUpdatePresenterProtocol: AnyObject {
     func setup()
     func done()
     func showInfo()
 }
 
-protocol DelegatedAccountsUpdateInteractorInputProtocol: AnyObject {
+protocol ProxiedsUpdateInteractorInputProtocol: AnyObject {
     func setup()
 }
 
-protocol DelegatedAccountsUpdateInteractorOutputProtocol: AnyObject {
+protocol ProxiedsUpdateInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>])
     func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>])
-    func didReceiveError(_ error: DelegatedAccountsUpdateError)
+    func didReceiveError(_ error: ProxiedsUpdateError)
 }
 
-protocol DelegatedAccountsUpdateWireframeProtocol: AnyObject, WebPresentable {
+protocol ProxiedsUpdateWireframeProtocol: AnyObject, WebPresentable {
     func close(from view: ControllerBackedProtocol?)
 }
 
-enum DelegatedAccountsUpdateError: Error {
+enum ProxiedsUpdateError: Error {
     case subscription(Error)
 }

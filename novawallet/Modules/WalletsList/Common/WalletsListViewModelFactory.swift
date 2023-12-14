@@ -61,7 +61,7 @@ class WalletsListViewModelFactory {
         wallets: [ManagedMetaAccountModel]
     ) -> WalletsListSectionViewModel? {
         let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
-            WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxy
+            WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxied
         }.compactMap { wallet -> WalletsListViewModel? in
             guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }), let proxied = chainAccount.proxy else {
                 return nil
@@ -82,7 +82,7 @@ class WalletsListViewModelFactory {
         }
 
         if !viewModels.isEmpty {
-            return WalletsListSectionViewModel(type: .proxy, items: viewModels)
+            return WalletsListSectionViewModel(type: .proxied, items: viewModels)
         } else {
             return nil
         }

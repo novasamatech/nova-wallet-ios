@@ -1,22 +1,22 @@
 import Foundation
 import SubstrateSdk
 
-protocol DelegatedAccountsUpdateFactoryProtocol {
+protocol ProxiedsUpdateFactoryProtocol {
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
         statuses: [ProxyAccountModel.Status],
-        chainModelProvider: (ChainModel.Id) -> ChainModel?,
+        chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [ProxyWalletView.ViewModel]
 }
 
-final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtocol {
+final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
     private lazy var iconGenerator = NovaIconGenerator()
 
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
         statuses: [ProxyAccountModel.Status],
-        chainModelProvider: (ChainModel.Id) -> ChainModel?,
+        chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [ProxyWalletView.ViewModel] {
         let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
@@ -43,7 +43,7 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
             let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
                 IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxyWallet.info.metaId)
             }
-            let chainModel = chainModelProvider(chainAccount.chainId)
+            let chainModel = chains[chainAccount.chainId]
             let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
 
             return ProxyWalletView.ViewModel(

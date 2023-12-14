@@ -47,7 +47,7 @@ final class WalletSelectionPresenter: WalletsListPresenter {
 
         if proxyWalletChanged {
             shouldShowDelegatesUpdates = false
-            wireframe?.showDelegateUpdates(
+            wireframe?.showProxiedsUpdates(
                 from: baseView,
                 initWallets: walletsList.allItems
             ) { [weak self] in

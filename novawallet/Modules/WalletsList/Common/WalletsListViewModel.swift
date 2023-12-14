@@ -14,7 +14,7 @@ struct WalletsListSectionViewModel {
         case paritySigner
         case ledger
         case polkadotVault
-        case proxy
+        case proxied
 
         init(walletType: MetaAccountModelType) {
             switch walletType {
@@ -29,7 +29,7 @@ struct WalletsListSectionViewModel {
             case .polkadotVault:
                 self = .polkadotVault
             case .proxied:
-                self = .proxy
+                self = .proxied
             }
         }
     }

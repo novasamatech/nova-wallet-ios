@@ -31,12 +31,12 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         navigationController?.pushViewController(manageView.controller, animated: true)
     }
 
-    func showDelegateUpdates(
+    func showProxiedsUpdates(
         from view: ControllerBackedProtocol?,
         initWallets: [ManagedMetaAccountModel],
         completion: @escaping () -> Void
     ) {
-        guard let delegateUpdatesView = DelegatedAccountsUpdateViewFactory.createView(
+        guard let proxiedsUpdatesView = ProxiedsUpdateViewFactory.createView(
             initWallets: initWallets,
             completion: completion
         ) else {
@@ -44,9 +44,9 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         }
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-        delegateUpdatesView.controller.modalTransitioningFactory = factory
-        delegateUpdatesView.controller.modalPresentationStyle = .custom
+        proxiedsUpdatesView.controller.modalTransitioningFactory = factory
+        proxiedsUpdatesView.controller.modalPresentationStyle = .custom
 
-        view?.controller.present(delegateUpdatesView.controller, animated: true)
+        view?.controller.present(proxiedsUpdatesView.controller, animated: true)
     }
 }
