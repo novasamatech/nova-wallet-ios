@@ -123,16 +123,24 @@ extension ProxiedsUpdateViewController: ProxiedsUpdateViewProtocol {
     }
 
     func preferredContentHeight(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModelsCount: Int,
+        revokedModelsCount: Int
     ) -> CGFloat {
-        let delegatedModelsHeaderHeight = delegatedModels.isEmpty ? 0 : Constants.heightSectionHeader
-        let revokedModelsHeaderHeight = revokedModels.isEmpty ? 0 : Constants.heightSectionHeader
-        let delegatedAccountsContentHeight = Constants.accountCellHeight * CGFloat(delegatedModels.count)
-        let revokedAccountsContentHeight = Constants.accountCellHeight * CGFloat(revokedModels.count)
-
-        return delegatedModelsHeaderHeight + delegatedAccountsContentHeight +
-            revokedModelsHeaderHeight + revokedAccountsContentHeight
+        let titleHeight: CGFloat = 58 + ProxiedsUpdateViewLayout.Constants.titleTopOffset
+        let tableTopOffset: CGFloat = ProxiedsUpdateViewLayout.Constants.tableTopOffset
+        let delegatedModelsHeaderHeight = delegatedModelsCount > 0 ? Constants.heightSectionHeader : 0
+        let revokedModelsHeaderHeight = revokedModelsCount > 0 ? Constants.heightSectionHeader : 0
+        let delegatedAccountsContentHeight = Constants.accountCellHeight * CGFloat(delegatedModelsCount)
+        let revokedAccountsContentHeight = Constants.accountCellHeight * CGFloat(revokedModelsCount)
+        let buttonHeight = UIConstants.actionHeight + UIConstants.actionBottomInset
+        let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
+        let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: selectedLocale.rLanguages)
+        let headerHeight = ProxyInfoView.defaultHeight(
+            text: text,
+            link: link
+        )
+        return titleHeight + tableTopOffset + headerHeight + delegatedModelsHeaderHeight +
+            delegatedAccountsContentHeight + revokedModelsHeaderHeight + revokedAccountsContentHeight + buttonHeight
     }
 }
 

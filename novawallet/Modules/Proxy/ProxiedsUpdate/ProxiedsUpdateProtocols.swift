@@ -6,8 +6,8 @@ protocol ProxiedsUpdateViewProtocol: ControllerBackedProtocol {
         revokedModels: [ProxyWalletView.ViewModel]
     )
     func preferredContentHeight(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModelsCount: Int,
+        revokedModelsCount: Int
     ) -> CGFloat
 }
 

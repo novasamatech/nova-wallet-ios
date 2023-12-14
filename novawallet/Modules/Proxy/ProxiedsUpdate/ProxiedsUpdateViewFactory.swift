@@ -32,7 +32,7 @@ struct ProxiedsUpdateViewFactory {
 
         let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
         let contentHeight = presenter.preferredContentHeight()
-        let preferredContentSize = min(0, min(contentHeight, maxHeight))
+        let preferredContentSize = max(0, min(contentHeight, maxHeight))
 
         view.preferredContentSize = .init(
             width: 0,

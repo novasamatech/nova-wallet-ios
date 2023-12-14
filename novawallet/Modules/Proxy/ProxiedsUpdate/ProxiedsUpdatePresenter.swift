@@ -56,10 +56,16 @@ final class ProxiedsUpdatePresenter {
     }
 
     func preferredContentHeight() -> CGFloat {
-        let delegatedViewModels = viewModels([.new], wallets: initWallets)
-        let revokedViewModels = viewModels([.revoked], wallets: initWallets)
+        let proxies = initWallets.compactMap {
+            $0.info.chainAccounts.first(where: { $0.proxy != nil })
+        }
+        let newModelsCount = proxies.filter { $0.proxy?.status == .new }.count
+        let revokedModelsCount = proxies.filter { $0.proxy?.status == .revoked }.count
 
-        return view?.preferredContentHeight(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels) ?? 0
+        return view?.preferredContentHeight(
+            delegatedModelsCount: newModelsCount,
+            revokedModelsCount: revokedModelsCount
+        ) ?? 0
     }
 }
 
