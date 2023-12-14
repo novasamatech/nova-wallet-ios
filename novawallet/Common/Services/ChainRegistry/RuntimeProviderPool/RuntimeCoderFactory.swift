@@ -27,8 +27,6 @@ extension RuntimeCoderFactoryProtocol {
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
-    static let addressTypeName = "Address"
-
     let catalog: TypeRegistryCatalogProtocol
     let specVersion: UInt32
     let txVersion: UInt32
@@ -55,11 +53,16 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
     }
 
     func createRuntimeJsonContext() -> RuntimeJsonContext {
-        if let addressTypeNode = catalog.node(
-            for: Self.addressTypeName,
-            version: UInt64(specVersion)
-        ) as? ProxyNode {
-            let addressTypeName = addressTypeNode.typeName.components(separatedBy: ".").last
+        if let addressTypeNode = catalog.node(for: KnownType.address.name, version: UInt64(specVersion)) {
+            let addressTypeName: String?
+
+            if let proxyNode = addressTypeNode as? ProxyNode {
+                addressTypeName = proxyNode.typeName.components(separatedBy: ".").last
+            } else if let aliasNode = addressTypeNode as? AliasNode {
+                addressTypeName = aliasNode.underlyingTypeName.components(separatedBy: ".").last
+            } else {
+                addressTypeName = nil
+            }
 
             let preferresMultiAddress = addressTypeName?.lowercased() == "multiaddress"
             return RuntimeJsonContext(prefersRawAddress: !preferresMultiAddress)

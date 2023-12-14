@@ -8,7 +8,7 @@ struct ChainModel: Equatable, Hashable {
     typealias Id = String
 
     struct TypesSettings: Codable, Hashable {
-        let url: URL
+        let url: URL?
         let overridesCommon: Bool
     }
 
@@ -23,6 +23,7 @@ struct ChainModel: Equatable, Hashable {
         case onlyCommon
         case both
         case onlyOwn
+        case none
     }
 
     enum NodeSwitchStrategy: String, Codable, Hashable {
@@ -224,11 +225,15 @@ struct ChainModel: Equatable, Hashable {
     }
 
     var typesUsage: TypesUsage {
-        if let types = types {
-            return types.overridesCommon ? .onlyOwn : .both
-        } else {
-            return .onlyCommon
+        guard let types = types else {
+            return .none
         }
+
+        guard !types.overridesCommon else {
+            return .onlyOwn
+        }
+
+        return types.url != nil ? .both : .onlyCommon
     }
 
     var defaultTip: BigUInt? {
