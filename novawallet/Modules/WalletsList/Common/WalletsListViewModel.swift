@@ -28,7 +28,7 @@ struct WalletsListSectionViewModel {
                 self = .ledger
             case .polkadotVault:
                 self = .polkadotVault
-            case .proxy:
+            case .proxied:
                 self = .proxy
             }
         }

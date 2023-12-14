@@ -37,9 +37,9 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         let proxyWalletChanged = walletsList.lastDifferences.contains {
             switch $0 {
             case let .delete(_, metaAccount):
-                return metaAccount.info.type == .proxy
+                return metaAccount.info.type == .proxied
             case let .insert(_, metaAccount), let .update(_, _, metaAccount):
-                return metaAccount.info.type == .proxy && metaAccount.info.chainAccounts.contains {
+                return metaAccount.info.type == .proxied && metaAccount.info.chainAccounts.contains {
                     $0.proxy?.status == .new || $0.proxy?.status == .revoked
                 } ? true : false
             }

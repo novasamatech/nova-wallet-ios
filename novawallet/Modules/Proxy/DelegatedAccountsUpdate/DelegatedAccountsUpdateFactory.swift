@@ -19,14 +19,14 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
         chainModelProvider: (ChainModel.Id) -> ChainModel?,
         locale: Locale
     ) -> [ProxyWalletView.ViewModel] {
-        let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxy }.compactMap { wallet in
+        let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
             guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
                   let proxy = chainAccount.proxy,
                   statuses.contains(proxy.status),
                   let proxyWallet = wallets.first(where: { $0.info.has(
                       accountId: proxy.accountId,
                       chainId: chainAccount.chainId
-                  ) && $0.info.type != .proxy })
+                  ) && $0.info.type != .proxied })
             else {
                 return nil
             }
