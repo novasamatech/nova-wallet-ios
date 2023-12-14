@@ -10,7 +10,7 @@ import SoraFoundation
 
 final class ProxyOperationFactoryTests: XCTestCase {
     
-    func testFetching() throws {
+    func testFetching() {
         let chainId = KnowChainId.kusama
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
@@ -32,8 +32,17 @@ final class ProxyOperationFactoryTests: XCTestCase {
             waitUntilFinished: true
         )
         
-        let result = try wrapper.targetOperation.extractNoCancellableResultData()
-        XCTAssertFalse(result.isEmpty)
+        do {
+            let result = try wrapper.targetOperation.extractNoCancellableResultData()
+            if !result.isEmpty {
+                Logger.shared.info("Fetched \(result.count) proxies")
+            } else {
+                XCTFail("Can't get any proxies")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
     }
 }
 
