@@ -1,0 +1,46 @@
+name: PR Workflow
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+ 
+jobs:
+  make-or-update-pr:
+    if: github.event.pull_request.base.ref == 'main' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: Release notes
+
+      - name: Create comment link
+        id: create_link
+        run: |
+          echo "COMMENT_LINK=https://api.github.com/repos/${{ github.repository }}/issues/comments/${{ steps.fc.outputs.comment-id }}" >> $GITHUB_ENV
+        shell: bash
+
+      - uses: tibdex/github-app-token@v1
+        id: generate-token
+        with:
+          app_id: ${{ secrets.PR_APP_ID }}
+          private_key: ${{ secrets.PR_APP_TOKEN }}
+      
+      - name: Run Python script
+        run: python .github/scripts/pr_comment_extract_data.py
+
+      - name: Create new branch and file in novasamatech/nova-wallet-ios-releases repo
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          repository: novasamatech/nova-wallet-ios-releases
+          event-type: create-pr
+          client-payload: '{"version": "${{ env.VERSION }}", "comment_link": "${{ env.COMMENT_LINK }}", "time": "${{ env.TIME }}", "severity": "${{ env.SEVERITY }}"}'

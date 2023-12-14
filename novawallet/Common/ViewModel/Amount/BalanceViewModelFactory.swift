@@ -66,7 +66,7 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         targetAssetInfo: AssetBalanceDisplayInfo,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory(),
-        limit: Decimal = StakingConstants.maxAmount
+        limit: Decimal = Decimal.greatestFiniteMagnitude
     ) {
         self.targetAssetInfo = targetAssetInfo
         self.priceAssetInfoFactory = priceAssetInfoFactory

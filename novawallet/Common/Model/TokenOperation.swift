@@ -23,7 +23,7 @@ extension TokenOperation {
                 return .common(.available)
             }
 
-        case .watchOnly, .proxy:
+        case .watchOnly, .proxied:
             return .common(.noSigning)
         }
     }
@@ -46,7 +46,7 @@ extension TokenOperation {
             } else {
                 return .common(.available)
             }
-        case .watchOnly, .proxy:
+        case .watchOnly, .proxied:
             return .common(.noSigning)
         }
     }
