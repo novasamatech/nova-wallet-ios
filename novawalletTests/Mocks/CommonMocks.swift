@@ -4692,16 +4692,16 @@ import SubstrateSdk
     
     
     
-     func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage)  {
+     func replaceChainData(_ chain: ChainModel)  {
         
-    return cuckoo_manager.call("replaceTypesUsage(_: ChainModel.TypesUsage)",
-            parameters: (newTypeUsage),
-            escapingParameters: (newTypeUsage),
+    return cuckoo_manager.call("replaceChainData(_: ChainModel)",
+            parameters: (chain),
+            escapingParameters: (chain),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.replaceTypesUsage(newTypeUsage))
+            defaultCall: __defaultImplStub!.replaceChainData(chain))
         
     }
     
@@ -4759,9 +4759,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func replaceTypesUsage<M1: Cuckoo.Matchable>(_ newTypeUsage: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.TypesUsage)> where M1.MatchedType == ChainModel.TypesUsage {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.TypesUsage)>] = [wrap(matchable: newTypeUsage) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderProtocol.self, method: "replaceTypesUsage(_: ChainModel.TypesUsage)", parameterMatchers: matchers))
+	    func replaceChainData<M1: Cuckoo.Matchable>(_ chain: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel)> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderProtocol.self, method: "replaceChainData(_: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func cleanup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -4807,9 +4807,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func replaceTypesUsage<M1: Cuckoo.Matchable>(_ newTypeUsage: M1) -> Cuckoo.__DoNotUse<(ChainModel.TypesUsage), Void> where M1.MatchedType == ChainModel.TypesUsage {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.TypesUsage)>] = [wrap(matchable: newTypeUsage) { $0 }]
-	        return cuckoo_manager.verify("replaceTypesUsage(_: ChainModel.TypesUsage)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func replaceChainData<M1: Cuckoo.Matchable>(_ chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), Void> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return cuckoo_manager.verify("replaceChainData(_: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -4859,7 +4859,7 @@ import SubstrateSdk
     
     
     
-     func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage)   {
+     func replaceChainData(_ chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
