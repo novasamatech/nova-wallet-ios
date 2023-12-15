@@ -226,7 +226,7 @@ final class RuntimeAugmentationFactory {
         runtime: RuntimeMetadataV14
     ) -> RuntimeAugmentationResult.AdditionalNodes {
         addingAdditionalOneOfFrom(
-            types: ["RuntimeEvent"],
+            types: ["RuntimeEvent", "Event"],
             toType: GenericType.event.name,
             additionalNodes: additionalNodes,
             runtime: runtime,
@@ -239,7 +239,7 @@ final class RuntimeAugmentationFactory {
         runtime: RuntimeMetadataV14
     ) -> RuntimeAugmentationResult.AdditionalNodes {
         addingAdditionalOneOfFrom(
-            types: ["RuntimeCall"],
+            types: ["RuntimeCall", "Call"],
             toType: GenericType.call.name,
             additionalNodes: additionalNodes,
             runtime: runtime,
@@ -247,8 +247,47 @@ final class RuntimeAugmentationFactory {
         )
     }
 
-    private func addingRuntimeDispatchNode()
-    
+    private func addingRuntimeDispatchNode(
+        to additionalNodes: RuntimeAugmentationResult.AdditionalNodes,
+        runtime: RuntimeMetadataV14
+    ) -> RuntimeAugmentationResult.AdditionalNodes {
+        let feeType = StateCallRpc.feeResultType
+        let runtimeType = "frame_support.dispatch.DispatchInfo"
+
+        guard
+            let portableType = findPortableType(
+                for: runtimeType,
+                in: runtime,
+                mode: .firstLastComponents
+            ),
+            case let .composite(compositeType) = portableType.type.typeDefinition else {
+            return additionalNodes.adding(notMatchedType: feeType)
+        }
+
+        guard
+            let weightLookupId = compositeType.fields.first(where: { $0.name == "weight" })?.type,
+            let weightType = runtime.types.types.first(
+                where: { $0.identifier == weightLookupId }
+            )?.type.path.joined(separator: typePathSeparator),
+            let dispatchClassLookupId = compositeType.fields.first(where: { $0.name == "class" })?.type,
+            let dispatchClassType = runtime.types.types.first(
+                where: { $0.identifier == dispatchClassLookupId }
+            )?.type.path.joined(separator: typePathSeparator) else {
+            return additionalNodes.adding(notMatchedType: feeType)
+        }
+
+        let node = StructNode(
+            typeName: feeType,
+            typeMapping: [
+                NameNode(name: "weight", node: ProxyNode(typeName: weightType)),
+                NameNode(name: "class", node: ProxyNode(typeName: dispatchClassType)),
+                NameNode(name: "partialFee", node: ProxyNode(typeName: PrimitiveType.u128.name))
+            ]
+        )
+
+        return additionalNodes.adding(node: node)
+    }
+
     private func getCommonAdditionalNodes(
         for runtime: RuntimeMetadataV14
     ) -> RuntimeAugmentationResult.AdditionalNodes {
@@ -265,6 +304,7 @@ final class RuntimeAugmentationFactory {
         additionalNodes = addingRuntimeCallNode(to: additionalNodes, runtime: runtime)
         additionalNodes = addingSubstrateAccountIdNode(to: additionalNodes, runtime: runtime)
         additionalNodes = addingPalletIdentityDataNode(to: additionalNodes, runtime: runtime)
+        additionalNodes = addingRuntimeDispatchNode(to: additionalNodes, runtime: runtime)
 
         return additionalNodes
     }
