@@ -19,14 +19,16 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
         proxy: ExtrinsicBuilderOperationFactoryProtocol,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        usesStateCallForFee: Bool
     ) {
         self.proxy = proxy
 
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,
-            operationManager: operationManager
+            operationManager: operationManager,
+            usesStateCallForFee: usesStateCallForFee
         )
     }
 

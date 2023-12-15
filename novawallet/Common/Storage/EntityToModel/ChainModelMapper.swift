@@ -335,8 +335,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
 
         let types: ChainModel.TypesSettings?
 
-        if let url = entity.types, let overridesCommon = entity.typesOverrideCommon {
-            types = .init(url: url, overridesCommon: overridesCommon.boolValue)
+        if entity.types != nil || entity.typesOverrideCommon != nil {
+            types = .init(url: entity.types, overridesCommon: entity.typesOverrideCommon?.boolValue ?? false)
         } else {
             types = nil
         }
