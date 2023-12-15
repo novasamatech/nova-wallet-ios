@@ -271,6 +271,10 @@ struct ChainModel: Equatable, Hashable {
     var isLightSyncMode: Bool {
         syncMode == .light
     }
+
+    var feeViewRuntimeCall: Bool {
+        additional?.feeViewRuntimeCall?.boolValue ?? false
+    }
 }
 
 extension ChainModel: Identifiable {

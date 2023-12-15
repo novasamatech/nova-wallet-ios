@@ -130,7 +130,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,
-            operationManager: operationManager
+            operationManager: operationManager,
+            usesStateCallForFee: chain.feeViewRuntimeCall
         )
     }
 
