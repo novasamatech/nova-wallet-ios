@@ -272,8 +272,8 @@ struct ChainModel: Equatable, Hashable {
         syncMode == .light
     }
 
-    var feeViewRuntimeCall: Bool {
-        additional?.feeViewRuntimeCall?.boolValue ?? false
+    var feeViaRuntimeCall: Bool {
+        additional?.feeViaRuntimeCall?.boolValue ?? false
     }
 }
 

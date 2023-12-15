@@ -131,7 +131,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             runtimeRegistry: runtimeRegistry,
             engine: engine,
             operationManager: operationManager,
-            usesStateCallForFee: chain.feeViewRuntimeCall
+            usesStateCallForFee: chain.feeViaRuntimeCall
         )
     }
 

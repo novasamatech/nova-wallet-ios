@@ -81,7 +81,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue),
-            usesStateCallForFee: chain.feeViewRuntimeCall
+            usesStateCallForFee: chain.feeViaRuntimeCall
         )
 
         let feeWrapper = operationFactory.estimateFeeOperation { builder in
