@@ -53,7 +53,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
         )
 
         if lastPoolIdProvider == nil {
-            logger?.error("Can't subscribe last pool id")
+            logger.error("Can't subscribe last pool id")
 
             completeImmediate(CommonError.dataCorruption)
         }
@@ -104,7 +104,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
                     self?.mutex.unlock()
                 }
 
-                self?.logger?.debug("Did receive active pools response")
+                self?.logger.debug("Did receive active pools response")
 
                 guard self?.activePoolCancellable === wrapper else {
                     return
@@ -115,12 +115,12 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
                 do {
                     let activePools = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                    self?.logger?.debug("Active pools for era \(activePools.era): \(activePools.pools.count)")
+                    self?.logger.debug("Active pools for era \(activePools.era): \(activePools.pools.count)")
                     self?.handle(newActivePools: activePools)
                     self?.completeImmediate(nil)
                     self?.notifyAll()
                 } catch {
-                    self?.logger?.error("Can't fetch active pools: \(error)")
+                    self?.logger.error("Can't fetch active pools: \(error)")
                     self?.completeImmediate(error)
                 }
             }
@@ -132,7 +132,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
     }
 
     private func handle(newActivePools: NominationPools.ActivePools) {
-        logger?.debug("New active pools \(newActivePools)")
+        logger.debug("New active pools \(newActivePools)")
 
         snapshot = newActivePools
 
@@ -142,7 +142,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
 
             requests.forEach { deliver(snapshot: newActivePools, to: $0) }
 
-            logger?.debug("Fulfilled pendings")
+            logger.debug("Fulfilled pendings")
         }
     }
 
@@ -216,14 +216,14 @@ extension EraNominationPoolsService: NPoolsLocalStorageSubscriber, NPoolsLocalSu
             lastPoolId = optLastPoolId
 
             if let lastPoolId = optLastPoolId {
-                logger?.debug("Last pool id: \(lastPoolId)")
+                logger.debug("Last pool id: \(lastPoolId)")
                 updateActivePools()
             } else {
-                logger?.warning("No pools registered yet")
+                logger.warning("No pools registered yet")
                 completeImmediate(nil)
             }
         case let .failure(error):
-            logger?.error("Did receive error: \(error)")
+            logger.error("Did receive error: \(error)")
             completeImmediate(error)
         }
     }

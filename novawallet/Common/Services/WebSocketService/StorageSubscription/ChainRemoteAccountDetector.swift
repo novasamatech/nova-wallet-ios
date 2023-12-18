@@ -11,22 +11,16 @@ protocol ChainRemoteAccountDetecting: AnyObject {
 }
 
 protocol ChainRemoteAccountDetectorDelegate: AnyObject {
-    func didReceiveDetected(account: ChainRemoteDetectedAccount, accountId: AccountId, chain: ChainModel)
-}
-
-struct ChainRemoteDetectedAccount {
-    let exists: Bool
+    func didDetectAccount(for accountId: AccountId, chain: ChainModel)
 }
 
 final class SubstrateRemoteAccountDetector {
     weak var delegate: ChainRemoteAccountDetectorDelegate?
     var callbackQueue: DispatchQueue = .global()
 
-    let storageKeyFactory = StorageKeyFactory()
-
     let logger: LoggerProtocol
 
-    private var subscriptions: [ChainModel.Id: StorageSubscriptionContainer] = [:]
+    private var subscriptions: [ChainModel.Id: SyncServiceProtocol] = [:]
 
     init(logger: LoggerProtocol) {
         self.logger = logger
@@ -39,34 +33,29 @@ extension SubstrateRemoteAccountDetector: ChainRemoteAccountDetecting {
             return
         }
 
-        let remoteKey = try storageKeyFactory.accountInfoKeyForId(accountId)
-
-        let handler = RawDataStorageSubscription(remoteStorageKey: remoteKey) { [weak self] data, _ in
-            let hasAccount = data != nil
-
-            self?.callbackQueue.async {
-                self?.delegate?.didReceiveDetected(
-                    account: .init(exists: hasAccount),
-                    accountId: accountId,
-                    chain: chain
-                )
-            }
-        }
-
-        let container = StorageSubscriptionContainer(
-            engine: connection,
-            children: [handler],
+        let syncService = ChainRemoteAccountConfirmService(
+            accountId: accountId,
+            connection: connection,
+            shouldConfirm: true,
+            detectionClosure: { [weak self] in
+                self?.delegate?.didDetectAccount(for: accountId, chain: chain)
+            },
+            callbackQueue: callbackQueue,
             logger: logger
         )
 
-        subscriptions[chain.chainId] = container
+        subscriptions[chain.chainId] = syncService
+        syncService.setup()
     }
 
     func stopTrackingAccount(for chainId: ChainModel.Id) {
+        subscriptions[chainId]?.stopSyncUp()
         subscriptions[chainId] = nil
     }
 
     func stopTrackingAll() {
+        subscriptions.forEach { $0.value.stopSyncUp() }
+
         subscriptions = [:]
     }
 }
