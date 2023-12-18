@@ -3,6 +3,10 @@ import CoreData
 import RobinHood
 import SubstrateSdk
 
+enum ChainModelMapperError: Error {
+    case unexpectedSyncMode(Int16)
+}
+
 final class ChainModelMapper {
     var entityIdentifierFieldName: String { #keyPath(CDChain.chainId) }
 
@@ -274,8 +278,8 @@ final class ChainModelMapper {
         }
     }
 
-    private func createChainOptions(from entity: CDChain) -> [ChainOptions]? {
-        var options: [ChainOptions] = []
+    private func createChainOptions(from entity: CDChain) -> [LocalChainOptions]? {
+        var options: [LocalChainOptions] = []
 
         if entity.isEthereumBased {
             options.append(.ethereumBased)
@@ -331,8 +335,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
 
         let types: ChainModel.TypesSettings?
 
-        if let url = entity.types, let overridesCommon = entity.typesOverrideCommon {
-            types = .init(url: url, overridesCommon: overridesCommon.boolValue)
+        if entity.types != nil || entity.typesOverrideCommon != nil {
+            types = .init(url: entity.types, overridesCommon: entity.typesOverrideCommon?.boolValue ?? false)
         } else {
             types = nil
         }
@@ -344,6 +348,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
 
         let additional: JSON? = try entity.additional.map {
             try jsonDecoder.decode(JSON.self, from: $0)
+        }
+
+        guard let syncMode = ChainSyncMode(entityValue: entity.syncMode) else {
+            throw ChainModelMapperError.unexpectedSyncMode(entity.syncMode)
         }
 
         return ChainModel(
@@ -360,7 +368,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             externalApis: externalApiSet,
             explorers: explorers,
             order: entity.order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -389,6 +398,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }
+
+        entity.syncMode = model.syncMode.toEntityValue()
 
         try updateEntityAssets(for: entity, from: model, context: context)
 

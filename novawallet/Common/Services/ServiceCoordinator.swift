@@ -19,6 +19,7 @@ final class ServiceCoordinator {
     let githubPhishingService: ApplicationServiceProtocol
     let equilibriumService: AssetsUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
+    let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -28,7 +29,8 @@ final class ServiceCoordinator {
         evmNativeService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
         equilibriumService: AssetsUpdatingServiceProtocol,
-        dappMediator: DAppInteractionMediating
+        dappMediator: DAppInteractionMediating,
+        syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
@@ -38,6 +40,7 @@ final class ServiceCoordinator {
         self.equilibriumService = equilibriumService
         self.githubPhishingService = githubPhishingService
         self.dappMediator = dappMediator
+        self.syncModeUpdateService = syncModeUpdateService
     }
 }
 
@@ -49,6 +52,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             evmAssetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
+            syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
@@ -60,6 +64,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmNativeService.setup()
         equilibriumService.setup()
         dappMediator.setup()
+        syncModeUpdateService.setup()
     }
 
     func throttle() {
@@ -70,6 +75,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmNativeService.throttle()
         equilibriumService.throttle()
         dappMediator.throttle()
+        syncModeUpdateService.throttle()
     }
 }
 
@@ -154,6 +160,12 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let syncModeUpdateService = ChainSyncModeUpdateService(
+            selectedMetaAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
@@ -162,7 +174,8 @@ extension ServiceCoordinator {
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,
             equilibriumService: equilibriumService,
-            dappMediator: DAppInteractionFactory.createMediator()
+            dappMediator: DAppInteractionFactory.createMediator(),
+            syncModeUpdateService: syncModeUpdateService
         )
     }
 }

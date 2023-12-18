@@ -11,24 +11,6 @@ extension StorageKeyFactoryProtocol {
         )
     }
 
-    func bondedKeyForId(_ identifier: Data) throws -> Data {
-        try createStorageKey(
-            moduleName: "Staking",
-            storageName: "Bonded",
-            key: identifier,
-            hasher: .twox64Concat
-        )
-    }
-
-    func stakingInfoForControllerId(_ identifier: Data) throws -> Data {
-        try createStorageKey(
-            moduleName: "Staking",
-            storageName: "Ledger",
-            key: identifier,
-            hasher: .blake128Concat
-        )
-    }
-
     func activeEra() throws -> Data {
         try createStorageKey(
             moduleName: "Staking",
