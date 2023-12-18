@@ -78,7 +78,7 @@ final class ChainSyncModeUpdateService {
 }
 
 extension ChainSyncModeUpdateService: ChainRemoteAccountDetectorDelegate {
-    func didReceiveDetected(account: ChainRemoteDetectedAccount, accountId: AccountId, chain: ChainModel) {
+    func didDetectAccount(for accountId: AccountId, chain: ChainModel) {
         let request = chain.accountRequest()
 
         guard
@@ -87,14 +87,12 @@ extension ChainSyncModeUpdateService: ChainRemoteAccountDetectorDelegate {
             return
         }
 
-        if account.exists {
-            do {
-                try chainRegistry.switchSync(mode: .full, chainId: chain.chainId)
+        do {
+            try chainRegistry.switchSync(mode: .full, chainId: chain.chainId)
 
-                logger.debug("Switch to full mode for \(chain.name)")
-            } catch {
-                logger.error("Can't switch full sync \(chain.name) \(error)")
-            }
+            logger.debug("Switch to full mode for \(chain.name)")
+        } catch {
+            logger.error("Can't switch full sync \(chain.name) \(error)")
         }
     }
 }
