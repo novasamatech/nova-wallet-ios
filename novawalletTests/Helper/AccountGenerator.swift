@@ -26,7 +26,8 @@ enum AccountGenerator {
             chainId: Data.random(of: 32)!.toHex(),
             accountId: Data.random(of: 32)!,
             publicKey: Data.random(of: 32)!,
-            cryptoType: 0
+            cryptoType: 0,
+            proxy: nil
         )
     }
 }

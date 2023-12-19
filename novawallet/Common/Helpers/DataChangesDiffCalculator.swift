@@ -1,13 +1,17 @@
 import Foundation
 import RobinHood
 
-struct DataChangesDiffCalculator<T: Identifiable & Equatable> {
+struct DataChangesDiffCalculator<T: Identifiable> {
     struct Changes {
         let newOrUpdatedItems: [T]
         let removedItems: [T]
     }
 
-    func diff(newItems: [T], oldItems: [T]) -> Changes {
+    func diff(
+        newItems: [T],
+        oldItems: [T],
+        by compareClosure: (T, T) -> Bool
+    ) -> Changes {
         let newMapping = newItems.reduce(into: [String: T]()) { mapping, item in
             mapping[item.identifier] = item
         }
@@ -18,7 +22,7 @@ struct DataChangesDiffCalculator<T: Identifiable & Equatable> {
 
         let newOrUpdated: [T] = newItems.compactMap { newItem in
             if let oldItem = oldMapping[newItem.identifier] {
-                return oldItem != newItem ? newItem : nil
+                return !compareClosure(oldItem, newItem) ? newItem : nil
             } else {
                 return newItem
             }
@@ -31,7 +35,11 @@ struct DataChangesDiffCalculator<T: Identifiable & Equatable> {
         return Changes(newOrUpdatedItems: newOrUpdated, removedItems: removed)
     }
 
-    func calculateChanges(newItems: [T], oldItems: [T]) -> [DataProviderChange<T>] {
+    func diff(newItems: [T], oldItems: [T]) -> Changes where T: Equatable {
+        diff(newItems: newItems, oldItems: oldItems, by: ==)
+    }
+
+    func calculateChanges(newItems: [T], oldItems: [T]) -> [DataProviderChange<T>] where T: Equatable {
         let newMapping = newItems.reduce(into: [String: T]()) { mapping, item in
             mapping[item.identifier] = item
         }

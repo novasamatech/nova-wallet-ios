@@ -271,7 +271,7 @@ final class AccountManagementPresenter {
         switch walletType {
         case .secrets:
             displaySecretsReplaceActions(for: chainModel)
-        case .watchOnly:
+        case .watchOnly, .proxied:
             if let wallet = wallet {
                 wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
             }
@@ -375,7 +375,7 @@ final class AccountManagementPresenter {
         let handlingClosure: () -> Void
 
         switch walletType {
-        case .secrets, .watchOnly, .paritySigner, .polkadotVault:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .proxied:
             handlingClosure = { [weak self] in
                 self?.activateChangeAccount(for: chain, walletType: walletType)
             }
@@ -450,7 +450,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             } else {
                 displaySecretsExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
-        case .watchOnly:
+        case .watchOnly, .proxied:
             if chainViewModel.address == nil {
                 displayWatchOnlyNoAddressActions(for: chainModel)
             } else {

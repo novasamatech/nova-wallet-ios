@@ -28,7 +28,8 @@ final class LedgerWalletFactory: LedgerWalletFactoryProtocol {
                     chainId: ledgerAccount.chain.chainId,
                     accountId: info.accountId,
                     publicKey: info.publicKey,
-                    cryptoType: info.cryptoType.rawValue
+                    cryptoType: info.cryptoType.rawValue,
+                    proxy: nil
                 )
 
                 guard let derivationPath = accountsStore.derivationPath(for: chainAccount.accountId) else {
