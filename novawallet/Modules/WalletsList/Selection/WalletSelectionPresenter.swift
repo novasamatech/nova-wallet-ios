@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 final class WalletSelectionPresenter: WalletsListPresenter {
     var interactor: WalletSelectionInteractorInputProtocol? {
@@ -9,6 +10,8 @@ final class WalletSelectionPresenter: WalletsListPresenter {
     var wireframe: WalletSelectionWireframeProtocol? {
         baseWireframe as? WalletSelectionWireframeProtocol
     }
+
+    private var shouldShowDelegatesUpdates: Bool = true
 
     init(
         interactor: WalletSelectionInteractorInputProtocol,
@@ -24,6 +27,33 @@ final class WalletSelectionPresenter: WalletsListPresenter {
             localizationManager: localizationManager,
             logger: logger
         )
+    }
+
+    override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
+        super.updateWallets(changes: changes)
+        guard shouldShowDelegatesUpdates else {
+            return
+        }
+        let proxyWalletChanged = walletsList.lastDifferences.contains {
+            switch $0 {
+            case let .delete(_, metaAccount):
+                return metaAccount.info.type == .proxied
+            case let .insert(_, metaAccount), let .update(_, _, metaAccount):
+                return metaAccount.info.type == .proxied && metaAccount.info.chainAccounts.contains {
+                    $0.proxy?.status == .new || $0.proxy?.status == .revoked
+                } ? true : false
+            }
+        }
+
+        if proxyWalletChanged {
+            shouldShowDelegatesUpdates = false
+            wireframe?.showProxiedsUpdates(
+                from: baseView,
+                initWallets: walletsList.allItems
+            ) { [weak self] in
+                self?.shouldShowDelegatesUpdates = true
+            }
+        }
     }
 }
 

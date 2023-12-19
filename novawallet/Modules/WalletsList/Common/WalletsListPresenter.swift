@@ -43,6 +43,12 @@ class WalletsListPresenter {
         viewModels[section] = WalletsListSectionViewModel(type: type, items: items)
     }
 
+    func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
+        walletsList.apply(changes: changes)
+
+        updateViewModels()
+    }
+
     private func updateViewModels() {
         if let balancesCalculator = balancesCalculator {
             viewModels = viewModelFactory.createSectionViewModels(
@@ -80,9 +86,7 @@ extension WalletsListPresenter: WalletsListPresenterProtocol {
 
 extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>]) {
-        walletsList.apply(changes: changes)
-
-        updateViewModels()
+        updateWallets(changes: changes)
     }
 
     func didUpdateBalancesCalculator(_ calculator: BalancesCalculating) {

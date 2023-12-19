@@ -56,6 +56,37 @@ class WalletsListViewModelFactory {
             return nil
         }
     }
+
+    private func createProxySection(
+        wallets: [ManagedMetaAccountModel]
+    ) -> WalletsListSectionViewModel? {
+        let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
+            WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxied
+        }.compactMap { wallet -> WalletsListViewModel? in
+            guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }), let proxied = chainAccount.proxy else {
+                return nil
+            }
+            let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
+            let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
+
+            let detailsViewModel = WalletTotalAmountView.ViewModel(
+                icon: iconViewModel,
+                name: wallet.info.name,
+                amount: proxied.type.id + " in " + chainAccount.chainId
+            )
+            return WalletsListViewModel(
+                identifier: wallet.identifier,
+                walletAmountViewModel: detailsViewModel,
+                isSelected: isSelected(wallet: wallet)
+            )
+        }
+
+        if !viewModels.isEmpty {
+            return WalletsListSectionViewModel(type: .proxied, items: viewModels)
+        } else {
+            return nil
+        }
+    }
 }
 
 extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
@@ -139,6 +170,13 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 locale: locale
             ) {
             sections.append(watchOnlySection)
+        }
+
+        if
+            let proxySection = createProxySection(
+                wallets: wallets
+            ) {
+            sections.append(proxySection)
         }
 
         return sections

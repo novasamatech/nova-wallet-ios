@@ -1,25 +1,25 @@
 import Foundation
 import SubstrateSdk
 
-protocol DelegatedAccountsUpdateFactoryProtocol {
+protocol ProxiedsUpdateFactoryProtocol {
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
         statuses: [ProxyAccountModel.Status],
-        chainModelProvider: (ChainModel.Id) -> ChainModel?,
+        chains: [ChainModel.Id: ChainModel],
         locale: Locale
-    ) -> [WalletView.ViewModel]
+    ) -> [ProxyWalletView.ViewModel]
 }
 
-final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtocol {
+final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
     private lazy var iconGenerator = NovaIconGenerator()
 
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
         statuses: [ProxyAccountModel.Status],
-        chainModelProvider: (ChainModel.Id) -> ChainModel?,
+        chains: [ChainModel.Id: ChainModel],
         locale: Locale
-    ) -> [WalletView.ViewModel] {
-        let viewModels: [WalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
+    ) -> [ProxyWalletView.ViewModel] {
+        let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
             guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
                   let proxy = chainAccount.proxy,
                   statuses.contains(proxy.status),
@@ -43,17 +43,16 @@ final class DelegatedAccountsUpdateFactory: DelegatedAccountsUpdateFactoryProtoc
             let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
                 IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxyWallet.info.metaId)
             }
-            let chainModel = chainModelProvider(chainAccount.chainId)
+            let chainModel = chains[chainAccount.chainId]
             let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
 
-            return WalletView.ViewModel(
+            return ProxyWalletView.ViewModel(
                 icon: iconViewModel,
                 networkIcon: chainIcon,
                 name: wallet.info.name,
                 subtitle: proxy.type.subtitle(locale: locale),
                 subtitleDetailsIcon: subtitleDetailsIconViewModel,
-                subtitleDetails: proxyWallet.info.name,
-                marked: false
+                subtitleDetails: proxyWallet.info.name
             )
         }
 
