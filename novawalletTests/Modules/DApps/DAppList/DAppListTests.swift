@@ -42,7 +42,12 @@ class DAppListTests: XCTestCase {
 
         let mapper = DAppFavoriteMapper()
         let dappsFavoriteRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
-
+        let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+        
         let interactor = DAppListInteractor(
             walletSettings: walletSettings,
             eventCenter: EventCenter.shared,
@@ -50,6 +55,7 @@ class DAppListTests: XCTestCase {
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
             dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
+            proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
             operationQueue: operationQueue,
             logger: Logger.shared
         )

@@ -11523,6 +11523,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func didReceiveWalletsState(hasUpdates: Bool)  {
+        
+    return cuckoo_manager.call("didReceiveWalletsState(hasUpdates: Bool)",
+            parameters: (hasUpdates),
+            escapingParameters: (hasUpdates),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveWalletsState(hasUpdates: hasUpdates))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -11545,6 +11560,11 @@ import SubstrateSdk
 	    func didReceiveFavoriteDapp<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
 	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveWalletsState<M1: Cuckoo.Matchable>(hasUpdates: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hasUpdates) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceiveWalletsState(hasUpdates: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -11581,6 +11601,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveWalletsState<M1: Cuckoo.Matchable>(hasUpdates: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hasUpdates) { $0 }]
+	        return cuckoo_manager.verify("didReceiveWalletsState(hasUpdates: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -11605,6 +11631,12 @@ import SubstrateSdk
     
     
      func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveWalletsState(hasUpdates: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -20457,16 +20489,16 @@ import UIKit.UIImage
     
     
     
-     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel {
+     func createAccountViewModel(for wallet: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel {
         
-    return cuckoo_manager.call("createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel",
-            parameters: (wallet),
-            escapingParameters: (wallet),
+    return cuckoo_manager.call("createAccountViewModel(for: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel",
+            parameters: (wallet, hasWalletNotification),
+            escapingParameters: (wallet, hasWalletNotification),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createAccountViewModel(for: wallet))
+            defaultCall: __defaultImplStub!.createAccountViewModel(for: wallet, hasWalletNotification: hasWalletNotification))
         
     }
     
@@ -20494,9 +20526,9 @@ import UIKit.UIImage
 	    }
 	    
 	    
-	    func createAccountViewModel<M1: Cuckoo.Matchable>(for wallet: M1) -> Cuckoo.ProtocolStubFunction<(MetaAccountModel), SettingsAccountViewModel> where M1.MatchedType == MetaAccountModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: wallet) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel", parameterMatchers: matchers))
+	    func createAccountViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for wallet: M1, hasWalletNotification: M2) -> Cuckoo.ProtocolStubFunction<(MetaAccountModel, Bool), SettingsAccountViewModel> where M1.MatchedType == MetaAccountModel, M2.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel, Bool)>] = [wrap(matchable: wallet) { $0.0 }, wrap(matchable: hasWalletNotification) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createAccountViewModel(for: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel", parameterMatchers: matchers))
 	    }
 	    
 	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(language: M1, currency: M2, parameters: M3, locale: M4) -> Cuckoo.ProtocolStubFunction<(Language?, String?, SettingsParameters, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.OptionalMatchedType == String, M3.MatchedType == SettingsParameters, M4.MatchedType == Locale {
@@ -20521,9 +20553,9 @@ import UIKit.UIImage
 	
 	    
 	    @discardableResult
-	    func createAccountViewModel<M1: Cuckoo.Matchable>(for wallet: M1) -> Cuckoo.__DoNotUse<(MetaAccountModel), SettingsAccountViewModel> where M1.MatchedType == MetaAccountModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: wallet) { $0 }]
-	        return cuckoo_manager.verify("createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createAccountViewModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for wallet: M1, hasWalletNotification: M2) -> Cuckoo.__DoNotUse<(MetaAccountModel, Bool), SettingsAccountViewModel> where M1.MatchedType == MetaAccountModel, M2.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel, Bool)>] = [wrap(matchable: wallet) { $0.0 }, wrap(matchable: hasWalletNotification) { $0.1 }]
+	        return cuckoo_manager.verify("createAccountViewModel(for: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -20543,7 +20575,7 @@ import UIKit.UIImage
     
     
     
-     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel  {
+     func createAccountViewModel(for wallet: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel  {
         return DefaultValueRegistry.defaultValue(for: (SettingsAccountViewModel).self)
     }
     
@@ -20874,6 +20906,21 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     func didReceiveWalletsState(hasUpdates: Bool)  {
+        
+    return cuckoo_manager.call("didReceiveWalletsState(hasUpdates: Bool)",
+            parameters: (hasUpdates),
+            escapingParameters: (hasUpdates),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveWalletsState(hasUpdates: hasUpdates))
+        
+    }
+    
 
 	 struct __StubbingProxy_SettingsInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -20916,6 +20963,11 @@ import UIKit.UIImage
 	    func didReceive<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SettingsError)> where M1.MatchedType == SettingsError {
 	        let matchers: [Cuckoo.ParameterMatcher<(SettingsError)>] = [wrap(matchable: error) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(error: SettingsError)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveWalletsState<M1: Cuckoo.Matchable>(hasUpdates: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hasUpdates) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceiveWalletsState(hasUpdates: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -20976,6 +21028,12 @@ import UIKit.UIImage
 	        return cuckoo_manager.verify("didReceive(error: SettingsError)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveWalletsState<M1: Cuckoo.Matchable>(hasUpdates: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hasUpdates) { $0 }]
+	        return cuckoo_manager.verify("didReceiveWalletsState(hasUpdates: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -21024,6 +21082,12 @@ import UIKit.UIImage
     
     
      func didReceive(error: SettingsError)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveWalletsState(hasUpdates: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -49,7 +49,12 @@ final class SettingsTests: XCTestCase {
         let eventCenter = MockEventCenterProtocol()
 
         let walletConnect = MockWalletConnectDelegateInputProtocol()
-
+        let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+        
         stub(walletConnect) { stub in
             when(stub).add(delegate: any()).thenDoNothing()
             when(stub).connect(uri: any(), completion: any()).thenDoNothing()
@@ -69,7 +74,8 @@ final class SettingsTests: XCTestCase {
             walletConnect: walletConnect,
             currencyManager: CurrencyManagerStub(),
             settingsManager: InMemorySettingsManager(),
-            biometryAuth: biometryAuthMock
+            biometryAuth: biometryAuthMock,
+            proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory
         )
 
         let viewModelFactory = SettingsViewModelFactory(
