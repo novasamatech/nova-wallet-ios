@@ -133,7 +133,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
               let proxyWallet = wallets.first(where: { $0.info.has(
                   accountId: proxy.accountId,
                   chainId: chainAccount.chainId
-              ) && $0.info.type != .proxy })
+              ) && $0.info.type != .proxied })
         else {
             return nil
         }

@@ -19,7 +19,7 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletView.ViewModel] {
-        let viewModels: [WalletView.ViewModel] = wallets.filter { $0.info.type == .proxy }.compactMap { wallet in
+        let viewModels: [WalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
             guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
                   let proxy = chainAccount.proxy,
                   statuses.contains(proxy.status),
