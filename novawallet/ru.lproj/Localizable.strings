@@ -852,7 +852,7 @@
 "common.address.scan.title" = "Сканировать QR";
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "common.watch.only" = "Watch-only";
-"common.proxieds" = "Делегированные вам (PROXIEDS)";
+"common.proxieds" = "Делегированные вам (proxieds)";
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
 "common.signing.not.supported.title" = "Подписание не поддерживается";
 "common.parity.signer.not.supported.message" = "%@ не поддерживает подписание произвольных сообщений — только транзакции";
@@ -1464,4 +1464,4 @@
 "proxy.updates.hint" = "Nova Wallet автоматически добавляет для вас делегированные полномочия (Прокси) в отдельную категорию. Вы можете управлять кошельками в Настройках.";
 "proxy.updates.hint.link" = "Что такое Прокси?";
 "proxy.updates.title" = "Обновление делегированных аккаунтов.";
-"proxy.updates.proxy.revoked" = "ДОСТУП БЫЛ ОТОЗВАН";
+"proxy.updates.proxy.revoked" = "доступ был отозван";

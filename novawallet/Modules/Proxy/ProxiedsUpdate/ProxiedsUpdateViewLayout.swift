@@ -1,6 +1,6 @@
 import UIKit
 
-final class DelegatedAccountsUpdateViewLayout: UIView {
+final class ProxiedsUpdateViewLayout: UIView {
     let titleLabel: UILabel = .create {
         $0.apply(style: .bottomSheetTitle)
         $0.numberOfLines = 0
@@ -43,13 +43,13 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
     private func setupLayout() {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(10)
-            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().offset(Constants.titleTopOffset)
+            $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(Constants.tableTopOffset)
             $0.leading.trailing.equalToSuperview()
         }
 
@@ -60,5 +60,12 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
             $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
         }
+    }
+}
+
+extension ProxiedsUpdateViewLayout {
+    enum Constants {
+        static let titleTopOffset: CGFloat = 10
+        static let tableTopOffset: CGFloat = 8
     }
 }

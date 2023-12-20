@@ -277,11 +277,13 @@ extension MetaAccountModel {
     }
 
     func isProxied(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
-        type == .proxy && has(accountId: accountId, chainId: chainId)
+        type == .proxied && has(accountId: accountId, chainId: chainId)
     }
 
-    func proxyChainAccount(proxyAccountId: AccountId, type: Proxy.ProxyType) -> ChainAccountModel? {
-        chainAccounts.first { $0.proxy?.accountId == proxyAccountId && $0.proxy?.type == type }
+    func proxyChainAccount(
+        chainId: ChainModel.Id
+    ) -> ChainAccountModel? {
+        chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
 }
 

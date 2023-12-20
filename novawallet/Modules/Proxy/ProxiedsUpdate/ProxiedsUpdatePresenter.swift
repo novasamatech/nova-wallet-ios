@@ -2,11 +2,11 @@ import Foundation
 import RobinHood
 import SoraFoundation
 
-final class DelegatedAccountsUpdatePresenter {
-    weak var view: DelegatedAccountsUpdateViewProtocol?
-    let wireframe: DelegatedAccountsUpdateWireframeProtocol
-    let interactor: DelegatedAccountsUpdateInteractorInputProtocol
-    let viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol
+final class ProxiedsUpdatePresenter {
+    weak var view: ProxiedsUpdateViewProtocol?
+    let wireframe: ProxiedsUpdateWireframeProtocol
+    let interactor: ProxiedsUpdateInteractorInputProtocol
+    let viewModelsFactory: ProxiedsUpdateFactoryProtocol
     let logger: LoggerProtocol
     let applicationConfig: ApplicationConfigProtocol
 
@@ -19,9 +19,9 @@ final class DelegatedAccountsUpdatePresenter {
     }
 
     init(
-        interactor: DelegatedAccountsUpdateInteractorInputProtocol,
-        wireframe: DelegatedAccountsUpdateWireframeProtocol,
-        viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol,
+        interactor: ProxiedsUpdateInteractorInputProtocol,
+        wireframe: ProxiedsUpdateWireframeProtocol,
+        viewModelsFactory: ProxiedsUpdateFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         initWallets: [ManagedMetaAccountModel],
@@ -47,20 +47,26 @@ final class DelegatedAccountsUpdatePresenter {
         viewModelsFactory.createViewModels(
             for: wallets,
             statuses: statuses,
-            chainModelProvider: { [weak self] in self?.chains[$0] },
+            chains: chains,
             locale: selectedLocale
         )
     }
 
     func preferredContentHeight() -> CGFloat {
-        let delegatedViewModels = viewModels([.new], wallets: initWallets)
-        let revokedViewModels = viewModels([.revoked], wallets: initWallets)
+        let proxies = initWallets.compactMap {
+            $0.info.chainAccounts.first(where: { $0.proxy != nil })
+        }
+        let newModelsCount = proxies.filter { $0.proxy?.status == .new }.count
+        let revokedModelsCount = proxies.filter { $0.proxy?.status == .revoked }.count
 
-        return view?.preferredContentHeight(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels) ?? 0
+        return view?.preferredContentHeight(
+            delegatedModelsCount: newModelsCount,
+            revokedModelsCount: revokedModelsCount
+        ) ?? 0
     }
 }
 
-extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProtocol {
+extension ProxiedsUpdatePresenter: ProxiedsUpdatePresenterProtocol {
     func setup() {
         interactor.setup()
     }
@@ -78,7 +84,7 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProt
     }
 }
 
-extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdateInteractorOutputProtocol {
+extension ProxiedsUpdatePresenter: ProxiedsUpdateInteractorOutputProtocol {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         walletsList.apply(changes: changes)
         updateView()
@@ -98,12 +104,12 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdateInteractorOut
         updateView()
     }
 
-    func didReceiveError(_ error: DelegatedAccountsUpdateError) {
+    func didReceiveError(_ error: ProxiedsUpdateError) {
         logger.error(error.localizedDescription)
     }
 }
 
-extension DelegatedAccountsUpdatePresenter: Localizable {
+extension ProxiedsUpdatePresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateView()

@@ -71,7 +71,7 @@ class WalletsListViewModelFactory {
         locale: Locale
     ) -> WalletsListSectionViewModel? {
         let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
-            WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxy
+            WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxied
         }.compactMap { wallet -> WalletsListViewModel? in
             createProxyItemViewModel(
                 for: wallet,
@@ -82,7 +82,7 @@ class WalletsListViewModelFactory {
         }
 
         if !viewModels.isEmpty {
-            return WalletsListSectionViewModel(type: .proxy, items: viewModels)
+            return WalletsListSectionViewModel(type: .proxied, items: viewModels)
         } else {
             return nil
         }

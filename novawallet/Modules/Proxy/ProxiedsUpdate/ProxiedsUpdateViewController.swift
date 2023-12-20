@@ -1,16 +1,16 @@
 import UIKit
 import SoraFoundation
 
-final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder {
-    typealias RootViewType = DelegatedAccountsUpdateViewLayout
+final class ProxiedsUpdateViewController: UIViewController, ViewHolder {
+    typealias RootViewType = ProxiedsUpdateViewLayout
     typealias DataSource = UITableViewDiffableDataSource<Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
 
-    let presenter: DelegatedAccountsUpdatePresenterProtocol
+    let presenter: ProxiedsUpdatePresenterProtocol
 
     init(
-        presenter: DelegatedAccountsUpdatePresenterProtocol,
+        presenter: ProxiedsUpdatePresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -25,7 +25,7 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     }
 
     override func loadView() {
-        view = DelegatedAccountsUpdateViewLayout()
+        view = ProxiedsUpdateViewLayout()
     }
 
     override func viewDidLoad() {
@@ -46,10 +46,10 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
             switch model {
             case .info:
                 let cell: ProxyInfoTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
-                let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: selectedLocale.rLanguages)
+                let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: self.selectedLocale.rLanguages)
+                let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: self.selectedLocale.rLanguages)
                 cell.bind(text: text, link: link)
-                cell.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
+                cell.actionButton.addTarget(self, action: #selector(self.didTapOnInfoButton), for: .touchUpInside)
                 return cell
             case let .delegated(viewModel), let .revoked(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
@@ -92,7 +92,7 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     }
 }
 
-extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProtocol {
+extension ProxiedsUpdateViewController: ProxiedsUpdateViewProtocol {
     func didReceive(
         delegatedModels: [WalletView.ViewModel],
         revokedModels: [WalletView.ViewModel]
@@ -123,20 +123,28 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
     }
 
     func preferredContentHeight(
-        delegatedModels: [WalletView.ViewModel],
-        revokedModels: [WalletView.ViewModel]
+        delegatedModelsCount: Int,
+        revokedModelsCount: Int
     ) -> CGFloat {
-        let delegatedModelsHeaderHeight = delegatedModels.isEmpty ? 0 : Constants.heightSectionHeader
-        let revokedModelsHeaderHeight = revokedModels.isEmpty ? 0 : Constants.heightSectionHeader
-        let delegatedAccountsContentHeight = Constants.accountCellHeight * CGFloat(delegatedModels.count)
-        let revokedAccountsContentHeight = Constants.accountCellHeight * CGFloat(revokedModels.count)
-
-        return delegatedModelsHeaderHeight + delegatedAccountsContentHeight +
-            revokedModelsHeaderHeight + revokedAccountsContentHeight
+        let titleHeight: CGFloat = 58 + ProxiedsUpdateViewLayout.Constants.titleTopOffset
+        let tableTopOffset: CGFloat = ProxiedsUpdateViewLayout.Constants.tableTopOffset
+        let delegatedModelsHeaderHeight = delegatedModelsCount > 0 ? Constants.heightSectionHeader : 0
+        let revokedModelsHeaderHeight = revokedModelsCount > 0 ? Constants.heightSectionHeader : 0
+        let delegatedAccountsContentHeight = Constants.accountCellHeight * CGFloat(delegatedModelsCount)
+        let revokedAccountsContentHeight = Constants.accountCellHeight * CGFloat(revokedModelsCount)
+        let buttonHeight = UIConstants.actionHeight + UIConstants.actionBottomInset
+        let text = R.string.localizable.proxyUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
+        let link = R.string.localizable.proxyUpdatesHintLink(preferredLanguages: selectedLocale.rLanguages)
+        let headerHeight = ProxyInfoView.defaultHeight(
+            text: text,
+            link: link
+        )
+        return titleHeight + tableTopOffset + headerHeight + delegatedModelsHeaderHeight +
+            delegatedAccountsContentHeight + revokedModelsHeaderHeight + revokedAccountsContentHeight + buttonHeight
     }
 }
 
-extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
+extension ProxiedsUpdateViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch Section(rawValue: indexPath.section) {
         case .info:
@@ -179,7 +187,7 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
     }
 }
 
-extension DelegatedAccountsUpdateViewController: Localizable {
+extension ProxiedsUpdateViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -187,7 +195,7 @@ extension DelegatedAccountsUpdateViewController: Localizable {
     }
 }
 
-extension DelegatedAccountsUpdateViewController {
+extension ProxiedsUpdateViewController {
     enum Section: Int, Hashable {
         case info
         case delegated
@@ -201,7 +209,7 @@ extension DelegatedAccountsUpdateViewController {
     }
 }
 
-extension DelegatedAccountsUpdateViewController {
+extension ProxiedsUpdateViewController {
     enum Constants {
         static let heightSectionHeader: CGFloat = 41
         static let accountCellHeight: CGFloat = 48

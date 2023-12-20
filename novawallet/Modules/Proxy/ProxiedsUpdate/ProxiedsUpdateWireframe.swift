@@ -1,6 +1,6 @@
 import Foundation
 
-final class DelegatedAccountsUpdateWireframe: DelegatedAccountsUpdateWireframeProtocol {
+final class ProxiedsUpdateWireframe: ProxiedsUpdateWireframeProtocol {
     let completion: () -> Void
 
     init(completion: @escaping () -> Void) {
