@@ -3,10 +3,13 @@ import XCTest
 import RobinHood
 
 final class ProxySyncIntegrationTests: XCTestCase {
-    func testSync() throws {
+    func testKusamaSync() throws {
         let kusamaAccountId = try "G4qFCkKu7BiaWFNLXfcdZpY94hndyKnzqY1JtmiSBsTPSxC".toAccountId()
-        let polkadotAccountId = try "1W9ZuKSDehxWy7DUDYCirpTSytPAWfvhpzG5oFCha7h1Rnf".toAccountId()
         testSyncChain(chainId: KnowChainId.kusama, substrateAccountId: kusamaAccountId)
+    }
+    
+    func testPolkadotSync() throws {
+        let polkadotAccountId = try "1W9ZuKSDehxWy7DUDYCirpTSytPAWfvhpzG5oFCha7h1Rnf".toAccountId()
         testSyncChain(chainId: KnowChainId.polkadot, substrateAccountId: polkadotAccountId)
     }
     
