@@ -272,8 +272,8 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartInteractorOutpu
         }
     }
 
-    func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo) {
-        extrinsicFee = BigUInt(feeInfo.fee)
+    func didReceiveScheduleAutocompound(feeInfo: ExtrinsicFeeProtocol) {
+        extrinsicFee = feeInfo.amount
 
         provideNetworkFeeViewModel()
     }

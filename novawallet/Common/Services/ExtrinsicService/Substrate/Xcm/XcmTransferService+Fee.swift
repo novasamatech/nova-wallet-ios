@@ -38,12 +38,7 @@ extension XcmTransferService {
 
             let mapperOperation = ClosureOperation<FeeWithWeight> {
                 let response = try wrapper.targetOperation.extractNoCancellableResultData()
-
-                guard let fee = BigUInt(response.fee) else {
-                    throw CommonError.dataCorruption
-                }
-
-                return FeeWithWeight(fee: fee, weight: BigUInt(response.weight))
+                return FeeWithWeight(fee: response.amount, weight: BigUInt(response.weight))
             }
 
             mapperOperation.addDependency(wrapper.targetOperation)

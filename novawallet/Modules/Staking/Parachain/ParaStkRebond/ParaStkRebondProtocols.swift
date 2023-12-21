@@ -26,7 +26,7 @@ protocol ParaStkRebondInteractorInputProtocol: PendingExtrinsicInteracting {
 protocol ParaStkRebondInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ priceData: PriceData?)
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveCollatorIdentity(_ identity: AccountIdentity?)
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>)

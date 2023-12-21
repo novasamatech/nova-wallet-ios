@@ -195,11 +195,8 @@ final class AssetHubFeeService: AnyCancellableCleaning {
                 throw CommonError.dataCorruption
             }
 
-            guard let fee = BigUInt(feeModel.fee) else {
-                throw CommonError.dataCorruption
-            }
-
-            return fee
+            // TODO: Maybe also need payer
+            return feeModel.amount
         }
 
         mainFeeOperation.addDependency(coderFactoryOperation)

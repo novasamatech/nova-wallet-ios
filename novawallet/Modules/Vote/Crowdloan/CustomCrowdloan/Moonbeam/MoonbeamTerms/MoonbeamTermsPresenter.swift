@@ -97,12 +97,10 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
 }
 
 extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee).map {
-                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
-            } ?? nil
+            fee = Decimal.fromSubstrateAmount(dispatchInfo.amount, precision: assetInfo.assetPrecision)
 
             provideFeeViewModel()
         case let .failure(error):

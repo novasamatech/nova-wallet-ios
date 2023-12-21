@@ -35,7 +35,7 @@ protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
     func didCompleteNomination(txHash: String)
     func didFailNomination(error: Error)
 
-    func didReceive(paymentInfo: RuntimeDispatchInfo)
+    func didReceive(paymentInfo: ExtrinsicFeeProtocol)
     func didReceive(feeError: Error)
 }
 

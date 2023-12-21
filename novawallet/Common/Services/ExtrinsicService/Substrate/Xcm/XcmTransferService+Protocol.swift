@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
 typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
@@ -83,13 +84,10 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             feeWrapper.targetOperation.completionBlock = {
                 switch feeWrapper.targetOperation.result {
-                case let .success(dispatchInfo):
-                    if let feeWithWeight = FeeWithWeight(dispatchInfo: dispatchInfo) {
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .success(feeWithWeight))
-                    } else {
-                        let error = CommonError.dataCorruption
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
+                case let .success(fee):
+                    // TODO: Maybe also need payer
+                    let feeWithWeight = FeeWithWeight(fee: fee.amount, weight: BigUInt(fee.weight))
+                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(feeWithWeight))
                 case let .failure(error):
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
                 case .none:

@@ -42,7 +42,7 @@ extension ExtrinsicOperationFactoryProtocol {
 
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<RuntimeDispatchInfo> {
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
         }
@@ -52,7 +52,7 @@ extension ExtrinsicOperationFactoryProtocol {
             numberOfExtrinsics: 1
         )
 
-        let resultMappingOperation = ClosureOperation<RuntimeDispatchInfo> {
+        let resultMappingOperation = ClosureOperation<ExtrinsicFeeProtocol> {
             guard let result = try feeOperation.targetOperation.extractNoCancellableResultData()
                 .results.first?.result else {
                 throw BaseOperationError.unexpectedDependentResult

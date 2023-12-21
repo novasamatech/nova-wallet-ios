@@ -27,7 +27,7 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceivePayee(result: Result<Staking.RewardDestinationArg?, Error>)

@@ -211,14 +211,18 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             feeOperation.addDependency(coderFactoryOperation)
             feeOperation.addDependency(builderWrapper.targetOperation)
 
-            let wrapperOperation = ClosureOperation<ExtrinsicRetriableResult<RuntimeDispatchInfo>> {
+            let wrapperOperation = ClosureOperation<ExtrinsicRetriableResult<ExtrinsicFeeProtocol>> {
                 do {
                     let results = try feeOperation.extractNoCancellableResultData()
 
-                    let indexedResults = zip(indexList, results).map { indexedResult in
-                        FeeIndexedExtrinsicResult.IndexedResult(
+                    let indexedResults = try zip(indexList, results).map { indexedResult in
+                        guard let convertedResult = ExtrinsicFee(dispatchInfo: indexedResult.1) else {
+                            throw CommonError.dataCorruption
+                        }
+
+                        return FeeIndexedExtrinsicResult.IndexedResult(
                             index: indexedResult.0,
-                            result: .success(indexedResult.1)
+                            result: .success(convertedResult)
                         )
                     }
 

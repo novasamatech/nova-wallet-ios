@@ -20,7 +20,7 @@ protocol MoonbeamTermsInteractorInputProtocol: AnyObject {
 
 protocol MoonbeamTermsInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveVerifyRemark(result: Result<Bool, Error>)
     func didReceiveBalance(result: Result<AssetBalance?, Error>)
     func didReceiveMinimumBalance(result: Result<BigUInt, Error>)

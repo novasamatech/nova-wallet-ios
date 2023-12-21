@@ -97,12 +97,10 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 
                 do {
                     let info = try feeWrapper.targetOperation.extractNoCancellableResultData()
-                    if let fee = BigUInt(info.fee) {
-                        let feeModel = FeeOutputModel(value: fee, validationProvider: nil)
-                        self?.presenter?.didReceive(feeResult: .success(feeModel))
-                    } else {
-                        self?.presenter?.didReceive(feeResult: .failure(CommonError.dataCorruption))
-                    }
+
+                    // TODO: Consider fee payer here
+                    let feeModel = FeeOutputModel(value: info.amount, validationProvider: nil)
+                    self?.presenter?.didReceive(feeResult: .success(feeModel))
                 } catch {
                     self?.presenter?.didReceive(feeResult: .failure(error))
                 }

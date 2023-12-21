@@ -17,7 +17,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
 
     var priceProvider: StreamableProvider<PriceData>?
-    var feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>?
+    var feeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
     var signWrapper: CompoundOperationWrapper<Data>?
 
     init(

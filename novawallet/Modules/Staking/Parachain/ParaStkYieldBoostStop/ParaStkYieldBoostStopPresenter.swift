@@ -191,8 +191,8 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopInteractorOutputP
         }
     }
 
-    func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo) {
-        extrinsicFee = BigUInt(feeInfo.fee)
+    func didReceiveCancelTask(feeInfo: ExtrinsicFeeProtocol) {
+        extrinsicFee = feeInfo.amount
 
         provideNetworkFeeViewModel()
     }

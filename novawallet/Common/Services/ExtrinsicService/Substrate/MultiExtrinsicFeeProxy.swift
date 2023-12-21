@@ -18,13 +18,11 @@ protocol MultiExtrinsicFeeProxyProtocol: AnyObject {
 final class MultiExtrinsicFeeProxy: TransactionFeeProxy<BigUInt> {
     weak var delegate: MultiExtrinsicFeeProxyDelegate?
 
-    private func handle(results: [Result<RuntimeDispatchInfo, Error>], for identifier: TransactionFeeId) {
+    private func handle(results: [Result<ExtrinsicFeeProtocol, Error>], for identifier: TransactionFeeId) {
         do {
             let totalFee = try results.reduce(BigUInt(0)) { accum, result in
                 let newFeeInfo = try result.get()
-                let value = BigUInt(newFeeInfo.fee) ?? 0
-
-                return accum + value
+                return accum + newFeeInfo.amount
             }
 
             update(result: .success(totalFee), for: identifier)

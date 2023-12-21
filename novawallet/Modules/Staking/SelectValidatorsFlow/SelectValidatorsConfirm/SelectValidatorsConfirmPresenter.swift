@@ -327,9 +327,8 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         handle(error: error)
     }
 
-    func didReceive(paymentInfo: RuntimeDispatchInfo) {
-        if let feeValue = BigUInt(paymentInfo.fee),
-           let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision) {
+    func didReceive(paymentInfo: ExtrinsicFeeProtocol) {
+        if let fee = Decimal.fromSubstrateAmount(paymentInfo.amount, precision: assetInfo.assetPrecision) {
             self.fee = fee
         } else {
             fee = nil

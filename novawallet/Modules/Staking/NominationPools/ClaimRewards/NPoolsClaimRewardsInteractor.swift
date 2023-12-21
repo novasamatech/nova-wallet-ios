@@ -171,10 +171,10 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
 }
 
 extension NPoolsClaimRewardsInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            presenter?.didReceive(fee: BigUInt(dispatchInfo.fee))
+        case let .success(feeInfo):
+            presenter?.didReceive(fee: feeInfo.amount)
         case let .failure(error):
             presenter?.didReceive(error: .fee(error))
         }

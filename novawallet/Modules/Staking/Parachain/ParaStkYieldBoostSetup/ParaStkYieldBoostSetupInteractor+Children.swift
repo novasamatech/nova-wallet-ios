@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostScheduleInteractorOutputProtocol {
-    func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo) {
+    func didReceiveScheduleAutocompound(feeInfo: ExtrinsicFeeProtocol) {
         presenter?.didReceiveScheduleAutocompound(feeInfo: feeInfo)
     }
 
@@ -20,7 +20,7 @@ extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostScheduleInteractorO
 }
 
 extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostCancelInteractorOutputProtocol {
-    func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo) {
+    func didReceiveCancelTask(feeInfo: ExtrinsicFeeProtocol) {
         presenter?.didReceiveCancelTask(feeInfo: feeInfo)
     }
 

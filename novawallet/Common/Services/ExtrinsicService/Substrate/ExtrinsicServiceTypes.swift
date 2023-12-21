@@ -54,8 +54,8 @@ struct ExtrinsicRetriableResult<R> {
     }
 }
 
-typealias FeeExtrinsicResult = Result<RuntimeDispatchInfo, Error>
-typealias FeeIndexedExtrinsicResult = ExtrinsicRetriableResult<RuntimeDispatchInfo>
+typealias FeeExtrinsicResult = Result<ExtrinsicFeeProtocol, Error>
+typealias FeeIndexedExtrinsicResult = ExtrinsicRetriableResult<ExtrinsicFeeProtocol>
 
 typealias EstimateFeeClosure = (FeeExtrinsicResult) -> Void
 typealias EstimateFeeIndexedClosure = (FeeIndexedExtrinsicResult) -> Void

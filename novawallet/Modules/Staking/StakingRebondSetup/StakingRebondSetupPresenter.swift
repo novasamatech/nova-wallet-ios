@@ -135,14 +135,10 @@ extension StakingRebondSetupPresenter: StakingRebondSetupPresenterProtocol {
 }
 
 extension StakingRebondSetupPresenter: StakingRebondSetupInteractorOutputProtocol {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
-            } else {
-                fee = nil
-            }
+        case let .success(feeInfo):
+            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
 
             provideFeeViewModel()
         case let .failure(error):

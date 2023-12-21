@@ -23,7 +23,7 @@ protocol StakingBondMoreConfirmationInteractorInputProtocol: AnyObject {
 protocol StakingBondMoreConfirmationOutputProtocol: AnyObject {
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)

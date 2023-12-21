@@ -211,15 +211,10 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let feeValue = BigUInt(dispatchInfo.fee) {
-                fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision)
-            } else {
-                fee = nil
-            }
-
+        case let .success(feeInfo):
+            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")
