@@ -20,12 +20,14 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
         let request = UnkeyedRemoteStorageRequest(storagePath: Proxy.proxyList)
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
+        let options = StorageQueryListOptions(ignoresFailedItems: true)
         let fetchWrapper: CompoundOperationWrapper<[AccountIdKey: ProxyDefinition]> =
             requestFactory.queryByPrefix(
                 engine: connection,
                 request: request,
                 storagePath: Proxy.proxyList,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                options: options
             )
 
         let mapper = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {

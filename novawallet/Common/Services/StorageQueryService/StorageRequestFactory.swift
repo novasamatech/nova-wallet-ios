@@ -15,6 +15,16 @@ struct ChildStorageResponse<T: Decodable> {
     let value: T?
 }
 
+struct StorageQueryListOptions {
+    let atBlock: Data?
+    let ignoresFailedItems: Bool
+
+    init(atBlock: Data? = nil, ignoresFailedItems: Bool = false) {
+        self.atBlock = atBlock
+        self.ignoresFailedItems = ignoresFailedItems
+    }
+}
+
 protocol StorageRequestFactoryProtocol {
     func queryItem<T>(
         engine: JSONRPCEngine,
@@ -28,7 +38,7 @@ protocol StorageRequestFactoryProtocol {
         keyParams: @escaping () throws -> [K],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         storagePath: StorageCodingPath,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     )
         -> CompoundOperationWrapper<[StorageResponse<T>]> where K: Encodable, T: Decodable
 
@@ -38,7 +48,7 @@ protocol StorageRequestFactoryProtocol {
         keyParams2: @escaping () throws -> [K2],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         storagePath: StorageCodingPath,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     )
         -> CompoundOperationWrapper<[StorageResponse<T>]> where K1: Encodable, K2: Encodable, T: Decodable
 
@@ -47,7 +57,7 @@ protocol StorageRequestFactoryProtocol {
         keys: @escaping () throws -> [Data],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         storagePath: StorageCodingPath,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     )
         -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable
 
@@ -65,7 +75,7 @@ protocol StorageRequestFactoryProtocol {
         request: RemoteStorageRequestProtocol,
         storagePath: StorageCodingPath,
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[K: T]> where K: JSONListConvertible, T: Decodable
 }
 
@@ -216,11 +226,15 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         keys: @escaping () throws -> [Data],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         storagePath: StorageCodingPath,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable {
-        let queryOperation = createQueryOperation(for: keys, at: blockHash, engine: engine, timeout: timeout)
+        let queryOperation = createQueryOperation(for: keys, at: options.atBlock, engine: engine, timeout: timeout)
 
-        let decodingOperation = StorageFallbackDecodingListOperation<T>(path: storagePath)
+        let decodingOperation = StorageFallbackDecodingListOperation<T>(
+            path: storagePath,
+            ignoresFailedItems: options.ignoresFailedItems
+        )
+
         decodingOperation.configurationBlock = {
             do {
                 let result = try queryOperation.extractNoCancellableResultData().flatMap { $0 }
@@ -258,7 +272,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         keyParams: @escaping () throws -> [K],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         storagePath: StorageCodingPath,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where K: Encodable, T: Decodable {
         let keysOperation = MapKeyEncodingOperation<K>(
             path: storagePath,
@@ -279,7 +293,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         }
 
         let queryWrapper: CompoundOperationWrapper<[StorageResponse<T>]> =
-            queryItems(engine: engine, keys: keys, factory: factory, storagePath: storagePath, at: blockHash)
+            queryItems(engine: engine, keys: keys, factory: factory, storagePath: storagePath, options: options)
 
         queryWrapper.allOperations.forEach { $0.addDependency(keysOperation) }
 
@@ -297,7 +311,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         keyParams2: @escaping () throws -> [K2],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         storagePath: StorageCodingPath,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where K1: Encodable, K2: Encodable, T: Decodable {
         let keysOperation = DoubleMapKeyEncodingOperation<K1, K2>(path: storagePath, storageKeyFactory: remoteFactory)
 
@@ -316,7 +330,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         }
 
         let queryWrapper: CompoundOperationWrapper<[StorageResponse<T>]> =
-            queryItems(engine: engine, keys: keys, factory: factory, storagePath: storagePath, at: blockHash)
+            queryItems(engine: engine, keys: keys, factory: factory, storagePath: storagePath, options: options)
 
         queryWrapper.allOperations.forEach { $0.addDependency(keysOperation) }
 
@@ -379,13 +393,14 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         request: RemoteStorageRequestProtocol,
         storagePath: StorageCodingPath,
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        at blockHash: Data?
+        options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[K: T]> where K: JSONListConvertible, T: Decodable {
         let prefixKeyWrapper = request.createKeyEncodingWrapper(
             using: remoteFactory,
             codingFactoryClosure: factory
         )
 
+        let blockHash = options.atBlock
         let pageSize: UInt32? = blockHash == nil ? 1000 : nil
 
         let keysFetchOperation = StorageKeysQueryService(
@@ -407,7 +422,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
             },
             factory: factory,
             storagePath: storagePath,
-            at: blockHash
+            options: options
         )
 
         queryWrapper.addDependency(operations: [keysFetchOperation])
@@ -465,14 +480,15 @@ extension StorageRequestFactoryProtocol {
         engine: JSONRPCEngine,
         keyParams: @escaping () throws -> [K],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        storagePath: StorageCodingPath
+        storagePath: StorageCodingPath,
+        at blockHash: Data? = nil
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where K: Encodable, T: Decodable {
         queryItems(
             engine: engine,
             keyParams: keyParams,
             factory: factory,
             storagePath: storagePath,
-            at: nil
+            options: .init(atBlock: blockHash)
         )
     }
 
@@ -481,7 +497,8 @@ extension StorageRequestFactoryProtocol {
         keyParams1: @escaping () throws -> [K1],
         keyParams2: @escaping () throws -> [K2],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        storagePath: StorageCodingPath
+        storagePath: StorageCodingPath,
+        at blockHash: Data? = nil
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where K1: Encodable, K2: Encodable, T: Decodable {
         queryItems(
             engine: engine,
@@ -489,7 +506,7 @@ extension StorageRequestFactoryProtocol {
             keyParams2: keyParams2,
             factory: factory,
             storagePath: storagePath,
-            at: nil
+            options: .init(atBlock: blockHash)
         )
     }
 
@@ -497,14 +514,15 @@ extension StorageRequestFactoryProtocol {
         engine: JSONRPCEngine,
         keys: @escaping () throws -> [Data],
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        storagePath: StorageCodingPath
+        storagePath: StorageCodingPath,
+        at blockHash: Data? = nil
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable {
         queryItems(
             engine: engine,
             keys: keys,
             factory: factory,
             storagePath: storagePath,
-            at: nil
+            options: .init(atBlock: blockHash)
         )
     }
 
@@ -529,14 +547,15 @@ extension StorageRequestFactoryProtocol {
         engine: JSONRPCEngine,
         request: RemoteStorageRequestProtocol,
         storagePath: StorageCodingPath,
-        factory: @escaping () throws -> RuntimeCoderFactoryProtocol
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        at blockHash: Data? = nil
     ) -> CompoundOperationWrapper<[K: T]> where K: JSONListConvertible, T: Decodable {
         queryByPrefix(
             engine: engine,
             request: request,
             storagePath: storagePath,
             factory: factory,
-            at: nil
+            options: .init(atBlock: blockHash)
         )
     }
 }

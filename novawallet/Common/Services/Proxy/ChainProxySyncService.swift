@@ -94,7 +94,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success:
+            case .success:
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.completeImmediate(error)
