@@ -77,7 +77,8 @@ struct ParaStkYieldBoostStartViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(

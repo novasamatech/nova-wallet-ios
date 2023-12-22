@@ -14,6 +14,7 @@ final class XcmTransferService {
 
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
+    let userStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
@@ -23,10 +24,12 @@ final class XcmTransferService {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
+        self.userStorageFacade = userStorageFacade
         self.operationQueue = operationQueue
     }
 
@@ -71,6 +74,12 @@ final class XcmTransferService {
             signaturePayloadFormat = .regular
         }
 
+        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
+            chainAccount: chainAccount,
+            chain: chain,
+            userStorageFacade: userStorageFacade
+        )
+
         return ExtrinsicOperationFactory(
             accountId: accountId,
             chain: chain,
@@ -79,6 +88,7 @@ final class XcmTransferService {
             runtimeRegistry: runtimeProvider,
             customExtensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
+            senderResolvingFactory: senderResolvingFactory,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }

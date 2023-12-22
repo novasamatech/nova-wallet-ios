@@ -82,7 +82,8 @@ struct MoonbeamTermsViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: accountResponse, chain: chain)
 
         let feeProxy = ExtrinsicFeeProxy()

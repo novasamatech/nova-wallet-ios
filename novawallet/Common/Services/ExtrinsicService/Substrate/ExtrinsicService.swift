@@ -105,6 +105,7 @@ final class ExtrinsicService {
         cryptoType: MultiassetCryptoType,
         walletType: MetaAccountModelType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
+        senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         extensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
@@ -117,6 +118,7 @@ final class ExtrinsicService {
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            senderResolvingFactory: senderResolvingFactory,
             operationManager: operationManager
         )
 

@@ -128,7 +128,8 @@ extension TransferSetupPresenterFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chain)
 
         return OnChainTransferSetupInteractor(

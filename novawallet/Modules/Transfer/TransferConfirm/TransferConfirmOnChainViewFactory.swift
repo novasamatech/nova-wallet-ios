@@ -209,7 +209,8 @@ struct TransferConfirmOnChainViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: account, chain: chain)
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(

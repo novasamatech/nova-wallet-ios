@@ -47,7 +47,8 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: OperationManager(operationQueue: operationQueue),
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let conversionOperationFactory = AssetHubSwapOperationFactory(

@@ -67,7 +67,8 @@ struct NominationPoolBondMoreSetupViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 

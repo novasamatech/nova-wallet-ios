@@ -172,7 +172,8 @@ struct StartStakingConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: state.chainAsset.chain)
 
         let signer = SigningWrapperFactory(keystore: Keychain()).createSigningWrapper(

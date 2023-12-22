@@ -88,7 +88,8 @@ final class StakingPayoutConfirmationViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let extrinsicService = extrinsicServiceFactory.createService(

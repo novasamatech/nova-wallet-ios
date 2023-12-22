@@ -120,6 +120,7 @@ struct TransferConfirmCrossChainViewFactory {
         let extrinsicService = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
+            userStorageFacade: UserDataStorageFacade.shared,
             operationQueue: operationQueue
         )
 

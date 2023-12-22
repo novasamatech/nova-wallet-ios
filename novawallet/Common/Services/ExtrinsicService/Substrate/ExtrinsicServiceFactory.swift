@@ -68,15 +68,18 @@ final class ExtrinsicServiceFactory {
     private let runtimeRegistry: RuntimeCodingServiceProtocol
     private let engine: JSONRPCEngine
     private let operationManager: OperationManagerProtocol
+    private let userStorageFacade: StorageFacadeProtocol
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        userStorageFacade: StorageFacadeProtocol
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
         self.operationManager = operationManager
+        self.userStorageFacade = userStorageFacade
     }
 }
 
@@ -86,12 +89,19 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         chain: ChainModel,
         extensions: [ExtrinsicExtension]
     ) -> ExtrinsicServiceProtocol {
-        ExtrinsicService(
+        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
+            chainAccount: account,
+            chain: chain,
+            userStorageFacade: userStorageFacade
+        )
+
+        return ExtrinsicService(
             accountId: account.accountId,
             chain: chain,
             cryptoType: account.cryptoType,
             walletType: account.type,
             runtimeRegistry: runtimeRegistry,
+            senderResolvingFactory: senderResolvingFactory,
             extensions: extensions,
             engine: engine,
             operationManager: operationManager
@@ -103,7 +113,13 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         chain: ChainModel,
         extensions: [ExtrinsicExtension]
     ) -> ExtrinsicOperationFactoryProtocol {
-        ExtrinsicOperationFactory(
+        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
+            chainAccount: account,
+            chain: chain,
+            userStorageFacade: userStorageFacade
+        )
+
+        return ExtrinsicOperationFactory(
             accountId: account.accountId,
             chain: chain,
             cryptoType: account.cryptoType,
@@ -111,6 +127,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            senderResolvingFactory: senderResolvingFactory,
             operationManager: operationManager
         )
     }
