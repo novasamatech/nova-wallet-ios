@@ -190,6 +190,9 @@ final class NftListViewModelFactory {
             return createRMRKV1Metadata(from: model.nft, locale: locale)
         case .rmrkV2:
             return createRMRKV2Metadata(from: model.nft, locale: locale)
+        case .pdc20:
+            // TODO: Create PDC20 Metadata Protocol
+            return createStaticMetadata(from: model.nft)
         case .none:
             return createStaticMetadata(from: model.nft)
         }

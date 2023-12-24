@@ -81,6 +81,9 @@ struct NftDetailsViewFactory {
                 nftMetadataService: nftMetadataService,
                 operationQueue: operationQueue
             )
+        case .pdc20:
+            // TODO: Create PDC20 Interactor
+            return nil
         case .none:
             return nil
         }
