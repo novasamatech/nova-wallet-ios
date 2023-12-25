@@ -78,8 +78,8 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
     }
 
     func updateWalletsStatuses() {
-        let newProxyWallets = proxies.filter { $0.value.proxy?.status == .new }.map {
-            $0.key.replacingInfo($0.key.info.replacingChainAccount($0.value.replacingProxyStatus(.active)))
+        let newProxyWallets = proxies.map {
+            $0.key.replacingInfo($0.key.info.replacingChainAccount($0.value.replacingProxyStatus(from: .new, to: .active)))
         }.compactMap { $0 }
         let revokedProxyWallets = proxies
             .filter { $0.value.proxy?.status == .revoked }

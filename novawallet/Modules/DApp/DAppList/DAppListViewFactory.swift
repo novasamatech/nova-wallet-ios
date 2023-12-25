@@ -25,6 +25,11 @@ struct DAppListViewFactory {
             storageFacade: UserDataStorageFacade.shared
         ).createFavoriteDAppsRepository()
 
+        let proxyNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: logger
+        )
+
         let interactor = DAppListInteractor(
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
@@ -32,7 +37,7 @@ struct DAppListViewFactory {
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            proxyNotificationService: proxyNotificationService,
             operationQueue: sharedQueue,
             logger: logger
         )

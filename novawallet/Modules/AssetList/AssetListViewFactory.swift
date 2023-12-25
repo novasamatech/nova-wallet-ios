@@ -13,12 +13,17 @@ struct AssetListViewFactory {
 
         let assetListModelObservable = AssetListModelObservable(state: .init(value: .init()))
 
+        let proxyNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: Logger.shared
+        )
+
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetListModelObservable: assetListModelObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            proxyNotificationService: proxyNotificationService,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

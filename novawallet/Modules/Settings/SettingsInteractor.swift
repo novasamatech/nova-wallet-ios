@@ -15,10 +15,7 @@ final class SettingsInteractor {
     let eventCenter: EventCenterProtocol
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
-    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
-    let logger: LoggerProtocol
-    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
-    private var proxies: [ProxyAccountModel] = []
+    let proxyNotificationService: WalletNotificationServiceProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -27,16 +24,14 @@ final class SettingsInteractor {
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
-        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
-        logger: LoggerProtocol = Logger.shared
+        proxyNotificationService: WalletNotificationServiceProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
-        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
-        self.logger = logger
+        self.proxyNotificationService = proxyNotificationService
         self.currencyManager = currencyManager
     }
 
@@ -71,10 +66,6 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
-
-    private func provideWalletUpdates() {
-        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
-    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -85,8 +76,11 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
-        proxyListSubscription = subscribeAllProxies()
-        provideWalletUpdates()
+
+        proxyNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
+        proxyNotificationService.setup()
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {
@@ -138,17 +132,5 @@ extension SettingsInteractor: SelectedCurrencyDepending {
         }
 
         presenter.didReceive(currencyCode: currencyManager.selectedCurrency.code)
-    }
-}
-
-extension SettingsInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
-    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
-        switch result {
-        case let .success(changes):
-            proxies = proxies.applying(changes: changes)
-            provideWalletUpdates()
-        case let .failure(error):
-            logger.error(error.localizedDescription)
-        }
     }
 }

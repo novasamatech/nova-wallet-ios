@@ -12,11 +12,9 @@ final class DAppListInteractor {
     let phishingSyncService: ApplicationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
-    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
+    let proxyNotificationService: WalletNotificationServiceProtocol
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
-    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
-    private var proxies: [ProxyAccountModel] = []
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -25,7 +23,7 @@ final class DAppListInteractor {
         phishingSyncService: ApplicationServiceProtocol,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
-        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
+        proxyNotificationService: WalletNotificationServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -35,7 +33,7 @@ final class DAppListInteractor {
         self.phishingSyncService = phishingSyncService
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
-        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
+        self.proxyNotificationService = proxyNotificationService
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -50,10 +48,6 @@ final class DAppListInteractor {
         }
 
         presenter?.didReceive(walletResult: .success(wallet))
-    }
-
-    private func provideWalletUpdates() {
-        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
     }
 
     private func subscribeDApps() {
@@ -111,8 +105,10 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        proxyListSubscription = subscribeAllProxies()
-        provideWalletUpdates()
+        proxyNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
+        proxyNotificationService.setup()
     }
 
     func refresh() {
@@ -133,18 +129,6 @@ extension DAppListInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionH
             presenter?.didReceiveFavoriteDapp(changes: changes)
         case let .failure(error):
             logger.error("Unexpected favorites error: \(error)")
-        }
-    }
-}
-
-extension DAppListInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
-    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
-        switch result {
-        case let .success(changes):
-            proxies = proxies.applying(changes: changes)
-            provideWalletUpdates()
-        case let .failure(error):
-            logger.error(error.localizedDescription)
         }
     }
 }

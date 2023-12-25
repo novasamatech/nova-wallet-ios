@@ -7,10 +7,15 @@ enum VoteViewFactory {
             return nil
         }
 
+        let proxyNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: Logger.shared
+        )
+
         let interactor = VoteInteractor(
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
+            proxyNotificationService: proxyNotificationService
         )
 
         let wireframe = VoteWireframe()

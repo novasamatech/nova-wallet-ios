@@ -65,6 +65,11 @@ struct StakingDashboardViewFactory {
             logger: Logger.shared
         )
 
+        let proxyNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: Logger.shared
+        )
+
         return .init(
             syncServiceFactory: syncServiceFactory,
             walletSettings: walletSettings,
@@ -75,7 +80,7 @@ struct StakingDashboardViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stateObserver: stateObserver,
             applicationHandler: ApplicationHandler(),
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            proxyNotificationService: proxyNotificationService,
             currencyManager: currencyManager
         )
     }

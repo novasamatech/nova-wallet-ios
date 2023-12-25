@@ -21,6 +21,11 @@ struct SettingsViewFactory {
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
+        let proxyNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: Logger.shared
+        )
+
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
@@ -28,7 +33,7 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
+            proxyNotificationService: proxyNotificationService
         )
 
         let wireframe = SettingsWireframe(dappMediator: dappMediator)
