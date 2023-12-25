@@ -54,6 +54,10 @@ final class SettingsTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
+        let proxyNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
+            logger: Logger.shared
+        )
         
         stub(walletConnect) { stub in
             when(stub).add(delegate: any()).thenDoNothing()
@@ -75,7 +79,7 @@ final class SettingsTests: XCTestCase {
             currencyManager: CurrencyManagerStub(),
             settingsManager: InMemorySettingsManager(),
             biometryAuth: biometryAuthMock,
-            proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory
+            proxyNotificationService: proxyNotificationService
         )
 
         let viewModelFactory = SettingsViewModelFactory(
