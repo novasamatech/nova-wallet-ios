@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 struct NftModel: Identifiable, Equatable {
     // swiftlint:disable:next type_name
@@ -11,11 +12,13 @@ struct NftModel: Identifiable, Equatable {
     let collectionId: String?
     let instanceId: String?
     let metadata: Data?
-    let totalIssuance: Int32?
+    let issuanceTotal: BigUInt?
+    let issuanceMyAmount: BigUInt?
     let name: String?
     let label: String?
     let media: String?
     let price: String?
+    let priceUnits: String?
     let type: UInt16
     let createdAt: Date?
 
@@ -27,11 +30,13 @@ struct NftModel: Identifiable, Equatable {
         collectionId: String? = nil,
         instanceId: String? = nil,
         metadata: Data? = nil,
-        totalIssuance: Int32? = nil,
+        issuanceTotal: BigUInt? = nil,
+        issuanceMyAmount: BigUInt? = nil,
         name: String? = nil,
         label: String? = nil,
         media: String? = nil,
         price: String? = nil,
+        priceUnits: String? = nil,
         createdAt: Date? = nil
     ) {
         self.identifier = identifier
@@ -41,11 +46,13 @@ struct NftModel: Identifiable, Equatable {
         self.collectionId = collectionId
         self.instanceId = instanceId
         self.metadata = metadata
-        self.totalIssuance = totalIssuance
+        self.issuanceTotal = issuanceTotal
+        self.issuanceMyAmount = issuanceMyAmount
         self.name = name
         self.label = label
         self.media = media
         self.price = price
+        self.priceUnits = priceUnits
         self.createdAt = createdAt
     }
 
@@ -57,11 +64,13 @@ struct NftModel: Identifiable, Equatable {
         collectionId = remoteModel.collectionId
         instanceId = remoteModel.instanceId
         metadata = remoteModel.metadata
-        totalIssuance = remoteModel.totalIssuance
+        issuanceTotal = remoteModel.issuanceTotal
+        issuanceMyAmount = remoteModel.issuanceMyAmount
         name = remoteModel.name
         label = remoteModel.label
         media = remoteModel.media
         price = remoteModel.price
+        priceUnits = remoteModel.priceUnits
         createdAt = nil
     }
 }

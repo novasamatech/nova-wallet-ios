@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 struct RemoteNftModel: Equatable, Identifiable {
     let identifier: NftModel.Id
@@ -8,11 +9,13 @@ struct RemoteNftModel: Equatable, Identifiable {
     let collectionId: String?
     let instanceId: String?
     let metadata: Data?
-    let totalIssuance: Int32?
+    let issuanceTotal: BigUInt?
+    let issuanceMyAmount: BigUInt?
     let name: String?
     let label: String?
     let media: String?
     let price: String?
+    let priceUnits: String?
     let type: UInt16
 
     init(
@@ -23,11 +26,13 @@ struct RemoteNftModel: Equatable, Identifiable {
         collectionId: String? = nil,
         instanceId: String? = nil,
         metadata: Data? = nil,
-        totalIssuance: Int32? = nil,
+        issuanceTotal: BigUInt? = nil,
+        issuanceMyAmount: BigUInt? = nil,
         name: String? = nil,
         label: String? = nil,
         media: String? = nil,
-        price: String? = nil
+        price: String? = nil,
+        priceUnits: String? = nil
     ) {
         self.identifier = identifier
         self.type = type
@@ -36,11 +41,13 @@ struct RemoteNftModel: Equatable, Identifiable {
         self.collectionId = collectionId
         self.instanceId = instanceId
         self.metadata = metadata
-        self.totalIssuance = totalIssuance
+        self.issuanceTotal = issuanceTotal
+        self.issuanceMyAmount = issuanceMyAmount
         self.name = name
         self.label = label
         self.media = media
         self.price = price
+        self.priceUnits = priceUnits
     }
 
     init(localModel: NftModel) {
@@ -51,11 +58,13 @@ struct RemoteNftModel: Equatable, Identifiable {
         collectionId = localModel.collectionId
         instanceId = localModel.instanceId
         metadata = localModel.metadata
-        totalIssuance = localModel.totalIssuance
+        issuanceTotal = localModel.issuanceTotal
+        issuanceMyAmount = localModel.issuanceMyAmount
         name = localModel.name
         label = localModel.label
         media = localModel.media
         price = localModel.price
+        priceUnits = localModel.priceUnits
     }
 }
 
@@ -89,11 +98,13 @@ extension RemoteNftModel {
             collectionId: remoteItem.collectionId,
             instanceId: remoteItem.instance,
             metadata: metadata,
-            totalIssuance: collection?.max,
+            issuanceTotal: collection?.max.map { BigUInt($0) },
+            issuanceMyAmount: nil,
             name: remoteItem.name,
             label: remoteItem.serialNumber,
             media: nil,
-            price: price
+            price: price,
+            priceUnits: nil
         )
     }
 
@@ -138,11 +149,13 @@ extension RemoteNftModel {
             collectionId: remoteItem.collectionId,
             instanceId: remoteItem.identifier,
             metadata: metadata,
-            totalIssuance: collection?.max,
+            issuanceTotal: collection?.max.map { BigUInt($0) },
+            issuanceMyAmount: nil,
             name: remoteItem.symbol,
             label: remoteItem.serialNumber,
             media: imageUrl,
-            price: price
+            price: price,
+            priceUnits: nil
         )
     }
 }

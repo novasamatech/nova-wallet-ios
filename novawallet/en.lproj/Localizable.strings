@@ -1439,3 +1439,5 @@
 "swaps.error.rate.was.updated.message" = "Old rate: %@.\nNew rate: %@";
 "settings.wiki" = "Wiki";
 "common.not.enough.fee.message_v3.8.0" = "You don’t have enough balance to pay the network fee of %@.\nAvailable balance to pay fee after operation: %@";
+"nft.fungible.price" = "%@ for %@";
+"nft.issuance.fungible.format" = "%@ units of %@";

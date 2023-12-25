@@ -51,6 +51,16 @@ enum Pdc20NftModelConverter {
 
             let listing = aggregatedListing[listingId]
 
+            let price: String? = listing.flatMap {
+                guard
+                    let assetInfo = chain.utilityChainAsset()?.assetDisplayInfo,
+                    let value = $0.value.toSubstrateAmount(precision: assetInfo.assetPrecision) else {
+                    return nil
+                }
+
+                return String(value)
+            }
+
             return RemoteNftModel(
                 identifier: identifier,
                 type: NftType.pdc20.rawValue,
@@ -59,11 +69,13 @@ enum Pdc20NftModelConverter {
                 collectionId: tokenBalance.token.identifier,
                 instanceId: tokenBalance.token.identifier,
                 metadata: nil,
-                totalIssuance: tokenBalance.token.totalSupply.map { Int32($0) },
+                issuanceTotal: tokenBalance.token.totalSupply,
+                issuanceMyAmount: tokenBalance.balance,
                 name: tokenBalance.token.ticker,
                 label: nil,
                 media: tokenBalance.token.logo,
-                price: listing.flatMap { String($0.amount) }
+                price: price,
+                priceUnits: listing.flatMap { String($0.amount) }
             )
         }
     }

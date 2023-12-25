@@ -40,12 +40,11 @@ final class NftListViewModelFactory {
         return viewModelFactory
     }
 
-    private func createLimitedIssuanceLabel(from serialNumber: Int32, totalNumber: Int32, locale: Locale) -> String {
+    private func createLimitedIssuanceLabel(from serialNumber: Int32, totalNumber: BigUInt, locale: Locale) -> String {
         let serialNumberString = quantityFormatter.value(for: locale)
             .string(from: NSNumber(value: serialNumber)) ?? ""
 
-        let totalNumberString = quantityFormatter.value(for: locale)
-            .string(from: NSNumber(value: totalNumber)) ?? ""
+        let totalNumberString = String(totalNumber)
 
         return R.string.localizable.nftListItemLimitedFormat(
             serialNumberString,
@@ -58,7 +57,7 @@ final class NftListViewModelFactory {
         R.string.localizable.nftListItemUnlimited(preferredLanguages: locale.rLanguages)
     }
 
-    private func createPrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
+    private func createNonFungiblePrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
         if let priceString = model.nft.price, let priceInPlanks = BigUInt(priceString), priceInPlanks > 0 {
             let assetInfo = model.chainAsset.assetDisplayInfo
             let priceDecimal = Decimal.fromSubstrateAmount(priceInPlanks, precision: assetInfo.assetPrecision) ?? 0
@@ -67,6 +66,34 @@ final class NftListViewModelFactory {
             return balanceViewModelFactory.balanceFromPrice(priceDecimal, priceData: model.price).value(for: locale)
         } else {
             return nil
+        }
+    }
+
+    private func createFungiblePrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
+        guard
+            let price = model.nft.price.flatMap({ BigUInt($0)?.decimal(precision: model.chainAsset.asset.precision) }),
+            let priceUnits = model.nft.priceUnits else {
+            return nil
+        }
+
+        let viewModelFactory = getBalanceViewModelFactory(for: model.chainAsset)
+        let viewModel = viewModelFactory.balanceFromPrice(price, priceData: model.price).value(for: locale)
+
+        let amount = R.string.localizable.nftFungiblePrice(
+            priceUnits,
+            viewModel.amount,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return BalanceViewModel(amount: amount, price: viewModel.price)
+    }
+
+    private func createPrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
+        switch NftType(rawValue: model.nft.type) {
+        case .rmrkV1, .rmrkV2, .uniques, .none:
+            return createNonFungiblePrice(from: model, locale: locale)
+        case .pdc20:
+            return createFungiblePrice(from: model, locale: locale)
         }
     }
 
@@ -103,7 +130,7 @@ final class NftListViewModelFactory {
             let label: String
 
             if
-                let totalIssuence = model.totalIssuance,
+                let totalIssuence = model.issuanceTotal,
                 let instanceIdString = model.instanceId,
                 let instanceId = Int32(instanceIdString) {
                 label = createLimitedIssuanceLabel(from: instanceId, totalNumber: totalIssuence, locale: locale)
@@ -130,7 +157,7 @@ final class NftListViewModelFactory {
             if
                 let snString = model.label,
                 let serialNumber = Int32(snString),
-                let totalIssuance = model.totalIssuance,
+                let totalIssuance = model.issuanceTotal,
                 totalIssuance > 0 {
                 label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
             } else {
@@ -166,7 +193,7 @@ final class NftListViewModelFactory {
             if
                 let snString = model.label,
                 let serialNumber = Int32(snString),
-                let totalIssuance = model.totalIssuance,
+                let totalIssuance = model.issuanceTotal,
                 totalIssuance > 0 {
                 label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
             } else {
@@ -177,6 +204,40 @@ final class NftListViewModelFactory {
         } else {
             return createStaticMetadata(from: model)
         }
+    }
+
+    private func createPdc20Metadata(
+        from model: NftModel,
+        locale: Locale
+    ) -> NftListMetadataViewModelProtocol {
+        let name = model.name ?? model.instanceId
+
+        let mediaViewModel: NftMediaViewModelProtocol?
+
+        if
+            let imageUrlString = model.media,
+            !imageUrlString.isEmpty,
+            let imageUrl = URL(string: imageUrlString) {
+            mediaViewModel = NftImageViewModel(url: imageUrl)
+        } else {
+            mediaViewModel = nil
+        }
+
+        let label: String?
+
+        if
+            let amount = model.issuanceMyAmount,
+            let totalSupply = model.issuanceTotal {
+            label = R.string.localizable.nftIssuanceFungibleFormat(
+                String(amount),
+                String(totalSupply),
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            label = model.issuanceMyAmount.map { String($0) }
+        }
+
+        return NftListStaticViewModel(name: name ?? "", label: label ?? "", media: mediaViewModel)
     }
 
     private func createMedatadaViewModel(
@@ -191,8 +252,7 @@ final class NftListViewModelFactory {
         case .rmrkV2:
             return createRMRKV2Metadata(from: model.nft, locale: locale)
         case .pdc20:
-            // TODO: Create PDC20 Metadata Protocol
-            return createStaticMetadata(from: model.nft)
+            return createPdc20Metadata(from: model.nft, locale: locale)
         case .none:
             return createStaticMetadata(from: model.nft)
         }

@@ -54,9 +54,7 @@ final class NftDetailsPresenter {
                 from: NSNumber(value: serialNumber)
             ) ?? ""
 
-            let totalIssuanceString = quantityFactory.value(for: selectedLocale).string(
-                from: NSNumber(value: totalIssuance)
-            ) ?? ""
+            let totalIssuanceString = String(totalIssuance)
 
             labelString = R.string.localizable.nftListItemLimitedFormat(
                 snString,

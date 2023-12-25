@@ -4348,6 +4348,7 @@
 		0C8AF7B72B38043400005AC9 /* Pdc20NftSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20NftSyncService.swift; sourceTree = "<group>"; };
 		0C8AF7B92B3806B700005AC9 /* ChainModel+Pdc20.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Pdc20.swift"; sourceTree = "<group>"; };
 		0C8AF7BB2B38076900005AC9 /* Pdc20NftModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20NftModelConverter.swift; sourceTree = "<group>"; };
+		0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel24.xcdatamodel; sourceTree = "<group>"; };
 		0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTimeModel.swift; sourceTree = "<group>"; };
 		0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingMinStakeBuilder.swift; sourceTree = "<group>"; };
 		0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueResolver.swift; sourceTree = "<group>"; };
@@ -24515,6 +24516,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */,
 				0C6941C92B203E2F00A7CF6D /* SubstrateDataModel23.xcdatamodel */,
 				0C0130482B0E5BD300746952 /* SubstrateDataModel22.xcdatamodel */,
 				77AAE22B2AFCD7AA006872CC /* SubstrateDataModel21.xcdatamodel */,
@@ -24539,7 +24541,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 0C6941C92B203E2F00A7CF6D /* SubstrateDataModel23.xcdatamodel */;
+			currentVersion = 0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
