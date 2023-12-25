@@ -55,7 +55,7 @@ final class WalletSwitchContentView: UIView {
         typeImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.size.equalTo(24.0)
+            make.size.equalTo(20)
         }
 
         addSubview(iconView)
@@ -127,12 +127,9 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
 
             typeImageView.image = R.image.iconLedger()
         case .proxied:
-            controlBackgroundView.fillColor = .clear
-            controlBackgroundView.highlightedFillColor = .clear
-            controlBackgroundView.strokeColor = .clear
-            controlBackgroundView.highlightedStrokeColor = .clear
+            applyCommonStyle(to: controlBackgroundView)
 
-            typeImageView.image = nil
+            typeImageView.image = R.image.iconProxiedWallet()
         }
 
         controlContentView.badgeView.isHidden = !viewModel.hasNotification

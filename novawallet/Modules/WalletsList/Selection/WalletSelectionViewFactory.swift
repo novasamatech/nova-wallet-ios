@@ -42,15 +42,23 @@ struct WalletSelectionViewFactory {
 
         let userDataStorageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
-        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
+        let proxySyncService = ProxySyncService(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            userDataStorageFacade: userDataStorageFacade,
+            proxyOperationFactory: ProxyOperationFactory(),
+            metaAccountsRepository: metaAccountsRepository
+        )
 
         return WalletSelectionInteractor(
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            metaAccountRepository: metaAccountsRepository,
+            proxySyncService: proxySyncService,
             settings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            eventCenter: EventCenter.shared
         )
     }
 }
