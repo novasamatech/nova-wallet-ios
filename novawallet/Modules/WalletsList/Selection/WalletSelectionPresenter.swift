@@ -11,8 +11,6 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         baseWireframe as? WalletSelectionWireframeProtocol
     }
 
-    private var shouldShowDelegatesUpdates: Bool = true
-
     init(
         interactor: WalletSelectionInteractorInputProtocol,
         wireframe: WalletSelectionWireframeProtocol,
@@ -31,9 +29,11 @@ final class WalletSelectionPresenter: WalletsListPresenter {
 
     override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         super.updateWallets(changes: changes)
-        guard shouldShowDelegatesUpdates else {
+
+        guard let view = baseView, view.controller.topModalViewController == view.controller else {
             return
         }
+
         let proxyWalletChanged = walletsList.lastDifferences.contains {
             switch $0 {
             case let .delete(_, metaAccount):
@@ -46,13 +46,10 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         }
 
         if proxyWalletChanged {
-            shouldShowDelegatesUpdates = false
             wireframe?.showProxiedsUpdates(
                 from: baseView,
                 initWallets: walletsList.allItems
-            ) { [weak self] in
-                self?.shouldShowDelegatesUpdates = true
-            }
+            )
         }
     }
 }
@@ -66,25 +63,25 @@ extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
             !item.isSelected else {
             return
         }
-        shouldShowDelegatesUpdates = false
+
         interactor?.select(item: item)
     }
 
     func activateSettings() {
-        shouldShowDelegatesUpdates = false
-        interactor?.updateWalletsStatuses()
         wireframe?.showSettings(from: baseView)
     }
 
     func didReceive(saveError: Error) {
         super.didReceiveError(saveError)
-        shouldShowDelegatesUpdates = true
+    }
+
+    func viewWillDisappear() {
+        interactor?.updateWalletsStatuses()
     }
 }
 
 extension WalletSelectionPresenter: WalletSelectionInteractorOutputProtocol {
     func didCompleteSelection() {
-        interactor?.updateWalletsStatuses()
         wireframe?.close(view: baseView)
     }
 }

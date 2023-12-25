@@ -36,53 +36,104 @@ final class WalletView: GenericTitleValueView<WalletIconView, GenericPairValueVi
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4
+        valueView.spacing = 4
         subtitleLabel.setContentCompressionResistancePriority(.high, for: .horizontal)
     }
 }
 
 extension WalletView {
-    struct ViewModel: Hashable, Equatable {
-        let icon: IdentifiableImageViewModelProtocol?
-        let networkIcon: IdentifiableImageViewModelProtocol?
-        let name: String
-        let subtitle: String
-        let subtitleDetailsIcon: IdentifiableImageViewModelProtocol?
-        let subtitleDetails: String?
-        let marked: Bool
+    struct ViewModel: Hashable {
+        let wallet: WalletInfo
+        let type: TypeInfo
 
-        static func == (lhs: ViewModel, rhs: ViewModel) -> Bool {
-            lhs.icon?.identifier == rhs.icon?.identifier &&
-                lhs.networkIcon?.identifier == rhs.networkIcon?.identifier &&
-                lhs.name == rhs.name &&
-                lhs.subtitle == rhs.subtitle &&
-                lhs.subtitleDetailsIcon?.identifier == rhs.subtitleDetailsIcon?.identifier &&
-                lhs.subtitleDetails == rhs.subtitleDetails &&
-                lhs.marked == rhs.marked
+        enum TypeInfo: Hashable {
+            case regular(BalanceInfo)
+            case proxy(ProxyInfo)
         }
 
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(icon?.identifier ?? "")
-            hasher.combine(networkIcon?.identifier ?? "")
-            hasher.combine(name)
-            hasher.combine(subtitle)
-            hasher.combine(subtitleDetailsIcon?.identifier ?? "")
-            hasher.combine(subtitleDetails ?? "")
-            hasher.combine(marked)
+        struct WalletInfo: Hashable {
+            let icon: IdentifiableImageViewModelProtocol?
+            let name: String
+
+            static func == (lhs: WalletInfo, rhs: WalletInfo) -> Bool {
+                lhs.icon?.identifier == rhs.icon?.identifier &&
+                    lhs.name == rhs.name
+            }
+
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(icon?.identifier ?? "")
+                hasher.combine(name)
+            }
+        }
+
+        struct ProxyInfo: Hashable {
+            let networkIcon: IdentifiableImageViewModelProtocol?
+            let proxyType: String
+            let proxyIcon: IdentifiableImageViewModelProtocol?
+            let proxyName: String?
+            let isNew: Bool
+
+            static func == (lhs: ProxyInfo, rhs: ProxyInfo) -> Bool {
+                lhs.networkIcon?.identifier == rhs.networkIcon?.identifier &&
+                    lhs.proxyType == rhs.proxyType &&
+                    lhs.proxyIcon?.identifier == rhs.proxyIcon?.identifier &&
+                    lhs.proxyName == rhs.proxyName &&
+                    lhs.isNew == rhs.isNew
+            }
+
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(networkIcon?.identifier ?? "")
+                hasher.combine(proxyType)
+                hasher.combine(proxyIcon?.identifier ?? "")
+                hasher.combine(proxyName ?? "")
+                hasher.combine(isNew)
+            }
+        }
+
+        typealias BalanceInfo = String
+
+        var proxyInfo: ProxyInfo? {
+            switch type {
+            case let .proxy(info):
+                return info
+            case .regular:
+                return nil
+            }
         }
     }
 
     func cancelImagesLoading() {
-        viewModel?.icon?.cancel(on: iconImageView)
-        iconImageView.image = nil
+        cancelIconLoading(info: viewModel?.wallet)
+        cancelProxyIconsLoading(info: viewModel?.proxyInfo)
+    }
 
-        viewModel?.networkIcon?.cancel(on: networkImageView)
+    private func cancelIconLoading(info: ViewModel.WalletInfo?) {
+        info?.icon?.cancel(on: iconImageView)
+        iconImageView.image = nil
+    }
+
+    private func cancelProxyIconsLoading(info: ViewModel.ProxyInfo?) {
+        info?.networkIcon?.cancel(on: networkImageView)
         networkImageView.image = nil
 
-        viewModel?.subtitleDetailsIcon?.cancel(on: subtitleDetailsImage)
+        info?.proxyIcon?.cancel(on: subtitleDetailsImage)
         subtitleDetailsImage.image = nil
     }
 
     func bind(viewModel: ViewModel) {
+        bind(wallet: viewModel.wallet)
+
+        switch viewModel.type {
+        case let .regular(balanceViewModel):
+            bind(regular: balanceViewModel)
+        case let .proxy(proxyViewModel):
+            bind(proxy: proxyViewModel)
+        }
+
+        self.viewModel = viewModel
+    }
+
+    private func bind(wallet viewModel: ViewModel.WalletInfo) {
         cancelImagesLoading()
 
         viewModel.icon?.loadImage(
@@ -90,25 +141,34 @@ extension WalletView {
             targetSize: WalletIconView.Constants.iconSize,
             animated: true
         )
+        titleLabel.text = viewModel.name
+    }
 
+    private func bind(regular viewModel: ViewModel.BalanceInfo) {
+        subtitleLabel.text = viewModel
+        subtitleDetailsLabel.text = nil
+        networkImageView.isHidden = true
+        subtitleDetailsImage.isHidden = true
+        indicatorImageView.isHidden = true
+    }
+
+    private func bind(proxy viewModel: ViewModel.ProxyInfo) {
         viewModel.networkIcon?.loadImage(
             on: networkImageView,
             targetSize: WalletIconView.Constants.networkIconSize,
             animated: true
         )
 
-        viewModel.subtitleDetailsIcon?.loadImage(
+        viewModel.proxyIcon?.loadImage(
             on: subtitleDetailsImage,
             targetSize: .init(width: 16, height: 16),
             animated: true
         )
 
-        titleLabel.text = viewModel.name
-        subtitleLabel.text = viewModel.subtitle
-        subtitleDetailsLabel.text = viewModel.subtitleDetails
+        subtitleLabel.text = viewModel.proxyType
+        subtitleDetailsLabel.text = viewModel.proxyName
         networkImageView.isHidden = viewModel.networkIcon == nil
-        subtitleDetailsImage.isHidden = viewModel.subtitleDetailsIcon == nil
-        indicatorImageView.isHidden = !viewModel.marked
-        self.viewModel = viewModel
+        subtitleDetailsImage.isHidden = viewModel.proxyIcon == nil
+        indicatorImageView.isHidden = !viewModel.isNew
     }
 }

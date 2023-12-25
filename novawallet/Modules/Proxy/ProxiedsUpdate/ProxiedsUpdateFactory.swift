@@ -45,15 +45,17 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
             }
             let chainModel = chains[chainAccount.chainId]
             let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
+            let proxyInfo = WalletView.ViewModel.ProxyInfo(
+                networkIcon: chainIcon,
+                proxyType: proxy.type.subtitle(locale: locale),
+                proxyIcon: subtitleDetailsIconViewModel,
+                proxyName: proxyWallet.info.name,
+                isNew: false
+            )
 
             return WalletView.ViewModel(
-                icon: iconViewModel,
-                networkIcon: chainIcon,
-                name: wallet.info.name,
-                subtitle: proxy.type.subtitle(locale: locale),
-                subtitleDetailsIcon: subtitleDetailsIconViewModel,
-                subtitleDetails: proxyWallet.info.name,
-                marked: false
+                wallet: .init(icon: iconViewModel, name: wallet.info.name),
+                type: .proxy(proxyInfo)
             )
         }
 

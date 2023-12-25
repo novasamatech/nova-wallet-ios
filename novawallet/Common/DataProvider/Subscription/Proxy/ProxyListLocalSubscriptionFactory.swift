@@ -1,7 +1,7 @@
 import RobinHood
 
 protocol ProxyListLocalSubscriptionFactoryProtocol {
-    func getProxyListProvider(statuses: [ProxyAccountModel.Status]) throws -> StreamableProvider<ProxyAccountModel>
+    func getProxyListProvider() throws -> StreamableProvider<ProxyAccountModel>
 }
 
 final class ProxyListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -27,13 +27,10 @@ final class ProxyListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
 }
 
 extension ProxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol {
-    func getProxyListProvider(
-        statuses: [ProxyAccountModel.Status]
-    ) throws -> StreamableProvider<ProxyAccountModel> {
+    func getProxyListProvider() throws -> StreamableProvider<ProxyAccountModel> {
         clearIfNeeded()
 
-        let rawStatuses = statuses.map(\.rawValue).sorted()
-        let cacheKey = "proxy-\(rawStatuses.joined(separator: "-"))"
+        let cacheKey = "proxy"
 
         if let provider = getProvider(for: cacheKey) as? StreamableProvider<ProxyAccountModel> {
             return provider
@@ -47,9 +44,7 @@ extension ProxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryPr
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
-            predicate: { entity in
-                rawStatuses.contains(entity.status ?? "")
-            }
+            predicate: { _ in true }
         )
 
         observable.start { [weak self] error in

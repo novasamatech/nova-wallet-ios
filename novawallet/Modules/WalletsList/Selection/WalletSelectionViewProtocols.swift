@@ -3,6 +3,7 @@ import Foundation
 protocol WalletSelectionPresenterProtocol: WalletsListPresenterProtocol {
     func selectItem(at index: Int, section: Int)
     func activateSettings()
+    func viewWillDisappear()
 }
 
 protocol WalletSelectionInteractorInputProtocol: WalletsListInteractorInputProtocol {
@@ -20,7 +21,6 @@ protocol WalletSelectionWireframeProtocol: WalletsListWireframeProtocol {
     func showSettings(from view: WalletsListViewProtocol?)
     func showProxiedsUpdates(
         from view: ControllerBackedProtocol?,
-        initWallets: [ManagedMetaAccountModel],
-        completion: @escaping () -> Void
+        initWallets: [ManagedMetaAccountModel]
     )
 }

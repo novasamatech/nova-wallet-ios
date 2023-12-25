@@ -13,9 +13,14 @@ final class WalletSwitchContentView: UIView {
         return imageView
     }()
 
-    let badgeView: UIView = .create {
-        $0.backgroundColor = R.color.colorIconAccent()!
-        $0.layer.cornerRadius = 5
+    let badgeView: RoundedView = .create {
+        let color = R.color.colorIconAccent()!
+        $0.apply(style: .init(
+            shadowOpacity: 0,
+            fillColor: color,
+            highlightedFillColor: color,
+            rounding: .init(radius: 5, corners: .allCorners)
+        ))
         $0.isHidden = true
     }
 
@@ -35,7 +40,14 @@ final class WalletSwitchContentView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        layoutBadge()
+        badgeView.layoutIfNeeded()
+        iconView.layoutIfNeeded()
+
+        cutHole(
+            on: iconView,
+            underView: badgeView,
+            holeWidth: 4
+        )
     }
 
     private func setupLayout() {
@@ -58,29 +70,6 @@ final class WalletSwitchContentView: UIView {
         badgeView.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview()
             make.width.height.equalTo(10)
-        }
-    }
-
-    func layoutBadge() {
-        if !badgeView.isHidden {
-            badgeView.layoutIfNeeded()
-
-            let holeWidth: CGFloat = 4
-
-            let width = badgeView.bounds.width + holeWidth * 2
-            let height = badgeView.bounds.height + holeWidth * 2
-            let origin = convert(badgeView.frame.origin, to: iconView)
-
-            let frame = CGRect(
-                x: origin.x - holeWidth,
-                y: origin.y - holeWidth,
-                width: width,
-                height: height
-            )
-
-            iconView.cutHole(ovalIn: frame)
-        } else {
-            iconView.layer.mask = nil
         }
     }
 }
