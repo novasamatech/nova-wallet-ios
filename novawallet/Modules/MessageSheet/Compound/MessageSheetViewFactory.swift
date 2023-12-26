@@ -122,4 +122,42 @@ struct MessageSheetViewFactory {
 
         return view
     }
+
+    static func createProxySigningView(
+        with completionCallback: @escaping MessageSheetCallback,
+        cancelCallback: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let wireframe = MessageSheetWireframe()
+
+        let presenter = MessageSheetPresenter(wireframe: wireframe)
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.proxySigningTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            R.string.localizable.proxySigningMessage(preferredLanguages: locale.rLanguages)
+        }
+
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentView>(
+            title: title,
+            message: message,
+            graphics: R.image.imageProxy(),
+            content: .init(),
+            mainAction: .continueAction(for: completionCallback),
+            secondaryAction: .cancelAction(for: cancelCallback)
+        )
+
+        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
+            presenter: presenter,
+            viewModel: viewModel,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.controller.preferredContentSize = CGSize(width: 0, height: 408)
+
+        presenter.view = view
+
+        return view
+    }
 }

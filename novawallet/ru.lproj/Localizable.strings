@@ -836,6 +836,8 @@
 "common.ok.back" = "Хорошо, назад";
 "no.key.title" = "Упс! Ключ отсутствует";
 "no.key.message" = "Ваш кошелек доступен только для просмотра, то есть вы не можете выполнять с ним никаких операций";
+"proxy.signing.title" = "Это учётная запись с делегированием (Proxied)";
+"proxy.signing.message" = "Транзакция будет проведена %@ от имени делегированной учётной записи. Сетевая комиссия также будет оплачена делегированной учётной записью.";
 "welcome.watch.only.title" = "Добавить watch-only кошелёк";
 "create.watch.only.missing.nickname" = "Введите имя кошелька...";
 "common.substrate.address.title" = "Substrate адрес";

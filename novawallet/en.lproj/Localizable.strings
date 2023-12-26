@@ -836,6 +836,8 @@
 "common.ok.back" = "Okay, back";
 "no.key.title" = "Oops! Key is missing";
 "no.key.message" = "Your wallet is watch-only, meaning that you cannot do any operations with it";
+"proxy.signing.title" = "This is Delegating (Proxied) account";
+"proxy.signing.message" = "Transaction will be initiated by %@ as a delegated account. Network fee will be paid by delegated account.";
 "welcome.watch.only.title" = "Add watch-only wallet";
 "create.watch.only.missing.nickname" = "Enter wallet nickname...";
 "common.substrate.address.title" = "Substrate Address";
