@@ -82,8 +82,12 @@ struct NftDetailsViewFactory {
                 operationQueue: operationQueue
             )
         case .pdc20:
-            // TODO: Create PDC20 Interactor
-            return nil
+            return createPdc20Interactor(
+                from: nftChainModel,
+                accountRepository: AnyDataProviderRepository(accountRepository),
+                nftMetadataService: nftMetadataService,
+                operationQueue: operationQueue
+            )
         case .none:
             return nil
         }
@@ -131,6 +135,20 @@ struct NftDetailsViewFactory {
             operationFactory: UniquesOperationFactory(),
             nftMetadataService: nftMetadataService,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createPdc20Interactor(
+        from nftChainModel: NftChainModel,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> Pdc20DetailsInteractor? {
+        Pdc20DetailsInteractor(
+            nftChainModel: nftChainModel,
+            accountRepository: accountRepository,
+            nftMetadataService: nftMetadataService,
             operationQueue: operationQueue
         )
     }

@@ -219,6 +219,8 @@
 		0C8AF7B82B38043400005AC9 /* Pdc20NftSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7B72B38043400005AC9 /* Pdc20NftSyncService.swift */; };
 		0C8AF7BA2B3806B700005AC9 /* ChainModel+Pdc20.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7B92B3806B700005AC9 /* ChainModel+Pdc20.swift */; };
 		0C8AF7BC2B38076900005AC9 /* Pdc20NftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7BB2B38076900005AC9 /* Pdc20NftModelConverter.swift */; };
+		0C8AF7BF2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */; };
+		0C8AF7C12B3A9EFE00005AC9 /* NftDetailsPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */; };
 		0C9525E32A7AAB2A00BD724D /* StakingTimeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */; };
 		0C9525E52A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */; };
 		0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */; };
@@ -4349,6 +4351,8 @@
 		0C8AF7B92B3806B700005AC9 /* ChainModel+Pdc20.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Pdc20.swift"; sourceTree = "<group>"; };
 		0C8AF7BB2B38076900005AC9 /* Pdc20NftModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20NftModelConverter.swift; sourceTree = "<group>"; };
 		0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel24.xcdatamodel; sourceTree = "<group>"; };
+		0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20DetailsInteractor.swift; sourceTree = "<group>"; };
+		0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftDetailsPrice.swift; sourceTree = "<group>"; };
 		0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTimeModel.swift; sourceTree = "<group>"; };
 		0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingMinStakeBuilder.swift; sourceTree = "<group>"; };
 		0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueResolver.swift; sourceTree = "<group>"; };
@@ -11641,6 +11645,7 @@
 				843CE3A527D2098100436F4E /* NftDetailsLabel.swift */,
 				843CE3A727D20A8700436F4E /* NftDetailsCollection.swift */,
 				84AE7ABC27D55E3400495267 /* NftDetailsProgress.swift */,
+				0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -18695,6 +18700,7 @@
 				843CE3A927D22B5200436F4E /* UniquesDetailsInteractor.swift */,
 				84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */,
 				84AE7ABA27D411CE00495267 /* RMRKV2DetailsInteractor.swift */,
+				0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */,
 			);
 			path = NftDetails;
 			sourceTree = "<group>";
@@ -23044,6 +23050,7 @@
 				887404B62982775F00EE270A /* InAppUpdatesUrlProvider.swift in Sources */,
 				88B438E728F6C629001FC08A /* StatusTimeViewModel.swift in Sources */,
 				E65FDA8BF9DBE7F50AE9D733 /* ChangeWatchOnlyWireframe.swift in Sources */,
+				0C8AF7C12B3A9EFE00005AC9 /* NftDetailsPrice.swift in Sources */,
 				02838B00DD7C9BC3BD78FF65 /* ChangeWatchOnlyPresenter.swift in Sources */,
 				493A9637BE5A1BF4B0744A4C /* ChangeWatchOnlyInteractor.swift in Sources */,
 				4B4189889DEFAF917332D41C /* ChangeWatchOnlyViewController.swift in Sources */,
@@ -23321,6 +23328,7 @@
 				B8349266F061AEFFA9802237 /* TokenManageSingleViewController.swift in Sources */,
 				D9746967761B1B4772A562B2 /* TokenManageSingleViewLayout.swift in Sources */,
 				0C7C88662A95030800DD96A1 /* SubqueryStakingType.swift in Sources */,
+				0C8AF7BF2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift in Sources */,
 				0C7945BB2ABB2251001C07CA /* XTokens.swift in Sources */,
 				0CAC01572A52E1960069413E /* AssetListPresenterHelpers.swift in Sources */,
 				26533668754DB6C1DF2425AB /* TokenManageSingleViewFactory.swift in Sources */,

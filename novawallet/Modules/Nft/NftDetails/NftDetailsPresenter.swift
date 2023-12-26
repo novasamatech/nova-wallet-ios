@@ -24,7 +24,7 @@ final class NftDetailsPresenter {
     private lazy var gradientFactory = CSSGradientFactory()
 
     private var label: NftDetailsLabel?
-    private var price: BigUInt?
+    private var price: NftDetailsPrice?
     private var tokenPriceData: PriceData?
     private var owner: DisplayAddress?
     private var issuer: DisplayAddress?
@@ -65,6 +65,20 @@ final class NftDetailsPresenter {
             labelString = R.string.localizable.nftListItemUnlimited(
                 preferredLanguages: selectedLocale.rLanguages
             )
+        case let .fungible(amount, totalSupply):
+            let amountString = balanceViewModelFactory.unitsFromValue(amount.decimal()).value(
+                for: selectedLocale
+            )
+
+            let totalSupplyString = balanceViewModelFactory.unitsFromValue(totalSupply.decimal()).value(
+                for: selectedLocale
+            )
+
+            labelString = R.string.localizable.nftIssuanceFungibleFormat(
+                amountString,
+                totalSupplyString,
+                preferredLanguages: selectedLocale.rLanguages
+            )
         case let .custom(string):
             labelString = string
         case .none:
@@ -76,19 +90,35 @@ final class NftDetailsPresenter {
 
     private func updatePriceViewModel() {
         let assetInfo = chainAsset.assetDisplayInfo
-        if
+
+        guard
             let price = price,
-            price > 0,
+            price.value > 0,
             let priceDecimal = Decimal.fromSubstrateAmount(
-                price,
+                price.value,
                 precision: assetInfo.assetPrecision
-            ) {
-            let viewModel = balanceViewModelFactory
-                .balanceFromPrice(priceDecimal, priceData: tokenPriceData)
-                .value(for: selectedLocale)
-            view?.didReceive(price: viewModel)
-        } else {
+            ) else {
             view?.didReceive(price: nil)
+            return
+        }
+
+        let viewModel = balanceViewModelFactory
+            .balanceFromPrice(priceDecimal, priceData: tokenPriceData)
+            .value(for: selectedLocale)
+
+        if let unitsDecimal = price.units?.decimal() {
+            let unitsString = balanceViewModelFactory.unitsFromValue(unitsDecimal).value(for: selectedLocale)
+            let amount = R.string.localizable.nftFungiblePrice(
+                unitsString,
+                viewModel.amount,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let viewModelWithUnits = BalanceViewModel(amount: amount, price: viewModel.price)
+
+            view?.didReceive(price: viewModelWithUnits)
+        } else {
+            view?.didReceive(price: viewModel)
         }
     }
 
@@ -215,7 +245,7 @@ extension NftDetailsPresenter: NftDetailsInteractorOutputProtocol {
         view?.didReceive(media: media)
     }
 
-    func didReceive(price: BigUInt?, tokenPriceData: PriceData?) {
+    func didReceive(price: NftDetailsPrice?, tokenPriceData: PriceData?) {
         loadingProgress.formUnion(.price)
 
         self.price = price

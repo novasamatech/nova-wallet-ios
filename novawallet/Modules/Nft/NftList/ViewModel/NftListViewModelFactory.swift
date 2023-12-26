@@ -40,11 +40,29 @@ final class NftListViewModelFactory {
         return viewModelFactory
     }
 
+    private func getUnitsBalanceViewModelFactory() -> BalanceViewModelFactory {
+        let chainAssetId = ChainAssetId(chainId: "", assetId: 0)
+
+        if let viewModelFactory = balanceViewModelFactories[chainAssetId] {
+            return viewModelFactory
+        }
+
+        let assetInfo = AssetBalanceDisplayInfo.units(for: 0)
+        let viewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+        balanceViewModelFactories[chainAssetId] = viewModelFactory
+
+        return viewModelFactory
+    }
+
     private func createLimitedIssuanceLabel(from serialNumber: Int32, totalNumber: BigUInt, locale: Locale) -> String {
         let serialNumberString = quantityFormatter.value(for: locale)
             .string(from: NSNumber(value: serialNumber)) ?? ""
 
-        let totalNumberString = String(totalNumber)
+        let unitsViewModelFactory = getUnitsBalanceViewModelFactory()
+        let totalNumberString = unitsViewModelFactory.unitsFromValue(totalNumber.decimal()).value(for: locale)
 
         return R.string.localizable.nftListItemLimitedFormat(
             serialNumberString,
@@ -72,15 +90,17 @@ final class NftListViewModelFactory {
     private func createFungiblePrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
         guard
             let price = model.nft.price.flatMap({ BigUInt($0)?.decimal(precision: model.chainAsset.asset.precision) }),
-            let priceUnits = model.nft.priceUnits else {
+            let priceUnits = model.nft.priceUnits.flatMap({ BigUInt($0) })?.decimal() else {
             return nil
         }
 
         let viewModelFactory = getBalanceViewModelFactory(for: model.chainAsset)
         let viewModel = viewModelFactory.balanceFromPrice(price, priceData: model.price).value(for: locale)
 
+        let priceUnitsString = viewModelFactory.unitsFromValue(priceUnits).value(for: locale)
+
         let amount = R.string.localizable.nftFungiblePrice(
-            priceUnits,
+            priceUnitsString,
             viewModel.amount,
             preferredLanguages: locale.rLanguages
         )
@@ -228,9 +248,13 @@ final class NftListViewModelFactory {
         if
             let amount = model.issuanceMyAmount,
             let totalSupply = model.issuanceTotal {
+            let viewModelFactory = getUnitsBalanceViewModelFactory()
+            let amountString = viewModelFactory.unitsFromValue(amount.decimal()).value(for: locale)
+            let totalSupplyString = viewModelFactory.unitsFromValue(totalSupply.decimal()).value(for: locale)
+
             label = R.string.localizable.nftIssuanceFungibleFormat(
-                String(amount),
-                String(totalSupply),
+                amountString,
+                totalSupplyString,
                 preferredLanguages: locale.rLanguages
             )
         } else {
