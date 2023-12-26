@@ -40,7 +40,7 @@ extension MessageSheetAction {
 
         return MessageSheetAction(title: title, handler: handler)
     }
-    
+
     static func continueAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
             R.string.localizable.commonContinue(preferredLanguages: locale.rLanguages)
