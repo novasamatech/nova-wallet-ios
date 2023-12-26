@@ -22,6 +22,17 @@ extension AssetBalanceDisplayInfo {
         )
     }
 
+    static func units(for assetPrecision: Int16) -> AssetBalanceDisplayInfo {
+        AssetBalanceDisplayInfo(
+            displayPrecision: 5,
+            assetPrecision: assetPrecision,
+            symbol: "",
+            symbolValueSeparator: "",
+            symbolPosition: .prefix,
+            icon: nil
+        )
+    }
+
     static func fromCrowdloan(info: CrowdloanDisplayInfo) -> AssetBalanceDisplayInfo {
         AssetBalanceDisplayInfo(
             displayPrecision: 5,

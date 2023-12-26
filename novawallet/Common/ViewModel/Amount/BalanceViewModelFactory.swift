@@ -24,6 +24,8 @@ protocol BalanceViewModelFactoryProtocol {
     func createBalanceInputViewModel(_ amount: Decimal?) -> LocalizableResource<AmountInputViewModelProtocol>
     func createAssetBalanceViewModel(_ amount: Decimal, balance: Decimal?, priceData: PriceData?)
         -> LocalizableResource<AssetBalanceViewModelProtocol>
+
+    func unitsFromValue(_ value: Decimal, roundingMode: NumberFormatter.RoundingMode) -> LocalizableResource<String>
 }
 
 extension BalanceViewModelFactoryProtocol {
@@ -33,6 +35,10 @@ extension BalanceViewModelFactoryProtocol {
 
     func amountFromValue(_ value: Decimal) -> LocalizableResource<String> {
         amountFromValue(value, roundingMode: .down)
+    }
+
+    func unitsFromValue(_ value: Decimal) -> LocalizableResource<String> {
+        unitsFromValue(value, roundingMode: .down)
     }
 
     func balanceWithPriceIfPossible(
@@ -95,6 +101,21 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
 
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
         return formatterFactory.createAssetPriceFormatter(for: priceAssetInfo)
+    }
+
+    func unitsFromValue(
+        _ value: Decimal,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<String> {
+        let localizableFormatter = formatterFactory.createTokenFormatter(
+            for: AssetBalanceDisplayInfo.units(for: targetAssetInfo.assetPrecision),
+            roundingMode: roundingMode
+        )
+
+        return LocalizableResource { locale in
+            let formatter = localizableFormatter.value(for: locale)
+            return formatter.stringFromDecimal(value) ?? ""
+        }
     }
 
     func amountFromValue(
