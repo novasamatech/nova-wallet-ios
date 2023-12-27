@@ -98,7 +98,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.eventCenter.notify(with: AccountsChanged(method: .manually))
+                self?.eventCenter.notify(with: AccountsChanged(method: .automatically))
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.completeImmediate(error)
