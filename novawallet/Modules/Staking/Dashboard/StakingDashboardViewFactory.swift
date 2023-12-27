@@ -3,7 +3,8 @@ import SoraFoundation
 
 struct StakingDashboardViewFactory {
     static func createView(
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
@@ -16,7 +17,10 @@ struct StakingDashboardViewFactory {
             return nil
         }
 
-        let wireframe = StakingDashboardWireframe(stateObserver: stateObserver)
+        let wireframe = StakingDashboardWireframe(
+            stateObserver: stateObserver,
+            proxySyncService: proxySyncService
+        )
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 

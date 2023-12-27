@@ -3,7 +3,10 @@ import SoraFoundation
 import RobinHood
 
 struct DAppListViewFactory {
-    static func createView(walletNotificationService: WalletNotificationServiceProtocol) -> DAppListViewProtocol? {
+    static func createView(
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
+    ) -> DAppListViewProtocol? {
         let dAppsUrl = ApplicationConfig.shared.dAppsListURL
         let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
             for: dAppsUrl
@@ -37,7 +40,7 @@ struct DAppListViewFactory {
             logger: logger
         )
 
-        let wireframe = DAppListWireframe()
+        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
 
         let localizationManager = LocalizationManager.shared
 

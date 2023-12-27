@@ -32,32 +32,37 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         )
 
         let walletNotificationService = serviceCoordinator.walletNotificationService
+        let proxySyncService = serviceCoordinator.proxySyncService
 
         guard let walletController = createWalletController(
             for: localizationManager,
             dappMediator: serviceCoordinator.dappMediator,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         ) else {
             return nil
         }
 
         guard let stakingController = createStakingController(
             for: localizationManager,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         ) else {
             return nil
         }
 
         guard let voteController = createVoteController(
             for: localizationManager,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         ) else {
             return nil
         }
 
         guard let dappsController = createDappsController(
             for: localizationManager,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         ) else {
             return nil
         }
@@ -65,7 +70,8 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         guard let settingsController = createProfileController(
             for: localizationManager,
             dappMediator: serviceCoordinator.dappMediator,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         ) else {
             return nil
         }
@@ -99,11 +105,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createWalletController(
         for localizationManager: LocalizationManagerProtocol,
         dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> UIViewController? {
         guard let viewController = AssetListViewFactory.createView(
             with: dappMediator,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         )?.controller else {
             return nil
         }
@@ -140,10 +148,12 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> UIViewController? {
         let viewController = StakingDashboardViewFactory.createView(
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         )?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
@@ -179,11 +189,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol,
         dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> UIViewController? {
         guard let view = SettingsViewFactory.createView(
             with: dappMediator,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
         ) else { return nil }
 
         let viewController = view.controller
@@ -219,9 +231,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createVoteController(
         for localizationManager: LocalizationManagerProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> UIViewController? {
-        guard let view = VoteViewFactory.createView(walletNotificationService: walletNotificationService) else {
+        guard let view = VoteViewFactory.createView(
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
+        ) else {
             return nil
         }
 
@@ -256,9 +272,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createDappsController(
         for localizationManager: LocalizationManagerProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> UIViewController? {
-        guard let dappsView = DAppListViewFactory.createView(walletNotificationService: walletNotificationService) else {
+        guard let dappsView = DAppListViewFactory.createView(
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
+        ) else {
             return nil
         }
 

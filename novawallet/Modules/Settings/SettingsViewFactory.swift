@@ -7,7 +7,8 @@ import SubstrateSdk
 struct SettingsViewFactory {
     static func createView(
         with dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
     ) -> SettingsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -34,7 +35,7 @@ struct SettingsViewFactory {
             walletNotificationService: walletNotificationService
         )
 
-        let wireframe = SettingsWireframe(dappMediator: dappMediator)
+        let wireframe = SettingsWireframe(dappMediator: dappMediator, proxySyncService: proxySyncService)
 
         let view = SettingsViewController()
 

@@ -7,6 +7,7 @@ import RobinHood
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
     var walletNotificationService: WalletNotificationServiceProtocol { get }
+    var proxySyncService: ProxySyncServiceProtocol { get }
 
     func updateOnAccountChange()
 }
