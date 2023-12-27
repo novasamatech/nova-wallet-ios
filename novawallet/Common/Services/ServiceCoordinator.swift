@@ -7,7 +7,9 @@ import RobinHood
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
 
-    func updateOnAccountChange()
+    func updateOnWalletSelectionChange()
+
+    func updateOnWalletChange()
 }
 
 final class ServiceCoordinator {
@@ -45,7 +47,7 @@ final class ServiceCoordinator {
 }
 
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
-    func updateOnAccountChange() {
+    func updateOnWalletSelectionChange() {
         if let selectedMetaAccount = walletSettings.value {
             accountInfoService.update(selectedMetaAccount: selectedMetaAccount)
             assetsService.update(selectedMetaAccount: selectedMetaAccount)
@@ -53,6 +55,10 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
         }
+    }
+
+    func updateOnWalletChange() {
+        proxySyncService.syncUp()
     }
 
     func setup() {
@@ -104,7 +110,10 @@ extension ServiceCoordinator {
 
         let userDataStorageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
-        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
         let accountInfoService = AccountInfoUpdatingService(
             selectedAccount: walletSettings.value,

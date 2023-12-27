@@ -52,6 +52,7 @@ extension AddAccount {
                     case .success:
                         self?.settings.setup()
                         self?.eventCenter.notify(with: SelectedAccountChanged())
+                        self?.eventCenter.notify(with: AccountsChanged(method: .manually))
                         self?.presenter?.didCompleteConfirmation()
 
                     case let .failure(error):

@@ -27,6 +27,8 @@ protocol EventVisitorProtocol: AnyObject {
     func processBlockTimeChanged(event: BlockTimeChanged)
 
     func processAssetBalanceChanged(event: AssetBalanceChanged)
+
+    func processAccountsChanged(event: AccountsChanged)
 }
 
 extension EventVisitorProtocol {
@@ -56,4 +58,6 @@ extension EventVisitorProtocol {
     func processBlockTimeChanged(event _: BlockTimeChanged) {}
 
     func processAssetBalanceChanged(event _: AssetBalanceChanged) {}
+
+    func processAccountsChanged(event _: AccountsChanged) {}
 }
