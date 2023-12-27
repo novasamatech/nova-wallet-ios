@@ -142,7 +142,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
             let remoteProxieds = try proxyListOperation.extractNoCancellableResultData()
 
-            return changesCalculator.calculateUpdates(
+            return try changesCalculator.calculateUpdates(
                 from: remoteProxieds,
                 chainMetaAccounts: chainMetaAccounts,
                 identities: identities

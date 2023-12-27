@@ -21,7 +21,7 @@ struct ChainProxyChangesCalculator {
         from remoteProxieds: [ProxiedAccountId: [ProxyAccount]],
         chainMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
-    ) -> SyncChanges<ManagedMetaAccountModel> {
+    ) throws -> SyncChanges<ManagedMetaAccountModel> {
         let localProxies = chainMetaAccounts.reduce(into: [ProxyIdentifier: ProxiedMetaAccount]()) { result, item in
             if let chainAccount = item.info.proxyChainAccount(chainId: chainModel.chainId),
                let proxy = chainAccount.proxy {
@@ -33,8 +33,8 @@ struct ChainProxyChangesCalculator {
             }
         }
 
-        let changes = remoteProxieds.map { accountId, remoteProxies in
-            calculateUpdates(
+        let changes = try remoteProxieds.map { accountId, remoteProxies in
+            try calculateUpdates(
                 for: localProxies,
                 from: remoteProxies,
                 accountId: accountId,
@@ -53,8 +53,8 @@ struct ChainProxyChangesCalculator {
         from remoteProxies: [ProxyAccount],
         accountId: ProxiedAccountId,
         identities: [ProxiedAccountId: AccountIdentity]
-    ) -> SyncChanges<ManagedMetaAccountModel> {
-        let updatedProxiedMetaAccounts = remoteProxies.reduce(into: [ManagedMetaAccountModel]()) { result, proxy in
+    ) throws -> SyncChanges<ManagedMetaAccountModel> {
+        let updatedProxiedMetaAccounts = try remoteProxies.reduce(into: [ManagedMetaAccountModel]()) { result, proxy in
             let key = ProxyIdentifier(proxiedAccountId: accountId, proxyType: proxy.type)
             if let localProxy = localProxies[key] {
                 if localProxy.proxy.status == .revoked {
@@ -78,11 +78,12 @@ struct ChainProxyChangesCalculator {
                     proxy: .init(type: proxy.type, accountId: proxy.accountId, status: .new)
                 )
 
+                let name = try identities[accountId]?.displayName ?? accountId.toAddress(using: chainModel.chainFormat)
                 let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
                     metaId: UUID().uuidString,
-                    name: identities[accountId]?.displayName ?? accountId.toHexString(),
-                    substrateAccountId: accountId,
-                    substrateCryptoType: cryptoType.rawValue,
+                    name: name,
+                    substrateAccountId: nil,
+                    substrateCryptoType: nil,
                     substratePublicKey: nil,
                     ethereumAddress: nil,
                     ethereumPublicKey: nil,

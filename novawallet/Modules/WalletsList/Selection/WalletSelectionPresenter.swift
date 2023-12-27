@@ -38,10 +38,17 @@ final class WalletSelectionPresenter: WalletsListPresenter {
             switch $0 {
             case let .delete(_, metaAccount):
                 return metaAccount.info.type == .proxied
-            case let .insert(_, metaAccount), let .update(_, _, metaAccount):
+            case let .insert(_, metaAccount):
                 return metaAccount.info.type == .proxied && metaAccount.info.chainAccounts.contains {
                     $0.proxy?.status == .new || $0.proxy?.status == .revoked
                 } ? true : false
+            case let .update(_, old, new):
+                guard old.info.type == .proxied, new.info.type == .proxied else {
+                    return false
+                }
+                let oldProxy = old.info.chainAccounts.first(where: { $0.proxy?.isNotActive == true })
+                let newProxy = new.info.chainAccounts.first(where: { $0.proxy != nil })
+                return oldProxy?.proxy?.status != newProxy?.proxy?.status
             }
         }
 
