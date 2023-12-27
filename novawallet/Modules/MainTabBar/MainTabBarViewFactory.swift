@@ -31,28 +31,41 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             inAppUpdatesService: inAppUpdatesService
         )
 
+        let walletNotificationService = serviceCoordinator.walletNotificationService
+
         guard let walletController = createWalletController(
             for: localizationManager,
-            dappMediator: serviceCoordinator.dappMediator
+            dappMediator: serviceCoordinator.dappMediator,
+            walletNotificationService: walletNotificationService
         ) else {
             return nil
         }
 
-        guard let stakingController = createStakingController(for: localizationManager) else {
+        guard let stakingController = createStakingController(
+            for: localizationManager,
+            walletNotificationService: walletNotificationService
+        ) else {
             return nil
         }
 
-        guard let voteController = createVoteController(for: localizationManager) else {
+        guard let voteController = createVoteController(
+            for: localizationManager,
+            walletNotificationService: walletNotificationService
+        ) else {
             return nil
         }
 
-        guard let dappsController = createDappsController(for: localizationManager) else {
+        guard let dappsController = createDappsController(
+            for: localizationManager,
+            walletNotificationService: walletNotificationService
+        ) else {
             return nil
         }
 
         guard let settingsController = createProfileController(
             for: localizationManager,
-            dappMediator: serviceCoordinator.dappMediator
+            dappMediator: serviceCoordinator.dappMediator,
+            walletNotificationService: walletNotificationService
         ) else {
             return nil
         }
@@ -85,9 +98,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createWalletController(
         for localizationManager: LocalizationManagerProtocol,
-        dappMediator: DAppInteractionMediating
+        dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) -> UIViewController? {
-        guard let viewController = AssetListViewFactory.createView(with: dappMediator)?.controller else {
+        guard let viewController = AssetListViewFactory.createView(
+            with: dappMediator,
+            walletNotificationService: walletNotificationService
+        )?.controller else {
             return nil
         }
 
@@ -122,9 +139,12 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func createStakingController(
-        for localizationManager: LocalizationManagerProtocol
+        for localizationManager: LocalizationManagerProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) -> UIViewController? {
-        let viewController = StakingDashboardViewFactory.createView()?.controller ?? UIViewController()
+        let viewController = StakingDashboardViewFactory.createView(
+            walletNotificationService: walletNotificationService
+        )?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarStakingTitle(preferredLanguages: locale.rLanguages)
@@ -158,9 +178,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol,
-        dappMediator: DAppInteractionMediating
+        dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) -> UIViewController? {
-        guard let view = SettingsViewFactory.createView(with: dappMediator) else { return nil }
+        guard let view = SettingsViewFactory.createView(
+            with: dappMediator,
+            walletNotificationService: walletNotificationService
+        ) else { return nil }
 
         let viewController = view.controller
 
@@ -193,8 +217,11 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         return navigationController
     }
 
-    static func createVoteController(for localizationManager: LocalizationManagerProtocol) -> UIViewController? {
-        guard let view = VoteViewFactory.createView() else {
+    static func createVoteController(
+        for localizationManager: LocalizationManagerProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol
+    ) -> UIViewController? {
+        guard let view = VoteViewFactory.createView(walletNotificationService: walletNotificationService) else {
             return nil
         }
 
@@ -227,8 +254,11 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         return navigationController
     }
 
-    static func createDappsController(for localizationManager: LocalizationManagerProtocol) -> UIViewController? {
-        guard let dappsView = DAppListViewFactory.createView() else {
+    static func createDappsController(
+        for localizationManager: LocalizationManagerProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol
+    ) -> UIViewController? {
+        guard let dappsView = DAppListViewFactory.createView(walletNotificationService: walletNotificationService) else {
             return nil
         }
 

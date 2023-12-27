@@ -5,7 +5,10 @@ import IrohaCrypto
 import SubstrateSdk
 
 struct SettingsViewFactory {
-    static func createView(with dappMediator: DAppInteractionMediating) -> SettingsViewProtocol? {
+    static func createView(
+        with dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol
+    ) -> SettingsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
             let walletConnect = dappMediator.children.first(
@@ -21,11 +24,6 @@ struct SettingsViewFactory {
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
-        let proxyNotificationService = WalletNotificationService(
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
-            logger: Logger.shared
-        )
-
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
@@ -33,7 +31,7 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            proxyNotificationService: proxyNotificationService
+            walletNotificationService: walletNotificationService
         )
 
         let wireframe = SettingsWireframe(dappMediator: dappMediator)

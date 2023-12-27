@@ -6,6 +6,7 @@ import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
+    var walletNotificationService: WalletNotificationServiceProtocol { get }
 
     func updateOnAccountChange()
 }
@@ -20,6 +21,7 @@ final class ServiceCoordinator {
     let equilibriumService: AssetsUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
     let proxySyncService: ProxySyncServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -30,7 +32,8 @@ final class ServiceCoordinator {
         githubPhishingService: ApplicationServiceProtocol,
         equilibriumService: AssetsUpdatingServiceProtocol,
         proxySyncService: ProxySyncServiceProtocol,
-        dappMediator: DAppInteractionMediating
+        dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
@@ -41,6 +44,7 @@ final class ServiceCoordinator {
         self.githubPhishingService = githubPhishingService
         self.proxySyncService = proxySyncService
         self.dappMediator = dappMediator
+        self.walletNotificationService = walletNotificationService
     }
 }
 
@@ -104,7 +108,10 @@ extension ServiceCoordinator {
 
         let userDataStorageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
-        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
         let accountInfoService = AccountInfoUpdatingService(
             selectedAccount: walletSettings.value,
@@ -170,6 +177,11 @@ extension ServiceCoordinator {
             metaAccountsRepository: metaAccountsRepository
         )
 
+        let walletNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
@@ -179,7 +191,8 @@ extension ServiceCoordinator {
             githubPhishingService: githubPhishingAPIService,
             equilibriumService: equilibriumService,
             proxySyncService: proxySyncService,
-            dappMediator: DAppInteractionFactory.createMediator()
+            dappMediator: DAppInteractionFactory.createMediator(),
+            walletNotificationService: walletNotificationService
         )
     }
 }

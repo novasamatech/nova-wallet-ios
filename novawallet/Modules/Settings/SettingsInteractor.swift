@@ -15,7 +15,7 @@ final class SettingsInteractor {
     let eventCenter: EventCenterProtocol
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
-    let proxyNotificationService: WalletNotificationServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -24,14 +24,14 @@ final class SettingsInteractor {
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
-        proxyNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
-        self.proxyNotificationService = proxyNotificationService
+        self.walletNotificationService = walletNotificationService
         self.currencyManager = currencyManager
     }
 
@@ -77,10 +77,10 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideWalletConnectSessionsCount()
         applyCurrency()
 
-        proxyNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        proxyNotificationService.setup()
+        walletNotificationService.setup()
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {

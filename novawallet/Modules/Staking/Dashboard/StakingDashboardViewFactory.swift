@@ -2,11 +2,16 @@ import Foundation
 import SoraFoundation
 
 struct StakingDashboardViewFactory {
-    static func createView() -> StakingDashboardViewProtocol? {
+    static func createView(
+        walletNotificationService: WalletNotificationServiceProtocol
+    ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
         guard
-            let interactor = createInteractor(for: stateObserver),
+            let interactor = createInteractor(
+                for: stateObserver,
+                walletNotificationService: walletNotificationService
+            ),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -42,7 +47,8 @@ struct StakingDashboardViewFactory {
     }
 
     private static func createInteractor(
-        for stateObserver: Observable<StakingDashboardModel>
+        for stateObserver: Observable<StakingDashboardModel>,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) -> StakingDashboardInteractor? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -65,11 +71,6 @@ struct StakingDashboardViewFactory {
             logger: Logger.shared
         )
 
-        let proxyNotificationService = WalletNotificationService(
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
-            logger: Logger.shared
-        )
-
         return .init(
             syncServiceFactory: syncServiceFactory,
             walletSettings: walletSettings,
@@ -80,7 +81,7 @@ struct StakingDashboardViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stateObserver: stateObserver,
             applicationHandler: ApplicationHandler(),
-            proxyNotificationService: proxyNotificationService,
+            walletNotificationService: walletNotificationService,
             currencyManager: currencyManager
         )
     }

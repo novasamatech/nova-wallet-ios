@@ -3,7 +3,7 @@ import SoraFoundation
 import RobinHood
 
 struct DAppListViewFactory {
-    static func createView() -> DAppListViewProtocol? {
+    static func createView(walletNotificationService: WalletNotificationServiceProtocol) -> DAppListViewProtocol? {
         let dAppsUrl = ApplicationConfig.shared.dAppsListURL
         let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
             for: dAppsUrl
@@ -25,11 +25,6 @@ struct DAppListViewFactory {
             storageFacade: UserDataStorageFacade.shared
         ).createFavoriteDAppsRepository()
 
-        let proxyNotificationService = WalletNotificationService(
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
-            logger: logger
-        )
-
         let interactor = DAppListInteractor(
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
@@ -37,7 +32,7 @@ struct DAppListViewFactory {
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
-            proxyNotificationService: proxyNotificationService,
+            walletNotificationService: walletNotificationService,
             operationQueue: sharedQueue,
             logger: logger
         )

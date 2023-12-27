@@ -14,7 +14,7 @@ final class StakingDashboardInteractor {
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let stateObserver: Observable<StakingDashboardModel>
-    let proxyNotificationService: WalletNotificationServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     private var syncService: MultistakingSyncServiceProtocol?
     private var modelBuilder: StakingDashboardBuilderProtocol?
@@ -37,7 +37,7 @@ final class StakingDashboardInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stateObserver: Observable<StakingDashboardModel>,
         applicationHandler: ApplicationHandlerProtocol,
-        proxyNotificationService: WalletNotificationServiceProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.syncServiceFactory = syncServiceFactory
@@ -49,7 +49,7 @@ final class StakingDashboardInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.applicationHandler = applicationHandler
         self.stateObserver = stateObserver
-        self.proxyNotificationService = proxyNotificationService
+        self.walletNotificationService = walletNotificationService
         self.currencyManager = currencyManager
     }
 
@@ -171,10 +171,10 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
         eventCenter.add(observer: self, dispatchIn: .main)
         applicationHandler.delegate = self
 
-        proxyNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        proxyNotificationService.setup()
+        walletNotificationService.setup()
     }
 
     func retryBalancesSubscription() {

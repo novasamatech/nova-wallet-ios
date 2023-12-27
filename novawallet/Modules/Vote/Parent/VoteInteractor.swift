@@ -6,16 +6,16 @@ final class VoteInteractor {
 
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
-    let proxyNotificationService: WalletNotificationServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        proxyNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
-        self.proxyNotificationService = proxyNotificationService
+        self.walletNotificationService = walletNotificationService
     }
 
     private func provideSelectedWallet() {
@@ -33,10 +33,10 @@ extension VoteInteractor: VoteInteractorInputProtocol {
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        proxyNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        proxyNotificationService.setup()
+        walletNotificationService.setup()
     }
 }
 

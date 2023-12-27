@@ -22,7 +22,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let settingsManager: SettingsManagerProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let assetListModelObservable: AssetListModelObservable
-    let proxyNotificationService: WalletNotificationServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
@@ -35,7 +35,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         chainRegistry: ChainRegistryProtocol,
         assetListModelObservable: AssetListModelObservable,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        proxyNotificationService: WalletNotificationServiceProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -50,7 +50,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.walletConnect = walletConnect
-        self.proxyNotificationService = proxyNotificationService
+        self.walletNotificationService = walletNotificationService
         super.init(
             selectedWalletSettings: selectedWalletSettings,
             chainRegistry: chainRegistry,
@@ -167,10 +167,10 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        proxyNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        proxyNotificationService.setup()
+        walletNotificationService.setup()
     }
 
     private func updateLocksSubscription(from changes: [DataProviderChange<ChainModel>]) {

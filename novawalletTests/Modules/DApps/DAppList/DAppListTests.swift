@@ -47,7 +47,7 @@ class DAppListTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
-        let proxyNotificationService = WalletNotificationService(
+        let walletNotificationService = WalletNotificationService(
             proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
             logger: Logger.shared
         )
@@ -59,7 +59,7 @@ class DAppListTests: XCTestCase {
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
             dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
-            proxyNotificationService: proxyNotificationService,
+            walletNotificationService: walletNotificationService,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
