@@ -46,9 +46,11 @@ final class WalletSelectionPresenter: WalletsListPresenter {
                 guard old.info.type == .proxied, new.info.type == .proxied else {
                     return false
                 }
-                let oldProxy = old.info.chainAccounts.first(where: { $0.proxy?.isNotActive == true })
-                let newProxy = new.info.chainAccounts.first(where: { $0.proxy != nil })
-                return oldProxy?.proxy?.status != newProxy?.proxy?.status
+                guard let oldProxy = old.info.chainAccounts.first(where: { $0.proxy != nil }),
+                      let newProxy = new.info.chainAccounts.first(where: { $0.proxy?.isNotActive == true }) else {
+                    return false
+                }
+                return oldProxy.proxy?.status != newProxy.proxy?.status
             }
         }
 
