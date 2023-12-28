@@ -18,7 +18,7 @@ class RuntimePoolTests: XCTestCase {
 
         stub(expectedRuntimeProvider) { stub in
             stub.setup().thenDoNothing()
-            stub.replaceTypesUsage(any()).thenDoNothing()
+            stub.replaceChainData(any()).thenDoNothing()
             stub.cleanup().thenDoNothing()
         }
 
@@ -46,7 +46,7 @@ class RuntimePoolTests: XCTestCase {
 
         verify(factory, times(1)).createRuntimeProvider(for: any())
         verify(expectedRuntimeProvider, times(1)).setup()
-        verify(expectedRuntimeProvider, times(1)).replaceTypesUsage(any())
+        verify(expectedRuntimeProvider, times(1)).replaceChainData(any())
         verify(expectedRuntimeProvider, times(1)).cleanup()
     }
 }

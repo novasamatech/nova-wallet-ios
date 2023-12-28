@@ -19,7 +19,7 @@ extension SyncServiceProtocol {
 
 class BaseSyncService {
     let retryStrategy: ReconnectionStrategyProtocol
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     var retryAttempt: Int = 0
 
@@ -35,7 +35,7 @@ class BaseSyncService {
 
     init(
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
-        logger: LoggerProtocol? = Logger.shared
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.retryStrategy = retryStrategy
         self.logger = logger
@@ -73,21 +73,21 @@ class BaseSyncService {
         isSyncing = false
 
         if let error = error {
-            logger?.error("Sync failed with error: \(error)")
+            logger.error("Sync failed with error: \(error)")
 
             retryAttempt += 1
 
             retry()
         } else {
-            logger?.debug("Sync completed")
+            logger.debug("Sync completed")
 
             retryAttempt = 0
         }
     }
 
-    private func retry() {
+    func retry() {
         if let nextDelay = retryStrategy.reconnectAfter(attempt: retryAttempt) {
-            logger?.debug("Scheduling chain sync retry after \(nextDelay)")
+            logger.debug("Scheduling chain sync retry after \(nextDelay)")
 
             scheduler.notifyAfter(nextDelay)
         }

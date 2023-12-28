@@ -230,7 +230,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
             stateSubscription?.subscribe()
         } catch {
-            logger?.error("Local key failed: \(error)")
+            logger.error("Local key failed: \(error)")
             completeImmediate(error)
         }
     }
@@ -295,7 +295,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                 } catch {
-                    self?.logger?.error("Can't save stash account id")
+                    self?.logger.error("Can't save stash account id")
                 }
             }
         }
@@ -354,7 +354,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                 } catch {
-                    self?.logger?.error("Can't save stash item")
+                    self?.logger.error("Can't save stash item")
                 }
             }
         }

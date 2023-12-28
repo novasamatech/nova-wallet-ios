@@ -1465,3 +1465,5 @@
 "proxy.updates.hint.link" = "Что такое Прокси?";
 "proxy.updates.title" = "Обновление делегированных аккаунтов.";
 "proxy.updates.proxy.revoked" = "доступ был отозван";
+"nft.fungible.price" = "%@ for %@";
+"nft.issuance.fungible.format" = "%@ единиц из %@";

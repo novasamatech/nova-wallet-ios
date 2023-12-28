@@ -99,10 +99,10 @@ final class NominationPoolsAccountUpdatingService: BaseSyncService, NPoolsLocalS
 
             switch result {
             case .success:
-                self?.logger?.debug("Subscribe for remote pool: \(poolId)")
+                self?.logger.debug("Subscribe for remote pool: \(poolId)")
                 self?.completeImmediate(nil)
             case let .failure(error):
-                self?.logger?.error("Couldn't subscribe remote: \(error)")
+                self?.logger.error("Couldn't subscribe remote: \(error)")
                 self?.completeImmediate(error)
             }
         }
@@ -130,14 +130,14 @@ extension NominationPoolsAccountUpdatingService: NPoolsLocalSubscriptionHandler 
             poolId = optPoolMember?.poolId
 
             if let poolMember = optPoolMember {
-                logger?.debug("Did receive pool member: \(poolMember)")
+                logger.debug("Did receive pool member: \(poolMember)")
 
                 subscribeRemote(for: poolMember.poolId)
             } else {
-                logger?.warning("No pool staking found")
+                logger.warning("No pool staking found")
             }
         case let .failure(error):
-            logger?.error("Local subscription error: \(error)")
+            logger.error("Local subscription error: \(error)")
 
             completeImmediate(error)
         }

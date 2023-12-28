@@ -37,3 +37,7 @@ extension RemoteChainModel {
         )
     }
 }
+
+enum RemoteOnlyChainOptions: String {
+    case fullSyncByDefault
+}
