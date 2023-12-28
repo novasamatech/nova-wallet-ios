@@ -9,6 +9,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
     let chainModel: ChainModel
     let requestFactory: StorageRequestFactoryProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
+    let eventCenter: EventCenterProtocol
 
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
@@ -20,6 +21,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         chainRegistry: ChainRegistryProtocol,
         proxyOperationFactory: ProxyOperationFactoryProtocol,
+        eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue
     ) {
@@ -29,6 +31,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         self.operationQueue = operationQueue
         self.metaAccountsRepository = metaAccountsRepository
         self.workingQueue = workingQueue
+        self.eventCenter = eventCenter
         changesCalculator = .init(chainModel: chainModel)
         requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -95,6 +98,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         ) { [weak self] result in
             switch result {
             case .success:
+                self?.eventCenter.notify(with: AccountsChanged(method: .automatically))
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.completeImmediate(error)
@@ -142,7 +146,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
             let remoteProxieds = try proxyListOperation.extractNoCancellableResultData()
 
-            return changesCalculator.calculateUpdates(
+            return try changesCalculator.calculateUpdates(
                 from: remoteProxieds,
                 chainMetaAccounts: chainMetaAccounts,
                 identities: identities

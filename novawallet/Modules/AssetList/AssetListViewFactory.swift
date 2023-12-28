@@ -3,7 +3,11 @@ import SoraFoundation
 import SoraKeystore
 
 struct AssetListViewFactory {
-    static func createView(with dappMediator: DAppInteractionMediating) -> AssetListViewProtocol? {
+    static func createView(
+        with dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
+    ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let walletConnect = dappMediator.children.first(
                   where: { $0 is WalletConnectDelegateInputProtocol }
@@ -18,7 +22,7 @@ struct AssetListViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetListModelObservable: assetListModelObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            walletNotificationService: walletNotificationService,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -31,7 +35,8 @@ struct AssetListViewFactory {
 
         let wireframe = AssetListWireframe(
             dappMediator: dappMediator,
-            assetListModelObservable: assetListModelObservable
+            assetListModelObservable: assetListModelObservable,
+            proxySyncService: proxySyncService
         )
 
         let nftDownloadService = NftFileDownloadService(

@@ -2,8 +2,8 @@ import Foundation
 import SoraFoundation
 
 struct WalletSelectionViewFactory {
-    static func createView() -> WalletsListViewProtocol? {
-        guard let interactor = createInteractor(),
+    static func createView(proxySyncService: ProxySyncServiceProtocol) -> WalletsListViewProtocol? {
+        guard let interactor = createInteractor(proxySyncService: proxySyncService),
               let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -35,22 +35,17 @@ struct WalletSelectionViewFactory {
         return view
     }
 
-    private static func createInteractor() -> WalletSelectionInteractor? {
+    private static func createInteractor(proxySyncService: ProxySyncServiceProtocol) -> WalletSelectionInteractor? {
         guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
 
-        let userDataStorageFacade = UserDataStorageFacade.shared
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
-        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
-
         return WalletSelectionInteractor(
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            metaAccountRepository: metaAccountsRepository,
+            proxySyncService: proxySyncService,
             settings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            eventCenter: EventCenter.shared
         )
     }
 }

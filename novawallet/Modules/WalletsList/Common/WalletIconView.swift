@@ -26,30 +26,14 @@ final class WalletIconView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
-        guard !networkIconImageView.isHidden else {
-            return
-        }
-
         iconViewImageView.layoutIfNeeded()
+        networkIconImageView.layoutIfNeeded()
 
-        let width = networkIconImageView.bounds.width + Constants.holeWidth * 2
-        let height = networkIconImageView.bounds.height + Constants.holeWidth * 2
-        let origin = convert(networkIconImageView.frame.origin, to: iconViewImageView)
-
-        let frame = CGRect(
-            x: origin.x - Constants.holeWidth,
-            y: origin.y - Constants.holeWidth,
-            width: width,
-            height: height
-        )
-
-        iconViewImageView.cutHole(
-            roundedRect: frame,
-            cornerRadii: CGSize(
-                width: Constants.radius + Constants.holeWidth / 2,
-                height: Constants.radius + Constants.holeWidth / 2
-            )
+        cutHole(
+            on: iconViewImageView,
+            underView: networkIconImageView,
+            holeWidth: Constants.holeWidth,
+            radius: Constants.radius
         )
     }
 
@@ -69,6 +53,10 @@ final class WalletIconView: UIView {
             $0.bottom.equalTo(iconViewImageView.snp.bottom).offset(Constants.networkIconOffset.y)
             $0.size.equalTo(Constants.networkIconSize)
         }
+    }
+
+    func clear() {
+        removeHole(on: iconViewImageView)
     }
 
     override var intrinsicContentSize: CGSize {

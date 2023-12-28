@@ -6,21 +6,16 @@ final class VoteInteractor {
 
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
-    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
-    let logger: LoggerProtocol
-    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
-    private var proxies: [ProxyAccountModel] = []
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
-        logger: LoggerProtocol = Logger.shared
+        walletNotificationService: WalletNotificationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
-        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
-        self.logger = logger
+        self.walletNotificationService = walletNotificationService
     }
 
     private func provideSelectedWallet() {
@@ -30,10 +25,6 @@ final class VoteInteractor {
 
         presenter?.didReceiveWallet(selectedWallet)
     }
-
-    private func provideWalletUpdates() {
-        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
-    }
 }
 
 extension VoteInteractor: VoteInteractorInputProtocol {
@@ -41,8 +32,11 @@ extension VoteInteractor: VoteInteractorInputProtocol {
         provideSelectedWallet()
 
         eventCenter.add(observer: self, dispatchIn: .main)
-        proxyListSubscription = subscribeAllProxies()
-        provideWalletUpdates()
+
+        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
+        walletNotificationService.setup()
     }
 }
 
@@ -53,17 +47,5 @@ extension VoteInteractor: EventVisitorProtocol {
 
     func processChainAccountChanged(event _: ChainAccountChanged) {
         provideSelectedWallet()
-    }
-}
-
-extension VoteInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
-    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
-        switch result {
-        case let .success(changes):
-            proxies = proxies.applying(changes: changes)
-            provideWalletUpdates()
-        case let .failure(error):
-            logger.error(error.localizedDescription)
-        }
     }
 }

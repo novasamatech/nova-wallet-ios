@@ -26,7 +26,7 @@ extension RuntimeProviderPool: RuntimeProviderPoolProtocol {
         }
 
         if let runtimeProvider = runtimeProviders[chain.chainId] {
-            runtimeProvider.replaceTypesUsage(chain.typesUsage)
+            runtimeProvider.replaceChainData(chain)
 
             return runtimeProvider
         } else {

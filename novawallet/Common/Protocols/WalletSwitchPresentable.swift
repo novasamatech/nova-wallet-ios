@@ -1,12 +1,14 @@
 import Foundation
 
 protocol WalletSwitchPresentable {
+    var proxySyncService: ProxySyncServiceProtocol { get }
+
     func showWalletSwitch(from view: ControllerBackedProtocol?)
 }
 
 extension WalletSwitchPresentable {
     func showWalletSwitch(from view: ControllerBackedProtocol?) {
-        guard let accountManagement = WalletSelectionViewFactory.createView() else {
+        guard let accountManagement = WalletSelectionViewFactory.createView(proxySyncService: proxySyncService) else {
             return
         }
 

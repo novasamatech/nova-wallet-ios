@@ -8,7 +8,7 @@ struct ParachainSlotLease: Decodable {
 
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        accountId = try container.decode(AccountId.self)
+        accountId = try container.decode(BytesCodable.self).wrappedValue
         amount = try container.decode(StringScaleMapper<BigUInt>.self).value
     }
 }

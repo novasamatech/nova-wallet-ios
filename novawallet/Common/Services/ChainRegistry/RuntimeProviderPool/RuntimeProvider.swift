@@ -7,7 +7,7 @@ protocol RuntimeProviderProtocol: AnyObject, RuntimeCodingServiceProtocol {
     var hasSnapshot: Bool { get }
 
     func setup()
-    func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage)
+    func replaceChainData(_ chain: ChainModel)
     func cleanup()
 }
 
@@ -21,13 +21,13 @@ final class RuntimeProvider {
         let queue: DispatchQueue?
     }
 
-    let chainId: ChainModel.Id
-    private(set) var typesUsage: ChainModel.TypesUsage
+    var chainId: ChainModel.Id { chain.chainId }
+    private(set) var chain: RuntimeProviderChain
 
     let snapshotOperationFactory: RuntimeSnapshotFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     private(set) var snapshot: RuntimeSnapshot?
     private(set) var pendingRequests: [UUID: PendingRequest] = [:]
@@ -49,10 +49,15 @@ final class RuntimeProvider {
         snapshotOperationFactory: RuntimeSnapshotFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
-        chainId = chainModel.chainId
-        typesUsage = chainModel.typesUsage
+        chain = RuntimeProviderChain(
+            chainId: chainModel.chainId,
+            typesUsage: chainModel.typesUsage,
+            name: chainModel.name,
+            isEthereumBased: chainModel.isEthereumBased
+        )
+
         self.snapshotOperationFactory = snapshotOperationFactory
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
@@ -61,8 +66,8 @@ final class RuntimeProvider {
         eventCenter.add(observer: self, dispatchIn: DispatchQueue.global())
     }
 
-    private func buildSnapshot(with typesUsage: ChainModel.TypesUsage) {
-        let wrapper = snapshotOperationFactory.createRuntimeSnapshotWrapper(for: typesUsage)
+    private func buildSnapshot(with chain: RuntimeProviderChain) {
+        let wrapper = snapshotOperationFactory.createRuntimeSnapshotWrapper(for: chain)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.global(qos: .userInitiated).async {
@@ -89,8 +94,8 @@ final class RuntimeProvider {
             if let snapshot = snapshot {
                 self.snapshot = snapshot
 
-                logger?.debug("Did complete snapshot for: \(chainId)")
-                logger?.debug("Will notify waiters: \(pendingRequests.count)")
+                logger.debug("Did complete snapshot for: \(chainId)")
+                logger.debug("Will notify waiters: \(pendingRequests.count)")
 
                 resolveRequests()
 
@@ -100,7 +105,7 @@ final class RuntimeProvider {
         case let .failure(error):
             currentWrapper = nil
 
-            logger?.debug("Failed to build snapshot for \(chainId): \(error)")
+            logger.debug("Failed to build snapshot for \(chainId): \(error)")
 
             let event = RuntimeCoderCreationFailed(chainId: chainId, error: error)
             eventCenter.notify(with: event)
@@ -203,26 +208,33 @@ extension RuntimeProvider: RuntimeProviderProtocol {
             return
         }
 
-        buildSnapshot(with: typesUsage)
+        buildSnapshot(with: chain)
     }
 
-    func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage) {
+    func replaceChainData(_ chain: ChainModel) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        guard typesUsage != newTypeUsage else {
+        let runtimeChain = RuntimeProviderChain(
+            chainId: chain.chainId,
+            typesUsage: chain.typesUsage,
+            name: chain.name,
+            isEthereumBased: chain.isEthereumBased
+        )
+
+        guard self.chain != runtimeChain else {
             return
         }
 
         currentWrapper?.cancel()
         currentWrapper = nil
 
-        typesUsage = newTypeUsage
+        self.chain = runtimeChain
 
-        buildSnapshot(with: newTypeUsage)
+        buildSnapshot(with: runtimeChain)
     }
 
     func cleanup() {
@@ -260,9 +272,9 @@ extension RuntimeProvider: EventVisitorProtocol {
         currentWrapper?.cancel()
         currentWrapper = nil
 
-        logger?.debug("Will start building snapshot after chain types update for \(chainId)")
+        logger.debug("Will start building snapshot after chain types update for \(chainId)")
 
-        buildSnapshot(with: typesUsage)
+        buildSnapshot(with: chain)
     }
 
     func processRuntimeChainMetadataSyncCompleted(event: RuntimeMetadataSyncCompleted) {
@@ -279,13 +291,13 @@ extension RuntimeProvider: EventVisitorProtocol {
         currentWrapper?.cancel()
         currentWrapper = nil
 
-        logger?.debug("Will start building snapshot after metadata update for \(chainId)")
+        logger.debug("Will start building snapshot after metadata update for \(chainId)")
 
-        buildSnapshot(with: typesUsage)
+        buildSnapshot(with: chain)
     }
 
     func processRuntimeCommonTypesSyncCompleted(event: RuntimeCommonTypesSyncCompleted) {
-        guard typesUsage != .onlyOwn else {
+        guard chain.typesUsage != .onlyOwn else {
             return
         }
 
@@ -302,8 +314,8 @@ extension RuntimeProvider: EventVisitorProtocol {
         currentWrapper?.cancel()
         currentWrapper = nil
 
-        logger?.debug("Will start building snapshot after common types update for \(chainId)")
+        logger.debug("Will start building snapshot after common types update for \(chainId)")
 
-        buildSnapshot(with: typesUsage)
+        buildSnapshot(with: chain)
     }
 }

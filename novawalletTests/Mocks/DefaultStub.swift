@@ -74,7 +74,7 @@ extension MockRuntimeProviderProtocol {
 
             stub.cleanup().thenDoNothing()
             stub.setup().thenDoNothing()
-            stub.replaceTypesUsage(any()).thenDoNothing()
+            stub.replaceChainData(any()).thenDoNothing()
         }
 
         return self

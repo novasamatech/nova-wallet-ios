@@ -7,15 +7,18 @@ class BaseExtrinsicOperationFactory {
     let runtimeRegistry: RuntimeCodingServiceProtocol
     let engine: JSONRPCEngine
     let operationManager: OperationManagerProtocol
+    let usesStateCallForFee: Bool
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        usesStateCallForFee: Bool
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
         self.operationManager = operationManager
+        self.usesStateCallForFee = usesStateCallForFee
     }
 
     func createDummySigner() throws -> DummySigner {
@@ -130,7 +133,8 @@ class BaseExtrinsicOperationFactory {
     private func createFeeOperation(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         extrinsicOperation: BaseOperation<[Data]>,
-        connection: JSONRPCEngine
+        connection: JSONRPCEngine,
+        usesStateCallForFee: Bool
     ) -> BaseOperation<[RuntimeDispatchInfo]> {
         OperationCombiningService<RuntimeDispatchInfo>(
             operationManager: operationManager
@@ -138,17 +142,14 @@ class BaseExtrinsicOperationFactory {
             let coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let extrinsics = try extrinsicOperation.extractNoCancellableResultData()
 
-            let feeType = StateCallRpc.feeResultType
-            let hasFeeType = coderFactory.hasType(for: feeType)
-
             let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
                 extrinsics.map { extrinsicData in
                     let feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>
 
-                    if hasFeeType {
+                    if usesStateCallForFee {
                         feeWrapper = self.createStateCallFeeWrapper(
                             for: coderFactory,
-                            type: feeType,
+                            type: StateCallRpc.feeResultType,
                             extrinsic: extrinsicData,
                             connection: connection
                         )
@@ -205,7 +206,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             let feeOperation = createFeeOperation(
                 dependingOn: coderFactoryOperation,
                 extrinsicOperation: builderWrapper.targetOperation,
-                connection: connection
+                connection: connection,
+                usesStateCallForFee: usesStateCallForFee
             )
 
             feeOperation.addDependency(coderFactoryOperation)

@@ -4,14 +4,13 @@ import SoraUI
 
 struct ProxiedsUpdateViewFactory {
     static func createView(
-        initWallets: [ManagedMetaAccountModel],
-        completion: @escaping () -> Void
+        initWallets: [ManagedMetaAccountModel]
     ) -> ProxiedsUpdateViewProtocol? {
         let interactor = ProxiedsUpdateInteractor(
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry
         )
-        let wireframe = ProxiedsUpdateWireframe(completion: completion)
+        let wireframe = ProxiedsUpdateWireframe()
 
         let presenter = ProxiedsUpdatePresenter(
             interactor: interactor,

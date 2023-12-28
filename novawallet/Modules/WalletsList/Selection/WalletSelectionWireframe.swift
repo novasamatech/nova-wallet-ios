@@ -33,12 +33,10 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
 
     func showProxiedsUpdates(
         from view: ControllerBackedProtocol?,
-        initWallets: [ManagedMetaAccountModel],
-        completion: @escaping () -> Void
+        initWallets: [ManagedMetaAccountModel]
     ) {
         guard let proxiedsUpdatesView = ProxiedsUpdateViewFactory.createView(
-            initWallets: initWallets,
-            completion: completion
+            initWallets: initWallets
         ) else {
             return
         }

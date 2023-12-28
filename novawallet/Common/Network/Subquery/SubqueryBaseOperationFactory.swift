@@ -46,4 +46,9 @@ class SubqueryBaseOperationFactory {
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
+
+    func createOperation<R: Decodable>(for query: String) -> BaseOperation<R> {
+        let handler: (R) -> R = { $0 }
+        return createOperation(for: query, resultHandler: handler)
+    }
 }

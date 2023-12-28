@@ -14,8 +14,7 @@ final class StakingDashboardInteractor {
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let stateObserver: Observable<StakingDashboardModel>
-    let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
-    let logger: LoggerProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     private var syncService: MultistakingSyncServiceProtocol?
     private var modelBuilder: StakingDashboardBuilderProtocol?
@@ -27,8 +26,6 @@ final class StakingDashboardInteractor {
     private var priceProviders: [AssetModel.PriceId: StreamableProvider<PriceData>] = [:]
 
     private var stakableAssets: Set<ChainAsset> = []
-    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
-    private var proxies: [ProxyAccountModel] = []
 
     init(
         syncServiceFactory: MultistakingSyncServiceFactoryProtocol,
@@ -40,9 +37,8 @@ final class StakingDashboardInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stateObserver: Observable<StakingDashboardModel>,
         applicationHandler: ApplicationHandlerProtocol,
-        proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        logger: LoggerProtocol = Logger.shared
+        walletNotificationService: WalletNotificationServiceProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.syncServiceFactory = syncServiceFactory
         self.walletSettings = walletSettings
@@ -53,8 +49,7 @@ final class StakingDashboardInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.applicationHandler = applicationHandler
         self.stateObserver = stateObserver
-        self.proxyListLocalSubscriptionFactory = proxyListLocalSubscriptionFactory
-        self.logger = logger
+        self.walletNotificationService = walletNotificationService
         self.currencyManager = currencyManager
     }
 
@@ -157,10 +152,6 @@ final class StakingDashboardInteractor {
 
         modelBuilder?.applyWallet(model: wallet)
     }
-
-    private func provideWalletUpdates() {
-        presenter?.didReceiveWalletsState(hasUpdates: proxies.hasNotActive)
-    }
 }
 
 extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
@@ -179,8 +170,11 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
         eventCenter.add(observer: self, dispatchIn: .main)
         applicationHandler.delegate = self
-        proxyListSubscription = subscribeAllProxies()
-        provideWalletUpdates()
+
+        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
+        walletNotificationService.setup()
     }
 
     func retryBalancesSubscription() {
@@ -292,17 +286,5 @@ extension StakingDashboardInteractor: ApplicationHandlerDelegate {
 
     func didReceiveDidEnterBackground(notification _: Notification) {
         syncService?.throttle()
-    }
-}
-
-extension StakingDashboardInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
-    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
-        switch result {
-        case let .success(changes):
-            proxies = proxies.applying(changes: changes)
-            provideWalletUpdates()
-        case let .failure(error):
-            logger.error(error.localizedDescription)
-        }
     }
 }

@@ -53,6 +53,7 @@ extension ImportChainAccount {
                    savedAccountItem.identifier == metaAccountItem.identifier {
                     self.settings.save(value: metaAccountItem)
                     self.eventCenter.notify(with: SelectedAccountChanged())
+                    self.eventCenter.notify(with: AccountsChanged(method: .manually))
                 }
             }
 

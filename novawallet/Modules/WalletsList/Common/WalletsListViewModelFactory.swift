@@ -106,13 +106,8 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         ) }
 
         let walletViewModel = WalletView.ViewModel(
-            icon: iconViewModel,
-            networkIcon: nil,
-            name: wallet.info.name,
-            subtitle: totalValue,
-            subtitleDetailsIcon: nil,
-            subtitleDetails: nil,
-            marked: false
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .regular(totalValue)
         )
 
         return WalletsListViewModel(
@@ -133,7 +128,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
               let proxyWallet = wallets.first(where: { $0.info.has(
                   accountId: proxy.accountId,
                   chainId: chainAccount.chainId
-              ) && $0.info.type != .proxied })
+              ) })
         else {
             return nil
         }
@@ -152,15 +147,17 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
         let chainModel = chains[chainAccount.chainId]
         let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
+        let proxyInfo = WalletView.ViewModel.ProxyInfo(
+            networkIcon: chainIcon,
+            proxyType: proxy.type.subtitle(locale: locale),
+            proxyIcon: subtitleDetailsIconViewModel,
+            proxyName: proxyWallet.info.name,
+            isNew: proxy.status == .new
+        )
 
         let proxyModel = WalletView.ViewModel(
-            icon: iconViewModel,
-            networkIcon: chainIcon,
-            name: wallet.info.name,
-            subtitle: proxy.type.subtitle(locale: locale),
-            subtitleDetailsIcon: subtitleDetailsIconViewModel,
-            subtitleDetails: proxyWallet.info.name,
-            marked: proxy.status == .new
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .proxy(proxyInfo)
         )
 
         return WalletsListViewModel(

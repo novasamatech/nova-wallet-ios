@@ -5,7 +5,11 @@ import IrohaCrypto
 import SubstrateSdk
 
 struct SettingsViewFactory {
-    static func createView(with dappMediator: DAppInteractionMediating) -> SettingsViewProtocol? {
+    static func createView(
+        with dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
+    ) -> SettingsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
             let walletConnect = dappMediator.children.first(
@@ -28,10 +32,10 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
+            walletNotificationService: walletNotificationService
         )
 
-        let wireframe = SettingsWireframe(dappMediator: dappMediator)
+        let wireframe = SettingsWireframe(dappMediator: dappMediator, proxySyncService: proxySyncService)
 
         let view = SettingsViewController()
 

@@ -44,6 +44,7 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
                 case .success:
                     self?.settings.setup()
                     self?.eventCenter.notify(with: SelectedAccountChanged())
+                    self?.eventCenter.notify(with: AccountsChanged(method: .manually))
                     self?.presenter?.didCompleteAccountImport()
 
                 case let .failure(error):

@@ -117,11 +117,11 @@ final class RMRKV1DetailsInteractor: NftDetailsInteractor {
         if
             let snString = nftChainModel.nft.label,
             let serialNumber = UInt32(snString),
-            let totalIssuance = nftChainModel.nft.totalIssuance,
+            let totalIssuance = nftChainModel.nft.issuanceTotal,
             totalIssuance > 0 {
             let label: NftDetailsLabel = .limited(
                 serialNumber: serialNumber,
-                totalIssuance: UInt32(bitPattern: totalIssuance)
+                totalIssuance: totalIssuance
             )
 
             presenter?.didReceive(label: label)

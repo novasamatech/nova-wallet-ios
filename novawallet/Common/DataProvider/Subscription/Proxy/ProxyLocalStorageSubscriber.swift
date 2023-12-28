@@ -11,9 +11,7 @@ protocol ProxyListLocalStorageSubscriber where Self: AnyObject {
 
 extension ProxyListLocalStorageSubscriber {
     func subscribeAllProxies() -> StreamableProvider<ProxyAccountModel>? {
-        guard let provider = try? proxyListLocalSubscriptionFactory.getProxyListProvider(
-            statuses: [.new, .revoked, .active]
-        ) else {
+        guard let provider = try? proxyListLocalSubscriptionFactory.getProxyListProvider() else {
             return nil
         }
 
