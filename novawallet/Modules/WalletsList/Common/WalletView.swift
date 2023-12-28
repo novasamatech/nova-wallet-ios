@@ -118,6 +118,8 @@ extension WalletView {
 
         info?.proxyIcon?.cancel(on: subtitleDetailsImage)
         subtitleDetailsImage.image = nil
+
+        titleView.clear()
     }
 
     func bind(viewModel: ViewModel) {
@@ -170,5 +172,7 @@ extension WalletView {
         networkImageView.isHidden = viewModel.networkIcon == nil
         subtitleDetailsImage.isHidden = viewModel.proxyIcon == nil
         indicatorImageView.isHidden = !viewModel.isNew
+
+        titleView.setNeedsLayout()
     }
 }

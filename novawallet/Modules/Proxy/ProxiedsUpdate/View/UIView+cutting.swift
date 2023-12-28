@@ -50,6 +50,10 @@ extension UIView {
         cut(path: ovalPath)
     }
 
+    func removeHole(on view: UIView) {
+        view.layer.mask = nil
+    }
+
     private func cut(path: UIBezierPath) {
         let entireViewPath = UIBezierPath(rect: bounds)
         entireViewPath.append(path)
