@@ -55,6 +55,10 @@ final class WalletIconView: UIView {
         }
     }
 
+    func clear() {
+        removeHole(on: iconViewImageView)
+    }
+
     override var intrinsicContentSize: CGSize {
         .init(
             width: Constants.networkIconOffset.x + Constants.iconSize.width,
