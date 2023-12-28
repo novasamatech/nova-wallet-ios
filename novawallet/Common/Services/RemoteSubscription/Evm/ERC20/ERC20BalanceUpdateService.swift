@@ -28,7 +28,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         operationQueue: OperationQueue,
         blockNumber: Core.BlockNumber,
         queryMessageFactory: EvmQueryContractMessageFactoryProtocol,
-        logger: LoggerProtocol?,
+        logger: LoggerProtocol,
         completion: ERC20UpdateServiceCompletionClosure?
     ) {
         self.holder = holder
@@ -157,10 +157,10 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                     let amount = BigUInt.fromHexString(amountString) {
                     accum[assetContract.chainAssetId] = amount
                 } else {
-                    logger?.error("Unexpected format: \(json)")
+                    logger.error("Unexpected format: \(json)")
                 }
             case let .failure(error):
-                logger?.error("Unexpected error: \(error)")
+                logger.error("Unexpected error: \(error)")
             }
         }
     }

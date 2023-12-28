@@ -210,10 +210,10 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
         if
             let instanceIdString = nftChainModel.nft.instanceId,
             let instanceId = UInt32(instanceIdString),
-            let totalIssuance = nftChainModel.nft.totalIssuance {
+            let totalIssuance = nftChainModel.nft.issuanceTotal {
             let label: NftDetailsLabel = .limited(
                 serialNumber: instanceId,
-                totalIssuance: UInt32(bitPattern: totalIssuance)
+                totalIssuance: totalIssuance
             )
 
             presenter?.didReceive(label: label)

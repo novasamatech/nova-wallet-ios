@@ -105,11 +105,16 @@ class NftDetailsInteractor {
     }
 
     func providePrice() {
-        if let priceString = nftChainModel.nft.price, let price = BigUInt(priceString) {
-            presenter?.didReceive(price: price, tokenPriceData: nftChainModel.price)
-        } else {
+        guard let priceValue = nftChainModel.nft.price.flatMap({ BigUInt($0) }) else {
             presenter?.didReceive(price: nil, tokenPriceData: nftChainModel.price)
+            return
         }
+
+        let priceUnits = nftChainModel.nft.priceUnits.flatMap { BigUInt($0) }
+
+        let model = NftDetailsPrice(value: priceValue, units: priceUnits)
+
+        presenter?.didReceive(price: model, tokenPriceData: nftChainModel.price)
     }
 
     private func provideInstanceInfo(from json: JSON) {

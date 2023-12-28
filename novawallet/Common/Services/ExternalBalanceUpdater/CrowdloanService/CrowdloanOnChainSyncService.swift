@@ -17,7 +17,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         accountId: AccountId,
         chainId: ChainModel.Id,
         operationManager: OperationManagerProtocol,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
         self.chainRegistry = chainRegistry
@@ -120,13 +120,13 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
 
     override func performSyncUp() {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            logger?.error("Connection for chainId: \(chainId) is unavailable")
+            logger.error("Connection for chainId: \(chainId) is unavailable")
             completeImmediate(ChainRegistryError.connectionUnavailable)
             return
         }
 
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            logger?.error("Runtime metadata for chainId: \(chainId) is unavailable")
+            logger.error("Runtime metadata for chainId: \(chainId) is unavailable")
             completeImmediate(ChainRegistryError.runtimeMetadaUnavailable)
             return
         }

@@ -14,7 +14,7 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
         accountId: AccountId,
         operationManager: OperationManagerProtocol,
         repository: AnyDataProviderRepository<CrowdloanContributionData>,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
         self.source = source
         self.operationManager = operationManager
