@@ -115,7 +115,7 @@ final class AccountManagementInteractor {
                     ) })?.info
                     self?.presenter?.didReceiveProxyWallet(.success(proxyWallet))
                 } catch {
-                    self?.presenter?.didReceiveChains(.failure(error))
+                    self?.presenter?.didReceiveProxyWallet(.failure(error))
                 }
             }
         }

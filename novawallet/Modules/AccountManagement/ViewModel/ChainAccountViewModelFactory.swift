@@ -20,6 +20,7 @@ protocol ChainAccountViewModelFactoryProtocol {
 
 final class ChainAccountViewModelFactory {
     let iconGenerator: IconGenerating
+    private lazy var walletIconGenerator = NovaIconGenerator()
 
     init(iconGenerator: IconGenerating) {
         self.iconGenerator = iconGenerator
@@ -203,7 +204,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         locale: Locale
     ) -> AccountProxyViewModel {
         let optIcon = proxyWallet.walletIdenticonData().flatMap {
-            try? iconGenerator.generateFromAccountId($0)
+            try? walletIconGenerator.generateFromAccountId($0)
         }
         let iconViewModel = optIcon.map {
             DrawableIconViewModel(icon: $0)

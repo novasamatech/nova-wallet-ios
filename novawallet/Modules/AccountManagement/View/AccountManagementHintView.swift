@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class AccountManagementHintView: UIView {
     let iconDetailsView: IconDetailsView = .create {
