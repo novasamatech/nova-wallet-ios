@@ -66,7 +66,6 @@ struct TransactionHistoryViewFactory {
         currencyManager: CurrencyManagerProtocol
     ) -> TransactionHistoryInteractor {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared)
@@ -84,7 +83,7 @@ struct TransactionHistoryViewFactory {
         )
 
         let localFilterFactory = TransactionHistoryLocalFilterFactory(
-            runtimeProvider: runtimeProvider,
+            chainRegistry: chainRegistry,
             chainAsset: chainAsset,
             logger: Logger.shared
         )

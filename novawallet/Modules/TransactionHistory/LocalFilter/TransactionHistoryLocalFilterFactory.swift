@@ -7,12 +7,12 @@ protocol TransactionHistoryLocalFilterFactoryProtocol {
 }
 
 final class TransactionHistoryLocalFilterFactory {
-    let runtimeProvider: RuntimeProviderProtocol?
+    let chainRegistry: ChainRegistryProtocol
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
 
-    init(runtimeProvider: RuntimeProviderProtocol?, chainAsset: ChainAsset, logger: LoggerProtocol) {
-        self.runtimeProvider = runtimeProvider
+    init(chainRegistry: ChainRegistryProtocol, chainAsset: ChainAsset, logger: LoggerProtocol) {
+        self.chainRegistry = chainRegistry
         self.chainAsset = chainAsset
         self.logger = logger
     }
@@ -54,7 +54,9 @@ extension TransactionHistoryLocalFilterFactory: TransactionHistoryLocalFilterFac
     func createWrapper() -> CompoundOperationWrapper<TransactionHistoryLocalFilterProtocol> {
         let phishingFilter = TransactionHistoryPhishingFilter()
 
-        guard chainAsset.asset.hasPoolStaking, let runtimeProvider = runtimeProvider else {
+        guard
+            chainAsset.asset.hasPoolStaking,
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return CompoundOperationWrapper.createWithResult(phishingFilter)
         }
 

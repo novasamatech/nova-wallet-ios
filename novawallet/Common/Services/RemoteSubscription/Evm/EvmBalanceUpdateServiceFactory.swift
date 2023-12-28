@@ -24,13 +24,13 @@ final class EvmBalanceUpdateServiceFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry

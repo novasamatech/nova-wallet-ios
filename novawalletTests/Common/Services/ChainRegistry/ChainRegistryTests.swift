@@ -4,7 +4,7 @@ import RobinHood
 import Cuckoo
 
 class ChainRegistryTests: XCTestCase {
-    func testSetupCompletion() throws {
+    func testSetupCompletionWhenAllChainsFullySynced() throws {
         // given
 
         let runtimeProviderPool = MockRuntimeProviderPoolProtocol()
@@ -33,12 +33,18 @@ class ChainRegistryTests: XCTestCase {
 
         let substrateChainsCount = 5
         let noRuntimeChainsCount = 5
-        let substrateChains = ChainModelGenerator.generate(count: substrateChainsCount)
-        let noRuntimeChains = ChainModelGenerator.generate(count: noRuntimeChainsCount, hasSubstrateRuntime: false)
-        let expectedChains = substrateChains + noRuntimeChains
+        let remoteSubstrateChains = ChainModelGenerator.generateRemote(count: substrateChainsCount)
+        let remoteNoRuntimeChains = ChainModelGenerator.generateRemote(count: noRuntimeChainsCount, hasSubstrateRuntime: false)
+        let remoteChains = remoteSubstrateChains + remoteNoRuntimeChains
+        
+        let converter = ChainModelConverter()
+        let expectedChains = remoteChains.enumerated().compactMap { (index, remoteModel) in
+            converter.update(localModel: nil, remoteModel: remoteModel, additionalAssets: [], order: Int64(index))
+        }
+        
         let expectedChainIds = Set(expectedChains.map { $0.chainId })
-        let substrateChainIds = Set(substrateChains.map { $0.chainId })
-        let chainsData = try JSONEncoder().encode(expectedChains)
+        let substrateChainIds = Set(remoteSubstrateChains.map { $0.chainId })
+        let chainsData = try JSONEncoder().encode(remoteChains)
         let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
         let chainURL = URL(string: "https://github.com")!
         let evmAssetURL = URL(string: "https://google.com")!
