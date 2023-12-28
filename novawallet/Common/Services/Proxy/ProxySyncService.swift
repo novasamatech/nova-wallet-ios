@@ -12,6 +12,7 @@ protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
 
     func unsubscribeSyncState(_ target: AnyObject)
     func updateWalletsStatuses()
+    func syncUp()
 }
 
 final class ProxySyncService {
@@ -103,6 +104,7 @@ final class ProxySyncService {
             metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
             proxyOperationFactory: proxyOperationFactory,
+            eventCenter: EventCenter.shared,
             operationQueue: operationQueue,
             workingQueue: workingQueue
         )
@@ -245,5 +247,9 @@ extension ProxySyncService: ProxySyncServiceProtocol {
                 self?.logger.error(error.localizedDescription)
             }
         }
+    }
+
+    func syncUp() {
+        updaters.values.forEach { $0.syncUp() }
     }
 }

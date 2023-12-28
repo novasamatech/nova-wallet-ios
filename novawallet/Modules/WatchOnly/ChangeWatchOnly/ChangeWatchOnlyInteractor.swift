@@ -50,6 +50,7 @@ final class ChangeWatchOnlyInteractor {
                 let newWallet = try replaceAccountOperation.extractNoCancellableResultData()
                 settings.save(value: newWallet)
                 eventCenter.notify(with: SelectedAccountChanged())
+                eventCenter.notify(with: AccountsChanged(method: .manually))
             }
         } else {
             saveOperation = repository.saveOperation({

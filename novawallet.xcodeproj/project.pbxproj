@@ -771,6 +771,7 @@
 		774091FC2ACC053000172516 /* SwapAssetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FB2ACC053000172516 /* SwapAssetView.swift */; };
 		774091FE2ACC054B00172516 /* SwapAssetControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FD2ACC054B00172516 /* SwapAssetControl.swift */; };
 		774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091FF2ACC1BE400172516 /* SwapAmountInput.swift */; };
+		7746854F2B3BDD4F002E0A0F /* AccountsChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7746854E2B3BDD4F002E0A0F /* AccountsChanged.swift */; };
 		774A481129F8BFB70094635B /* OperationAuthPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A481029F8BFB70094635B /* OperationAuthPresentable.swift */; };
 		774A980D2B0D0873009146CA /* OpenScreenUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A980C2B0D0873009146CA /* OpenScreenUrlParsingService.swift */; };
 		774A980F2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A980E2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift */; };
@@ -4917,6 +4918,7 @@
 		774091FB2ACC053000172516 /* SwapAssetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetView.swift; sourceTree = "<group>"; };
 		774091FD2ACC054B00172516 /* SwapAssetControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetControl.swift; sourceTree = "<group>"; };
 		774091FF2ACC1BE400172516 /* SwapAmountInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAmountInput.swift; sourceTree = "<group>"; };
+		7746854E2B3BDD4F002E0A0F /* AccountsChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsChanged.swift; sourceTree = "<group>"; };
 		774A481029F8BFB70094635B /* OperationAuthPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationAuthPresentable.swift; sourceTree = "<group>"; };
 		774A980C2B0D0873009146CA /* OpenScreenUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenScreenUrlParsingService.swift; sourceTree = "<group>"; };
 		774A980E2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenScreenUrlParsingServiceFactory.swift; sourceTree = "<group>"; };
@@ -16676,6 +16678,7 @@
 				84C342122831BE8200156569 /* BlockTimeChanged.swift */,
 				84C2063D28D1E8CE006D0D52 /* AssetBalanceChanged.swift */,
 				0C2F868A2A725C3C00593C01 /* EraNominationPoolsChanged.swift */,
+				7746854E2B3BDD4F002E0A0F /* AccountsChanged.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -20053,6 +20056,7 @@
 				845D8ED92977F18300F22133 /* GovernanceDelegateStats.swift in Sources */,
 				84CF00C327F6C1E4004DB322 /* CustomAssetMapper.swift in Sources */,
 				0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */,
+				7746854F2B3BDD4F002E0A0F /* AccountsChanged.swift in Sources */,
 				880CC0B029E7F194008C7F65 /* EquillibriumLocksUpdater.swift in Sources */,
 				843910DB253F90C400E3C217 /* NovaWindow.swift in Sources */,
 				84DD5F4C263DE82C00425ACF /* DataValidationRunner.swift in Sources */,

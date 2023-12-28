@@ -82,6 +82,7 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
                savedAccountItem.identifier == newAccountItem.identifier {
                 self.settings.save(value: newAccountItem)
                 self.eventCenter.notify(with: SelectedAccountChanged())
+                self.eventCenter.notify(with: AccountsChanged(method: .manually))
             }
         }
 

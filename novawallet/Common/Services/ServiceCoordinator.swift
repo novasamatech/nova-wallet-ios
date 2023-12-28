@@ -9,7 +9,9 @@ protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var walletNotificationService: WalletNotificationServiceProtocol { get }
     var proxySyncService: ProxySyncServiceProtocol { get }
 
-    func updateOnAccountChange()
+    func updateOnWalletSelectionChange()
+
+    func updateOnWalletChange()
 }
 
 final class ServiceCoordinator {
@@ -50,7 +52,7 @@ final class ServiceCoordinator {
 }
 
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
-    func updateOnAccountChange() {
+    func updateOnWalletSelectionChange() {
         if let selectedMetaAccount = walletSettings.value {
             accountInfoService.update(selectedMetaAccount: selectedMetaAccount)
             assetsService.update(selectedMetaAccount: selectedMetaAccount)
@@ -58,6 +60,10 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
         }
+    }
+
+    func updateOnWalletChange() {
+        proxySyncService.syncUp()
     }
 
     func setup() {
