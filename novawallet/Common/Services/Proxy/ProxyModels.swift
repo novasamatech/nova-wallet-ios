@@ -22,7 +22,7 @@ struct AccountIdKey: JSONListConvertible, Hashable {
             )
         }
 
-        accountId = try jsonList[0].map(to: AccountId.self, with: context)
+        accountId = try jsonList[0].map(to: BytesCodable.self, with: context).wrappedValue
     }
 }
 
