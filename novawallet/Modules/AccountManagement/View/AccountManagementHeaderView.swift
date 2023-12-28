@@ -28,7 +28,7 @@ final class AccountManagementHeaderView: UIView {
         return field
     }()
 
-    private(set) var hintView: BorderedIconLabelView?
+    private(set) var hintView: AccountManagementHintView?
 
     var bottomInset: CGFloat = 0.0 {
         didSet {
@@ -70,8 +70,7 @@ final class AccountManagementHeaderView: UIView {
     }
 
     func bindHint(text: String, icon: UIImage?) {
-        hintView?.iconDetailsView.detailsLabel.text = text
-        hintView?.iconDetailsView.imageView.image = icon
+        hintView?.bindHint(text: text, icon: icon)
     }
 
     private func setupHintView() {
@@ -79,18 +78,7 @@ final class AccountManagementHeaderView: UIView {
             return
         }
 
-        let view = BorderedIconLabelView()
-        view.iconDetailsView.stackView.alignment = .top
-        view.iconDetailsView.mode = .iconDetails
-        view.iconDetailsView.iconWidth = 20.0
-        view.iconDetailsView.spacing = 12.0
-        view.iconDetailsView.detailsLabel.textColor = R.color.colorTextPrimary()
-        view.iconDetailsView.detailsLabel.font = .caption1
-        view.contentInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
-        view.backgroundView.fillColor = R.color.colorBlockBackground()!
-        view.backgroundView.highlightedFillColor = R.color.colorBlockBackground()!
-        view.backgroundView.cornerRadius = 12.0
-
+        let view = AccountManagementHintView()
         addSubview(view)
 
         view.snp.makeConstraints { make in

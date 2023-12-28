@@ -6,6 +6,7 @@ protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
     func set(nameViewModel: InputViewModelProtocol)
     func set(walletType: WalletsListSectionViewModel.SectionType)
+    func setProxy(viewModel: AccountProxyViewModel)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
@@ -36,6 +37,7 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
         metaAccount: MetaAccountModel,
         chain: ChainModel
     )
+    func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)
 }
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting,

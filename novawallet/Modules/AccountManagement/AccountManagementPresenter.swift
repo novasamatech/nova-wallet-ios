@@ -17,6 +17,8 @@ final class AccountManagementPresenter {
     let logger: LoggerProtocol?
 
     private var wallet: MetaAccountModel?
+    private var proxyWallet: MetaAccountModel?
+
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var viewModel: ChainAccountListViewModel = []
 
@@ -39,6 +41,19 @@ final class AccountManagementPresenter {
 
         let walletType = WalletsListSectionViewModel.SectionType(walletType: wallet.type)
         view?.set(walletType: walletType)
+    }
+
+    private func updateProxyWallet() {
+        guard let wallet = wallet,
+              let proxyWallet = proxyWallet else {
+            return
+        }
+        let proxyViewModel = viewModelFactory.createProxyViewModel(
+            proxiedWallet: wallet,
+            proxyWallet: proxyWallet,
+            locale: selectedLocale
+        )
+        view?.setProxy(viewModel: proxyViewModel)
     }
 
     private func updateChainViewModels() {
@@ -491,6 +506,20 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
             updateChainViewModels()
             updateNameViewModel()
 
+        case let .failure(error):
+            logger?.error("Did receive wallet fetch error: \(error)")
+        }
+    }
+
+    func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>) {
+        switch result {
+        case let .success(proxyWallet):
+            guard let wallet = wallet else {
+                logger?.error("Didn't find proxy wallet for proxied wallet with id: \(walletId)")
+                return
+            }
+            self.proxyWallet = proxyWallet
+            updateProxyWallet()
         case let .failure(error):
             logger?.error("Did receive wallet fetch error: \(error)")
         }

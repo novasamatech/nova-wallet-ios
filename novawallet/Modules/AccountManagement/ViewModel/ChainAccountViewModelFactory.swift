@@ -10,6 +10,12 @@ protocol ChainAccountViewModelFactoryProtocol {
     ) -> ChainAccountListViewModel
 
     func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
+
+    func createProxyViewModel(
+        proxiedWallet: MetaAccountModel,
+        proxyWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountProxyViewModel
 }
 
 final class ChainAccountViewModelFactory {
@@ -189,5 +195,25 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
 
             return [section]
         }
+    }
+
+    func createProxyViewModel(
+        proxiedWallet: MetaAccountModel,
+        proxyWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountProxyViewModel {
+        let optIcon = proxyWallet.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
+        let iconViewModel = optIcon.map {
+            DrawableIconViewModel(icon: $0)
+        }
+        let type = proxiedWallet.proxy()?.type.title(locale: locale) ?? ""
+
+        return .init(
+            name: proxyWallet.name,
+            icon: iconViewModel,
+            type: type
+        )
     }
 }
