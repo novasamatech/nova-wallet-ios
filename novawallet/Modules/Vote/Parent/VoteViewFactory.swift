@@ -2,17 +2,21 @@ import Foundation
 import SoraFoundation
 
 enum VoteViewFactory {
-    static func createView() -> VoteViewProtocol? {
+    static func createView(
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService: ProxySyncServiceProtocol
+    ) -> VoteViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let interactor = VoteInteractor(
             walletSettings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared
+            eventCenter: EventCenter.shared,
+            walletNotificationService: walletNotificationService
         )
 
-        let wireframe = VoteWireframe()
+        let wireframe = VoteWireframe(proxySyncService: proxySyncService)
 
         let childPresenterFactory = VoteChildPresenterFactory(
             currencyManager: currencyManager,

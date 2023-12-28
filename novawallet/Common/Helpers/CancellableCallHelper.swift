@@ -80,3 +80,23 @@ func executeCancellable<T>(
 
     operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
 }
+
+func execute<T>(
+    operation: BaseOperation<T>,
+    inOperationQueue operationQueue: OperationQueue,
+    runningCallbackIn callbackQueue: DispatchQueue?,
+    callbackClosure: @escaping (Result<T, Error>) -> Void
+) {
+    operation.completionBlock = {
+        dispatchInQueueWhenPossible(callbackQueue) {
+            do {
+                let value = try operation.extractNoCancellableResultData()
+                callbackClosure(.success(value))
+            } catch {
+                callbackClosure(.failure(error))
+            }
+        }
+    }
+
+    operationQueue.addOperations([operation], waitUntilFinished: false)
+}

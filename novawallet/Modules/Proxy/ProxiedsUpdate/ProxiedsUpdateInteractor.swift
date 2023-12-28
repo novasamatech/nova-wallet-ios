@@ -7,7 +7,6 @@ final class ProxiedsUpdateInteractor {
     let chainRegistry: ChainRegistryProtocol
 
     private(set) var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
-    private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
 
     init(
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,

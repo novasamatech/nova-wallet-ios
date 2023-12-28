@@ -11,6 +11,8 @@ protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
     )
 
     func unsubscribeSyncState(_ target: AnyObject)
+    func updateWalletsStatuses()
+    func syncUp()
 }
 
 final class ProxySyncService {
@@ -102,6 +104,7 @@ final class ProxySyncService {
             metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
             proxyOperationFactory: proxyOperationFactory,
+            eventCenter: EventCenter.shared,
             operationQueue: operationQueue,
             workingQueue: workingQueue
         )
@@ -197,5 +200,56 @@ extension ProxySyncService: ProxySyncServiceProtocol {
         isActive = false
 
         updaters.values.forEach { $0.throttle() }
+    }
+
+    func updateWalletsStatuses() {
+        let walletsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
+
+        let proxiesOperation: ClosureOperation<[ManagedMetaAccountModel: ChainAccountModel]> = .init {
+            let wallets = try walletsOperation.extractNoCancellableResultData()
+            return wallets.reduce(into: [ManagedMetaAccountModel: ChainAccountModel]()) { result, item in
+                if let chainAccount = item.info.chainAccounts.first(where: { $0.proxy != nil }),
+                   let proxy = chainAccount.proxy {
+                    result[item] = chainAccount
+                }
+            }
+        }
+        proxiesOperation.addDependency(walletsOperation)
+
+        let saveOperation = metaAccountsRepository.saveOperation({
+            let proxies = try proxiesOperation.extractNoCancellableResultData()
+            return proxies.map {
+                $0.key.replacingInfo($0.key.info.replacingChainAccount($0.value.replacingProxyStatus(from: .new, to: .active)))
+            }.compactMap { $0 }
+        }, {
+            let proxies = try proxiesOperation.extractNoCancellableResultData()
+            return proxies
+                .filter { $0.value.proxy?.status == .revoked }
+                .map(\.key.identifier)
+                .compactMap { $0 }
+        })
+        saveOperation.addDependency(proxiesOperation)
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: saveOperation,
+            dependencies: [proxiesOperation, walletsOperation]
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.logger.debug("Proxy statuses were updated")
+            case let .failure(error):
+                self?.logger.error(error.localizedDescription)
+            }
+        }
+    }
+
+    func syncUp() {
+        updaters.values.forEach { $0.syncUp() }
     }
 }

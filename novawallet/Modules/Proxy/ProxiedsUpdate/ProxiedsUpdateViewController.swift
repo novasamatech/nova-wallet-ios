@@ -94,8 +94,8 @@ final class ProxiedsUpdateViewController: UIViewController, ViewHolder {
 
 extension ProxiedsUpdateViewController: ProxiedsUpdateViewProtocol {
     func didReceive(
-        delegatedModels: [ProxyWalletView.ViewModel],
-        revokedModels: [ProxyWalletView.ViewModel]
+        delegatedModels: [WalletView.ViewModel],
+        revokedModels: [WalletView.ViewModel]
     ) {
         let infoSection = Section.info
         let delegatedSection: Section? = !delegatedModels.isEmpty ? Section.delegated : nil
@@ -204,8 +204,8 @@ extension ProxiedsUpdateViewController {
 
     enum Row: Hashable {
         case info
-        case delegated(ProxyWalletView.ViewModel)
-        case revoked(ProxyWalletView.ViewModel)
+        case delegated(WalletView.ViewModel)
+        case revoked(WalletView.ViewModel)
     }
 }
 

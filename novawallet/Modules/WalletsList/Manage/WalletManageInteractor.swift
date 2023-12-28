@@ -32,6 +32,7 @@ final class WalletManageInteractor: WalletsListInteractor {
 
         super.init(
             balancesStore: balancesStore,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory
         )
     }

@@ -1,7 +1,7 @@
 import UIKit
 import SnapKit
 
-final class ProxyIconView: UIView {
+final class WalletIconView: UIView {
     enum Constants {
         static let holeWidth: CGFloat = 3
         static let iconSize = CGSize(width: 32, height: 32)
@@ -26,6 +26,10 @@ final class ProxyIconView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+
+        guard !networkIconImageView.isHidden else {
+            return
+        }
 
         iconViewImageView.layoutIfNeeded()
 

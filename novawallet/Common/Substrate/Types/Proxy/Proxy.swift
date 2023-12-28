@@ -8,7 +8,7 @@ enum Proxy {
     }
 
     struct ProxyDefinition: Decodable {
-        let delegate: AccountId
+        @BytesCodable var delegate: AccountId
         let proxyType: ProxyType
         @StringCodable var delay: BlockNumber
     }

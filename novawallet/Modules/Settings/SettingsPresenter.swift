@@ -11,6 +11,7 @@ final class SettingsPresenter {
     private var currency: String?
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
+    private var hasWalletsListUpdates: Bool = false
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -52,7 +53,10 @@ final class SettingsPresenter {
 
     private func updateAccountView() {
         guard let wallet = wallet else { return }
-        let viewModel = viewModelFactory.createAccountViewModel(for: wallet)
+        let viewModel = viewModelFactory.createAccountViewModel(
+            for: wallet,
+            hasWalletNotification: hasWalletsListUpdates
+        )
         view?.didLoad(userViewModel: viewModel)
     }
 
@@ -286,6 +290,11 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         walletConnectSessionsCount = sessionsCount
 
         updateView()
+    }
+
+    func didReceiveWalletsState(hasUpdates: Bool) {
+        hasWalletsListUpdates = hasUpdates
+        updateAccountView()
     }
 }
 

@@ -6,7 +6,7 @@
         <attribute name="cryptoType" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="publicKey" attributeType="Binary"/>
         <relationship name="metaAccount" maxCount="1" deletionRule="Nullify" destinationEntity="CDMetaAccount" inverseName="chainAccounts" inverseEntity="CDMetaAccount"/>
-        <relationship name="proxy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDProxy" inverseName="chainAccount" inverseEntity="CDProxy"/>
+        <relationship name="proxy" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDProxy" inverseName="chainAccount" inverseEntity="CDProxy"/>
     </entity>
     <entity name="CDChainSettings" representedClassName="CDChainSettings" syncable="YES" codeGenerationType="class">
         <attribute name="autobalanced" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
@@ -44,6 +44,7 @@
         <relationship name="chainAccounts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDChainAccount" inverseName="metaAccount" inverseEntity="CDChainAccount"/>
     </entity>
     <entity name="CDProxy" representedClassName="CDProxy" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
         <attribute name="proxyAccountId" optional="YES" attributeType="String"/>
         <attribute name="status" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>

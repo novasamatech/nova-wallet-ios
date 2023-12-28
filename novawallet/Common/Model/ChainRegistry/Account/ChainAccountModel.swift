@@ -24,6 +24,20 @@ extension ChainAccountModel: Identifiable {
 }
 
 extension ChainAccountModel {
+    func replacingProxyStatus(from oldStatus: ProxyAccountModel.Status, to newStatus: ProxyAccountModel.Status) -> ChainAccountModel {
+        guard let proxy = self.proxy, proxy.status == oldStatus else {
+            return self
+        }
+
+        return .init(
+            chainId: chainId,
+            accountId: accountId,
+            publicKey: publicKey,
+            cryptoType: cryptoType,
+            proxy: .init(type: proxy.type, accountId: proxy.accountId, status: newStatus)
+        )
+    }
+
     func replacingProxy(_ proxy: ProxyAccountModel?) -> ChainAccountModel {
         .init(
             chainId: chainId,

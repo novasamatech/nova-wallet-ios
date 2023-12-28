@@ -11,8 +11,6 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         baseWireframe as? WalletSelectionWireframeProtocol
     }
 
-    private var shouldShowDelegatesUpdates: Bool = true
-
     init(
         interactor: WalletSelectionInteractorInputProtocol,
         wireframe: WalletSelectionWireframeProtocol,
@@ -31,28 +29,36 @@ final class WalletSelectionPresenter: WalletsListPresenter {
 
     override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         super.updateWallets(changes: changes)
-        guard shouldShowDelegatesUpdates else {
+
+        guard let view = baseView, view.controller.topModalViewController == view.controller else {
             return
         }
+
         let proxyWalletChanged = walletsList.lastDifferences.contains {
             switch $0 {
             case let .delete(_, metaAccount):
                 return metaAccount.info.type == .proxied
-            case let .insert(_, metaAccount), let .update(_, _, metaAccount):
+            case let .insert(_, metaAccount):
                 return metaAccount.info.type == .proxied && metaAccount.info.chainAccounts.contains {
                     $0.proxy?.status == .new || $0.proxy?.status == .revoked
                 } ? true : false
+            case let .update(_, old, new):
+                guard old.info.type == .proxied, new.info.type == .proxied else {
+                    return false
+                }
+                guard let oldProxy = old.info.chainAccounts.first(where: { $0.proxy != nil }),
+                      let newProxy = new.info.chainAccounts.first(where: { $0.proxy?.isNotActive == true }) else {
+                    return false
+                }
+                return oldProxy.proxy?.status != newProxy.proxy?.status
             }
         }
 
         if proxyWalletChanged {
-            shouldShowDelegatesUpdates = false
             wireframe?.showProxiedsUpdates(
                 from: baseView,
                 initWallets: walletsList.allItems
-            ) { [weak self] in
-                self?.shouldShowDelegatesUpdates = true
-            }
+            )
         }
     }
 }
@@ -72,6 +78,14 @@ extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
 
     func activateSettings() {
         wireframe?.showSettings(from: baseView)
+    }
+
+    func didReceive(saveError: Error) {
+        super.didReceiveError(saveError)
+    }
+
+    func viewWillDisappear() {
+        interactor?.updateWalletsStatuses()
     }
 }
 

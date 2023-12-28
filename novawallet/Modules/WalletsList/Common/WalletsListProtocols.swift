@@ -22,6 +22,7 @@ protocol WalletsListInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>])
     func didUpdateBalancesCalculator(_ calculator: BalancesCalculating)
     func didReceiveError(_ error: Error)
+    func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>])
 }
 
 protocol WalletsListWireframeProtocol: AlertPresentable, ErrorPresentable {}

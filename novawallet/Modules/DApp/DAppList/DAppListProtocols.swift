@@ -37,6 +37,7 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceive(walletResult: Result<MetaAccountModel, Error>)
     func didReceive(dAppsResult: Result<DAppList, Error>?)
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])
+    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
 protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebPresentable, WalletSwitchPresentable {

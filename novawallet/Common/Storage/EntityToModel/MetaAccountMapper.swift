@@ -106,11 +106,14 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
 
         if let proxy = model.proxy {
             if chainAccounEntity.proxy == nil {
-                chainAccounEntity.proxy = CDProxy(context: context)
+                let proxy = CDProxy(context: context)
+                proxy.chainAccount = chainAccounEntity
+                chainAccounEntity.proxy = proxy
             }
             chainAccounEntity.proxy?.type = proxy.type.id
             chainAccounEntity.proxy?.proxyAccountId = proxy.accountId.toHex()
             chainAccounEntity.proxy?.status = proxy.status.rawValue
+            chainAccounEntity.proxy?.identifier = proxy.identifier
         } else {
             chainAccounEntity.proxy = nil
         }

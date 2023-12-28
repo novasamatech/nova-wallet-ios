@@ -3,9 +3,14 @@ import UIKit
 
 final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentable {
     let dappMediator: DAppInteractionMediating
+    let proxySyncService: ProxySyncServiceProtocol
 
-    init(dappMediator: DAppInteractionMediating) {
+    init(
+        dappMediator: DAppInteractionMediating,
+        proxySyncService: ProxySyncServiceProtocol
+    ) {
         self.dappMediator = dappMediator
+        self.proxySyncService = proxySyncService
     }
 
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {

@@ -15,7 +15,7 @@ protocol SettingsPresenterProtocol: AnyObject {
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
-    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
+    func createAccountViewModel(for wallet: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel
 
     func createSectionViewModels(
         language: Language?,
@@ -40,6 +40,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(biometrySettings: BiometrySettings)
     func didReceive(pinConfirmationEnabled: Bool)
     func didReceive(error: SettingsError)
+    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,

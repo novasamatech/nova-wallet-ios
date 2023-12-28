@@ -6,8 +6,12 @@ import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
+    var walletNotificationService: WalletNotificationServiceProtocol { get }
+    var proxySyncService: ProxySyncServiceProtocol { get }
 
-    func updateOnAccountChange()
+    func updateOnWalletSelectionChange()
+
+    func updateOnWalletChange()
 }
 
 final class ServiceCoordinator {
@@ -20,6 +24,7 @@ final class ServiceCoordinator {
     let equilibriumService: AssetsUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
     let proxySyncService: ProxySyncServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
 
     init(
@@ -32,6 +37,7 @@ final class ServiceCoordinator {
         equilibriumService: AssetsUpdatingServiceProtocol,
         proxySyncService: ProxySyncServiceProtocol,
         dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     ) {
         self.walletSettings = walletSettings
@@ -43,12 +49,13 @@ final class ServiceCoordinator {
         self.githubPhishingService = githubPhishingService
         self.proxySyncService = proxySyncService
         self.dappMediator = dappMediator
+        self.walletNotificationService = walletNotificationService
         self.syncModeUpdateService = syncModeUpdateService
     }
 }
 
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
-    func updateOnAccountChange() {
+    func updateOnWalletSelectionChange() {
         if let selectedMetaAccount = walletSettings.value {
             accountInfoService.update(selectedMetaAccount: selectedMetaAccount)
             assetsService.update(selectedMetaAccount: selectedMetaAccount)
@@ -57,6 +64,10 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
             syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
         }
+    }
+
+    func updateOnWalletChange() {
+        proxySyncService.syncUp()
     }
 
     func setup() {
@@ -110,7 +121,10 @@ extension ServiceCoordinator {
 
         let userDataStorageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
-        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(for: nil, sortDescriptors: [])
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
         let accountInfoService = AccountInfoUpdatingService(
             selectedAccount: walletSettings.value,
@@ -176,6 +190,11 @@ extension ServiceCoordinator {
             metaAccountsRepository: metaAccountsRepository
         )
 
+        let walletNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: logger
+        )
+
         let syncModeUpdateService = ChainSyncModeUpdateService(
             selectedMetaAccount: walletSettings.value,
             chainRegistry: chainRegistry,
@@ -192,6 +211,7 @@ extension ServiceCoordinator {
             equilibriumService: equilibriumService,
             proxySyncService: proxySyncService,
             dappMediator: DAppInteractionFactory.createMediator(),
+            walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService
         )
     }

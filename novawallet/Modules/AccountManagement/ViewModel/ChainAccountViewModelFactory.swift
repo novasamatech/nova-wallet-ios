@@ -164,7 +164,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 
         switch wallet.type {
-        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault:
             guard !customSecretAccountList.isEmpty else {
                 return [ChainAccountListSectionViewModel(
                     section: .sharedSecret,
@@ -182,7 +182,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger:
+        case .ledger, .proxied:
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)

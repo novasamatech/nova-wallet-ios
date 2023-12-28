@@ -7,7 +7,7 @@ protocol ProxiedsUpdateFactoryProtocol {
         statuses: [ProxyAccountModel.Status],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
-    ) -> [ProxyWalletView.ViewModel]
+    ) -> [WalletView.ViewModel]
 }
 
 final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
@@ -18,15 +18,15 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
         statuses: [ProxyAccountModel.Status],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
-    ) -> [ProxyWalletView.ViewModel] {
-        let viewModels: [ProxyWalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
+    ) -> [WalletView.ViewModel] {
+        let viewModels: [WalletView.ViewModel] = wallets.filter { $0.info.type == .proxied }.compactMap { wallet in
             guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
                   let proxy = chainAccount.proxy,
                   statuses.contains(proxy.status),
                   let proxyWallet = wallets.first(where: { $0.info.has(
                       accountId: proxy.accountId,
                       chainId: chainAccount.chainId
-                  ) && $0.info.type != .proxied })
+                  ) })
             else {
                 return nil
             }
@@ -45,14 +45,17 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
             }
             let chainModel = chains[chainAccount.chainId]
             let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
-
-            return ProxyWalletView.ViewModel(
-                icon: iconViewModel,
+            let proxyInfo = WalletView.ViewModel.ProxyInfo(
                 networkIcon: chainIcon,
-                name: wallet.info.name,
-                subtitle: proxy.type.subtitle(locale: locale),
-                subtitleDetailsIcon: subtitleDetailsIconViewModel,
-                subtitleDetails: proxyWallet.info.name
+                proxyType: proxy.type.subtitle(locale: locale),
+                proxyIcon: subtitleDetailsIconViewModel,
+                proxyName: proxyWallet.info.name,
+                isNew: false
+            )
+
+            return WalletView.ViewModel(
+                wallet: .init(icon: iconViewModel, name: wallet.info.name),
+                type: .proxy(proxyInfo)
             )
         }
 

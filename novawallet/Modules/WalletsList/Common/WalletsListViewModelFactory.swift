@@ -7,6 +7,7 @@ protocol WalletsListViewModelFactoryProtocol {
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
         balancesCalculator: BalancesCalculating,
+        chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletsListSectionViewModel]
 
@@ -15,6 +16,13 @@ protocol WalletsListViewModelFactoryProtocol {
         balancesCalculator: BalancesCalculating,
         locale: Locale
     ) -> WalletsListViewModel
+
+    func createProxyItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListViewModel?
 }
 
 class WalletsListViewModelFactory {
@@ -58,26 +66,18 @@ class WalletsListViewModelFactory {
     }
 
     private func createProxySection(
-        wallets: [ManagedMetaAccountModel]
+        wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
     ) -> WalletsListSectionViewModel? {
         let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
             WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxied
         }.compactMap { wallet -> WalletsListViewModel? in
-            guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }), let proxied = chainAccount.proxy else {
-                return nil
-            }
-            let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-            let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
-
-            let detailsViewModel = WalletTotalAmountView.ViewModel(
-                icon: iconViewModel,
-                name: wallet.info.name,
-                amount: proxied.type.id + " in " + chainAccount.chainId
-            )
-            return WalletsListViewModel(
-                identifier: wallet.identifier,
-                walletAmountViewModel: detailsViewModel,
-                isSelected: isSelected(wallet: wallet)
+            createProxyItemViewModel(
+                for: wallet,
+                wallets: wallets,
+                chains: chains,
+                locale: locale
             )
         }
 
@@ -100,17 +100,69 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         let totalValue = formatPrice(amount: totalValueDecimal, locale: locale)
 
         let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
+        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
+            .init(icon: $0),
+            identifier: wallet.info.metaId
+        ) }
 
-        let totalAmountViewModel = WalletTotalAmountView.ViewModel(
-            icon: iconViewModel,
-            name: wallet.info.name,
-            amount: totalValue
+        let walletViewModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .regular(totalValue)
         )
 
         return WalletsListViewModel(
             identifier: wallet.identifier,
-            walletAmountViewModel: totalAmountViewModel,
+            walletViewModel: walletViewModel,
+            isSelected: isSelected(wallet: wallet)
+        )
+    }
+
+    func createProxyItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListViewModel? {
+        guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
+              let proxy = chainAccount.proxy,
+              let proxyWallet = wallets.first(where: { $0.info.has(
+                  accountId: proxy.accountId,
+                  chainId: chainAccount.chainId
+              ) })
+        else {
+            return nil
+        }
+
+        let optIcon = wallet.info.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
+        let iconViewModel = optIcon.map {
+            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
+        }
+        let optSubtitleDetailsIcon = proxyWallet.info.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
+        let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
+            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxyWallet.info.metaId)
+        }
+        let chainModel = chains[chainAccount.chainId]
+        let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
+        let proxyInfo = WalletView.ViewModel.ProxyInfo(
+            networkIcon: chainIcon,
+            proxyType: proxy.type.subtitle(locale: locale),
+            proxyIcon: subtitleDetailsIconViewModel,
+            proxyName: proxyWallet.info.name,
+            isNew: proxy.status == .new
+        )
+
+        let proxyModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .proxy(proxyInfo)
+        )
+
+        return WalletsListViewModel(
+            identifier: wallet.identifier,
+            walletViewModel: proxyModel,
             isSelected: isSelected(wallet: wallet)
         )
     }
@@ -118,6 +170,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
         balancesCalculator: BalancesCalculating,
+        chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletsListSectionViewModel] {
         var sections: [WalletsListSectionViewModel] = []
@@ -174,7 +227,9 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
 
         if
             let proxySection = createProxySection(
-                wallets: wallets
+                wallets: wallets,
+                chains: chains,
+                locale: locale
             ) {
             sections.append(proxySection)
         }

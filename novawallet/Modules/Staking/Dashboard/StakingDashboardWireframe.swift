@@ -2,9 +2,14 @@ import Foundation
 
 final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     let stateObserver: Observable<StakingDashboardModel>
+    let proxySyncService: ProxySyncServiceProtocol
 
-    init(stateObserver: Observable<StakingDashboardModel>) {
+    init(
+        stateObserver: Observable<StakingDashboardModel>,
+        proxySyncService: ProxySyncServiceProtocol
+    ) {
         self.stateObserver = stateObserver
+        self.proxySyncService = proxySyncService
     }
 
     func showMoreOptions(from view: ControllerBackedProtocol?) {
