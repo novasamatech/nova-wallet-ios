@@ -28,7 +28,7 @@ class BaseExtrinsicOperationFactory {
     func createExtrinsicWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
-        signingClosure _: @escaping (Data) throws -> Data
+        signingClosure _: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<[Data]> {
         fatalError("Subclass must override this method")
     }
@@ -189,8 +189,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         do {
             let signer = try createDummySigner()
 
-            let signingClosure: (Data) throws -> Data = { data in
-                try signer.sign(data).rawData()
+            let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
+                try signer.sign(data, context: context).rawData()
             }
 
             let indexList = Array(indexes)
@@ -254,8 +254,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         signer: SigningWrapperProtocol,
         indexes: IndexSet
     ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
-        let signingClosure: (Data) throws -> Data = { data in
-            try signer.sign(data).rawData()
+        let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
+            try signer.sign(data, context: context).rawData()
         }
 
         let indexList = Array(indexes)
@@ -322,8 +322,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             try closure(builder)
         }
 
-        let signingClosure: (Data) throws -> Data = { data in
-            try signer.sign(data).rawData()
+        let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
+            try signer.sign(data, context: context).rawData()
         }
 
         let builderWrapper = createExtrinsicWrapper(

@@ -20,13 +20,15 @@ final class ExtrinsicSenderResolutionFactory {
         self.userStorageFacade = userStorageFacade
     }
 
-    private func createCurrentResolver() -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
-        let resolver = ExtrinsicCurrentSenderResolver()
+    private func createCurrentResolver(
+        for chainAccount: ChainAccountResponse
+    ) -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
+        let resolver = ExtrinsicCurrentSenderResolver(currentAccount: chainAccount)
         return CompoundOperationWrapper.createWithResult(resolver)
     }
 
     private func createProxyResolver(
-        for _: ChainAccountResponse
+        for proxiedAccount: ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         let repository = AccountRepositoryFactory(storageFacade: userStorageFacade).createMetaAccountRepository(
             for: nil,
@@ -37,7 +39,7 @@ final class ExtrinsicSenderResolutionFactory {
 
         let mappingOperation = ClosureOperation<ExtrinsicSenderResolving> {
             let wallets = try fetchOperation.extractNoCancellableResultData()
-            return ExtrinsicProxySenderResolver(wallets: wallets)
+            return ExtrinsicProxySenderResolver(currentAccount: proxiedAccount, wallets: wallets)
         }
 
         mappingOperation.addDependency(fetchOperation)
@@ -49,12 +51,13 @@ final class ExtrinsicSenderResolutionFactory {
 extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         guard let chainAccount = chainAccount else {
-            return createCurrentResolver()
+            // TODO: Decide on nil chain account
+            return .createWithError(CommonError.dataCorruption)
         }
 
         switch chainAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .ledger, .watchOnly:
-            return createCurrentResolver()
+            return createCurrentResolver(for: chainAccount)
         case .proxied:
             return createProxyResolver(for: chainAccount)
         }

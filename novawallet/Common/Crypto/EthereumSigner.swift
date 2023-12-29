@@ -22,7 +22,7 @@ final class EthereumSigner: BaseSigner {
         super.init(settingsManager: settingsManager)
     }
 
-    override func signData(_ data: Data) throws -> IRSignatureProtocol {
+    override func signData(_ data: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         let tag = KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId)
 
         let secretKey = try keystore.fetchKey(for: tag)

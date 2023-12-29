@@ -25,7 +25,7 @@ final class DummySigner: SigningWrapperProtocol {
         }
     }
 
-    func sign(_ originalData: Data) throws -> IRSignatureProtocol {
+    func sign(_ originalData: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         switch type {
         case let .sr25519(secretKeyData, publicKeyData):
             return try signSr25519(

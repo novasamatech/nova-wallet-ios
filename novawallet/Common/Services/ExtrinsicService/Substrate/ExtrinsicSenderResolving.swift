@@ -2,30 +2,55 @@ import Foundation
 import SubstrateSdk
 
 enum ExtrinsicSenderResolution {
-    case current
-    case proxy(MetaAccountModel, Proxy.ProxyType)
+    struct ResolvedProxy {
+        let proxyAccount: ChainAccountResponse
+        let proxiedAccount: ChainAccountResponse
+        let type: Proxy.ProxyType
+    }
+
+    case current(ChainAccountResponse)
+    case proxy(ResolvedProxy)
+
+    var account: ChainAccountResponse {
+        switch self {
+        case let .current(account):
+            return account
+        case let .proxy(proxy):
+            return proxy.proxyAccount
+        }
+    }
 }
 
+typealias ExtrinsicSenderBuilderResolution = (sender: ExtrinsicSenderResolution, builders: [ExtrinsicBuilderProtocol])
+
 protocol ExtrinsicSenderResolving: AnyObject {
-    func resolve(for calls: [JSON]) throws -> ExtrinsicSenderResolution
+    func resolveSender(wrapping builders: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution
 }
 
 final class ExtrinsicProxySenderResolver {
     let wallets: [MetaAccountModel]
+    let currentAccount: ChainAccountResponse
 
-    init(wallets: [MetaAccountModel]) {
+    init(currentAccount: ChainAccountResponse, wallets: [MetaAccountModel]) {
+        self.currentAccount = currentAccount
         self.wallets = wallets
     }
 }
 
 extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
-    func resolve(for _: [JSON]) throws -> ExtrinsicSenderResolution {
-        .current
+    func resolveSender(wrapping _: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution {
+        throw CommonError.dataCorruption
     }
 }
 
 final class ExtrinsicCurrentSenderResolver: ExtrinsicSenderResolving {
-    func resolve(for _: [JSON]) throws -> ExtrinsicSenderResolution {
-        .current
+    let currentAccount: ChainAccountResponse
+
+    init(currentAccount: ChainAccountResponse) {
+        self.currentAccount = currentAccount
+    }
+
+    func resolveSender(wrapping builders: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution {
+        (.current(currentAccount), builders)
     }
 }

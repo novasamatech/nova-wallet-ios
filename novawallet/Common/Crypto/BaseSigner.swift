@@ -9,9 +9,9 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
         self.settingsManager = settingsManager
     }
 
-    func sign(_ originalData: Data) throws -> IRSignatureProtocol {
+    func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         if settingsManager.pinConfirmationEnabled == true {
-            let signingResult = signAfterAutorization(originalData)
+            let signingResult = signAfterAutorization(originalData, context: context)
             switch signingResult {
             case let .success(signature):
                 return signature
@@ -19,11 +19,14 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
                 throw error
             }
         } else {
-            return try signData(originalData)
+            return try signData(originalData, context: context)
         }
     }
 
-    private func signAfterAutorization(_ originalData: Data) -> Result<IRSignatureProtocol, Error> {
+    private func signAfterAutorization(
+        _ originalData: Data,
+        context: ExtrinsicSigningContext
+    ) -> Result<IRSignatureProtocol, Error> {
         let semaphore = DispatchSemaphore(value: 0)
         var signResult: Result<IRSignatureProtocol, Error>?
 
@@ -37,7 +40,7 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
                 }
                 if completed {
                     do {
-                        let sign = try self.signData(originalData)
+                        let sign = try self.signData(originalData, context: context)
                         signResult = .success(sign)
                     } catch {
                         signResult = .failure(error)
@@ -51,7 +54,7 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
         return signResult ?? .failure(SigningWrapperError.pinCheckNotPassed)
     }
 
-    func signData(_: Data) throws -> IRSignatureProtocol {
+    func signData(_: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         fatalError("Must be overriden by subsclass")
     }
 }

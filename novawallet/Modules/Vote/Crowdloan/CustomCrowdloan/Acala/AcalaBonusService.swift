@@ -201,7 +201,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
                 throw CrowdloanBonusServiceError.veficationFailed
             }
 
-            let signedData = try self.signingWrapper.sign(statement)
+            let signedData = try self.signingWrapper.sign(statement, context: .rawBytes)
 
             return KaruraVerifyInfo(
                 address: self.address,

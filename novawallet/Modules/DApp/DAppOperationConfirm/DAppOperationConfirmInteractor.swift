@@ -100,7 +100,8 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
         let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data in
-            try signer.sign(data).rawData()
+            // TODO: support context for DApps
+            try signer.sign(data, context: .rawBytes).rawData()
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

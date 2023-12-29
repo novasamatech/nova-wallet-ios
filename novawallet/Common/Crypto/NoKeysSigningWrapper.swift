@@ -6,7 +6,7 @@ enum NoKeysSigningWrapperError: Error {
 }
 
 final class NoKeysSigningWrapper: SigningWrapperProtocol {
-    func sign(_: Data) throws -> IRSignatureProtocol {
+    func sign(_: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         throw NoKeysSigningWrapperError.watchOnly
     }
 }

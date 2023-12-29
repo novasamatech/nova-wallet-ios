@@ -46,6 +46,8 @@
 		0C0CB3852AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */; };
 		0C0CB3882AC5688100EAC516 /* AssetConversionPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */; };
 		0C0CB38A2AC56A1600EAC516 /* AssetConversionPallet+Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3892AC56A1600EAC516 /* AssetConversionPallet+Path.swift */; };
+		0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */; };
+		0C0E0A9B2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C1338102AB832B30036BCD6 /* QRImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */; };
@@ -4207,6 +4209,8 @@
 		0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapOperationFactory.swift; sourceTree = "<group>"; };
 		0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionPallet.swift; sourceTree = "<group>"; };
 		0C0CB3892AC56A1600EAC516 /* AssetConversionPallet+Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionPallet+Path.swift"; sourceTree = "<group>"; };
+		0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicWrapperResult.swift; sourceTree = "<group>"; };
+		0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningContext.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModel.swift; sourceTree = "<group>"; };
@@ -14946,6 +14950,8 @@
 				0C8AF7A92B33455A00005AC9 /* ExtrinsicFee.swift */,
 				0C8AF7AB2B3437E700005AC9 /* ExtrinsicSenderResolving.swift */,
 				0C8AF7AE2B343C6B00005AC9 /* ExtrinsicSenderResolutionFactory.swift */,
+				0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */,
+				0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -21580,6 +21586,7 @@
 				847A25C628D84BE2006AC9F5 /* Referenda.swift in Sources */,
 				0C17BD9B2A43025E004AF9E7 /* Pagination.swift in Sources */,
 				88D02FE82942EB1A00E26390 /* AssetDetailsModel.swift in Sources */,
+				0C0E0A9B2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift in Sources */,
 				77F033A22A84E00F006BC67E /* StakingPoolView.swift in Sources */,
 				77E304A92AEB9F76006FD6F0 /* SwapConfirmInitState.swift in Sources */,
 				88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */,
@@ -22556,6 +22563,7 @@
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
 				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,
 				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
+				0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				0C0CB3822AC545A800EAC516 /* AssetConversionExtrinsicService.swift in Sources */,
 				77A4F4032B036615006294BC /* Optional+Result.swift in Sources */,

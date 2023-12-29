@@ -46,7 +46,7 @@ final class DAppExtrinsicBuilderOperationFactory {
 
     private func createRawSignatureOperation(
         for result: DAppOperationProcessedResult,
-        signingClosure: @escaping (Data) throws -> Data
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -57,14 +57,20 @@ final class DAppExtrinsicBuilderOperationFactory {
 
         builderOperation.addDependency(codingFactoryOperation)
 
+        // TODO: Resolve account for context
+        let context = ExtrinsicSigningContext.Substrate(
+            senderResolution: .current(result.account),
+            chainFormat: result.account.chainFormat,
+            cryptoType: result.account.cryptoType
+        )
+
         let payloadOperation = ClosureOperation<Data> {
             let builder = try builderOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             return try builder.signing(
-                with: { try signingClosure($0) },
-                chainFormat: result.account.chainFormat,
-                cryptoType: result.account.cryptoType,
+                with: { try signingClosure($0, $1) },
+                context: context,
                 codingFactory: codingFactory
             )
             .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
@@ -84,7 +90,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     func createWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
-        signingClosure: @escaping (Data) throws -> Data
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<[Data]> {
         let signatureWrapper = createRawSignatureOperation(
             for: processedResult,

@@ -18,7 +18,7 @@ final class NoSigningSupportWrapper: SigningWrapperProtocol {
         self.type = type
     }
 
-    func sign(_: Data) throws -> IRSignatureProtocol {
+    func sign(_: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         throw NoSigningSupportError.notSupported(type: type)
     }
 }

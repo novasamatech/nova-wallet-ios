@@ -6,7 +6,7 @@ protocol ExtrinsicBuilderOperationFactoryProtocol {
     func createWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
-        signingClosure: @escaping (Data) throws -> Data
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<[Data]>
 
     func createDummySigner() throws -> DummySigner
@@ -39,7 +39,7 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
     override func createExtrinsicWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
-        signingClosure: @escaping (Data) throws -> Data
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<[Data]> {
         proxy.createWrapper(
             customClosure: customClosure,

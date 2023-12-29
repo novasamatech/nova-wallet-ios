@@ -142,6 +142,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         for _: @escaping (Void) throws -> AccountId
     ) -> BaseOperation<UInt32> {
         do {
+            // TODO: retrieve account id from closure
             let address = try accountId.toAddress(using: chain.chainFormat)
             return JSONRPCListOperation<UInt32>(
                 engine: engine,
@@ -177,10 +178,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     override func createExtrinsicWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
-        signingClosure: @escaping (Data) throws -> Data
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<[Data]> {
-        let currentCryptoType = cryptoType
-        let currentAccountId = accountId
         let currentChainFormat = chain.chainFormat
         let currentExtensions = customExtensions
         let currentSignaturePayloadFormat = signaturePayloadFormat
@@ -229,50 +228,45 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         }
 
         let senderResolverWrapper = senderResolvingFactory.createWrapper()
-        let senderResolutionOperation = ClosureOperation<ExtrinsicSenderResolution> {
-            let builders = try partialBuildersOperation.extractNoCancellableResultData() // flatmap calls
+        let senderResolutionOperation = ClosureOperation<ExtrinsicSenderBuilderResolution> {
+            let builders = try partialBuildersOperation.extractNoCancellableResultData()
             let resolver = try senderResolverWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try resolver.resolve(for: [])
+            return try resolver.resolveSender(wrapping: builders)
         }
 
         senderResolutionOperation.addDependency(partialBuildersOperation)
         senderResolutionOperation.addDependency(senderResolverWrapper.targetOperation)
 
         let nonceOperation = createNonceOperation {
-            let senderResolution = try senderResolutionOperation.extractNoCancellableResultData()
-            switch senderResolution {
-            case .current:
-                return currentAccountId
-            case let .proxy(wallet, _):
-                return currentAccountId
-            }
+            let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
+            return senderResolution.account.accountId
         }
+
+        nonceOperation.addDependency(senderResolutionOperation)
 
         let extrinsicsOperation = ClosureOperation<[Data]> {
             let nonce = try nonceOperation.extractNoCancellableResultData()
-            let senderResolution = try senderResolutionOperation.extractNoCancellableResultData()
-            let builders = try partialBuildersOperation.extractNoCancellableResultData()
+            let (senderResolution, builders) = try senderResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let context = ExtrinsicSigningContext.Substrate(
+                senderResolution: senderResolution,
+                chainFormat: currentChainFormat,
+                cryptoType: senderResolution.account.cryptoType
+            )
 
             let extrinsics: [Data] = try builders.enumerated().map { index, partialBuilder in
                 var builder = partialBuilder.with(nonce: nonce + UInt32(index))
-
-                // also wrap calls here
-
-                let account = MultiAddress.accoundId(currentAccountId)
+                let account = MultiAddress.accoundId(senderResolution.account.accountId)
                 builder = try builder.with(address: account)
                 builder = try builder.signing(
                     with: signingClosure,
-                    chainFormat: currentChainFormat,
-                    cryptoType: currentCryptoType,
+                    context: context,
                     codingFactory: codingFactory
                 )
 
-                return try builder.build(
-                    encodingBy: codingFactory.createEncoder(),
-                    metadata: codingFactory.metadata
-                )
+                return try builder.build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
             }
 
             return extrinsics
