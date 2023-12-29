@@ -4,23 +4,30 @@ import RobinHood
 
 protocol RuntimeSnapshotFactoryProtocol {
     func createRuntimeSnapshotWrapper(
-        for typesUsage: ChainModel.TypesUsage
+        for chain: RuntimeProviderChain
     ) -> CompoundOperationWrapper<RuntimeSnapshot?>
+}
+
+enum RuntimeSnapshotFactoryError: Error {
+    case unsupportedRuntimeVersion
 }
 
 final class RuntimeSnapshotFactory {
     let chainId: ChainModel.Id
     let filesOperationFactory: RuntimeFilesOperationFactoryProtocol
     let repository: AnyDataProviderRepository<RuntimeMetadataItem>
+    let logger: LoggerProtocol
 
     init(
         chainId: ChainModel.Id,
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
-        repository: AnyDataProviderRepository<RuntimeMetadataItem>
+        repository: AnyDataProviderRepository<RuntimeMetadataItem>,
+        logger: LoggerProtocol
     ) {
         self.chainId = chainId
         self.filesOperationFactory = filesOperationFactory
         self.repository = repository
+        self.logger = logger
     }
 
     private func createWrapperForCommonAndChainTypes() -> CompoundOperationWrapper<RuntimeSnapshot?> {
@@ -212,19 +219,84 @@ final class RuntimeSnapshotFactory {
 
         return CompoundOperationWrapper(targetOperation: snapshotOperation, dependencies: dependencies)
     }
+
+    func createWrapperForMetadataAndDefaultTyping(
+        for chain: RuntimeProviderChain,
+        logger: LoggerProtocol
+    ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
+        let runtimeMetadataOperation = repository.fetchOperation(
+            by: chainId,
+            options: RepositoryFetchOptions()
+        )
+
+        let snapshotOperation = ClosureOperation<RuntimeSnapshot?> {
+            guard let runtimeMetadataItem = try runtimeMetadataOperation
+                .extractNoCancellableResultData() else {
+                return nil
+            }
+
+            let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
+            let runtimeMetadataContainer = try RuntimeMetadataContainer(scaleDecoder: decoder)
+
+            let runtimeMetadata: RuntimeMetadataProtocol
+            let catalog: TypeRegistryCatalogProtocol
+
+            switch runtimeMetadataContainer.runtimeMetadata {
+            case let .v14(metadata):
+                let augmentationFactory = RuntimeAugmentationFactory()
+
+                let result = !chain.isEthereumBased ? augmentationFactory.createSubstrateAugmentation(for: metadata) :
+                    augmentationFactory.createEthereumBasedAugmentation(for: metadata)
+
+                catalog = try TypeRegistryCatalog.createFromSiDefinition(
+                    runtimeMetadata: metadata,
+                    additionalNodes: result.additionalNodes.nodes,
+                    customExtensions: DefaultExtrinsicExtension.getCoders(for: metadata),
+                    customTypeMapper: CustomSiMappers.all,
+                    customNameMapper: ScaleInfoCamelCaseMapper()
+                )
+                runtimeMetadata = metadata
+
+                if !result.additionalNodes.notMatch.isEmpty {
+                    logger.warning("No \(chain.name) type matching: \(result.additionalNodes.notMatch)")
+                } else {
+                    logger.debug("Types matching succeed for \(chain.name)")
+                }
+            case .v13:
+                throw RuntimeSnapshotFactoryError.unsupportedRuntimeVersion
+            }
+
+            return RuntimeSnapshot(
+                localCommonHash: nil,
+                localChainHash: nil,
+                typeRegistryCatalog: catalog,
+                specVersion: runtimeMetadataItem.version,
+                txVersion: runtimeMetadataItem.txVersion,
+                metadata: runtimeMetadata
+            )
+        }
+
+        let dependencies = [runtimeMetadataOperation]
+
+        dependencies.forEach { snapshotOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: snapshotOperation, dependencies: dependencies)
+    }
 }
 
 extension RuntimeSnapshotFactory: RuntimeSnapshotFactoryProtocol {
     func createRuntimeSnapshotWrapper(
-        for typesUsage: ChainModel.TypesUsage
+        for chain: RuntimeProviderChain
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
-        switch typesUsage {
+        switch chain.typesUsage {
         case .onlyCommon:
             return createWrapperForCommonTypes()
         case .onlyOwn:
             return createWrapperForChainTypes()
         case .both:
             return createWrapperForCommonAndChainTypes()
+        case .none:
+            return createWrapperForMetadataAndDefaultTyping(for: chain, logger: logger)
         }
     }
 }

@@ -12,4 +12,8 @@ extension NftModel {
     static func rmrkv2Identifier(for chainId: String, identifier: String) -> String {
         "rmrkv2" + "-" + chainId + "-" + identifier
     }
+
+    static func pdc20Identifier(for chainId: String, token: String, address: String) -> String {
+        "pdc20" + "-" + chainId + "-" + token + "-" + address
+    }
 }

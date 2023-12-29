@@ -130,9 +130,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v16/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v16/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains_dev.json")!
         #endif
     }
 
@@ -158,7 +158,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #else
-            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking__bm92Y")!
+            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #endif
     }
 

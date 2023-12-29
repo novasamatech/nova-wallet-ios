@@ -41,7 +41,7 @@ enum ChainModelGenerator {
                 overridesCommon: false
             ) : nil
 
-            var options: [ChainOptions] = []
+            var options: [LocalChainOptions] = []
 
             if hasCrowdloans {
                 options.append(.crowdloans)
@@ -84,7 +84,8 @@ enum ChainModelGenerator {
                 externalApis: externalApis,
                 explorers: explorers,
                 order: Int64(index),
-                additional: nil
+                additional: nil,
+                syncMode: .full
             )
         }
     }
@@ -94,7 +95,8 @@ enum ChainModelGenerator {
         withTypes: Bool = true,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasSubstrateRuntime: Bool = true
+        hasSubstrateRuntime: Bool = true,
+        fullSyncByDefault: Bool = true
     ) -> [RemoteChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -123,14 +125,18 @@ enum ChainModelGenerator {
                 overridesCommon: false
             ) : nil
 
-            var options: [ChainOptions] = []
+            var options: [String] = []
 
             if hasCrowdloans {
-                options.append(.crowdloans)
+                options.append(LocalChainOptions.crowdloans.rawValue)
             }
 
             if !hasSubstrateRuntime {
-                options.append(.noSubstrateRuntime)
+                options.append(LocalChainOptions.noSubstrateRuntime.rawValue)
+            }
+            
+            if fullSyncByDefault {
+                options.append(RemoteOnlyChainOptions.fullSyncByDefault.rawValue)
             }
 
             let externalApi = generateRemoteExternaApis(
@@ -147,9 +153,7 @@ enum ChainModelGenerator {
                     event: nil
                 )
             ]
-
-            let rawOptions = options.compactMap { $0.rawValue }
-
+            
             return RemoteChainModel(
                 chainId: chainId,
                 parentId: nil,
@@ -160,7 +164,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
-                options: rawOptions.isEmpty ? nil : rawOptions,
+                options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers,
                 additional: nil
@@ -216,7 +220,7 @@ enum ChainModelGenerator {
             features: nil
         )
 
-        var options: [ChainOptions] = []
+        var options: [LocalChainOptions] = []
 
         if hasCrowdloans {
             options.append(.crowdloans)
@@ -255,7 +259,8 @@ enum ChainModelGenerator {
             externalApis: externalApis,
             explorers: explorers,
             order: 0,
-            additional: nil
+            additional: nil,
+            syncMode: .full
         )
     }
 

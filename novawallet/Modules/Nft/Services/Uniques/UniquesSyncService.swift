@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import BigInt
 
 final class UniquesSyncService: BaseNftSyncService {
     let chainRegistry: ChainRegistryProtocol
@@ -56,7 +57,7 @@ final class UniquesSyncService: BaseNftSyncService {
                 )
 
                 let metadata: Data? = instanceMetadata?.data ?? classMetadata?.data
-                let totalIssuance = classDetails.map { Int32(bitPattern: $0.items) }
+                let totalIssuance = classDetails.map { BigUInt($0.items) }
 
                 let instanceId = String(accountKey.instanceId)
                 let collectionId = String(accountKey.classId)
@@ -69,7 +70,7 @@ final class UniquesSyncService: BaseNftSyncService {
                     collectionId: collectionId,
                     instanceId: instanceId,
                     metadata: metadata,
-                    totalIssuance: totalIssuance
+                    issuanceTotal: totalIssuance
                 )
             }
         }

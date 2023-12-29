@@ -15,6 +15,12 @@ struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
             "$100"
         }
     }
+    
+    func unitsFromValue(_ value: Decimal, roundingMode: NumberFormatter.RoundingMode) -> LocalizableResource<String> {
+        LocalizableResource { _ in
+            "100"
+        }
+    }
 
     func balanceFromPrice(
         _ amount: Decimal,

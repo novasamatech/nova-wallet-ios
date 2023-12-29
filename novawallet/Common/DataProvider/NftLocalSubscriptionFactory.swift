@@ -96,6 +96,17 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
     }
 
+    private func createPdc20Service(for chain: ChainModel, ownerId: AccountId) -> NftSyncServiceProtocol {
+        let repository = createSyncRepository(for: chain, ownerId: ownerId, type: .pdc20)
+
+        return Pdc20NftSyncService(
+            ownerId: ownerId,
+            chain: chain,
+            repository: repository,
+            operationQueue: operationQueue
+        )
+    }
+
     private func createService(
         for chain: ChainModel,
         ownerId: AccountId,
@@ -108,6 +119,8 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             return createRMRKV1Service(for: chain, ownerId: ownerId)
         case .rmrkV2:
             return createRMRKV2Service(for: chain, ownerId: ownerId)
+        case .pdc20:
+            return createPdc20Service(for: chain, ownerId: ownerId)
         }
     }
 

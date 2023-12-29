@@ -29,6 +29,11 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
     }
 
     override func updateSubscription(for chain: ChainModel) {
+        guard chain.isFullSyncMode else {
+            removeSubscription(for: chain.chainId)
+            return
+        }
+
         guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
             return
         }

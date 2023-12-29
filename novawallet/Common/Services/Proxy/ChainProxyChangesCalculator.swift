@@ -3,6 +3,7 @@ import Foundation
 struct ChainProxyChangesCalculator {
     struct ProxyIdentifier: Hashable {
         let proxiedAccountId: AccountId
+        let proxyAccountId: AccountId
         let proxyType: Proxy.ProxyType
     }
 
@@ -27,6 +28,7 @@ struct ChainProxyChangesCalculator {
                let proxy = chainAccount.proxy {
                 let proxyId = ProxyIdentifier(
                     proxiedAccountId: chainAccount.accountId,
+                    proxyAccountId: proxy.accountId,
                     proxyType: proxy.type
                 )
                 result[proxyId] = .init(proxy: proxy, metaAccount: item)
@@ -34,8 +36,10 @@ struct ChainProxyChangesCalculator {
         }
 
         let changes = try remoteProxieds.map { accountId, remoteProxies in
-            try calculateUpdates(
-                for: localProxies,
+            let localProxiesForProxied = localProxies.filter { $0.key.proxiedAccountId == accountId }
+
+            return try calculateUpdates(
+                for: localProxiesForProxied,
                 from: remoteProxies,
                 accountId: accountId,
                 identities: identities
@@ -55,18 +59,23 @@ struct ChainProxyChangesCalculator {
         identities: [ProxiedAccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
         let updatedProxiedMetaAccounts = try remoteProxies.reduce(into: [ManagedMetaAccountModel]()) { result, proxy in
-            let key = ProxyIdentifier(proxiedAccountId: accountId, proxyType: proxy.type)
+            let key = ProxyIdentifier(
+                proxiedAccountId: accountId,
+                proxyAccountId: proxy.accountId,
+                proxyType: proxy.type
+            )
+
             if let localProxy = localProxies[key] {
-                if localProxy.proxy.status == .revoked {
-                    let newInfo = localProxy.metaAccount.info.replacingProxy(
-                        chainId: chainModel.chainId,
-                        proxy: localProxy.proxy.replacingStatus(.new)
-                    )
-                    let updatedItem = localProxy.metaAccount.replacingInfo(newInfo)
-                    result.append(updatedItem)
-                } else {
+                guard localProxy.proxy.status == .revoked else {
                     return
                 }
+
+                let newInfo = localProxy.metaAccount.info.replacingProxy(
+                    chainId: chainModel.chainId,
+                    proxy: localProxy.proxy.replacingStatus(.new)
+                )
+                let updatedItem = localProxy.metaAccount.replacingInfo(newInfo)
+                result.append(updatedItem)
             } else {
                 let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
 
@@ -98,7 +107,7 @@ struct ChainProxyChangesCalculator {
             !remoteProxies.contains {
                 localProxy.key.proxiedAccountId == accountId &&
                     localProxy.key.proxyType == $0.type &&
-                    localProxy.value.proxy.accountId == $0.accountId
+                    localProxy.key.proxyAccountId == $0.accountId
             }
         }.map { localProxy in
             let newInfo = localProxy.value.metaAccount.info.replacingProxy(

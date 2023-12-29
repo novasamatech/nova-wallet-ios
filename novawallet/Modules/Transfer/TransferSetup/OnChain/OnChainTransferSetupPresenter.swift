@@ -238,6 +238,8 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
             updateFeeView()
             provideAmountInputViewModelIfRate()
             updateAmountPriceView()
+        } else {
+            logger?.error("Did receive fee error: \(result)")
         }
     }
 

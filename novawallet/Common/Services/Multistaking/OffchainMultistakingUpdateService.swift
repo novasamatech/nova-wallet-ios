@@ -68,7 +68,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     }
 
     private func performSyncUpInternal() {
-        logger?.debug("Will start syncing...")
+        logger.debug("Will start syncing...")
 
         let bondedAccountIds = resolvedAccounts.mapValues { $0.resolvedAccountId }
         let rewardAccountIds = resolvedAccounts.compactMapValues { $0.rewardsAccountId }
@@ -131,7 +131,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
                 self?.pendingCall = nil
 
                 do {
-                    self?.logger?.debug("Did save synced data...")
+                    self?.logger.debug("Did save synced data...")
                     _ = try saveOperation.extractNoCancellableResultData()
 
                     self?.completeImmediate(nil)
@@ -147,7 +147,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
     }
 
     private func cancelOperation() {
-        logger?.debug("Cancelling syncing...")
+        logger.debug("Cancelling syncing...")
 
         clear(cancellable: &pendingCall)
     }
@@ -173,7 +173,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
         }
 
         let failureClosure: (Error) -> Void = { [weak self] _ in
-            self?.logger?.error("Can' retrive resolved accounts")
+            self?.logger.error("Can' retrive resolved accounts")
         }
 
         let options = StreamableProviderObserverOptions(
@@ -194,7 +194,7 @@ final class OffchainMultistakingUpdateService: ObservableSyncService, AnyCancell
         _ changes: [DataProviderChange<Multistaking.ResolvedAccount>],
         wallet: MetaAccountModel
     ) -> Bool {
-        logger?.debug("Did receive staking accounts: \(changes.count)")
+        logger.debug("Did receive staking accounts: \(changes.count)")
 
         var newAccounts = resolvedAccounts
 
