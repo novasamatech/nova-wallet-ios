@@ -245,6 +245,16 @@ final class AccountManagementPresenter {
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
+    private func displayProxyAddressActions(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        displayExistingHardwareAddressActions(
+            for: chain,
+            viewModel: viewModel
+        )
+    }
+
     private func displayExistingHardwareAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
@@ -465,12 +475,14 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             } else {
                 displaySecretsExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
-        case .watchOnly, .proxied:
+        case .watchOnly:
             if chainViewModel.address == nil {
                 displayWatchOnlyNoAddressActions(for: chainModel)
             } else {
                 displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
+        case .proxied:
+            displayProxyAddressActions(for: chainModel, viewModel: chainViewModel)
         case .paritySigner, .polkadotVault:
             if chainViewModel.address != nil {
                 displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
@@ -514,7 +526,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>) {
         switch result {
         case let .success(proxyWallet):
-            guard let wallet = wallet else {
+            guard let proxyWallet = proxyWallet else {
                 logger?.error("Didn't find proxy wallet for proxied wallet with id: \(walletId)")
                 return
             }
