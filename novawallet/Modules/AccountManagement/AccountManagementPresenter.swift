@@ -533,7 +533,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
             self.proxyWallet = proxyWallet
             updateProxyWallet()
         case let .failure(error):
-            logger?.error("Did receive wallet fetch error: \(error)")
+            logger?.error("Did receive proxy wallet fetch error: \(error)")
         }
     }
 
