@@ -80,6 +80,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         proxySyncService.setup()
         dappMediator.setup()
         syncModeUpdateService.setup()
+        walletNotificationService.setup()
     }
 
     func throttle() {
@@ -92,6 +93,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         proxySyncService.throttle()
         dappMediator.throttle()
         syncModeUpdateService.throttle()
+        walletNotificationService.throttle()
     }
 }
 
