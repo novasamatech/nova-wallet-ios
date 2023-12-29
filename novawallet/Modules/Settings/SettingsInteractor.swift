@@ -83,7 +83,6 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         ) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        walletNotificationService.setup()
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {

@@ -177,7 +177,6 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
         ) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        walletNotificationService.setup()
     }
 
     func retryBalancesSubscription() {

@@ -39,7 +39,6 @@ extension VoteInteractor: VoteInteractorInputProtocol {
         ) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        walletNotificationService.setup()
     }
 }
 
