@@ -1459,7 +1459,11 @@
 "proxy.updates.any.type.title" = "Доверены все операции";
 "proxy.updates.non.transfer.type.title" = "Доверено все, кроме переводов";
 "proxy.updates.governance.type.title" = "Доверено голосовать";
-"proxy.updates.staking.type.title" = "Доверено стайкать";
+"proxy.updates.staking.type.title" = "Доверено стейкать";
+"proxy.updates.nomination.pools.type.title" = "Доверено стейкать в пулах";
+"proxy.updates.identity.type.title" = "Доверена оценка identity";
+"proxy.updates.cancel.proxy.type.title" = "Доверена отмена прокси";
+"proxy.updates.auction.type.title" = "Доверено голосование в краудлонах";
 "proxy.updates.other.type.title" = "%@ proxy";
 "proxy.updates.hint" = "Nova Wallet автоматически добавляет для вас делегированные полномочия (Прокси) в отдельную категорию. Вы можете управлять кошельками в Настройках.";
 "proxy.updates.hint.link" = "Что такое Прокси?";

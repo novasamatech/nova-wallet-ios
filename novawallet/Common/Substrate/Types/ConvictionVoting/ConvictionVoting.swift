@@ -7,6 +7,8 @@ enum ConvictionVoting {
 
     static var lockId: String = "pyconvot"
 
+    static let name = "ConvictionVoting"
+
     enum Conviction: UInt8, Codable, Equatable {
         /// 0.1x votes, unlocked.
         case none

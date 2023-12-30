@@ -28,7 +28,8 @@ final class ExtrinsicSenderResolutionFactory {
     }
 
     private func createProxyResolver(
-        for proxiedAccount: ChainAccountResponse
+        for proxiedAccount: ChainAccountResponse,
+        chain: ChainModel
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         let repository = AccountRepositoryFactory(storageFacade: userStorageFacade).createMetaAccountRepository(
             for: nil,
@@ -39,7 +40,11 @@ final class ExtrinsicSenderResolutionFactory {
 
         let mappingOperation = ClosureOperation<ExtrinsicSenderResolving> {
             let wallets = try fetchOperation.extractNoCancellableResultData()
-            return ExtrinsicProxySenderResolver(currentAccount: proxiedAccount, wallets: wallets)
+            return ExtrinsicProxySenderResolver(
+                proxiedAccount: proxiedAccount,
+                wallets: wallets,
+                chain: chain
+            )
         }
 
         mappingOperation.addDependency(fetchOperation)
@@ -59,7 +64,7 @@ extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProt
         case .secrets, .paritySigner, .polkadotVault, .ledger, .watchOnly:
             return createCurrentResolver(for: chainAccount)
         case .proxied:
-            return createProxyResolver(for: chainAccount)
+            return createProxyResolver(for: chainAccount, chain: chain)
         }
     }
 }

@@ -119,3 +119,51 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         }
     }
 }
+
+extension Proxy.ProxyType {
+    init(id: String) {
+        switch id {
+        case "any":
+            self = .any
+        case "nonTransfer":
+            self = .nonTransfer
+        case "governance":
+            self = .governance
+        case "staking":
+            self = .staking
+        case "nominationPools":
+            self = .nominationPools
+        case "identityJudgement":
+            self = .identityJudgement
+        case "cancelProxy":
+            self = .cancelProxy
+        case "auction":
+            self = .auction
+        default:
+            self = .other(id)
+        }
+    }
+
+    var id: String {
+        switch self {
+        case .any:
+            return "any"
+        case .nonTransfer:
+            return "nonTransfer"
+        case .governance:
+            return "governance"
+        case .staking:
+            return "staking"
+        case .nominationPools:
+            return "nominationPools"
+        case .identityJudgement:
+            return "identityJudgement"
+        case .cancelProxy:
+            return "cancelProxy"
+        case .auction:
+            return "auction"
+        case let .other(value):
+            return value
+        }
+    }
+}

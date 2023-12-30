@@ -27,22 +27,6 @@ protocol ExtrinsicSenderResolving: AnyObject {
     func resolveSender(wrapping builders: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution
 }
 
-final class ExtrinsicProxySenderResolver {
-    let wallets: [MetaAccountModel]
-    let currentAccount: ChainAccountResponse
-
-    init(currentAccount: ChainAccountResponse, wallets: [MetaAccountModel]) {
-        self.currentAccount = currentAccount
-        self.wallets = wallets
-    }
-}
-
-extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
-    func resolveSender(wrapping _: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution {
-        throw CommonError.dataCorruption
-    }
-}
-
 final class ExtrinsicCurrentSenderResolver: ExtrinsicSenderResolving {
     let currentAccount: ChainAccountResponse
 

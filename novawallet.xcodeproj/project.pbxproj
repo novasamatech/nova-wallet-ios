@@ -48,6 +48,9 @@
 		0C0CB38A2AC56A1600EAC516 /* AssetConversionPallet+Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3892AC56A1600EAC516 /* AssetConversionPallet+Path.swift */; };
 		0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */; };
 		0C0E0A9B2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */; };
+		0C0E0A9D2B3EFD2500865F10 /* ProxyCallFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A9C2B3EFD2500865F10 /* ProxyCallFilter.swift */; };
+		0C0E0AA02B3F013800865F10 /* BalancesPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A9F2B3F013800865F10 /* BalancesPallet.swift */; };
+		0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C1338102AB832B30036BCD6 /* QRImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */; };
@@ -140,6 +143,7 @@
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
+		0C495B8C2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */; };
 		0C500B1F2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B1E2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift */; };
 		0C500B222B05102900ABEE70 /* AssetTxPaymentPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B212B05102900ABEE70 /* AssetTxPaymentPallet.swift */; };
 		0C500B242B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */; };
@@ -4211,6 +4215,9 @@
 		0C0CB3892AC56A1600EAC516 /* AssetConversionPallet+Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionPallet+Path.swift"; sourceTree = "<group>"; };
 		0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicWrapperResult.swift; sourceTree = "<group>"; };
 		0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningContext.swift; sourceTree = "<group>"; };
+		0C0E0A9C2B3EFD2500865F10 /* ProxyCallFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCallFilter.swift; sourceTree = "<group>"; };
+		0C0E0A9F2B3F013800865F10 /* BalancesPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesPallet.swift; sourceTree = "<group>"; };
+		0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniquesPallet.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModel.swift; sourceTree = "<group>"; };
@@ -4308,6 +4315,7 @@
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
 		0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+MotionEffect.swift"; sourceTree = "<group>"; };
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
+		0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProxySenderResolver.swift; sourceTree = "<group>"; };
 		0C500B1E2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionPallet+Event.swift"; sourceTree = "<group>"; };
 		0C500B212B05102900ABEE70 /* AssetTxPaymentPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTxPaymentPallet.swift; sourceTree = "<group>"; };
 		0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+CustomFee.swift"; sourceTree = "<group>"; };
@@ -8590,6 +8598,22 @@
 			path = AssetConversionPallet;
 			sourceTree = "<group>";
 		};
+		0C0E0A9E2B3F011E00865F10 /* BalancesPallet */ = {
+			isa = PBXGroup;
+			children = (
+				0C0E0A9F2B3F013800865F10 /* BalancesPallet.swift */,
+			);
+			path = BalancesPallet;
+			sourceTree = "<group>";
+		};
+		0C0E0AA12B3F01EE00865F10 /* Uniques */ = {
+			isa = PBXGroup;
+			children = (
+				0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */,
+			);
+			path = Uniques;
+			sourceTree = "<group>";
+		};
 		0C13D2F82A7D469E0054BB6F /* Recommendation */ = {
 			isa = PBXGroup;
 			children = (
@@ -10082,6 +10106,7 @@
 			children = (
 				773BA0772B15F52200929BD4 /* Proxy.swift */,
 				773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */,
+				0C0E0A9C2B3EFD2500865F10 /* ProxyCallFilter.swift */,
 			);
 			path = Proxy;
 			sourceTree = "<group>";
@@ -11625,6 +11650,8 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				0C0E0AA12B3F01EE00865F10 /* Uniques */,
+				0C0E0A9E2B3F011E00865F10 /* BalancesPallet */,
 				773BA0762B15F50700929BD4 /* Proxy */,
 				0CFA16172B0CE6F6007AF885 /* UtilityPallet */,
 				0C500B202B05101100ABEE70 /* AssetTxPaymentPallet */,
@@ -14952,6 +14979,7 @@
 				0C8AF7AE2B343C6B00005AC9 /* ExtrinsicSenderResolutionFactory.swift */,
 				0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */,
 				0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */,
+				0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -20320,6 +20348,7 @@
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
 				0C2FDF192AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift in Sources */,
 				0C13DFCD2AF8A5A300E5F355 /* SwapMaxModel.swift in Sources */,
+				0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
@@ -22070,6 +22099,7 @@
 				847119C0262EF3BD00716580 /* PayoutValidatorsFactoryProtocol.swift in Sources */,
 				843910DE253F912500E3C217 /* ApplicationStatusView.swift in Sources */,
 				8849C5E6297FA17500DE35CC /* ReleaseChangeLog.swift in Sources */,
+				0C495B8C2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift in Sources */,
 				88421060289BBAE600306F2C /* CurrencyRepository.swift in Sources */,
 				8476C9E025EF94F2003EEAE1 /* StakingViewModelFacade.swift in Sources */,
 				8495C6EB29BA24350014293F /* MessageSheetPresentable+ErrorPresentable.swift in Sources */,
@@ -22124,6 +22154,7 @@
 				2AFF4BA2274D1E5C00D790B4 /* UsernameSetupViewLayout.swift in Sources */,
 				2A66CF4F25D109780006E4C1 /* CDPhishingItem+CoreDataDecodable.swift in Sources */,
 				0C6941BF2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift in Sources */,
+				0C0E0A9D2B3EFD2500865F10 /* ProxyCallFilter.swift in Sources */,
 				8496ADDE276B123200306B24 /* PolkadotExtentionMessage.swift in Sources */,
 				84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */,
 				8473D4212657FFFB00B394B2 /* Crowdloan.swift in Sources */,
@@ -23272,6 +23303,7 @@
 				847012682983072A00F29C87 /* GovernanceDelegateInfoViewModelFactory.swift in Sources */,
 				012AE9F8BDA682C691B6F9FD /* ParitySignerWelcomeViewController.swift in Sources */,
 				DC2867A7DC1415052D090C53 /* ParitySignerWelcomeViewLayout.swift in Sources */,
+				0C0E0AA02B3F013800865F10 /* BalancesPallet.swift in Sources */,
 				845B07F5291627A3005785D3 /* Gov1OperationFactory+Protocol.swift in Sources */,
 				97608590E8D770A86CCFBE86 /* ParitySignerWelcomeViewFactory.swift in Sources */,
 				8425D0E028FE738D003B782A /* ReferendumVoteSetupInteractorError.swift in Sources */,
