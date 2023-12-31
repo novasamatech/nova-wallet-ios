@@ -8,15 +8,10 @@ final class ProxyGraph {
     }
 
     struct ProxyProxiedValue {
-        let proxyWallets: [MetaAccountModel]
         let proxyTypes: Set<Proxy.ProxyType>
 
         func adding(type: Proxy.ProxyType) -> ProxyProxiedValue {
-            .init(proxyWallets: proxyWallets, proxyTypes: proxyTypes.union([type]))
-        }
-
-        func adding(proxyWallet: MetaAccountModel) -> ProxyProxiedValue {
-            .init(proxyWallets: proxyWallets + [proxyWallet], proxyTypes: proxyTypes)
+            .init(proxyTypes: proxyTypes.union([type]))
         }
     }
 
@@ -27,6 +22,10 @@ final class ProxyGraph {
 
     struct ResolutionPath {
         let components: [ResolutionPathComponent]
+
+        var accountIds: [AccountId] {
+            components.map(\.proxyAccountId)
+        }
     }
 
     struct ResolutionContext {
@@ -107,7 +106,7 @@ final class ProxyGraph {
     }
 
     static func build(from wallets: [MetaAccountModel], chain: ChainModel) -> ProxyGraph {
-        var graph = wallets.reduce(into: [ProxyProxiedKey: ProxyProxiedValue]()) { accum, wallet in
+        let graph = wallets.reduce(into: [ProxyProxiedKey: ProxyProxiedValue]()) { accum, wallet in
             guard
                 wallet.type == .proxied,
                 let proxiedChainAccount = wallet.proxyChainAccount(chainId: chain.chainId),
@@ -116,23 +115,200 @@ final class ProxyGraph {
             }
 
             let key = ProxyProxiedKey(proxy: proxy.accountId, proxied: proxiedChainAccount.accountId)
-            let value = accum[key] ?? ProxyProxiedValue(proxyWallets: [], proxyTypes: [])
+            let value = accum[key] ?? ProxyProxiedValue(proxyTypes: [])
             accum[key] = value.adding(type: proxy.type)
         }
 
-        graph = wallets.reduce(into: graph) { accum, wallet in
-            guard let proxyAccountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
-                return
-            }
+        return ProxyGraph(graph: graph)
+    }
+}
 
-            let keys = accum.keys.filter { $0.proxy == proxyAccountId }
+final class ProxyPathMerger {
+    enum MergerError: Error {
+        case empthPaths(CallCodingPath)
+        case disjointPaths(CallCodingPath)
+    }
 
-            for key in keys {
-                accum[key] = accum[key]?.adding(proxyWallet: wallet)
+    private var availableProxies: Set<AccountId> = []
+    private(set) var availablePaths: [CallCodingPath: [ProxyGraph.ResolutionPath]] = [:]
+
+    func hasPaths(for call: CallCodingPath) -> Bool {
+        availablePaths[call] != nil
+    }
+
+    func combine(callPath: CallCodingPath, paths: [ProxyGraph.ResolutionPath]) throws {
+        let newProxies = Set(paths.compactMap(\.accountIds.last))
+
+        guard !paths.isEmpty else {
+            throw MergerError.empthPaths(callPath)
+        }
+
+        if !availableProxies.isEmpty {
+            availableProxies = availableProxies.intersection(newProxies)
+        } else {
+            availableProxies = newProxies
+        }
+
+        guard !availableProxies.isEmpty else {
+            throw MergerError.disjointPaths(callPath)
+        }
+
+        availablePaths[callPath] = paths
+
+        availablePaths = availablePaths.mapValues { paths in
+            paths.filter { path in
+                if let proxy = path.components.last?.proxyAccountId, availableProxies.contains(proxy) {
+                    return true
+                } else {
+                    return false
+                }
             }
         }
 
-        return ProxyGraph(graph: graph)
+        try availablePaths.forEach { keyValue in
+            if keyValue.value.isEmpty {
+                throw MergerError.disjointPaths(callPath)
+            }
+        }
+    }
+}
+
+final class ProxyPathFinder {
+    enum FinderError: Error {
+        case noSolution
+        case noAccount
+    }
+
+    struct PathComponent {
+        let account: ChainAccountResponse
+        let proxyType: Proxy.ProxyType
+    }
+
+    struct Path {
+        let components: [PathComponent]
+    }
+
+    struct Result {
+        let proxy: ChainAccountResponse
+        let callToPath: [CallCodingPath: Path]
+    }
+
+    struct CallProxyKey: Hashable {
+        let callPath: CallCodingPath
+        let proxy: AccountId
+    }
+
+    let accounts: [AccountId: [ChainAccountResponse]]
+
+    init(accounts: [AccountId: [ChainAccountResponse]]) {
+        self.accounts = accounts
+    }
+
+    private func buildResult(
+        from callPaths: [CallCodingPath: [ProxyGraph.ResolutionPath]],
+        accounts: [AccountId: ChainAccountResponse]
+    ) throws -> Result {
+        let allCalls = Set(callPaths.keys)
+
+        let callProxies = callPaths.reduce(into: [CallProxyKey: ProxyGraph.ResolutionPath]()) { accum, keyValue in
+            let call = keyValue.key
+            let paths = keyValue.value
+
+            paths.forEach { path in
+                guard let proxy = path.components.last?.proxyAccountId else {
+                    return
+                }
+
+                let key = CallProxyKey(callPath: call, proxy: proxy)
+
+                if let oldPath = accum[key], oldPath.components.count > path.components.count {
+                    return
+                }
+
+                accum[key] = path
+            }
+        }
+
+        guard
+            let proxyAccountId = callProxies.keys.first?.proxy,
+            let proxyAccount = accounts[proxyAccountId] else {
+            throw FinderError.noAccount
+        }
+
+        let callToPath = try allCalls.reduce(into: [CallCodingPath: Path]()) { accum, call in
+            let key = CallProxyKey(callPath: call, proxy: proxyAccountId)
+
+            guard let solution = callProxies[key] else {
+                throw FinderError.noSolution
+            }
+
+            let components = try solution.components.map { oldComponent in
+                guard
+                    let account = accounts[oldComponent.proxyAccountId],
+                    let proxyType = oldComponent.applicableTypes.first else {
+                    throw FinderError.noAccount
+                }
+
+                return PathComponent(account: account, proxyType: proxyType)
+            }
+
+            accum[call] = Path(components: components)
+        }
+
+        return Result(proxy: proxyAccount, callToPath: callToPath)
+    }
+
+    private func find(
+        callPaths: [CallCodingPath: [ProxyGraph.ResolutionPath]],
+        walletTypeFilter: (MetaAccountModelType) -> Bool
+    ) -> Result? {
+        do {
+            let pathMerger = ProxyPathMerger()
+
+            let accounts = accounts.reduce(into: [AccountId: ChainAccountResponse]()) { accum, keyValue in
+                guard let account = keyValue.value.first(where: { walletTypeFilter($0.type) }) else {
+                    return
+                }
+
+                accum[keyValue.key] = account
+            }
+
+            try callPaths.forEach { keyValue in
+                let paths = keyValue.value.filter { path in
+                    guard
+                        let proxyAccountId = path.components.last?.proxyAccountId,
+                        let account = accounts[proxyAccountId] else {
+                        return false
+                    }
+
+                    return walletTypeFilter(account.type)
+                }
+
+                try pathMerger.combine(callPath: keyValue.key, paths: paths)
+            }
+
+            return try buildResult(from: pathMerger.availablePaths, accounts: accounts)
+        } catch {
+            return nil
+        }
+    }
+
+    func find(from paths: [CallCodingPath: [ProxyGraph.ResolutionPath]]) throws -> Result {
+        if let secretBasedResult = find(callPaths: paths, walletTypeFilter: { $0 == .secrets }) {
+            return secretBasedResult
+        } else if let notWatchOnlyResult = find(callPaths: paths, walletTypeFilter: { $0 != .watchOnly }) {
+            return notWatchOnlyResult
+        } else {
+            let accounts = accounts.reduce(into: [AccountId: ChainAccountResponse]()) { accum, keyValue in
+                guard let account = keyValue.value.first else {
+                    return
+                }
+
+                accum[keyValue.key] = account
+            }
+
+            return try buildResult(from: paths, accounts: accounts)
+        }
     }
 }
 
@@ -156,9 +332,42 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
             .flatMap { $0.getCalls() }
             .map { try $0.map(to: RuntimeCall<NoRuntimeArgs>.self) }
 
-        for call in allCalls {
-            let proxyTypes = ProxyCallFilter.getProxyTypes(for: .init(moduleName: call.moduleName, callName: call.callName))
+        let pathMerger = ProxyPathMerger()
+
+        try allCalls.forEach { call in
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            guard pathMerger.hasPaths(for: callPath) else {
+                return
+            }
+
+            let proxyTypes = ProxyCallFilter.getProxyTypes(for: callPath)
             let paths = graph.resolveProxies(for: proxiedAccount.accountId, possibleProxyTypes: proxyTypes)
+
+            try pathMerger.combine(callPath: callPath, paths: paths)
+        }
+
+        let allAccounts = wallets.reduce(into: [AccountId: [ChainAccountResponse]]()) { accum, wallet in
+            guard let account = wallet.fetch(for: chain.accountRequest()) else {
+                return
+            }
+
+            let accounts = accum[account.accountId] ?? []
+            accum[account.accountId] = accounts + [account]
+        }
+
+        let solution = try ProxyPathFinder(accounts: allAccounts).find(from: pathMerger.availablePaths)
+        
+        let newBuilders = try builders.map { builder in
+            try builder.wrapCalls { callJson in
+                let call = try $0.map(to: RuntimeCall<NoRuntimeArgs>.self)
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                
+                guard let proxyPath = solution.callToPath[callPath] else {
+                    throw ProxyPathFinder.FinderError.noSolution
+                }
+                
+                
+            }
         }
 
         throw CommonError.dataCorruption

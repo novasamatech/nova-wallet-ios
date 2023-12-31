@@ -5,7 +5,7 @@ enum ExtrinsicSenderResolution {
     struct ResolvedProxy {
         let proxyAccount: ChainAccountResponse
         let proxiedAccount: ChainAccountResponse
-        let type: Proxy.ProxyType
+        let path: ProxyPathFinder.Path
     }
 
     case current(ChainAccountResponse)
