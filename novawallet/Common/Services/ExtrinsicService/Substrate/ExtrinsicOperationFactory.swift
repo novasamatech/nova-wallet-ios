@@ -139,19 +139,25 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     }
 
     private func createNonceOperation(
-        for _: @escaping (Void) throws -> AccountId
+        in chain: ChainModel,
+        accountIdClosure: @escaping () throws -> AccountId
     ) -> BaseOperation<UInt32> {
-        do {
-            // TODO: retrieve account id from closure
-            let address = try accountId.toAddress(using: chain.chainFormat)
-            return JSONRPCListOperation<UInt32>(
-                engine: engine,
-                method: RPCMethod.getExtrinsicNonce,
-                parameters: [address]
-            )
-        } catch {
-            return BaseOperation.createWithError(error)
+        let operation = JSONRPCListOperation<UInt32>(
+            engine: engine,
+            method: RPCMethod.getExtrinsicNonce
+        )
+
+        operation.configurationBlock = {
+            do {
+                let accountId = try accountIdClosure()
+                let address = try accountId.toAddress(using: chain.chainFormat)
+                operation.parameters = [address]
+            } catch {
+                operation.result = .failure(error)
+            }
         }
+
+        return operation
     }
 
     private func createBlockHashOperation(
@@ -231,14 +237,16 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         let senderResolutionOperation = ClosureOperation<ExtrinsicSenderBuilderResolution> {
             let builders = try partialBuildersOperation.extractNoCancellableResultData()
             let resolver = try senderResolverWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            return try resolver.resolveSender(wrapping: builders)
+            return try resolver.resolveSender(wrapping: builders, codingFactory: codingFactory)
         }
 
         senderResolutionOperation.addDependency(partialBuildersOperation)
         senderResolutionOperation.addDependency(senderResolverWrapper.targetOperation)
+        senderResolutionOperation.addDependency(codingFactoryOperation)
 
-        let nonceOperation = createNonceOperation {
+        let nonceOperation = createNonceOperation(in: chain) {
             let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
             return senderResolution.account.accountId
         }

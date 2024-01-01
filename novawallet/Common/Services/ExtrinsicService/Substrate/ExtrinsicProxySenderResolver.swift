@@ -180,7 +180,7 @@ final class ProxyPathFinder {
     }
 
     struct PathComponent {
-        let account: ChainAccountResponse
+        let account: MetaChainAccountResponse
         let proxyType: Proxy.ProxyType
     }
 
@@ -189,7 +189,7 @@ final class ProxyPathFinder {
     }
 
     struct Result {
-        let proxy: ChainAccountResponse
+        let proxy: MetaChainAccountResponse
         let callToPath: [CallCodingPath: Path]
     }
 
@@ -198,15 +198,15 @@ final class ProxyPathFinder {
         let proxy: AccountId
     }
 
-    let accounts: [AccountId: [ChainAccountResponse]]
+    let accounts: [AccountId: [MetaChainAccountResponse]]
 
-    init(accounts: [AccountId: [ChainAccountResponse]]) {
+    init(accounts: [AccountId: [MetaChainAccountResponse]]) {
         self.accounts = accounts
     }
 
     private func buildResult(
         from callPaths: [CallCodingPath: [ProxyGraph.ResolutionPath]],
-        accounts: [AccountId: ChainAccountResponse]
+        accounts: [AccountId: MetaChainAccountResponse]
     ) throws -> Result {
         let allCalls = Set(callPaths.keys)
 
@@ -265,8 +265,8 @@ final class ProxyPathFinder {
         do {
             let pathMerger = ProxyPathMerger()
 
-            let accounts = accounts.reduce(into: [AccountId: ChainAccountResponse]()) { accum, keyValue in
-                guard let account = keyValue.value.first(where: { walletTypeFilter($0.type) }) else {
+            let accounts = accounts.reduce(into: [AccountId: MetaChainAccountResponse]()) { accum, keyValue in
+                guard let account = keyValue.value.first(where: { walletTypeFilter($0.chainAccount.type) }) else {
                     return
                 }
 
@@ -281,7 +281,7 @@ final class ProxyPathFinder {
                         return false
                     }
 
-                    return walletTypeFilter(account.type)
+                    return walletTypeFilter(account.chainAccount.type)
                 }
 
                 try pathMerger.combine(callPath: keyValue.key, paths: paths)
@@ -299,7 +299,7 @@ final class ProxyPathFinder {
         } else if let notWatchOnlyResult = find(callPaths: paths, walletTypeFilter: { $0 != .watchOnly }) {
             return notWatchOnlyResult
         } else {
-            let accounts = accounts.reduce(into: [AccountId: ChainAccountResponse]()) { accum, keyValue in
+            let accounts = accounts.reduce(into: [AccountId: MetaChainAccountResponse]()) { accum, keyValue in
                 guard let account = keyValue.value.first else {
                     return
                 }
@@ -325,12 +325,17 @@ final class ExtrinsicProxySenderResolver {
 }
 
 extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
-    func resolveSender(wrapping builders: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution {
+    func resolveSender(
+        wrapping builders: [ExtrinsicBuilderProtocol],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> ExtrinsicSenderBuilderResolution {
         let graph = ProxyGraph.build(from: wallets, chain: chain)
+
+        let context = codingFactory.createRuntimeJsonContext()
 
         let allCalls = try builders
             .flatMap { $0.getCalls() }
-            .map { try $0.map(to: RuntimeCall<NoRuntimeArgs>.self) }
+            .map { try $0.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext()) }
 
         let pathMerger = ProxyPathMerger()
 
@@ -346,31 +351,43 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
             try pathMerger.combine(callPath: callPath, paths: paths)
         }
 
-        let allAccounts = wallets.reduce(into: [AccountId: [ChainAccountResponse]]()) { accum, wallet in
-            guard let account = wallet.fetch(for: chain.accountRequest()) else {
+        let allAccounts = wallets.reduce(into: [AccountId: [MetaChainAccountResponse]]()) { accum, wallet in
+            guard let account = wallet.fetchMetaChainAccount(for: chain.accountRequest()) else {
                 return
             }
 
-            let accounts = accum[account.accountId] ?? []
-            accum[account.accountId] = accounts + [account]
+            let accounts = accum[account.chainAccount.accountId] ?? []
+            accum[account.chainAccount.accountId] = accounts + [account]
         }
 
         let solution = try ProxyPathFinder(accounts: allAccounts).find(from: pathMerger.availablePaths)
-        
+
         let newBuilders = try builders.map { builder in
-            try builder.wrapCalls { callJson in
-                let call = try $0.map(to: RuntimeCall<NoRuntimeArgs>.self)
+            try builder.wrappingCalls { callJson in
+                let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
                 let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-                
+
                 guard let proxyPath = solution.callToPath[callPath] else {
                     throw ProxyPathFinder.FinderError.noSolution
                 }
-                
-                
+
+                return try proxyPath.components.reduce(callJson) { call, component in
+                    try Proxy.ProxyCall(
+                        real: component.account.chainAccount.accountId,
+                        forceProxyType: component.proxyType,
+                        call: call
+                    ).toScaleCompatibleJSON(with: context.toRawContext())
+                }
             }
         }
 
-        throw CommonError.dataCorruption
+        let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
+            proxyAccount: solution.proxy,
+            proxiedAccount: proxiedAccount,
+            paths: solution.callToPath
+        )
+
+        return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)
     }
 }
 

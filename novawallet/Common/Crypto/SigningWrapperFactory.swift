@@ -41,7 +41,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 accountResponse: accountResponse,
                 settingsManager: settingsManager
             )
-        case .watchOnly, .proxied:
+        case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
             return ParitySignerSigningWrapper(
@@ -63,6 +63,8 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 metaId: metaId,
                 chainId: accountResponse.chainId
             )
+        case .proxied:
+            return ProxySigningWrapper(signingWrapperFactory: self)
         }
     }
 

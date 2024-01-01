@@ -19,7 +19,7 @@ enum Proxy {
         @StringCodable var delay: BlockNumber
     }
 
-    enum ProxyType: Hashable, Decodable {
+    enum ProxyType: Hashable, Codable {
         case any
         case nonTransfer
         case governance
@@ -64,6 +64,31 @@ enum Proxy {
                 self = .auction
             default:
                 self = .other(type)
+            }
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+
+            switch self {
+            case .any:
+                try container.encode(Field.any)
+            case .nonTransfer:
+                try container.encode(Field.nonTransfer)
+            case .governance:
+                try container.encode(Field.governance)
+            case .staking:
+                try container.encode(Field.staking)
+            case .nominationPools:
+                try container.encode(Field.nominationPools)
+            case .identityJudgement:
+                try container.encode(Field.identityJudgement)
+            case .cancelProxy:
+                try container.encode(Field.cancelProxy)
+            case .auction:
+                try container.encode(Field.auction)
+            case let .other(type):
+                try container.encode(type)
             }
         }
     }

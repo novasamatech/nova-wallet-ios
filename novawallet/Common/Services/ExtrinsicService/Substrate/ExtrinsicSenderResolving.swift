@@ -3,9 +3,9 @@ import SubstrateSdk
 
 enum ExtrinsicSenderResolution {
     struct ResolvedProxy {
-        let proxyAccount: ChainAccountResponse
+        let proxyAccount: MetaChainAccountResponse
         let proxiedAccount: ChainAccountResponse
-        let path: ProxyPathFinder.Path
+        let paths: [CallCodingPath: ProxyPathFinder.Path]
     }
 
     case current(ChainAccountResponse)
@@ -16,7 +16,7 @@ enum ExtrinsicSenderResolution {
         case let .current(account):
             return account
         case let .proxy(proxy):
-            return proxy.proxyAccount
+            return proxy.proxyAccount.chainAccount
         }
     }
 }
@@ -24,7 +24,10 @@ enum ExtrinsicSenderResolution {
 typealias ExtrinsicSenderBuilderResolution = (sender: ExtrinsicSenderResolution, builders: [ExtrinsicBuilderProtocol])
 
 protocol ExtrinsicSenderResolving: AnyObject {
-    func resolveSender(wrapping builders: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution
+    func resolveSender(
+        wrapping builders: [ExtrinsicBuilderProtocol],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> ExtrinsicSenderBuilderResolution
 }
 
 final class ExtrinsicCurrentSenderResolver: ExtrinsicSenderResolving {
@@ -34,7 +37,10 @@ final class ExtrinsicCurrentSenderResolver: ExtrinsicSenderResolving {
         self.currentAccount = currentAccount
     }
 
-    func resolveSender(wrapping builders: [ExtrinsicBuilderProtocol]) throws -> ExtrinsicSenderBuilderResolution {
+    func resolveSender(
+        wrapping builders: [ExtrinsicBuilderProtocol],
+        codingFactory _: RuntimeCoderFactoryProtocol
+    ) throws -> ExtrinsicSenderBuilderResolution {
         (.current(currentAccount), builders)
     }
 }

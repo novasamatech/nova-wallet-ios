@@ -144,6 +144,8 @@
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
 		0C495B8C2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */; };
+		0C495B902B4290A900B8D339 /* Proxy+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8F2B4290A900B8D339 /* Proxy+Call.swift */; };
+		0C495B922B429BCC00B8D339 /* ProxySigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */; };
 		0C500B1F2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B1E2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift */; };
 		0C500B222B05102900ABEE70 /* AssetTxPaymentPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B212B05102900ABEE70 /* AssetTxPaymentPallet.swift */; };
 		0C500B242B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */; };
@@ -4316,6 +4318,8 @@
 		0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+MotionEffect.swift"; sourceTree = "<group>"; };
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
 		0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProxySenderResolver.swift; sourceTree = "<group>"; };
+		0C495B8F2B4290A900B8D339 /* Proxy+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Proxy+Call.swift"; sourceTree = "<group>"; };
+		0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySigningWrapper.swift; sourceTree = "<group>"; };
 		0C500B1E2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionPallet+Event.swift"; sourceTree = "<group>"; };
 		0C500B212B05102900ABEE70 /* AssetTxPaymentPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTxPaymentPallet.swift; sourceTree = "<group>"; };
 		0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+CustomFee.swift"; sourceTree = "<group>"; };
@@ -8789,6 +8793,14 @@
 			path = Effects;
 			sourceTree = "<group>";
 		};
+		0C495B8E2B42909600B8D339 /* Proxy */ = {
+			isa = PBXGroup;
+			children = (
+				0C495B8F2B4290A900B8D339 /* Proxy+Call.swift */,
+			);
+			path = Proxy;
+			sourceTree = "<group>";
+		};
 		0C500B202B05101100ABEE70 /* AssetTxPaymentPallet */ = {
 			isa = PBXGroup;
 			children = (
@@ -12380,6 +12392,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				0C495B8E2B42909600B8D339 /* Proxy */,
 				0CFA161A2B0CE83A007AF885 /* UtilityPallet */,
 				0CD352992ACD3E3500B3E446 /* Assets */,
 				0C22006C2ACAAC0F0067BA61 /* AssetConversionPallet */,
@@ -14181,6 +14194,7 @@
 				84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */,
 				84466B3F28B77B4500FA1E0D /* SignatureVerificationWrapper.swift */,
 				0C6D66AA2A8C0B6700AAB988 /* BaseSigner.swift */,
+				0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -20349,6 +20363,7 @@
 				0C2FDF192AEB82AA006A6C59 /* AssetHubFeeModelBuilder.swift in Sources */,
 				0C13DFCD2AF8A5A300E5F355 /* SwapMaxModel.swift in Sources */,
 				0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */,
+				0C495B922B429BCC00B8D339 /* ProxySigningWrapper.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
@@ -23434,6 +23449,7 @@
 				21B297239CC294307EF20B58 /* ParaStkYieldBoostSetupInteractor.swift in Sources */,
 				0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */,
 				77A6F5C62A2F17BE004AFD1A /* SendAssetOperationPresenter.swift in Sources */,
+				0C495B902B4290A900B8D339 /* Proxy+Call.swift in Sources */,
 				846DA55B2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift in Sources */,
 				0C3205CA2A895489002EB914 /* EvmGasLimitProvider.swift in Sources */,
 				AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */,
