@@ -49,7 +49,7 @@ final class XcmTransferService {
 
     func createExtrinsicOperationFactory(
         for chain: ChainModel,
-        chainAccount: ChainAccountResponse?
+        chainAccount: ChainAccountResponse
     ) throws -> ExtrinsicOperationFactoryProtocol {
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             throw ChainRegistryError.connectionUnavailable

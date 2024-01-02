@@ -32,7 +32,7 @@ class CrossChainTransferPresenter {
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var originFee: BigUInt?
-    private(set) var crossChainFee: FeeWithWeight?
+    private(set) var crossChainFee: ExtrinsicFeeProtocol?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -88,7 +88,7 @@ class CrossChainTransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
-    func updateCrossChainFee(_ newValue: FeeWithWeight?) {
+    func updateCrossChainFee(_ newValue: ExtrinsicFeeProtocol?) {
         crossChainFee = newValue
     }
 
@@ -98,7 +98,7 @@ class CrossChainTransferPresenter {
     }
 
     private func totalFee() -> BigUInt? {
-        let optDestSendingFee = crossChainFee?.fee
+        let optDestSendingFee = crossChainFee?.amount
         let optOriginSendingFee: BigUInt? = (isOriginUtilityTransfer ? originFee : 0)
 
         if let originSendingFee = optOriginSendingFee, let destSendingFee = optDestSendingFee {
@@ -128,7 +128,7 @@ class CrossChainTransferPresenter {
                 return
             },
 
-            dataValidatingFactory.has(fee: crossChainFee?.fee, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(fee: crossChainFee?.amount, locale: selectedLocale) { [weak self] in
                 self?.refreshCrossChainFee()
                 return
             },
@@ -160,7 +160,7 @@ class CrossChainTransferPresenter {
             // check whether cross chain fee can be paid after sending amount and paying origin fee
             dataValidatingFactory.canPayCrossChainFee(
                 for: sendingAmount,
-                fee: (origin: isOriginUtilityTransfer ? originFee : 0, crossChain: crossChainFee?.fee),
+                fee: (origin: isOriginUtilityTransfer ? originFee : 0, crossChain: crossChainFee?.amount),
                 transferable: senderSendingAssetBalance?.transferable,
                 destinationAsset: destinationChainAsset.assetDisplayInfo,
                 locale: selectedLocale
@@ -220,7 +220,7 @@ class CrossChainTransferPresenter {
         }
     }
 
-    func didReceiveCrossChainFee(result: Result<FeeWithWeight, Error>) {
+    func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(fee):
             crossChainFee = fee

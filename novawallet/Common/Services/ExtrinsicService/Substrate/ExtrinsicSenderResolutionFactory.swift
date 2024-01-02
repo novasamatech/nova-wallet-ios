@@ -8,10 +8,10 @@ protocol ExtrinsicSenderResolutionFactoryProtocol {
 final class ExtrinsicSenderResolutionFactory {
     let userStorageFacade: StorageFacadeProtocol
     let chain: ChainModel
-    let chainAccount: ChainAccountResponse?
+    let chainAccount: ChainAccountResponse
 
     init(
-        chainAccount: ChainAccountResponse?,
+        chainAccount: ChainAccountResponse,
         chain: ChainModel,
         userStorageFacade: StorageFacadeProtocol
     ) {
@@ -55,11 +55,6 @@ final class ExtrinsicSenderResolutionFactory {
 
 extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
-        guard let chainAccount = chainAccount else {
-            // TODO: Decide on nil chain account
-            return .createWithError(CommonError.dataCorruption)
-        }
-
         switch chainAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .ledger, .watchOnly:
             return createCurrentResolver(for: chainAccount)

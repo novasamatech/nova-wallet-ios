@@ -8,7 +8,7 @@ extension XcmTransferService {
         chain: ChainModel,
         message: Xcm.Message,
         maxWeight: BigUInt
-    ) -> CompoundOperationWrapper<FeeWithWeight> {
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
@@ -16,8 +16,11 @@ extension XcmTransferService {
         do {
             let moduleWrapper = createModuleResolutionWrapper(for: .xcmpallet, runtimeProvider: runtimeProvider)
 
-            let optChainAccount = wallet.fetch(for: chain.accountRequest())
-            let operationFactory = try createExtrinsicOperationFactory(for: chain, chainAccount: optChainAccount)
+            guard let chainAccount = wallet.fetch(for: chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            let operationFactory = try createExtrinsicOperationFactory(for: chain, chainAccount: chainAccount)
 
             let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -36,17 +39,9 @@ extension XcmTransferService {
             wrapper.addDependency(wrapper: moduleWrapper)
             wrapper.addDependency(operations: [coderFactoryOperation])
 
-            let mapperOperation = ClosureOperation<FeeWithWeight> {
-                let response = try wrapper.targetOperation.extractNoCancellableResultData()
-                return FeeWithWeight(fee: response.amount, weight: BigUInt(response.weight))
-            }
+            let dependencies = [coderFactoryOperation] + moduleWrapper.allOperations + wrapper.dependencies
 
-            mapperOperation.addDependency(wrapper.targetOperation)
-
-            let dependencies = [coderFactoryOperation] + moduleWrapper.allOperations +
-                wrapper.allOperations
-
-            return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
+            return CompoundOperationWrapper(targetOperation: wrapper.targetOperation, dependencies: dependencies)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -57,14 +52,14 @@ extension XcmTransferService {
         message: Xcm.Message,
         info: XcmAssetTransferFee,
         baseWeight: BigUInt
-    ) -> CompoundOperationWrapper<FeeWithWeight> {
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         let maxWeight = baseWeight * BigUInt(message.instructionsCount)
 
         switch info.mode.type {
         case .proportional:
             let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
             let fee = coefficient * maxWeight / Self.weightPerSecond
-            let model = FeeWithWeight(fee: fee, weight: maxWeight)
+            let model = ExtrinsicFee(amount: fee, payer: nil, weight: maxWeight)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:
             return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeight)
@@ -75,7 +70,7 @@ extension XcmTransferService {
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
-    ) -> CompoundOperationWrapper<FeeWithWeight> {
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         guard let feeInfo = xcmTransfers.destinationFee(
             from: request.origin.chainAssetId,
             to: request.destination.chain.chainId
@@ -105,7 +100,7 @@ extension XcmTransferService {
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
-    ) -> CompoundOperationWrapper<FeeWithWeight> {
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
             let error = XcmTransferFactoryError.noReserveFee(request.origin.chainAssetId)
             return CompoundOperationWrapper.createWithError(error)

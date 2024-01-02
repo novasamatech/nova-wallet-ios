@@ -111,7 +111,8 @@ final class ExtrinsicSplitter {
                 let callPath = pair.0.path
                 let feeResult = pair.1.result
 
-                accum[callPath] = try feeResult.get().weight
+                let fee = try feeResult.get()
+                accum[callPath] = UInt64(fee.weight)
             }
         }
 

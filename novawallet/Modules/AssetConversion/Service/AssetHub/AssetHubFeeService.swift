@@ -143,7 +143,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         conversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         wallet: MetaAccountModel,
         asset: ChainAsset
-    ) -> CompoundOperationWrapper<BigUInt> {
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let mainFeeOperation = OperationCombiningService(
@@ -191,13 +191,12 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             return [feeWrapper]
         }.longrunOperation()
 
-        let mappingOperation = ClosureOperation<BigUInt> {
+        let mappingOperation = ClosureOperation<ExtrinsicFeeProtocol> {
             guard let feeModel = try mainFeeOperation.extractNoCancellableResultData().first else {
                 throw CommonError.dataCorruption
             }
 
-            // TODO: Maybe also need payer
-            return feeModel.amount
+            return feeModel
         }
 
         mainFeeOperation.addDependency(coderFactoryOperation)
@@ -210,14 +209,14 @@ final class AssetHubFeeService: AnyCancellableCleaning {
     }
 
     private func createNativeTokenFeeCalculationWrapper(
-        using nativeFeeWrapper: CompoundOperationWrapper<BigUInt>
+        using nativeFeeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>
     ) -> CompoundOperationWrapper<AssetConversion.FeeModel> {
         let resultOperation = ClosureOperation<AssetConversion.FeeModel> {
-            let feeAmount = try nativeFeeWrapper.targetOperation.extractNoCancellableResultData()
+            let fee = try nativeFeeWrapper.targetOperation.extractNoCancellableResultData()
 
-            let model = AssetConversion.AmountWithNative(targetAmount: feeAmount, nativeAmount: feeAmount)
+            let model = AssetConversion.AmountWithNative(targetAmount: fee.amount, nativeAmount: fee.amount)
 
-            return .init(totalFee: model, networkFee: model)
+            return .init(totalFee: model, networkFee: model, networkFeePayer: fee.payer)
         }
 
         resultOperation.addDependency(nativeFeeWrapper.targetOperation)
@@ -228,7 +227,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
     private func createCustomTokenFeeCalculationWrapper(
         in feeAsset: ChainAsset,
         utilityAsset: ChainAsset,
-        nativeFeeWrapper: CompoundOperationWrapper<BigUInt>,
+        nativeFeeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>,
         runtimeProvider: RuntimeProviderProtocol,
         conversionOperationFactory: AssetConversionOperationFactoryProtocol
     ) -> CompoundOperationWrapper<AssetConversion.FeeModel> {
@@ -243,7 +242,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         )
 
         let feeWithEdOperation = ClosureOperation<(BigUInt, BigUInt)> {
-            let feeAmount = try nativeFeeWrapper.targetOperation.extractNoCancellableResultData()
+            let feeAmount = try nativeFeeWrapper.targetOperation.extractNoCancellableResultData().amount
             let edAmount = try edWrapper.targetOperation.extractNoCancellableResultData().minBalance
 
             return (feeAmount, edAmount)
@@ -263,6 +262,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
 
         let mergeOperation = ClosureOperation<AssetConversion.FeeModel> {
             let (feeAmount, edAmount) = try feeWithEdOperation.extractNoCancellableResultData()
+            let networkFeePayer = try nativeFeeWrapper.targetOperation.extractNoCancellableResultData().payer
 
             let quotes = try quoteOperation.extractNoCancellableResultData()
 
@@ -274,7 +274,8 @@ final class AssetHubFeeService: AnyCancellableCleaning {
                 networkFee: .init(
                     targetAmount: quotes[1].amountIn,
                     nativeAmount: feeAmount
-                )
+                ),
+                networkFeePayer: networkFeePayer
             )
         }
 

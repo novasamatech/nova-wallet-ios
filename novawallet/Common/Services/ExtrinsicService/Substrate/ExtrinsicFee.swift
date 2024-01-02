@@ -1,8 +1,8 @@
 import Foundation
 import BigInt
 
-struct ExtrinsicFeePayer {
-    enum Reason {
+struct ExtrinsicFeePayer: Equatable {
+    enum Reason: Equatable {
         case proxy
     }
 
@@ -28,13 +28,13 @@ struct ExtrinsicFeePayer {
 protocol ExtrinsicFeeProtocol {
     var amount: BigUInt { get }
     var payer: ExtrinsicFeePayer? { get }
-    var weight: UInt64 { get }
+    var weight: BigUInt { get }
 }
 
 struct ExtrinsicFee: ExtrinsicFeeProtocol {
     let amount: BigUInt
     let payer: ExtrinsicFeePayer?
-    let weight: UInt64
+    let weight: BigUInt
 
     init?(dispatchInfo: RuntimeDispatchInfo, payer: ExtrinsicFeePayer?) {
         guard let amount = BigUInt(dispatchInfo.fee) else {
@@ -43,10 +43,10 @@ struct ExtrinsicFee: ExtrinsicFeeProtocol {
 
         self.amount = amount
         self.payer = payer
-        weight = dispatchInfo.weight
+        weight = BigUInt(dispatchInfo.weight)
     }
 
-    init(amount: BigUInt, payer: ExtrinsicFeePayer?, weight: UInt64) {
+    init(amount: BigUInt, payer: ExtrinsicFeePayer?, weight: BigUInt) {
         self.amount = amount
         self.payer = payer
         self.weight = weight

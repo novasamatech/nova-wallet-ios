@@ -3210,7 +3210,6 @@
 		84FF268228494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF268128494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift */; };
 		84FF2684284951AF003EC78D /* DelegationCallWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF2683284951AF003EC78D /* DelegationCallWrapper.swift */; };
 		84FF26862849530E003EC78D /* AccountId+Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF26852849530E003EC78D /* AccountId+Dummy.swift */; };
-		84FFE4572861FFE5002432BB /* FeeWithWeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE4562861FFE5002432BB /* FeeWithWeight.swift */; };
 		84FFE45928620716002432BB /* XcmTransferParties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE45828620716002432BB /* XcmTransferParties.swift */; };
 		84FFE45B2862076F002432BB /* XcmUnweightedTransferRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE45A2862076F002432BB /* XcmUnweightedTransferRequest.swift */; };
 		84FFE45D28620833002432BB /* XcmTransferResolutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */; };
@@ -7422,7 +7421,6 @@
 		84FF268128494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkStakeConfirmPresenter+StakeMore.swift"; sourceTree = "<group>"; };
 		84FF2683284951AF003EC78D /* DelegationCallWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationCallWrapper.swift; sourceTree = "<group>"; };
 		84FF26852849530E003EC78D /* AccountId+Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountId+Dummy.swift"; sourceTree = "<group>"; };
-		84FFE4562861FFE5002432BB /* FeeWithWeight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeWithWeight.swift; sourceTree = "<group>"; };
 		84FFE45828620716002432BB /* XcmTransferParties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferParties.swift; sourceTree = "<group>"; };
 		84FFE45A2862076F002432BB /* XcmUnweightedTransferRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmUnweightedTransferRequest.swift; sourceTree = "<group>"; };
 		84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferResolutionService.swift; sourceTree = "<group>"; };
@@ -13805,7 +13803,6 @@
 				8456C08127CF9DC9001282DE /* RemoteNftModel.swift */,
 				8499FEDF27C0AE3200712589 /* KnownChainIds.swift */,
 				84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */,
-				84FFE4562861FFE5002432BB /* FeeWithWeight.swift */,
 				84F1A0702869DA51007DB053 /* AssetBalanceExistence.swift */,
 				8448F7A32882E21E0080CEA9 /* SearchMatch.swift */,
 				84BC7044289EFF44008A9758 /* TransactionDisplayCode.swift */,
@@ -21130,7 +21127,6 @@
 				84EF8D40288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift in Sources */,
 				AEA2C1B62681E9B20069492E /* ValidatorSearchViewFactory.swift in Sources */,
 				84AE7ABB27D411CE00495267 /* RMRKV2DetailsInteractor.swift in Sources */,
-				84FFE4572861FFE5002432BB /* FeeWithWeight.swift in Sources */,
 				77AAE22A2AFC36EE006872CC /* OperationDetailsBaseInteractor.swift in Sources */,
 				AE4A71D42607B1440017C663 /* NetworkStakingInfoViewModel.swift in Sources */,
 				8439398A2636E8840087658D /* YourValidatorListViewLayout.swift in Sources */,
