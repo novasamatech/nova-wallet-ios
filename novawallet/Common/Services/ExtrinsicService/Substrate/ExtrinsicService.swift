@@ -100,10 +100,7 @@ final class ExtrinsicService {
     let operationManager: OperationManagerProtocol
 
     init(
-        accountId _: AccountId,
         chain: ChainModel,
-        cryptoType _: MultiassetCryptoType,
-        walletType _: MetaAccountModelType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         extensions: [ExtrinsicExtension],

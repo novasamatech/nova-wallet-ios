@@ -96,10 +96,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         )
 
         return ExtrinsicService(
-            accountId: account.accountId,
             chain: chain,
-            cryptoType: account.cryptoType,
-            walletType: account.type,
             runtimeRegistry: runtimeRegistry,
             senderResolvingFactory: senderResolvingFactory,
             extensions: extensions,

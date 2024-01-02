@@ -63,3 +63,31 @@ extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProt
         }
     }
 }
+
+protocol ExtrinsicSenderResolutionFacadeProtocol {
+    func createResolutionFactory(
+        for chainAccount: ChainAccountResponse,
+        chainModel: ChainModel
+    ) -> ExtrinsicSenderResolutionFactoryProtocol
+}
+
+final class ExtrinsicSenderResolutionFacade {
+    let userStorageFacade: StorageFacadeProtocol
+
+    init(userStorageFacade: StorageFacadeProtocol) {
+        self.userStorageFacade = userStorageFacade
+    }
+}
+
+extension ExtrinsicSenderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol {
+    func createResolutionFactory(
+        for chainAccount: ChainAccountResponse,
+        chainModel: ChainModel
+    ) -> ExtrinsicSenderResolutionFactoryProtocol {
+        ExtrinsicSenderResolutionFactory(
+            chainAccount: chainAccount,
+            chain: chainModel,
+            userStorageFacade: userStorageFacade
+        )
+    }
+}

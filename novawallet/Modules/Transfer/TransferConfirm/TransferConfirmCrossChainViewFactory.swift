@@ -117,10 +117,11 @@ struct TransferConfirmCrossChainViewFactory {
             logger: logger
         )
 
+        let senderResolutionFacade = ExtrinsicSenderResolutionFacade(userStorageFacade: UserDataStorageFacade.shared)
         let extrinsicService = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            userStorageFacade: UserDataStorageFacade.shared,
+            senderResolutionFacade: senderResolutionFacade,
             operationQueue: operationQueue
         )
 

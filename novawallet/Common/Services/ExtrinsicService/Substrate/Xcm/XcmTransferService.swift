@@ -14,7 +14,7 @@ final class XcmTransferService {
 
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
-    let userStorageFacade: StorageFacadeProtocol
+    let senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol
     let operationQueue: OperationQueue
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
@@ -24,12 +24,12 @@ final class XcmTransferService {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        userStorageFacade: StorageFacadeProtocol,
+        senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
-        self.userStorageFacade = userStorageFacade
+        self.senderResolutionFacade = senderResolutionFacade
         self.operationQueue = operationQueue
     }
 
@@ -59,10 +59,9 @@ final class XcmTransferService {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
-            chainAccount: chainAccount,
-            chain: chain,
-            userStorageFacade: userStorageFacade
+        let senderResolvingFactory = senderResolutionFacade.createResolutionFactory(
+            for: chainAccount,
+            chainModel: chain
         )
 
         return ExtrinsicOperationFactory(

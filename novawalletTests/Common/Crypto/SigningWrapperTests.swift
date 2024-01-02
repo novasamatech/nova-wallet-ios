@@ -175,7 +175,7 @@ class SigningWrapperTests: XCTestCase {
             settingsManager: InMemorySettingsManager()
         )
 
-        let signature = try signer.sign(originalData)
+        let signature = try signer.sign(originalData, context: .rawBytes)
 
         let verifier = SNSignatureVerifier()
 
@@ -205,7 +205,7 @@ class SigningWrapperTests: XCTestCase {
             settingsManager: InMemorySettingsManager()
         )
 
-        let signature = try signer.sign(originalData)
+        let signature = try signer.sign(originalData, context: .rawBytes)
 
         let verifier = EDSignatureVerifier()
 
@@ -234,7 +234,7 @@ class SigningWrapperTests: XCTestCase {
             settingsManager: InMemorySettingsManager()
         )
 
-        let signature = try signer.sign(originalData)
+        let signature = try signer.sign(originalData, context: .rawBytes)
 
         let verifier = SECSignatureVerifier()
 
@@ -263,7 +263,7 @@ class SigningWrapperTests: XCTestCase {
             settingsManager: InMemorySettingsManager()
         )
 
-        let signature = try signer.sign(originalData)
+        let signature = try signer.sign(originalData, context: .rawBytes)
 
         let verifier = SECSignatureVerifier()
 

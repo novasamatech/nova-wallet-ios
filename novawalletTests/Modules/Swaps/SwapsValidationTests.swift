@@ -44,7 +44,8 @@ final class SwapsValidationTests: XCTestCase {
                 networkFee: .init(
                     targetAmount: fee,
                     nativeAmount: fee / 100
-                )
+                ),
+                networkFeePayer: nil
             ),
             payAssetExistense: nil,
             receiveAssetExistense: nil,
@@ -88,7 +89,8 @@ final class SwapsValidationTests: XCTestCase {
                 networkFee: .init(
                     targetAmount: fee,
                     nativeAmount: fee
-                )
+                ),
+                networkFeePayer: nil
             ),
             payAssetExistense: nil,
             receiveAssetExistense: nil,
