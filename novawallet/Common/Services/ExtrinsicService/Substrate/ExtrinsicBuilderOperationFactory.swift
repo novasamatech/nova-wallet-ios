@@ -7,9 +7,9 @@ protocol ExtrinsicBuilderOperationFactoryProtocol {
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]>
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult>
 
-    func createDummySigner() throws -> DummySigner
+    func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner
 }
 
 final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
@@ -32,15 +32,15 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
         )
     }
 
-    override func createDummySigner() throws -> DummySigner {
-        try proxy.createDummySigner()
+    override func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner {
+        try proxy.createDummySigner(for: cryptoType)
     }
 
     override func createExtrinsicWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]> {
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         proxy.createWrapper(
             customClosure: customClosure,
             indexes: indexes,

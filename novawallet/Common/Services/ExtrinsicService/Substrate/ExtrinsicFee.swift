@@ -7,8 +7,22 @@ struct ExtrinsicFeePayer {
     }
 
     let accountId: AccountId
-    let availableBalance: BigUInt
     let reason: Reason
+
+    init(accountId: AccountId, reason: Reason) {
+        self.accountId = accountId
+        self.reason = reason
+    }
+
+    init?(senderResolution: ExtrinsicSenderResolution) {
+        switch senderResolution {
+        case let .proxy(resolvedProxy):
+            accountId = resolvedProxy.proxyAccount.chainAccount.accountId
+            reason = .proxy
+        case .current:
+            return nil
+        }
+    }
 }
 
 protocol ExtrinsicFeeProtocol {
@@ -22,7 +36,7 @@ struct ExtrinsicFee: ExtrinsicFeeProtocol {
     let payer: ExtrinsicFeePayer?
     let weight: UInt64
 
-    init?(dispatchInfo: RuntimeDispatchInfo, payer: ExtrinsicFeePayer? = nil) {
+    init?(dispatchInfo: RuntimeDispatchInfo, payer: ExtrinsicFeePayer?) {
         guard let amount = BigUInt(dispatchInfo.fee) else {
             return nil
         }

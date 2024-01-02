@@ -102,19 +102,13 @@ extension ExtrinsicOperationFactoryProtocol {
 }
 
 final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
-    let accountId: AccountId
-    let cryptoType: MultiassetCryptoType
-    let signaturePayloadFormat: ExtrinsicSignaturePayloadFormat
     let chain: ChainModel
     let customExtensions: [ExtrinsicExtension]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
 
     init(
-        accountId: AccountId,
         chain: ChainModel,
-        cryptoType: MultiassetCryptoType,
-        signaturePayloadFormat: ExtrinsicSignaturePayloadFormat,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         customExtensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
@@ -122,11 +116,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory(),
         operationManager: OperationManagerProtocol
     ) {
-        self.accountId = accountId
         self.chain = chain
-        self.cryptoType = cryptoType
         self.senderResolvingFactory = senderResolvingFactory
-        self.signaturePayloadFormat = signaturePayloadFormat
         self.customExtensions = customExtensions
         self.eraOperationFactory = eraOperationFactory
 
@@ -185,10 +176,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]> {
-        let currentChainFormat = chain.chainFormat
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         let currentExtensions = customExtensions
-        let currentSignaturePayloadFormat = signaturePayloadFormat
         let optTip = chain.defaultTip
 
         let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
@@ -217,7 +206,6 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                     transactionVersion: codingFactory.txVersion,
                     genesisHash: genesisHash
                 )
-                .with(signaturePayloadFormat: currentSignaturePayloadFormat)
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
 
@@ -253,21 +241,21 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         nonceOperation.addDependency(senderResolutionOperation)
 
-        let extrinsicsOperation = ClosureOperation<[Data]> {
+        let extrinsicsOperation = ClosureOperation<ExtrinsicsCreationResult> {
             let nonce = try nonceOperation.extractNoCancellableResultData()
             let (senderResolution, builders) = try senderResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             let context = ExtrinsicSigningContext.Substrate(
-                senderResolution: senderResolution,
-                chainFormat: currentChainFormat,
-                cryptoType: senderResolution.account.cryptoType
+                senderResolution: senderResolution
             )
 
             let extrinsics: [Data] = try builders.enumerated().map { index, partialBuilder in
                 var builder = partialBuilder.with(nonce: nonce + UInt32(index))
                 let account = MultiAddress.accoundId(senderResolution.account.accountId)
-                builder = try builder.with(address: account)
+                builder = try builder
+                    .with(address: account)
+                    .with(signaturePayloadFormat: senderResolution.account.type.signaturePayloadFormat)
                 builder = try builder.signing(
                     with: signingClosure,
                     context: context,
@@ -277,7 +265,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 return try builder.build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
             }
 
-            return extrinsics
+            return (extrinsics, senderResolution)
         }
 
         extrinsicsOperation.addDependency(nonceOperation)
@@ -292,7 +280,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
     }
 
-    override func createDummySigner() throws -> DummySigner {
+    override func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner {
         try DummySigner(cryptoType: cryptoType)
     }
 }

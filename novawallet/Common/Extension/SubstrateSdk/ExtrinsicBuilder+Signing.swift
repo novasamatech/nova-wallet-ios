@@ -11,7 +11,9 @@ extension ExtrinsicBuilderProtocol {
         context: ExtrinsicSigningContext.Substrate,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Self {
-        switch context.chainFormat {
+        let account = context.senderResolution.account
+
+        switch account.chainFormat {
         case .ethereum:
             return try signing(
                 by: { data in
@@ -33,7 +35,7 @@ extension ExtrinsicBuilderProtocol {
                 by: { data in
                     try signingClosure(data, .substrateExtrinsic(context))
                 },
-                of: context.cryptoType.utilsType,
+                of: account.cryptoType.utilsType,
                 using: codingFactory.createEncoder(),
                 metadata: codingFactory.metadata
             )

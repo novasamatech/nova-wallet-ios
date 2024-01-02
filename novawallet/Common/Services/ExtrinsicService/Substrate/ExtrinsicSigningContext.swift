@@ -3,11 +3,18 @@ import Foundation
 enum ExtrinsicSigningContext {
     struct Substrate {
         let senderResolution: ExtrinsicSenderResolution
-        let chainFormat: ChainFormat
-        let cryptoType: MultiassetCryptoType
     }
 
     case substrateExtrinsic(Substrate)
     case evmTransaction
     case rawBytes
+
+    var substrateCryptoType: MultiassetCryptoType? {
+        switch self {
+        case let .substrateExtrinsic(substrate):
+            return substrate.senderResolution.account.cryptoType
+        case .evmTransaction, .rawBytes:
+            return nil
+        }
+    }
 }

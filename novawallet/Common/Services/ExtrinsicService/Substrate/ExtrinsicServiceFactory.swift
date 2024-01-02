@@ -120,10 +120,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         )
 
         return ExtrinsicOperationFactory(
-            accountId: account.accountId,
             chain: chain,
-            cryptoType: account.cryptoType,
-            signaturePayloadFormat: account.type.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,

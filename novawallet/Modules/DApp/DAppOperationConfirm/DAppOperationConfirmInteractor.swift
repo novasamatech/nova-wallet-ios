@@ -99,18 +99,19 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         for extrinsicFactory: DAppExtrinsicBuilderOperationFactory,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
-        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data in
-            // TODO: support context for DApps
-            try signer.sign(data, context: .rawBytes).rawData()
+        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data, context in
+            try signer.sign(data, context: context).rawData()
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let signatureOperation = ClosureOperation<Data> {
-            let rawSignature = try signatureWrapper.targetOperation.extractNoCancellableResultData()
+            let signatureResult = try signatureWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             let scaleEncoder = codingFactory.createEncoder()
+
+            let rawSignature = signatureResult.signedExtrinsic
 
             switch extrinsicFactory.processedResult.account.cryptoType {
             case .sr25519:

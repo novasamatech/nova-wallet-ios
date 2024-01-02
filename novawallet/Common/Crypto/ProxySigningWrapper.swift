@@ -15,7 +15,7 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
         guard
             case let .substrateExtrinsic(substrate) = context,
             case let .proxy(proxy) = substrate.senderResolution else {
-            throw CommonError.dataCorruption
+            throw NoKeysSigningWrapperError.watchOnly
         }
 
         return try signingWrapperFactory
@@ -23,9 +23,7 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
             .sign(
                 originalData,
                 context: .substrateExtrinsic(.init(
-                    senderResolution: .current(proxy.proxyAccount.chainAccount),
-                    chainFormat: substrate.chainFormat,
-                    cryptoType: proxy.proxyAccount.chainAccount.cryptoType
+                    senderResolution: .current(proxy.proxyAccount.chainAccount)
                 ))
             )
     }

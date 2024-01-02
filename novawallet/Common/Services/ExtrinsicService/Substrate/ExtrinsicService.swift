@@ -100,10 +100,10 @@ final class ExtrinsicService {
     let operationManager: OperationManagerProtocol
 
     init(
-        accountId: AccountId,
+        accountId _: AccountId,
         chain: ChainModel,
-        cryptoType: MultiassetCryptoType,
-        walletType: MetaAccountModelType,
+        cryptoType _: MultiassetCryptoType,
+        walletType _: MetaAccountModelType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         extensions: [ExtrinsicExtension],
@@ -111,10 +111,7 @@ final class ExtrinsicService {
         operationManager: OperationManagerProtocol
     ) {
         operationFactory = ExtrinsicOperationFactory(
-            accountId: accountId,
             chain: chain,
-            cryptoType: cryptoType,
-            signaturePayloadFormat: walletType.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
