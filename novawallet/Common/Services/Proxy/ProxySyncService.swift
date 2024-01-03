@@ -208,8 +208,7 @@ extension ProxySyncService: ProxySyncServiceProtocol {
         let proxiesOperation: ClosureOperation<[ManagedMetaAccountModel: ChainAccountModel]> = .init {
             let wallets = try walletsOperation.extractNoCancellableResultData()
             return wallets.reduce(into: [ManagedMetaAccountModel: ChainAccountModel]()) { result, item in
-                if let chainAccount = item.info.chainAccounts.first(where: { $0.proxy != nil }),
-                   let proxy = chainAccount.proxy {
+                if let chainAccount = item.info.chainAccounts.first(where: { $0.proxy != nil }) {
                     result[item] = chainAccount
                 }
             }
@@ -219,7 +218,9 @@ extension ProxySyncService: ProxySyncServiceProtocol {
         let saveOperation = metaAccountsRepository.saveOperation({
             let proxies = try proxiesOperation.extractNoCancellableResultData()
             return proxies.map {
-                $0.key.replacingInfo($0.key.info.replacingChainAccount($0.value.replacingProxyStatus(from: .new, to: .active)))
+                $0.key.replacingInfo($0.key.info.replacingChainAccount(
+                    $0.value.replacingProxyStatus(from: .new, to: .active)
+                ))
             }.compactMap { $0 }
         }, {
             let proxies = try proxiesOperation.extractNoCancellableResultData()

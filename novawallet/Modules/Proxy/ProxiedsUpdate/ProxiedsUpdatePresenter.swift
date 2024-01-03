@@ -43,7 +43,10 @@ final class ProxiedsUpdatePresenter {
         view?.didReceive(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels)
     }
 
-    private func viewModels(_ statuses: [ProxyAccountModel.Status], wallets: [ManagedMetaAccountModel]) -> [WalletView.ViewModel] {
+    private func viewModels(
+        _ statuses: [ProxyAccountModel.Status],
+        wallets: [ManagedMetaAccountModel]
+    ) -> [WalletView.ViewModel] {
         viewModelsFactory.createViewModels(
             for: wallets,
             statuses: statuses,
