@@ -49,7 +49,7 @@ extension ProxyResolution {
 
                     let key = CallProxyKey(callPath: call, proxy: proxy)
 
-                    if let oldPath = accum[key], oldPath.components.count > path.components.count {
+                    if let oldPath = accum[key], oldPath.components.count <= path.components.count {
                         return
                     }
 
@@ -91,8 +91,6 @@ extension ProxyResolution {
             walletTypeFilter: (MetaAccountModelType) -> Bool
         ) -> ProxyResolution.PathFinderResult? {
             do {
-                let pathMerger = ProxyResolution.PathMerger()
-
                 let accounts = accounts.reduce(into: [AccountId: MetaChainAccountResponse]()) { accum, keyValue in
                     guard let account = keyValue.value.first(where: { walletTypeFilter($0.chainAccount.type) }) else {
                         return
@@ -100,6 +98,8 @@ extension ProxyResolution {
 
                     accum[keyValue.key] = account
                 }
+
+                let pathMerger = ProxyResolution.PathMerger()
 
                 try callPaths.forEach { keyValue in
                     let paths = keyValue.value.filter { path in
@@ -126,7 +126,11 @@ extension ProxyResolution {
         ) throws -> ProxyResolution.PathFinderResult {
             if let secretBasedResult = find(callPaths: paths, walletTypeFilter: { $0 == .secrets }) {
                 return secretBasedResult
-            } else if let notWatchOnlyResult = find(callPaths: paths, walletTypeFilter: { $0 != .watchOnly }) {
+            } else
+            if let notWatchOnlyResult = find(
+                callPaths: paths,
+                walletTypeFilter: { $0 != .watchOnly && $0 != .proxied }
+            ) {
                 return notWatchOnlyResult
             } else {
                 let accounts = accounts.reduce(into: [AccountId: MetaChainAccountResponse]()) { accum, keyValue in

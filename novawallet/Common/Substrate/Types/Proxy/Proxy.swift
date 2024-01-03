@@ -3,9 +3,7 @@ import SubstrateSdk
 import BigInt
 
 enum Proxy {
-    static var moduleName: String {
-        "proxy"
-    }
+    static var name: String { "Proxy" }
 
     struct ProxyDefinition: Decodable {
         enum CodingKeys: String, CodingKey {
@@ -90,6 +88,8 @@ enum Proxy {
             case let .other(type):
                 try container.encode(type)
             }
+
+            try container.encode(JSON.null)
         }
     }
 }

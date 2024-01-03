@@ -2,10 +2,18 @@ import Foundation
 import SubstrateSdk
 
 enum ExtrinsicSenderResolution {
+    struct ResolutionProxyFailure {
+        let callPath: CallCodingPath
+        let possibleTypes: Set<Proxy.ProxyType>
+        let paths: ProxyResolution.GraphResult
+    }
+
     struct ResolvedProxy {
         let proxyAccount: MetaChainAccountResponse
         let proxiedAccount: ChainAccountResponse
         let paths: [CallCodingPath: ProxyResolution.PathFinderPath]
+        let allAccounts: [AccountId: [MetaChainAccountResponse]]
+        let failures: [ResolutionProxyFailure]
     }
 
     case current(ChainAccountResponse)

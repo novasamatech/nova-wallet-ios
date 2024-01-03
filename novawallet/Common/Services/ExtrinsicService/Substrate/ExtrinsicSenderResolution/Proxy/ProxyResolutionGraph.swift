@@ -59,8 +59,11 @@ extension ProxyResolution {
 
         private func derivePaths(from context: Graph.Context) -> GraphResult {
             if !context.partialPath.isEmpty {
-                let path = GraphPath(components: context.partialPath)
-                return [path]
+                // we found the max path but any subpath also applicable
+                return (1 ... context.partialPath.count).map { pathLength in
+                    let subPath = context.partialPath.prefix(pathLength)
+                    return GraphPath(components: Array(subPath))
+                }
             } else {
                 return []
             }

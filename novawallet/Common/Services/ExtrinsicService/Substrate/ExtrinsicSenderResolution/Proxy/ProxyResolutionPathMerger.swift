@@ -15,11 +15,11 @@ extension ProxyResolution {
         }
 
         func combine(callPath: CallCodingPath, paths: ProxyResolution.GraphResult) throws {
-            let newProxies = Set(paths.compactMap(\.accountIds.last))
-
             guard !paths.isEmpty else {
                 throw PathMergerError.empthPaths(callPath)
             }
+
+            let newProxies = Set(paths.compactMap(\.accountIds.last))
 
             if !availableProxies.isEmpty {
                 availableProxies = availableProxies.intersection(newProxies)

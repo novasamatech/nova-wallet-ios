@@ -11,6 +11,17 @@ final class ExtrinsicProxySenderResolver {
         self.wallets = wallets
         self.chain = chain
     }
+
+    private func buildAllAccounts() -> [AccountId: [MetaChainAccountResponse]] {
+        wallets.reduce(into: [AccountId: [MetaChainAccountResponse]]()) { accum, wallet in
+            guard let account = wallet.fetchMetaChainAccount(for: chain.accountRequest()) else {
+                return
+            }
+
+            let accounts = accum[account.chainAccount.accountId] ?? []
+            accum[account.chainAccount.accountId] = accounts + [account]
+        }
+    }
 }
 
 extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
@@ -28,26 +39,25 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
 
         let pathMerger = ProxyResolution.PathMerger()
 
-        try allCalls.forEach { call in
+        var resolutionFailures: [ExtrinsicSenderResolution.ResolutionProxyFailure] = []
+
+        allCalls.forEach { call in
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            guard pathMerger.hasPaths(for: callPath) else {
+            guard !pathMerger.hasPaths(for: callPath) else {
                 return
             }
 
             let proxyTypes = ProxyCallFilter.getProxyTypes(for: callPath)
             let paths = graph.resolveProxies(for: proxiedAccount.accountId, possibleProxyTypes: proxyTypes)
 
-            try pathMerger.combine(callPath: callPath, paths: paths)
-        }
-
-        let allAccounts = wallets.reduce(into: [AccountId: [MetaChainAccountResponse]]()) { accum, wallet in
-            guard let account = wallet.fetchMetaChainAccount(for: chain.accountRequest()) else {
-                return
+            do {
+                try pathMerger.combine(callPath: callPath, paths: paths)
+            } catch {
+                resolutionFailures.append(.init(callPath: callPath, possibleTypes: proxyTypes, paths: paths))
             }
-
-            let accounts = accum[account.chainAccount.accountId] ?? []
-            accum[account.chainAccount.accountId] = accounts + [account]
         }
+
+        let allAccounts = buildAllAccounts()
 
         let solution = try ProxyResolution.PathFinder(accounts: allAccounts).find(from: pathMerger.availablePaths)
 
@@ -57,15 +67,17 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
                 let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
                 guard let proxyPath = solution.callToPath[callPath] else {
-                    throw ProxyResolution.PathFinderError.noSolution
+                    return callJson
                 }
 
                 return try proxyPath.components.reduce(callJson) { call, component in
                     try Proxy.ProxyCall(
-                        real: component.account.chainAccount.accountId,
+                        real: .accoundId(component.account.chainAccount.accountId),
                         forceProxyType: component.proxyType,
                         call: call
-                    ).toScaleCompatibleJSON(with: context.toRawContext())
+                    )
+                    .runtimeCall()
+                    .toScaleCompatibleJSON(with: context.toRawContext())
                 }
             }
         }
@@ -73,7 +85,9 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
         let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
             proxyAccount: solution.proxy,
             proxiedAccount: proxiedAccount,
-            paths: solution.callToPath
+            paths: solution.callToPath,
+            allAccounts: allAccounts,
+            failures: resolutionFailures
         )
 
         return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)

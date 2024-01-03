@@ -9,12 +9,12 @@ extension Proxy {
             case call
         }
 
-        @BytesCodable var real: AccountId
+        let real: MultiAddress
         let forceProxyType: Proxy.ProxyType?
         let call: JSON
 
         func runtimeCall() -> RuntimeCall<Self> {
-            RuntimeCall(moduleName: Proxy.moduleName, callName: "proxy", args: self)
+            RuntimeCall(moduleName: Proxy.name, callName: "proxy", args: self)
         }
     }
 }

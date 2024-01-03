@@ -113,7 +113,7 @@ enum ProxyCallFilter {
                 ]
             ),
             Proxy.ProxyType.cancelProxy: MatchesCall(
-                callPath: .init(moduleName: Proxy.moduleName, callName: "reject_announcement")
+                callPath: .init(moduleName: Proxy.name, callName: "reject_announcement")
             ),
             Proxy.ProxyType.identityJudgement: MatchesCall(
                 callPath: .init(moduleName: "Identity", callName: "provide_judgement")
