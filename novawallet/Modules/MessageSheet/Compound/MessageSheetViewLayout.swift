@@ -30,6 +30,14 @@ final class MessageSheetViewLayout<
     private(set) var secondaryActionButton: TriangularedButton?
     private(set) var buttonsStackView: UIStackView?
 
+    var contentOffset: CGFloat = 40 {
+        didSet {
+            contentView.snp.updateConstraints { make in
+                make.top.equalTo(detailsLabel.snp.bottom).offset(contentOffset)
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -110,7 +118,7 @@ final class MessageSheetViewLayout<
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.top.equalTo(detailsLabel.snp.bottom).offset(40.0)
+            make.top.equalTo(detailsLabel.snp.bottom).offset(contentOffset)
         }
     }
 }

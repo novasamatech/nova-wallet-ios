@@ -1,6 +1,6 @@
 import Foundation
 
-final class MessageSheetPresenter {
+class MessageSheetPresenter {
     weak var view: MessageSheetViewProtocol?
     let wireframe: MessageSheetWireframeProtocol
 

@@ -836,6 +836,13 @@
 "common.ok.back" = "Okay, back";
 "no.key.title" = "Oops! Key is missing";
 "no.key.message" = "Your wallet is watch-only, meaning that you cannot do any operations with it";
+"proxy.signing.title" = "This is Delegating (Proxied) account";
+"proxy.signing.message" = "Transaction will be initiated by %@ as a delegated account. Network fee will be paid by delegated account.";
+"proxy.signing.checkmark.title" = "Automatically continue in the future";
+"proxy.signing.is.not.supported.title" = "Signing is not supported";
+"proxy.signing.is.not.supported.message" = "Proxied wallets does not support signing arbitrary messages — only transactions";
+"proxy.signing.not.enough.permissions.title" = "Oops! Not enough permission";
+"proxy.signing.not.enough.permissions.message" = "%@ delegated %@ only for %@";
 "welcome.watch.only.title" = "Add watch-only wallet";
 "create.watch.only.missing.nickname" = "Enter wallet nickname...";
 "common.substrate.address.title" = "Substrate Address";
@@ -1453,5 +1460,6 @@
 "proxy.updates.hint.link" = "What is a Proxy?";
 "proxy.updates.title" = "Delegated accounts update";
 "proxy.updates.proxy.revoked" = "access was revoked";
+"proxy.details.hint" = "This account has provided access to perform transactions to the following account:";
 "nft.fungible.price" = "%@ for %@";
 "nft.issuance.fungible.format" = "%@ units of %@";

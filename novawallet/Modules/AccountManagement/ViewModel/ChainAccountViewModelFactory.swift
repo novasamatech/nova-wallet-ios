@@ -10,10 +10,17 @@ protocol ChainAccountViewModelFactoryProtocol {
     ) -> ChainAccountListViewModel
 
     func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
+
+    func createProxyViewModel(
+        proxiedWallet: MetaAccountModel,
+        proxyWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountProxyViewModel
 }
 
 final class ChainAccountViewModelFactory {
     let iconGenerator: IconGenerating
+    private lazy var walletIconGenerator = NovaIconGenerator()
 
     init(iconGenerator: IconGenerating) {
         self.iconGenerator = iconGenerator
@@ -189,5 +196,25 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
 
             return [section]
         }
+    }
+
+    func createProxyViewModel(
+        proxiedWallet: MetaAccountModel,
+        proxyWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountProxyViewModel {
+        let optIcon = proxyWallet.walletIdenticonData().flatMap {
+            try? walletIconGenerator.generateFromAccountId($0)
+        }
+        let iconViewModel = optIcon.map {
+            DrawableIconViewModel(icon: $0)
+        }
+        let type = proxiedWallet.proxy()?.type.title(locale: locale) ?? ""
+
+        return .init(
+            name: proxyWallet.name,
+            icon: iconViewModel,
+            type: type
+        )
     }
 }

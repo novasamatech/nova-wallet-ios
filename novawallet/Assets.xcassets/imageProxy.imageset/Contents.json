@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "container-proxy.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

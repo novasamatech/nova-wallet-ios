@@ -836,6 +836,13 @@
 "common.ok.back" = "Хорошо, назад";
 "no.key.title" = "Упс! Ключ отсутствует";
 "no.key.message" = "Ваш кошелек доступен только для просмотра, то есть вы не можете выполнять с ним никаких операций";
+"proxy.signing.title" = "Это прокси-аккаунт";
+"proxy.signing.message" = "Транзакция будет проведена %@ от имени прокси. Сетевая комиссия также будет оплачена прокси.";
+"proxy.signing.checkmark.title" = "Автоматически проводить в будущем";
+"proxy.signing.is.not.supported.title" = "Подпись не поддерживается";
+"proxy.signing.is.not.supported.message" = "Проксированный кошелек не поддерживает подпись произвольных сообщений — только транзакции";
+"proxy.signing.not.enough.permissions.title" = "Упс! Недостаточно прав";
+"proxy.signing.not.enough.permissions.message" = "%@ делегировал %@ только для %@";
 "welcome.watch.only.title" = "Добавить watch-only кошелёк";
 "create.watch.only.missing.nickname" = "Введите имя кошелька...";
 "common.substrate.address.title" = "Substrate адрес";
@@ -1469,5 +1476,6 @@
 "proxy.updates.hint.link" = "Что такое Прокси?";
 "proxy.updates.title" = "Обновление делегированных аккаунтов.";
 "proxy.updates.proxy.revoked" = "доступ был отозван";
+"proxy.details.hint" = "Этот аккаунт предоставил доступ к выполнению транзакций следующему аккаунту:";
 "nft.fungible.price" = "%@ for %@";
 "nft.issuance.fungible.format" = "%@ единиц из %@";

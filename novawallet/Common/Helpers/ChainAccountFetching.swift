@@ -285,6 +285,15 @@ extension MetaAccountModel {
     ) -> ChainAccountModel? {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
+
+    func proxy() -> ProxyAccountModel? {
+        guard type == .proxied,
+              let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
+            return nil
+        }
+
+        return chainAccount.proxy
+    }
 }
 
 extension ChainModel {
