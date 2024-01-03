@@ -8,23 +8,46 @@ final class ProxySigningWrapper {
     init(signingWrapperFactory: SigningWrapperFactoryProtocol) {
         self.signingWrapperFactory = signingWrapperFactory
     }
+
+    private func sign(
+        _ originalData: Data,
+        proxy: ExtrinsicSenderResolution.ResolvedProxy
+    ) throws -> IRSignatureProtocol {
+        if proxy.failures.isEmpty, let proxyMetaAccount = proxy.proxyAccount {
+            let proxyAccount = proxyMetaAccount.chainAccount
+
+            return try signingWrapperFactory
+                .createSigningWrapper(for: proxyMetaAccount.metaId, accountResponse: proxyAccount)
+                .sign(
+                    originalData,
+                    context: .substrateExtrinsic(.init(senderResolution: .current(proxyAccount)))
+                )
+        } else {
+            // TODO: Handle failures
+            throw NoKeysSigningWrapperError.watchOnly
+        }
+    }
+
+    private func sign(_ originalData: Data, sender: ExtrinsicSenderResolution) throws -> IRSignatureProtocol {
+        switch sender {
+        case let .proxy(resolvedProxy):
+            return try sign(originalData, proxy: resolvedProxy)
+        case .current:
+            throw NoKeysSigningWrapperError.watchOnly
+        }
+    }
 }
 
 extension ProxySigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
-        guard
-            case let .substrateExtrinsic(substrate) = context,
-            case let .proxy(proxy) = substrate.senderResolution else {
+        switch context {
+        case let .substrateExtrinsic(substrate):
+            return try sign(originalData, sender: substrate.senderResolution)
+        case .evmTransaction:
+            throw NoKeysSigningWrapperError.watchOnly
+        case .rawBytes:
+            // TODO: No raw bytes support error
             throw NoKeysSigningWrapperError.watchOnly
         }
-
-        return try signingWrapperFactory
-            .createSigningWrapper(for: proxy.proxyAccount.metaId, accountResponse: proxy.proxyAccount.chainAccount)
-            .sign(
-                originalData,
-                context: .substrateExtrinsic(.init(
-                    senderResolution: .current(proxy.proxyAccount.chainAccount)
-                ))
-            )
     }
 }

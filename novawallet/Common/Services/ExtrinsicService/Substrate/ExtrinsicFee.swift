@@ -6,10 +6,10 @@ struct ExtrinsicFeePayer: Equatable {
         case proxy
     }
 
-    let accountId: AccountId
+    let accountId: AccountId?
     let reason: Reason
 
-    init(accountId: AccountId, reason: Reason) {
+    init(accountId: AccountId?, reason: Reason) {
         self.accountId = accountId
         self.reason = reason
     }
@@ -17,7 +17,7 @@ struct ExtrinsicFeePayer: Equatable {
     init?(senderResolution: ExtrinsicSenderResolution) {
         switch senderResolution {
         case let .proxy(resolvedProxy):
-            accountId = resolvedProxy.proxyAccount.chainAccount.accountId
+            accountId = resolvedProxy.proxyAccount?.chainAccount.accountId
             reason = .proxy
         case .current:
             return nil

@@ -59,38 +59,51 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
 
         let allAccounts = buildAllAccounts()
 
-        let solution = try ProxyResolution.PathFinder(accounts: allAccounts).find(from: pathMerger.availablePaths)
+        if
+            let solution = try? ProxyResolution.PathFinder(accounts: allAccounts).find(from: pathMerger.availablePaths) {
+            let newBuilders = try builders.map { builder in
+                try builder.wrappingCalls { callJson in
+                    let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
+                    let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
-        let newBuilders = try builders.map { builder in
-            try builder.wrappingCalls { callJson in
-                let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
-                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                    guard let proxyPath = solution.callToPath[callPath] else {
+                        return callJson
+                    }
 
-                guard let proxyPath = solution.callToPath[callPath] else {
-                    return callJson
-                }
-
-                return try proxyPath.components.reduce(callJson) { call, component in
-                    try Proxy.ProxyCall(
-                        real: .accoundId(component.account.chainAccount.accountId),
-                        forceProxyType: component.proxyType,
-                        call: call
-                    )
-                    .runtimeCall()
-                    .toScaleCompatibleJSON(with: context.toRawContext())
+                    return try proxyPath.components.reduce(callJson) { call, component in
+                        try Proxy.ProxyCall(
+                            real: .accoundId(component.account.chainAccount.accountId),
+                            forceProxyType: component.proxyType,
+                            call: call
+                        )
+                        .runtimeCall()
+                        .toScaleCompatibleJSON(with: context.toRawContext())
+                    }
                 }
             }
+
+            let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
+                proxyAccount: solution.proxy,
+                proxiedAccount: proxiedAccount,
+                paths: solution.callToPath,
+                allAccounts: allAccounts,
+                failures: resolutionFailures
+            )
+
+            return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)
+        } else {
+            // if proxy resolution fails we still want to calculate fee and notify about failures
+
+            let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
+                proxyAccount: nil,
+                proxiedAccount: proxiedAccount,
+                paths: nil,
+                allAccounts: allAccounts,
+                failures: resolutionFailures
+            )
+
+            return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: builders)
         }
-
-        let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
-            proxyAccount: solution.proxy,
-            proxiedAccount: proxiedAccount,
-            paths: solution.callToPath,
-            allAccounts: allAccounts,
-            failures: resolutionFailures
-        )
-
-        return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)
     }
 }
 
