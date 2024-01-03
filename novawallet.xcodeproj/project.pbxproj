@@ -782,6 +782,10 @@
 		7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */; };
 		7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */; };
 		773A37542B398CEB006AC4AA /* WalletNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37532B398CEB006AC4AA /* WalletNotificationService.swift */; };
+		773A37562B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */; };
+		773A375A2B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */; };
+		773A375C2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */; };
+		773A375E2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */; };
 		773BA0782B15F52200929BD4 /* Proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0772B15F52200929BD4 /* Proxy.swift */; };
 		773BA07A2B15F9DA00929BD4 /* Proxy+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */; };
 		774091F92ACB1F4B00172516 /* SwapAmountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091F82ACB1F4B00172516 /* SwapAmountInputView.swift */; };
@@ -4948,6 +4952,10 @@
 		7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedActionControlView.swift; sourceTree = "<group>"; };
 		7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingRelaychainInteractor.swift; sourceTree = "<group>"; };
 		773A37532B398CEB006AC4AA /* WalletNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNotificationService.swift; sourceTree = "<group>"; };
+		773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSheetCheckmarkContentView.swift; sourceTree = "<group>"; };
+		773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewController.swift; sourceTree = "<group>"; };
+		773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetPresenter.swift; sourceTree = "<group>"; };
+		773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetProtocols.swift; sourceTree = "<group>"; };
 		773BA0772B15F52200929BD4 /* Proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxy.swift; sourceTree = "<group>"; };
 		773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Proxy+CodingPath.swift"; sourceTree = "<group>"; };
 		774091F82ACB1F4B00172516 /* SwapAmountInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAmountInputView.swift; sourceTree = "<group>"; };
@@ -10071,6 +10079,24 @@
 			path = RelaychainStaking;
 			sourceTree = "<group>";
 		};
+		773A37572B3B587F006AC4AA /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "New Group";
+			sourceTree = "<group>";
+		};
+		773A37582B3B589F006AC4AA /* ProxyMessageSheet */ = {
+			isa = PBXGroup;
+			children = (
+				773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */,
+				773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */,
+				773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */,
+				773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */,
+			);
+			path = ProxyMessageSheet;
+			sourceTree = "<group>";
+		};
 		773BA0762B15F50700929BD4 /* Proxy */ = {
 			isa = PBXGroup;
 			children = (
@@ -12487,6 +12513,7 @@
 		8465DA32298EC5A800C7CFF1 /* Compound */ = {
 			isa = PBXGroup;
 			children = (
+				773A37582B3B589F006AC4AA /* ProxyMessageSheet */,
 				0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */,
 				14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */,
 				6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */,
@@ -17876,6 +17903,7 @@
 		95ED25232B568F2C7DA953CC /* MessageSheet */ = {
 			isa = PBXGroup;
 			children = (
+				773A37572B3B587F006AC4AA /* New Group */,
 				8465DA33298EC5D900C7CFF1 /* TitleDetails */,
 				8465DA32298EC5A800C7CFF1 /* Compound */,
 			);
@@ -20345,6 +20373,7 @@
 				848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */,
 				843CE3A327D1FB8A00436F4E /* NftDetailsPriceView.swift in Sources */,
 				8442002D28E9ADB500C49C4A /* VoteInteractor.swift in Sources */,
+				773A375E2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift in Sources */,
 				84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */,
 				8456C08227CF9DC9001282DE /* RemoteNftModel.swift in Sources */,
 				849F144F29445A4600D9F9BA /* EvmInputViewModel+Handler.swift in Sources */,
@@ -21981,6 +22010,7 @@
 				849F14492944443500D9F9BA /* CoingeckoUrlParser.swift in Sources */,
 				84E25BE427E5F71900290BF1 /* AccountFieldStateViewModel.swift in Sources */,
 				84452F4E25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift in Sources */,
+				773A375C2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift in Sources */,
 				84BC703F289DBE6C008A9758 /* QRCreationOperation.swift in Sources */,
 				84452A6025D037AE00F47EC5 /* ChainStorage+Decodable.swift in Sources */,
 				8849AD6E29C4690F00F4F7FF /* String+CheckLength.swift in Sources */,
@@ -22123,6 +22153,7 @@
 				84CA68CF26BD6872003B9453 /* RuntimeSyncService.swift in Sources */,
 				84880C462902781E00CADB06 /* ReferendumVotingLocal.swift in Sources */,
 				84CEAAF326D6ED870021B881 /* KeystoreTag.swift in Sources */,
+				773A37562B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift in Sources */,
 				840DCBF625E0059D00D45C6A /* AmountInputView+Inspectable.swift in Sources */,
 				845B8920295961AC00EE25B0 /* SecurityLayerProtocols.swift in Sources */,
 				8488ECEA258CE456004591CC /* PurchaseViewController.swift in Sources */,
@@ -22215,6 +22246,7 @@
 				84592F4A298716140001BB56 /* SubqueryVotingOperationFactory.swift in Sources */,
 				84A59166292B601600BCCF8F /* EvmOnChainTransferInteractor.swift in Sources */,
 				84038FF626FFDF4E00C73F3F /* CrowdloanSharedState.swift in Sources */,
+				773A375A2B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift in Sources */,
 				054C4BCDEC29ED5F74A36E8B /* ExportMnemonicPresenter.swift in Sources */,
 				39218CF5AA701518BD3B0103 /* ExportMnemonicInteractor.swift in Sources */,
 				0C13D3182A8216A10054BB6F /* NominationPoolsIconFactory.swift in Sources */,
