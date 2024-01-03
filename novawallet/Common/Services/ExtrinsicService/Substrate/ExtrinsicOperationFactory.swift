@@ -172,16 +172,13 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         return requestOperation
     }
 
-    override func createExtrinsicWrapper(
+    private func createPartialBuildersWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
-        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
-    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
-        let currentExtensions = customExtensions
-        let optTip = chain.defaultTip
-
-        let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
-
+        chain: ChainModel,
+        customExtensions: [ExtrinsicExtension],
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<[ExtrinsicBuilderProtocol]> {
         let genesisBlockOperation = createBlockHashOperation(connection: engine, for: { 0 })
 
         let eraWrapper = eraOperationFactory.createOperation(from: engine, runtimeService: runtimeRegistry)
@@ -209,11 +206,11 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
 
-                if let defaultTip = optTip {
+                if let defaultTip = chain.defaultTip {
                     builder = builder.with(tip: defaultTip)
                 }
 
-                for customExtension in currentExtensions {
+                for customExtension in customExtensions {
                     builder = builder.adding(extrinsicExtension: customExtension)
                 }
 
@@ -221,39 +218,25 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             }
         }
 
-        partialBuildersOperation.addDependency(codingFactoryOperation)
-        partialBuildersOperation.addDependency(genesisBlockOperation)
-        partialBuildersOperation.addDependency(eraWrapper.targetOperation)
-        partialBuildersOperation.addDependency(eraBlockOperation)
+        let dependencies = [genesisBlockOperation] + eraWrapper.allOperations + [eraBlockOperation]
 
-        let senderResolverWrapper = senderResolvingFactory.createWrapper()
-        let senderResolutionOperation = ClosureOperation<ExtrinsicSenderBuilderResolution> {
-            let builders = try partialBuildersOperation.extractNoCancellableResultData()
-            let resolver = try senderResolverWrapper.targetOperation.extractNoCancellableResultData()
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+        dependencies.forEach { partialBuildersOperation.addDependency($0) }
 
-            return try resolver.resolveSender(wrapping: builders, codingFactory: codingFactory)
-        }
+        return CompoundOperationWrapper(targetOperation: partialBuildersOperation, dependencies: dependencies)
+    }
 
-        senderResolutionOperation.addDependency(partialBuildersOperation)
-        senderResolutionOperation.addDependency(senderResolverWrapper.targetOperation)
-        senderResolutionOperation.addDependency(codingFactoryOperation)
-
-        let nonceOperation = createNonceOperation(in: chain) {
-            let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
-            return senderResolution.account.accountId
-        }
-
-        nonceOperation.addDependency(senderResolutionOperation)
-
-        let extrinsicsOperation = ClosureOperation<ExtrinsicsCreationResult> {
+    private func createExtrinsicsOperation(
+        dependingOn nonceOperation: BaseOperation<UInt32>,
+        senderResolutionOperation: BaseOperation<ExtrinsicSenderBuilderResolution>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> BaseOperation<ExtrinsicsCreationResult> {
+        ClosureOperation<ExtrinsicsCreationResult> {
             let nonce = try nonceOperation.extractNoCancellableResultData()
             let (senderResolution, builders) = try senderResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let context = ExtrinsicSigningContext.Substrate(
-                senderResolution: senderResolution
-            )
+            let context = ExtrinsicSigningContext.Substrate(senderResolution: senderResolution)
 
             let extrinsics: [Data] = try builders.enumerated().map { index, partialBuilder in
                 var builder = partialBuilder.with(nonce: nonce + UInt32(index))
@@ -272,14 +255,57 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
             return (extrinsics, senderResolution)
         }
+    }
+
+    override func createExtrinsicWrapper(
+        customClosure: @escaping ExtrinsicBuilderIndexedClosure,
+        indexes: [Int],
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
+        let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
+
+        let partialBuildersWrapper = createPartialBuildersWrapper(
+            customClosure: customClosure,
+            indexes: indexes,
+            chain: chain,
+            customExtensions: customExtensions,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        partialBuildersWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let senderResolverWrapper = senderResolvingFactory.createWrapper()
+        let senderResolutionOperation = ClosureOperation<ExtrinsicSenderBuilderResolution> {
+            let builders = try partialBuildersWrapper.targetOperation.extractNoCancellableResultData()
+            let resolver = try senderResolverWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            return try resolver.resolveSender(wrapping: builders, codingFactory: codingFactory)
+        }
+
+        senderResolutionOperation.addDependency(partialBuildersWrapper.targetOperation)
+        senderResolutionOperation.addDependency(senderResolverWrapper.targetOperation)
+        senderResolutionOperation.addDependency(codingFactoryOperation)
+
+        let nonceOperation = createNonceOperation(in: chain) {
+            let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
+            return senderResolution.account.accountId
+        }
+
+        nonceOperation.addDependency(senderResolutionOperation)
+
+        let extrinsicsOperation = createExtrinsicsOperation(
+            dependingOn: nonceOperation,
+            senderResolutionOperation: senderResolutionOperation,
+            codingFactoryOperation: codingFactoryOperation,
+            signingClosure: signingClosure
+        )
 
         extrinsicsOperation.addDependency(nonceOperation)
         extrinsicsOperation.addDependency(senderResolutionOperation)
-        extrinsicsOperation.addDependency(partialBuildersOperation)
         extrinsicsOperation.addDependency(codingFactoryOperation)
 
-        let dependencies = [codingFactoryOperation, genesisBlockOperation] +
-            eraWrapper.allOperations + [eraBlockOperation, partialBuildersOperation] +
+        let dependencies = [codingFactoryOperation] + partialBuildersWrapper.allOperations +
             senderResolverWrapper.allOperations + [senderResolutionOperation, nonceOperation]
 
         return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
