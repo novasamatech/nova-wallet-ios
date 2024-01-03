@@ -221,6 +221,11 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             }
         }
 
+        partialBuildersOperation.addDependency(codingFactoryOperation)
+        partialBuildersOperation.addDependency(genesisBlockOperation)
+        partialBuildersOperation.addDependency(eraWrapper.targetOperation)
+        partialBuildersOperation.addDependency(eraBlockOperation)
+
         let senderResolverWrapper = senderResolvingFactory.createWrapper()
         let senderResolutionOperation = ClosureOperation<ExtrinsicSenderBuilderResolution> {
             let builders = try partialBuildersOperation.extractNoCancellableResultData()
@@ -275,7 +280,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         let dependencies = [codingFactoryOperation, genesisBlockOperation] +
             eraWrapper.allOperations + [eraBlockOperation, partialBuildersOperation] +
-            senderResolverWrapper.allOperations + [senderResolutionOperation, nonceOperation, extrinsicsOperation]
+            senderResolverWrapper.allOperations + [senderResolutionOperation, nonceOperation]
 
         return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
     }
