@@ -74,14 +74,46 @@ enum ProxyCallFilter {
     private static var proxyTypeToFilter: [Proxy.ProxyType: ProxyCallFilterProtocol] {
         [
             Proxy.ProxyType.any: ConstantMatches(result: true),
-            Proxy.ProxyType.nonTransfer: NotMatches(
-                innerFilter: OrMatches(
-                    innerFilters: [
-                        MatchesPallet(pallet: BalancesPallet.name),
-                        MatchesPallet(pallet: PalletAssets.name),
-                        MatchesPallet(pallet: UniquesPallet.name)
-                    ]
-                )
+            Proxy.ProxyType.nonTransfer: OrMatches(
+                innerFilters: [
+                    MatchesPallet(pallet: "System"),
+                    MatchesPallet(pallet: "Scheduler"),
+                    MatchesPallet(pallet: "Babe"),
+                    MatchesPallet(pallet: "Timestamp"),
+                    MatchesCall(callPath: .init(moduleName: "Indices", callName: "claim")),
+                    MatchesCall(callPath: .init(moduleName: "Indices", callName: "free")),
+                    MatchesCall(callPath: .init(moduleName: "Indices", callName: "freeze")),
+                    // Specifically omitting Indices `transfer`, `force_transfer`
+                    // Specifically omitting the entire Balances pallet
+                    MatchesPallet(pallet: "Staking"),
+                    MatchesPallet(pallet: "Session"),
+                    MatchesPallet(pallet: "Grandpa"),
+                    MatchesPallet(pallet: "ImOnline"),
+                    MatchesPallet(pallet: "Treasury"),
+                    MatchesPallet(pallet: "Bounties"),
+                    MatchesPallet(pallet: "ChildBounties"),
+                    MatchesPallet(pallet: "ConvictionVoting"),
+                    MatchesPallet(pallet: "Referenda"),
+                    MatchesPallet(pallet: "Whitelist"),
+                    MatchesPallet(pallet: "Claims"),
+                    MatchesCall(callPath: .init(moduleName: "Vesting", callName: "vest")),
+                    MatchesCall(callPath: .init(moduleName: "Vesting", callName: "vest_other")),
+                    // Specifically omitting Vesting `vested_transfer`, and `force_vested_transfer`
+                    MatchesPallet(pallet: "Utility"),
+                    MatchesPallet(pallet: "Identity"),
+                    MatchesPallet(pallet: "Proxy"),
+                    MatchesPallet(pallet: "Multisig"),
+                    MatchesCall(callPath: .init(moduleName: "Registrar", callName: "register")),
+                    MatchesCall(callPath: .init(moduleName: "Registrar", callName: "deregister")),
+                    // Specifically omitting Registrar `swap`
+                    MatchesCall(callPath: .init(moduleName: "Registrar", callName: "reserve")),
+                    MatchesPallet(pallet: "Crowdloan"),
+                    MatchesPallet(pallet: "Slots"),
+                    MatchesPallet(pallet: "Auctions"),
+                    MatchesPallet(palletPossibleNames: Set(BagList.possibleModuleNames)),
+                    MatchesPallet(pallet: "NominationPools"),
+                    MatchesPallet(pallet: "FastUnstake")
+                ]
             ),
             Proxy.ProxyType.governance: OrMatches(
                 innerFilters: [
@@ -91,7 +123,8 @@ enum ProxyCallFilter {
                     MatchesPallet(pallet: "Bounties"),
                     MatchesPallet(pallet: "ChildBounties"),
                     MatchesPallet(pallet: "Whitelist"),
-                    MatchesPallet(pallet: "Democracy")
+                    MatchesPallet(pallet: "Democracy"),
+                    MatchesPallet(pallet: "Utility")
                 ]
             ),
             Proxy.ProxyType.staking: OrMatches(
@@ -100,10 +133,16 @@ enum ProxyCallFilter {
                     MatchesPallet(pallet: NominationPools.module),
                     MatchesPallet(palletPossibleNames: Set(BagList.possibleModuleNames)),
                     MatchesPallet(pallet: "FastUnstake"),
-                    MatchesPallet(pallet: "Session")
+                    MatchesPallet(pallet: "Session"),
+                    MatchesPallet(pallet: "Utility")
                 ]
             ),
-            Proxy.ProxyType.nominationPools: MatchesPallet(pallet: NominationPools.module),
+            Proxy.ProxyType.nominationPools: OrMatches(
+                innerFilters: [
+                    MatchesPallet(pallet: NominationPools.module),
+                    MatchesPallet(pallet: "Utility")
+                ]
+            ),
             Proxy.ProxyType.auction: OrMatches(
                 innerFilters: [
                     MatchesPallet(pallet: "Auctions"),
@@ -115,8 +154,11 @@ enum ProxyCallFilter {
             Proxy.ProxyType.cancelProxy: MatchesCall(
                 callPath: .init(moduleName: Proxy.name, callName: "reject_announcement")
             ),
-            Proxy.ProxyType.identityJudgement: MatchesCall(
-                callPath: .init(moduleName: "Identity", callName: "provide_judgement")
+            Proxy.ProxyType.identityJudgement: OrMatches(
+                innerFilters: [
+                    MatchesCall(callPath: .init(moduleName: "Identity", callName: "provide_judgement")),
+                    MatchesPallet(pallet: "Utility")
+                ]
             )
         ]
     }

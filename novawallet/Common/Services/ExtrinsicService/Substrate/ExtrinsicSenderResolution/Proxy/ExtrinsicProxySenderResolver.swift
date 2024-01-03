@@ -22,6 +22,54 @@ final class ExtrinsicProxySenderResolver {
             accum[account.chainAccount.accountId] = accounts + [account]
         }
     }
+
+    private func createResult(
+        from solution: ProxyResolution.PathFinderResult,
+        builders: [ExtrinsicBuilderProtocol],
+        allAccounts: [AccountId: [MetaChainAccountResponse]],
+        resolutionFailures: [ExtrinsicSenderResolution.ResolutionProxyFailure],
+        context: RuntimeJsonContext
+    ) throws -> ExtrinsicSenderBuilderResolution {
+        let newBuilders = try builders.map { builder in
+            try builder.wrappingCalls { callJson in
+                let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+
+                guard let proxyPath = solution.callToPath[callPath] else {
+                    return callJson
+                }
+
+                let (resultCall, _) = try proxyPath.components.reduce(
+                    (callJson, proxiedAccount.accountId)
+                ) { callAndProxied, component in
+                    let call = callAndProxied.0
+                    let proxiedAccountId = callAndProxied.1
+
+                    let newCall = try Proxy.ProxyCall(
+                        real: .accoundId(proxiedAccountId),
+                        forceProxyType: component.proxyType,
+                        call: call
+                    )
+                    .runtimeCall()
+                    .toScaleCompatibleJSON(with: context.toRawContext())
+
+                    return (newCall, component.account.chainAccount.accountId)
+                }
+
+                return resultCall
+            }
+        }
+
+        let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
+            proxyAccount: solution.proxy,
+            proxiedAccount: proxiedAccount,
+            paths: solution.callToPath,
+            allAccounts: allAccounts,
+            failures: resolutionFailures
+        )
+
+        return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)
+    }
 }
 
 extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
@@ -60,37 +108,16 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
         let allAccounts = buildAllAccounts()
 
         if
-            let solution = try? ProxyResolution.PathFinder(accounts: allAccounts).find(from: pathMerger.availablePaths) {
-            let newBuilders = try builders.map { builder in
-                try builder.wrappingCalls { callJson in
-                    let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
-                    let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-
-                    guard let proxyPath = solution.callToPath[callPath] else {
-                        return callJson
-                    }
-
-                    return try proxyPath.components.reduce(callJson) { call, component in
-                        try Proxy.ProxyCall(
-                            real: .accoundId(component.account.chainAccount.accountId),
-                            forceProxyType: component.proxyType,
-                            call: call
-                        )
-                        .runtimeCall()
-                        .toScaleCompatibleJSON(with: context.toRawContext())
-                    }
-                }
-            }
-
-            let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
-                proxyAccount: solution.proxy,
-                proxiedAccount: proxiedAccount,
-                paths: solution.callToPath,
+            let solution = try? ProxyResolution.PathFinder(
+                accounts: allAccounts
+            ).find(from: pathMerger.availablePaths) {
+            return try createResult(
+                from: solution,
+                builders: builders,
                 allAccounts: allAccounts,
-                failures: resolutionFailures
+                resolutionFailures: resolutionFailures,
+                context: context
             )
-
-            return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)
         } else {
             // if proxy resolution fails we still want to calculate fee and notify about failures
 
