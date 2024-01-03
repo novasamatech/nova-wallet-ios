@@ -1,6 +1,9 @@
 import UIKit
 
-final class WalletView: GenericTitleValueView<WalletIconView, GenericPairValueView<IconDetailsView, GenericPairValueView<UILabel, IconDetailsView>>> {
+final class WalletView: GenericTitleValueView<
+    WalletIconView,
+    GenericPairValueView<IconDetailsView, GenericPairValueView<UILabel, IconDetailsView>>
+> {
     private var viewModel: ViewModel?
 
     var iconImageView: UIImageView { titleView.iconViewImageView }
