@@ -3,6 +3,10 @@ import SubstrateSdk
 import IrohaCrypto
 import SoraKeystore
 
+enum ProxySigningWrapperError: Error {
+    case resolutionFailed(ExtrinsicSenderResolution.ResolvedProxy)
+}
+
 final class ProxySigningWrapper {
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let settingsManager: SettingsManagerProtocol
@@ -54,8 +58,7 @@ final class ProxySigningWrapper {
         if proxy.failures.isEmpty, let proxyMetaAccount = proxy.proxyAccount {
             return try sign(originalData, proxyMetaAccount: proxyMetaAccount)
         } else {
-            // TODO: Handle failures
-            throw NoKeysSigningWrapperError.watchOnly
+            throw ProxySigningWrapperError.resolutionFailed(proxy)
         }
     }
 
@@ -74,11 +77,8 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
         switch context {
         case let .substrateExtrinsic(substrate):
             return try sign(originalData, sender: substrate.senderResolution)
-        case .evmTransaction:
-            throw NoKeysSigningWrapperError.watchOnly
-        case .rawBytes:
-            // TODO: No raw bytes support error
-            throw NoKeysSigningWrapperError.watchOnly
+        case .evmTransaction, .rawBytes:
+            throw NoSigningSupportError.notSupported(type: .proxy)
         }
     }
 }

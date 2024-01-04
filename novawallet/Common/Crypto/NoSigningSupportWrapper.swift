@@ -5,6 +5,7 @@ enum NoSigningSupportType {
     case paritySigner
     case ledger
     case polkadotVault
+    case proxy
 }
 
 enum NoSigningSupportError: Error {

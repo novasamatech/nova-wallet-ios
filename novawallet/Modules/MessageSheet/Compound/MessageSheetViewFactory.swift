@@ -78,6 +78,11 @@ struct MessageSheetViewFactory {
             message = LocalizableResource { locale in
                 R.string.localizable.commonLedgerNotSupportedMessage(preferredLanguages: locale.rLanguages)
             }
+        case .proxy:
+            icon = R.image.imageProxy()
+            message = LocalizableResource { locale in
+                R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
+            }
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
