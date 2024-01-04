@@ -64,7 +64,11 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 chainId: accountResponse.chainId
             )
         case .proxied:
-            return ProxySigningWrapper(signingWrapperFactory: self)
+            return ProxySigningWrapper(
+                signingWrapperFactory: self,
+                settingsManager: settingsManager,
+                uiPresenter: uiPresenter
+            )
         }
     }
 

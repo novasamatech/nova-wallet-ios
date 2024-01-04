@@ -102,6 +102,7 @@
 		0C21D7802AB432B100EB2DBD /* MainTabBarIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C21D77F2AB432B100EB2DBD /* MainTabBarIndex.swift */; };
 		0C2200692ACA80BB0067BA61 /* AssetHubSwapQuoteBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2200682ACA80BB0067BA61 /* AssetHubSwapQuoteBuilder.swift */; };
 		0C22006E2ACAAC2F0067BA61 /* AssetConversionPallet+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C22006D2ACAAC2F0067BA61 /* AssetConversionPallet+Call.swift */; };
+		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
 		0C2AA829B5CB89B39E0FA95E /* CrowdloanContributionConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF01941105BCD02536538362 /* CrowdloanContributionConfirmProtocols.swift */; };
 		0C2F86802A7119D400593C01 /* AuraSessionLengthOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F867F2A7119D400593C01 /* AuraSessionLengthOperationFactory.swift */; };
@@ -4283,6 +4284,7 @@
 		0C2200682ACA80BB0067BA61 /* AssetHubSwapQuoteBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapQuoteBuilder.swift; sourceTree = "<group>"; };
 		0C22006D2ACAAC2F0067BA61 /* AssetConversionPallet+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionPallet+Call.swift"; sourceTree = "<group>"; };
 		0C2437D345C3D9B12AEE1E28 /* ParaStkYieldBoostSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupProtocols.swift; sourceTree = "<group>"; };
+		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationUpdatibleView.swift; sourceTree = "<group>"; };
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
@@ -10156,20 +10158,13 @@
 			path = RelaychainStaking;
 			sourceTree = "<group>";
 		};
-		773A37572B3B587F006AC4AA /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "New Group";
-			sourceTree = "<group>";
-		};
 		773A37582B3B589F006AC4AA /* ProxyMessageSheet */ = {
 			isa = PBXGroup;
 			children = (
 				773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */,
 				773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */,
 				773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */,
-				773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */,
+				0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */,
 			);
 			path = ProxyMessageSheet;
 			sourceTree = "<group>";
@@ -10646,6 +10641,7 @@
 		77FF02672B21DCB300B655BC /* Proxy */ = {
 			isa = PBXGroup;
 			children = (
+				773A37582B3B589F006AC4AA /* ProxyMessageSheet */,
 				B084A3FDB5B12737B254252D /* ProxiedsUpdate */,
 			);
 			path = Proxy;
@@ -12595,7 +12591,6 @@
 		8465DA32298EC5A800C7CFF1 /* Compound */ = {
 			isa = PBXGroup;
 			children = (
-				773A37582B3B589F006AC4AA /* ProxyMessageSheet */,
 				0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */,
 				14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */,
 				6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */,
@@ -12606,6 +12601,7 @@
 				84355CED28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift */,
 				846A835E28B8D94300D92892 /* MessageSheetNoContentView.swift */,
 				84E172CE28BE468D00DC85B6 /* MessageSheetPresentable.swift */,
+				773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */,
 			);
 			path = Compound;
 			sourceTree = "<group>";
@@ -17989,7 +17985,6 @@
 		95ED25232B568F2C7DA953CC /* MessageSheet */ = {
 			isa = PBXGroup;
 			children = (
-				773A37572B3B587F006AC4AA /* New Group */,
 				8465DA33298EC5D900C7CFF1 /* TitleDetails */,
 				8465DA32298EC5A800C7CFF1 /* Compound */,
 			);
@@ -23423,6 +23418,7 @@
 				0CD3A6802AEAC3C90059BBEC /* CompoundOperationWrapper+Add.swift in Sources */,
 				844C3E5C2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift in Sources */,
 				0C9C643A2A8DF97E004DC078 /* StakingNPoolsError.swift in Sources */,
+				0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */,
 				87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */,
 				84770F2C291F893200852A33 /* GovernanceUnlockConfirmInitData.swift in Sources */,
 				84B24FAC2A2F25FF00F9BF59 /* StakingDashboardActiveDetailsView.swift in Sources */,

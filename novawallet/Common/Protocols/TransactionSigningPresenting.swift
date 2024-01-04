@@ -1,5 +1,7 @@
 import Foundation
 import IrohaCrypto
+import SoraKeystore
+import SoraUI
 
 typealias TransactionSigningResult = Result<IRSignatureProtocol, Error>
 typealias TransactionSigningClosure = (TransactionSigningResult) -> Void
@@ -17,6 +19,12 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        completion: @escaping TransactionSigningClosure
+    )
+
+    func presentProxyFlow(
+        for data: Data,
+        proxy: MetaChainAccountResponse,
         completion: @escaping TransactionSigningClosure
     )
 }
@@ -88,5 +96,67 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         }
 
         present(signingView: ledgerView, completion: completion)
+    }
+
+    func presentProxyFlow(
+        for data: Data,
+        proxy: MetaChainAccountResponse,
+        completion: @escaping TransactionSigningClosure
+    ) {
+        let settingsManager = SettingsManager.shared
+
+        let completionClosure: () -> Void = {
+            let signingWrapperFactory = SigningWrapperFactory(
+                uiPresenter: self,
+                keystore: Keychain(),
+                settingsManager: settingsManager
+            )
+
+            let context = ExtrinsicSigningContext.Substrate(senderResolution: .current(proxy.chainAccount))
+            let signingWrapper = signingWrapperFactory.createSigningWrapper(
+                for: proxy.metaId,
+                accountResponse: proxy.chainAccount
+            )
+
+            DispatchQueue.global().async {
+                do {
+                    let signature = try signingWrapper.sign(data, context: .substrateExtrinsic(context))
+
+                    completion(.success(signature))
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+        }
+
+        guard !settingsManager.skipProxyFeeInformation else {
+            completionClosure()
+            return
+        }
+
+        let cancelClosure: () -> Void = {
+            // TODO: Make general error
+            completion(.failure(HardwareSigningError.signingCancelled))
+        }
+
+        guard
+            let proxyConfirmationView = ProxyMessageSheetViewFactory.createSigningView(
+                proxyName: proxy.chainAccount.name,
+                completionClosure: completionClosure,
+                cancelClosure: cancelClosure
+            ) else {
+            completion(.failure(CommonError.dataCorruption))
+            return
+        }
+
+        let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
+        let optionalController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
+
+        guard let presentationController = optionalController else {
+            completion(.failure(CommonError.dataCorruption))
+            return
+        }
+
+        presentationController.present(proxyConfirmationView.controller, animated: true)
     }
 }
