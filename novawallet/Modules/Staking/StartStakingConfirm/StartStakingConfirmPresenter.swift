@@ -244,11 +244,13 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
         case let .confirmation(internalError):
             view?.didStopLoading()
 
-            if internalError.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: internalError, from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }

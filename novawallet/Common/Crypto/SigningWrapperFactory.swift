@@ -65,6 +65,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             )
         case .proxied:
             return ProxySigningWrapper(
+                metaId: metaId,
                 signingWrapperFactory: self,
                 settingsManager: settingsManager,
                 uiPresenter: uiPresenter

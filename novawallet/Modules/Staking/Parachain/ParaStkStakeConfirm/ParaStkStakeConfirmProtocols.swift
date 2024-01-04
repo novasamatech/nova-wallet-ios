@@ -44,6 +44,6 @@ protocol ParaStkStakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentabl
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable {
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(on view: ParaStkStakeConfirmViewProtocol?, locale: Locale)
 }

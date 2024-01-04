@@ -40,6 +40,7 @@ protocol TransferConfirmCrossChainInteractorOutputProtocol: CrossChainTransferSe
 }
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable, CommonRetryable, MessageSheetPresentable {
+    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable, CommonRetryable, MessageSheetPresentable,
+    ExtrinsicSigningErrorHandling {
     func complete(on view: TransferConfirmCommonViewProtocol?, locale: Locale, completion: @escaping () -> Void)
 }

@@ -35,4 +35,4 @@ protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
 
 protocol NPoolsRedeemWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable,
     AddressOptionsPresentable, MessageSheetPresentable,
-    NominationPoolErrorPresentable, ExtrinsicSubmissionPresenting {}
+    NominationPoolErrorPresentable, ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

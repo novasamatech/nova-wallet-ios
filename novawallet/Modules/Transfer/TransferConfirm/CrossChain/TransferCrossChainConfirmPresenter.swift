@@ -250,11 +250,15 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
         view?.didStopLoading()
 
-        if error.isWatchOnlySigning {
-            wireframe.presentDismissingNoSigningView(from: view)
-        } else {
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        let isHandledError = wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+            error,
+            view: view,
+            closeAction: .dismiss,
+            locale: selectedLocale,
+            completionClosure: nil
+        )
 
+        if !isHandledError {
             logger?.error("Did receive error: \(error)")
         }
     }

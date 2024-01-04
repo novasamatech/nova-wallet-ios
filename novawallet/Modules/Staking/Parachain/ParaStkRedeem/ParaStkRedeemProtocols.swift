@@ -34,4 +34,4 @@ protocol ParaStkRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable, ExtrinsicSubmissionPresenting {}
+    MessageSheetPresentable, ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

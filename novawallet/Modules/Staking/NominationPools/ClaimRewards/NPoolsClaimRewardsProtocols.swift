@@ -35,4 +35,4 @@ protocol NPoolsClaimRewardsInteractorOutputProtocol: AnyObject {
 
 protocol NPoolsClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     AddressOptionsPresentable, MessageSheetPresentable,
-    ExtrinsicSubmissionPresenting, NominationPoolErrorPresentable {}
+    ExtrinsicSubmissionPresenting, NominationPoolErrorPresentable, ExtrinsicSigningErrorHandling {}

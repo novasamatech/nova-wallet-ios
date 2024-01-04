@@ -284,13 +284,13 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
                 }
             }
         case let .submitFailed(error):
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else {
-                wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 

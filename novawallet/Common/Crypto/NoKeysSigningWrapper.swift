@@ -23,6 +23,14 @@ extension Error {
         }
     }
 
+    var isSigningCancelled: Bool {
+        isHardwareWalletSigningCancelled || isProxySigningCancelled
+    }
+
+    var isSigningClosed: Bool {
+        isProxySigningClosed
+    }
+
     var isHardwareWalletSigningCancelled: Bool {
         guard let hardwareWalletError = self as? HardwareSigningError else {
             return false
@@ -31,6 +39,32 @@ extension Error {
         switch hardwareWalletError {
         case .signingCancelled:
             return true
+        }
+    }
+
+    var isProxySigningClosed: Bool {
+        guard let proxySigningError = self as? ProxySigningWrapperError else {
+            return false
+        }
+
+        switch proxySigningError {
+        case .closed:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isProxySigningCancelled: Bool {
+        guard let proxySigningError = self as? ProxySigningWrapperError else {
+            return false
+        }
+
+        switch proxySigningError {
+        case .canceled:
+            return true
+        default:
+            return false
         }
     }
 

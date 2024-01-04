@@ -26,7 +26,7 @@ final class ExtrinsicProxySenderResolver {
     private func createResult(
         from solution: ProxyResolution.PathFinderResult,
         builders: [ExtrinsicBuilderProtocol],
-        allAccounts: [AccountId: [MetaChainAccountResponse]],
+        allAccounts _: [AccountId: [MetaChainAccountResponse]],
         resolutionFailures: [ExtrinsicSenderResolution.ResolutionProxyFailure],
         context: RuntimeJsonContext
     ) throws -> ExtrinsicSenderBuilderResolution {
@@ -64,7 +64,8 @@ final class ExtrinsicProxySenderResolver {
             proxyAccount: solution.proxy,
             proxiedAccount: proxiedAccount,
             paths: solution.callToPath,
-            allAccounts: allAccounts,
+            allWallets: wallets,
+            chain: chain,
             failures: resolutionFailures
         )
 
@@ -125,7 +126,8 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
                 proxyAccount: nil,
                 proxiedAccount: proxiedAccount,
                 paths: nil,
-                allAccounts: allAccounts,
+                allWallets: wallets,
+                chain: chain,
                 failures: resolutionFailures
             )
 

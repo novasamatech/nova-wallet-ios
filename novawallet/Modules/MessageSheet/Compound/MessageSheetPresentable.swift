@@ -71,27 +71,6 @@ extension MessageSheetPresentable {
         }
     }
 
-    func presentDismissingNoSigningView(from presentationView: ControllerBackedProtocol?) {
-        guard let presentationView = presentationView else {
-            return
-        }
-
-        presentNoSigningView(from: presentationView) {
-            let presenter = presentationView.controller.presentingViewController
-            presenter?.dismiss(animated: true, completion: nil)
-        }
-    }
-
-    func presentPopingNoSigningView(from presentationView: ControllerBackedProtocol?) {
-        guard let presentationView = presentationView else {
-            return
-        }
-
-        presentNoSigningView(from: presentationView) {
-            presentationView.controller.navigationController?.popToRootViewController(animated: true)
-        }
-    }
-
     func presentNoSigningView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void) {
         guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: completion) else {
             return

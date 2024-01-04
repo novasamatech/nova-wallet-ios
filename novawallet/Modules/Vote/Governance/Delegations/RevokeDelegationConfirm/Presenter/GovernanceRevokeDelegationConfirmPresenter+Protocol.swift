@@ -123,7 +123,13 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
         case let .submitFailed(internalError):
             view?.didStopLoading()
 
-            wireframe.presentNoSigningOrError(from: view, error: internalError, locale: selectedLocale)
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                internalError,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 

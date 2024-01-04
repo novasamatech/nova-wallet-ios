@@ -319,11 +319,13 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
                 return
             }
 
-            if error.isWatchOnlySigning {
-                wireframe.presentPopingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+            if !wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .pop,
+                locale: selectedLocale,
+                completionClosure: nil
+            ) {
                 wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
             }
         }

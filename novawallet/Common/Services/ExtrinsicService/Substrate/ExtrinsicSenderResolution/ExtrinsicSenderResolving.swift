@@ -12,7 +12,8 @@ enum ExtrinsicSenderResolution {
         let proxyAccount: MetaChainAccountResponse?
         let proxiedAccount: ChainAccountResponse
         let paths: [CallCodingPath: ProxyResolution.PathFinderPath]?
-        let allAccounts: [AccountId: [MetaChainAccountResponse]]
+        let allWallets: [MetaAccountModel]
+        let chain: ChainModel
         let failures: [ResolutionProxyFailure]
     }
 

@@ -206,25 +206,19 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
             wireframe.close(view: view)
 
         case let .failure(error):
-            if error.isWatchOnlySigning {
-                guard let view = view else {
-                    return
-                }
+            let isSigningError = wireframe.handleExtrinsicSigningErrorPresentation(
+                error,
+                view: view,
+                closeAction: nil
+            ) { [weak self] _ in
+                self?.interactor.reject()
+            }
 
-                wireframe.presentNoSigningView(from: view) { [weak self] in
-                    self?.interactor.reject()
-                }
-            } else if error.isHardwareWalletSigningCancelled {
+            guard !isSigningError else {
                 return
-            } else if let notSupportedSigner = error.notSupportedSignerType {
-                guard let view = view else {
-                    return
-                }
+            }
 
-                wireframe.presentSignerNotSupportedView(from: view, type: notSupportedSigner) { [weak self] in
-                    self?.interactor.reject()
-                }
-            } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 logger?.error("Response error: \(error)")
             }
         }

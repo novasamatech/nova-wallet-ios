@@ -35,4 +35,4 @@ protocol ParaStkYieldBoostStartInteractorOutputProtocol: ParaStkYieldBoostSchedu
 
 protocol ParaStkYieldBoostStartWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable, MessageSheetPresentable, ParaStkYieldBoostErrorPresentable,
-    AddressOptionsPresentable, ExtrinsicSubmissionPresenting {}
+    AddressOptionsPresentable, ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

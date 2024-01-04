@@ -4,19 +4,23 @@ import IrohaCrypto
 import SoraKeystore
 
 enum ProxySigningWrapperError: Error {
-    case resolutionFailed(ExtrinsicSenderResolution.ResolvedProxy)
+    case canceled
+    case closed
 }
 
 final class ProxySigningWrapper {
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let settingsManager: SettingsManagerProtocol
     let uiPresenter: TransactionSigningPresenting
+    let metaId: String
 
     init(
+        metaId: String,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
         uiPresenter: TransactionSigningPresenting
     ) {
+        self.metaId = metaId
         self.signingWrapperFactory = signingWrapperFactory
         self.settingsManager = settingsManager
         self.uiPresenter = uiPresenter
@@ -51,6 +55,38 @@ final class ProxySigningWrapper {
         }
     }
 
+    private func signWithNotEnoughPermissions(
+        metaId: String,
+        proxy: ExtrinsicSenderResolution.ResolvedProxy
+    ) throws -> IRSignatureProtocol {
+        let semaphore = DispatchSemaphore(value: 0)
+
+        var signingResult: TransactionSigningResult?
+
+        DispatchQueue.main.async {
+            self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
+                for: metaId,
+                resolution: proxy
+            ) { result in
+                signingResult = result
+
+                semaphore.signal()
+            }
+        }
+
+        // block tx sending flow until we get signing result from ui
+        semaphore.wait()
+
+        switch signingResult {
+        case let .success(signature):
+            return signature
+        case let .failure(error):
+            throw error
+        case .none:
+            throw CommonError.undefined
+        }
+    }
+
     private func sign(
         _ originalData: Data,
         proxy: ExtrinsicSenderResolution.ResolvedProxy
@@ -58,7 +94,7 @@ final class ProxySigningWrapper {
         if proxy.failures.isEmpty, let proxyMetaAccount = proxy.proxyAccount {
             return try sign(originalData, proxyMetaAccount: proxyMetaAccount)
         } else {
-            throw ProxySigningWrapperError.resolutionFailed(proxy)
+            return try signWithNotEnoughPermissions(metaId: metaId, proxy: proxy)
         }
     }
 

@@ -39,6 +39,6 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingUnbondConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable {
+    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(from view: StakingUnbondConfirmViewProtocol?)
 }

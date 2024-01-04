@@ -101,11 +101,7 @@ final class SelectValidatorsConfirmPresenter {
     private func handle(error: Error) {
         let locale = view?.localizationManager?.selectedLocale
 
-        if error.isWatchOnlySigning {
-            wireframe.presentDismissingNoSigningView(from: view)
-        } else if error.isHardwareWalletSigningCancelled {
-            return
-        } else if let confirmError = error as? SelectValidatorsConfirmError {
+        if let confirmError = error as? SelectValidatorsConfirmError {
             guard let view = view else {
                 return
             }
@@ -121,9 +117,13 @@ final class SelectValidatorsConfirmPresenter {
                 wireframe.presentExtrinsicFailed(from: view, locale: locale)
             }
         } else {
-            if !wireframe.present(error: error, from: view, locale: locale) {
-                logger?.error("Did receive error: \(error)")
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: locale,
+                completionClosure: nil
+            )
         }
     }
 }

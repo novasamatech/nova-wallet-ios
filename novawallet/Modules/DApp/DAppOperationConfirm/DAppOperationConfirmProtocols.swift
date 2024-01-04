@@ -31,7 +31,7 @@ protocol DAppOperationConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol DAppOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    MessageSheetPresentable, AddressOptionsPresentable {
+    MessageSheetPresentable, AddressOptionsPresentable, ExtrinsicSigningErrorHandling {
     func close(view: DAppOperationConfirmViewProtocol?)
     func showTxDetails(from view: DAppOperationConfirmViewProtocol?, json: JSON)
 }
