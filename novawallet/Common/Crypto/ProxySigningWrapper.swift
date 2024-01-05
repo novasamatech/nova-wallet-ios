@@ -26,16 +26,15 @@ final class ProxySigningWrapper {
         self.uiPresenter = uiPresenter
     }
 
-    private func sign(_ originalData: Data, proxyMetaAccount: MetaChainAccountResponse) throws -> IRSignatureProtocol {
+    private func signWithUiFlow(
+        _ closure: @escaping (@escaping TransactionSigningClosure) -> Void
+    ) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
 
         var signingResult: TransactionSigningResult?
 
         DispatchQueue.main.async {
-            self.uiPresenter.presentProxyFlow(
-                for: originalData,
-                proxy: proxyMetaAccount
-            ) { result in
+            closure { result in
                 signingResult = result
 
                 semaphore.signal()
@@ -55,35 +54,26 @@ final class ProxySigningWrapper {
         }
     }
 
+    private func sign(_ originalData: Data, proxyMetaAccount: MetaChainAccountResponse) throws -> IRSignatureProtocol {
+        try signWithUiFlow { completionClosure in
+            self.uiPresenter.presentProxyFlow(
+                for: originalData,
+                proxy: proxyMetaAccount,
+                completion: completionClosure
+            )
+        }
+    }
+
     private func signWithNotEnoughPermissions(
         metaId: String,
         proxy: ExtrinsicSenderResolution.ResolvedProxy
     ) throws -> IRSignatureProtocol {
-        let semaphore = DispatchSemaphore(value: 0)
-
-        var signingResult: TransactionSigningResult?
-
-        DispatchQueue.main.async {
+        try signWithUiFlow { completionClosure in
             self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
                 for: metaId,
-                resolution: proxy
-            ) { result in
-                signingResult = result
-
-                semaphore.signal()
-            }
-        }
-
-        // block tx sending flow until we get signing result from ui
-        semaphore.wait()
-
-        switch signingResult {
-        case let .success(signature):
-            return signature
-        case let .failure(error):
-            throw error
-        case .none:
-            throw CommonError.undefined
+                resolution: proxy,
+                completion: completionClosure
+            )
         }
     }
 
