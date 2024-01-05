@@ -218,10 +218,10 @@ extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
         }
     }
 
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee)
+        case let .success(feeInfo):
+            fee = feeInfo.amount
 
             provideFeeViewModel()
         case let .failure(error):
@@ -259,13 +259,13 @@ extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
             applyCurrentState()
             refreshFee()
 
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-
-                logger.error("Extrinsic submission failed: \(error)")
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 

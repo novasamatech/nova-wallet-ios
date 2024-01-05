@@ -10,6 +10,7 @@ extension AssetConversion {
     struct FeeModel: Equatable {
         let totalFee: AmountWithNative
         let networkFee: AmountWithNative
+        let networkFeePayer: ExtrinsicFeePayer?
 
         var networkNativeFeeAddition: AmountWithNative? {
             let targetAmount = totalFee.targetAmount > networkFee.targetAmount ?

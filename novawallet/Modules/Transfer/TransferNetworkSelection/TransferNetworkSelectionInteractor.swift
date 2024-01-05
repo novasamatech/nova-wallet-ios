@@ -14,7 +14,7 @@ final class TransferNetworkSelectionInteractor {
             switch balanceResult {
             case let .success(balance):
                 return balance
-            case let .failure(error):
+            case .failure:
                 return nil
             }
         }

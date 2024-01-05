@@ -111,6 +111,8 @@ class XcmTransfersFeeTests: XCTestCase {
                 chainAccounts: Set(),
                 type: .secrets
             )
+            
+            let userStorageFacade = UserDataStorageTestFacade()
 
             let destinationFee = try estimateFees(
                 for: wallet,
@@ -198,10 +200,11 @@ class XcmTransfersFeeTests: XCTestCase {
         chainRegistry: ChainRegistryProtocol,
         amount: BigUInt,
         isForDestination: Bool
-    ) throws -> FeeWithWeight {
+    ) throws -> ExtrinsicFeeProtocol {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
+            senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
             operationQueue: OperationQueue()
         )
 

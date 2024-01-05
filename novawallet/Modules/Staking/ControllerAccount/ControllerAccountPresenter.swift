@@ -242,12 +242,10 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
-            }
+            fee = Decimal.fromSubstrateAmount(dispatchInfo.amount, precision: assetInfo.assetPrecision)
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")
         }

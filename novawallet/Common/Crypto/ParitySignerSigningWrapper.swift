@@ -28,7 +28,7 @@ final class ParitySignerSigningWrapper {
 }
 
 extension ParitySignerSigningWrapper: SigningWrapperProtocol {
-    func sign(_ originalData: Data) throws -> IRSignatureProtocol {
+    func sign(_ originalData: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
 
         var signingResult: TransactionSigningResult?

@@ -24,4 +24,5 @@ protocol NominationPoolBondMoreConfirmInteractorOutputProtocol: NominationPoolBo
 }
 
 protocol NominationPoolBondMoreConfirmWireframeProtocol: NominationPoolBondMoreBaseWireframeProtocol,
-    AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSubmissionPresenting {}
+    AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSubmissionPresenting,
+    ExtrinsicSigningErrorHandling {}

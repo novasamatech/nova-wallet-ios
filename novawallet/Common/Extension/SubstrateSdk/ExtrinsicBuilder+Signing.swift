@@ -7,16 +7,17 @@ enum ExtrinsicBuilderExtensionError: Error {
 
 extension ExtrinsicBuilderProtocol {
     func signing(
-        with signingClosure: (Data) throws -> Data,
-        chainFormat: ChainFormat,
-        cryptoType: MultiassetCryptoType,
+        with signingClosure: (Data, ExtrinsicSigningContext) throws -> Data,
+        context: ExtrinsicSigningContext.Substrate,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Self {
-        switch chainFormat {
+        let account = context.senderResolution.account
+
+        switch account.chainFormat {
         case .ethereum:
             return try signing(
                 by: { data in
-                    let signature = try signingClosure(data)
+                    let signature = try signingClosure(data, .substrateExtrinsic(context))
 
                     guard let ethereumSignature = EthereumSignature(rawValue: signature) else {
                         throw ExtrinsicBuilderExtensionError.invalidRawSignature(data: signature)
@@ -31,8 +32,10 @@ extension ExtrinsicBuilderProtocol {
             )
         case .substrate:
             return try signing(
-                by: signingClosure,
-                of: cryptoType.utilsType,
+                by: { data in
+                    try signingClosure(data, .substrateExtrinsic(context))
+                },
+                of: account.cryptoType.utilsType,
                 using: codingFactory.createEncoder(),
                 metadata: codingFactory.metadata
             )

@@ -75,7 +75,8 @@ struct NominationPoolBondMoreConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let signingWrapper = SigningWrapperFactory.createSigner(from: selectedAccount)

@@ -78,7 +78,9 @@ final class InAppUpdatesPresenter {
         loadMoreReleaseChangeLogsTitle = .cached(value: loadMoreButtonText)
         updateView()
 
-        let message = R.string.localizable.inAppUpdatesFetchChangeLogsError(preferredLanguages: selectedLocale.rLanguages)
+        let message = R.string.localizable.inAppUpdatesFetchChangeLogsError(
+            preferredLanguages: selectedLocale.rLanguages
+        )
         let cancelAction = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
 
         wireframe.presentRequestStatus(

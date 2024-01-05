@@ -33,7 +33,7 @@ final class AssetHubFeeModelBuilder {
         if balance.freeInPlank >= feeModel.totalFee.nativeAmount {
             // we have enough tokens for ed - need to exchange only network fee
             let networkFee = feeModel.networkFee
-            resultModel = .init(totalFee: networkFee, networkFee: networkFee)
+            resultModel = .init(totalFee: networkFee, networkFee: networkFee, networkFeePayer: feeModel.networkFeePayer)
         } else {
             resultModel = feeModel
         }

@@ -330,7 +330,7 @@ extension StakingRewardDestSetupInteractor: PriceLocalStorageSubscriber, PriceLo
 }
 
 extension StakingRewardDestSetupInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         presenter?.didReceiveFee(result: result)
     }
 }

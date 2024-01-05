@@ -181,11 +181,13 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
         view?.didStopLoading()
 
-        if error.isWatchOnlySigning {
-            wireframe.presentDismissingNoSigningView(from: view)
-        } else {
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-        }
+        wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+            error,
+            view: view,
+            closeAction: .dismiss,
+            locale: selectedLocale,
+            completionClosure: nil
+        )
     }
 }
 

@@ -31,4 +31,4 @@ protocol GovernanceUnlockConfirmInteractorOutputProtocol: GovernanceUnlockIntera
 
 protocol GovernanceUnlockConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {}
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling {}

@@ -2,7 +2,9 @@ import Foundation
 import IrohaCrypto
 import SubstrateSdk
 
-protocol SignatureCreatorProtocol: IRSignatureCreatorProtocol {}
+protocol SignatureCreatorProtocol: AnyObject {
+    func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol
+}
 
 protocol SigningWrapperProtocol: SignatureCreatorProtocol {}
 

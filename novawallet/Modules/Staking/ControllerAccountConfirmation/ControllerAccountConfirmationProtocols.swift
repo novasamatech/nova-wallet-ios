@@ -21,7 +21,7 @@ protocol ControllerAccountConfirmationInteractorInputProtocol: AnyObject {
 protocol ControllerAccountConfirmationInteractorOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStashAccount(result: Result<MetaChainAccountResponse?, Error>)
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
@@ -32,7 +32,7 @@ protocol ControllerAccountConfirmationWireframeProtocol: AddressOptionsPresentab
     ErrorPresentable,
     AlertPresentable,
     StakingErrorPresentable,
-    MessageSheetPresentable {
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(from view: ControllerAccountConfirmationViewProtocol?)
     func close(view: ControllerBackedProtocol?)
 }

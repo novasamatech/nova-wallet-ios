@@ -28,7 +28,7 @@ protocol ParaStkStakeConfirmInteractorInputProtocol: PendingExtrinsicInteracting
 protocol ParaStkStakeConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ priceData: PriceData?)
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
     func didReceiveMinTechStake(_ minStake: BigUInt)
     func didReceiveMinDelegationAmount(_ amount: BigUInt)
@@ -44,6 +44,6 @@ protocol ParaStkStakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentabl
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable {
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(on view: ParaStkStakeConfirmViewProtocol?, locale: Locale)
 }

@@ -42,6 +42,7 @@ protocol StakingRebagConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRebagConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, StakingErrorPresentable, CommonRetryable, MessageSheetPresentable {
+    AddressOptionsPresentable, StakingErrorPresentable, CommonRetryable, MessageSheetPresentable,
+    ExtrinsicSigningErrorHandling {
     func complete(from view: StakingRebagConfirmViewProtocol?, locale: Locale)
 }

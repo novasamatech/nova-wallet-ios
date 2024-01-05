@@ -40,7 +40,6 @@ class ExtrinsicServiceTests: XCTestCase {
     func testEstimateFeeForBondExtraCall() throws {
         let chainId = KnowChainId.kusama
         let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
-        let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
 
         let storageFacade = SubstrateStorageTestFacade()
@@ -51,12 +50,12 @@ class ExtrinsicServiceTests: XCTestCase {
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
         let chain = chainRegistry.getChain(for: chainId)!
 
+        let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
+        
         let extrinsicService = ExtrinsicService(
-            accountId: selectedAccountId,
             chain: chain,
-            cryptoType: .sr25519,
-            walletType: .secrets,
             runtimeRegistry: runtimeService,
+            senderResolvingFactory: senderResolutionFactory,
             extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
@@ -68,8 +67,7 @@ class ExtrinsicServiceTests: XCTestCase {
             switch result {
             case let .success(paymentInfo):
                 if
-                    let feeValue = BigUInt(paymentInfo.fee),
-                    let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetPrecision),
+                    let fee = Decimal.fromSubstrateAmount(paymentInfo.amount, precision: assetPrecision),
                     fee > 0 {
                     feeExpectation.fulfill()
                 } else {
@@ -96,13 +94,13 @@ class ExtrinsicServiceTests: XCTestCase {
         let connection = chainRegistry.getConnection(for: chainId)!
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
         let chain = chainRegistry.getChain(for: chainId)!
+        
+        let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
 
         let extrinsicService = ExtrinsicService(
-            accountId: selectedAccountId,
             chain: chain,
-            cryptoType: .sr25519,
-            walletType: .secrets,
             runtimeRegistry: runtimeService,
+            senderResolvingFactory: senderResolutionFactory,
             extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
@@ -119,8 +117,7 @@ class ExtrinsicServiceTests: XCTestCase {
             switch result {
             case let .success(paymentInfo):
                 if
-                    let feeValue = BigUInt(paymentInfo.fee),
-                    let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetPrecision),
+                    let fee = Decimal.fromSubstrateAmount(paymentInfo.amount, precision: assetPrecision),
                     fee > 0 {
                     feeExpectation.fulfill()
                 } else {

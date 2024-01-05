@@ -206,14 +206,10 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
-            } else {
-                fee = nil
-            }
+        case let .success(feeInfo):
+            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
 
             provideFeeViewModel()
         case let .failure(error):
@@ -253,13 +249,13 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         case .success:
             wireframe.complete(from: view)
         case let .failure(error):
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else {
-                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: view.localizationManager?.selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }

@@ -14,6 +14,7 @@ final class XcmTransferService {
 
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
+    let senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol
     let operationQueue: OperationQueue
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
@@ -23,10 +24,12 @@ final class XcmTransferService {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
+        self.senderResolutionFacade = senderResolutionFacade
         self.operationQueue = operationQueue
     }
 
@@ -46,7 +49,7 @@ final class XcmTransferService {
 
     func createExtrinsicOperationFactory(
         for chain: ChainModel,
-        chainAccount: ChainAccountResponse?
+        chainAccount: ChainAccountResponse
     ) throws -> ExtrinsicOperationFactoryProtocol {
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             throw ChainRegistryError.connectionUnavailable
@@ -56,29 +59,17 @@ final class XcmTransferService {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        let accountId: AccountId
-        let cryptoType: MultiassetCryptoType
-        let signaturePayloadFormat: ExtrinsicSignaturePayloadFormat
-
-        if let chainAccount = chainAccount {
-            accountId = chainAccount.accountId
-            cryptoType = chainAccount.cryptoType
-            signaturePayloadFormat = chainAccount.type.signaturePayloadFormat
-        } else {
-            // account doesn't exists but we still might want to calculate fee
-            accountId = AccountId.zeroAccountId(of: chain.accountIdSize)
-            cryptoType = chain.isEthereumBased ? .ethereumEcdsa : .sr25519
-            signaturePayloadFormat = .regular
-        }
+        let senderResolvingFactory = senderResolutionFacade.createResolutionFactory(
+            for: chainAccount,
+            chainModel: chain
+        )
 
         return ExtrinsicOperationFactory(
-            accountId: accountId,
             chain: chain,
-            cryptoType: cryptoType,
-            signaturePayloadFormat: signaturePayloadFormat,
             runtimeRegistry: runtimeProvider,
             customExtensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
+            senderResolvingFactory: senderResolvingFactory,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }

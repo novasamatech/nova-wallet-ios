@@ -234,11 +234,13 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmInt
         case let .removeVotesFailed(internalError):
             view?.didStopLoading()
 
-            if internalError.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: internalError, from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                internalError,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }

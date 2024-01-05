@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ExtrinsicFeeProxyDelegate: AnyObject {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for identifier: TransactionFeeId)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for identifier: TransactionFeeId)
 }
 
 protocol ExtrinsicFeeProxyProtocol: AnyObject {
@@ -14,10 +14,10 @@ protocol ExtrinsicFeeProxyProtocol: AnyObject {
     )
 }
 
-final class ExtrinsicFeeProxy: TransactionFeeProxy<RuntimeDispatchInfo> {
+final class ExtrinsicFeeProxy: TransactionFeeProxy<ExtrinsicFeeProtocol> {
     weak var delegate: ExtrinsicFeeProxyDelegate?
 
-    private func handle(result: Result<RuntimeDispatchInfo, Error>, for identifier: TransactionFeeId) {
+    private func handle(result: Result<ExtrinsicFeeProtocol, Error>, for identifier: TransactionFeeId) {
         update(result: result, for: identifier)
 
         delegate?.didReceiveFee(result: result, for: identifier)

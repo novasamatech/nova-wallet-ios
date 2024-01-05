@@ -412,7 +412,9 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 chainId: chainId
             )
 
-            let reservedAsssetRequests = try info.assets.reduce(into: [EquilibriumAssetId: SubscriptionRequestProtocol]()) { result, asset in
+            let reservedAsssetRequests = try info.assets.reduce(
+                into: [EquilibriumAssetId: SubscriptionRequestProtocol]()
+            ) { result, asset in
                 let key = try storageKeyFactory.createFromStoragePath(
                     .equilibriumReserved,
                     encodableElements: [asset, accountId],

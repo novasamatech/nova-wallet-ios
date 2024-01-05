@@ -279,10 +279,10 @@ extension ParaStkUnstakePresenter: ParaStkUnstakeInteractorOutputProtocol {
         provideFeeViewModel()
     }
 
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee)
+        case let .success(feeInfo):
+            fee = feeInfo.amount
 
             provideFeeViewModel()
         case let .failure(error):

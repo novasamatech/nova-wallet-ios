@@ -101,7 +101,7 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
             let rawBytes = try prepareRawBytes()
 
             let signingOperation = ClosureOperation<Data> {
-                try signer.sign(rawBytes).rawData()
+                try signer.sign(rawBytes, context: .rawBytes).rawData()
             }
 
             signingOperation.completionBlock = { [weak self] in

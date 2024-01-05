@@ -34,7 +34,7 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
             let proxyResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
             return proxyResult.reduce(into: [AccountId: [ProxyAccount]]()) { result, nextPart in
                 result[nextPart.key.accountId] = nextPart.value.definition.map {
-                    ProxyAccount(accountId: $0.delegate, type: $0.proxyType)
+                    ProxyAccount(accountId: $0.proxy, type: $0.proxyType)
                 }
             }
         }

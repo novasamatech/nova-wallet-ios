@@ -23,4 +23,4 @@ protocol NPoolsUnstakeConfirmInteractorOutputProtocol: NPoolsUnstakeBaseInteract
 }
 
 protocol NPoolsUnstakeConfirmWireframeProtocol: NPoolsUnstakeBaseWireframeProtocol, AddressOptionsPresentable,
-    MessageSheetPresentable, ExtrinsicSubmissionPresenting {}
+    MessageSheetPresentable, ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

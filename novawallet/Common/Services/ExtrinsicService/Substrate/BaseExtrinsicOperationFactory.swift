@@ -21,15 +21,15 @@ class BaseExtrinsicOperationFactory {
         self.usesStateCallForFee = usesStateCallForFee
     }
 
-    func createDummySigner() throws -> DummySigner {
+    func createDummySigner(for _: MultiassetCryptoType) throws -> DummySigner {
         fatalError("Subclass must override this method")
     }
 
     func createExtrinsicWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
-        signingClosure _: @escaping (Data) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]> {
+        signingClosure _: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         fatalError("Subclass must override this method")
     }
 
@@ -132,7 +132,7 @@ class BaseExtrinsicOperationFactory {
 
     private func createFeeOperation(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        extrinsicOperation: BaseOperation<[Data]>,
+        extrinsicOperation: BaseOperation<ExtrinsicsCreationResult>,
         connection: JSONRPCEngine,
         usesStateCallForFee: Bool
     ) -> BaseOperation<[RuntimeDispatchInfo]> {
@@ -140,7 +140,7 @@ class BaseExtrinsicOperationFactory {
             operationManager: operationManager
         ) {
             let coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            let extrinsics = try extrinsicOperation.extractNoCancellableResultData()
+            let extrinsics = try extrinsicOperation.extractNoCancellableResultData().extrinsics
 
             let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
                 extrinsics.map { extrinsicData in
@@ -186,63 +186,70 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: IndexSet
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
-        do {
-            let signer = try createDummySigner()
-
-            let signingClosure: (Data) throws -> Data = { data in
-                try signer.sign(data).rawData()
+        let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
+            guard let cryptoType = context.substrateCryptoType else {
+                throw CommonError.undefined
             }
 
-            let indexList = Array(indexes)
+            let signer = try self.createDummySigner(for: cryptoType)
 
-            let builderWrapper = createExtrinsicWrapper(
-                customClosure: closure,
-                indexes: indexList,
-                signingClosure: signingClosure
-            )
-
-            let coderFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
-
-            let feeOperation = createFeeOperation(
-                dependingOn: coderFactoryOperation,
-                extrinsicOperation: builderWrapper.targetOperation,
-                connection: connection,
-                usesStateCallForFee: usesStateCallForFee
-            )
-
-            feeOperation.addDependency(coderFactoryOperation)
-            feeOperation.addDependency(builderWrapper.targetOperation)
-
-            let wrapperOperation = ClosureOperation<ExtrinsicRetriableResult<RuntimeDispatchInfo>> {
-                do {
-                    let results = try feeOperation.extractNoCancellableResultData()
-
-                    let indexedResults = zip(indexList, results).map { indexedResult in
-                        FeeIndexedExtrinsicResult.IndexedResult(
-                            index: indexedResult.0,
-                            result: .success(indexedResult.1)
-                        )
-                    }
-
-                    return .init(builderClosure: closure, results: indexedResults)
-                } catch {
-                    let indexedResults = indexList.map { index in
-                        FeeIndexedExtrinsicResult.IndexedResult(index: index, result: .failure(error))
-                    }
-
-                    return .init(builderClosure: closure, results: indexedResults)
-                }
-            }
-
-            wrapperOperation.addDependency(feeOperation)
-
-            return CompoundOperationWrapper(
-                targetOperation: wrapperOperation,
-                dependencies: builderWrapper.allOperations + [coderFactoryOperation, feeOperation]
-            )
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
+            return try signer.sign(data, context: context).rawData()
         }
+
+        let indexList = Array(indexes)
+
+        let builderWrapper = createExtrinsicWrapper(
+            customClosure: closure,
+            indexes: indexList,
+            signingClosure: signingClosure
+        )
+
+        let coderFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
+
+        let feeOperation = createFeeOperation(
+            dependingOn: coderFactoryOperation,
+            extrinsicOperation: builderWrapper.targetOperation,
+            connection: connection,
+            usesStateCallForFee: usesStateCallForFee
+        )
+
+        feeOperation.addDependency(coderFactoryOperation)
+        feeOperation.addDependency(builderWrapper.targetOperation)
+
+        let wrapperOperation = ClosureOperation<ExtrinsicRetriableResult<ExtrinsicFeeProtocol>> {
+            do {
+                let results = try feeOperation.extractNoCancellableResultData()
+                let sender = try builderWrapper.targetOperation.extractNoCancellableResultData().sender
+
+                let feePayer = ExtrinsicFeePayer(senderResolution: sender)
+
+                let indexedResults = try zip(indexList, results).map { indexedResult in
+                    guard let convertedResult = ExtrinsicFee(dispatchInfo: indexedResult.1, payer: feePayer) else {
+                        throw CommonError.dataCorruption
+                    }
+
+                    return FeeIndexedExtrinsicResult.IndexedResult(
+                        index: indexedResult.0,
+                        result: .success(convertedResult)
+                    )
+                }
+
+                return .init(builderClosure: closure, results: indexedResults)
+            } catch {
+                let indexedResults = indexList.map { index in
+                    FeeIndexedExtrinsicResult.IndexedResult(index: index, result: .failure(error))
+                }
+
+                return .init(builderClosure: closure, results: indexedResults)
+            }
+        }
+
+        wrapperOperation.addDependency(feeOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: wrapperOperation,
+            dependencies: builderWrapper.allOperations + [coderFactoryOperation, feeOperation]
+        )
     }
 
     func submit(
@@ -250,8 +257,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         signer: SigningWrapperProtocol,
         indexes: IndexSet
     ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
-        let signingClosure: (Data) throws -> Data = { data in
-            try signer.sign(data).rawData()
+        let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
+            try signer.sign(data, context: context).rawData()
         }
 
         let indexList = Array(indexes)
@@ -271,7 +278,7 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
                 submitOperation.configurationBlock = {
                     do {
-                        let extrinsics = try builderWrapper.targetOperation.extractNoCancellableResultData()
+                        let extrinsics = try builderWrapper.targetOperation.extractNoCancellableResultData().extrinsics
                         let extrinsic = extrinsics[index].toHex(includePrefix: true)
 
                         submitOperation.parameters = [extrinsic]
@@ -318,8 +325,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             try closure(builder)
         }
 
-        let signingClosure: (Data) throws -> Data = { data in
-            try signer.sign(data).rawData()
+        let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
+            try signer.sign(data, context: context).rawData()
         }
 
         let builderWrapper = createExtrinsicWrapper(
@@ -329,7 +336,10 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         )
 
         let resOperation: ClosureOperation<String> = ClosureOperation {
-            let extrinsic = try builderWrapper.targetOperation.extractNoCancellableResultData().first!
+            let extrinsic = try builderWrapper.targetOperation.extractNoCancellableResultData()
+                .extrinsics
+                .first!
+
             return extrinsic.toHex(includePrefix: true)
         }
         builderWrapper.allOperations.forEach {

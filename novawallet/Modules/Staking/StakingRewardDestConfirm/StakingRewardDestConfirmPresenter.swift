@@ -142,12 +142,10 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
 }
 
 extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorOutputProtocol {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee).map {
-                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
-            } ?? nil
+        case let .success(feeInfo):
+            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
 
             provideFeeViewModel()
         case let .failure(error):
@@ -212,13 +210,13 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         case .success:
             wireframe.complete(from: view)
         case let .failure(error):
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else {
-                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: view.localizationManager?.selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }

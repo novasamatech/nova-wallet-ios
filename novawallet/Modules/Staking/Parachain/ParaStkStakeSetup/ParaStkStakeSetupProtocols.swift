@@ -30,7 +30,7 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
     func didReceiveMinTechStake(_ minStake: BigUInt)
     func didReceiveMinDelegationAmount(_ amount: BigUInt)

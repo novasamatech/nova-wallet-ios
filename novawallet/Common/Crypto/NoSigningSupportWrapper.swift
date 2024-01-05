@@ -5,6 +5,7 @@ enum NoSigningSupportType {
     case paritySigner
     case ledger
     case polkadotVault
+    case proxy
 }
 
 enum NoSigningSupportError: Error {
@@ -18,7 +19,7 @@ final class NoSigningSupportWrapper: SigningWrapperProtocol {
         self.type = type
     }
 
-    func sign(_: Data) throws -> IRSignatureProtocol {
+    func sign(_: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         throw NoSigningSupportError.notSupported(type: type)
     }
 }

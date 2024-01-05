@@ -2,12 +2,12 @@ import Foundation
 @testable import novawallet
 
 final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
-    let dispatchInfo: Result<RuntimeDispatchInfo, Error>
+    let feeResult: Result<ExtrinsicFeeProtocol, Error>
     let txHash: Result<String, Error>
 
-    init(dispatchInfo: Result<RuntimeDispatchInfo, Error>,
+    init(feeResult: Result<ExtrinsicFeeProtocol, Error>,
          txHash: Result<String, Error>) {
-        self.dispatchInfo = dispatchInfo
+        self.feeResult = feeResult
         self.txHash = txHash
     }
 
@@ -15,7 +15,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
                      runningIn queue: DispatchQueue,
                      completion completionClosure: @escaping EstimateFeeClosure) {
         queue.async {
-            completionClosure(self.dispatchInfo)
+            completionClosure(self.feeResult)
         }
     }
 
@@ -26,7 +26,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
         let results = indexes.map { index in
-            FeeIndexedExtrinsicResult.IndexedResult(index: index, result: dispatchInfo)
+            FeeIndexedExtrinsicResult.IndexedResult(index: index, result: self.feeResult)
         }
 
         let feeResult = FeeIndexedExtrinsicResult(builderClosure: closure, results: results)
@@ -39,7 +39,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
-        let result = FeeIndexedExtrinsicResult.IndexedResult(index: 0, result: dispatchInfo)
+        let result = FeeIndexedExtrinsicResult.IndexedResult(index: 0, result: self.feeResult)
         let feeResult = FeeIndexedExtrinsicResult(builderClosure: nil, results: [result])
 
         completionClosure(feeResult)
@@ -113,12 +113,9 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
 extension ExtrinsicServiceStub {
     static func dummy() -> ExtrinsicServiceStub {
-        let dispatchInfo = RuntimeDispatchInfo(
-            fee: "10000000000",
-            weight: 10005000
-        )
+        let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: 10005000)
 
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
-        return ExtrinsicServiceStub(dispatchInfo: .success(dispatchInfo), txHash: .success(txHash))
+        return ExtrinsicServiceStub(feeResult: .success(fee), txHash: .success(txHash))
     }
 }

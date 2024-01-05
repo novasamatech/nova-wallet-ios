@@ -1556,6 +1556,21 @@ import RobinHood
     
     
     
+     func syncUp()  {
+        
+    return cuckoo_manager.call("syncUp()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.syncUp())
+        
+    }
+    
+    
+    
      func setup()  {
         
     return cuckoo_manager.call("setup()",
@@ -1608,6 +1623,11 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "updateWalletsStatuses()", parameterMatchers: matchers))
 	    }
 	    
+	    func syncUp() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp()", parameterMatchers: matchers))
+	    }
+	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
@@ -1653,6 +1673,12 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
+	    func syncUp() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("syncUp()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -1688,6 +1714,12 @@ import RobinHood
     
     
      func updateWalletsStatuses()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func syncUp()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -23051,9 +23083,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -23153,9 +23185,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveControllerAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountInfo?, Error>, AccountAddress)> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
@@ -23219,9 +23251,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -23283,7 +23315,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -26626,9 +26658,9 @@ import SoraFoundation
     
     
     
-     func didReceive(paymentInfo: RuntimeDispatchInfo)  {
+     func didReceive(paymentInfo: ExtrinsicFeeProtocol)  {
         
-    return cuckoo_manager.call("didReceive(paymentInfo: RuntimeDispatchInfo)",
+    return cuckoo_manager.call("didReceive(paymentInfo: ExtrinsicFeeProtocol)",
             parameters: (paymentInfo),
             escapingParameters: (paymentInfo),
             superclassCall:
@@ -26713,9 +26745,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmInteractorOutputProtocol.self, method: "didFailNomination(error: Error)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(paymentInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(RuntimeDispatchInfo)> where M1.MatchedType == RuntimeDispatchInfo {
-	        let matchers: [Cuckoo.ParameterMatcher<(RuntimeDispatchInfo)>] = [wrap(matchable: paymentInfo) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmInteractorOutputProtocol.self, method: "didReceive(paymentInfo: RuntimeDispatchInfo)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(paymentInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExtrinsicFeeProtocol)> where M1.MatchedType == ExtrinsicFeeProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExtrinsicFeeProtocol)>] = [wrap(matchable: paymentInfo) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmInteractorOutputProtocol.self, method: "didReceive(paymentInfo: ExtrinsicFeeProtocol)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable>(feeError: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
@@ -26800,9 +26832,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(paymentInfo: M1) -> Cuckoo.__DoNotUse<(RuntimeDispatchInfo), Void> where M1.MatchedType == RuntimeDispatchInfo {
-	        let matchers: [Cuckoo.ParameterMatcher<(RuntimeDispatchInfo)>] = [wrap(matchable: paymentInfo) { $0 }]
-	        return cuckoo_manager.verify("didReceive(paymentInfo: RuntimeDispatchInfo)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(paymentInfo: M1) -> Cuckoo.__DoNotUse<(ExtrinsicFeeProtocol), Void> where M1.MatchedType == ExtrinsicFeeProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExtrinsicFeeProtocol)>] = [wrap(matchable: paymentInfo) { $0 }]
+	        return cuckoo_manager.verify("didReceive(paymentInfo: ExtrinsicFeeProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -26882,7 +26914,7 @@ import SoraFoundation
     
     
     
-     func didReceive(paymentInfo: RuntimeDispatchInfo)   {
+     func didReceive(paymentInfo: ExtrinsicFeeProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -33852,9 +33884,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -33929,9 +33961,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveStash<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ChainAccountResponse?, Error>)> where M1.MatchedType == Result<ChainAccountResponse?, Error> {
@@ -33978,9 +34010,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -34024,7 +34056,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -35044,9 +35076,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -35136,9 +35168,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveStash<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaChainAccountResponse?, Error>)> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
@@ -35190,9 +35222,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -35242,7 +35274,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -40772,9 +40804,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -40854,9 +40886,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaChainAccountResponse?, Error>)> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
@@ -40909,9 +40941,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -40961,7 +40993,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41868,9 +41900,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -41955,9 +41987,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondSetupInteractorOutputProtocol.self, method: "didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -42003,9 +42035,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -42049,7 +42081,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -43106,9 +43138,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -43208,9 +43240,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemInteractorOutputProtocol.self, method: "didReceiveExistentialDeposit(result: Result<BigUInt, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaChainAccountResponse?, Error>)> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
@@ -43274,9 +43306,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -43338,7 +43370,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -44301,9 +44333,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -44398,9 +44430,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -44445,9 +44477,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -44491,7 +44523,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -45427,9 +45459,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -45614,9 +45646,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -45691,9 +45723,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -45773,7 +45805,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -48659,9 +48691,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -48806,9 +48838,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didReceiveExistentialDeposit(result: Result<BigUInt, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaChainAccountResponse?, Error>)> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
@@ -48887,9 +48919,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -48969,7 +49001,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -49978,9 +50010,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -50065,9 +50097,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondSetupInteractorOutputProtocol.self, method: "didReceiveExistentialDeposit(result: Result<BigUInt, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ChainAccountResponse?, Error>)> where M1.MatchedType == Result<ChainAccountResponse?, Error> {
@@ -50126,9 +50158,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -50184,7 +50216,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -51627,9 +51659,9 @@ import Foundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -51699,9 +51731,9 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -51781,9 +51813,9 @@ import Foundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -51857,7 +51889,7 @@ import Foundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -52995,9 +53027,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -53082,9 +53114,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -53182,9 +53214,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -53276,7 +53308,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -54591,9 +54623,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -54663,9 +54695,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -54745,9 +54777,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -54821,7 +54853,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

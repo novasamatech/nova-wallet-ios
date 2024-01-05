@@ -18,7 +18,6 @@ extension Xcm {
     }
 
     struct Multiasset: Encodable {
-        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case assetId = "id"
             case fun

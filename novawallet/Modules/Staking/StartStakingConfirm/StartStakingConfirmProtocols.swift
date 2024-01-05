@@ -36,7 +36,7 @@ protocol StartStakingConfirmInteractorOutputProtocol: AnyObject {
 
 protocol StartStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, AddressOptionsPresentable, MessageSheetPresentable,
-    ExtrinsicSubmissionPresenting, StakingErrorPresentable {}
+    ExtrinsicSubmissionPresenting, StakingErrorPresentable, ExtrinsicSigningErrorHandling {}
 
 protocol StartStakingDirectConfirmWireframeProtocol: StartStakingConfirmWireframeProtocol {
     func showSelectedValidators(from view: StartStakingConfirmViewProtocol?, validators: PreparedValidators)

@@ -7,7 +7,6 @@ extension Xcm {
     static var executeCallName: String { "execute" }
 
     struct ExecuteCall<M: Codable>: Codable {
-        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case message
             case maxWeight = "max_weight"

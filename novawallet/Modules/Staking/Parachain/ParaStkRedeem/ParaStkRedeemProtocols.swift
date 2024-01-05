@@ -22,7 +22,7 @@ protocol ParaStkRedeemInteractorInputProtocol: PendingExtrinsicInteracting {
 protocol ParaStkRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ priceData: PriceData?)
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
@@ -34,4 +34,4 @@ protocol ParaStkRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable, ExtrinsicSubmissionPresenting {}
+    MessageSheetPresentable, ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

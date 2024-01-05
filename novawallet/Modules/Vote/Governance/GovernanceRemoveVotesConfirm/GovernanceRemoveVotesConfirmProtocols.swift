@@ -33,7 +33,7 @@ protocol GovernanceRemoveVotesConfirmInteractorOutputProtocol: AnyObject {
 
 protocol GovernanceRemoveVotesConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling {
     func showTracks(
         from view: GovernanceRemoveVotesConfirmViewProtocol?,
         tracks: [GovernanceTrackInfoLocal]
