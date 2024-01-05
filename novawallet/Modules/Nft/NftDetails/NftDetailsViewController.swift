@@ -96,7 +96,9 @@ extension NftDetailsViewController: NftDetailsViewProtocol {
     }
 
     func didReceive(description: String?) {
+        let hasText = !(description ?? "").isEmpty
         rootView.detailsLabel.text = description
+        rootView.setupDetailsLabel(hasText)
     }
 
     func didReceive(media: NftMediaViewModelProtocol?) {

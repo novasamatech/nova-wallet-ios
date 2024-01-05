@@ -1455,3 +1455,5 @@
 "deeplink.error.invalid.derivation.path.message" = "Неверный формат пути деривации";
 "settings.wiki" = "Руководство пользователя";
 "common.not.enough.fee.message_v3.8.0" = "У вас недостаточно средств для оплаты комиссии сети в размере %@.\nДоступный баланс для оплаты комиссии после операции: %@";
+"nft.fungible.price" = "%@ for %@";
+"nft.issuance.fungible.format" = "%@ единиц из %@";

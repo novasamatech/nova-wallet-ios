@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 
 final class DAppSearchInteractor {
-    weak var presenter: DAppSearchInteractorOutputProtocol!
+    weak var presenter: DAppSearchInteractorOutputProtocol?
 
     let dAppProvider: AnySingleValueProvider<DAppList>
     let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
@@ -60,7 +60,7 @@ extension DAppSearchInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptio
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
         switch result {
         case let .success(changes):
-            presenter.didReceiveFavorite(changes: changes)
+            presenter?.didReceiveFavorite(changes: changes)
         case let .failure(error):
             logger.error("Favorites error: \(error)")
         }
