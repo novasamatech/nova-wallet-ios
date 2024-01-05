@@ -74,8 +74,12 @@ final class WalletManagePresenter: WalletsListPresenter {
 }
 
 extension WalletManagePresenter: WalletManagePresenterProtocol {
-    func canDeleteItem(at _: Int, section _: Int) -> Bool {
-        true
+    func canDeleteItem(at _: Int, section: Int) -> Bool {
+        guard viewModels.count > section else {
+            return false
+        }
+
+        return viewModels[section].type != .proxied
     }
 
     func selectItem(at index: Int, section: Int) {
