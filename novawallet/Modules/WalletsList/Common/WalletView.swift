@@ -35,12 +35,18 @@ final class WalletView: GenericTitleValueView<
         indicatorImageView.isHidden = true
         subtitleLabel.apply(style: .footnoteSecondary)
         valueView.sView.sView.iconWidth = 16
+        subtitleDetailsLabel.numberOfLines = 1
         subtitleDetailsLabel.apply(style: .footnotePrimary)
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4
         valueView.spacing = 4
-        subtitleLabel.setContentCompressionResistancePriority(.high, for: .horizontal)
+
+        titleView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        valueView.setContentCompressionResistancePriority(.low, for: .horizontal)
+        subtitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        subtitleDetailsLabel.setContentCompressionResistancePriority(.low, for: .horizontal)
+        subtitleDetailsLabel.setContentHuggingPriority(.low, for: .horizontal)
     }
 }
 

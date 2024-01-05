@@ -16,10 +16,10 @@ final class WalletSelectionViewController: WalletsListViewController<
 
         super.viewDidLoad()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
+
         presenter?.viewDidDisappear()
     }
 
