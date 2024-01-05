@@ -31,6 +31,9 @@ final class ProxyMessageSheetViewController: MessageSheetViewController<
     }
 
     override func actionMain() {
-        presenter?.proceed(skipInfoNextTime: rootView.contentView.controlView.isSelected, action: viewModel.mainAction)
+        presenter?.proceed(
+            skipInfoNextTime: rootView.contentView.controlView.isChecked,
+            action: viewModel.mainAction
+        )
     }
 }
