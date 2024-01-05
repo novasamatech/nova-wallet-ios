@@ -53,22 +53,15 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
     }
 
     func createRuntimeJsonContext() -> RuntimeJsonContext {
-        if let addressTypeNode = catalog.node(for: KnownType.address.name, version: UInt64(specVersion)) {
-            let addressTypeName: String?
+        let isMultiaddress = catalog.nodeMatches(
+            closure: { node in
+                node is EnumNode || node is SiVariantNode || node is GenericMultiAddressNode
+            },
+            typeName: KnownType.address.name,
+            version: UInt64(specVersion)
+        )
 
-            if let proxyNode = addressTypeNode as? ProxyNode {
-                addressTypeName = proxyNode.typeName.components(separatedBy: ".").last
-            } else if let aliasNode = addressTypeNode as? AliasNode {
-                addressTypeName = aliasNode.underlyingTypeName.components(separatedBy: ".").last
-            } else {
-                addressTypeName = nil
-            }
-
-            let preferresMultiAddress = addressTypeName?.lowercased() == "multiaddress"
-            return RuntimeJsonContext(prefersRawAddress: !preferresMultiAddress)
-        } else {
-            return RuntimeJsonContext(prefersRawAddress: false)
-        }
+        return RuntimeJsonContext(prefersRawAddress: !isMultiaddress)
     }
 
     func hasType(for name: String) -> Bool {
