@@ -16,11 +16,11 @@ final class WalletSelectionViewController: WalletsListViewController<
 
         super.viewDidLoad()
     }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        presenter?.viewWillDisappear()
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        presenter?.viewDidDisappear()
     }
 
     override func setupLocalization() {

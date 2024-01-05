@@ -3,7 +3,7 @@ import Foundation
 protocol WalletSelectionPresenterProtocol: WalletsListPresenterProtocol {
     func selectItem(at index: Int, section: Int)
     func activateSettings()
-    func viewWillDisappear()
+    func viewDidDisappear()
 }
 
 protocol WalletSelectionInteractorInputProtocol: WalletsListInteractorInputProtocol {
