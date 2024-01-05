@@ -35,8 +35,11 @@ struct ChainProxyChangesCalculator {
             }
         }
 
-        let changes = try remoteProxieds.map { accountId, remoteProxies in
+        let allProxieds = Set(remoteProxieds.map(\.key) + localProxies.map(\.key.proxiedAccountId))
+
+        let changes = try allProxieds.map { accountId in
             let localProxiesForProxied = localProxies.filter { $0.key.proxiedAccountId == accountId }
+            let remoteProxies = remoteProxieds[accountId] ?? []
 
             return try calculateUpdates(
                 for: localProxiesForProxied,

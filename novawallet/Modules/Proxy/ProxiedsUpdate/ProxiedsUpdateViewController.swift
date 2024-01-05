@@ -51,9 +51,15 @@ final class ProxiedsUpdateViewController: UIViewController, ViewHolder {
                 cell.bind(text: text, link: link)
                 cell.actionButton.addTarget(self, action: #selector(self.didTapOnInfoButton), for: .touchUpInside)
                 return cell
-            case let .delegated(viewModel), let .revoked(viewModel):
+            case let .delegated(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.bind(viewModel: viewModel)
+                ProxyUpdateStyle.delegated.apply(to: cell)
+                return cell
+            case let .revoked(viewModel):
+                let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.bind(viewModel: viewModel)
+                ProxyUpdateStyle.revoked.apply(to: cell)
                 return cell
             }
         }
@@ -98,8 +104,8 @@ extension ProxiedsUpdateViewController: ProxiedsUpdateViewProtocol {
         revokedModels: [WalletView.ViewModel]
     ) {
         let infoSection = Section.info
-        let delegatedSection: Section? = !delegatedModels.isEmpty ? Section.delegated : nil
-        let revokedSection: Section? = !revokedModels.isEmpty ? Section.revoked : nil
+        let delegatedSection = Section.delegated
+        let revokedSection = Section.revoked
 
         let delegatedViewModels = delegatedModels.map { Row.delegated($0) }
         let revokedViewModels = revokedModels.map { Row.revoked($0) }
@@ -113,12 +119,15 @@ extension ProxiedsUpdateViewController: ProxiedsUpdateViewProtocol {
         ].compactMap { $0 })
 
         snapshot.appendItems([infoViewModel], toSection: infoSection)
-        if let delegatedSection = delegatedSection {
+
+        if !delegatedModels.isEmpty {
             snapshot.appendItems(delegatedViewModels, toSection: delegatedSection)
         }
-        if let revokedSection = revokedSection {
+
+        if !revokedModels.isEmpty {
             snapshot.appendItems(revokedViewModels, toSection: revokedSection)
         }
+
         dataSource?.apply(snapshot, animatingDifferences: [delegatedModels + revokedModels].count > 1)
     }
 
@@ -157,32 +166,52 @@ extension ProxiedsUpdateViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch Section(rawValue: section) {
+        guard let headerSection = Section(rawValue: section) else {
+            return nil
+        }
+
+        switch headerSection {
         case .info:
             return nil
         case .delegated:
+            let numberOfRows = dataSource?.snapshot().numberOfItems(inSection: headerSection) ?? 0
+            guard numberOfRows > 0 else {
+                return nil
+            }
+
             let title = R.string.localizable.commonProxieds(preferredLanguages: selectedLocale.rLanguages)
             let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
             header.bind(text: title)
             return header
         case .revoked:
+            let numberOfRows = dataSource?.snapshot().numberOfItems(inSection: headerSection) ?? 0
+            guard numberOfRows > 0 else {
+                return nil
+            }
+
             let title = R.string.localizable.proxyUpdatesProxyRevoked(preferredLanguages: selectedLocale.rLanguages)
             let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
             header.bind(text: title)
             return header
-        default:
-            return nil
         }
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch Section(rawValue: section) {
+        guard let headerSection = Section(rawValue: section) else {
+            return 0
+        }
+
+        switch headerSection {
         case .info:
             return 0
         case .delegated, .revoked:
-            return Constants.heightSectionHeader
-        default:
-            return 0
+            let numberOfRows = dataSource?.snapshot().numberOfItems(inSection: headerSection) ?? 0
+
+            if numberOfRows > 0 {
+                return Constants.heightSectionHeader
+            } else {
+                return 0
+            }
         }
     }
 }
