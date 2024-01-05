@@ -116,12 +116,15 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let proxyListOperation = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
             let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
-            let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
 
-            // We only need remote proxieds of accounts whose proxies are in our database
+            // no nesting support yet
+            let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
+                .filter { $0.info.type != .proxied }
+
+            // We only need remote proxieds for proxies we have locally and we don't support delaed proxies
             let proxies = proxyList.compactMapValues { accounts in
                 accounts.filter {
-                    chainMetaAccounts.has(accountId: $0.accountId, in: chainModel)
+                    !$0.hasDelay && chainMetaAccounts.has(accountId: $0.accountId, in: chainModel)
                 }
             }.filter { !$0.value.isEmpty }
             return proxies
