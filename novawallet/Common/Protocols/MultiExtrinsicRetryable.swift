@@ -90,16 +90,16 @@ extension MultiExtrinsicRetryable where Self: AlertPresentable & ErrorPresentabl
 
         let error = errors[0]
 
-        let isSignigError = handleExtrinsicSigningErrorPresentation(
+        guard !handleExtrinsicSigningErrorPresentation(
             error,
             view: view,
-            closeAction: .popBaseAndDismiss,
+            closeAction: .dismiss,
             completionClosure: nil
-        )
-
-        if isSignigError {
+        ) else {
             return
-        } else if let builderClosure = result.builderClosure {
+        }
+
+        if let builderClosure = result.builderClosure {
             presentMultiExtrinsicStatus(
                 on: view,
                 params: .init(errors: errors, totalExtrinsics: result.results.count),
