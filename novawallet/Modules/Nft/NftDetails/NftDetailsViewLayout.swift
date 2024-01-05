@@ -94,6 +94,13 @@ final class NftDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setupDetailsLabel(_ hasText: Bool) {
+        detailsLabel.snp.updateConstraints { make in
+            let offset = hasText ? 18 : 0
+            make.top.equalTo(subtitleView.snp.bottom).offset(offset)
+        }
+    }
+
     func setupPriceViewIfNeeded() -> NftDetailsPriceView {
         if let priceView = priceView {
             return priceView
