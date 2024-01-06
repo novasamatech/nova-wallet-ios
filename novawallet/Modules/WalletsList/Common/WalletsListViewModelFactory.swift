@@ -167,6 +167,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
         balancesCalculator: BalancesCalculating,
@@ -216,6 +217,15 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
 
         if
+            let proxySection = createProxySection(
+                wallets: wallets,
+                chains: chains,
+                locale: locale
+            ) {
+            sections.append(proxySection)
+        }
+
+        if
             let watchOnlySection = createSection(
                 type: .watchOnly,
                 wallets: wallets,
@@ -223,15 +233,6 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 locale: locale
             ) {
             sections.append(watchOnlySection)
-        }
-
-        if
-            let proxySection = createProxySection(
-                wallets: wallets,
-                chains: chains,
-                locale: locale
-            ) {
-            sections.append(proxySection)
         }
 
         return sections

@@ -3,6 +3,11 @@ import SubstrateSdk
 struct ProxyAccount {
     let accountId: AccountId
     let type: Proxy.ProxyType
+    let delay: BlockNumber
+
+    var hasDelay: Bool {
+        delay > 0
+    }
 }
 
 struct AccountIdKey: JSONListConvertible, Hashable {

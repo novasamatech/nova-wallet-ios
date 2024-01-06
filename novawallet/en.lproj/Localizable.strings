@@ -1460,6 +1460,6 @@
 "proxy.updates.hint.link" = "What is a Proxy?";
 "proxy.updates.title" = "Delegated accounts update";
 "proxy.updates.proxy.revoked" = "access was revoked";
-"proxy.details.hint" = "This account has provided access to perform transactions to the following account:";
+"proxy.details.hint" = "This account granted access to perform transactions to the following account:";
 "nft.fungible.price" = "%@ for %@";
 "nft.issuance.fungible.format" = "%@ units of %@";

@@ -5530,6 +5530,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func setProxy(viewModel: AccountProxyViewModel)  {
+        
+    return cuckoo_manager.call("setProxy(viewModel: AccountProxyViewModel)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setProxy(viewModel: viewModel))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountManagementViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -5562,6 +5577,11 @@ import SoraFoundation
 	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(WalletsListSectionViewModel.SectionType)> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
 	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(walletType: WalletsListSectionViewModel.SectionType)", parameterMatchers: matchers))
+	    }
+	    
+	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountProxyViewModel)> where M1.MatchedType == AccountProxyViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setProxy(viewModel: AccountProxyViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -5608,6 +5628,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("set(walletType: WalletsListSectionViewModel.SectionType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AccountProxyViewModel), Void> where M1.MatchedType == AccountProxyViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("setProxy(viewModel: AccountProxyViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -5650,6 +5676,12 @@ import SoraFoundation
     
     
      func set(walletType: WalletsListSectionViewModel.SectionType)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func setProxy(viewModel: AccountProxyViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -6246,6 +6278,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveProxyWallet(result))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountManagementInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -6273,6 +6320,11 @@ import SoraFoundation
 	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(exportOptionsResult: M1, metaAccount: M2, chain: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[SecretSource], Error>, MetaAccountModel, ChainModel)> where M1.MatchedType == Result<[SecretSource], Error>, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<[SecretSource], Error>, MetaAccountModel, ChainModel)>] = [wrap(matchable: exportOptionsResult) { $0.0 }, wrap(matchable: metaAccount) { $0.1 }, wrap(matchable: chain) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceive(exportOptionsResult: Result<[SecretSource], Error>, metaAccount: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaAccountModel?, Error>)> where M1.MatchedType == Result<MetaAccountModel?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6315,6 +6367,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("didReceive(exportOptionsResult: Result<[SecretSource], Error>, metaAccount: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.__DoNotUse<(Result<MetaAccountModel?, Error>), Void> where M1.MatchedType == Result<MetaAccountModel?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -6345,6 +6403,12 @@ import SoraFoundation
     
     
      func didReceive(exportOptionsResult: Result<[SecretSource], Error>, metaAccount: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

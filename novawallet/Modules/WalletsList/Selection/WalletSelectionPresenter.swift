@@ -84,7 +84,7 @@ extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
         super.didReceiveError(saveError)
     }
 
-    func viewWillDisappear() {
+    func viewDidDisappear() {
         interactor?.updateWalletsStatuses()
     }
 }
