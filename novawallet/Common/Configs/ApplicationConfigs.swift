@@ -35,6 +35,7 @@ protocol ApplicationConfigProtocol {
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
+    var proxyWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
@@ -255,6 +256,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var wikiURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki")!
+    }
+
+    var proxyWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
     // swiftlint:enable line_length

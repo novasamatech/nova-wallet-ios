@@ -82,7 +82,10 @@ extension ProxiedsUpdatePresenter: ProxiedsUpdatePresenterProtocol {
         guard let view = view else {
             return
         }
-        let wikiUrl = applicationConfig.wikiURL
+
+        wireframe.close(from: view)
+
+        let wikiUrl = applicationConfig.proxyWikiURL
         wireframe.showWeb(url: wikiUrl, from: view, style: .automatic)
     }
 }
