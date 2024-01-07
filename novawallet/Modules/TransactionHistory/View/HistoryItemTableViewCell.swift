@@ -163,7 +163,6 @@ final class HistoryItemTableViewCell: UITableViewCell {
 
 extension HistoryItemTableViewCell {
     func bind(transactionModel: TransactionItemViewModel) {
-        let timePriceSeparator = ""
         titleLabel.text = transactionModel.title
         subtitleLabel.text = transactionModel.subtitle
         amountDetailsLabel.text = transactionModel.amountDetails

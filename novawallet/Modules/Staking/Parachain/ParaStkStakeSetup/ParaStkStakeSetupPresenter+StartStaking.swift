@@ -15,8 +15,6 @@ extension ParaStkStakeSetupPresenter {
             minStake = minTechStake
         }
 
-        let precision = assetDisplayInfo.assetPrecision
-
         return DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 fee: fee,

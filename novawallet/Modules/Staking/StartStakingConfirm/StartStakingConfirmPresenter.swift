@@ -244,7 +244,7 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
             view?.didStopLoading()
 
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
-                error,
+                internalError,
                 view: view,
                 closeAction: .dismiss,
                 locale: selectedLocale,

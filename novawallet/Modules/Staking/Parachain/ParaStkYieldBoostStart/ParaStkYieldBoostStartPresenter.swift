@@ -174,7 +174,6 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartPresenterProtoc
 
     func submit() {
         let assetInfo = chainAsset.assetDisplayInfo
-        let precision = assetInfo.assetPrecision
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(

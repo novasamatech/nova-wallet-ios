@@ -56,7 +56,7 @@ final class ProxySyncIntegrationTests: XCTestCase {
                     let fetchWalletsOperation = managedAccountRepository.fetchAllOperation(with: RepositoryFetchOptions())
                     operationQueue.addOperations([fetchWalletsOperation], waitUntilFinished: true)
                     let wallets = try fetchWalletsOperation.extractNoCancellableResultData()
-                    if let walletWithProxy = wallets.first(where: { $0.info.type == .proxied }) {
+                    if wallets.first(where: { $0.info.type == .proxied }) != nil {
                         Logger.shared.info("Proxy wallet was added")
                         completionExpectation.fulfill()
                     } else {
