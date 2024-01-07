@@ -80,7 +80,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
 }
 
 extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: BigUInt?) {
+    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: ExtrinsicFeeProtocol?) {
         do {
             guard let transferParties = transferParties else {
                 throw CommonError.dataCorruption
@@ -113,7 +113,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                             sender: sender,
                             txHash: txHashData,
                             callPath: result.callPath,
-                            fee: originFee
+                            fee: originFee?.amount
                         )
 
                         self?.persistExtrinsicAndComplete(details: details)

@@ -62,12 +62,12 @@ final class DAppOperationConfirmPresenter {
             return
         }
 
-        guard let feeDecimal = viewModelFactory.convertBalanceToDecimal(feeModel.value) else {
+        guard let feeDecimal = viewModelFactory.convertBalanceToDecimal(feeModel.value.amount) else {
             view?.didReceive(feeViewModel: .loading)
             return
         }
 
-        if feeModel.value > 0 {
+        if feeModel.value.amount > 0 {
             let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
                 .value(for: selectedLocale)
             view?.didReceive(feeViewModel: .loaded(value: viewModel))

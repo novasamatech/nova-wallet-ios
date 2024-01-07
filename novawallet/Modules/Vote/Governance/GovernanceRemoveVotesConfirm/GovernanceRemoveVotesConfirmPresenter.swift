@@ -19,7 +19,7 @@ final class GovernanceRemoveVotesConfirmPresenter {
     private var votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var assetBalance: AssetBalance?
     private var price: PriceData?
-    private var fee: BigUInt?
+    private var fee: ExtrinsicFeeProtocol?
 
     private lazy var walletDisplayViewModelFactory = WalletAccountViewModelFactory()
     private lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
@@ -74,7 +74,7 @@ final class GovernanceRemoveVotesConfirmPresenter {
             }
 
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: precision
             ) ?? 0.0
 
@@ -170,10 +170,9 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmPre
         }
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
-                locale: selectedLocale,
-                precision: assetDisplayInfo.assetPrecision
+                locale: selectedLocale
             ) { [weak self] in
                 self?.refreshFee()
             },
@@ -213,7 +212,7 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmInt
         wireframe.presentExtrinsicSubmission(from: view, completionAction: .popBack, locale: selectedLocale)
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         updateFeeView()

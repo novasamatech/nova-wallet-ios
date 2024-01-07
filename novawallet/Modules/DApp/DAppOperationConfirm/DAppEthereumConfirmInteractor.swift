@@ -170,7 +170,10 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             case let .success(model):
                 self?.lastFee = model
                 let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
-                let feeModel = FeeOutputModel(value: model.fee, validationProvider: validationProvider)
+                let feeModel = FeeOutputModel(
+                    value: ExtrinsicFee(amount: model.fee, payer: nil, weight: 0),
+                    validationProvider: validationProvider
+                )
 
                 self?.presenter?.didReceive(feeResult: .success(feeModel))
             case let .failure(error):

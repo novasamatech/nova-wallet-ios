@@ -6,7 +6,7 @@ extension ParaStkYieldBoostSetupPresenter {
         // allow fee update is yield boost selected or not enabled previously
         if isYieldBoostSelected ||
             yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator }) == nil {
-            updateExtrinsicFee(feeInfo.amount)
+            updateExtrinsicFee(feeInfo)
 
             provideNetworkFee()
         }

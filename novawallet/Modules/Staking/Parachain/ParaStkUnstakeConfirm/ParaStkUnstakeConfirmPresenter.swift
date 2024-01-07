@@ -16,7 +16,7 @@ final class ParaStkUnstakeConfirmPresenter {
     let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
     let logger: LoggerProtocol
 
-    private(set) var fee: BigUInt?
+    private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
     private(set) var delegator: ParachainStaking.Delegator?
@@ -96,9 +96,9 @@ final class ParaStkUnstakeConfirmPresenter {
     }
 
     private func provideFeeViewModel() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { value in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                value.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil
@@ -196,10 +196,9 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol
         let stakedAmount = delegationsDict?[collatorId]?.amount
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale,
-                precision: assetInfo.assetPrecision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
             dataValidatingFactory.canPayFeeInPlank(
@@ -258,7 +257,7 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = feeInfo.amount
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

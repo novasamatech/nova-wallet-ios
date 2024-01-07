@@ -14,13 +14,13 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
 
     func canPayFeeSpendingAmount(
         balance: Decimal?,
-        fee: Decimal?,
+        fee: ExtrinsicFeeProtocol?,
         spendingAmount: Decimal?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
 
-    func has(fee: Decimal?, locale: Locale, onError: (() -> Void)?) -> DataValidating
+    func has(fee: ExtrinsicFeeProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 
     func exsitentialDepositIsNotViolated(
         spendingAmount: BigUInt?,
@@ -32,7 +32,7 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
     func accountIsNotSystem(for accountId: AccountId?, locale: Locale) -> DataValidating
 
     func notViolatingMinBalancePaying(
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         total: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -63,7 +63,7 @@ extension BaseDataValidatingFactoryProtocol {
 
     func canPayFee(
         balance: Decimal?,
-        fee: Decimal?,
+        fee: ExtrinsicFeeProtocol?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
@@ -75,23 +75,29 @@ extension BaseDataValidatingFactoryProtocol {
             let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: asset)
 
             let balanceString = tokenFormatter.value(for: locale).stringFromDecimal(balance ?? 0) ?? ""
-            let feeString = tokenFormatter.value(for: locale).stringFromDecimal(fee ?? 0) ?? ""
+            let feeDecimal = fee?.amountForCurrentAccount?.decimal(assetInfo: asset)
+            let feeString = tokenFormatter.value(for: locale).stringFromDecimal(feeDecimal ?? 0) ?? ""
 
             self?.basePresentable.presentFeeTooHigh(from: view, balance: balanceString, fee: feeString, locale: locale)
 
         }, preservesCondition: {
-            if let balance = balance,
-               let fee = fee {
-                return fee <= balance
-            } else {
+            guard let balance = balance, let fee = fee else {
                 return false
             }
+
+            guard let feeAmountInPlank = fee.amountForCurrentAccount else {
+                return true
+            }
+
+            let feeAmount = feeAmountInPlank.decimal(assetInfo: asset)
+
+            return feeAmount <= balance
         })
     }
 
     func canPayFeeSpendingAmount(
         balance: Decimal?,
-        fee: Decimal?,
+        fee: ExtrinsicFeeProtocol?,
         spendingAmount: Decimal?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
@@ -111,7 +117,7 @@ extension BaseDataValidatingFactoryProtocol {
         }
     }
 
-    func has(fee: Decimal?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
+    func has(fee: ExtrinsicFeeProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             defer {
                 onError?()
@@ -174,17 +180,16 @@ extension BaseDataValidatingFactoryProtocol {
 
     func canPayFeeInPlank(
         balance: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
         let precision = asset.assetPrecision
         let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
-        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
 
         return canPayFee(
             balance: balanceDecimal,
-            fee: feeDecimal,
+            fee: fee,
             asset: asset,
             locale: locale
         )
@@ -192,28 +197,21 @@ extension BaseDataValidatingFactoryProtocol {
 
     func canPayFeeSpendingAmountInPlank(
         balance: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         spendingAmount: Decimal?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
         let precision = asset.assetPrecision
         let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
-        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
 
         return canPayFeeSpendingAmount(
             balance: balanceDecimal,
-            fee: feeDecimal,
+            fee: fee,
             spendingAmount: spendingAmount,
             asset: asset,
             locale: locale
         )
-    }
-
-    func hasInPlank(fee: BigUInt?, locale: Locale, precision: Int16, onError: (() -> Void)?) -> DataValidating {
-        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
-
-        return has(fee: feeDecimal, locale: locale, onError: onError)
     }
 
     func accountIsNotSystem(for accountId: AccountId?, locale: Locale) -> DataValidating {
@@ -241,7 +239,7 @@ extension BaseDataValidatingFactoryProtocol {
     }
 
     func notViolatingMinBalancePaying(
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         total: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -254,11 +252,12 @@ extension BaseDataValidatingFactoryProtocol {
             self?.basePresentable.presentMinBalanceViolated(from: view, locale: locale)
 
         }, preservesCondition: {
-            if
-                let total = total,
-                let fee = fee,
-                let minBalance = minBalance {
-                return fee + minBalance <= total
+            guard let feeAmount = fee?.amountForCurrentAccount else {
+                return true
+            }
+
+            if let total = total, let minBalance = minBalance {
+                return feeAmount + minBalance <= total
             } else {
                 return false
             }

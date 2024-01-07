@@ -2,6 +2,6 @@ import Foundation
 import BigInt
 
 struct FeeOutputModel {
-    let value: BigUInt
+    let value: ExtrinsicFeeProtocol
     let validationProvider: ExtrinsicValidationProviderProtocol?
 }

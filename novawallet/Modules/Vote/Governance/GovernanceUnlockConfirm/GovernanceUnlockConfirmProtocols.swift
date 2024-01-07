@@ -25,7 +25,7 @@ protocol GovernanceUnlockConfirmInteractorOutputProtocol: GovernanceUnlockIntera
     func didReceiveBalance(_ assetBalance: AssetBalance?)
     func didReceiveLocks(_ locks: AssetLocks)
     func didReceiveUnlockHash(_ hash: String)
-    func didReceiveFee(_ fee: BigUInt)
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveError(_ error: GovernanceUnlockConfirmInteractorError)
 }
 

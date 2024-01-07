@@ -12,10 +12,9 @@ extension ParaStkStakeSetupPresenter {
         let precision = assetDisplayInfo.assetPrecision
 
         return DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale,
-                precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
 

@@ -2,14 +2,12 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-typealias CrossChainValidationFee = (origin: BigUInt?, crossChain: BigUInt?)
+typealias CrossChainValidationFee = (origin: ExtrinsicFeeProtocol?, crossChain: ExtrinsicFeeProtocol?)
 
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
-    func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating
-
     func willBeReaped(
         amount: Decimal?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -91,7 +89,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
     func willBeReaped(
         amount: Decimal?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -118,9 +116,9 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             if
                 let sendingAmount = sendingAmount,
                 let totalAmount = totalAmount,
-                let minBalance = minBalance,
-                let fee = fee {
-                return totalAmount >= minBalance + sendingAmount + fee
+                let minBalance = minBalance {
+                let feeAmount = fee?.amountForCurrentAccount ?? 0
+                return totalAmount >= minBalance + sendingAmount + feeAmount
             } else {
                 return false
             }
@@ -265,7 +263,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             )
 
             let crossChainFeeDecimal = Decimal.fromSubstrateAmount(
-                fee?.crossChain ?? 0,
+                fee?.crossChain?.amountForCurrentAccount ?? 0,
                 precision: destinationAsset.assetPrecision
             ) ?? 0
 
@@ -279,7 +277,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             ) ?? 0
 
             let originFeeDecimal = Decimal.fromSubstrateAmount(
-                fee?.origin ?? 0,
+                fee?.origin?.amountForCurrentAccount ?? 0,
                 precision: originAsset.assetPrecision
             ) ?? 0
 
@@ -295,12 +293,10 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             )
 
         }, preservesCondition: {
-            if
-                let sendingAmount = sendingAmount,
-                let originFee = fee?.origin,
-                let crossChainFee = fee?.crossChain,
-                let transferable = transferable {
-                return sendingAmount + originFee + crossChainFee <= transferable
+            if let sendingAmount = sendingAmount, let transferable = transferable {
+                let originFeeAmount = fee?.origin?.amountForCurrentAccount ?? 0
+                let crosschainFeeAmount = fee?.crossChain?.amountForCurrentAccount ?? 0
+                return sendingAmount + originFeeAmount + crosschainFeeAmount <= transferable
             } else {
                 return false
             }

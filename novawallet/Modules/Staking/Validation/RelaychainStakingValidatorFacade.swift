@@ -9,7 +9,7 @@ struct RelaychainStakingValidationParams {
     let stakingAmount: Decimal?
     let availableBalance: BigUInt?
     let assetBalance: AssetBalance?
-    let fee: BigUInt?
+    let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: BigUInt?
     let feeRefreshClosure: () -> Void
     let stakeUpdateClosure: (Decimal) -> Void
@@ -62,10 +62,9 @@ final class RelaychainStakingValidatorFacade {
         let assetDisplayInfo = params.chainAsset.assetDisplayInfo
 
         return [
-            directStakingValidatingFactory.hasInPlank(
+            directStakingValidatingFactory.has(
                 fee: params.fee,
-                locale: locale,
-                precision: assetDisplayInfo.assetPrecision
+                locale: locale
             ) {
                 params.feeRefreshClosure()
             },

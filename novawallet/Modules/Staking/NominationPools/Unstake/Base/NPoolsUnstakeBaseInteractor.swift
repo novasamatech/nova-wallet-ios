@@ -347,8 +347,8 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
 extension NPoolsUnstakeBaseInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            basePresenter?.didReceive(fee: dispatchInfo.amount)
+        case let .success(feeInfo):
+            basePresenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             basePresenter?.didReceive(error: .fee(error))
         }

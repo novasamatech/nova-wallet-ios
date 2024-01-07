@@ -629,7 +629,7 @@ extension CrossChainTransferInteractor: XcmExtrinsicFeeProxyDelegate {
     ) {
         switch result {
         case let .success(feeWithWeight):
-            presenter?.didReceiveOriginFee(result: .success(feeWithWeight.amount))
+            presenter?.didReceiveOriginFee(result: .success(feeWithWeight))
         case let .failure(error):
             presenter?.didReceiveOriginFee(result: .failure(error))
         }

@@ -282,7 +282,7 @@ extension GovernanceDelegateInteractor: PriceLocalSubscriptionHandler, PriceLoca
 }
 
 extension GovernanceDelegateInteractor: MultiExtrinsicFeeProxyDelegate {
-    func didReceiveTotalFee(result: Result<BigUInt, Error>, for _: TransactionFeeId) {
+    func didReceiveTotalFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(fee):
             basePresenter?.didReceiveFee(fee)

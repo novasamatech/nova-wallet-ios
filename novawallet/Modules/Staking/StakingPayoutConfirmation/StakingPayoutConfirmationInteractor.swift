@@ -169,11 +169,7 @@ extension StakingPayoutConfirmationInteractor: SelectedCurrencyDepending {
 }
 
 extension StakingPayoutConfirmationInteractor: MultiExtrinsicFeeProxyDelegate {
-    func didReceiveTotalFee(result: Result<BigUInt, Error>, for _: TransactionFeeId) {
-        let decimalResult = result.map { value in
-            Decimal.fromSubstrateAmount(value, precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 0
-        }
-
-        presenter?.didReceiveFee(result: decimalResult)
+    func didReceiveTotalFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
+        presenter?.didReceiveFee(result: result)
     }
 }

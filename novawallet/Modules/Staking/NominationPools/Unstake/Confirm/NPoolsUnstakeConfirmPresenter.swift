@@ -92,9 +92,9 @@ final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
     }
 
     override func provideFee() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { fee in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                fee.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil

@@ -35,7 +35,7 @@ final class StakingSetupAmountPresenter {
 
     private var pendingRecommendationAmount: BigUInt?
     private var priceData: PriceData?
-    private var fee: BigUInt?
+    private var fee: ExtrinsicFeeProtocol?
     private var pendingFeeId: TransactionFeeId?
     private var assetLocks: AssetLocks?
 
@@ -128,7 +128,7 @@ final class StakingSetupAmountPresenter {
     }
 
     private func stakeableBalanceMinusFee() -> Decimal {
-        let feeValue = fee ?? 0
+        let feeValue = fee?.amountForCurrentAccount ?? 0
         guard
             let precision = chainAsset.chain.utilityAsset()?.displayInfo.assetPrecision,
             let balance = stakeableBalance(),
@@ -409,7 +409,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
         self.existentialDeposit = existentialDeposit
     }
 
-    func didReceive(fee: BigUInt?, feeId: TransactionFeeId) {
+    func didReceive(fee: ExtrinsicFeeProtocol, feeId: TransactionFeeId) {
         logger.debug("Did receive fee: \(String(describing: fee))")
 
         guard pendingFeeId == feeId else {

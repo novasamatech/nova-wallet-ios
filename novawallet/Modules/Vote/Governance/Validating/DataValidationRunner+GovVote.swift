@@ -15,10 +15,9 @@ extension DataValidationRunner {
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
-            factory.hasInPlank(
+            factory.has(
                 fee: params.fee,
                 locale: selectedLocale,
-                precision: params.assetInfo.assetPrecision,
                 onError: feeErrorClosure
             ),
             factory.enoughTokensForVotingAndFee(
@@ -58,12 +57,7 @@ extension DataValidationRunner {
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
-            factory.hasInPlank(
-                fee: params.fee,
-                locale: selectedLocale,
-                precision: params.assetInfo.assetPrecision,
-                onError: feeErrorClosure
-            ),
+            factory.has(fee: params.fee, locale: selectedLocale, onError: feeErrorClosure),
             factory.enoughTokensForVotingAndFee(
                 params.assetBalance,
                 votingAmount: params.newDelegation?.balance,
@@ -94,12 +88,7 @@ extension DataValidationRunner {
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
         let runner = DataValidationRunner(validators: [
-            factory.hasInPlank(
-                fee: params.fee,
-                locale: selectedLocale,
-                precision: params.assetInfo.assetPrecision,
-                onError: feeErrorClosure
-            ),
+            factory.has(fee: params.fee, locale: selectedLocale, onError: feeErrorClosure),
             factory.canPayFeeInPlank(
                 balance: params.assetBalance?.transferable,
                 fee: params.fee,

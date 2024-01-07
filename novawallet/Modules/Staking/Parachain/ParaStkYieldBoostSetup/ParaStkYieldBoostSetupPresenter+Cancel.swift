@@ -4,7 +4,7 @@ import BigInt
 extension ParaStkYieldBoostSetupPresenter {
     func didReceiveCancelTask(feeInfo: ExtrinsicFeeProtocol) {
         if !isYieldBoostSelected {
-            updateExtrinsicFee(feeInfo.amount)
+            updateExtrinsicFee(feeInfo)
 
             provideNetworkFee()
         }

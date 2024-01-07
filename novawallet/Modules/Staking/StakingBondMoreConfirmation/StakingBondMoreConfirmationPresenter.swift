@@ -18,7 +18,7 @@ final class StakingBondMoreConfirmationPresenter {
     private var transferableBalance: Decimal?
     private var bondBalance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var stashAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
 
@@ -53,7 +53,10 @@ final class StakingBondMoreConfirmationPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -214,7 +217,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
+            fee = feeInfo
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")

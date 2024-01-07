@@ -7,7 +7,7 @@ final class StakingPayoutConfirmationPresenter {
     var interactor: StakingPayoutConfirmationInteractorInputProtocol!
 
     private var balance: Decimal?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var rewardAmount: Decimal = 0.0
     private var priceData: PriceData?
     private var account: MetaChainAccountResponse?
@@ -39,7 +39,10 @@ final class StakingPayoutConfirmationPresenter {
 
     private func provideFee() {
         if let fee = fee {
-            let viewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let viewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceive(feeViewModel: viewModel)
         } else {
             view?.didReceive(feeViewModel: nil)
@@ -83,6 +86,8 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
     func proceed() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
+        let feeDecimal = fee.map { $0.amount.decimal(assetInfo: assetInfo) }
+
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
                 self?.interactor.estimateFee()
@@ -90,7 +95,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
 
             dataValidatingFactory.rewardIsHigherThanFee(
                 reward: rewardAmount,
-                fee: fee,
+                fee: feeDecimal,
                 locale: locale
             ),
 
@@ -128,7 +133,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
 // MARK: - StakingPayoutConfirmationInteractorOutputProtocol
 
 extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteractorOutputProtocol {
-    func didReceiveFee(result: Result<Decimal, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(fee):
             self.fee = fee

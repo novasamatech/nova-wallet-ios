@@ -27,7 +27,7 @@ protocol GovernanceRemoveVotesConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveBalance(_ assetBalance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveRemoveVotesHash(_ hash: String)
-    func didReceiveFee(_ fee: BigUInt)
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveError(_ error: GovernanceRemoveVotesInteractorError)
 }
 

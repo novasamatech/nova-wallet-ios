@@ -45,7 +45,7 @@ final class StakingRebondConfirmationPresenter {
     private var stakingLedger: StakingLedger?
     private var balance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
 
@@ -73,7 +73,10 @@ final class StakingRebondConfirmationPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -209,7 +212,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

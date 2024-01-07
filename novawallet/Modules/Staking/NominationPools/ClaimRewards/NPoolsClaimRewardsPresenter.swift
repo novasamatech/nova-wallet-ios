@@ -21,7 +21,7 @@ final class NPoolsClaimRewardsPresenter {
     var claimableRewards: BigUInt?
     var price: PriceData?
     var existentialDeposit: BigUInt?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
 
     init(
         interactor: NPoolsClaimRewardsInteractorInputProtocol,
@@ -75,9 +75,9 @@ final class NPoolsClaimRewardsPresenter {
     }
 
     private func provideFee() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { value in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                value.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil
@@ -123,11 +123,7 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
 
     func confirm() {
         DataValidationRunner(validators: [
-            dataValidatorFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) { [weak self] in
+            dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
             dataValidatorFactory.canPayFeeInPlank(
@@ -210,7 +206,7 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         provideFee()
     }
 
-    func didReceive(fee: BigUInt?) {
+    func didReceive(fee: ExtrinsicFeeProtocol) {
         logger.debug("Fee: \(String(describing: fee))")
 
         self.fee = fee

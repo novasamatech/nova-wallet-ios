@@ -260,7 +260,7 @@ extension NominationPoolBondMoreBaseInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(feeInfo):
-            basePresenter?.didReceive(fee: feeInfo.amount)
+            basePresenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             basePresenter?.didReceive(error: .fetchFeeFailed(error))
         }

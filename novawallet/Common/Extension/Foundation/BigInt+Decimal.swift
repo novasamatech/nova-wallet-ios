@@ -8,6 +8,13 @@ extension BigUInt {
             precision: Int16(precision)
         ) ?? 0
     }
+
+    func decimal(assetInfo: AssetBalanceDisplayInfo) -> Decimal {
+        Decimal.fromSubstrateAmount(
+            self,
+            precision: assetInfo.assetPrecision
+        ) ?? 0
+    }
 }
 
 extension Optional where Wrapped == BigUInt {
