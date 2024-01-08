@@ -3,6 +3,7 @@ import IrohaCrypto
 import SoraKeystore
 import SoraUI
 import SoraFoundation
+import SubstrateSdk
 
 typealias TransactionSigningResult = Result<IRSignatureProtocol, Error>
 typealias TransactionSigningClosure = (TransactionSigningResult) -> Void
@@ -26,6 +27,7 @@ protocol TransactionSigningPresenting: AnyObject {
     func presentProxyFlow(
         for data: Data,
         proxy: MetaChainAccountResponse,
+        calls: [JSON],
         completion: @escaping TransactionSigningClosure
     )
 
@@ -108,6 +110,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     func presentProxyFlow(
         for data: Data,
         proxy: MetaChainAccountResponse,
+        calls: [JSON],
         completion: @escaping TransactionSigningClosure
     ) {
         let settingsManager = SettingsManager.shared
@@ -119,7 +122,10 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
                 settingsManager: settingsManager
             )
 
-            let context = ExtrinsicSigningContext.Substrate(senderResolution: .current(proxy.chainAccount))
+            let context = ExtrinsicSigningContext.Substrate(
+                senderResolution: .current(proxy.chainAccount),
+                calls: calls
+            )
             let signingWrapper = signingWrapperFactory.createSigningWrapper(
                 for: proxy.metaId,
                 accountResponse: proxy.chainAccount

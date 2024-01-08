@@ -1,8 +1,10 @@
 import Foundation
+import SubstrateSdk
 
 enum ExtrinsicSigningContext {
     struct Substrate {
         let senderResolution: ExtrinsicSenderResolution
+        let calls: [JSON]
     }
 
     case substrateExtrinsic(Substrate)

@@ -54,11 +54,16 @@ final class ProxySigningWrapper {
         }
     }
 
-    private func sign(_ originalData: Data, proxyMetaAccount: MetaChainAccountResponse) throws -> IRSignatureProtocol {
+    private func sign(
+        _ originalData: Data,
+        proxyMetaAccount: MetaChainAccountResponse,
+        calls: [JSON]
+    ) throws -> IRSignatureProtocol {
         try signWithUiFlow { completionClosure in
             self.uiPresenter.presentProxyFlow(
                 for: originalData,
                 proxy: proxyMetaAccount,
+                calls: calls,
                 completion: completionClosure
             )
         }
@@ -79,19 +84,24 @@ final class ProxySigningWrapper {
 
     private func sign(
         _ originalData: Data,
-        proxy: ExtrinsicSenderResolution.ResolvedProxy
+        proxy: ExtrinsicSenderResolution.ResolvedProxy,
+        calls: [JSON]
     ) throws -> IRSignatureProtocol {
         if proxy.failures.isEmpty, let proxyMetaAccount = proxy.proxyAccount {
-            return try sign(originalData, proxyMetaAccount: proxyMetaAccount)
+            return try sign(originalData, proxyMetaAccount: proxyMetaAccount, calls: calls)
         } else {
             return try signWithNotEnoughPermissions(metaId: metaId, proxy: proxy)
         }
     }
 
-    private func sign(_ originalData: Data, sender: ExtrinsicSenderResolution) throws -> IRSignatureProtocol {
+    private func sign(
+        _ originalData: Data,
+        sender: ExtrinsicSenderResolution,
+        calls: [JSON]
+    ) throws -> IRSignatureProtocol {
         switch sender {
         case let .proxy(resolvedProxy):
-            return try sign(originalData, proxy: resolvedProxy)
+            return try sign(originalData, proxy: resolvedProxy, calls: calls)
         case .current:
             throw NoKeysSigningWrapperError.watchOnly
         }
@@ -102,7 +112,7 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         switch context {
         case let .substrateExtrinsic(substrate):
-            return try sign(originalData, sender: substrate.senderResolution)
+            return try sign(originalData, sender: substrate.senderResolution, calls: substrate.calls)
         case .evmTransaction, .rawBytes:
             throw NoSigningSupportError.notSupported(type: .proxy)
         }
