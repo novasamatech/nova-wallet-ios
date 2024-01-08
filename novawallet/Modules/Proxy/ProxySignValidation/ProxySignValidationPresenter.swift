@@ -12,18 +12,18 @@ final class ProxySignValidationPresenter {
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
     let completionClosure: ProxySignValidationCompletion
-    
-    let balance: AssetBalance?
-    let fee: ExtrinsicFeeProtocol?
-    let minBalance: BigUInt?
-    
+
+    var balance: AssetBalance?
+    var fee: ExtrinsicFeeProtocol?
+    var balanceExistence: AssetBalanceExistence?
+
     init(
         view: ControllerBackedProtocol,
         interactor: ProxySignValidationInteractorInputProtocol,
         wireframe: ProxySignValidationWireframeProtocol,
         dataValidationFactory: BaseDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
-        completionClosure: ProxySignValidationCompletion,
+        completionClosure: @escaping ProxySignValidationCompletion,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,14 +36,14 @@ final class ProxySignValidationPresenter {
         self.localizationManager = localizationManager
         self.logger = logger
     }
-    
+
     private func completeValidation() {
-        guard let balance = balance, let fee = fee, let minBalance = minBalance else {
+        guard let balance = balance, let fee = fee, let balanceExistence = balanceExistence else {
             return
         }
-        
+
         let locale = localizationManager.selectedLocale
-        
+
         DataValidationRunner(validators: [
             dataValidationFactory.canPayFeeInPlank(
                 balance: balance.transferable,
@@ -54,14 +54,14 @@ final class ProxySignValidationPresenter {
             dataValidationFactory.notViolatingMinBalancePaying(
                 fee: fee,
                 total: balance.balanceCountingEd,
-                minBalance: minBalance,
+                minBalance: balanceExistence.minBalance,
                 locale: locale
             )
         ]).runValidation(
             notifyingOnSuccess: { [weak self] in
                 self?.completionClosure(true)
             },
-            notifyingOnStop: { problem in
+            notifyingOnStop: { [weak self] problem in
                 switch problem {
                 case .error, .warning:
                     self?.completionClosure(false)
@@ -71,8 +71,6 @@ final class ProxySignValidationPresenter {
             },
             notifyingOnResume: nil
         )
-        
-        
     }
 }
 
@@ -85,35 +83,37 @@ extension ProxySignValidationPresenter: ProxySignValidationPresenterProtocol {
 extension ProxySignValidationPresenter: ProxySignValidationInteractorOutputProtocol {
     func didReceiveBalance(_ balance: AssetBalance) {
         logger.debug("Did receive balance: \(balance)")
-        
+
         self.balance = balance
-        
+
         completeValidation()
     }
-    
-    func didReceiveMinBalance(_ minBalance: BigUInt) {
-        logger.debug("Did receive min balance: \(minBalance)")
-        
-        self.minBalance = minBalance
-        
+
+    func didReceiveBalanceExistense(_ balanceExistence: AssetBalanceExistence) {
+        logger.debug("Did receive min balance: \(balanceExistence)")
+
+        self.balanceExistence = balanceExistence
+
         completeValidation()
     }
-    
+
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         logger.debug("Did receive fee: \(fee)")
-        
+
         self.fee = fee
-        
+
         completeValidation()
     }
-    
+
     func didReceiveError(_ error: Error) {
         logger.error("Did receive error: \(error)")
-        
+
         let locale = localizationManager.selectedLocale
-        
+
         if !wireframe.present(error: error, from: view, locale: locale) {
             _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
         }
+        
+        completionClosure(false)
     }
 }

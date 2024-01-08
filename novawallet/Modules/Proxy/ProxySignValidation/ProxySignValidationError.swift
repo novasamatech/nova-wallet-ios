@@ -1,5 +1,3 @@
 import Foundation
 
-enum ProxySignValidationError: Error {
-    
-}
+enum ProxySignValidationError: Error {}

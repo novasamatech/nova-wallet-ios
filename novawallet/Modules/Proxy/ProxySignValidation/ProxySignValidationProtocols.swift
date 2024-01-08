@@ -12,9 +12,9 @@ protocol ProxySignValidationInteractorInputProtocol: AnyObject {
 
 protocol ProxySignValidationInteractorOutputProtocol: AnyObject {
     func didReceiveBalance(_ balance: AssetBalance)
-    func didReceiveMinBalance(_ minBalance: BigUInt)
+    func didReceiveBalanceExistense(_ balanceExistence: AssetBalanceExistence)
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveError(_ error: Error)
 }
 
-protocol ProxySignValidationWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol ProxySignValidationWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {}

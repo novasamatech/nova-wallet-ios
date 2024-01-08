@@ -94,3 +94,80 @@ extension AssetBalance: Identifiable {
         )
     }
 }
+
+extension AssetBalance {
+    init(accountInfo: AccountInfo?, chainAssetId: ChainAssetId, accountId: AccountId) {
+        self.init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: accountInfo?.data.free ?? 0,
+            reservedInPlank: accountInfo?.data.reserved ?? 0,
+            frozenInPlank: accountInfo?.data.locked ?? 0,
+            edCountMode: accountInfo?.data.edCountMode ?? .basedOnFree,
+            transferrableMode: accountInfo?.data.transferrableModel ?? .regular,
+            blocked: false
+        )
+    }
+
+    init(ormlAccount: OrmlAccount?, chainAssetId: ChainAssetId, accountId: AccountId) {
+        self.init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: ormlAccount?.free ?? 0,
+            reservedInPlank: ormlAccount?.reserved ?? 0,
+            frozenInPlank: ormlAccount?.frozen ?? 0,
+            edCountMode: .basedOnTotal,
+            transferrableMode: .regular,
+            blocked: false
+        )
+    }
+
+    init(
+        assetsAccount: PalletAssets.Account?,
+        assetsDetails: PalletAssets.Details?,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId
+    ) {
+        let balance = assetsAccount?.balance ?? 0
+
+        let isFrozen = (assetsAccount?.isFrozen ?? false) || (assetsDetails?.isFrozen ?? false)
+        let isBlocked = assetsAccount?.isBlocked ?? false
+
+        self.init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: balance,
+            reservedInPlank: 0,
+            frozenInPlank: isFrozen ? balance : 0,
+            edCountMode: .basedOnTotal,
+            transferrableMode: .regular,
+            blocked: isBlocked
+        )
+    }
+
+    init(
+        eqAccount: EquilibriumAccountInfo?,
+        eqReserve: EquilibriumReservedData?,
+        eqAssetId: EquilibriumAssetId,
+        isUtilityAsset: Bool,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId
+    ) {
+        let frozenInPlank = isUtilityAsset ? eqAccount?.lock ?? .zero : .zero
+        let reservedInPlank = eqReserve?.value ?? .zero
+        let freeInPlank = eqAccount?.balances
+            .first(where: { $0.asset == eqAssetId })?
+            .balance.value ?? .zero
+
+        self.init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeInPlank,
+            reservedInPlank: reservedInPlank,
+            frozenInPlank: frozenInPlank,
+            edCountMode: .basedOnTotal,
+            transferrableMode: .regular,
+            blocked: false
+        )
+    }
+}

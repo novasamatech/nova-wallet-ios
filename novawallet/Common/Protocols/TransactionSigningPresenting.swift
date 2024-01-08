@@ -26,7 +26,7 @@ protocol TransactionSigningPresenting: AnyObject {
 
     func presentProxyFlow(
         for data: Data,
-        proxy: MetaChainAccountResponse,
+        resolution: ExtrinsicSenderResolution.ResolvedProxy,
         calls: [JSON],
         completion: @escaping TransactionSigningClosure
     )
@@ -41,15 +41,22 @@ protocol TransactionSigningPresenting: AnyObject {
 final class TransactionSigningPresenter: TransactionSigningPresenting {
     weak var view: UIViewController?
 
+    private var flowHolder: AnyObject?
+
     init(view: UIViewController? = nil) {
         self.view = view
     }
 
+    private var presentationController: UIViewController? {
+        let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
+        return view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
+    }
+
     private func present(signingView: ControllerBackedProtocol, completion: @escaping TransactionSigningClosure) {
         let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
-        let optionalController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
+        let optController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
 
-        guard let controller = optionalController else {
+        guard let controller = optController else {
             completion(.failure(CommonError.dataCorruption))
             return
         }
@@ -107,19 +114,21 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         present(signingView: ledgerView, completion: completion)
     }
 
-    func presentProxyFlow(
+    private func createProxySigningClosure(
         for data: Data,
         proxy: MetaChainAccountResponse,
         calls: [JSON],
         completion: @escaping TransactionSigningClosure
-    ) {
-        let settingsManager = SettingsManager.shared
+    ) -> () -> Void {
+        { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
 
-        let completionClosure: () -> Void = {
             let signingWrapperFactory = SigningWrapperFactory(
-                uiPresenter: self,
+                uiPresenter: strongSelf,
                 keystore: Keychain(),
-                settingsManager: settingsManager
+                settingsManager: SettingsManager.shared
             )
 
             let context = ExtrinsicSigningContext.Substrate(
@@ -141,14 +150,74 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
                 }
             }
         }
+    }
+
+    private func createProxyValidationClosure(
+        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        calls: [JSON]
+    ) -> (@escaping ProxySignValidationCompletion) -> Void {
+        { [weak self] completionClosure in
+            guard
+                let strongSelf = self,
+                let presentationController = strongSelf.presentationController,
+                let presenter = ProxySignValidationViewFactory.createView(
+                    from: presentationController,
+                    resolvedProxy: resolution,
+                    calls: calls,
+                    completionClosure: { result in
+                        self?.flowHolder = nil
+                        completionClosure(result)
+                    }
+                ) else {
+                completionClosure(false)
+                return
+            }
+
+            strongSelf.flowHolder = presenter
+
+            presenter.setup()
+        }
+    }
+
+    func presentProxyFlow(
+        for data: Data,
+        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        calls: [JSON],
+        completion: @escaping TransactionSigningClosure
+    ) {
+        guard let proxy = resolution.proxyAccount else {
+            completion(.failure(CommonError.dataCorruption))
+            return
+        }
+
+        let settingsManager = SettingsManager.shared
+
+        let cancelClosure: () -> Void = {
+            completion(.failure(ProxySigningWrapperError.canceled))
+        }
+
+        let signClosure = createProxySigningClosure(
+            for: data,
+            proxy: proxy,
+            calls: calls,
+            completion: completion
+        )
+
+        let validationClosure = createProxyValidationClosure(resolution: resolution, calls: calls)
+
+        let completionClosure: () -> Void = {
+            validationClosure { isSuccess in
+                if isSuccess {
+                    signClosure()
+                } else {
+                    cancelClosure()
+                }
+            }
+        }
 
         guard !settingsManager.skipProxyFeeInformation else {
             completionClosure()
             return
-        }
-
-        let cancelClosure: () -> Void = {
-            completion(.failure(ProxySigningWrapperError.canceled))
         }
 
         guard

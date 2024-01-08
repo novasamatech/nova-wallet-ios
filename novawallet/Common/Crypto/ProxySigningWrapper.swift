@@ -56,41 +56,26 @@ final class ProxySigningWrapper {
 
     private func sign(
         _ originalData: Data,
-        proxyMetaAccount: MetaChainAccountResponse,
-        calls: [JSON]
-    ) throws -> IRSignatureProtocol {
-        try signWithUiFlow { completionClosure in
-            self.uiPresenter.presentProxyFlow(
-                for: originalData,
-                proxy: proxyMetaAccount,
-                calls: calls,
-                completion: completionClosure
-            )
-        }
-    }
-
-    private func signWithNotEnoughPermissions(
-        metaId: String,
-        proxy: ExtrinsicSenderResolution.ResolvedProxy
-    ) throws -> IRSignatureProtocol {
-        try signWithUiFlow { completionClosure in
-            self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
-                for: metaId,
-                resolution: proxy,
-                completion: completionClosure
-            )
-        }
-    }
-
-    private func sign(
-        _ originalData: Data,
         proxy: ExtrinsicSenderResolution.ResolvedProxy,
         calls: [JSON]
     ) throws -> IRSignatureProtocol {
-        if proxy.failures.isEmpty, let proxyMetaAccount = proxy.proxyAccount {
-            return try sign(originalData, proxyMetaAccount: proxyMetaAccount, calls: calls)
+        if proxy.failures.isEmpty, proxy.proxyAccount != nil {
+            return try signWithUiFlow { completionClosure in
+                self.uiPresenter.presentProxyFlow(
+                    for: originalData,
+                    resolution: proxy,
+                    calls: calls,
+                    completion: completionClosure
+                )
+            }
         } else {
-            return try signWithNotEnoughPermissions(metaId: metaId, proxy: proxy)
+            return try signWithUiFlow { completionClosure in
+                self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
+                    for: self.metaId,
+                    resolution: proxy,
+                    completion: completionClosure
+                )
+            }
         }
     }
 
