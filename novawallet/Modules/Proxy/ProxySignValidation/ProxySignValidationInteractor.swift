@@ -38,6 +38,7 @@ final class ProxySignValidationInteractor {
 
     deinit {
         existentialDepositCall.cancel()
+        balanceQueryCall.cancel()
     }
 
     private func provideBalance() {
@@ -116,6 +117,7 @@ final class ProxySignValidationInteractor {
 extension ProxySignValidationInteractor: ProxySignValidationInteractorInputProtocol {
     func setup() {
         provideBalanceExistense()
+        provideBalance()
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         execute(

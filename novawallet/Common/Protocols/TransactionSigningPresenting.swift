@@ -53,10 +53,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     }
 
     private func present(signingView: ControllerBackedProtocol, completion: @escaping TransactionSigningClosure) {
-        let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
-        let optController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
-
-        guard let controller = optController else {
+        guard let controller = presentationController else {
             completion(.failure(CommonError.dataCorruption))
             return
         }
