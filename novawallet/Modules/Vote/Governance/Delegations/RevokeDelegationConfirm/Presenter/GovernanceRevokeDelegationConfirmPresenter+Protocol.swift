@@ -143,7 +143,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
         provideFeeViewModel()
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         provideFeeViewModel()

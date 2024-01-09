@@ -100,7 +100,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
                     let info = try feeWrapper.targetOperation.extractNoCancellableResultData()
 
                     // TODO: Consider fee payer here
-                    let feeModel = FeeOutputModel(value: info.amount, validationProvider: nil)
+                    let feeModel = FeeOutputModel(value: info, validationProvider: nil)
                     self?.presenter?.didReceive(feeResult: .success(feeModel))
                 } catch {
                     self?.presenter?.didReceive(feeResult: .failure(error))

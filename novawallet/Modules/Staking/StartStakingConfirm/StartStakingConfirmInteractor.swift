@@ -131,7 +131,7 @@ extension StartStakingConfirmInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(info):
-            presenter?.didReceive(fee: info.amount)
+            presenter?.didReceive(fee: info)
         case let .failure(error):
             presenter?.didReceive(error: .fee(error))
         }

@@ -21,7 +21,7 @@ final class StakingUnbondConfirmPresenter {
     private var minNominatorBonded: Decimal?
     private var nomination: Nomination?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var payee: Staking.RewardDestinationArg?
@@ -50,7 +50,10 @@ final class StakingUnbondConfirmPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -232,7 +235,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

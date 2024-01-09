@@ -84,14 +84,9 @@ final class AccountInfoSubscription {
             let localModel = try fetchOperation.extractNoCancellableResultData()
 
             let remoteModel = AssetBalance(
+                accountInfo: account,
                 chainAssetId: chainAssetId,
-                accountId: accountId,
-                freeInPlank: account?.data.free ?? 0,
-                reservedInPlank: account?.data.reserved ?? 0,
-                frozenInPlank: account?.data.locked ?? 0,
-                edCountMode: account?.data.edCountMode ?? .basedOnFree,
-                transferrableMode: account?.data.transferrableModel ?? .regular,
-                blocked: false
+                accountId: accountId
             )
 
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {

@@ -20,7 +20,7 @@ final class GovRevokeDelegationConfirmPresenter {
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
     var priceData: PriceData?
     var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     var blockTime: BlockTime?

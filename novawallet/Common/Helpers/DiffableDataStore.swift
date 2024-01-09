@@ -56,7 +56,7 @@ final class DiffableDataStore<Section, Row> where Section: Identifiable & Equata
 
             let removedItems = snapshot
                 .itemIdentifiers(inSection: section.identifier)
-                .filter { snapshotUpdates.model[$0] == nil } ?? []
+                .filter { snapshotUpdates.model[$0] == nil }
 
             if !removedItems.isEmpty {
                 snapshot.deleteItems(removedItems)

@@ -17,7 +17,7 @@ protocol ReferendumVoteInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveVotingReferendum(_ referendum: ReferendumLocal)
-    func didReceiveFee(_ fee: BigUInt)
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveLockStateDiff(_ stateDiff: GovernanceLockStateDiff)
     func didReceiveAccountVotes(
         _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>

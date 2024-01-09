@@ -28,7 +28,7 @@ protocol StartStakingConfirmInteractorInputProtocol: AnyObject {
 protocol StartStakingConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(price: PriceData?)
-    func didReceive(fee: BigUInt?)
+    func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(restrictions: RelaychainStakingRestrictions)
     func didReceiveConfirmation(hash: String)
     func didReceive(error: StartStakingConfirmInteractorError)

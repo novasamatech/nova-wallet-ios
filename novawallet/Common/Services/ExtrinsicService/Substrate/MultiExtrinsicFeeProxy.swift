@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 protocol MultiExtrinsicFeeProxyDelegate: AnyObject {
-    func didReceiveTotalFee(result: Result<BigUInt, Error>, for identifier: TransactionFeeId)
+    func didReceiveTotalFee(result: Result<ExtrinsicFeeProtocol, Error>, for identifier: TransactionFeeId)
 }
 
 protocol MultiExtrinsicFeeProxyProtocol: AnyObject {
@@ -15,14 +15,18 @@ protocol MultiExtrinsicFeeProxyProtocol: AnyObject {
     )
 }
 
-final class MultiExtrinsicFeeProxy: TransactionFeeProxy<BigUInt> {
+final class MultiExtrinsicFeeProxy: TransactionFeeProxy<ExtrinsicFeeProtocol> {
     weak var delegate: MultiExtrinsicFeeProxyDelegate?
 
     private func handle(results: [Result<ExtrinsicFeeProtocol, Error>], for identifier: TransactionFeeId) {
         do {
-            let totalFee = try results.reduce(BigUInt(0)) { accum, result in
+            let totalFee = try results.reduce(ExtrinsicFee.zero()) { accum, result in
                 let newFeeInfo = try result.get()
-                return accum + newFeeInfo.amount
+                return ExtrinsicFee(
+                    amount: newFeeInfo.amount + accum.amount,
+                    payer: newFeeInfo.payer,
+                    weight: newFeeInfo.weight + accum.weight
+                )
             }
 
             update(result: .success(totalFee), for: identifier)

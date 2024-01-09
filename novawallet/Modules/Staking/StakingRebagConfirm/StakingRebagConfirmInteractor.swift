@@ -396,8 +396,7 @@ extension StakingRebagConfirmInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(feeInfo):
-            let fee = feeInfo.amount
-            presenter?.didReceive(fee: fee)
+            presenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             presenter?.didReceive(error: .fetchFeeFailed(error))
         }

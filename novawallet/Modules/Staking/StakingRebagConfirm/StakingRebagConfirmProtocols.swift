@@ -30,7 +30,7 @@ protocol StakingRebagConfirmInteractorInputProtocol: AnyObject {
 protocol StakingRebagConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance?)
-    func didReceive(fee: BigUInt?)
+    func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(networkInfo: NetworkStakingInfo?)
     func didReceive(currentBagListNode: BagList.Node?)
     func didReceive(ledgerInfo: StakingLedger?)

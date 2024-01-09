@@ -5,7 +5,7 @@ struct StakingRecommendationValidationParams {
     let stakingAmount: Decimal?
     let assetBalance: AssetBalance?
     let assetLocks: AssetLocks?
-    let fee: BigUInt?
+    let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: BigUInt?
     let stakeUpdateClosure: (Decimal) -> Void
 }
@@ -50,7 +50,7 @@ final class HybridStakingValidationFactory {
 
             let lockReason = optMaxLock?.lockType?.displayType.value(for: locale) ?? ""
 
-            let fee = params.fee ?? 0
+            let fee = params.fee?.amountForCurrentAccount ?? 0
 
             let availableToStake = assetBalance.transferable > fee ? assetBalance.transferable - fee : 0
             let availableToStakeDecimal = availableToStake.decimal(precision: UInt16(bitPattern: precision))
@@ -81,7 +81,7 @@ final class HybridStakingValidationFactory {
                 return true
             }
 
-            let fee = params.fee ?? 0
+            let fee = params.fee?.amountForCurrentAccount ?? 0
 
             return stakingAmountInPlank + fee <= assetBalance.transferable ||
                 stakingAmountInPlank >= rewardableStake

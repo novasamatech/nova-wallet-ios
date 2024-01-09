@@ -21,7 +21,7 @@ final class NPoolsRedeemPresenter {
     var activeEra: ActiveEraInfo?
     var existentialDeposit: BigUInt?
     var price: PriceData?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
 
     init(
         interactor: NPoolsRedeemInteractorInputProtocol,
@@ -86,9 +86,9 @@ final class NPoolsRedeemPresenter {
     }
 
     private func provideFee() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { fee in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                fee.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil
@@ -120,10 +120,9 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
 
     func confirm() {
         DataValidationRunner(validators: [
-            dataValidatorFactory.hasInPlank(
+            dataValidatorFactory.has(
                 fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
+                locale: selectedLocale
             ) { [weak self] in
                 self?.interactor.estimateFee()
             },
@@ -207,8 +206,8 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         self.existentialDeposit = existentialDeposit
     }
 
-    func didReceive(fee: BigUInt?) {
-        logger.debug("Fee: \(String(describing: assetBalance))")
+    func didReceive(fee: ExtrinsicFeeProtocol) {
+        logger.debug("Fee: \(fee)")
 
         self.fee = fee
 

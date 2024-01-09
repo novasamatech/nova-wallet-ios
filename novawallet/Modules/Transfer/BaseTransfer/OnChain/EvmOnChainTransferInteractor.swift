@@ -202,7 +202,8 @@ extension EvmOnChainTransferInteractor: EvmTransactionFeeProxyDelegate {
             lastFeeModel = model
 
             let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
-            let feeModel = FeeOutputModel(value: model.fee, validationProvider: validationProvider)
+            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: 0)
+            let feeModel = FeeOutputModel(value: feeValue, validationProvider: validationProvider)
             presenter?.didReceiveFee(result: .success(feeModel))
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))

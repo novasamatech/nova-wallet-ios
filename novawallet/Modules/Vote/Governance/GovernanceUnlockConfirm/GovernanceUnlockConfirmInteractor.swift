@@ -130,7 +130,7 @@ extension GovernanceUnlockConfirmInteractor: GovernanceUnlockConfirmInteractorIn
         extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
             switch result {
             case let .success(feeInfo):
-                self?.presenter?.didReceiveFee(feeInfo.amount)
+                self?.presenter?.didReceiveFee(feeInfo)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.feeFetchFailed(error))
             }

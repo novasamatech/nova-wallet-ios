@@ -13,7 +13,7 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func enoughTokensForVotingAndFee(
         _ assetBalance: AssetBalance?,
         votingAmount: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
     ) -> DataValidating
@@ -56,7 +56,7 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
 }
 
 final class GovernanceValidatorFactory {
-    weak var view: (Localizable & ControllerBackedProtocol)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
@@ -118,7 +118,7 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
     func enoughTokensForVotingAndFee(
         _ assetBalance: AssetBalance?,
         votingAmount: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
     ) -> DataValidating {
@@ -158,7 +158,7 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
 
             if
                 let feeDecimal = Decimal.fromSubstrateAmount(
-                    fee ?? 0,
+                    fee?.amountForCurrentAccount ?? 0,
                     precision: assetInfo.assetPrecision
                 ) {
                 feeString = amountFormatter?.stringFromDecimal(feeDecimal) ?? ""
@@ -168,7 +168,7 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
 
             self?.presentable.presentFeeTooHigh(from: view, balance: amountString, fee: feeString, locale: locale)
         }, preservesCondition: {
-            guard let fee = fee else {
+            guard let fee = fee?.amountForCurrentAccount else {
                 return true
             }
 

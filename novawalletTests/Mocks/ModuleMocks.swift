@@ -39675,9 +39675,9 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<Decimal, Error>)  {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)  {
         
-    return cuckoo_manager.call("didReceiveFee(result: Result<Decimal, Error>)",
+    return cuckoo_manager.call("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -39757,9 +39757,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didReceiveAccountBalance(result: Result<AssetBalance?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Decimal, Error>)> where M1.MatchedType == Result<Decimal, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<Decimal, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<Decimal, Error>)", parameterMatchers: matchers))
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicFeeProtocol, Error>)> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didStartPayout() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -39812,9 +39812,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<Decimal, Error>), Void> where M1.MatchedType == Result<Decimal, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<Decimal, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFee(result: Result<Decimal, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicFeeProtocol, Error>), Void> where M1.MatchedType == Result<ExtrinsicFeeProtocol, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicFeeProtocol, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -39864,7 +39864,7 @@ import SoraFoundation
     
     
     
-     func didReceiveFee(result: Result<Decimal, Error>)   {
+     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

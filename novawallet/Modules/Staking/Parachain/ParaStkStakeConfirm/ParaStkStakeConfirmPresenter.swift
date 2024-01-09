@@ -16,7 +16,7 @@ final class ParaStkStakeConfirmPresenter {
     let logger: LoggerProtocol
 
     private(set) var balance: AssetBalance?
-    private(set) var fee: BigUInt?
+    private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var price: PriceData?
     private(set) var stakingDuration: ParachainStakingDuration?
     private(set) var delegator: ParachainStaking.Delegator?
@@ -98,9 +98,9 @@ final class ParaStkStakeConfirmPresenter {
     }
 
     private func provideFeeViewModel() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { fee in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                fee.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil
@@ -244,7 +244,7 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = feeInfo.amount
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

@@ -102,7 +102,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
     }
 
     override func provideFee() {
-        guard let fee = fee?.decimal(precision: chainAsset.asset.precision) else {
+        guard let fee = fee?.amount.decimal(precision: chainAsset.asset.precision) else {
             view?.didReceiveFee(viewModel: nil)
             return
         }

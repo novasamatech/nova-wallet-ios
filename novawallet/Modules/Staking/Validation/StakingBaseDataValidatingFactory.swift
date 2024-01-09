@@ -10,7 +10,7 @@ protocol StakingBaseDataValidatingFactoryProtocol: BaseDataValidatingFactoryProt
 }
 
 class StakingBaseDataValidatingFactory: StakingBaseDataValidatingFactoryProtocol {
-    var view: (ControllerBackedProtocol & Localizable)?
+    var view: ControllerBackedProtocol?
     var basePresentable: BaseErrorPresentable { presentable }
     private let presentable: StakingBaseErrorPresentable
     let balanceFactory: BalanceViewModelFactoryProtocol?

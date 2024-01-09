@@ -16,7 +16,7 @@ protocol GovernanceDelegateInteractorInputProtocol: AnyObject {
 protocol GovernanceDelegateInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
-    func didReceiveFee(_ fee: BigUInt)
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveDelegateStateDiff(_ stateDiff: GovernanceDelegateStateDiff)
     func didReceiveAccountVotes(
         _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>

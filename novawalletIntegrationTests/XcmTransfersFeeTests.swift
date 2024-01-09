@@ -111,8 +111,6 @@ class XcmTransfersFeeTests: XCTestCase {
                 chainAccounts: Set(),
                 type: .secrets
             )
-            
-            let userStorageFacade = UserDataStorageTestFacade()
 
             let destinationFee = try estimateFees(
                 for: wallet,

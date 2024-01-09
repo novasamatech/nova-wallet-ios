@@ -246,10 +246,9 @@ class SwapBasePresenter {
         locale: Locale
     ) -> [DataValidating] {
         [
-            dataValidatingFactory.hasInPlank(
-                fee: swapModel.feeModel?.totalFee.targetAmount,
-                locale: locale,
-                precision: swapModel.feeChainAsset.assetDisplayInfo.assetPrecision
+            dataValidatingFactory.has(
+                fee: swapModel.feeModel?.extrinsicFee,
+                locale: locale
             ) { [weak self] in
                 self?.estimateFee()
             },
@@ -261,7 +260,7 @@ class SwapBasePresenter {
                 locale: locale
             ),
             dataValidatingFactory.notViolatingMinBalancePaying(
-                fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.totalFee.targetAmount : 0,
+                fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.extrinsicFee : nil,
                 total: swapModel.utilityAssetBalance?.balanceCountingEd,
                 minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
                 locale: locale

@@ -81,7 +81,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private func provideCanPayFee(for asset: ChainAsset) {
         canPayFeeInAssetCall.cancel()
 
-        guard let utilityAssetId = asset.chain.utilityChainAssetId() else {
+        // we currently don't allow to pay for swaps in non native token for proxy
+        guard let utilityAssetId = asset.chain.utilityChainAssetId(), selectedWallet.type != .proxied else {
             presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
             return
         }

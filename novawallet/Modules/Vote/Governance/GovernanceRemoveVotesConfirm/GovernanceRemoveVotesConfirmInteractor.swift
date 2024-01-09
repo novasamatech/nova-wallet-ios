@@ -127,7 +127,7 @@ extension GovernanceRemoveVotesConfirmInteractor: GovernanceRemoveVotesConfirmIn
         extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] feeResult in
             switch feeResult {
             case let .success(info):
-                self?.presenter?.didReceiveFee(info.amount)
+                self?.presenter?.didReceiveFee(info)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.feeFetchFailed(error))
             }

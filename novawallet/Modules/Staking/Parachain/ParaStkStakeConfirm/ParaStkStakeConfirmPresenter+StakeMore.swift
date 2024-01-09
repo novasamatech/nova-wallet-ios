@@ -16,10 +16,9 @@ extension ParaStkStakeConfirmPresenter {
         let collatorId = try? collator.address.toAccountId()
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale,
-                precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
 

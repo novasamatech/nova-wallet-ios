@@ -25,6 +25,10 @@ extension AssetConversion {
 
             return .init(targetAmount: targetAmount, nativeAmount: nativeAmount)
         }
+
+        var extrinsicFee: ExtrinsicFeeProtocol {
+            ExtrinsicFee(amount: networkFee.targetAmount, payer: networkFeePayer, weight: 0)
+        }
     }
 
     typealias FeeResult = Result<AssetConversion.FeeModel, AssetConversionFeeServiceError>

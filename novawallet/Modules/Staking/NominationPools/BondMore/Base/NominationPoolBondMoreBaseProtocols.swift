@@ -15,7 +15,7 @@ protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
 protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance?)
-    func didReceive(fee: BigUInt?)
+    func didReceive(fee: ExtrinsicFeeProtocol?)
     func didReceive(error: NominationPoolBondMoreError)
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
