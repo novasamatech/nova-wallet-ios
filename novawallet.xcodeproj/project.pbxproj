@@ -276,6 +276,7 @@
 		0CAC02F92B48534200DDEC3A /* ProxyUpdateStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC02F82B48534200DDEC3A /* ProxyUpdateStyle.swift */; };
 		0CAC02FB2B4BC10800DDEC3A /* ProxySignValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC02FA2B4BC10800DDEC3A /* ProxySignValidationError.swift */; };
 		0CAC02FD2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC02FC2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift */; };
+		0CAC03042B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */; };
 		0CAC44AA2A7A79C2001EDE61 /* StartStakingInfoParachainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC44A92A7A79C2001EDE61 /* StartStakingInfoParachainWireframe.swift */; };
 		0CAC44AC2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC44AB2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift */; };
 		0CB064682A403ADE00BFBA3F /* AmountDecimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB064672A403ADE00BFBA3F /* AmountDecimal.swift */; };
@@ -4472,6 +4473,7 @@
 		0CAC02F82B48534200DDEC3A /* ProxyUpdateStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyUpdateStyle.swift; sourceTree = "<group>"; };
 		0CAC02FA2B4BC10800DDEC3A /* ProxySignValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignValidationError.swift; sourceTree = "<group>"; };
 		0CAC02FC2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteQueryWrapperFactory.swift; sourceTree = "<group>"; };
+		0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteQueryFactoryTests.swift; sourceTree = "<group>"; };
 		0CAC44A92A7A79C2001EDE61 /* StartStakingInfoParachainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainWireframe.swift; sourceTree = "<group>"; };
 		0CAC44AB2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainConsensusStateDepending.swift; sourceTree = "<group>"; };
 		0CB064672A403ADE00BFBA3F /* AmountDecimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountDecimal.swift; sourceTree = "<group>"; };
@@ -11733,6 +11735,7 @@
 				0C59E8EA2AA71C3E001E11F3 /* ExternalAssetBalanceIntegrationTests.swift */,
 				0CCA24642AC6B51200AEF23D /* AssetHubSwapTests.swift */,
 				0C8AF7B52B36C75400005AC9 /* Pdc20OperationTests.swift */,
+				0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -20130,6 +20133,7 @@
 				840874E02978882700ACFA55 /* Gov2DelegationTests.swift in Sources */,
 				0C2F869A2A72948100593C01 /* NominationPoolsApyTests.swift in Sources */,
 				8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */,
+				0CAC03042B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift in Sources */,
 				8455F19A2A1DEEAF003F072D /* SubqueryMultistakingTests.swift in Sources */,
 				0C59E8EB2AA71C3E001E11F3 /* ExternalAssetBalanceIntegrationTests.swift in Sources */,
 				AEE4E37225ECF83F00D6DF31 /* StakingInfoTests.swift in Sources */,
