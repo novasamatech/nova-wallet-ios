@@ -1372,6 +1372,10 @@
 "staking.pool.is.not.open.title" = "Пул не открыт";
 "staking.start.balance" = "Доступный баланс: %@";
 "staking.start.no.account" = "Нет %@ аккаунта";
+"staking.setup.proxy.title" = "Добавить делегацию для %@ стекинга";
+"staking.setup.proxy.authority" = "Дать доступ";
+"staking.setup.proxy.deposit" = "Прокси депозит";
+"staking.setup.proxy.deposit.details" = "Депозит остается зарезервированным на вашем счете до тех пор, пока прокси не будет удален.";
 "common.time.in" = "через";
 "common.and" = " и ";
 "common.time.period.after" = "через";

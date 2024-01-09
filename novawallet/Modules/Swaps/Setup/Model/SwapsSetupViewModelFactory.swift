@@ -34,7 +34,7 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
         isEditable: Bool,
         priceData: PriceData?,
         locale: Locale
-    ) -> SwapFeeViewModel
+    ) -> NetworkFeeInfoViewModel
 
     func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String
 }
@@ -225,7 +225,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         isEditable: Bool,
         priceData: PriceData?,
         locale: Locale
-    ) -> SwapFeeViewModel {
+    ) -> NetworkFeeInfoViewModel {
         let amountDecimal = Decimal.fromSubstrateAmount(
             amount,
             precision: assetDisplayInfo.assetPrecision
