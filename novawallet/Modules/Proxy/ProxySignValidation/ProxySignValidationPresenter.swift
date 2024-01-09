@@ -113,7 +113,7 @@ extension ProxySignValidationPresenter: ProxySignValidationInteractorOutputProto
         if !wireframe.present(error: error, from: view, locale: locale) {
             _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
         }
-        
+
         completionClosure(false)
     }
 }
