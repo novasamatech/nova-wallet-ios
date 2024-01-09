@@ -27,7 +27,7 @@ final class RelaychainStakingValidatorFacade {
     let directStakingValidatingFactory: StakingDataValidatingFactory
     let poolStakingValidatingFactory: NominationPoolDataValidatorFactory
 
-    var view: (ControllerBackedProtocol & Localizable)? {
+    var view: ControllerBackedProtocol? {
         get {
             directStakingValidatingFactory.view
         }

@@ -56,7 +56,7 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
 }
 
 final class GovernanceValidatorFactory {
-    weak var view: (Localizable & ControllerBackedProtocol)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol

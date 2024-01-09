@@ -46,7 +46,7 @@ protocol ParaStkYieldBoostValidatorFactoryProtocol: BaseDataValidatingFactoryPro
 }
 
 final class ParaStkYieldBoostValidatorFactory {
-    weak var view: (Localizable & ControllerBackedProtocol)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol

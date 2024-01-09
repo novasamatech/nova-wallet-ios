@@ -52,7 +52,7 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 }
 
 final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
-    weak var view: (Localizable & ControllerBackedProtocol)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
     let assetDisplayInfo: AssetBalanceDisplayInfo

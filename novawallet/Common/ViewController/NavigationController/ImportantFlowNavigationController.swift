@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
 
-class ImportantFlowNavigationController: NovaNavigationController {
+class ImportantFlowNavigationController: NovaNavigationController, ControllerBackedProtocol {
     let localizationManager: LocalizationManagerProtocol
 
     let dismissalClosure: (() -> Void)?

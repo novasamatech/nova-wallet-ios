@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 protocol BaseDataValidatingFactoryProtocol: AnyObject {
-    var view: (ControllerBackedProtocol & Localizable)? { get }
+    var view: ControllerBackedProtocol? { get }
     var basePresentable: BaseErrorPresentable { get }
 
     func canSpendAmount(

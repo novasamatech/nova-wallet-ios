@@ -4,7 +4,7 @@ import SoraFoundation
 
 extension ParachainStaking {
     final class ValidatorFactory: ParaStkValidatorFactoryProtocol {
-        weak var view: (Localizable & ControllerBackedProtocol)?
+        weak var view: ControllerBackedProtocol?
 
         var basePresentable: BaseErrorPresentable { presentable }
         let assetDisplayInfo: AssetBalanceDisplayInfo

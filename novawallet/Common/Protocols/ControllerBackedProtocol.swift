@@ -14,5 +14,3 @@ extension ControllerBackedProtocol where Self: UIViewController {
         self
     }
 }
-
-extension UIViewController: ControllerBackedProtocol {}

@@ -36,7 +36,7 @@ protocol CrowdloanDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtoco
 }
 
 final class CrowdloanDataValidatingFactory: CrowdloanDataValidatorFactoryProtocol {
-    weak var view: (ControllerBackedProtocol & Localizable)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
 

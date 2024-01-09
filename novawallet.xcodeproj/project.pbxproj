@@ -277,6 +277,7 @@
 		0CAC02FB2B4BC10800DDEC3A /* ProxySignValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC02FA2B4BC10800DDEC3A /* ProxySignValidationError.swift */; };
 		0CAC02FD2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC02FC2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift */; };
 		0CAC03042B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */; };
+		0CAC03062B4D86E000DDEC3A /* LocalizableControllerBackedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC03052B4D86E000DDEC3A /* LocalizableControllerBackedView.swift */; };
 		0CAC44AA2A7A79C2001EDE61 /* StartStakingInfoParachainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC44A92A7A79C2001EDE61 /* StartStakingInfoParachainWireframe.swift */; };
 		0CAC44AC2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC44AB2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift */; };
 		0CB064682A403ADE00BFBA3F /* AmountDecimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB064672A403ADE00BFBA3F /* AmountDecimal.swift */; };
@@ -4474,6 +4475,7 @@
 		0CAC02FA2B4BC10800DDEC3A /* ProxySignValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignValidationError.swift; sourceTree = "<group>"; };
 		0CAC02FC2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteQueryWrapperFactory.swift; sourceTree = "<group>"; };
 		0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteQueryFactoryTests.swift; sourceTree = "<group>"; };
+		0CAC03052B4D86E000DDEC3A /* LocalizableControllerBackedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizableControllerBackedView.swift; sourceTree = "<group>"; };
 		0CAC44A92A7A79C2001EDE61 /* StartStakingInfoParachainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainWireframe.swift; sourceTree = "<group>"; };
 		0CAC44AB2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainConsensusStateDepending.swift; sourceTree = "<group>"; };
 		0CB064672A403ADE00BFBA3F /* AmountDecimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountDecimal.swift; sourceTree = "<group>"; };
@@ -14384,6 +14386,7 @@
 				842D8B772A4098C300660005 /* ShimmeringLabel.swift */,
 				88A95FA728FAA99D00BE26F3 /* DAppView.swift */,
 				77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */,
+				0CAC03052B4D86E000DDEC3A /* LocalizableControllerBackedView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -23480,6 +23483,7 @@
 				0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */,
 				83DCE6BEEAD957D9C7588DB5 /* ParitySignerTxScanViewController.swift in Sources */,
 				CDED41B125E1D5128736B933 /* ParitySignerTxScanViewLayout.swift in Sources */,
+				0CAC03062B4D86E000DDEC3A /* LocalizableControllerBackedView.swift in Sources */,
 				561F5B387B0A1682CE5DE7E4 /* ParitySignerTxScanViewFactory.swift in Sources */,
 				4C165167688A2791643AC667 /* LedgerDiscoverProtocols.swift in Sources */,
 				AD9CA7391ACF85B767D7784C /* LedgerDiscoverWalletCreateWireframe.swift in Sources */,

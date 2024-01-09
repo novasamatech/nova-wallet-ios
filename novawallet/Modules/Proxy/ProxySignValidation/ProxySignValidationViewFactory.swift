@@ -4,7 +4,7 @@ import SoraFoundation
 
 struct ProxySignValidationViewFactory {
     static func createView(
-        from view: ControllerBackedProtocol,
+        from viewController: UIViewController,
         resolvedProxy: ExtrinsicSenderResolution.ResolvedProxy,
         calls: [JSON],
         completionClosure: @escaping ProxySignValidationCompletion
@@ -18,12 +18,16 @@ struct ProxySignValidationViewFactory {
 
         let wireframe = ProxySignValidationWireframe()
 
+        let view = ControllerBacked(controller: viewController)
+
         let dataValidatorFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: utilityChainAsset.assetDisplayInfo,
             utilityAssetInfo: utilityChainAsset.assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
+
+        dataValidatorFactory.view = view
 
         let presenter = ProxySignValidationPresenter(
             view: view,
