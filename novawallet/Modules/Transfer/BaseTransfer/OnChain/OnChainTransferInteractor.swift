@@ -559,7 +559,7 @@ extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     ) {
         switch result {
         case let .success(info):
-            let feeModel = FeeOutputModel(value: info.amount, validationProvider: nil)
+            let feeModel = FeeOutputModel(value: info, validationProvider: nil)
             presenter?.didReceiveFee(result: .success(feeModel))
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))

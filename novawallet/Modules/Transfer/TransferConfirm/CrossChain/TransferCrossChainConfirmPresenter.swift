@@ -98,7 +98,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = originFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -194,7 +194,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         }
     }
 
-    override func didReceiveOriginFee(result: Result<BigUInt, Error>) {
+    override func didReceiveOriginFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         super.didReceiveOriginFee(result: result)
 
         if case .success = result {

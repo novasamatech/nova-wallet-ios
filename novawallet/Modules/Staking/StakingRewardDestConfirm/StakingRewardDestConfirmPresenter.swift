@@ -15,7 +15,7 @@ final class StakingRewardDestConfirmPresenter {
 
     private var controllerAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var balance: Decimal?
     private var priceData: PriceData?
 
@@ -42,7 +42,13 @@ final class StakingRewardDestConfirmPresenter {
     }
 
     private func provideFeeViewModel() {
-        let viewModel = fee.map { balanceViewModelFactory.balanceFromPrice($0, priceData: priceData) }
+        let viewModel = fee.map {
+            balanceViewModelFactory.balanceFromPrice(
+                $0.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
+        }
+
         view?.didReceiveFee(viewModel: viewModel)
     }
 
@@ -145,7 +151,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

@@ -174,7 +174,7 @@ extension NPoolsClaimRewardsInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(feeInfo):
-            presenter?.didReceive(fee: feeInfo.amount)
+            presenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             presenter?.didReceive(error: .fee(error))
         }

@@ -13,7 +13,7 @@ final class StakingRebondSetupPresenter {
 
     private var inputAmount: Decimal?
     private var balance: Decimal?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var priceData: PriceData?
     private var stashItem: StashItem?
     private var controller: ChainAccountResponse?
@@ -50,7 +50,10 @@ final class StakingRebondSetupPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -138,7 +141,7 @@ extension StakingRebondSetupPresenter: StakingRebondSetupInteractorOutputProtoco
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = Decimal.fromSubstrateAmount(feeInfo.amount, precision: assetInfo.assetPrecision)
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

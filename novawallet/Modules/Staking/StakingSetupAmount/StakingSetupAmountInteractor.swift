@@ -174,7 +174,7 @@ extension StakingSetupAmountInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for identifier: TransactionFeeId) {
         switch result {
         case let .success(info):
-            presenter?.didReceive(fee: info.amount, feeId: identifier)
+            presenter?.didReceive(fee: info, feeId: identifier)
         case let .failure(error):
             presenter?.didReceive(error: .fee(error, identifier))
         }

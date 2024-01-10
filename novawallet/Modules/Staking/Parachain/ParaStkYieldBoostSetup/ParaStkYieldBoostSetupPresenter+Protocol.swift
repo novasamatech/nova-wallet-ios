@@ -105,24 +105,22 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
     }
 
     private func createYieldBoostValidationRunner(
-        for assetDisplayInfo: AssetBalanceDisplayInfo,
+        for _: AssetBalanceDisplayInfo,
         selectedCollatorName: String?,
         threshold: Decimal?
     ) -> DataValidationRunnerProtocol {
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: extrinsicFee,
                 locale: selectedLocale,
-                precision: assetDisplayInfo.assetPrecision,
                 onError: { [weak self] in
                     self?.refreshFeeIfNeeded()
                 }
             ),
-            dataValidatingFactory.hasInPlank(
-                fee: taskExecutionFee,
+            dataValidatingFactory.hasExecutionFee(
+                taskExecutionFee,
                 locale: selectedLocale,
-                precision: assetDisplayInfo.assetPrecision,
-                onError: { [weak self] in
+                errorClosure: { [weak self] in
                     self?.interactor.estimateTaskExecutionFee()
                 }
             ),
@@ -199,10 +197,9 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: extrinsicFee,
                 locale: selectedLocale,
-                precision: assetDisplayInfo.assetPrecision,
                 onError: { [weak self] in
                     self?.refreshFeeIfNeeded()
                 }

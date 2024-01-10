@@ -31,6 +31,12 @@ protocol ExtrinsicFeeProtocol {
     var weight: BigUInt { get }
 }
 
+extension ExtrinsicFeeProtocol {
+    var amountForCurrentAccount: BigUInt? {
+        payer == nil ? amount : nil
+    }
+}
+
 struct ExtrinsicFee: ExtrinsicFeeProtocol {
     let amount: BigUInt
     let payer: ExtrinsicFeePayer?
@@ -50,5 +56,9 @@ struct ExtrinsicFee: ExtrinsicFeeProtocol {
         self.amount = amount
         self.payer = payer
         self.weight = weight
+    }
+
+    static func zero() -> ExtrinsicFee {
+        .init(amount: 0, payer: nil, weight: 0)
     }
 }

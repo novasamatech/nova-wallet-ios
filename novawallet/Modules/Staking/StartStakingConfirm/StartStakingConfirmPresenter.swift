@@ -16,7 +16,7 @@ class StartStakingConfirmPresenter {
 
     var assetBalance: AssetBalance?
     var price: PriceData?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
     var restrictions: RelaychainStakingRestrictions?
 
     private lazy var walletDisplayViewModelFactory = WalletAccountViewModelFactory()
@@ -75,7 +75,7 @@ class StartStakingConfirmPresenter {
 
     func provideFeeViewModel() {
         if let fee = fee {
-            let feeDecimal = fee.decimal(precision: chainAsset.asset.precision)
+            let feeDecimal = fee.amount.decimal(precision: chainAsset.asset.precision)
 
             let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: price)
                 .value(for: selectedLocale)
@@ -126,10 +126,9 @@ class StartStakingConfirmPresenter {
 
     func createCommonValidations() -> [DataValidating] {
         [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
+                locale: selectedLocale
             ) { [weak self] in
                 self?.interactor.estimateFee()
             },
@@ -205,10 +204,10 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
         provideFeeViewModel()
     }
 
-    func didReceive(fee: BigUInt?) {
+    func didReceive(fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
-        logger.debug("Did receive fee: \(String(describing: fee))")
+        logger.debug("Did receive fee: \(fee)")
 
         provideFeeViewModel()
     }
@@ -245,7 +244,7 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
             view?.didStopLoading()
 
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
-                error,
+                internalError,
                 view: view,
                 closeAction: .dismiss,
                 locale: selectedLocale,

@@ -18,7 +18,7 @@ final class ControllerAccountPresenter {
     private var chosenAccountItem: MetaChainAccountResponse?
     private var accounts: [MetaChainAccountResponse]?
     private var canChooseOtherController = false
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var balance: Decimal?
     private var controllerBalance: Decimal?
     private var stakingLedger: StakingLedger?
@@ -244,8 +244,8 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
 
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = Decimal.fromSubstrateAmount(dispatchInfo.amount, precision: assetInfo.assetPrecision)
+        case let .success(feeModel):
+            fee = feeModel
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")
         }

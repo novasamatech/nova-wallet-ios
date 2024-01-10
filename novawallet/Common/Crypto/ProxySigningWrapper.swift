@@ -54,44 +54,39 @@ final class ProxySigningWrapper {
         }
     }
 
-    private func sign(_ originalData: Data, proxyMetaAccount: MetaChainAccountResponse) throws -> IRSignatureProtocol {
-        try signWithUiFlow { completionClosure in
-            self.uiPresenter.presentProxyFlow(
-                for: originalData,
-                proxy: proxyMetaAccount,
-                completion: completionClosure
-            )
-        }
-    }
-
-    private func signWithNotEnoughPermissions(
-        metaId: String,
-        proxy: ExtrinsicSenderResolution.ResolvedProxy
+    private func sign(
+        _ originalData: Data,
+        proxy: ExtrinsicSenderResolution.ResolvedProxy,
+        calls: [JSON]
     ) throws -> IRSignatureProtocol {
-        try signWithUiFlow { completionClosure in
-            self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
-                for: metaId,
-                resolution: proxy,
-                completion: completionClosure
-            )
+        if proxy.failures.isEmpty, proxy.proxyAccount != nil {
+            return try signWithUiFlow { completionClosure in
+                self.uiPresenter.presentProxyFlow(
+                    for: originalData,
+                    resolution: proxy,
+                    calls: calls,
+                    completion: completionClosure
+                )
+            }
+        } else {
+            return try signWithUiFlow { completionClosure in
+                self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
+                    for: self.metaId,
+                    resolution: proxy,
+                    completion: completionClosure
+                )
+            }
         }
     }
 
     private func sign(
         _ originalData: Data,
-        proxy: ExtrinsicSenderResolution.ResolvedProxy
+        sender: ExtrinsicSenderResolution,
+        calls: [JSON]
     ) throws -> IRSignatureProtocol {
-        if proxy.failures.isEmpty, let proxyMetaAccount = proxy.proxyAccount {
-            return try sign(originalData, proxyMetaAccount: proxyMetaAccount)
-        } else {
-            return try signWithNotEnoughPermissions(metaId: metaId, proxy: proxy)
-        }
-    }
-
-    private func sign(_ originalData: Data, sender: ExtrinsicSenderResolution) throws -> IRSignatureProtocol {
         switch sender {
         case let .proxy(resolvedProxy):
-            return try sign(originalData, proxy: resolvedProxy)
+            return try sign(originalData, proxy: resolvedProxy, calls: calls)
         case .current:
             throw NoKeysSigningWrapperError.watchOnly
         }
@@ -102,7 +97,7 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         switch context {
         case let .substrateExtrinsic(substrate):
-            return try sign(originalData, sender: substrate.senderResolution)
+            return try sign(originalData, sender: substrate.senderResolution, calls: substrate.calls)
         case .evmTransaction, .rawBytes:
             throw NoSigningSupportError.notSupported(type: .proxy)
         }

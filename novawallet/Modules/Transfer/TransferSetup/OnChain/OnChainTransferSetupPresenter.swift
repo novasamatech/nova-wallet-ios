@@ -106,7 +106,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = fee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee.value,
+                fee.value.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -160,7 +160,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let feeValue = isUtilityTransfer ? (fee?.value ?? 0) : 0
+        let feeValue = isUtilityTransfer ? (fee?.value.amountForCurrentAccount ?? 0) : 0
 
         let precision = chainAsset.assetDisplayInfo.assetPrecision
 
@@ -339,7 +339,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
-                fee: isUtilityTransfer ? fee?.value : 0,
+                fee: isUtilityTransfer ? fee?.value : nil,
                 totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale

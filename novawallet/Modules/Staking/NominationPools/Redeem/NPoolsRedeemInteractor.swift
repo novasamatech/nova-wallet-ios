@@ -237,8 +237,8 @@ extension NPoolsRedeemInteractor: NPoolsRedeemInteractorInputProtocol {
 extension NPoolsRedeemInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            presenter?.didReceive(fee: dispatchInfo.amount)
+        case let .success(feeInfo):
+            presenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             presenter?.didReceive(error: .fee(error))
         }

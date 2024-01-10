@@ -16,7 +16,7 @@ final class ControllerAccountConfirmationPresenter {
     private let chain: ChainModel
 
     private var stashAccountItem: MetaChainAccountResponse?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var priceData: PriceData?
     private var balance: Decimal?
     private var stakingLedger: StakingLedger?
@@ -62,7 +62,11 @@ final class ControllerAccountConfirmationPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
+
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -151,7 +155,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeModel):
-            fee = Decimal.fromSubstrateAmount(feeModel.amount, precision: assetInfo.assetPrecision)
+            fee = feeModel
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")

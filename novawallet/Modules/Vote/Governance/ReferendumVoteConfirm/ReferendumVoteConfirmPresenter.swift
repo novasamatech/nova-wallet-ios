@@ -19,7 +19,7 @@ final class ReferendumVoteConfirmPresenter {
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
-    private var fee: BigUInt?
+    private var fee: ExtrinsicFeeProtocol?
     private var priceData: PriceData?
     private var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var blockNumber: BlockNumber?
@@ -112,7 +112,7 @@ final class ReferendumVoteConfirmPresenter {
             }
 
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: precision
             ) ?? 0.0
 
@@ -309,7 +309,7 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
         self.referendum = referendum
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         provideFeeViewModel()

@@ -79,8 +79,11 @@ final class DAppExtrinsicBuilderOperationFactory {
             let builderResult = try builderWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let context = ExtrinsicSigningContext.Substrate(senderResolution: builderResult.sender)
             let builder = builderResult.builder
+            let context = ExtrinsicSigningContext.Substrate(
+                senderResolution: builderResult.sender,
+                calls: builder.getCalls()
+            )
 
             let signedExtrinsic = try builder.signing(
                 with: { try signingClosure($0, $1) },
@@ -149,7 +152,12 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             let builder = builderResult.builder
-            let context = ExtrinsicSigningContext.substrateExtrinsic(.init(senderResolution: builderResult.sender))
+            let context = ExtrinsicSigningContext.substrateExtrinsic(
+                .init(
+                    senderResolution: builderResult.sender,
+                    calls: builder.getCalls()
+                )
+            )
 
             let rawSignature = try builder.buildRawSignature(
                 using: { data in

@@ -28,7 +28,7 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
 }
 
 final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
-    weak var view: (Localizable & ControllerBackedProtocol)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
 

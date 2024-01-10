@@ -10,7 +10,7 @@ final class SelectValidatorsConfirmPresenter {
     private var freeBalance: Decimal?
     private var transferableBalance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var minimalBalance: Decimal?
     private var minNominatorBond: Decimal?
     private var counterForNominators: UInt32?
@@ -78,7 +78,10 @@ final class SelectValidatorsConfirmPresenter {
 
     private func provideFee() {
         if let fee = fee {
-            let viewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let viewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceive(feeViewModel: viewModel)
         } else {
             view?.didReceive(feeViewModel: nil)
@@ -328,11 +331,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
     }
 
     func didReceive(paymentInfo: ExtrinsicFeeProtocol) {
-        if let fee = Decimal.fromSubstrateAmount(paymentInfo.amount, precision: assetInfo.assetPrecision) {
-            self.fee = fee
-        } else {
-            fee = nil
-        }
+        fee = paymentInfo
 
         provideFee()
     }

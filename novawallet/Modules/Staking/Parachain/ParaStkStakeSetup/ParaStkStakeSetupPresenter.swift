@@ -13,7 +13,7 @@ final class ParaStkStakeSetupPresenter {
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
-    private(set) var fee: BigUInt?
+    private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
     private(set) var minTechStake: BigUInt?
     private(set) var minDelegationAmount: BigUInt?
@@ -82,7 +82,7 @@ final class ParaStkStakeSetupPresenter {
 
     func balanceMinusFee() -> Decimal {
         let balanceValue = allowedAmountToStake() ?? 0
-        let feeValue = fee ?? 0
+        let feeValue = fee?.amountForCurrentAccount ?? 0
 
         let precision = chainAsset.assetDisplayInfo.assetPrecision
 
@@ -153,7 +153,7 @@ final class ParaStkStakeSetupPresenter {
     private func provideFeeViewModel() {
         let optFeeDecimal = fee.flatMap { value in
             Decimal.fromSubstrateAmount(
-                value,
+                value.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             )
         }
@@ -395,7 +395,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = feeInfo.amount
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

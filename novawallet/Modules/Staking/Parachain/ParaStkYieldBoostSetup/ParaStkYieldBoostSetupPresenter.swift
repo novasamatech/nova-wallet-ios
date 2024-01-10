@@ -23,7 +23,7 @@ final class ParaStkYieldBoostSetupPresenter {
     private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
     private(set) var yieldBoostParams: ParaStkYieldBoostResponse?
     private(set) var isYieldBoostSelected: Bool = false
-    private(set) var extrinsicFee: BigUInt?
+    private(set) var extrinsicFee: ExtrinsicFeeProtocol?
     private(set) var taskExecutionFee: BigUInt?
     private(set) var taskExecutionTime: AutomationTime.UnixTime?
 
@@ -81,7 +81,10 @@ final class ParaStkYieldBoostSetupPresenter {
             return 0
         }
 
-        let extrinsicFeeDecimal = Decimal.fromSubstrateAmount(extrinsicFee ?? 0, precision: precision) ?? 0
+        let extrinsicFeeDecimal = Decimal.fromSubstrateAmount(
+            extrinsicFee?.amountForCurrentAccount ?? 0,
+            precision: precision
+        ) ?? 0
 
         return max(balance - extrinsicFeeDecimal, 0)
     }
@@ -165,7 +168,7 @@ final class ParaStkYieldBoostSetupPresenter {
         thresholdInput = newValue
     }
 
-    func updateExtrinsicFee(_ newValue: BigUInt?) {
+    func updateExtrinsicFee(_ newValue: ExtrinsicFeeProtocol?) {
         extrinsicFee = newValue
 
         if case .rate = thresholdInput {

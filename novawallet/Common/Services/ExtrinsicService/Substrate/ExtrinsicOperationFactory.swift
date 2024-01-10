@@ -236,14 +236,18 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             let (senderResolution, builders) = try senderResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let context = ExtrinsicSigningContext.Substrate(senderResolution: senderResolution)
-
             let extrinsics: [Data] = try builders.enumerated().map { index, partialBuilder in
                 var builder = partialBuilder.with(nonce: nonce + UInt32(index))
                 let account = MultiAddress.accoundId(senderResolution.account.accountId)
                 builder = try builder
                     .with(address: account)
                     .with(signaturePayloadFormat: senderResolution.account.type.signaturePayloadFormat)
+
+                let context = ExtrinsicSigningContext.Substrate(
+                    senderResolution: senderResolution,
+                    calls: builder.getCalls()
+                )
+
                 builder = try builder.signing(
                     with: signingClosure,
                     context: context,

@@ -73,7 +73,7 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
         guard let inputResult = inputResult else {
             return nil
         }
-        let fee = fee?.decimal(precision: chainAsset.asset.precision) ?? 0
+        let fee = fee?.amountForCurrentAccount?.decimal(precision: chainAsset.asset.precision) ?? 0
         let transferable = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) ?? 0
         let balanceCountingEd = assetBalance?.balanceCountingEd.decimal(precision: chainAsset.asset.precision) ?? 0
         let existentialDeposit = assetBalanceExistance?.minBalance.decimal(precision: chainAsset.asset.precision) ?? 0
@@ -90,7 +90,7 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
     }
 
     override func provideFee() {
-        guard let fee = fee?.decimal(precision: chainAsset.asset.precision) else {
+        guard let fee = fee?.amount.decimal(precision: chainAsset.asset.precision) else {
             view?.didReceiveFee(viewModel: nil)
             return
         }

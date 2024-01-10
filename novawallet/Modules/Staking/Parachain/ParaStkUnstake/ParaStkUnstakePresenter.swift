@@ -14,7 +14,7 @@ final class ParaStkUnstakePresenter {
     let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
-    private(set) var fee: BigUInt?
+    private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
     private(set) var minTechStake: BigUInt?
     private(set) var minDelegationAmount: BigUInt?
@@ -148,7 +148,7 @@ final class ParaStkUnstakePresenter {
     func provideFeeViewModel() {
         let optFeeDecimal = fee.flatMap { value in
             Decimal.fromSubstrateAmount(
-                value,
+                value.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             )
         }
@@ -282,7 +282,7 @@ extension ParaStkUnstakePresenter: ParaStkUnstakeInteractorOutputProtocol {
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(feeInfo):
-            fee = feeInfo.amount
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):
