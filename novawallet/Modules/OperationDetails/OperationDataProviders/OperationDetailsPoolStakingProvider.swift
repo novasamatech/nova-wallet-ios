@@ -49,7 +49,10 @@ final class OperationDetailsPoolStakingProvider: OperationDetailsBaseProvider, A
             return
         }
 
-        let isReward = transaction.type(for: accountAddress) == .poolReward
+        let isReward = transaction.type(
+            for: accountAddress,
+            chainAssetId: chainAsset.chainAssetId
+        ) == .poolReward
 
         if isReward {
             progressClosure(.poolReward(model))

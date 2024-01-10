@@ -359,7 +359,7 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
         address: AccountAddress,
         locale: Locale
     ) -> TransactionItemViewModel? {
-        guard let transactionType = data.type(for: address) else {
+        guard let transactionType = data.type(for: address, chainAssetId: chainAsset.chainAssetId) else {
             return nil
         }
         switch transactionType {
@@ -404,7 +404,7 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
 }
 
 extension TransactionHistoryItem {
-    func type(for address: AccountAddress) -> TransactionType? {
+    func type(for address: AccountAddress, chainAssetId: ChainAssetId) -> TransactionType? {
         if swap != nil {
             return .swap
         }
@@ -419,7 +419,10 @@ extension TransactionHistoryItem {
         case .poolSlash:
             return .poolSlash
         default:
-            if callPath.isSubstrateOrEvmTransfer {
+            if
+                callPath.isSubstrateOrEvmTransfer,
+                chainAssetId.chainId == chainId,
+                chainAssetId.assetId == assetId {
                 return sender == address ? .outgoing : .incoming
             } else {
                 return TransactionType.extrinsic

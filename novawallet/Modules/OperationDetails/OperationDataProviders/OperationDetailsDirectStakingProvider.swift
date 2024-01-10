@@ -32,7 +32,10 @@ final class OperationDetailsDirectStakingProvider: OperationDetailsBaseProvider,
             return
         }
 
-        let isReward = transaction.type(for: accountAddress) == .reward
+        let isReward = transaction.type(
+            for: accountAddress,
+            chainAssetId: chainAsset.chainAssetId
+        ) == .reward
 
         if isReward {
             completion(.reward(model))
