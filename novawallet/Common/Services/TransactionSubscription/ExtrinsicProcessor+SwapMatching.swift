@@ -29,18 +29,6 @@ extension ExtrinsicProcessor {
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
-            guard let swapResult = try parseAssetHubSwapExtrinsic(
-                extrinsic,
-                extrinsicIndex: extrinsicIndex,
-                eventRecords: eventRecords,
-                codingFactory: codingFactory
-            ) else {
-                return nil
-            }
-
-            let fee: BigUInt
-            let feeAssetId: AssetModel.Id?
-
             let context = codingFactory.createRuntimeJsonContext()
 
             let maybeSender: AccountId? = try extrinsic.signature?.address.map(
@@ -51,6 +39,19 @@ extension ExtrinsicProcessor {
             guard let sender = maybeSender else {
                 return nil
             }
+
+            guard let swapResult = try parseAssetHubSwapExtrinsic(
+                extrinsic,
+                sender: sender,
+                extrinsicIndex: extrinsicIndex,
+                eventRecords: eventRecords,
+                codingFactory: codingFactory
+            ) else {
+                return nil
+            }
+
+            let fee: BigUInt
+            let feeAssetId: AssetModel.Id?
 
             if
                 let customFee = swapResult.customFee,
@@ -111,15 +112,32 @@ extension ExtrinsicProcessor {
 
     private func parseAssetHubSwapExtrinsic(
         _ extrinsic: Extrinsic,
+        sender: AccountId,
         extrinsicIndex: UInt32,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> SwapExtrinsicParsingResult? {
         let context = codingFactory.createRuntimeJsonContext()
 
-        guard
-            let call = try? extrinsic.call.map(to: RuntimeCall<JSON>.self, with: context.toRawContext()),
-            AssetConversionPallet.isSwap(.init(moduleName: call.moduleName, callName: call.callName)) else {
+        let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
+
+        let optResult = try? callMapper.map(
+            call: extrinsic.call,
+            context: context
+        ) { callJson in
+            do {
+                let call = try callJson.map(to: RuntimeCall<JSON>.self, with: context.toRawContext())
+                return AssetConversionPallet.isSwap(.init(moduleName: call.moduleName, callName: call.callName))
+            } catch {
+                return false
+            }
+        }
+
+        guard let mappingResult = optResult,
+              let call = try? mappingResult.call.map(
+                  to: RuntimeCall<JSON>.self,
+                  with: context.toRawContext()
+              ) else {
             return nil
         }
 

@@ -242,6 +242,7 @@
 		0C8AF7BC2B38076900005AC9 /* Pdc20NftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7BB2B38076900005AC9 /* Pdc20NftModelConverter.swift */; };
 		0C8AF7BF2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */; };
 		0C8AF7C12B3A9EFE00005AC9 /* NftDetailsPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */; };
+		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C9525E32A7AAB2A00BD724D /* StakingTimeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */; };
 		0C9525E52A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */; };
 		0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */; };
@@ -4441,6 +4442,7 @@
 		0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel24.xcdatamodel; sourceTree = "<group>"; };
 		0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20DetailsInteractor.swift; sourceTree = "<group>"; };
 		0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftDetailsPrice.swift; sourceTree = "<group>"; };
+		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTimeModel.swift; sourceTree = "<group>"; };
 		0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingMinStakeBuilder.swift; sourceTree = "<group>"; };
 		0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueResolver.swift; sourceTree = "<group>"; };
@@ -8887,6 +8889,7 @@
 				0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+SwapMatching.swift */,
 				0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */,
 				0C500B262B07314000ABEE70 /* ExtrinsicProcessingResult.swift */,
+				0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */,
 			);
 			path = TransactionSubscription;
 			sourceTree = "<group>";
@@ -23607,6 +23610,7 @@
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,
 				842D8B7C2A4179A000660005 /* ShimmeringAnimator.swift in Sources */,
+				0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */,
 				74F470AE889B0E49D9808802 /* ReferendumFullDetailsViewFactory.swift in Sources */,
 				84033055290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift in Sources */,
 				003063A17B04BA6327EA355F /* ReferendumVotersProtocols.swift in Sources */,

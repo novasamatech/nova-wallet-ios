@@ -22,6 +22,7 @@ private typealias BalancesParsingResult = (
     callPath: CallCodingPath,
     isAccountMatched: Bool,
     callAccountId: AccountId?,
+    callSenderId: AccountId,
     callAmount: BigUInt
 )
 
@@ -408,19 +409,22 @@ extension ExtrinsicProcessor {
                 with: context.toRawContext()
             ).accountId
 
+            guard let sender = maybeSender else {
+                return nil
+            }
+
             let extrinsicEventRecords = eventRecords.filter { $0.extrinsicIndex == extrinsicIndex }
             let result = try parseBalancesExtrinsic(
                 extrinsic,
                 eventRecords: extrinsicEventRecords,
                 metadata: metadata,
-                sender: maybeSender,
+                sender: sender,
                 context: context
             )
 
             guard
                 result.callPath.isBalancesTransfer,
                 result.isAccountMatched,
-                let sender = maybeSender,
                 let isSuccess = matchStatus(
                     for: extrinsicIndex,
                     eventRecords: eventRecords,
@@ -437,14 +441,14 @@ extension ExtrinsicProcessor {
                 runtimeJsonContext: context
             )
 
-            let peerId = accountId == sender ? result.callAccountId : sender
+            let peerId = accountId == result.callSenderId ? result.callAccountId : result.callSenderId
 
             guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
                 return nil
             }
 
             return ExtrinsicProcessingResult(
-                sender: sender,
+                sender: result.callSenderId,
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
@@ -466,24 +470,33 @@ extension ExtrinsicProcessor {
         _ extrinsic: Extrinsic,
         eventRecords: [EventRecord],
         metadata: RuntimeMetadataProtocol,
-        sender: AccountId?,
+        sender: AccountId,
         context: RuntimeJsonContext
     ) throws -> BalancesParsingResult {
-        if let call = try? extrinsic.call.map(
-            to: RuntimeCall<TransferCall>.self,
-            with: context.toRawContext()
-        ) {
+        let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
+
+        if
+            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<TransferCall>> = try? callMapper.mapRuntimeCall(
+                call: extrinsic.call,
+                context: context
+            ) {
+            let call = callResult.call
             let callAccountId = call.args.dest.accountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == sender || accountId == callAccountId
+            let isAccountMatched = accountId == callResult.callSender || accountId == callAccountId
 
-            return (callPath, isAccountMatched, callAccountId, call.args.value)
+            return (callPath, isAccountMatched, callAccountId, callResult.callSender, call.args.value)
         } else {
-            let call = try extrinsic.call.map(to: RuntimeCall<TransferAllCall>.self, with: context.toRawContext())
+            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<TransferCall>> = try callMapper.mapRuntimeCall(
+                call: extrinsic.call,
+                context: context
+            )
+
+            let call = callResult.call
 
             let callAccountId = call.args.dest.accountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == sender || accountId == callAccountId
+            let isAccountMatched = accountId == callResult.callSender || accountId == callAccountId
 
             let amount = try? matchBalancesTransferAmount(
                 from: eventRecords,
@@ -491,7 +504,7 @@ extension ExtrinsicProcessor {
                 context: context
             )
 
-            return (callPath, isAccountMatched, callAccountId, amount ?? 0)
+            return (callPath, isAccountMatched, callAccountId, callResult.callSender, amount ?? 0)
         }
     }
 
