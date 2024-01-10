@@ -255,6 +255,7 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .unstake,
             .rewardDestination,
             .setupValidators,
+            .proxies(count: state.proxy?.definition.count ?? 0),
             .controllerAccount
         ]
 
@@ -319,6 +320,7 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .rewardDestination,
             .pendingRewards,
             .changeValidators(count: state.nomination.targets.count),
+            .proxies(count: state.proxy?.definition.count ?? 0),
             .controllerAccount
         ]
 
@@ -383,6 +385,7 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .rewardDestination,
             .pendingRewards,
             .yourValidator,
+            .proxies(count: state.proxy?.definition.count ?? 0),
             .controllerAccount
         ]
 

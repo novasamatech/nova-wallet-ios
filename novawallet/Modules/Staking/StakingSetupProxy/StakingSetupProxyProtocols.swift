@@ -1,4 +1,4 @@
-protocol StakingSetupProxyViewProtocol: AnyObject {}
+protocol StakingSetupProxyViewProtocol: ControllerBackedProtocol {}
 
 protocol StakingSetupProxyPresenterProtocol: AnyObject {
     func setup()

@@ -51,6 +51,7 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
         rootView.feeView.locale = selectedLocale
+        rootView.accountInputView.locale = selectedLocale
     }
 
     private func setupHandlers() {

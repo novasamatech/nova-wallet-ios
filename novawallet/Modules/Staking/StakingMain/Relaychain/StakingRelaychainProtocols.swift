@@ -42,6 +42,7 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)
 
     func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)
+    func didReceiveProxy(result: Result<ProxyDefinition?, Error>)
 }
 
 protocol StakingRelaychainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
@@ -63,4 +64,5 @@ protocol StakingRelaychainWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showRebagConfirm(from view: ControllerBackedProtocol?)
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)
+    func showAddProxies(from view: ControllerBackedProtocol?)
 }

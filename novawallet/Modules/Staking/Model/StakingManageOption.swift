@@ -10,6 +10,7 @@ enum StakingManageOption {
     case controllerAccount
     case yourValidator
     case yieldBoost(enabled: Bool)
+    case proxies(count: Int)
 
     func titleForLocale(_ locale: Locale, statics: StakingMainStaticViewModelProtocol?) -> String {
         switch self {
@@ -35,6 +36,9 @@ enum StakingManageOption {
             return R.string.localizable.stakingYourValidatorTitle(preferredLanguages: locale.rLanguages)
         case .yieldBoost:
             return R.string.localizable.commonYieldBoost(preferredLanguages: locale.rLanguages)
+        case let .proxies(count):
+            return count > 0 ? R.string.localizable.stakingSetupYourProxies(preferredLanguages: locale.rLanguages) :
+                R.string.localizable.stakingSetupAddYourProxy(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -56,6 +60,15 @@ enum StakingManageOption {
             }
         }
 
+        if case let .proxies(count) = self {
+            guard count > 0 else {
+                return nil
+            }
+
+            let formatter = NumberFormatter.quantity.localizableResource().value(for: locale)
+            return formatter.string(from: NSNumber(value: count))
+        }
+
         return nil
     }
 
@@ -75,6 +88,8 @@ enum StakingManageOption {
             return R.image.iconControllerAccount()
         case .yieldBoost:
             return R.image.iconYieldBoost()
+        case .proxies:
+            return R.image.iconDelegate()
         }
     }
 }

@@ -1376,6 +1376,8 @@
 "staking.setup.proxy.authority" = "Дать доступ";
 "staking.setup.proxy.deposit" = "Прокси депозит";
 "staking.setup.proxy.deposit.details" = "Депозит остается зарезервированным на вашем счете до тех пор, пока прокси не будет удален.";
+"staking.setup.your.proxies" = "Ваши делегации";
+"staking.setup.add.your.proxy" = "Добавить делегацию (Прокси)";
 "common.time.in" = "через";
 "common.and" = " и ";
 "common.time.period.after" = "через";

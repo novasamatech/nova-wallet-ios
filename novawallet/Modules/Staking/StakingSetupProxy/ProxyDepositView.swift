@@ -3,7 +3,7 @@ import SoraUI
 final class ProxyDepositView: RowView<LoadableGenericIconDetailsView<NetworkFeeInfoView>> {
     var imageView: UIImageView { rowContentView.imageView }
     var titleButton: RoundedButton { rowContentView.detailsView.titleButton }
-    var valueTopButton: RoundedButton { rowContentView.detailsView.titleButton }
+    var valueTopButton: RoundedButton { rowContentView.detailsView.valueTopButton }
     var valueBottomLabel: UILabel { rowContentView.detailsView.valueBottomLabel }
 
     override init(frame: CGRect) {

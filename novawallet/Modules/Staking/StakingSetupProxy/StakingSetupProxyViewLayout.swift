@@ -27,7 +27,8 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
     }
 
     let proxyView: ProxyDepositView = .create {
-        $0.imageView.image = R.image.iconLock()!
+        $0.imageView.image = R.image.iconLock()!.withTintColor(R.color.colorIconSecondary()!)
+        $0.contentInsets = .zero
     }
 
     let feeView: NetworkFeeView = {
@@ -37,6 +38,8 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
     }()
 
     override func setupLayout() {
+        super.setupLayout()
+
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -44,7 +47,7 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addArrangedSubview(titleLabel, spacingAfter: 16)
+        addArrangedSubview(titleLabel, spacingAfter: 8)
 
         let titleStackView = UIStackView(arrangedSubviews: [
             authorityLabel,
@@ -52,7 +55,7 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
             yourWalletsControl
         ])
 
-        addArrangedSubview(titleStackView, spacingAfter: 8)
+        addArrangedSubview(titleStackView, spacingAfter: 0)
         addArrangedSubview(accountInputView, spacingAfter: 40)
         addArrangedSubview(proxyView, spacingAfter: 0)
         addArrangedSubview(feeView)

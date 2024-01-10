@@ -31,7 +31,7 @@ struct AccountIdKey: JSONListConvertible, Hashable {
     }
 }
 
-struct ProxyDefinition: Decodable {
+struct ProxyDefinition: Decodable, Equatable {
     let definition: [Proxy.ProxyDefinition]
 
     init(from decoder: Decoder) throws {

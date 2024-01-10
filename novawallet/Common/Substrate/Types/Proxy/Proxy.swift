@@ -5,7 +5,7 @@ import BigInt
 enum Proxy {
     static var name: String { "Proxy" }
 
-    struct ProxyDefinition: Decodable {
+    struct ProxyDefinition: Decodable, Equatable {
         enum CodingKeys: String, CodingKey {
             case proxy = "delegate"
             case proxyType
