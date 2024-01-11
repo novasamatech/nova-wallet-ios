@@ -87,11 +87,7 @@ final class WalletUpdateMediator {
 
             let newUpdatedWallets = changes.newOrUpdatedItems.map { wallet in
                 if wallet.isSelected, wallet.info.proxy()?.status == .revoked {
-                    return ManagedMetaAccountModel(
-                        info: wallet.info,
-                        isSelected: false,
-                        order: wallet.order
-                    )
+                    return ManagedMetaAccountModel(info: wallet.info, isSelected: false, order: wallet.order)
                 } else {
                     return wallet
                 }
