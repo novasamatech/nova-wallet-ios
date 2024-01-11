@@ -343,10 +343,9 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
         case .addProxy:
-            wireframe.showAddProxies(from: view)
+            wireframe.showAddProxy(from: view)
         case .editProxies:
-            // TODO: show proxy list
-            fallthrough
+            wireframe.showEditProxies(from: view)
         default:
             logger?.warning("Unsupported action: \(action)")
         }

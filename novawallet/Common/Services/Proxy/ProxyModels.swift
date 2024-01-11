@@ -38,4 +38,14 @@ struct ProxyDefinition: Decodable, Equatable {
         var container = try decoder.unkeyedContainer()
         definition = try container.decode([Proxy.ProxyDefinition].self)
     }
+
+    init(definition: [Proxy.ProxyDefinition]) {
+        self.definition = definition
+    }
+}
+
+extension ProxyDefinition {
+    func filterStakingProxy() -> ProxyDefinition {
+        .init(definition: definition.filter { $0.proxyType.allowStaking })
+    }
 }

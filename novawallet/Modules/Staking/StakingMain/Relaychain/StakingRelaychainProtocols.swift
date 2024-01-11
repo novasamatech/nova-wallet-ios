@@ -64,5 +64,6 @@ protocol StakingRelaychainWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showRebagConfirm(from view: ControllerBackedProtocol?)
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)
-    func showAddProxies(from view: ControllerBackedProtocol?)
+    func showAddProxy(from view: ControllerBackedProtocol?)
+    func showEditProxies(from view: ControllerBackedProtocol?)
 }

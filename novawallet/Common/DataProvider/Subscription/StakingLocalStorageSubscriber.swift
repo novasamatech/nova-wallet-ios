@@ -666,9 +666,10 @@ extension StakingLocalStorageSubscriber {
         }
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<DecodedProxyDefinition>]) in
-            let proxies = changes.reduceToLastChange()
+            let proxies = changes.reduceToLastChange()?.item?.filterStakingProxy()
+
             self?.stakingLocalSubscriptionHandler.handleProxies(
-                result: .success(proxies?.item),
+                result: .success(proxies),
                 accountId: accountId,
                 chainId: chainId
             )

@@ -82,7 +82,8 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
             try accountRemoteSubscriptionService.setupSubscription(
                 for: accountId,
                 chainId: chain.chainId,
-                chainFormat: chain.chainFormat
+                chainFormat: chain.chainFormat,
+                chainHasProxy: chain.hasProxy
             )
 
             logger.debug("Relaychain staking account data subscription succeeded")

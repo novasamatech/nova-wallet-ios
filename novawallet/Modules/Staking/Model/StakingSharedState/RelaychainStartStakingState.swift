@@ -137,7 +137,8 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
             try relaychainAccountSubscriptionService.setupSubscription(
                 for: accountId,
                 chainId: chainId,
-                chainFormat: chainAsset.chain.chainFormat
+                chainFormat: chainAsset.chain.chainFormat,
+                chainHasProxy: chainAsset.chain.hasProxy
             )
 
             npAccountService = try npAccountSubscriptionServiceFactory?.create(
