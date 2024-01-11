@@ -9,7 +9,7 @@ final class ProxySyncIntegrationTests: XCTestCase {
     }
     
     func testPolkadotSync() throws {
-        let polkadotAccountId = try "1W9ZuKSDehxWy7DUDYCirpTSytPAWfvhpzG5oFCha7h1Rnf".toAccountId()
+        let polkadotAccountId = try "16aBtmicQscoxSYDZGNzVJFTHS1GoeDWx51whmKxLFSZCYTU".toAccountId()
         testSyncChain(chainId: KnowChainId.polkadot, substrateAccountId: polkadotAccountId)
     }
     
@@ -33,11 +33,16 @@ final class ProxySyncIntegrationTests: XCTestCase {
         
         operationQueue.addOperations([saveWalletOperation], waitUntilFinished: true)
         
+        let walletUpdateMediator = WalletUpdateMediator(
+            selectedWalletSettings: SelectedWalletSettings(storageFacade: userStorageFacade, operationQueue: operationQueue),
+            repository: managedAccountRepository,
+            operationQueue: operationQueue
+        )
+        
         let syncService = ProxySyncService(
             chainRegistry: chainRegistry,
-            userDataStorageFacade: userStorageFacade,
             proxyOperationFactory: ProxyOperationFactory(),
-            metaAccountsRepository: managedAccountRepository,
+            metaAccountsRepository: managedAccountRepository, walletUpdateMediator: walletUpdateMediator,
             chainsFilter: { $0.chainId == chainId }
         )
         
