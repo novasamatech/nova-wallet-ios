@@ -31,7 +31,7 @@ extension OperationDetailsDataProviderFactory: OperationDetailsDataProviderFacto
     func createProvider(for transaction: TransactionHistoryItem) -> OperationDetailsDataProviderProtocol? {
         guard
             let address = selectedAccount.chainAccount.toAddress(),
-            let transactionType = transaction.type(for: address) else {
+            let transactionType = transaction.type(for: address, chainAssetId: chainAsset.chainAssetId) else {
             return nil
         }
 
