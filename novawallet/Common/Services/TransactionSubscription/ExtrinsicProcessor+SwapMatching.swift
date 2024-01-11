@@ -10,6 +10,7 @@ private struct SwapExtrinsicCallArgs {
 }
 
 private struct SwapExtrinsicParsingResult {
+    let callSender: AccountId
     let receiver: AccountId
     let assetIdIn: UInt32
     let amountIn: BigUInt
@@ -29,8 +30,20 @@ extension ExtrinsicProcessor {
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
+            let context = codingFactory.createRuntimeJsonContext()
+
+            let maybeExtrinsicSender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: context.toRawContext()
+            ).accountId
+
+            guard let extrinsicSender = maybeExtrinsicSender else {
+                return nil
+            }
+
             guard let swapResult = try parseAssetHubSwapExtrinsic(
                 extrinsic,
+                sender: extrinsicSender,
                 extrinsicIndex: extrinsicIndex,
                 eventRecords: eventRecords,
                 codingFactory: codingFactory
@@ -40,17 +53,6 @@ extension ExtrinsicProcessor {
 
             let fee: BigUInt
             let feeAssetId: AssetModel.Id?
-
-            let context = codingFactory.createRuntimeJsonContext()
-
-            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
-                to: MultiAddress.self,
-                with: context.toRawContext()
-            ).accountId
-
-            guard let sender = maybeSender else {
-                return nil
-            }
 
             if
                 let customFee = swapResult.customFee,
@@ -71,7 +73,7 @@ extension ExtrinsicProcessor {
             } else {
                 let optNativeFee = findFee(
                     for: extrinsicIndex,
-                    sender: sender,
+                    sender: extrinsicSender,
                     eventRecords: eventRecords,
                     metadata: codingFactory.metadata,
                     runtimeJsonContext: context
@@ -86,7 +88,7 @@ extension ExtrinsicProcessor {
             }
 
             return .init(
-                sender: sender,
+                sender: swapResult.callSender,
                 callPath: swapResult.callPath,
                 call: swapResult.call,
                 extrinsicHash: nil,
@@ -111,15 +113,32 @@ extension ExtrinsicProcessor {
 
     private func parseAssetHubSwapExtrinsic(
         _ extrinsic: Extrinsic,
+        sender: AccountId,
         extrinsicIndex: UInt32,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> SwapExtrinsicParsingResult? {
         let context = codingFactory.createRuntimeJsonContext()
 
-        guard
-            let call = try? extrinsic.call.map(to: RuntimeCall<JSON>.self, with: context.toRawContext()),
-            AssetConversionPallet.isSwap(.init(moduleName: call.moduleName, callName: call.callName)) else {
+        let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
+
+        let optResult = try? callMapper.map(
+            call: extrinsic.call,
+            context: context
+        ) { callJson in
+            do {
+                let call = try callJson.map(to: RuntimeCall<JSON>.self, with: context.toRawContext())
+                return AssetConversionPallet.isSwap(.init(moduleName: call.moduleName, callName: call.callName))
+            } catch {
+                return false
+            }
+        }
+
+        guard let mappingResult = optResult,
+              let call = try? mappingResult.call.map(
+                  to: RuntimeCall<JSON>.self,
+                  with: context.toRawContext()
+              ) else {
             return nil
         }
 
@@ -140,6 +159,7 @@ extension ExtrinsicProcessor {
         if isSuccess {
             return try findSuccessAssetHubSwapResult(
                 from: call,
+                callSender: mappingResult.callSender,
                 eventRecords: eventRecords,
                 customFee: customFee,
                 codingFactory: codingFactory
@@ -147,6 +167,7 @@ extension ExtrinsicProcessor {
         } else {
             return try findFailedAssetHubSwapResult(
                 from: call,
+                callSender: mappingResult.callSender,
                 customFee: customFee,
                 codingFactory: codingFactory
             )
@@ -155,6 +176,7 @@ extension ExtrinsicProcessor {
 
     private func findSuccessAssetHubSwapResult(
         from call: RuntimeCall<JSON>,
+        callSender: AccountId,
         eventRecords: [EventRecord],
         customFee: AssetTxPaymentPallet.AssetTxFeePaid?,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -203,6 +225,7 @@ extension ExtrinsicProcessor {
         }
 
         return .init(
+            callSender: callSender,
             receiver: swap.sendTo,
             assetIdIn: assetIn.chainAssetId.assetId,
             amountIn: swap.amountIn,
@@ -217,6 +240,7 @@ extension ExtrinsicProcessor {
 
     private func findFailedAssetHubSwapResult(
         from call: RuntimeCall<JSON>,
+        callSender: AccountId,
         customFee: AssetTxPaymentPallet.AssetTxFeePaid?,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> SwapExtrinsicParsingResult? {
@@ -263,6 +287,7 @@ extension ExtrinsicProcessor {
         }
 
         return .init(
+            callSender: callSender,
             receiver: args.receiver,
             assetIdIn: assetIn.asset.assetId,
             amountIn: args.amountIn,
