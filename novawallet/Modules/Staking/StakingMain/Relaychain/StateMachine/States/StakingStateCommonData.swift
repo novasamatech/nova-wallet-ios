@@ -2,21 +2,22 @@ import Foundation
 import BigInt
 
 struct StakingStateCommonData {
-    let address: String?
-    let chainAsset: ChainAsset?
-    let accountBalance: AssetBalance?
-    let price: PriceData?
-    let calculatorEngine: RewardCalculatorEngineProtocol?
-    let eraStakersInfo: EraStakersInfo?
-    let minStake: BigUInt?
-    let maxNominatorsPerValidator: UInt32?
-    let minNominatorBond: BigUInt?
-    let counterForNominators: UInt32?
-    let maxNominatorsCount: UInt32?
-    let bagListSize: UInt32?
-    let bagListScoreFactor: BigUInt?
-    let eraCountdown: EraCountdown?
-    let totalRewardFilter: StakingRewardFiltersPeriod?
+    private(set) var address: String?
+    private(set) var chainAsset: ChainAsset?
+    private(set) var accountBalance: AssetBalance?
+    private(set) var price: PriceData?
+    private(set) var calculatorEngine: RewardCalculatorEngineProtocol?
+    private(set) var eraStakersInfo: EraStakersInfo?
+    private(set) var minStake: BigUInt?
+    private(set) var maxNominatorsPerValidator: UInt32?
+    private(set) var minNominatorBond: BigUInt?
+    private(set) var counterForNominators: UInt32?
+    private(set) var maxNominatorsCount: UInt32?
+    private(set) var bagListSize: UInt32?
+    private(set) var bagListScoreFactor: BigUInt?
+    private(set) var eraCountdown: EraCountdown?
+    private(set) var totalRewardFilter: StakingRewardFiltersPeriod?
+    private(set) var proxy: ProxyDefinition?
 }
 
 extension StakingStateCommonData {
@@ -36,307 +37,110 @@ extension StakingStateCommonData {
             bagListSize: nil,
             bagListScoreFactor: nil,
             eraCountdown: nil,
-            totalRewardFilter: nil
+            totalRewardFilter: nil,
+            proxy: nil
         )
     }
 
     func byReplacing(address: String?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.address = address
+        }
     }
 
     func byReplacing(chainAsset: ChainAsset?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.chainAsset = chainAsset
+        }
     }
 
     func byReplacing(accountBalance: AssetBalance?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.accountBalance = accountBalance
+        }
     }
 
     func byReplacing(price: PriceData?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.price = price
+        }
     }
 
     func byReplacing(calculatorEngine: RewardCalculatorEngineProtocol?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.calculatorEngine = calculatorEngine
+        }
     }
 
     func byReplacing(eraStakersInfo: EraStakersInfo?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.eraStakersInfo = eraStakersInfo
+        }
     }
 
     func byReplacing(minStake: BigUInt?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.minStake = minStake
+        }
     }
 
     func byReplacing(maxNominatorsPerValidator: UInt32?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.maxNominatorsPerValidator = maxNominatorsPerValidator
+        }
     }
 
     func byReplacing(minNominatorBond: BigUInt?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.minNominatorBond = minNominatorBond
+        }
     }
 
     func byReplacing(counterForNominators: UInt32?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.counterForNominators = counterForNominators
+        }
     }
 
     func byReplacing(maxNominatorsCount: UInt32?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.maxNominatorsCount = maxNominatorsCount
+        }
     }
 
     func byReplacing(bagListSize: UInt32?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.bagListSize = bagListSize
+        }
     }
 
     func byReplacing(bagListScoreFactor: BigUInt?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.bagListScoreFactor = bagListScoreFactor
+        }
     }
 
     func byReplacing(eraCountdown: EraCountdown?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.eraCountdown = eraCountdown
+        }
     }
 
     func byReplacing(totalRewardFilter: StakingRewardFiltersPeriod?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown,
-            totalRewardFilter: totalRewardFilter
-        )
+        replace {
+            $0.totalRewardFilter = totalRewardFilter
+        }
+    }
+
+    func byReplacing(proxy: ProxyDefinition?) -> StakingStateCommonData {
+        replace {
+            $0.proxy = proxy
+        }
+    }
+
+    private func replace(builder: (inout StakingStateCommonData) -> Void) -> StakingStateCommonData {
+        var data = self
+        builder(&data)
+        return data
     }
 }

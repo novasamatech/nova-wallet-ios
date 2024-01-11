@@ -6,7 +6,6 @@ final class StashState: BaseStakingState {
     private(set) var payee: Staking.RewardDestinationArg?
     private(set) var ledgerInfo: StakingLedger?
     private(set) var bagListNode: BagList.Node?
-    private(set) var proxy: ProxyDefinition?
 
     init(
         stateMachine: StakingStateMachineProtocol,
@@ -154,12 +153,6 @@ final class StashState: BaseStakingState {
 
     override func process(bagListNode: BagList.Node?) {
         self.bagListNode = bagListNode
-
-        stateMachine?.transit(to: self)
-    }
-
-    override func process(proxy: ProxyDefinition?) {
-        self.proxy = proxy
 
         stateMachine?.transit(to: self)
     }

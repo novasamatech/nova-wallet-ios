@@ -10,7 +10,8 @@ enum StakingManageOption {
     case controllerAccount
     case yourValidator
     case yieldBoost(enabled: Bool)
-    case proxies(count: Int)
+    case addProxy
+    case editProxies(currentCount: Int)
 
     func titleForLocale(_ locale: Locale, statics: StakingMainStaticViewModelProtocol?) -> String {
         switch self {
@@ -36,9 +37,10 @@ enum StakingManageOption {
             return R.string.localizable.stakingYourValidatorTitle(preferredLanguages: locale.rLanguages)
         case .yieldBoost:
             return R.string.localizable.commonYieldBoost(preferredLanguages: locale.rLanguages)
-        case let .proxies(count):
-            return count > 0 ? R.string.localizable.stakingSetupYourProxies(preferredLanguages: locale.rLanguages) :
-                R.string.localizable.stakingSetupAddYourProxy(preferredLanguages: locale.rLanguages)
+        case .addProxy:
+            return R.string.localizable.stakingSetupAddYourProxy(preferredLanguages: locale.rLanguages)
+        case let .editProxies:
+            return R.string.localizable.stakingSetupYourProxies(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -60,11 +62,7 @@ enum StakingManageOption {
             }
         }
 
-        if case let .proxies(count) = self {
-            guard count > 0 else {
-                return nil
-            }
-
+        if case let .editProxies(count) = self {
             let formatter = NumberFormatter.quantity.localizableResource().value(for: locale)
             return formatter.string(from: NSNumber(value: count))
         }
@@ -88,8 +86,16 @@ enum StakingManageOption {
             return R.image.iconControllerAccount()
         case .yieldBoost:
             return R.image.iconYieldBoost()
-        case .proxies:
+        case .addProxy, .editProxies:
             return R.image.iconDelegate()
         }
+    }
+
+    static func proxyAction(from proxyDefinition: ProxyDefinition?) -> StakingManageOption {
+        guard let proxiesCount = proxyDefinition?.definition.count, proxiesCount > 0 else {
+            return .addProxy
+        }
+
+        return .editProxies(currentCount: proxiesCount)
     }
 }

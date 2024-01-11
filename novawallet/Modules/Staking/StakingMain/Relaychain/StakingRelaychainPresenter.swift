@@ -342,8 +342,11 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 let stashAddress = validatorState.stashItem.stash
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
-        case .proxies:
+        case .addProxy:
             wireframe.showAddProxies(from: view)
+        case .editProxies:
+            // TODO: show proxy list
+            fallthrough
         default:
             logger?.warning("Unsupported action: \(action)")
         }

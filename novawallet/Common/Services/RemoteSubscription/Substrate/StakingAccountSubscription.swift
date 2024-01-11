@@ -130,6 +130,8 @@ final class StakingAccountSubscription: WebSocketSubscribing {
             )
         }
 
+        requests.append(.init(storagePath: Proxy.proxyList, accountId: stashId))
+
         return requests
     }
 

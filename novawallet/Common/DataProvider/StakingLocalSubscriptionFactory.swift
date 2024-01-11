@@ -361,10 +361,13 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         return provider
     }
 
-    func getProxyListProvider(for accountId: AccountId, chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedProxyDefinition> {
+    func getProxyListProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedProxyDefinition> {
         clearIfNeeded()
 
-        let codingPath = StorageCodingPath.proxy
+        let codingPath = Proxy.proxyList
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             codingPath,
             accountId: accountId,
