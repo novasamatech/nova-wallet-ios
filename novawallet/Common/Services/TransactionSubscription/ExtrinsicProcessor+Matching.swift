@@ -506,7 +506,7 @@ extension ExtrinsicProcessor {
 
             return (callPath, isAccountMatched, callAccountId, callResult.callSender, call.args.value)
         } else {
-            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<TransferCall>> = try callMapper.mapRuntimeCall(
+            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<TransferAllCall>> = try callMapper.mapRuntimeCall(
                 call: extrinsic.call,
                 context: context
             )
