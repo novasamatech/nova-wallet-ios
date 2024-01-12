@@ -1,4 +1,8 @@
-protocol StakingSetupProxyViewProtocol: ControllerBackedProtocol {}
+protocol StakingSetupProxyViewProtocol: ControllerBackedProtocol {
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceive(token: String)
+}
 
 protocol StakingSetupProxyPresenterProtocol: AnyObject {
     func setup()
@@ -6,8 +10,8 @@ protocol StakingSetupProxyPresenterProtocol: AnyObject {
     func showDepositInfo()
 }
 
-protocol StakingSetupProxyInteractorInputProtocol: AnyObject {}
+protocol StakingSetupProxyInteractorInputProtocol: StakingProxyBaseInteractorInputProtocol {}
 
-protocol StakingSetupProxyInteractorOutputProtocol: AnyObject {}
+protocol StakingSetupProxyInteractorOutputProtocol: StakingProxyBaseInteractorOutputProtocol {}
 
 protocol StakingSetupProxyWireframeProtocol: AnyObject {}

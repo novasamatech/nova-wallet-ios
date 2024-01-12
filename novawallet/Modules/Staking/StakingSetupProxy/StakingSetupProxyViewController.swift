@@ -47,7 +47,7 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
             image: R.image.iconUsers()
         ))
 
-        rootView.proxyView.titleButton.imageWithTitleView?.title = strings.stakingSetupProxyDeposit(
+        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = strings.stakingSetupProxyDeposit(
             preferredLanguages: languages
         )
         rootView.feeView.locale = selectedLocale
@@ -55,7 +55,7 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
-        rootView.proxyView.addTarget(
+        rootView.proxyDepositView.addTarget(
             self,
             action: #selector(proxyInfoAction),
             for: .touchUpInside
@@ -69,7 +69,23 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
     }
 }
 
-extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {}
+extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
+        rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+    }
+
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.feeView.bind(viewModel: viewModel)
+    }
+
+    func didReceive(token: String) {
+        self.token = token
+        rootView.titleLabel.text = R.string.localizable.stakingSetupProxyTitle(
+            token,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+}
 
 extension StakingSetupProxyViewController: Localizable {
     func applyLocalization() {

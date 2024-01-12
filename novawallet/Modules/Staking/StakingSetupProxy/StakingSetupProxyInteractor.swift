@@ -1,7 +1,9 @@
 import UIKit
 
-final class StakingSetupProxyInteractor {
-    weak var presenter: StakingSetupProxyInteractorOutputProtocol?
+final class StakingSetupProxyInteractor: StakingProxyBaseInteractor {
+    weak var presenter: StakingSetupProxyInteractorOutputProtocol? {
+        basePresenter as? StakingSetupProxyInteractorOutputProtocol
+    }
 }
 
 extension StakingSetupProxyInteractor: StakingSetupProxyInteractorInputProtocol {}

@@ -26,7 +26,7 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
         }
     }
 
-    let proxyView: ProxyDepositView = .create {
+    let proxyDepositView: ProxyDepositView = .create {
         $0.imageView.image = R.image.iconLock()!.withTintColor(R.color.colorIconSecondary()!)
         $0.contentInsets = .zero
     }
@@ -57,7 +57,7 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
 
         addArrangedSubview(titleStackView, spacingAfter: 0)
         addArrangedSubview(accountInputView, spacingAfter: 40)
-        addArrangedSubview(proxyView, spacingAfter: 0)
+        addArrangedSubview(proxyDepositView, spacingAfter: 0)
         addArrangedSubview(feeView)
     }
 }
