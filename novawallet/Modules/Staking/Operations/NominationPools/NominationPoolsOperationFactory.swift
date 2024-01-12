@@ -296,7 +296,8 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
 
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32> = PrimitiveConstantOperation.wrapper(
             for: .maxNominatorRewardedPerValidator,
-            runtimeService: runtimeService
+            runtimeService: runtimeService,
+            fallbackValue: UInt32.max
         )
 
         let validatorsResolveOperation = ClosureOperation<[NominationPools.PoolId: Set<AccountId>]> {

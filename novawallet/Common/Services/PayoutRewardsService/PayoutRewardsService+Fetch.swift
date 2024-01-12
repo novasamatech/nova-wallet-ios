@@ -256,7 +256,7 @@ extension PayoutRewardsService {
 
             return ledgerInfo
                 .reduce(into: [Data: [EraIndex]]()) { dict, ledger in
-                    let erasClaimedRewards = Set(ledger.claimedRewards.map(\.value))
+                    let erasClaimedRewards = Set(ledger.claimedRewardsOrEmpty.map(\.value))
                     let erasUnclaimedRewards = Set(eraList).subtracting(erasClaimedRewards)
                     dict[ledger.stash] = Array(erasUnclaimedRewards)
                 }

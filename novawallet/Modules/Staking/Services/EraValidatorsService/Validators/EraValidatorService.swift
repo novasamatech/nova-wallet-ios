@@ -25,40 +25,42 @@ final class EraValidatorService {
     private var isActive: Bool = false
 
     private var snapshot: EraStakersInfo?
-    private var eraDataProvider: StreamableProvider<ChainStorageItem>?
+    private var eraDataProvider: AnyDataProvider<DecodedActiveEra>?
     private var pendingRequests: [PendingRequest] = []
+
+    var validatorUpdater: EraValidatorsUpdating?
 
     let chainId: ChainModel.Id
     let storageFacade: StorageFacadeProtocol
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
-    let providerFactory: SubstrateDataProviderFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let providerFactory: StakingLocalSubscriptionFactoryProtocol
+    let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     init(
         chainId: ChainModel.Id,
         storageFacade: StorageFacadeProtocol,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
-        providerFactory: SubstrateDataProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        providerFactory: StakingLocalSubscriptionFactoryProtocol,
+        operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.chainId = chainId
         self.storageFacade = storageFacade
         self.runtimeCodingService = runtimeCodingService
         self.connection = connection
         self.providerFactory = providerFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.logger = logger
     }
 
     func didReceiveSnapshot(_ snapshot: EraStakersInfo) {
-        logger?.debug("Attempt fulfill pendings \(pendingRequests.count)")
+        logger.debug("Attempt fulfill pendings \(pendingRequests.count)")
 
         self.snapshot = snapshot
 
@@ -68,7 +70,7 @@ final class EraValidatorService {
 
             requests.forEach { deliver(snapshot: snapshot, to: $0) }
 
-            logger?.debug("Fulfilled pendings")
+            logger.debug("Fulfilled pendings")
         }
 
         DispatchQueue.main.async {
@@ -102,24 +104,16 @@ final class EraValidatorService {
 
     private func subscribe() {
         do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(.activeEra, chainId: chainId)
-            let eraDataProvider = providerFactory.createStorageProvider(for: localKey)
+            let eraDataProvider = try providerFactory.getActiveEra(for: chainId)
 
-            let updateClosure: ([DataProviderChange<ChainStorageItem>]) -> Void = { [weak self] changes in
-                let finalValue: ChainStorageItem? = changes.reduce(nil) { _, item in
-                    switch item {
-                    case let .insert(newItem), let .update(newItem):
-                        return newItem
-                    case .delete:
-                        return nil
-                    }
-                }
+            let updateClosure: ([DataProviderChange<DecodedActiveEra>]) -> Void = { [weak self] changes in
+                let finalValue: DecodedActiveEra? = changes.reduceToLastChange()
 
                 self?.didUpdateActiveEraItem(finalValue)
             }
 
             let failureClosure: (Error) -> Void = { [weak self] error in
-                self?.logger?.error("Did receive error: \(error)")
+                self?.logger.error("Did receive error: \(error)")
             }
 
             eraDataProvider.addObserver(
@@ -127,12 +121,12 @@ final class EraValidatorService {
                 deliverOn: syncQueue,
                 executing: updateClosure,
                 failing: failureClosure,
-                options: StreamableProviderObserverOptions.substrateSource()
+                options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
             )
 
             self.eraDataProvider = eraDataProvider
         } catch {
-            logger?.error("Can't make subscription")
+            logger.error("Can't make subscription")
         }
     }
 

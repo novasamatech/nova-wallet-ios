@@ -123,7 +123,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         maxNominatorsPerValidatorCancellable = fetchConstant(
             for: .maxNominatorRewardedPerValidator,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationManager: operationManager,
+            fallbackValue: UInt32.max
         ) { [weak self] (result: Result<UInt32, Error>) in
             if self?.maxNominatorsPerValidatorCancellable != nil {
                 self?.maxNominatorsPerValidatorCancellable = nil

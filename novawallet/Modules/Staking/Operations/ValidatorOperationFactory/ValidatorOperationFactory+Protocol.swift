@@ -16,7 +16,8 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let maxNominatorsOperation: BaseOperation<UInt32> =
             createConstOperation(
                 dependingOn: runtimeOperation,
-                path: .maxNominatorRewardedPerValidator
+                path: .maxNominatorRewardedPerValidator,
+                fallbackValue: UInt32.max
             )
 
         slashDeferOperation.addDependency(runtimeOperation)

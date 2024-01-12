@@ -25,9 +25,10 @@ final class NetworkStakingInfoOperationFactory {
 
     private func createConstOperation<T>(
         dependingOn runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
-        path: ConstantCodingPath
+        path: ConstantCodingPath,
+        fallbackValue: T? = nil
     ) -> PrimitiveConstantOperation<T> where T: LosslessStringConvertible {
-        let operation = PrimitiveConstantOperation<T>(path: path)
+        let operation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
 
         operation.configurationBlock = {
             do {
@@ -143,7 +144,8 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
         let maxNominatorsOperation: BaseOperation<UInt32> =
             createConstOperation(
                 dependingOn: runtimeOperation,
-                path: .maxNominatorRewardedPerValidator
+                path: .maxNominatorRewardedPerValidator,
+                fallbackValue: UInt32.max
             )
 
         let lockUpPeriodOperation: BaseOperation<UInt32> =

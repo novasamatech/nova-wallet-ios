@@ -58,9 +58,10 @@ final class ValidatorOperationFactory {
 
     func createConstOperation<T>(
         dependingOn runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
-        path: ConstantCodingPath
+        path: ConstantCodingPath,
+        fallbackValue: T? = nil
     ) -> PrimitiveConstantOperation<T> where T: LosslessStringConvertible {
-        let operation = PrimitiveConstantOperation<T>(path: path)
+        let operation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
 
         operation.configurationBlock = {
             do {
@@ -121,7 +122,8 @@ final class ValidatorOperationFactory {
         let maxNominatorsOperation: BaseOperation<UInt32> =
             createConstOperation(
                 dependingOn: runtimeOperation,
-                path: .maxNominatorRewardedPerValidator
+                path: .maxNominatorRewardedPerValidator,
+                fallbackValue: UInt32.max
             )
 
         maxNominatorsOperation.addDependency(runtimeOperation)
@@ -213,7 +215,8 @@ final class ValidatorOperationFactory {
 
         let maxNominatorsOperation: BaseOperation<UInt32> = createConstOperation(
             dependingOn: runtimeOperation,
-            path: .maxNominatorRewardedPerValidator
+            path: .maxNominatorRewardedPerValidator,
+            fallbackValue: UInt32.max
         )
 
         maxNominatorsOperation.addDependency(runtimeOperation)
@@ -283,7 +286,8 @@ final class ValidatorOperationFactory {
 
         let maxNominatorsOperation: BaseOperation<UInt32> = createConstOperation(
             dependingOn: runtimeOperation,
-            path: .maxNominatorRewardedPerValidator
+            path: .maxNominatorRewardedPerValidator,
+            fallbackValue: UInt32.max
         )
 
         maxNominatorsOperation.addDependency(runtimeOperation)
