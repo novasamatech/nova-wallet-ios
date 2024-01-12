@@ -7,7 +7,10 @@ enum AccountGenerator {
         return generateMetaAccount(with: Set(chainAccounts))
     }
 
-    static func generateMetaAccount(with chainAccounts: Set<ChainAccountModel> = []) -> MetaAccountModel {
+    static func generateMetaAccount(
+        with chainAccounts: Set<ChainAccountModel> = [],
+        type: MetaAccountModelType = .secrets
+    ) -> MetaAccountModel {
         MetaAccountModel(
             metaId: UUID().uuidString,
             name: UUID().uuidString,
@@ -17,7 +20,7 @@ enum AccountGenerator {
             ethereumAddress: Data.random(of: 20)!,
             ethereumPublicKey: Data.random(of: 32)!,
             chainAccounts: chainAccounts,
-            type: .secrets
+            type: type
         )
     }
 
@@ -28,6 +31,18 @@ enum AccountGenerator {
             publicKey: Data.random(of: 32)!,
             cryptoType: 0,
             proxy: nil
+        )
+    }
+    
+    static func generateProxiedChainAccount(
+        for model: ProxyAccountModel
+    ) -> ChainAccountModel {
+        ChainAccountModel(
+            chainId: Data.random(of: 32)!.toHex(),
+            accountId: Data.random(of: 32)!,
+            publicKey: Data.random(of: 32)!,
+            cryptoType: 0,
+            proxy: model
         )
     }
 }

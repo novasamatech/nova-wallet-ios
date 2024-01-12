@@ -39,7 +39,10 @@ final class WalletUpdateMediator {
         changesClosure: @escaping () throws -> SyncChanges<ManagedMetaAccountModel>
     ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
         ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
-            let allWallets = try allWalletsOperation.extractNoCancellableResultData()
+            let allWallets = try allWalletsOperation.extractNoCancellableResultData().sorted { wallet1, wallet2 in
+                wallet1.order < wallet2.order
+            }
+
             let changes = try changesClosure()
 
             let allRemovedIds = Set(changes.removedItems.map(\.identifier))
@@ -49,7 +52,9 @@ final class WalletUpdateMediator {
             }
 
             let proxiedsToRemove = allProxieds.filter { proxiedWallet in
-                guard let proxyChainAccount = proxiedWallet.info.chainAccounts.first else {
+                guard
+                    let chainAccount = proxiedWallet.info.chainAccounts.first,
+                    let proxy = chainAccount.proxy else {
                     return false
                 }
 
@@ -58,10 +63,7 @@ final class WalletUpdateMediator {
                         return true
                     }
 
-                    return !wallet.info.has(
-                        accountId: proxyChainAccount.accountId,
-                        chainId: proxyChainAccount.chainId
-                    )
+                    return !wallet.info.has(accountId: proxy.accountId, chainId: chainAccount.chainId)
                 }
             }
 

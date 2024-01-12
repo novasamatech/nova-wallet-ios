@@ -244,6 +244,7 @@
 		0C8AF7C12B3A9EFE00005AC9 /* NftDetailsPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
+		0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */; };
 		0C9525E32A7AAB2A00BD724D /* StakingTimeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */; };
 		0C9525E52A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */; };
 		0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */; };
@@ -4445,6 +4446,7 @@
 		0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftDetailsPrice.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
+		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
 		0C9525E22A7AAB2A00BD724D /* StakingTimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTimeModel.swift; sourceTree = "<group>"; };
 		0C9525E42A7AF82B00BD724D /* DirectStakingMinStakeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingMinStakeBuilder.swift; sourceTree = "<group>"; };
 		0C9525E62A7AFA2C00BD724D /* ValueResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueResolver.swift; sourceTree = "<group>"; };
@@ -11559,6 +11561,7 @@
 				845B822226EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift */,
 				845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */,
 				84F13F0D26F1D9B1006725FF /* CrowdloadSettingsTests.swift */,
+				0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -24117,6 +24120,7 @@
 				843612CB279011B400DC739E /* SigningWrapperFactoryStub.swift in Sources */,
 				8846F73829D6F57700B8B776 /* MultibaseTests.swift in Sources */,
 				84300B2F26C1112300D64514 /* ConnectionPoolTests.swift in Sources */,
+				0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */,
 				84B7C72A289BFA79001A3566 /* RecommendationsComposerTests.swift in Sources */,
 				0C1BE1A02A46F1F00010933C /* ScientificStringParsing.swift in Sources */,
 				84B7C73B289BFA79001A3566 /* StakingUnbondConfirmTests.swift in Sources */,
