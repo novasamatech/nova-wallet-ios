@@ -45,7 +45,25 @@ class WalletsListPresenter {
     }
 
     func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
-        walletsList.apply(changes: changes)
+        // we don't want display revoked proxied wallets
+
+        let updatedChanges = changes.map { change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                if newItem.info.type == .proxied, newItem.info.proxy()?.status == .revoked {
+                    return DataProviderChange<ManagedMetaAccountModel>.delete(
+                        deletedIdentifier: newItem.identifier
+                    )
+                } else {
+                    return change
+                }
+
+            case .delete:
+                return change
+            }
+        }
+
+        walletsList.apply(changes: updatedChanges)
 
         updateViewModels()
     }
