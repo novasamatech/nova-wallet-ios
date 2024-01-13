@@ -16,7 +16,7 @@ extension NominatorState {
             let accountId = try stashItem.stash.toAccountId()
 
             let allNominators = eraStakers.validators.map(\.exposure.others)
-                .flatMap { (nominators) -> [IndividualExposure] in
+                .flatMap { (nominators) -> [Staking.IndividualExposure] in
                     if let maxNominatorsPerValidator = commonData.maxNominatorsPerValidator {
                         return Array(nominators.prefix(Int(maxNominatorsPerValidator)))
                     } else {

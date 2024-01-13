@@ -13,6 +13,8 @@ extension EraValidatorService {
             return
         }
 
+        validatorUpdater = nil
+
         let keyedPrefs = prefs.reduce(into: [Data: ValidatorPrefs]()) { result, item in
             let accountId = item.key.getAccountIdFromKey()
             result[accountId] = item.value
@@ -23,7 +25,7 @@ extension EraValidatorService {
                 return nil
             }
 
-            let exposure = ValidatorExposure(
+            let exposure = Staking.ValidatorExposure(
                 total: item.exposure.total,
                 own: item.exposure.own,
                 others: item.exposure.others.sorted { $0.value > $1.value }

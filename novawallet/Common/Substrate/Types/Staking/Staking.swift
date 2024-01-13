@@ -1,10 +1,20 @@
 import Foundation
+import BigInt
+import SubstrateSdk
 
 enum Staking {
     static let module = "Staking"
 
     static var historyDepthStoragePath: StorageCodingPath {
         StorageCodingPath(moduleName: module, itemName: "HistoryDepth")
+    }
+
+    static var eraStakersOverview: StorageCodingPath {
+        StorageCodingPath(moduleName: module, itemName: "ErasStakersOverview")
+    }
+
+    static var eraStakersPaged: StorageCodingPath {
+        StorageCodingPath(moduleName: module, itemName: "ErasStakersPaged")
     }
 
     static var historyDepthCostantPath: ConstantCodingPath {

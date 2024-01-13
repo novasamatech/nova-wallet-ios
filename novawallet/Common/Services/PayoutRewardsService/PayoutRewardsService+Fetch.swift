@@ -317,7 +317,7 @@ extension PayoutRewardsService {
     }
 
     func createEraValidatorsInfoOperation(
-        dependingOn exposureOperation: BaseOperation<[EraIndex: [Data: ValidatorExposure]]>,
+        dependingOn exposureOperation: BaseOperation<[EraIndex: [Data: Staking.ValidatorExposure]]>,
         dependingOn prefsOperation: BaseOperation<[EraIndex: [Data: ValidatorPrefs]]>
     ) -> BaseOperation<[EraIndex: [EraValidatorInfo]]> {
         ClosureOperation {

@@ -96,7 +96,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
                 $0.addDependency(unclaimedErasByStashOperation)
             }
 
-            let exposuresByEraWrapper: CompoundOperationWrapper<[EraIndex: [Data: ValidatorExposure]]> =
+            let exposuresByEraWrapper: CompoundOperationWrapper<[EraIndex: [Data: Staking.ValidatorExposure]]> =
                 try createCreateHistoryByEraAccountIdOperation(
                     dependingOn: unclaimedErasByStashOperation,
                     codingFactoryOperation: codingFactoryOperation,

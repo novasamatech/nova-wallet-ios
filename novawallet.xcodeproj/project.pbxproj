@@ -256,6 +256,7 @@
 		0C9680F32A8AC2F2006A411B /* EvmTokenAddResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */; };
 		0C992C342B5184F100ACC129 /* EraValidatorsUpdating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */; };
 		0C992C392B5187A800ACC129 /* EraStakersRemoteKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */; };
+		0C992C3B2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */; };
 		0C9951CA2AE2ABA400B65615 /* AssetListBannerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */; };
 		0C9951CF2AE2BAE500B65615 /* PromotionBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */; };
 		0C9951D32AE2DB0200B65615 /* PromotionViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */; };
@@ -2239,7 +2240,7 @@
 		848FFE8B25E69A6000652AA5 /* EraValidatorServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE8A25E69A6000652AA5 /* EraValidatorServiceProtocol.swift */; };
 		848FFE9025E6CF4300652AA5 /* StorageKeyEncodingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE8F25E6CF4300652AA5 /* StorageKeyEncodingOperation.swift */; };
 		848FFE9525E6DF2200652AA5 /* PagedKeysRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE9425E6DF2200652AA5 /* PagedKeysRequest.swift */; };
-		848FFE9A25E6E0E400652AA5 /* ValidatorExposure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE9925E6E0E400652AA5 /* ValidatorExposure.swift */; };
+		848FFE9A25E6E0E400652AA5 /* Staking+Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE9925E6E0E400652AA5 /* Staking+Validator.swift */; };
 		8490110B29E5A491005D688B /* URIScanViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490110A29E5A491005D688B /* URIScanViewFactory.swift */; };
 		8490110D29E5A4BE005D688B /* URIScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490110C29E5A4BE005D688B /* URIScanDelegate.swift */; };
 		8490110F29E5A4F4005D688B /* URIQRMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490110E29E5A4F4005D688B /* URIQRMatcher.swift */; };
@@ -4460,6 +4461,7 @@
 		0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTokenAddResult.swift; sourceTree = "<group>"; };
 		0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorsUpdating.swift; sourceTree = "<group>"; };
 		0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraStakersRemoteKey.swift; sourceTree = "<group>"; };
+		0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraStakersPagedRemoteKey.swift; sourceTree = "<group>"; };
 		0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBannerCell.swift; sourceTree = "<group>"; };
 		0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotionBannerView.swift; sourceTree = "<group>"; };
 		0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotionViewModelFactory.swift; sourceTree = "<group>"; };
@@ -6462,7 +6464,7 @@
 		848FFE8A25E69A6000652AA5 /* EraValidatorServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorServiceProtocol.swift; sourceTree = "<group>"; };
 		848FFE8F25E6CF4300652AA5 /* StorageKeyEncodingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyEncodingOperation.swift; sourceTree = "<group>"; };
 		848FFE9425E6DF2200652AA5 /* PagedKeysRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedKeysRequest.swift; sourceTree = "<group>"; };
-		848FFE9925E6E0E400652AA5 /* ValidatorExposure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorExposure.swift; sourceTree = "<group>"; };
+		848FFE9925E6E0E400652AA5 /* Staking+Validator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Staking+Validator.swift"; sourceTree = "<group>"; };
 		8490110A29E5A491005D688B /* URIScanViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URIScanViewFactory.swift; sourceTree = "<group>"; };
 		8490110C29E5A4BE005D688B /* URIScanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URIScanDelegate.swift; sourceTree = "<group>"; };
 		8490110E29E5A4F4005D688B /* URIQRMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URIQRMatcher.swift; sourceTree = "<group>"; };
@@ -9056,6 +9058,7 @@
 				84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */,
 				0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */,
 				0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */,
+				0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */,
 			);
 			path = Validators;
 			sourceTree = "<group>";
@@ -11827,7 +11830,6 @@
 				84403D7E25E91BC100494FD4 /* SuperIdentity.swift */,
 				84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */,
 				8425EA8A25EA7AF200C307C9 /* UnappliedSlashes.swift */,
-				848FFE9925E6E0E400652AA5 /* ValidatorExposure.swift */,
 				84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */,
 				2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */,
 				84F18D4927A1869E00CA7554 /* OrmlAccount.swift */,
@@ -12918,6 +12920,7 @@
 			isa = PBXGroup;
 			children = (
 				8469D5A528F5E8F20074FEE3 /* Staking.swift */,
+				848FFE9925E6E0E400652AA5 /* Staking+Validator.swift */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -22382,7 +22385,7 @@
 				8499FE7327BE305100712589 /* JSONListConvertible.swift in Sources */,
 				845B821726EF7FED00D25C72 /* SelectedWalletSettings.swift in Sources */,
 				84DC3CE12795DEBF0038E2ED /* SubqueryHistoryOperationFactory.swift in Sources */,
-				848FFE9A25E6E0E400652AA5 /* ValidatorExposure.swift in Sources */,
+				848FFE9A25E6E0E400652AA5 /* Staking+Validator.swift in Sources */,
 				8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */,
 				8482F62D280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift in Sources */,
 				5DDD2206DF795CF205610455 /* AccountExportPasswordPresenter.swift in Sources */,
@@ -24060,6 +24063,7 @@
 				16359021D9683A59F293FA67 /* NPoolsUnstakeConfirmViewFactory.swift in Sources */,
 				B19BA6D7071BC7BE1EFFDE6D /* NPoolsClaimRewardsProtocols.swift in Sources */,
 				0CE629E22AA9BE3000E250BD /* StakingSetupTypeEntityFacade.swift in Sources */,
+				0C992C3B2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift in Sources */,
 				FCBFD26B960C4837646A0D86 /* NPoolsClaimRewardsWireframe.swift in Sources */,
 				F690C666F5A95D0C8A48BD45 /* NPoolsClaimRewardsPresenter.swift in Sources */,
 				924BADB89E7FA2DC54BF1A02 /* NPoolsClaimRewardsInteractor.swift in Sources */,
