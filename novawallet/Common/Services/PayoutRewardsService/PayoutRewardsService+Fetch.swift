@@ -217,18 +217,14 @@ extension PayoutRewardsService {
     }
 
     func createFetchAndMapOperation<T: Encodable, R: Decodable>(
-        dependingOn depedencyOperation: BaseOperation<[T]>,
+        dependingOn keyParamsClosure: @escaping () throws -> [T],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         path: StorageCodingPath
     ) throws -> CompoundOperationWrapper<[R]> {
-        let keyParams: () throws -> [T] = {
-            try depedencyOperation.extractNoCancellableResultData()
-        }
-
         let wrapper: CompoundOperationWrapper<[StorageResponse<R>]> =
             storageRequestFactory.queryItems(
                 engine: engine,
-                keyParams: keyParams,
+                keyParams: keyParamsClosure,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
                 storagePath: path
             )

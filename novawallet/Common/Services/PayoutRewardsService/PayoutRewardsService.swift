@@ -57,20 +57,32 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
 
             validatorsWrapper.addDependency(wrapper: historyRangeWrapper)
 
+            let validatorsClosure: () throws -> [AccountId] = {
+                let validators = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
+                    .map(\.validator)
+
+                return validators.distinct()
+            }
+
             let controllersWrapper: CompoundOperationWrapper<[Data]> = try createFetchAndMapOperation(
-                dependingOn: validatorsWrapper.targetOperation,
+                dependingOn: validatorsClosure,
                 codingFactoryOperation: codingFactoryOperation,
                 path: .controller
             )
+
             controllersWrapper.allOperations
                 .forEach {
                     $0.addDependency(validatorsWrapper.targetOperation)
                     $0.addDependency(codingFactoryOperation)
                 }
 
+            let controllersClosure: () throws -> [AccountId] = {
+                try controllersWrapper.targetOperation.extractNoCancellableResultData()
+            }
+
             let ledgerInfos: CompoundOperationWrapper<[StakingLedger]> =
                 try createFetchAndMapOperation(
-                    dependingOn: controllersWrapper.targetOperation,
+                    dependingOn: controllersClosure,
                     codingFactoryOperation: codingFactoryOperation,
                     path: .stakingLedger
                 )

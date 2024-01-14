@@ -5,11 +5,15 @@ import IrohaCrypto
 final class PayoutValidatorsForValidatorFactory: PayoutValidatorsFactoryProtocol {
     func createResolutionOperation(
         for address: AccountAddress,
-        eraRangeClosure _: @escaping () throws -> EraRange?
-    ) -> CompoundOperationWrapper<[AccountId]> {
-        let operation = ClosureOperation<[AccountId]> {
+        eraRangeClosure: @escaping () throws -> EraRange
+    ) -> CompoundOperationWrapper<Set<ResolvedValidatorEra>> {
+        let operation = ClosureOperation<Set<ResolvedValidatorEra>> {
             let accountId = try address.toAccountId()
-            return [accountId]
+            let eraRange = try eraRangeClosure()
+            let validators = (eraRange.start ... eraRange.end).map {
+                ResolvedValidatorEra(validator: accountId, era: $0)
+            }
+            return Set(validators)
         }
 
         return CompoundOperationWrapper(targetOperation: operation)

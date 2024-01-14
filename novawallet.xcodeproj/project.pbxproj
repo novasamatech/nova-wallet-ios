@@ -257,6 +257,9 @@
 		0C992C342B5184F100ACC129 /* EraValidatorsUpdating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */; };
 		0C992C392B5187A800ACC129 /* EraStakersRemoteKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */; };
 		0C992C3B2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */; };
+		0C992C3D2B53ADF300ACC129 /* Array+Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */; };
+		0C992C3F2B53AEF700ACC129 /* OperationSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C3E2B53AEF700ACC129 /* OperationSearchService.swift */; };
+		0C992C412B53B91A00ACC129 /* ExposurePagedEraOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C402B53B91A00ACC129 /* ExposurePagedEraOperationFactory.swift */; };
 		0C9951CA2AE2ABA400B65615 /* AssetListBannerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */; };
 		0C9951CF2AE2BAE500B65615 /* PromotionBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */; };
 		0C9951D32AE2DB0200B65615 /* PromotionViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */; };
@@ -4462,6 +4465,9 @@
 		0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorsUpdating.swift; sourceTree = "<group>"; };
 		0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraStakersRemoteKey.swift; sourceTree = "<group>"; };
 		0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraStakersPagedRemoteKey.swift; sourceTree = "<group>"; };
+		0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Operations.swift"; sourceTree = "<group>"; };
+		0C992C3E2B53AEF700ACC129 /* OperationSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationSearchService.swift; sourceTree = "<group>"; };
+		0C992C402B53B91A00ACC129 /* ExposurePagedEraOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExposurePagedEraOperationFactory.swift; sourceTree = "<group>"; };
 		0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBannerCell.swift; sourceTree = "<group>"; };
 		0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotionBannerView.swift; sourceTree = "<group>"; };
 		0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotionViewModelFactory.swift; sourceTree = "<group>"; };
@@ -14239,6 +14245,7 @@
 				0C7C9B9A2AC16D7B009A0362 /* NSAttributedString+Helpers.swift */,
 				0C13DFCE2AF8ADB300E5F355 /* BigUInt+Operation.swift */,
 				0C13DFDE2AFA89EF00E5F355 /* Decimal+Percents.swift */,
+				0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -14277,6 +14284,7 @@
 				840D8917262429C900AB231B /* LocalStorageRequestFactory.swift */,
 				840D891C26242AE500AB231B /* StorageRequest.swift */,
 				84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */,
+				0C992C3E2B53AEF700ACC129 /* OperationSearchService.swift */,
 				AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */,
 				84CC128527B8336900C8E6AB /* AsyncClosureOperation.swift */,
 				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
@@ -19616,6 +19624,7 @@
 				847119BF262EF3BD00716580 /* PayoutValidatorsFactoryProtocol.swift */,
 				847119CC262EF61F00716580 /* PayoutValidatorForValidatorFactory.swift */,
 				84415BC926E783EB005A3683 /* PayoutValidatorsForNominatorFactory.swift */,
+				0C992C402B53B91A00ACC129 /* ExposurePagedEraOperationFactory.swift */,
 			);
 			path = PayoutRewardsService;
 			sourceTree = "<group>";
@@ -20574,6 +20583,7 @@
 				840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */,
 				883DB178297A411300EFB7D8 /* AddDelegationStyles.swift in Sources */,
 				777BD86429F979DA004969A2 /* SelectableFilterCell.swift in Sources */,
+				0C992C3F2B53AEF700ACC129 /* OperationSearchService.swift in Sources */,
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				849067CA299BCCB700B2983E /* GovernanceRevokeDelegationConfirmPresenter+Update.swift in Sources */,
@@ -21856,6 +21866,7 @@
 				84B73ADA279D265A0071AE16 /* AssetsSubscriptionHandlingFactory.swift in Sources */,
 				AE7129BC2608C069000AA3F5 /* NetworkStakingInfoOperationFactory.swift in Sources */,
 				8413C4A42A0242B6001E190A /* WalletConnectSession.swift in Sources */,
+				0C992C3D2B53ADF300ACC129 /* Array+Operations.swift in Sources */,
 				842A736827DB4883006EE1EA /* OperationTransferModel.swift in Sources */,
 				8881043A29EBDC48000FA9BC /* EquilibriumTokenExtras.swift in Sources */,
 				AE2C84E425EF98C700986716 /* ValidatorInfoViewController.swift in Sources */,
@@ -23734,6 +23745,7 @@
 				0C7945BB2ABB2251001C07CA /* XTokens.swift in Sources */,
 				0CAC01572A52E1960069413E /* AssetListPresenterHelpers.swift in Sources */,
 				26533668754DB6C1DF2425AB /* TokenManageSingleViewFactory.swift in Sources */,
+				0C992C412B53B91A00ACC129 /* ExposurePagedEraOperationFactory.swift in Sources */,
 				3187CF2169E709F25DFB4C0D /* TokensAddSelectNetworkProtocols.swift in Sources */,
 				DB37394BD4880A81E22C7172 /* TokensAddSelectNetworkWireframe.swift in Sources */,
 				541C2290F9E2D4D11270F39A /* TokensAddSelectNetworkPresenter.swift in Sources */,
