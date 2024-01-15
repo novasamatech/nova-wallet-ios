@@ -51,10 +51,10 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>?
 
-    func subscribeProxies(
-        for accountId: AccountId,
+    func subscribeStashItemProvider(
+        for address: AccountAddress,
         chainId: ChainModel.Id
-    ) -> AnyDataProvider<DecodedProxyDefinition>?
+    ) -> StreamableProvider<StashItem>?
 }
 
 extension StakingLocalStorageSubscriber {
@@ -649,53 +649,6 @@ extension StakingLocalStorageSubscriber {
             executing: changesClosure,
             failing: failureClosure,
             options: StreamableProviderObserverOptions.substrateSource()
-        )
-
-        return provider
-    }
-
-    func subscribeProxies(
-        for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) -> AnyDataProvider<DecodedProxyDefinition>? {
-        guard let provider = try? stakingLocalSubscriptionFactory.getProxyListProvider(
-            for: accountId,
-            chainId: chainId
-        ) else {
-            return nil
-        }
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<DecodedProxyDefinition>]) in
-            let proxies = changes.reduceToLastChange()?.item?.filterStakingProxy()
-
-            self?.stakingLocalSubscriptionHandler.handleProxies(
-                result: .success(proxies),
-                accountId: accountId,
-                chainId: chainId
-            )
-            return
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.stakingLocalSubscriptionHandler.handleProxies(
-                result: .failure(error),
-                accountId: accountId,
-                chainId: chainId
-            )
-            return
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        provider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
         )
 
         return provider

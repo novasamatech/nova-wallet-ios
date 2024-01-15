@@ -20,10 +20,11 @@ final class ProxySyncService {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
-    let userDataStorageFacade: StorageFacadeProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
     let chainsFilter: (ChainModel) -> Bool
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let walletUpdateMediator: WalletUpdateMediating
+    let eventCenter: EventCenterProtocol
 
     private(set) var isActive: Bool = false
 
@@ -34,10 +35,11 @@ final class ProxySyncService {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        userDataStorageFacade: StorageFacadeProtocol,
         proxyOperationFactory: ProxyOperationFactoryProtocol,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        walletUpdateMediator: WalletUpdateMediating,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
+        eventCenter: EventCenterProtocol = EventCenter.shared,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.proxy.sync",
             qos: .userInitiated,
@@ -47,11 +49,12 @@ final class ProxySyncService {
         chainsFilter: ((ChainModel) -> Bool)? = nil
     ) {
         self.chainRegistry = chainRegistry
-        self.userDataStorageFacade = userDataStorageFacade
         self.proxyOperationFactory = proxyOperationFactory
+        self.walletUpdateMediator = walletUpdateMediator
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
+        self.eventCenter = eventCenter
         self.metaAccountsRepository = metaAccountsRepository
         self.chainsFilter = chainsFilter ?? { $0.hasProxy }
         subscribeChains()
@@ -101,10 +104,11 @@ final class ProxySyncService {
 
         let service = ChainProxySyncService(
             chainModel: chain,
+            walletUpdateMediator: walletUpdateMediator,
             metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
             proxyOperationFactory: proxyOperationFactory,
-            eventCenter: EventCenter.shared,
+            eventCenter: eventCenter,
             operationQueue: operationQueue,
             workingQueue: workingQueue
         )
@@ -215,37 +219,43 @@ extension ProxySyncService: ProxySyncServiceProtocol {
         }
         proxiesOperation.addDependency(walletsOperation)
 
-        let saveOperation = metaAccountsRepository.saveOperation({
+        let walletUpdateWrapper = walletUpdateMediator.saveChanges {
             let proxies = try proxiesOperation.extractNoCancellableResultData()
-            return proxies.map {
+
+            let updated = proxies.map {
                 $0.key.replacingInfo($0.key.info.replacingChainAccount(
                     $0.value.replacingProxyStatus(from: .new, to: .active)
                 ))
             }.compactMap { $0 }
-        }, {
-            let proxies = try proxiesOperation.extractNoCancellableResultData()
-            return proxies
-                .filter { $0.value.proxy?.status == .revoked }
-                .map(\.key.identifier)
-                .compactMap { $0 }
-        })
-        saveOperation.addDependency(proxiesOperation)
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: [proxiesOperation, walletsOperation]
+            let removed = proxies
+                .filter { $0.value.proxy?.status == .revoked }
+                .map(\.key)
+
+            return SyncChanges(newOrUpdatedItems: updated, removedItems: removed)
+        }
+
+        walletUpdateWrapper.addDependency(operations: [proxiesOperation])
+
+        let compoundWrapper = CompoundOperationWrapper(
+            targetOperation: walletUpdateWrapper.targetOperation,
+            dependencies: [walletsOperation, proxiesOperation] + walletUpdateWrapper.dependencies
         )
 
         execute(
-            wrapper: wrapper,
+            wrapper: compoundWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
-        ) { [weak self] result in
+        ) { result in
             switch result {
-            case .success:
-                self?.logger.debug("Proxy statuses were updated")
+            case let .success(update):
+                if update.isWalletSwitched {
+                    self.eventCenter.notify(with: SelectedAccountChanged())
+                }
+
+                self.logger.debug("Proxy statuses updated")
             case let .failure(error):
-                self?.logger.error(error.localizedDescription)
+                self.logger.error("Did fail to update proxy statuses: \(error)")
             }
         }
     }

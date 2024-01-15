@@ -183,11 +183,17 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let walletUpdateMediator = WalletUpdateMediator(
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            repository: metaAccountsRepository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let proxySyncService = ProxySyncService(
             chainRegistry: chainRegistry,
-            userDataStorageFacade: userDataStorageFacade,
             proxyOperationFactory: ProxyOperationFactory(),
-            metaAccountsRepository: metaAccountsRepository
+            metaAccountsRepository: metaAccountsRepository,
+            walletUpdateMediator: walletUpdateMediator
         )
 
         let walletNotificationService = WalletNotificationService(

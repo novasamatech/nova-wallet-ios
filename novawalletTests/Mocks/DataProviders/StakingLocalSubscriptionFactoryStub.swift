@@ -20,7 +20,8 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let totalIssuance: BigUInt?
     let stashItem: StashItem?
     let storageFacade: StorageFacadeProtocol
-
+    let proxy: ProxyDefinition?
+    
     init(
         minNominatorBond: BigUInt? = nil,
         counterForNominators: UInt32? = nil,
@@ -36,6 +37,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         totalIssuance: BigUInt? = nil,
         totalReward: TotalRewardItem? = nil,
         stashItem: StashItem? = nil,
+        proxy: ProxyDefinition? = nil,
         storageFacade: StorageFacadeProtocol = SubstrateStorageTestFacade()
     ) {
         self.minNominatorBond = minNominatorBond
@@ -52,6 +54,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         self.totalReward = totalReward
         self.totalIssuance = totalIssuance
         self.stashItem = stashItem
+        self.proxy = proxy
         self.storageFacade = storageFacade
     }
 
@@ -331,6 +334,29 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         }
 
         return provider
+    }
+    
+    func getProxyListProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedProxyDefinition> {
+        let localIdentifierFactory = LocalStorageKeyFactory()
+
+        let proxyModel: DecodedProxyDefinition = try {
+            let localKey = try localIdentifierFactory.createFromStoragePath(
+                Proxy.proxyList,
+                accountId: accountId,
+                chainId: chainId
+            )
+
+            if let proxy = proxy {
+                return DecodedProxyDefinition(identifier: localKey, item: proxy)
+            } else {
+                return DecodedProxyDefinition(identifier: localKey, item: nil)
+            }
+        }()
+
+        return AnyDataProvider(DataProviderStub(models: [proxyModel]))
     }
 
     private func getDataProviderStub<T: Decodable & Equatable>(
