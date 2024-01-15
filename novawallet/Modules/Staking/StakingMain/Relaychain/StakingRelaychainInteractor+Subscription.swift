@@ -26,7 +26,11 @@ extension StakingRelaychainInteractor {
             nominatorProvider = subscribeNomination(for: stashAccountId, chainId: chainId)
             validatorProvider = subscribeValidator(for: stashAccountId, chainId: chainId)
             payeeProvider = subscribePayee(for: stashAccountId, chainId: chainId)
-            proxyProvider = subscribeProxies(for: stashAccountId, chainId: chainId)
+            proxyProvider = subscribeProxies(
+                for: stashAccountId,
+                chainId: chainId,
+                modifyInternalList: ProxyFilter.filteredStakingProxy
+            )
 
             performTotalRewardSubscription()
 
@@ -262,7 +266,9 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
             presenter?.didReceiveBagListScoreFactor(result: .failure(error))
         }
     }
+}
 
+extension StakingRelaychainInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
     func handleProxies(result: Result<ProxyDefinition?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
         presenter?.didReceiveProxy(result: result)
     }

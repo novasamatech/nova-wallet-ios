@@ -39,10 +39,16 @@ class DAppListTests: XCTestCase {
             storageFacade: storageFacade,
             operationQueue: operationQueue
         )
-
+        let streamableProviderFactory = SubstrateDataProviderFactory(
+            facade: SubstrateStorageTestFacade(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+        
         let mapper = DAppFavoriteMapper()
         let dappsFavoriteRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
+            chainRegistry: ChainRegistryProtocolStub(),
+            streamableProviderFactory: streamableProviderFactory,
             storageFacade: storageFacade,
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared

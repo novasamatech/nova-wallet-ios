@@ -43,6 +43,7 @@ final class StakingSharedStateFactory {
         let rewardCalculatorService: RewardCalculatorServiceProtocol
         let timeModel: StakingTimeModel
         let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+        let proxySubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     }
 
     struct NominationPoolsServices {
@@ -166,7 +167,8 @@ final class StakingSharedStateFactory {
             eraValidatorService: globalServices.eraValidatorService,
             rewardCalculatorService: globalServices.rewardCalculatorService,
             timeModel: globalServices.timeModel,
-            localSubscriptionFactory: globalServices.localSubscriptionFactory
+            localSubscriptionFactory: globalServices.localSubscriptionFactory,
+            proxySubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
         )
     }
 
@@ -260,6 +262,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             globalRemoteSubscriptionService: services.globalRemoteSubscriptionService,
             accountRemoteSubscriptionService: services.accountRemoteSubscriptionService,
             localSubscriptionFactory: services.localSubscriptionFactory,
+            proxyLocalSubscriptionFactory: services.proxySubscriptionFactory,
             eraValidatorService: services.eraValidatorService,
             rewardCalculatorService: services.rewardCalculatorService,
             timeModel: services.timeModel,

@@ -49,12 +49,6 @@ protocol StakingLocalSubscriptionHandler {
     func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId: ChainModel.Id)
 
     func handleCurrentEra(result: Result<EraIndex?, Error>, chainId: ChainModel.Id)
-
-    func handleProxies(
-        result: Result<ProxyDefinition?, Error>,
-        accountId: AccountId,
-        chainId: ChainModel.Id
-    )
 }
 
 extension StakingLocalSubscriptionHandler {
@@ -109,10 +103,4 @@ extension StakingLocalSubscriptionHandler {
     func handleActiveEra(result _: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {}
 
     func handleCurrentEra(result _: Result<EraIndex?, Error>, chainId _: ChainModel.Id) {}
-
-    func handleProxies(
-        result _: Result<ProxyDefinition?, Error>,
-        accountId _: AccountId,
-        chainId _: ChainModel.Id
-    ) {}
 }

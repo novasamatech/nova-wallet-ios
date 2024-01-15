@@ -44,8 +44,8 @@ struct ProxyDefinition: Decodable, Equatable {
     }
 }
 
-extension ProxyDefinition {
-    func filterStakingProxy() -> ProxyDefinition {
-        .init(definition: definition.filter { $0.proxyType.allowStaking })
+enum ProxyFilter {
+    static func filteredStakingProxy(from proxy: ProxyDefinition) -> ProxyDefinition {
+        ProxyDefinition(definition: proxy.definition.filter { $0.proxyType.allowStaking })
     }
 }
