@@ -169,7 +169,7 @@ extension StakingProxyBaseInteractor: StakingProxyBaseInteractorInputProtocol {
         }
 
         let call = callFactory.addProxy(
-            accountId: AccountId.empty,
+            accountId: AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize),
             type: .staking
         )
 
