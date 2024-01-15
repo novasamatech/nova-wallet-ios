@@ -161,7 +161,6 @@ extension StakingProxyBaseInteractor: StakingProxyBaseInteractorInputProtocol {
 
     func estimateFee() {
         guard
-            let stashAccountId = try? stashItem?.stash.toAccountId(),
             let extrinsicService = self.extrinsicService,
             let amount = StakingConstants.feeEstimation.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
@@ -170,7 +169,7 @@ extension StakingProxyBaseInteractor: StakingProxyBaseInteractorInputProtocol {
         }
 
         let call = callFactory.addProxy(
-            accountId: stashAccountId,
+            accountId: AccountId.empty,
             type: .staking
         )
 

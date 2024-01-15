@@ -62,7 +62,7 @@ protocol SubstrateCallFactoryProtocol {
         amount: BigUInt
     ) -> RuntimeCall<EquilibriumTokenTransfer>
 
-    func addProxy(accountId: AccountId, type: Proxy.ProxyType) -> RuntimeCall<Proxy.ProxyDefinition>
+    func addProxy(accountId: AccountId, type: Proxy.ProxyType) -> RuntimeCall<Proxy.AddProxyCall>
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
@@ -224,9 +224,9 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         }) ?? rebagCall.defaultRuntimeCall
     }
 
-    func addProxy(accountId: AccountId, type: Proxy.ProxyType) -> RuntimeCall<Proxy.ProxyDefinition> {
-        let proxyCall = Proxy.ProxyDefinition(
-            proxy: accountId,
+    func addProxy(accountId: AccountId, type: Proxy.ProxyType) -> RuntimeCall<Proxy.AddProxyCall> {
+        let proxyCall = Proxy.AddProxyCall(
+            proxy: .accoundId(accountId),
             proxyType: type,
             delay: 0
         )
