@@ -53,13 +53,19 @@ final class WalletManageViewFactory {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
 
+        let walletUpdateMediator = WalletUpdateMediator(
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            repository: repository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         return WalletManageInteractor(
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            repository: repository,
-            selectedWalletSettings: SelectedWalletSettings.shared,
+            walletUpdateMediator: walletUpdateMediator,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
     }
 }

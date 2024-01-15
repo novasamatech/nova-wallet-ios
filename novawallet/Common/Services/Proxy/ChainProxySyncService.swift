@@ -3,6 +3,7 @@ import RobinHood
 import BigInt
 
 final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning {
+    let walletUpdateMediator: WalletUpdateMediating
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let chainRegistry: ChainRegistryProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
@@ -18,6 +19,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
 
     init(
         chainModel: ChainModel,
+        walletUpdateMediator: WalletUpdateMediating,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         chainRegistry: ChainRegistryProtocol,
         proxyOperationFactory: ProxyOperationFactoryProtocol,
@@ -29,6 +31,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         self.chainRegistry = chainRegistry
         self.proxyOperationFactory = proxyOperationFactory
         self.operationQueue = operationQueue
+        self.walletUpdateMediator = walletUpdateMediator
         self.metaAccountsRepository = metaAccountsRepository
         self.workingQueue = workingQueue
         self.eventCenter = eventCenter
@@ -81,12 +84,15 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             chainModel: chainModel
         )
 
-        let saveOperation = saveOperation(dependingOn: changesOperation)
-        saveOperation.addDependency(changesOperation.targetOperation)
+        let updateWrapper = walletUpdateMediator.saveChanges {
+            try changesOperation.targetOperation.extractNoCancellableResultData()
+        }
+
+        updateWrapper.addDependency(wrapper: changesOperation)
 
         let compoundWrapper = CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: changesOperation.allOperations
+            targetOperation: updateWrapper.targetOperation,
+            dependencies: changesOperation.allOperations + updateWrapper.dependencies
         )
 
         executeCancellable(
@@ -97,8 +103,15 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case .success:
-                self?.eventCenter.notify(with: AccountsChanged(method: .automatically))
+            case let .success(update):
+                DispatchQueue.main.async {
+                    self?.eventCenter.notify(with: AccountsChanged(method: .automatically))
+
+                    if update.isWalletSwitched {
+                        self?.eventCenter.notify(with: SelectedAccountChanged())
+                    }
+                }
+
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.completeImmediate(error)
@@ -172,18 +185,6 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             [proxyListOperation, metaAccountsOperation]
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
-    }
-
-    private func saveOperation(
-        dependingOn updatingMetaAccountsOperation: CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>>
-    ) -> BaseOperation<Void> {
-        metaAccountsRepository.saveOperation({
-            let metaAccounts = try updatingMetaAccountsOperation.targetOperation.extractNoCancellableResultData()
-            return metaAccounts.newOrUpdatedItems
-        }, {
-            let metaAccounts = try updatingMetaAccountsOperation.targetOperation.extractNoCancellableResultData()
-            return metaAccounts.removedItems.map(\.identifier)
-        })
     }
 
     override func stopSyncUp() {
