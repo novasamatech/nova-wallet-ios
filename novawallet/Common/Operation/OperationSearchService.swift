@@ -1,8 +1,12 @@
 import Foundation
 import RobinHood
 
+/**
+ *   Class is designed to execute a binary search to find first parameter in the list for which
+ *   given statement holds. The result is nil if an element can't be found.
+ */
 final class OperationSearchService<P, R>: Longrunable {
-    typealias ResultType = P
+    typealias ResultType = P?
 
     let paramsClosure: () throws -> [P]
     let fetchFactory: (P) -> CompoundOperationWrapper<R>
@@ -31,25 +35,35 @@ final class OperationSearchService<P, R>: Longrunable {
         params: [P],
         start: Int,
         end: Int,
-        completionClosure: @escaping (Result<P, Error>) -> Void
+        completionClosure: @escaping (Result<P?, Error>) -> Void
     ) {
         switch result {
         case let .success(value):
             let evalResult = evalClosure(value)
-
             let midIndex = (start + end) / 2
+
+            guard start < end else {
+                if evalResult {
+                    completionClosure(.success(params[start]))
+                } else {
+                    completionClosure(.success(nil))
+                }
+
+                return
+            }
+
             if evalResult {
                 search(
                     for: params,
-                    start: midIndex + 1,
-                    end: end,
+                    start: start,
+                    end: midIndex,
                     completionClosure: completionClosure
                 )
             } else {
                 search(
                     for: params,
-                    start: start,
-                    end: midIndex,
+                    start: midIndex + 1,
+                    end: end,
                     completionClosure: completionClosure
                 )
             }
@@ -62,15 +76,10 @@ final class OperationSearchService<P, R>: Longrunable {
         for params: [P],
         start: Int,
         end: Int,
-        completionClosure: @escaping (Result<P, Error>) -> Void
+        completionClosure: @escaping (Result<P?, Error>) -> Void
     ) {
-        guard start < end else {
-            if start < params.count {
-                completionClosure(.success(params[start]))
-            } else {
-                completionClosure(.failure(CommonError.dataCorruption))
-            }
-
+        guard start <= end else {
+            completionClosure(.success(nil))
             return
         }
 
@@ -94,7 +103,7 @@ final class OperationSearchService<P, R>: Longrunable {
         }
     }
 
-    func start(with completionClosure: @escaping (Result<P, Error>) -> Void) {
+    func start(with completionClosure: @escaping (Result<P?, Error>) -> Void) {
         do {
             let params = try paramsClosure()
 

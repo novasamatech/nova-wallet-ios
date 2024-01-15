@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-protocol ExposurePageEraOperationFactoryProtocol {
+protocol ExposurePagedEraOperationFactoryProtocol {
     func createWrapper(
         for eraRangeClosure: @escaping () throws -> EraRange,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
@@ -10,20 +10,19 @@ protocol ExposurePageEraOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<EraIndex?>
 }
 
-final class ExposurePageEraOperationFactory {
+final class ExposurePagedEraOperationFactory {
     let operationQueue: OperationQueue
 
     init(operationQueue: OperationQueue) {
         self.operationQueue = operationQueue
     }
-}
 
-extension ExposurePageEraOperationFactory: ExposurePageEraOperationFactoryProtocol {
-    func createWrapper(
-        for eraRangeClosure: @escaping () throws -> EraRange,
+    private func createSearchWrapper(
+        for storagePath: StorageCodingPath,
+        eraRangeClosure: @escaping () throws -> EraRange,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<EraIndex> {
+    ) -> CompoundOperationWrapper<EraIndex?> {
         let searchService = OperationSearchService<EraIndex, UInt?>(
             paramsClosure: {
                 let eraRange = try eraRangeClosure()
@@ -34,7 +33,7 @@ extension ExposurePageEraOperationFactory: ExposurePageEraOperationFactoryProtoc
                     let codingFactory = try codingFactoryClosure()
 
                     let encodingOperation = MapKeyEncodingOperation(
-                        path: Staking.eraStakersOverview,
+                        path: storagePath,
                         storageKeyFactory: StorageKeyFactory(),
                         keyParams: [StringScaleMapper(value: eraIndex)]
                     )
@@ -70,7 +69,7 @@ extension ExposurePageEraOperationFactory: ExposurePageEraOperationFactoryProtoc
             },
             evalClosure: { optStorageSize in
                 let storageSize = optStorageSize ?? 0
-                return storageSize == 0
+                return storageSize > 0
             },
             operationQueue: operationQueue
         )
@@ -78,5 +77,49 @@ extension ExposurePageEraOperationFactory: ExposurePageEraOperationFactoryProtoc
         let operation = LongrunOperation(longrun: AnyLongrun(longrun: searchService))
 
         return CompoundOperationWrapper(targetOperation: operation)
+    }
+}
+
+extension ExposurePagedEraOperationFactory: ExposurePagedEraOperationFactoryProtocol {
+    func createWrapper(
+        for eraRangeClosure: @escaping () throws -> EraRange,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<EraIndex?> {
+        let searchOperation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let codingFactory = try codingFactoryClosure()
+            let eraRange = try eraRangeClosure()
+
+            let storagePath = Staking.eraStakersOverview
+
+            if eraRange.start <= eraRange.end, codingFactory.hasStorage(for: storagePath) {
+                let wrapper = self.createSearchWrapper(
+                    for: storagePath,
+                    eraRangeClosure: eraRangeClosure,
+                    codingFactoryClosure: codingFactoryClosure,
+                    connection: connection
+                )
+
+                return [wrapper]
+            } else {
+                let wrapper = CompoundOperationWrapper<EraIndex?>.createWithResult(nil)
+
+                return [wrapper]
+            }
+        }.longrunOperation()
+
+        let mappingOperation = ClosureOperation<EraIndex?> {
+            guard let index = try searchOperation.extractNoCancellableResultData().first else {
+                return nil
+            }
+
+            return index
+        }
+
+        mappingOperation.addDependency(searchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [searchOperation])
     }
 }

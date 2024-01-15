@@ -61,7 +61,8 @@ struct WestendStub {
                                    total: BigUInt(1e+12),
                                    active: BigUInt(1e+12),
                                    unlocking: [],
-                                   claimedRewards: [])
+                                   claimedRewards: [],
+                                 legacyClaimedRewards: nil)
 
         return DecodedLedgerInfo(identifier: address, item: info)
     }()
@@ -125,7 +126,7 @@ struct WestendStub {
 
     static let eraValidators: [EraValidatorInfo] = {
         let validator = EraValidatorInfo(accountId: Data(repeating: 0, count: 32),
-                                         exposure: ValidatorExposure(total: BigUInt(1e+13),
+                                         exposure: Staking.ValidatorExposure(total: BigUInt(1e+13),
                                                                      own: BigUInt(1e+13),
                                                                      others: []),
                                          prefs: ValidatorPrefs(commission: BigUInt(1e+8), blocked: false))

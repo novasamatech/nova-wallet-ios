@@ -96,7 +96,8 @@ class StakingRedeemTests: XCTestCase {
             unlocking: [
                 UnlockChunk(value: BigUInt(2e+12), era: 5)
             ],
-            claimedRewards: []
+            claimedRewards: [],
+            legacyClaimedRewards: nil
         )
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(

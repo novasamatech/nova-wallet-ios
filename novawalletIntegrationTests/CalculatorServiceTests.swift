@@ -361,10 +361,10 @@ class CalculatorServiceTests: XCTestCase {
 
     private func createLocalValidatorsWrapper(repository: AnyDataProviderRepository<ChainStorageItem>,
                                               codingFactory: RuntimeCoderFactoryProtocol)
-    -> CompoundOperationWrapper<[(Data, ValidatorExposure)]> {
+    -> CompoundOperationWrapper<[(Data, Staking.ValidatorExposure)]> {
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        let decodingOperation = StorageDecodingListOperation<ValidatorExposure>(path: .erasStakers)
+        let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: .erasStakers)
         decodingOperation.codingFactory = codingFactory
 
         decodingOperation.configurationBlock = {
@@ -382,7 +382,7 @@ class CalculatorServiceTests: XCTestCase {
 
         decodingOperation.addDependency(fetchOperation)
 
-        let mapOperation: BaseOperation<[(Data, ValidatorExposure)]> = ClosureOperation {
+        let mapOperation: BaseOperation<[(Data, Staking.ValidatorExposure)]> = ClosureOperation {
             let identifiers = try fetchOperation.extractNoCancellableResultData().map { item in
                 try Data(hexString: item.identifier).getAccountIdFromKey()
             }
@@ -451,8 +451,8 @@ class CalculatorServiceTests: XCTestCase {
     private func decodeEncodedValidators(_ validators: [ChainStorageItem],
                                          codingFactory: RuntimeCoderFactoryProtocol,
                                          operationQueue: OperationQueue = OperationQueue()) throws
-    -> [ValidatorExposure] {
-        let decodingOperation = StorageDecodingListOperation<ValidatorExposure>(path: .erasStakers)
+    -> [Staking.ValidatorExposure] {
+        let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: .erasStakers)
         decodingOperation.codingFactory = codingFactory
         decodingOperation.dataList = validators.map { $0.data }
 
@@ -602,16 +602,20 @@ class CalculatorServiceTests: XCTestCase {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
-
-        let validatorService = try serviceFactory.createEraValidatorService(for: chainId)
-        validatorService.setup()
-
+        
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
             operationManager: OperationManager(),
             logger: Logger.shared
         )
+
+        let validatorService = try serviceFactory.createEraValidatorService(
+            for: chainId,
+            localSubscriptionFactory: stakingLocalSubscriptionFactory
+        )
+        
+        validatorService.setup()
 
         let calculatorService = try serviceFactory.createRewardCalculatorService(
             for: chainAsset,
