@@ -50,6 +50,11 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
         api: LocalChainExternalApi,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>?
+
+    func subscribeStashItemProvider(
+        for address: AccountAddress,
+        chainId: ChainModel.Id
+    ) -> StreamableProvider<StashItem>?
 }
 
 extension StakingLocalStorageSubscriber {
