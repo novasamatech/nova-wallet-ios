@@ -6,6 +6,7 @@ extension Staking {
     struct ValidatorOverview: Decodable {
         @StringCodable var total: BigUInt
         @StringCodable var own: BigUInt
+        @StringCodable var pageCount: ValidatorPage
     }
 
     struct ValidatorExposurePage: Decodable {
@@ -22,4 +23,6 @@ extension Staking {
         @BytesCodable var who: AccountId
         @StringCodable var value: BigUInt
     }
+
+    typealias ValidatorPage = UInt32
 }

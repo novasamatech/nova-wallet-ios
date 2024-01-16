@@ -8,6 +8,9 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
     let selectedAccountAddress: String
     let chainFormat: ChainFormat
     let validatorsResolutionFactory: PayoutValidatorsFactoryProtocol
+    let erasStakersPagedSearchFactory: ExposurePagedEraOperationFactoryProtocol
+    let exposureFactoryFacade: StakingValidatorExposureFacadeProtocol
+    let unclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
     let engine: JSONRPCEngine
@@ -20,6 +23,9 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
         selectedAccountAddress: String,
         chainFormat: ChainFormat,
         validatorsResolutionFactory: PayoutValidatorsFactoryProtocol,
+        erasStakersPagedSearchFactory: ExposurePagedEraOperationFactoryProtocol,
+        exposureFactoryFacade: StakingValidatorExposureFacadeProtocol,
+        unclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
         engine: JSONRPCEngine,
@@ -31,6 +37,9 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
         self.selectedAccountAddress = selectedAccountAddress
         self.chainFormat = chainFormat
         self.validatorsResolutionFactory = validatorsResolutionFactory
+        self.erasStakersPagedSearchFactory = erasStakersPagedSearchFactory
+        self.exposureFactoryFacade = exposureFactoryFacade
+        self.unclaimedRewardsFacade = unclaimedRewardsFacade
         self.runtimeCodingService = runtimeCodingService
         self.storageRequestFactory = storageRequestFactory
         self.engine = engine
@@ -40,6 +49,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
         self.logger = logger
     }
 
+    // swiftlint:disable:next function_body_length
     func fetchPayoutsOperationWrapper() -> CompoundOperationWrapper<PayoutsInfo> {
         do {
             let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
@@ -50,142 +60,91 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
 
             historyRangeWrapper.allOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
-            let validatorsWrapper = validatorsResolutionFactory
-                .createResolutionOperation(for: selectedAccountAddress) {
-                    try historyRangeWrapper.targetOperation.extractNoCancellableResultData().eraRange
-                }
+            let validatorsWrapper = validatorsResolutionFactory.createResolutionOperation(for: selectedAccountAddress) {
+                try historyRangeWrapper.targetOperation.extractNoCancellableResultData().eraRange
+            }
 
             validatorsWrapper.addDependency(wrapper: historyRangeWrapper)
 
-            let validatorsClosure: () throws -> [AccountId] = {
-                let validators = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
-                    .map(\.validator)
-
-                return validators.distinct()
-            }
-
-            let controllersWrapper: CompoundOperationWrapper<[Data]> = try createFetchAndMapOperation(
-                dependingOn: validatorsClosure,
-                codingFactoryOperation: codingFactoryOperation,
-                path: .controller
+            let pagedExposuresSearchWrapper = erasStakersPagedSearchFactory.createWrapper(
+                for: { try historyRangeWrapper.targetOperation.extractNoCancellableResultData().eraRange },
+                codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
+                connection: engine
             )
 
-            controllersWrapper.allOperations
-                .forEach {
-                    $0.addDependency(validatorsWrapper.targetOperation)
-                    $0.addDependency(codingFactoryOperation)
-                }
+            pagedExposuresSearchWrapper.addDependency(operations: [codingFactoryOperation])
+            pagedExposuresSearchWrapper.addDependency(wrapper: historyRangeWrapper)
 
-            let controllersClosure: () throws -> [AccountId] = {
-                try controllersWrapper.targetOperation.extractNoCancellableResultData()
-            }
-
-            let ledgerInfos: CompoundOperationWrapper<[StakingLedger]> =
-                try createFetchAndMapOperation(
-                    dependingOn: controllersClosure,
-                    codingFactoryOperation: codingFactoryOperation,
-                    path: .stakingLedger
-                )
-
-            ledgerInfos.allOperations
-                .forEach { $0.addDependency(controllersWrapper.targetOperation) }
-
-            let unclaimedErasByStashOperation = try createUnclaimedEraByStashOperation(
-                ledgerInfoOperation: ledgerInfos.targetOperation,
-                historyRangeOperation: historyRangeWrapper.targetOperation
+            let exposuresWrapper = exposureFactoryFacade.createWrapper(
+                dependingOn: { try validatorsWrapper.targetOperation.extractNoCancellableResultData() },
+                exposurePagedEra: { try pagedExposuresSearchWrapper.targetOperation.extractNoCancellableResultData() },
+                codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
+                connection: engine
             )
 
-            unclaimedErasByStashOperation.addDependency(ledgerInfos.targetOperation)
-            unclaimedErasByStashOperation.addDependency(historyRangeWrapper.targetOperation)
+            exposuresWrapper.addDependency(wrapper: validatorsWrapper)
+            exposuresWrapper.addDependency(wrapper: pagedExposuresSearchWrapper)
+
+            let selectedAccountId = try selectedAccountAddress.toAccountId(using: chainFormat)
+            let unclaimedRewardsWrapper = unclaimedRewardsFacade.createWrapper(
+                for: selectedAccountId,
+                validatorsClosure: { try exposuresWrapper.targetOperation.extractNoCancellableResultData() },
+                exposurePagedEra: { try pagedExposuresSearchWrapper.targetOperation.extractNoCancellableResultData() },
+                codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
+                connection: engine
+            )
+
+            unclaimedRewardsWrapper.addDependency(wrapper: exposuresWrapper)
 
             let erasRewardDistributionWrapper = try createErasRewardDistributionOperationWrapper(
-                dependingOn: unclaimedErasByStashOperation,
+                dependingOn: { try unclaimedRewardsWrapper.targetOperation.extractNoCancellableResultData() },
                 engine: engine,
                 codingFactoryOperation: codingFactoryOperation
             )
 
-            erasRewardDistributionWrapper.allOperations.forEach {
-                $0.addDependency(unclaimedErasByStashOperation)
-            }
+            erasRewardDistributionWrapper.addDependency(wrapper: unclaimedRewardsWrapper)
 
-            let exposuresByEraWrapper: CompoundOperationWrapper<[EraIndex: [Data: Staking.ValidatorExposure]]> =
-                try createCreateHistoryByEraAccountIdOperation(
-                    dependingOn: unclaimedErasByStashOperation,
-                    codingFactoryOperation: codingFactoryOperation,
-                    path: .validatorExposureClipped
-                )
-
-            exposuresByEraWrapper.allOperations
-                .forEach { $0.addDependency(unclaimedErasByStashOperation) }
-
-            let prefsByEraWrapper: CompoundOperationWrapper<[EraIndex: [Data: ValidatorPrefs]]> =
-                try createCreateHistoryByEraAccountIdOperation(
-                    dependingOn: unclaimedErasByStashOperation,
-                    codingFactoryOperation: codingFactoryOperation,
-                    path: .erasPrefs
-                )
-
-            prefsByEraWrapper.allOperations
-                .forEach { $0.addDependency(unclaimedErasByStashOperation) }
-
-            let eraInfoOperation = createEraValidatorsInfoOperation(
-                dependingOn: exposuresByEraWrapper.targetOperation,
-                dependingOn: prefsByEraWrapper.targetOperation
+            let prefsByEraWrapper = try createValidatorPrefsWrapper(
+                dependingOn: { try unclaimedRewardsWrapper.targetOperation.extractNoCancellableResultData() },
+                codingFactoryOperation: codingFactoryOperation
             )
 
-            exposuresByEraWrapper.allOperations.forEach { eraInfoOperation.addDependency($0) }
-            prefsByEraWrapper.allOperations.forEach { eraInfoOperation.addDependency($0) }
+            prefsByEraWrapper.addDependency(wrapper: unclaimedRewardsWrapper)
 
-            let identityWrapper = createIdentityFetchOperation(
-                dependingOn: eraInfoOperation
+            let identityWrapper = identityOperationFactory.createIdentityWrapper(
+                for: {
+                    try unclaimedRewardsWrapper.targetOperation.extractNoCancellableResultData()
+                        .map(\.accountId)
+                        .distinct()
+                },
+                engine: engine,
+                runtimeService: runtimeCodingService,
+                chainFormat: chainFormat
             )
 
-            identityWrapper.allOperations.forEach { $0.addDependency(eraInfoOperation) }
+            identityWrapper.addDependency(wrapper: unclaimedRewardsWrapper)
 
             let payoutOperation = try calculatePayouts(
                 for: payoutInfoFactory,
-                dependingOn: eraInfoOperation,
+                eraValidatorsOperation: exposuresWrapper.targetOperation,
+                unclaimedRewardsOperation: unclaimedRewardsWrapper.targetOperation,
+                prefsOperation: prefsByEraWrapper.targetOperation,
                 erasRewardOperation: erasRewardDistributionWrapper.targetOperation,
                 historyRangeOperation: historyRangeWrapper.targetOperation,
                 identityOperation: identityWrapper.targetOperation
             )
 
-            payoutOperation.addDependency(eraInfoOperation)
-            payoutOperation.addDependency(identityWrapper.targetOperation)
-            payoutOperation.addDependency(erasRewardDistributionWrapper.targetOperation)
-            payoutOperation.addDependency(historyRangeWrapper.targetOperation)
+            let helperOperations = [codingFactoryOperation] + historyRangeWrapper.allOperations +
+                pagedExposuresSearchWrapper.allOperations
 
-            let overviewOperations: [Operation] = {
-                var array = [Operation]()
-                array.append(contentsOf: historyRangeWrapper.allOperations)
-                array.append(contentsOf: erasRewardDistributionWrapper.allOperations)
-                array.append(codingFactoryOperation)
-                return array
-            }()
-            let validatorsResolutionOperations: [Operation] = {
-                var array = [Operation]()
-                array.append(contentsOf: validatorsWrapper.allOperations)
-                array.append(contentsOf: controllersWrapper.allOperations)
-                array.append(contentsOf: ledgerInfos.allOperations)
-                array.append(unclaimedErasByStashOperation)
-                return array
-            }()
-            let validatorsAndEraInfoOperations: [Operation] = {
-                var array = [Operation]()
-                array.append(contentsOf: exposuresByEraWrapper.allOperations)
-                array.append(contentsOf: prefsByEraWrapper.allOperations)
-                array.append(contentsOf: identityWrapper.allOperations)
-                array.append(eraInfoOperation)
-                return array
-            }()
+            let rewardsAndValidatorOperations = unclaimedRewardsWrapper.allOperations +
+                erasRewardDistributionWrapper.allOperations + prefsByEraWrapper.allOperations
 
-            let dependencies = overviewOperations + validatorsResolutionOperations
-                + validatorsAndEraInfoOperations
+            let dependencies = helperOperations + rewardsAndValidatorOperations + identityWrapper.allOperations
 
-            return CompoundOperationWrapper(
-                targetOperation: payoutOperation,
-                dependencies: dependencies
-            )
+            dependencies.forEach { payoutOperation.addDependency($0) }
+
+            return CompoundOperationWrapper(targetOperation: payoutOperation, dependencies: dependencies)
 
         } catch {
             return CompoundOperationWrapper.createWithError(error)

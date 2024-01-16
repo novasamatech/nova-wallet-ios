@@ -98,10 +98,6 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "Staking", itemName: "ErasRewardPoints")
     }
 
-    static var validatorExposureClipped: StorageCodingPath {
-        StorageCodingPath(moduleName: "Staking", itemName: "ErasStakersClipped")
-    }
-
     static var eraStartSessionIndex: StorageCodingPath {
         StorageCodingPath(moduleName: "Staking", itemName: "ErasStartSessionIndex")
     }
