@@ -133,9 +133,9 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
             )
 
             let helperOperations = [codingFactoryOperation] + historyRangeWrapper.allOperations +
-                pagedExposuresSearchWrapper.allOperations
+                validatorsWrapper.allOperations + pagedExposuresSearchWrapper.allOperations
 
-            let rewardsAndValidatorOperations = unclaimedRewardsWrapper.allOperations +
+            let rewardsAndValidatorOperations = exposuresWrapper.allOperations + unclaimedRewardsWrapper.allOperations +
                 erasRewardDistributionWrapper.allOperations + prefsByEraWrapper.allOperations
 
             let dependencies = helperOperations + rewardsAndValidatorOperations + identityWrapper.allOperations

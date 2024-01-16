@@ -35,7 +35,7 @@ final class ValidatorOperationFactory {
         runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
         slashDefer: BaseOperation<UInt32>
     ) -> UnappliedSlashesWrapper {
-        let path = StorageCodingPath.unappliedSlashes
+        let path = Staking.unappliedSlashes
 
         let keyParams: () throws -> [String] = {
             let activeEra = try activeEraClosure()
@@ -85,7 +85,7 @@ final class ValidatorOperationFactory {
                 engine: engine,
                 keyParams: { validatorIds },
                 factory: { try runtimeOperation.extractNoCancellableResultData() },
-                storagePath: .slashingSpans
+                storagePath: Staking.slashingSpans
             )
 
         slashingSpansWrapper.allOperations.forEach { $0.addDependency(runtimeOperation) }
@@ -175,7 +175,7 @@ final class ValidatorOperationFactory {
                 engine: engine,
                 keyParams: { accountIdList },
                 factory: { try runtimeFetchOperation.extractNoCancellableResultData() },
-                storagePath: .validatorPrefs
+                storagePath: Staking.validatorPrefs
             )
 
         fetchOperation.allOperations.forEach { $0.addDependency(runtimeFetchOperation) }

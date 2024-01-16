@@ -81,7 +81,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     private func subscribeControllerResolution(for accountId: AccountId) {
         let controllerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .controller,
+                storagePath: Staking.controller,
                 localKey: ""
             ) {
                 BytesCodable(wrappedValue: accountId)
@@ -91,7 +91,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
         let ledgerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .stakingLedger,
+                storagePath: Staking.stakingLedger,
                 localKey: ""
             ) {
                 BytesCodable(wrappedValue: accountId)
@@ -158,14 +158,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             let localKeyFactory = LocalStorageKeyFactory()
 
             let ledgerLocalKey = try localKeyFactory.createFromStoragePath(
-                .stakingLedger,
+                Staking.stakingLedger,
                 accountId: controller,
                 chainId: chainAsset.chain.chainId
             )
 
             let ledgerRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .stakingLedger,
+                    storagePath: Staking.stakingLedger,
                     localKey: ledgerLocalKey
                 ) {
                     BytesCodable(wrappedValue: controller)
@@ -174,14 +174,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             )
 
             let nominationLocalKey = try localKeyFactory.createFromStoragePath(
-                .nominators,
+                Staking.nominators,
                 accountId: stash,
                 chainId: chainAsset.chain.chainId
             )
 
             let nominationRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .nominators,
+                    storagePath: Staking.nominators,
                     localKey: nominationLocalKey
                 ) {
                     BytesCodable(wrappedValue: stash)
@@ -190,14 +190,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             )
 
             let validatorLocalKey = try localKeyFactory.createFromStoragePath(
-                .validatorPrefs,
+                Staking.validatorPrefs,
                 accountId: stash,
                 chainId: chainAsset.chain.chainId
             )
 
             let validatorRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .validatorPrefs,
+                    storagePath: Staking.validatorPrefs,
                     localKey: validatorLocalKey
                 ) {
                     BytesCodable(wrappedValue: stash)
@@ -207,7 +207,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
             let eraRequest = BatchStorageSubscriptionRequest(
                 innerRequest: UnkeyedSubscriptionRequest(
-                    storagePath: .activeEra,
+                    storagePath: Staking.activeEra,
                     localKey: ""
                 ),
                 mappingKey: Multistaking.RelaychainStateChange.Key.era.rawValue

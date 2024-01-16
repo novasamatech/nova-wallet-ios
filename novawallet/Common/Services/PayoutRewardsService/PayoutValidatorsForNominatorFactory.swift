@@ -40,14 +40,13 @@ final class PayoutValidatorsForNominatorFactory {
             let validators: [ResolvedValidatorEra] = try nodes.compactMap { node in
                 guard
                     let address = node.address?.stringValue,
-                    let era = node.era?.stringValue,
-                    let eraIndex = EraIndex(era) else {
+                    let era = node.era?.unsignedIntValue else {
                     return nil
                 }
 
                 let accountId = try address.toAccountId()
 
-                return ResolvedValidatorEra(validator: accountId, era: eraIndex)
+                return ResolvedValidatorEra(validator: accountId, era: EraIndex(era))
             }
 
             return Set(validators)

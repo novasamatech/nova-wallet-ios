@@ -17,8 +17,8 @@ final class StakingClaimedRewardsOperationFactory {
         let fetchWrapper: CompoundOperationWrapper<[StorageResponse<[StringScaleMapper<Staking.ValidatorPage>]>]>
         fetchWrapper = requestFactory.queryItems(
             engine: connection,
-            keyParams1: { try validatorsClosure().map(\.era) },
-            keyParams2: { try validatorsClosure().map(\.accountId) },
+            keyParams1: { try validatorsClosure().map { StringScaleMapper(value: $0.era) } },
+            keyParams2: { try validatorsClosure().map { BytesCodable(wrappedValue: $0.accountId) } },
             factory: codingFactoryClosure,
             storagePath: Staking.claimedRewards
         )

@@ -109,7 +109,7 @@ extension StakingValidatorExposureFacade: StakingValidatorExposureFacadeProtocol
 
             if !pagedItems.isEmpty {
                 let wrapper = self.createEraStakersPagedWrapper(
-                    for: Array(eraStakersItems),
+                    for: Array(pagedItems),
                     codingFactoryClosure: codingFactoryClosure,
                     connection: connection
                 )

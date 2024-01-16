@@ -14,7 +14,7 @@ extension PayoutRewardsService {
                 engine: engine,
                 keys: { [try keyFactory.currentEra()] },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .currentEra
+                storagePath: Staking.currentEra
             )
 
         let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<ActiveEraInfo>]> =
@@ -22,7 +22,7 @@ extension PayoutRewardsService {
                 engine: engine,
                 keys: { [try keyFactory.activeEra()] },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .activeEra
+                storagePath: Staking.activeEra
             )
 
         let historyDepthWrapper = createHistoryDepthWrapper(
@@ -167,7 +167,7 @@ extension PayoutRewardsService {
                 dependingOn: erasOperation,
                 engine: engine,
                 codingFactoryOperation: codingFactoryOperation,
-                path: .totalValidatorReward
+                path: Staking.totalValidatorReward
             )
 
         totalRewardOperation.allOperations.forEach {
@@ -180,7 +180,7 @@ extension PayoutRewardsService {
                 dependingOn: erasOperation,
                 engine: engine,
                 codingFactoryOperation: codingFactoryOperation,
-                path: .rewardPointsPerValidator
+                path: Staking.rewardPointsPerValidator
             )
 
         validatorRewardPoints.allOperations.forEach {
@@ -232,7 +232,7 @@ extension PayoutRewardsService {
                 keyParams1: keyParams1,
                 keyParams2: keyParams2,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .validatorPrefs
+                storagePath: Staking.eraValidatorPrefs
             )
 
         let mergeOperation = ClosureOperation<[ResolvedValidatorEra: ValidatorPrefs]> {

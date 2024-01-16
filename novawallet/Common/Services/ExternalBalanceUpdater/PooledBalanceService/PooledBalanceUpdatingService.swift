@@ -165,7 +165,7 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
 
         let ledgerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .stakingLedger,
+                storagePath: Staking.stakingLedger,
                 localKey: .empty,
                 keyParamClosure: {
                     BytesCodable(wrappedValue: poolAccountId)

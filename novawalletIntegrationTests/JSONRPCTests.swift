@@ -327,7 +327,7 @@ class JSONRPCTests: XCTestCase {
             engine: connection,
             keys: keys,
             factory: factoryClosure,
-            storagePath: .erasStakers
+            storagePath: Staking.erasStakers
         )
 
         wrapper.allOperations.forEach { $0.addDependency(coderFactoryOperation) }
@@ -397,7 +397,7 @@ class JSONRPCTests: XCTestCase {
             keyParams1: keyParams1,
             keyParams2: keyParams2,
             factory: factoryClosure,
-            storagePath: .erasStakers
+            storagePath: Staking.erasStakers
         )
 
         wrapper.allOperations.forEach { $0.addDependency(coderFactoryOperation) }

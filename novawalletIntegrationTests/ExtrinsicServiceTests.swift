@@ -23,11 +23,11 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let closure: ExtrinsicBuilderClosure = { builder in
             try batch.forEach { payout in
-                let payoutCall = try callFactory.payout(
-                    validatorId: payout.validator,
+                let payoutCall = try Staking.PayoutCall.V1(
+                    validatorStash: payout.validator,
                     era: payout.era
-                )
-
+                ).runtimeCall()
+                
                 _ = try builder.adding(call: payoutCall)
             }
 
@@ -108,9 +108,9 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let feeExpectation = XCTestExpectation()
         let payouts = [
-            PayoutInfo(era: 1000, validator: selectedAccountId, reward: 100.0, identity: nil),
-            PayoutInfo(era: 1001, validator: selectedAccountId, reward: 100.0, identity: nil),
-            PayoutInfo(era: 1002, validator: selectedAccountId, reward: 100.0, identity: nil)
+            PayoutInfo(validator: selectedAccountId, era: 1000, pages: [0], reward: 100.0, identity: nil),
+            PayoutInfo(validator: selectedAccountId, era: 1001, pages: [0], reward: 100.0, identity: nil),
+            PayoutInfo(validator: selectedAccountId, era: 1002, pages: [0], reward: 100.0, identity: nil)
         ]
         let closure = createExtrinsicBuilderClosure(for: payouts)
         extrinsicService.estimateFee(closure, runningIn: .main) { result in

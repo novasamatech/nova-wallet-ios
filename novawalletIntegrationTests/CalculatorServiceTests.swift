@@ -280,7 +280,7 @@ class CalculatorServiceTests: XCTestCase {
 
                 let localFactory = LocalStorageKeyFactory()
 
-                let path = StorageCodingPath.activeEra
+                let path = Staking.activeEra
                 let localKey = try localFactory.createFromStoragePath(path, chainId: chainId)
                 let eraDataProvider = SubstrateDataProviderFactory(facade: storageFacade,
                                                                    operationManager: OperationManager())
@@ -364,7 +364,7 @@ class CalculatorServiceTests: XCTestCase {
     -> CompoundOperationWrapper<[(Data, Staking.ValidatorExposure)]> {
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: .erasStakers)
+        let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: Staking.erasStakers)
         decodingOperation.codingFactory = codingFactory
 
         decodingOperation.configurationBlock = {
@@ -421,7 +421,7 @@ class CalculatorServiceTests: XCTestCase {
                                       keyParams1: params1,
                                       keyParams2: params2,
                                       factory: { codingFactory },
-                                      storagePath: .erasPrefs)
+                                      storagePath: Staking.eraValidatorPrefs)
 
         queue.addOperations(queryWrapper.allOperations, waitUntilFinished: true)
 
@@ -452,7 +452,7 @@ class CalculatorServiceTests: XCTestCase {
                                          codingFactory: RuntimeCoderFactoryProtocol,
                                          operationQueue: OperationQueue = OperationQueue()) throws
     -> [Staking.ValidatorExposure] {
-        let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: .erasStakers)
+        let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: Staking.erasStakers)
         decodingOperation.codingFactory = codingFactory
         decodingOperation.dataList = validators.map { $0.data }
 
@@ -482,7 +482,7 @@ class CalculatorServiceTests: XCTestCase {
     ) throws -> UInt32? {
         let localFactory = LocalStorageKeyFactory()
 
-        let path = StorageCodingPath.activeEra
+        let path = Staking.activeEra
 
         let localKey = try localFactory.createFromStoragePath(path, chainId: chainId)
 
@@ -491,7 +491,7 @@ class CalculatorServiceTests: XCTestCase {
 
         let fetchOperation = repository.fetchOperation(by: localKey, options: RepositoryFetchOptions())
 
-        let decodingOperation = StorageDecodingOperation<ActiveEraInfo>(path: .activeEra)
+        let decodingOperation = StorageDecodingOperation<ActiveEraInfo>(path: Staking.activeEra)
         decodingOperation.codingFactory = codingFactory
 
         decodingOperation.configurationBlock = {
@@ -513,7 +513,7 @@ class CalculatorServiceTests: XCTestCase {
     private func createEraStakersPrefixKey(for chainId: ChainModel.Id, era: UInt32?) throws -> String {
 
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            .erasStakers,
+            Staking.erasStakers,
             chainId: chainId
         )
 

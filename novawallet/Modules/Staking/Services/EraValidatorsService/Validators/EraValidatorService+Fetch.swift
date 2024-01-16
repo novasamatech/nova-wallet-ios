@@ -64,7 +64,7 @@ extension EraValidatorService {
             engine: connection,
             keyParams: keys,
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: .validatorPrefs
+            storagePath: Staking.validatorPrefs
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])

@@ -22,7 +22,7 @@ extension StakingEraStakersExposureFactory: StakingValidatorExposureFactoryProto
             keyParams1: { try validatorsClosure().map { StringScaleMapper(value: $0.era) } },
             keyParams2: { try validatorsClosure().map { BytesCodable(wrappedValue: $0.validator) } },
             factory: codingFactoryClosure,
-            storagePath: .erasStakers
+            storagePath: Staking.erasStakers
         )
 
         let mappingOperation = ClosureOperation<[StakingValidatorExposure]> {

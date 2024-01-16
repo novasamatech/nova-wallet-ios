@@ -185,7 +185,7 @@ final class EraValidatorsUpdater {
         legacySyncService = StorageListSyncService(
             key: StringScaleMapper(value: era),
             chainId: chainId,
-            storagePath: .erasStakers,
+            storagePath: Staking.erasStakers,
             repositoryFactory: substrateRepositoryFactory,
             connection: connection,
             runtimeCodingService: runtimeService,

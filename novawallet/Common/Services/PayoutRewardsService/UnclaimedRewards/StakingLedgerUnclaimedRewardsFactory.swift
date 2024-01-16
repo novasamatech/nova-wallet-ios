@@ -73,7 +73,7 @@ extension StakingLedgerUnclaimedRewardsFactory: StakingUnclaimedRewardsOperation
             dependingOn: validatorIdsClosure,
             codingFactoryClosure: codingFactoryClosure,
             connection: connection,
-            path: .controller
+            path: Staking.controller
         )
 
         let controllersClosure: () throws -> [AccountId] = {
@@ -84,7 +84,7 @@ extension StakingLedgerUnclaimedRewardsFactory: StakingUnclaimedRewardsOperation
             dependingOn: controllersClosure,
             codingFactoryClosure: codingFactoryClosure,
             connection: connection,
-            path: .stakingLedger
+            path: Staking.stakingLedger
         )
 
         ledgersWrapper.addDependency(wrapper: controllersWrapper)
