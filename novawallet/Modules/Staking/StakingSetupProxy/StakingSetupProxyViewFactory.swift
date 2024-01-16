@@ -42,6 +42,7 @@ struct StakingSetupProxyViewFactory {
 
         presenter.baseView = view
         interactor.basePresenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }

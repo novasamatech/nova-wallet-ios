@@ -146,6 +146,10 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
             )
         }
     }
+
+    override func getProxyAddress() -> AccountAddress {
+        proxyAddress?.address ?? ""
+    }
 }
 
 extension StakingSetupProxyPresenter: StakingSetupProxyPresenterProtocol {

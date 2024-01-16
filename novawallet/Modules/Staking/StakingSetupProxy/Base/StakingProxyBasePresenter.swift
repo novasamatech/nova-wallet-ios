@@ -14,7 +14,6 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     private var proxyDeposit: ProxyDeposit?
     private var priceData: PriceData?
     private var fee: ExtrinsicFeeProtocol?
-    private var proxyAddress: String?
     private var existensialDeposit: BigUInt?
     private var maxProxies: Int?
     private var proxy: ProxyDefinition?
@@ -79,6 +78,23 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
 
     func createCommonValidations() -> [DataValidating] {
         [
+            dataValidatingFactory.validAddress(
+                getProxyAddress(),
+                chain: chainAsset.chain,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.proxyNotExists(
+                address: getProxyAddress(),
+                chain: chainAsset.chain,
+                proxyList: proxy,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.notReachedMaximimProxyCount(
+                proxy?.definition.count,
+                limit: maxProxies,
+                chain: chainAsset.chain,
+                locale: selectedLocale
+            ),
             dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale
@@ -89,12 +105,6 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 balance: assetBalance?.regularTransferrableBalance(),
                 fee: fee,
                 asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.proxyNotExists(
-                address: proxyAddress ?? "",
-                chain: chainAsset.chain,
-                proxyList: proxy,
                 locale: selectedLocale
             ),
             dataValidatingFactory.hasSufficientBalance(
@@ -109,14 +119,12 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 totalAmount: assetBalance?.freeInPlank,
                 minimumBalance: existensialDeposit,
                 locale: selectedLocale
-            ),
-            dataValidatingFactory.notReachedMaximimProxyCount(
-                proxy?.definition.count,
-                limit: maxProxies,
-                chain: chainAsset.chain,
-                locale: selectedLocale
             )
         ]
+    }
+
+    func getProxyAddress() -> AccountAddress {
+        fatalError("This function should be overriden")
     }
 }
 
