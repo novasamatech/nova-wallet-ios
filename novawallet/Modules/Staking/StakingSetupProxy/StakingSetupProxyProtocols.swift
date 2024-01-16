@@ -2,16 +2,16 @@ import SoraFoundation
 
 protocol StakingSetupProxyViewProtocol: StakingSetupProxyBaseViewProtocol {
     func didReceive(token: String)
-    func didReceiveAuthorityInputState(focused: Bool, empty: Bool?)
-    func didReceiveAccountInput(viewModel: InputViewModelProtocol)
-    func didReceiveWeb3NameAuthority(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>)
+    func didReceiveProxyInputState(focused: Bool, empty: Bool?)
+    func didReceiveProxyAccountInput(viewModel: InputViewModelProtocol)
+    func didReceiveWeb3NameProxy(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>)
     func didReceiveYourWallets(state: YourWalletsControl.State)
 }
 
 protocol StakingSetupProxyPresenterProtocol: StakingSetupProxyBasePresenterProtocol {
-    func complete(authority: String)
-    func updateAuthority(partialAddress: String)
-    func showWeb3NameAuthority()
+    func complete(proxyInput: String)
+    func updateProxy(partialAddress: String)
+    func showWeb3NameProxy()
     func didTapOnYourWallets()
     func proceed()
     func scanAddressCode()
@@ -28,9 +28,9 @@ protocol StakingSetupProxyInteractorOutputProtocol: StakingProxyBaseInteractorOu
     func didReceive(yourWallets: [MetaAccountChainResponse])
 }
 
-protocol StakingSetupProxyWireframeProtocol: StakingSetupProxyBaseWireframeProtocol, ProxyErrorPresentable, AlertPresentable,
-    CommonRetryable, ErrorPresentable, Web3NameAddressListPresentable, AddressOptionsPresentable,
-    YourWalletsPresentable, ScanAddressPresentable {
+protocol StakingSetupProxyWireframeProtocol: StakingSetupProxyBaseWireframeProtocol, ProxyErrorPresentable,
+    AlertPresentable, CommonRetryable, ErrorPresentable, Web3NameAddressListPresentable,
+    AddressOptionsPresentable, YourWalletsPresentable, ScanAddressPresentable {
     func checkDismissing(view: ControllerBackedProtocol?) -> Bool
     func showConfirmation(
         from: ControllerBackedProtocol?,

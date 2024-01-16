@@ -27,11 +27,10 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        presenter.setup()
-
         setupLocalization()
         setupHandlers()
+
+        presenter.setup()
     }
 
     private func setupLocalization() {
@@ -39,7 +38,7 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
         let strings = R.string.localizable.self
 
         rootView.titleLabel.text = strings.stakingSetupProxyTitle(token, preferredLanguages: languages)
-        rootView.authorityLabel.text = strings.stakingSetupProxyAuthority(preferredLanguages: languages)
+        rootView.proxyTitleLabel.text = strings.stakingSetupProxyAuthority(preferredLanguages: languages)
 
         let selectYourWalletTitle = strings.assetsSelectSendYourWallets(preferredLanguages: languages)
         rootView.yourWalletsControl.bind(model: .init(
@@ -85,14 +84,13 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
         rootView.accountInputView.delegate = self
     }
 
-    @objc
-    private func proxyInfoAction() {
+    @objc private func proxyInfoAction() {
         presenter.showDepositInfo()
     }
 
     @objc private func actionAddressChange() {
         let partialAddress = rootView.accountInputView.textField.text ?? ""
-        presenter.updateAuthority(partialAddress: partialAddress)
+        presenter.updateProxy(partialAddress: partialAddress)
 
         updateActionButtonState()
     }
@@ -129,7 +127,7 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
     @objc func actionProceed() {
         if rootView.accountInputView.textField.isFirstResponder {
             let partialAddress = rootView.accountInputView.textField.text ?? ""
-            presenter.complete(authority: partialAddress)
+            presenter.complete(proxyInput: partialAddress)
 
             rootView.accountInputView.textField.resignFirstResponder()
         }
@@ -155,13 +153,13 @@ extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
         )
     }
 
-    func didReceiveAccountInput(viewModel: InputViewModelProtocol) {
+    func didReceiveProxyAccountInput(viewModel: InputViewModelProtocol) {
         rootView.accountInputView.bind(inputViewModel: viewModel)
 
         updateActionButtonState()
     }
 
-    func didReceiveAuthorityInputState(focused: Bool, empty: Bool?) {
+    func didReceiveProxyInputState(focused: Bool, empty: Bool?) {
         if focused {
             rootView.accountInputView.textField.becomeFirstResponder()
         } else {
@@ -172,7 +170,7 @@ extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
         }
     }
 
-    func didReceiveWeb3NameAuthority(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>) {
+    func didReceiveWeb3NameProxy(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>) {
         rootView.web3NameReceipientView.bind(viewModel: viewModel)
     }
 
@@ -193,7 +191,7 @@ extension StakingSetupProxyViewController: AccountInputViewDelegate {
     func accountInputViewWillStartEditing(_: AccountInputView) {}
 
     func accountInputViewDidEndEditing(_ inputView: AccountInputView) {
-        presenter.complete(authority: inputView.textField.text ?? "")
+        presenter.complete(proxyInput: inputView.textField.text ?? "")
     }
 
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
@@ -203,7 +201,7 @@ extension StakingSetupProxyViewController: AccountInputViewDelegate {
 
     func accountInputViewDidPaste(_ inputView: AccountInputView) {
         if !inputView.textField.isFirstResponder {
-            presenter.complete(authority: inputView.textField.text ?? "")
+            presenter.complete(proxyInput: inputView.textField.text ?? "")
         }
     }
 }
@@ -212,6 +210,6 @@ extension StakingSetupProxyViewController: Web3NameReceipientViewDelegate {
     func didTapOnAccountList() {}
 
     func didTapOnAccount() {
-        presenter.showWeb3NameAuthority()
+        presenter.showWeb3NameProxy()
     }
 }

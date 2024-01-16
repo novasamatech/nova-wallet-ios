@@ -10,14 +10,14 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
     let wireframe: StakingSetupProxyWireframeProtocol
     let interactor: StakingSetupProxyInteractorInputProtocol
     let web3NameViewModelFactory: Web3NameViewModelFactoryProtocol
-    private(set) var recipientAddress: SetupRecipientAccount? {
+    private(set) var proxyAddress: StakingSetupProxyAccount? {
         didSet {
-            switch recipientAddress {
+            switch proxyAddress {
             case .none, .address:
-                view?.didReceiveWeb3NameAuthority(viewModel: .loaded(value: nil))
+                view?.didReceiveWeb3NameProxy(viewModel: .loaded(value: nil))
             case let .external(externalAccount):
                 let isLoading = externalAccount.recipient.isLoading == true
-                view?.didReceiveWeb3NameAuthority(viewModel: isLoading ? .loading :
+                view?.didReceiveWeb3NameProxy(viewModel: isLoading ? .loading :
                     .loaded(value: externalAccount.recipient.value??.displayTitle))
             }
         }
@@ -60,13 +60,13 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
         }
 
         let chain = chainAsset.chain
-        view.didReceiveWeb3NameAuthority(viewModel: .cached(value: nil))
+        view.didReceiveWeb3NameProxy(viewModel: .cached(value: nil))
 
         let viewModel = web3NameViewModelFactory.recipientListViewModel(
             recipients: recipients,
             for: name,
             chain: chain,
-            selectedAddress: recipientAddress?.address
+            selectedAddress: proxyAddress?.address
         )
 
         wireframe.presentWeb3NameAddressListPicker(from: view, viewModel: viewModel, delegate: self)
@@ -74,9 +74,9 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
 
     private func provideWeb3NameViewModel(_ authority: Web3TransferRecipient?, name: String) {
         guard let authority = authority else {
-            if recipientAddress?.isExternal == true {
-                recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
-                view?.didReceiveAuthorityInputState(focused: true, empty: true)
+            if proxyAddress?.isExternal == true {
+                proxyAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
+                view?.didReceiveProxyInputState(focused: true, empty: true)
             }
             return
         }
@@ -84,32 +84,32 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
         let chain = chainAsset.chain
 
         if let account = authority.normalizedAddress(for: chain.chainFormat) {
-            let authorityViewModel = SetupRecipientAccount.ExternalAccountValue(
+            let authorityViewModel = StakingSetupProxyAccount.ExternalAccountValue(
                 address: account,
                 description: authority.description
             )
-            recipientAddress = .external(.init(name: name, recipient: .loaded(value: authorityViewModel)))
-            view?.didReceiveAuthorityInputState(focused: false, empty: nil)
+            proxyAddress = .external(.init(name: name, recipient: .loaded(value: authorityViewModel)))
+            view?.didReceiveProxyInputState(focused: false, empty: nil)
         } else {
-            recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
+            proxyAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
             didReceive(error: .web3Name(.invalidAddress(chain.name)))
         }
     }
 
     private func provideInputViewModel() {
-        let value = recipientAddress?.address ?? ""
+        let value = proxyAddress?.address ?? ""
 
         let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
 
-        view?.didReceiveAccountInput(viewModel: inputViewModel)
+        view?.didReceiveProxyAccountInput(viewModel: inputViewModel)
     }
 
     private func updateRecepientAddress(_ newAddress: String) {
-        guard recipientAddress?.address != newAddress else {
+        guard proxyAddress?.address != newAddress else {
             return
         }
 
-        recipientAddress = .address(newAddress)
+        proxyAddress = .address(newAddress)
     }
 
     func updateYourWalletsButton() {
@@ -117,7 +117,7 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
         view?.didReceiveYourWallets(state: isShowYourWallets ? .inactive : .hidden)
     }
 
-    private func proceedWithExternal(account: SetupRecipientAccount.ExternalAccount) {
+    private func proceedWithExternal(account: StakingSetupProxyAccount.ExternalAccount) {
         switch account.recipient {
         case let .cached(value), let .loaded(value):
             if value?.address == nil {
@@ -136,7 +136,7 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
 
         DataValidationRunner(validators: validations).runValidation { [weak self] in
             guard
-                let address = self?.recipientAddress?.address else {
+                let address = self?.proxyAddress?.address else {
                 return
             }
 
@@ -149,36 +149,36 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
 }
 
 extension StakingSetupProxyPresenter: StakingSetupProxyPresenterProtocol {
-    func complete(authority: String) {
+    func complete(proxyInput: String) {
         guard !wireframe.checkDismissing(view: view) else {
             return
         }
 
-        guard let web3Name = KiltW3n.web3Name(nameWithScheme: authority) else {
+        guard let web3Name = KiltW3n.web3Name(nameWithScheme: proxyInput) else {
             return
         }
-        recipientAddress = .external(.init(
+        proxyAddress = .external(.init(
             name: KiltW3n.fullName(for: web3Name),
             recipient: .loading
         ))
         interactor.search(web3Name: web3Name)
     }
 
-    func updateAuthority(partialAddress: String) {
+    func updateProxy(partialAddress: String) {
         if let w3n = KiltW3n.web3Name(nameWithScheme: partialAddress) {
-            recipientAddress = .external(.init(
+            proxyAddress = .external(.init(
                 name: KiltW3n.fullName(for: w3n),
                 recipient: .cached(value: nil)
             ))
         } else {
-            recipientAddress = .address(partialAddress)
+            proxyAddress = .address(partialAddress)
         }
 
-        view?.didReceiveWeb3NameAuthority(viewModel: .loaded(value: nil))
+        view?.didReceiveWeb3NameProxy(viewModel: .loaded(value: nil))
     }
 
-    func showWeb3NameAuthority() {
-        guard let view = view, let address = recipientAddress?.address else {
+    func showWeb3NameProxy() {
+        guard let view = view, let address = proxyAddress?.address else {
             return
         }
 
@@ -194,7 +194,7 @@ extension StakingSetupProxyPresenter: StakingSetupProxyPresenterProtocol {
         wireframe.showYourWallets(
             from: view,
             accounts: yourWallets,
-            address: recipientAddress?.address,
+            address: proxyAddress?.address,
             delegate: self
         )
     }
@@ -204,7 +204,7 @@ extension StakingSetupProxyPresenter: StakingSetupProxyPresenterProtocol {
     }
 
     func proceed() {
-        switch recipientAddress {
+        switch proxyAddress {
         case .none, .address:
             proceedWithValidation()
         case let .external(externalAccount):
@@ -222,9 +222,9 @@ extension StakingSetupProxyPresenter: StakingSetupProxyInteractorOutputProtocol 
                 from: view,
                 locale: selectedLocale
             ) { [weak self] in
-                self?.view?.didReceiveAuthorityInputState(focused: true, empty: nil)
-                self?.recipientAddress = .external(.init(
-                    name: self?.recipientAddress?.name ?? "",
+                self?.view?.didReceiveProxyInputState(focused: true, empty: nil)
+                self?.proxyAddress = .external(.init(
+                    name: self?.proxyAddress?.name ?? "",
                     recipient: .loaded(value: nil)
                 ))
             }
@@ -261,7 +261,7 @@ extension StakingSetupProxyPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidCancel(context _: AnyObject?) {
-        view?.didReceiveAuthorityInputState(focused: true, empty: nil)
+        view?.didReceiveProxyInputState(focused: true, empty: nil)
     }
 }
 
@@ -285,13 +285,4 @@ extension StakingSetupProxyPresenter: AddressScanDelegate {
         updateRecepientAddress(address)
         provideInputViewModel()
     }
-}
-
-struct ProxyConfirmInputState {
-    let delegatingAccount: AccountId
-    let proxyDeposit: BigUInt
-    let fee: BigUInt
-    let proxy: AccountAddress
-    let grantingAccess: Proxy.ProxyType
-    let chainAsset: ChainAsset
 }

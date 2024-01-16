@@ -10,7 +10,7 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
         $0.apply(style: .boldTitle2Primary)
     }
 
-    let authorityLabel: UILabel = .create {
+    let proxyTitleLabel: UILabel = .create {
         $0.apply(style: .footnoteSecondary)
     }
 
@@ -52,14 +52,14 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
         addArrangedSubview(titleLabel, spacingAfter: 8)
 
         let titleStackView = UIStackView(arrangedSubviews: [
-            authorityLabel,
+            proxyTitleLabel,
             FlexibleSpaceView(),
             yourWalletsControl
         ])
 
         addArrangedSubview(titleStackView, spacingAfter: 0)
         addArrangedSubview(accountInputView, spacingAfter: 8)
-        addArrangedSubview(web3NameReceipientView, spacingAfter: 40)
+        addArrangedSubview(web3NameReceipientView, spacingAfter: 16)
         addArrangedSubview(proxyDepositView, spacingAfter: 0)
         addArrangedSubview(feeView)
     }

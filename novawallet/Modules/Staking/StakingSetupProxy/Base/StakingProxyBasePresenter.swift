@@ -111,8 +111,8 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 locale: selectedLocale
             ),
             dataValidatingFactory.notReachedMaximimProxyCount(
-                proxy?.definition.count ?? 0,
-                limit: maxProxies ?? 32,
+                proxy?.definition.count,
+                limit: maxProxies,
                 chain: chainAsset.chain,
                 locale: selectedLocale
             )
@@ -129,7 +129,7 @@ extension StakingProxyBasePresenter: StakingProxyBaseInteractorOutputProtocol {
             }
         case .handleProxies, .balance:
             wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
-                self?.interactor.refetchConstants()
+                self?.interactor.remakeSubscriptions()
             }
         case .stashItem, .price:
             wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in

@@ -1,4 +1,5 @@
 typealias TransferSetupRecipientAccount = SetupRecipientAccount
+typealias StakingSetupProxyAccount = SetupRecipientAccount
 
 enum SetupRecipientAccount {
     case address(AccountAddress?)

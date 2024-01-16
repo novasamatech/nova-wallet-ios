@@ -147,7 +147,6 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             guard let view = self?.view else {
                 return
             }
-            let formatter = NumberFormatter.quantity
             self?.presentable.presentProxyAlreadyAdded(
                 from: view,
                 account: address,
@@ -155,7 +154,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             )
         }, preservesCondition: {
             guard let proxyList = proxyList else {
-                return false
+                return true
             }
             let accountId = try? address.toAccountId(using: chain.chainFormat)
             return proxyList.definition.contains(where: { $0.proxy == accountId }) == false

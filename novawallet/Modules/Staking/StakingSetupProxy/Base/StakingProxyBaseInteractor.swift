@@ -203,7 +203,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInter
         }
 
         let call = callFactory.addProxy(
-            accountId: AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize),
+            accountId: proxyAccount(),
             type: .staking
         )
 
@@ -220,6 +220,10 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInter
         if let stashItem = stashItem {
             handle(stashItem: stashItem)
         }
+    }
+
+    func proxyAccount() -> AccountId {
+        AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
     }
 }
 
@@ -315,8 +319,12 @@ extension StakingProxyBaseInteractor: ProxyListLocalSubscriptionHandler, ProxyLi
             let proxyCount = proxy?.definition.count ?? 0
             calculator.proxyCount = proxyCount
             updateProxyDeposit()
+            basePresenter?.didReceive(proxy: proxy)
         case let .failure(error):
             basePresenter?.didReceive(baseError: .handleProxies(error))
+            calculator.proxyCount = nil
+            updateProxyDeposit()
+            basePresenter?.didReceive(proxy: nil)
         }
     }
 }
