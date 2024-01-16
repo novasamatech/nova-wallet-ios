@@ -45,6 +45,15 @@ struct AssetBalance: Equatable {
         )
     }
 
+    func regularTransferrableBalance() -> BigUInt {
+        Self.transferrableBalance(
+            from: freeInPlank,
+            frozen: frozenInPlank,
+            reserved: reservedInPlank,
+            mode: .regular
+        )
+    }
+
     static func transferrableBalance(
         from free: BigUInt,
         frozen: BigUInt,

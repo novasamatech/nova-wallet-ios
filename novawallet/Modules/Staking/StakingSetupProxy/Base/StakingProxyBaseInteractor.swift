@@ -2,24 +2,23 @@ import UIKit
 import BigInt
 import RobinHood
 
-class StakingProxyBaseInteractor: RuntimeConstantFetching {
+class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInteractorInputProtocol {
     weak var basePresenter: StakingProxyBaseInteractorOutputProtocol?
     let runtimeService: RuntimeCodingServiceProtocol
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
-    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let accountProviderFactory: AccountProviderFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let sharedState: RelaychainStakingSharedStateProtocol
 
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
     private var calculator = ProxyDepositCalculator()
     private var proxyProvider: AnyDataProvider<DecodedProxyDefinition>?
     private let operationQueue: OperationQueue
-
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var controllerAccountProvider: StreamableProvider<MetaAccountModel>?
@@ -28,9 +27,17 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching {
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var stashItem: StashItem?
 
+    var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
+        sharedState.localSubscriptionFactory
+    }
+
+    var proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol {
+        sharedState.proxyLocalSubscriptionFactory
+    }
+
     init(
         runtimeService: RuntimeCodingServiceProtocol,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        sharedState: RelaychainStakingSharedStateProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         accountProviderFactory: AccountProviderFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -43,7 +50,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching {
         operationQueue: OperationQueue
     ) {
         self.runtimeService = runtimeService
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.sharedState = sharedState
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.accountProviderFactory = accountProviderFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -106,7 +113,11 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching {
             let stashItem = stashItem,
             let stashAccountId = try? stashItem.stash.toAccountId() {
             let chainId = chainAsset.chain.chainId
-            proxyProvider = subscribeProxies(for: stashAccountId, chainId: chainId)
+            proxyProvider = subscribeProxies(
+                for: stashAccountId,
+                chainId: chainId,
+                modifyInternalList: ProxyFilter.allProxies
+            )
             balanceProvider = subscribeToAssetBalanceProvider(
                 for: stashAccountId,
                 chainId: chainAsset.chain.chainId,
@@ -145,9 +156,9 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching {
 
         stashAccountProvider = subscribeForAccountId(accountId, chain: chain)
     }
-}
 
-extension StakingProxyBaseInteractor: StakingProxyBaseInteractorInputProtocol {
+    // MARK: - StakingProxyBaseInteractorInputProtocol
+
     func setup() {
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
@@ -161,10 +172,7 @@ extension StakingProxyBaseInteractor: StakingProxyBaseInteractorInputProtocol {
 
     func estimateFee() {
         guard
-            let extrinsicService = self.extrinsicService,
-            let amount = StakingConstants.feeEstimation.toSubstrateAmount(
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) else {
+            let extrinsicService = self.extrinsicService else {
             return
         }
 
@@ -187,17 +195,6 @@ extension StakingProxyBaseInteractor: StakingLocalStorageSubscriber, StakingLoca
             handle(stashItem: stashItem)
         case let .failure(error):
             basePresenter?.didReceive(baseError: .stashItem(error))
-        }
-    }
-
-    func handleProxies(result: Result<ProxyDefinition?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(proxy):
-            let proxyCount = proxy?.definition.count ?? 0
-            calculator.proxyCount = proxyCount
-            updateProxyDeposit()
-        case let .failure(error):
-            basePresenter?.didReceive(baseError: .handleProxies(error))
         }
     }
 }
@@ -274,6 +271,19 @@ extension StakingProxyBaseInteractor: AccountLocalSubscriptionHandler, AccountLo
             extrinsicService = nil
             estimateFee()
             basePresenter?.didReceiveAccount(nil, for: accountId)
+        }
+    }
+}
+
+extension StakingProxyBaseInteractor: ProxyListLocalSubscriptionHandler, ProxyListLocalStorageSubscriber {
+    func handleProxies(result: Result<ProxyDefinition?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(proxy):
+            let proxyCount = proxy?.definition.count ?? 0
+            calculator.proxyCount = proxyCount
+            updateProxyDeposit()
+        case let .failure(error):
+            basePresenter?.didReceive(baseError: .handleProxies(error))
         }
     }
 }

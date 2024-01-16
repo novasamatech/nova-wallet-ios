@@ -1,4 +1,6 @@
-enum TransferSetupRecipientAccount {
+typealias TransferSetupRecipientAccount = SetupRecipientAccount
+
+enum SetupRecipientAccount {
     case address(AccountAddress?)
     case external(ExternalAccount)
 

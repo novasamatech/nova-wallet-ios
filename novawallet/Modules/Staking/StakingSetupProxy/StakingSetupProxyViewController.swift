@@ -60,6 +60,17 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
             action: #selector(proxyInfoAction),
             for: .touchUpInside
         )
+        rootView.accountInputView.addTarget(
+            self,
+            action: #selector(actionAddressChange),
+            for: .editingChanged
+        )
+        rootView.yourWalletsControl.addTarget(
+            self,
+            action: #selector(actionYourWallets),
+            for: .touchUpInside
+        )
+        rootView.web3NameReceipientView.delegate = self
         rootView.accountInputView.delegate = self
     }
 
@@ -67,6 +78,19 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
     private func proxyInfoAction() {
         presenter.showDepositInfo()
     }
+
+    @objc private func actionAddressChange() {
+        let partialAddress = rootView.accountInputView.textField.text ?? ""
+        presenter.updateAuthority(partialAddress: partialAddress)
+
+        updateActionButtonState()
+    }
+
+    @objc func actionYourWallets() {
+        presenter.didTapOnYourWallets()
+    }
+
+    func updateActionButtonState() {}
 }
 
 extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
@@ -84,6 +108,31 @@ extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
             token,
             preferredLanguages: selectedLocale.rLanguages
         )
+    }
+
+    func didReceiveAccountInput(viewModel: InputViewModelProtocol) {
+        rootView.accountInputView.bind(inputViewModel: viewModel)
+
+        updateActionButtonState()
+    }
+
+    func didReceiveAuthorityInputState(focused: Bool, empty: Bool?) {
+        if focused {
+            rootView.accountInputView.textField.becomeFirstResponder()
+        } else {
+            rootView.accountInputView.textField.resignFirstResponder()
+        }
+        if empty == true {
+            rootView.accountInputView.actionClear()
+        }
+    }
+
+    func didReceiveWeb3NameAuthority(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>) {
+        rootView.web3NameReceipientView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveYourWallets(state: YourWalletsControl.State) {
+        rootView.yourWalletsControl.apply(state: state)
     }
 }
 
@@ -111,5 +160,13 @@ extension StakingSetupProxyViewController: AccountInputViewDelegate {
         if !inputView.textField.isFirstResponder {
             presenter.complete(authority: inputView.textField.text ?? "")
         }
+    }
+}
+
+extension StakingSetupProxyViewController: Web3NameReceipientViewDelegate {
+    func didTapOnAccountList() {}
+
+    func didTapOnAccount() {
+        presenter.showWeb3NameAuthority()
     }
 }

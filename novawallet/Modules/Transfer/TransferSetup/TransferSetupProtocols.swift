@@ -61,7 +61,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
-    Web3NameAddressListPresentable {
+    Web3NameAddressListPresentable, YourWalletsPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
@@ -78,15 +78,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate)
 
     func hideRecepientScan(from view: TransferSetupViewProtocol?)
-
-    func showYourWallets(
-        from view: TransferSetupViewProtocol?,
-        accounts: [MetaAccountChainResponse],
-        address: AccountAddress?,
-        delegate: YourWalletsDelegate
-    )
-
-    func hideYourWallets(from view: TransferSetupViewProtocol?)
 
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool
 }

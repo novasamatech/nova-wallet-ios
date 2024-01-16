@@ -23,3 +23,15 @@ protocol StakingProxyBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee()
 }
+
+protocol StakingSetupProxyBaseViewProtocol: ControllerBackedProtocol {
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+}
+
+protocol StakingSetupProxyBasePresenterProtocol: AnyObject {
+    func setup()
+    func showDepositInfo()
+}
+
+protocol StakingSetupProxyBaseWireframeProtocol: AnyObject {}

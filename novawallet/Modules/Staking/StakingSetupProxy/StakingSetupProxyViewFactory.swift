@@ -17,12 +17,21 @@ struct StakingSetupProxyViewFactory {
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
-
+        let dataValidatingFactory = ProxyDataValidatorFactory(
+            presentable: wireframe,
+            balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
+        )
         let presenter = StakingSetupProxyPresenter(
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
+            web3NameViewModelFactory: Web3NameViewModelFactory(
+                displayAddressViewModelFactory: DisplayAddressViewModelFactory()
+            ),
             localizationManager: LocalizationManager.shared
         )
 
@@ -31,7 +40,7 @@ struct StakingSetupProxyViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        presenter.view = view
+        presenter.baseView = view
         interactor.basePresenter = presenter
 
         return view
@@ -66,9 +75,18 @@ struct StakingSetupProxyViewFactory {
             logger: Logger.shared
         )
 
+        let web3NamesService = createWeb3NameService()
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: [NSSortDescriptor.accountsByOrder]
+        )
+
         return StakingSetupProxyInteractor(
+            web3NamesService: web3NamesService,
+            accountRepository: accountRepository,
             runtimeService: runtimeRegistry,
-            stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
+            sharedState: state,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             accountProviderFactory: accountProviderFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -79,6 +97,38 @@ struct StakingSetupProxyViewFactory {
             chainAsset: chainAsset,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
+
+    private static func createWeb3NameService() -> Web3NameServiceProtocol? {
+        let kiltChainId = KnowChainId.kiltOnEnviroment
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard let kiltConnection = chainRegistry.getConnection(for: kiltChainId),
+              let kiltRuntimeService = chainRegistry.getRuntimeProvider(for: kiltChainId) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
+
+        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(
+            integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory()
+        )
+
+        let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
+        let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
+            for: slip44CoinsUrl
+        )
+
+        return Web3NameService(
+            providerName: Web3NameProvider.kilt,
+            slip44CoinsProvider: slip44CoinsProvider,
+            web3NamesOperationFactory: web3NamesOperationFactory,
+            runtimeService: kiltRuntimeService,
+            connection: kiltConnection,
+            transferRecipientRepositoryFactory: recipientRepositoryFactory,
+            operationQueue: operationQueue
         )
     }
 }

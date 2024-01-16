@@ -37,6 +37,8 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
         return view
     }()
 
+    let web3NameReceipientView = Web3NameReceipientView()
+
     override func setupLayout() {
         super.setupLayout()
 
@@ -56,7 +58,8 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
         ])
 
         addArrangedSubview(titleStackView, spacingAfter: 0)
-        addArrangedSubview(accountInputView, spacingAfter: 40)
+        addArrangedSubview(accountInputView, spacingAfter: 8)
+        addArrangedSubview(web3NameReceipientView, spacingAfter: 40)
         addArrangedSubview(proxyDepositView, spacingAfter: 0)
         addArrangedSubview(feeView)
     }
