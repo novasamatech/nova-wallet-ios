@@ -85,10 +85,8 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
             exposuresWrapper.addDependency(wrapper: validatorsWrapper)
             exposuresWrapper.addDependency(wrapper: pagedExposuresSearchWrapper)
 
-            let selectedAccountId = try selectedAccountAddress.toAccountId(using: chainFormat)
             let unclaimedRewardsWrapper = unclaimedRewardsFacade.createWrapper(
-                for: selectedAccountId,
-                validatorsClosure: { try exposuresWrapper.targetOperation.extractNoCancellableResultData() },
+                for: { try exposuresWrapper.targetOperation.extractNoCancellableResultData() },
                 exposurePagedEra: { try pagedExposuresSearchWrapper.targetOperation.extractNoCancellableResultData() },
                 codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
                 connection: engine

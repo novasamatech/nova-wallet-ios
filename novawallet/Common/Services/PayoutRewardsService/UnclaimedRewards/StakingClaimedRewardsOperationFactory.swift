@@ -51,8 +51,7 @@ final class StakingClaimedRewardsOperationFactory {
 
 extension StakingClaimedRewardsOperationFactory: StakingUnclaimedRewardsOperationFactoryProtocol {
     func createWrapper(
-        for accountId: AccountId,
-        validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
+        for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]> {
@@ -68,22 +67,19 @@ extension StakingClaimedRewardsOperationFactory: StakingUnclaimedRewardsOperatio
 
             return exposures.compactMap { exposure in
                 let validatorEra = ResolvedValidatorEra(validator: exposure.accountId, era: exposure.era)
-                let optAccountPage = exposure.pages.firstIndex { page in
-                    page.contains { $0.who == accountId }
-                }
 
+                let allPages = (0 ..< exposure.pages.count).map { Staking.ValidatorPage($0) }
                 let claimedPages = allClaimedPages[validatorEra] ?? Set()
+                let unclaimedPages = Set(allPages).subtracting(claimedPages)
 
-                guard
-                    let accountPage = optAccountPage,
-                    !claimedPages.contains(Staking.ValidatorPage(accountPage)) else {
+                guard !unclaimedPages.isEmpty else {
                     return nil
                 }
 
                 return StakingUnclaimedReward(
                     accountId: validatorEra.validator,
                     era: validatorEra.era,
-                    page: Staking.ValidatorPage(accountPage)
+                    pages: unclaimedPages
                 )
             }
         }

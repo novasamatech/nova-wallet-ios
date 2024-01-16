@@ -52,7 +52,7 @@ final class StakingLedgerUnclaimedRewardsFactory {
                 let unclaimedEras = validatorEras.subtracting(erasClaimedRewards)
 
                 return unclaimedEras.map { era in
-                    StakingUnclaimedReward(accountId: ledger.stash, era: era, page: 0)
+                    StakingUnclaimedReward(accountId: ledger.stash, era: era, pages: [0])
                 }
             }
         }
@@ -61,8 +61,7 @@ final class StakingLedgerUnclaimedRewardsFactory {
 
 extension StakingLedgerUnclaimedRewardsFactory: StakingUnclaimedRewardsOperationFactoryProtocol {
     func createWrapper(
-        for _: AccountId,
-        validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
+        for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]> {

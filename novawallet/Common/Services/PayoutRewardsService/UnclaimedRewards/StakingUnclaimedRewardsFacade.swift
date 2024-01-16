@@ -5,13 +5,12 @@ import RobinHood
 struct StakingUnclaimedReward {
     let accountId: AccountId
     let era: EraIndex
-    let page: Staking.ValidatorPage
+    let pages: Set<Staking.ValidatorPage>
 }
 
 protocol StakingUnclaimedRewardsFacadeProtocol {
     func createWrapper(
-        for accountId: AccountId,
-        validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
+        for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
         exposurePagedEra: @escaping () throws -> EraIndex?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
@@ -20,8 +19,7 @@ protocol StakingUnclaimedRewardsFacadeProtocol {
 
 protocol StakingUnclaimedRewardsOperationFactoryProtocol {
     func createWrapper(
-        for accountId: AccountId,
-        validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
+        for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]>
@@ -37,32 +35,28 @@ final class StakingUnclaimedRewardsFacade {
     }
 
     func createLedgerBasedWrapper(
-        for accountId: AccountId,
-        validators: [StakingValidatorExposure],
+        for validators: [StakingValidatorExposure],
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]> {
         StakingLedgerUnclaimedRewardsFactory(
             requestFactory: requestFactory
         ).createWrapper(
-            for: accountId,
-            validatorsClosure: { validators },
+            for: { validators },
             codingFactoryClosure: codingFactoryClosure,
             connection: connection
         )
     }
 
     func createClaimedBasedWrapper(
-        for accountId: AccountId,
-        validators: [StakingValidatorExposure],
+        for validators: [StakingValidatorExposure],
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]> {
         StakingClaimedRewardsOperationFactory(
             requestFactory: requestFactory
         ).createWrapper(
-            for: accountId,
-            validatorsClosure: { validators },
+            for: { validators },
             codingFactoryClosure: codingFactoryClosure,
             connection: connection
         )
@@ -71,8 +65,7 @@ final class StakingUnclaimedRewardsFacade {
 
 extension StakingUnclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol {
     func createWrapper(
-        for accountId: AccountId,
-        validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
+        for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
         exposurePagedEra: @escaping () throws -> EraIndex?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
@@ -103,8 +96,7 @@ extension StakingUnclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol {
 
             if !stakingLedgerItems.isEmpty {
                 let wrapper = self.createLedgerBasedWrapper(
-                    for: accountId,
-                    validators: stakingLedgerItems,
+                    for: stakingLedgerItems,
                     codingFactoryClosure: codingFactoryClosure,
                     connection: connection
                 )
@@ -114,8 +106,7 @@ extension StakingUnclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol {
 
             if !claimedBasedItems.isEmpty {
                 let wrapper = self.createClaimedBasedWrapper(
-                    for: accountId,
-                    validators: claimedBasedItems,
+                    for: claimedBasedItems,
                     codingFactoryClosure: codingFactoryClosure,
                     connection: connection
                 )

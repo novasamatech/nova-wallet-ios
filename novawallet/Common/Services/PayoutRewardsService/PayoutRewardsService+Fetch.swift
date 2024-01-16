@@ -285,23 +285,15 @@ extension PayoutRewardsService {
                     return nil
                 }
 
-                let validatorInfo = EraValidatorInfo(
-                    accountId: validatorEra.validator,
-                    exposure: .init(
-                        total: exposure.totalStake,
-                        own: exposure.ownStake,
-                        others: exposure.others()
-                    ),
-                    prefs: prefs
-                )
-
-                return try payoutInfoFactory.calculate(
-                    for: targetAccountId,
-                    era: validatorEra.era,
-                    validatorInfo: validatorInfo,
-                    erasRewardDistribution: erasRewardDistribution,
+                let params = PayoutInfoFactoryParams(
+                    unclaimedRewards: unclaimedReward,
+                    exposure: exposure,
+                    prefs: prefs,
+                    rewardDistribution: erasRewardDistribution,
                     identities: identities
                 )
+
+                return try payoutInfoFactory.calculate(for: targetAccountId, params: params)
             }
 
             let overview = try historyRangeOperation.extractNoCancellableResultData()
