@@ -14,4 +14,8 @@ extension Proxy {
     static var depositFactor: ConstantCodingPath {
         .init(moduleName: Proxy.name, constantName: "ProxyDepositFactor")
     }
+
+    static var maxProxyCount: ConstantCodingPath {
+        .init(moduleName: Proxy.name, constantName: "MaxProxies")
+    }
 }

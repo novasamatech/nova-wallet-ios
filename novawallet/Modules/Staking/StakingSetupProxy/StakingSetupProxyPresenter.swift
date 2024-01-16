@@ -92,7 +92,7 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
             view?.didReceiveAuthorityInputState(focused: false, empty: nil)
         } else {
             recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
-            didReceive(error: .web3NameInvalidAddress(chainName: chain.name))
+            didReceive(error: .web3Name(.invalidAddress(chain.name)))
         }
     }
 
@@ -110,14 +110,41 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
         }
 
         recipientAddress = .address(newAddress)
-
-        //   let optAccountId = getRecepientAccountId()
-        //   interactor.change(recepient: optAccountId)
     }
 
     func updateYourWalletsButton() {
         let isShowYourWallets = yourWallets.contains { $0.chainAccountResponse != nil }
         view?.didReceiveYourWallets(state: isShowYourWallets ? .inactive : .hidden)
+    }
+
+    private func proceedWithExternal(account: SetupRecipientAccount.ExternalAccount) {
+        switch account.recipient {
+        case let .cached(value), let .loaded(value):
+            if value?.address == nil {
+                didReceive(error: .web3Name(.accountNotFound(account.name)))
+            } else {
+                proceedWithValidation()
+            }
+        case .loading:
+            // wait the result
+            break
+        }
+    }
+
+    private func proceedWithValidation() {
+        let validations = createCommonValidations()
+
+        DataValidationRunner(validators: validations).runValidation { [weak self] in
+            guard
+                let address = self?.recipientAddress?.address else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                proxyAddress: address
+            )
+        }
     }
 }
 
@@ -171,10 +198,45 @@ extension StakingSetupProxyPresenter: StakingSetupProxyPresenterProtocol {
             delegate: self
         )
     }
+
+    func scanAddressCode() {
+        wireframe.showAddressScan(from: view, delegate: self)
+    }
+
+    func proceed() {
+        switch recipientAddress {
+        case .none, .address:
+            proceedWithValidation()
+        case let .external(externalAccount):
+            proceedWithExternal(account: externalAccount)
+        }
+    }
 }
 
 extension StakingSetupProxyPresenter: StakingSetupProxyInteractorOutputProtocol {
-    func didReceive(error _: StakingSetupProxyError) {}
+    func didReceive(error: StakingSetupProxyError) {
+        switch error {
+        case let .web3Name(error):
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.view?.didReceiveAuthorityInputState(focused: true, empty: nil)
+                self?.recipientAddress = .external(.init(
+                    name: self?.recipientAddress?.name ?? "",
+                    recipient: .loaded(value: nil)
+                ))
+            }
+        case let .fetchMetaAccounts(error):
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.refetchAccounts()
+            }
+        }
+    }
 
     func didReceive(recipients: [Web3TransferRecipient], for name: String) {
         if recipients.count > 1 {
@@ -184,11 +246,8 @@ extension StakingSetupProxyPresenter: StakingSetupProxyInteractorOutputProtocol 
         }
     }
 
-    func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
-        let excludingWalletTypes: [MetaAccountModelType] = [.proxied, .watchOnly]
-        yourWallets = metaChainAccountResponses.filter {
-            !excludingWalletTypes.contains($0.metaAccount.type)
-        }
+    func didReceive(yourWallets: [MetaAccountChainResponse]) {
+        self.yourWallets = yourWallets
         updateYourWalletsButton()
     }
 }
@@ -210,10 +269,29 @@ extension StakingSetupProxyPresenter: YourWalletsDelegate {
     func didSelectYourWallet(address: AccountAddress) {
         wireframe.hideYourWallets(from: view)
         view?.didReceiveYourWallets(state: .inactive)
-        recipientAddress = .address(address)
+        updateRecepientAddress(address)
+        provideInputViewModel()
     }
 
     func didCloseYourWalletSelection() {
         view?.didReceiveYourWallets(state: .inactive)
     }
+}
+
+extension StakingSetupProxyPresenter: AddressScanDelegate {
+    func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
+        wireframe.hideAddressScan(from: view)
+
+        updateRecepientAddress(address)
+        provideInputViewModel()
+    }
+}
+
+struct ProxyConfirmInputState {
+    let delegatingAccount: AccountId
+    let proxyDeposit: BigUInt
+    let fee: BigUInt
+    let proxy: AccountAddress
+    let grantingAccess: Proxy.ProxyType
+    let chainAsset: ChainAsset
 }

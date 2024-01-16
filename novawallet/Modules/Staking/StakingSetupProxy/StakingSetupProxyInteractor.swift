@@ -67,11 +67,13 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
         switch result {
         case let .failure(error):
             presenter?.didReceive(error: .fetchMetaAccounts(error))
-            presenter?.didReceive(metaChainAccountResponses: [])
+            presenter?.didReceive(yourWallets: [])
         case let .success(accounts):
             let excludedWalletTypes: [MetaAccountModelType] = [ /* .watchOnly, */ .proxied]
-            let filteredAccounts = accounts.filter { !excludedWalletTypes.contains($0.metaAccount.type) }
-            presenter?.didReceive(metaChainAccountResponses: filteredAccounts)
+            let filteredAccounts = accounts.filter {
+                !excludedWalletTypes.contains($0.metaAccount.type) && $0.chainAccountResponse != nil
+            }
+            presenter?.didReceive(yourWallets: filteredAccounts)
         }
     }
 }
@@ -80,7 +82,7 @@ extension StakingSetupProxyInteractor: StakingSetupProxyInteractorInputProtocol 
     func search(web3Name: String) {
         guard let web3NamesService = web3NamesService else {
             let error = Web3NameServiceError.serviceNotFound(web3Name, chainAsset.chain.name)
-            presenter?.didReceive(error: .web3NamesService(error))
+            presenter?.didReceive(error: .web3Name(error))
             return
         }
 
@@ -94,9 +96,13 @@ extension StakingSetupProxyInteractor: StakingSetupProxyInteractorInputProtocol 
                 case let .success(recipients):
                     self.presenter?.didReceive(recipients: recipients, for: web3Name)
                 case let .failure(error):
-                    self.presenter?.didReceive(error: .web3NamesService(error))
+                    self.presenter?.didReceive(error: .web3Name(error))
                 }
             }
         }
+    }
+
+    func refetchAccounts() {
+        fetchAccounts()
     }
 }

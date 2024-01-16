@@ -36,26 +36,6 @@ class TransferSetupWireframe: TransferSetupWireframeProtocol {
         )
     }
 
-    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate) {
-        guard
-            let scanView = AddressScanViewFactory.createTransferRecipientScan(
-                for: delegate,
-                context: nil
-            ) else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(
-            rootViewController: scanView.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
-    func hideRecepientScan(from view: TransferSetupViewProtocol?) {
-        view?.controller.dismiss(animated: true)
-    }
-
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
         view?.controller.navigationController?.isBeingDismissed ?? true
     }

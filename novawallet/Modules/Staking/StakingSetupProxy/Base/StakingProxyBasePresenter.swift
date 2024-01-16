@@ -11,12 +11,10 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     private let interactor: StakingProxyBaseInteractorInputProtocol
     private let wireframe: StakingSetupProxyBaseWireframeProtocol
     private var assetBalance: AssetBalance?
-    private var proxyDeposit: BigUInt?
+    private var proxyDeposit: ProxyDeposit?
     private var priceData: PriceData?
     private var fee: ExtrinsicFeeProtocol?
     private var proxyAddress: String?
-    private var currentDeposit: BigUInt?
-    private var deposit: BigUInt?
     private var existensialDeposit: BigUInt?
     private var maxProxies: Int?
     private var proxy: ProxyDefinition?
@@ -38,7 +36,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     }
 
     func provideProxyDeposit() {
-        guard let amount = proxyDeposit?.decimal(precision: chainAsset.asset.precision) else {
+        guard let amount = proxyDeposit?.diff.decimal(precision: chainAsset.asset.precision) else {
             baseView?.didReceiveProxyDeposit(viewModel: .loading)
             return
         }
@@ -75,9 +73,11 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
         interactor.setup()
     }
 
-    func showDepositInfo() {}
+    func showDepositInfo() {
+        wireframe.showProxyDepositInfo(from: baseView)
+    }
 
-    func createCommonValidations() -> [DataValidating]? {
+    func createCommonValidations() -> [DataValidating] {
         [
             dataValidatingFactory.has(
                 fee: fee,
@@ -98,8 +98,8 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 locale: selectedLocale
             ),
             dataValidatingFactory.hasSufficientBalance(
-                available: (assetBalance?.regularTransferrableBalance() ?? 0) + (currentDeposit ?? 0),
-                deposit: deposit,
+                available: (assetBalance?.regularTransferrableBalance() ?? 0) + (proxyDeposit?.current ?? 0),
+                deposit: proxyDeposit?.new,
                 fee: fee?.amountForCurrentAccount,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
@@ -121,8 +121,28 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
 }
 
 extension StakingProxyBasePresenter: StakingProxyBaseInteractorOutputProtocol {
-    func didReceive(baseError _: StakingProxyBaseError) {}
-    func didReceive(proxyDeposit: BigUInt?) {
+    func didReceive(baseError: StakingProxyBaseError) {
+        switch baseError {
+        case .fetchDepositBase, .fetchDepositFactor, .fetchED, .fetchMaxProxyCount:
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
+                self?.interactor.refetchConstants()
+            }
+        case .handleProxies, .balance:
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
+                self?.interactor.refetchConstants()
+            }
+        case .stashItem, .price:
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        case .fee:
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
+                self?.interactor.estimateFee()
+            }
+        }
+    }
+
+    func didReceive(proxyDeposit: ProxyDeposit?) {
         self.proxyDeposit = proxyDeposit
         provideProxyDeposit()
     }
@@ -136,13 +156,23 @@ extension StakingProxyBasePresenter: StakingProxyBaseInteractorOutputProtocol {
         provideFee()
     }
 
+    func didReceive(maxProxies: Int?) {
+        self.maxProxies = maxProxies
+    }
+
+    func didReceive(existensialDeposit: BigUInt?) {
+        self.existensialDeposit = existensialDeposit
+    }
+
+    func didReceive(proxy: ProxyDefinition?) {
+        self.proxy = proxy
+    }
+
     func didReceive(price: PriceData?) {
         priceData = price
         provideProxyDeposit()
         provideFee()
     }
-
-    func didReceiveAccount(_: MetaChainAccountResponse?, for _: AccountId) {}
 }
 
 extension StakingProxyBasePresenter: Localizable {

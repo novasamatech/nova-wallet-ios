@@ -70,6 +70,17 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
             action: #selector(actionYourWallets),
             for: .touchUpInside
         )
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionProceed),
+            for: .touchUpInside
+        )
+        rootView.accountInputView.scanButton.addTarget(
+            self,
+            action: #selector(actionAddressScan),
+            for: .touchUpInside
+        )
+
         rootView.web3NameReceipientView.delegate = self
         rootView.accountInputView.delegate = self
     }
@@ -90,7 +101,41 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
         presenter.didTapOnYourWallets()
     }
 
-    func updateActionButtonState() {}
+    func updateActionButtonState() {
+        if !rootView.accountInputView.completed {
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = false
+
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+                .transferSetupEnterAddress(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.invalidateLayout()
+
+            return
+        }
+
+        rootView.actionButton.applyEnabledStyle()
+        rootView.actionButton.isUserInteractionEnabled = true
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.actionButton.invalidateLayout()
+    }
+
+    @objc func actionAddressScan() {
+        presenter.scanAddressCode()
+    }
+
+    @objc func actionProceed() {
+        if rootView.accountInputView.textField.isFirstResponder {
+            let partialAddress = rootView.accountInputView.textField.text ?? ""
+            presenter.complete(authority: partialAddress)
+
+            rootView.accountInputView.textField.resignFirstResponder()
+        }
+
+        presenter.proceed()
+    }
 }
 
 extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {

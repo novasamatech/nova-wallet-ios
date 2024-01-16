@@ -2,11 +2,13 @@ import BigInt
 
 protocol StakingProxyBaseInteractorOutputProtocol: AnyObject {
     func didReceive(baseError: StakingProxyBaseError)
-    func didReceive(proxyDeposit: BigUInt?)
+    func didReceive(proxyDeposit: ProxyDeposit?)
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(fee: ExtrinsicFeeProtocol?)
+    func didReceive(maxProxies: Int?)
+    func didReceive(existensialDeposit: BigUInt?)
+    func didReceive(proxy: ProxyDefinition?)
     func didReceive(price: PriceData?)
-    func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)
 }
 
 enum StakingProxyBaseError: Error {
@@ -17,11 +19,15 @@ enum StakingProxyBaseError: Error {
     case price(Error)
     case stashItem(Error)
     case fee(Error)
+    case fetchMaxProxyCount(Error)
+    case fetchED(Error)
 }
 
 protocol StakingProxyBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee()
+    func refetchConstants()
+    func remakeSubscriptions()
 }
 
 protocol StakingSetupProxyBaseViewProtocol: ControllerBackedProtocol {
@@ -34,4 +40,4 @@ protocol StakingSetupProxyBasePresenterProtocol: AnyObject {
     func showDepositInfo()
 }
 
-protocol StakingSetupProxyBaseWireframeProtocol: AnyObject {}
+protocol StakingSetupProxyBaseWireframeProtocol: ShortTextInfoPresentable, AlertPresentable, ErrorPresentable, CommonRetryable {}

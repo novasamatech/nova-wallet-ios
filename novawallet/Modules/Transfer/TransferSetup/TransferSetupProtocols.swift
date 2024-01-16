@@ -61,7 +61,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
-    Web3NameAddressListPresentable, YourWalletsPresentable {
+    Web3NameAddressListPresentable, YourWalletsPresentable, ScanAddressPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
@@ -74,10 +74,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
         selectionState: CrossChainOriginSelectionState,
         delegate: ModalPickerViewControllerDelegate
     )
-
-    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate)
-
-    func hideRecepientScan(from view: TransferSetupViewProtocol?)
 
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool
 }

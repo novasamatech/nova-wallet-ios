@@ -89,6 +89,32 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInter
                 self?.basePresenter?.didReceive(baseError: .fetchDepositFactor(error))
             }
         }
+
+        fetchConstant(
+            for: Proxy.maxProxyCount,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<Int, Error>) in
+            switch result {
+            case let .success(maxCount):
+                self?.basePresenter?.didReceive(maxProxies: maxCount)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(baseError: .fetchMaxProxyCount(error))
+            }
+        }
+
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(existensialDeposit):
+                self?.basePresenter?.didReceive(existensialDeposit: existensialDeposit)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(baseError: .fetchED(error))
+            }
+        }
     }
 
     private func performPriceSubscription() {
@@ -185,6 +211,16 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInter
             try builder.adding(call: call)
         }
     }
+
+    func refetchConstants() {
+        fetchConstants()
+    }
+
+    func remakeSubscriptions() {
+        if let stashItem = stashItem {
+            handle(stashItem: stashItem)
+        }
+    }
 }
 
 extension StakingProxyBaseInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
@@ -253,7 +289,7 @@ extension StakingProxyBaseInteractor: SelectedCurrencyDepending {
 extension StakingProxyBaseInteractor: AccountLocalSubscriptionHandler, AccountLocalStorageSubscriber {
     func handleAccountResponse(
         result: Result<MetaChainAccountResponse?, Error>,
-        accountId: AccountId,
+        accountId _: AccountId,
         chain _: ChainModel
     ) {
         switch result {
@@ -265,12 +301,9 @@ extension StakingProxyBaseInteractor: AccountLocalSubscriptionHandler, AccountLo
                 )
                 estimateFee()
             }
-
-            basePresenter?.didReceiveAccount(optAccount, for: accountId)
         case .failure:
             extrinsicService = nil
             estimateFee()
-            basePresenter?.didReceiveAccount(nil, for: accountId)
         }
     }
 }
