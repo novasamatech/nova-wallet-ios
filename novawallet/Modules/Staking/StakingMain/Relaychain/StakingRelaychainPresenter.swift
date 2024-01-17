@@ -530,7 +530,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         accounts[accountId] = account
     }
 
-    func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>) {
+    func didReceiveMaxNominatorsPerValidator(result: Result<UInt32?, Error>) {
         switch result {
         case let .success(maxNominatorsPerValidator):
             stateMachine.state.process(maxNominatorsPerValidator: maxNominatorsPerValidator)

@@ -294,10 +294,9 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
             runtimeService: runtimeService
         )
 
-        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32> = PrimitiveConstantOperation.wrapper(
+        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
             for: .maxNominatorRewardedPerValidator,
-            runtimeService: runtimeService,
-            fallbackValue: UInt32.max
+            runtimeService: runtimeService
         )
 
         let validatorsResolveOperation = ClosureOperation<[NominationPools.PoolId: Set<AccountId>]> {
@@ -309,7 +308,8 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
                 into: [AccountId: Set<AccountId>]()
             ) { accum, validator in
                 let allNominators = validator.exposure.others
-                let targetNominators = Array(allNominators.prefix(Int(maxRewardedNominators)))
+                let targetNominators = maxRewardedNominators.map { Array(allNominators.prefix(Int($0))) }
+                    ?? allNominators
 
                 for nominator in targetNominators {
                     let currentValidators = accum[nominator.who] ?? Set()
