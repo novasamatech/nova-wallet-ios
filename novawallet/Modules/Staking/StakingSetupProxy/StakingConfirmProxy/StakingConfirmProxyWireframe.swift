@@ -1,7 +1,7 @@
 import Foundation
 
-final class StakingConfirmProxyWireframe: StakingConfirmProxyWireframeProtocol {
-    func complete(from view: StakingRebagConfirmViewProtocol?) {
+final class StakingConfirmProxyWireframe: StakingConfirmProxyWireframeProtocol, ModalAlertPresenting {
+    func complete(from view: ControllerBackedProtocol?) {
         let presenter = view?.controller.navigationController?.presentingViewController
 
         presenter?.dismiss(animated: true) {
