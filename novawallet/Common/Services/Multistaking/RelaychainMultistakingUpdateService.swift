@@ -124,26 +124,32 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         switch result {
         case let .success(accounts):
             if
-                case let .defined(stash) = accounts.stash,
-                case let .defined(controller) = accounts.controller {
+                case let .defined(remoteStash) = accounts.stash,
+                case let .defined(remoteController) = accounts.controller {
                 markSyncingImmediate()
+
+                let stash: AccountId?
+                let controller: AccountId?
+
+                if remoteStash != nil || remoteController != nil {
+                    if remoteStash != nil, remoteController != nil {
+                        // stash and controller at the same time - prefer stash
+                        stash = accountId
+                        controller = remoteController ?? accountId
+                    } else {
+                        stash = remoteStash ?? accountId
+                        controller = remoteController ?? accountId
+                    }
+                } else {
+                    stash = nil
+                    controller = nil
+                }
 
                 saveResolvedAccounts(stash ?? accountId)
 
-                if stash != nil || controller != nil {
-                    saveStashItem(
-                        stash: stash ?? accountId,
-                        controller: controller ?? accountId,
-                        chain: chainAsset.chain
-                    )
-                } else {
-                    saveStashItem(stash: nil, controller: nil, chain: chainAsset.chain)
-                }
+                saveStashItem(stash: stash, controller: controller, chain: chainAsset.chain)
 
-                subscribeState(
-                    for: controller ?? accountId,
-                    stash: stash ?? accountId
-                )
+                subscribeState(for: controller ?? accountId, stash: stash ?? accountId)
             }
         case let .failure(error):
             completeImmediate(error)
@@ -335,6 +341,10 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     }
 
     private func saveStashItem(stash: AccountId?, controller: AccountId?, chain: ChainModel) {
+        logger.debug(
+            "Saving stash item \(chain.name): \(String(describing: stash)) \(String(describing: controller))"
+        )
+
         let saveOperation = stashItemRepository.replaceOperation {
             if let stash = stash, let controller = controller {
                 let stashItem = StashItem(

@@ -442,6 +442,8 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
     }
 
     func didReceive(stashItemError: Error) {
+        logger?.error("Stash item error: \(stashItemError)")
+
         handle(error: stashItemError)
     }
 
