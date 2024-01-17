@@ -20,7 +20,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInter
     private var proxyProvider: AnyDataProvider<DecodedProxyDefinition>?
     private let operationQueue: OperationQueue
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var extrinsicService: ExtrinsicServiceProtocol?
+    private(set) var extrinsicService: ExtrinsicServiceProtocol?
     private var controllerAccountProvider: StreamableProvider<MetaAccountModel>?
     private var stashAccountProvider: StreamableProvider<MetaAccountModel>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -225,6 +225,19 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching, StakingProxyBaseInter
     func proxyAccount() -> AccountId {
         AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
     }
+
+    func handleStashItemChainAccountResponse(_ response: MetaChainAccountResponse?) {
+        if let response = response {
+            extrinsicService = extrinsicServiceFactory.createService(
+                account: response.chainAccount,
+                chain: chainAsset.chain
+            )
+            estimateFee()
+        } else {
+            extrinsicService = nil
+            estimateFee()
+        }
+    }
 }
 
 extension StakingProxyBaseInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
@@ -299,15 +312,10 @@ extension StakingProxyBaseInteractor: AccountLocalSubscriptionHandler, AccountLo
         switch result {
         case let .success(optAccount):
             if let account = optAccount {
-                extrinsicService = extrinsicServiceFactory.createService(
-                    account: account.chainAccount,
-                    chain: chainAsset.chain
-                )
-                estimateFee()
+                handleStashItemChainAccountResponse(optAccount)
             }
         case .failure:
-            extrinsicService = nil
-            estimateFee()
+            handleStashItemChainAccountResponse(nil)
         }
     }
 }

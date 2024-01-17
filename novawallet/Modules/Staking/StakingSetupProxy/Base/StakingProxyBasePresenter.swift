@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 
 class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
-    weak var baseView: StakingSetupProxyViewProtocol?
+    weak var baseView: StakingSetupProxyBaseViewProtocol?
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let chainAsset: ChainAsset
     let dataValidatingFactory: ProxyDataValidatorFactoryProtocol

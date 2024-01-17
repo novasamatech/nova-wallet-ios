@@ -1,15 +1,22 @@
 import Foundation
 import SoraFoundation
 
-struct StakingSetupProxyViewFactory {
-    static func createView(state: RelaychainStakingSharedStateProtocol) -> StakingSetupProxyViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+struct StakingConfirmProxyViewFactory {
+    static func createView(
+        state: RelaychainStakingSharedStateProtocol,
+        proxyAddress: AccountAddress
+    ) -> StakingConfirmProxyViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared,
+              let wallet = SelectedWalletSettings.shared.value,
+              let interactor = createInteractor(
+                  state: state,
+                  proxyAddress: proxyAddress
+              ) else {
             return nil
         }
-        guard let interactor = createInteractor(state: state) else {
-            return nil
-        }
-        let wireframe = StakingSetupProxyWireframe(state: state)
+
+        let wireframe = StakingConfirmProxyWireframe()
+
         let chainAsset = state.stakingOption.chainAsset
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -23,19 +30,21 @@ struct StakingSetupProxyViewFactory {
                 priceAssetInfoFactory: priceAssetInfoFactory
             )
         )
-        let presenter = StakingSetupProxyPresenter(
+
+        let presenter = StakingConfirmProxyPresenter(
             chainAsset: chainAsset,
+            wallet: wallet,
+            proxyAddress: proxyAddress,
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            web3NameViewModelFactory: Web3NameViewModelFactory(
-                displayAddressViewModelFactory: DisplayAddressViewModelFactory()
-            ),
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            networkViewModelFactory: NetworkViewModelFactory(),
             localizationManager: LocalizationManager.shared
         )
 
-        let view = StakingSetupProxyViewController(
+        let view = StakingConfirmProxyViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
@@ -48,8 +57,9 @@ struct StakingSetupProxyViewFactory {
     }
 
     private static func createInteractor(
-        state: RelaychainStakingSharedStateProtocol
-    ) -> StakingSetupProxyInteractor? {
+        state: RelaychainStakingSharedStateProtocol,
+        proxyAddress: AccountAddress
+    ) -> StakingConfirmProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
 
@@ -76,16 +86,9 @@ struct StakingSetupProxyViewFactory {
             logger: Logger.shared
         )
 
-        let web3NamesService = createWeb3NameService()
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
-            for: nil,
-            sortDescriptors: [NSSortDescriptor.accountsByOrder]
-        )
-
-        return StakingSetupProxyInteractor(
-            web3NamesService: web3NamesService,
-            accountRepository: accountRepository,
+        return StakingConfirmProxyInteractor(
+            proxyAccount: proxyAddress,
+            signingWrapperFactory: SigningWrapperFactory(),
             runtimeService: runtimeRegistry,
             sharedState: state,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
@@ -98,38 +101,6 @@ struct StakingSetupProxyViewFactory {
             chainAsset: chainAsset,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-    }
-
-    private static func createWeb3NameService() -> Web3NameServiceProtocol? {
-        let kiltChainId = KnowChainId.kiltOnEnviroment
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard let kiltConnection = chainRegistry.getConnection(for: kiltChainId),
-              let kiltRuntimeService = chainRegistry.getRuntimeProvider(for: kiltChainId) else {
-            return nil
-        }
-
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
-
-        let recipientRepositoryFactory = Web3TransferRecipientRepositoryFactory(
-            integrityVerifierFactory: Web3TransferRecipientIntegrityVerifierFactory()
-        )
-
-        let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
-        let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
-            for: slip44CoinsUrl
-        )
-
-        return Web3NameService(
-            providerName: Web3NameProvider.kilt,
-            slip44CoinsProvider: slip44CoinsProvider,
-            web3NamesOperationFactory: web3NamesOperationFactory,
-            runtimeService: kiltRuntimeService,
-            connection: kiltConnection,
-            transferRecipientRepositoryFactory: recipientRepositoryFactory,
-            operationQueue: operationQueue
         )
     }
 }
