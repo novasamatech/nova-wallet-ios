@@ -58,6 +58,9 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
         rootView.proxyAddressCell.titleLabel.text = R.string.localizable.stakingConfirmProxyAccountProxy(
             preferredLanguages: languages
         )
+        rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+            preferredLanguages: languages
+        )
         title = R.string.localizable.delegationsAddTitle(
             preferredLanguages: languages
         )

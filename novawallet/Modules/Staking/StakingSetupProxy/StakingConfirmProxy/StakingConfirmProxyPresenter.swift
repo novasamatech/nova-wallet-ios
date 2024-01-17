@@ -119,6 +119,8 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
 extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProtocol {
     func didSubmit() {
         view?.didStopLoading()
+        
+        wireframe.complete(from: view)
     }
 
     func didReceive(error: StakingConfirmProxyError) {
