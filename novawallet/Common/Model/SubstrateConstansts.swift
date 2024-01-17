@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct SubstrateConstants {
-    static let maxNominations = 16
+    static let maxNominations: UInt32 = 16
     static let accountIdLength = 32
     static let ethereumAddressLength = 20
     static let paraIdLength = 4

@@ -147,6 +147,8 @@
 		0C37AFBB2B556A9300009ECA /* StakingPagedExposureFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFBA2B556A9300009ECA /* StakingPagedExposureFactory.swift */; };
 		0C37AFBD2B55732100009ECA /* NMapKeyEncodingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFBC2B55732100009ECA /* NMapKeyEncodingOperation.swift */; };
 		0C37AFBF2B56852500009ECA /* PayoutStakersCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFBE2B56852500009ECA /* PayoutStakersCall.swift */; };
+		0C37AFC12B56EBC000009ECA /* MaxNominationsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFC02B56EBC000009ECA /* MaxNominationsOperationFactory.swift */; };
+		0C37AFC32B5796DD00009ECA /* StateCallOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFC22B5796DD00009ECA /* StateCallOperationFactory.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
@@ -4360,6 +4362,8 @@
 		0C37AFBA2B556A9300009ECA /* StakingPagedExposureFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPagedExposureFactory.swift; sourceTree = "<group>"; };
 		0C37AFBC2B55732100009ECA /* NMapKeyEncodingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NMapKeyEncodingOperation.swift; sourceTree = "<group>"; };
 		0C37AFBE2B56852500009ECA /* PayoutStakersCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutStakersCall.swift; sourceTree = "<group>"; };
+		0C37AFC02B56EBC000009ECA /* MaxNominationsOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxNominationsOperationFactory.swift; sourceTree = "<group>"; };
+		0C37AFC22B5796DD00009ECA /* StateCallOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateCallOperationFactory.swift; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
@@ -11161,6 +11165,7 @@
 				84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */,
 				84329ED12832636F0020BC1C /* RoundCountdown.swift */,
 				84DD261329ACA9030032A598 /* VotersInfoOperationFactory.swift */,
+				0C37AFC02B56EBC000009ECA /* MaxNominationsOperationFactory.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -14331,6 +14336,7 @@
 				84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */,
 				8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */,
 				0C37AFBC2B55732100009ECA /* NMapKeyEncodingOperation.swift */,
+				0C37AFC22B5796DD00009ECA /* StateCallOperationFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -22193,6 +22199,7 @@
 				843910B6253EE62B00E3C217 /* DataProviderChange+Result.swift in Sources */,
 				84D8753D28EB17B2004065BD /* GovernanceSharedState.swift in Sources */,
 				8436EDE725895846004D9E97 /* PurchaseProvider.swift in Sources */,
+				0C37AFC32B5796DD00009ECA /* StateCallOperationFactory.swift in Sources */,
 				880059D828EEBC0200E87B9B /* SliderView.swift in Sources */,
 				84AF08DF2941DB2300D0572B /* MultichainTokenView.swift in Sources */,
 				84FB29942639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift in Sources */,
@@ -22809,6 +22816,7 @@
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
 				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,
 				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
+				0C37AFC12B56EBC000009ECA /* MaxNominationsOperationFactory.swift in Sources */,
 				0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				0C0CB3822AC545A800EAC516 /* AssetConversionExtrinsicService.swift in Sources */,
