@@ -27,7 +27,7 @@ protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func proxyNotExists(
         address: String,
         chain: ChainModel,
-        proxyList: ProxyDefinition?,
+        proxyList: [Proxy.ProxyDefinition]?,
         locale: Locale
     ) -> DataValidating
 }
@@ -140,7 +140,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
     func proxyNotExists(
         address: String,
         chain: ChainModel,
-        proxyList: ProxyDefinition?,
+        proxyList: [Proxy.ProxyDefinition]?,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -154,10 +154,10 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             )
         }, preservesCondition: {
             guard let proxyList = proxyList else {
-                return true
+                return false
             }
             let accountId = try? address.toAccountId(using: chain.chainFormat)
-            return proxyList.definition.contains(where: { $0.proxy == accountId }) == false
+            return proxyList.contains(where: { $0.proxy == accountId }) == false
         })
     }
 }

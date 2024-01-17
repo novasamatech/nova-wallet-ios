@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import SubstrateSdk
 
 final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
     weak var view: StakingSetupProxyViewProtocol? {
@@ -12,6 +13,9 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
     let web3NameViewModelFactory: Web3NameViewModelFactoryProtocol
     private(set) var proxyAddress: StakingSetupProxyAccount? {
         didSet {
+            guard view?.isSetup == true else {
+                return
+            }
             switch proxyAddress {
             case .none, .address:
                 view?.didReceiveWeb3NameProxy(viewModel: .loaded(value: nil))
@@ -20,10 +24,12 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
                 view?.didReceiveWeb3NameProxy(viewModel: isLoading ? .loading :
                     .loaded(value: externalAccount.recipient.value??.displayTitle))
             }
+            provideAccountFieldStateViewModel()
         }
     }
 
     private var yourWallets: [MetaAccountChainResponse] = []
+    private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
         chainAsset: ChainAsset,
@@ -149,6 +155,19 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
 
     override func getProxyAddress() -> AccountAddress {
         proxyAddress?.address ?? ""
+    }
+
+    private func provideAccountFieldStateViewModel() {
+        if
+            let accountId = try? getProxyAddress().toAccountId(using: chainAsset.chain.chainFormat),
+            let icon = try? iconGenerator.generateFromAccountId(accountId) {
+            let iconViewModel = DrawableIconViewModel(icon: icon)
+            let viewModel = AccountFieldStateViewModel(icon: iconViewModel)
+            view?.didReceiveAccountState(viewModel: viewModel)
+        } else {
+            let viewModel = AccountFieldStateViewModel(icon: nil)
+            view?.didReceiveAccountState(viewModel: viewModel)
+        }
     }
 }
 

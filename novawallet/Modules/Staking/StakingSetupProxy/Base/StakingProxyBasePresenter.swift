@@ -16,7 +16,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     private var fee: ExtrinsicFeeProtocol?
     private var existensialDeposit: BigUInt?
     private var maxProxies: Int?
-    private var proxy: ProxyDefinition?
+    private var proxy: UncertainStorage<ProxyDefinition?> = .undefined
 
     init(
         chainAsset: ChainAsset,
@@ -86,11 +86,11 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
             dataValidatingFactory.proxyNotExists(
                 address: getProxyAddress(),
                 chain: chainAsset.chain,
-                proxyList: proxy,
+                proxyList: proxy.map { $0?.definition ?? [] }.value,
                 locale: selectedLocale
             ),
             dataValidatingFactory.notReachedMaximimProxyCount(
-                proxy?.definition.count,
+                proxy.map { $0?.definition.count ?? 0 }.value,
                 limit: maxProxies,
                 chain: chainAsset.chain,
                 locale: selectedLocale
@@ -173,7 +173,7 @@ extension StakingProxyBasePresenter: StakingProxyBaseInteractorOutputProtocol {
     }
 
     func didReceive(proxy: ProxyDefinition?) {
-        self.proxy = proxy
+        self.proxy = .defined(proxy)
     }
 
     func didReceive(price: PriceData?) {

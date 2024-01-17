@@ -177,6 +177,10 @@ extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
     func didReceiveYourWallets(state: YourWalletsControl.State) {
         rootView.yourWalletsControl.apply(state: state)
     }
+
+    func didReceiveAccountState(viewModel: AccountFieldStateViewModel) {
+        rootView.accountInputView.bind(fieldStateViewModel: viewModel)
+    }
 }
 
 extension StakingSetupProxyViewController: Localizable {

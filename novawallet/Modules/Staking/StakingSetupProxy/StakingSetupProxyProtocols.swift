@@ -6,6 +6,7 @@ protocol StakingSetupProxyViewProtocol: StakingSetupProxyBaseViewProtocol {
     func didReceiveProxyAccountInput(viewModel: InputViewModelProtocol)
     func didReceiveWeb3NameProxy(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>)
     func didReceiveYourWallets(state: YourWalletsControl.State)
+    func didReceiveAccountState(viewModel: AccountFieldStateViewModel)
 }
 
 protocol StakingSetupProxyPresenterProtocol: StakingSetupProxyBasePresenterProtocol {

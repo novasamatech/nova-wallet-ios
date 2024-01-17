@@ -10,13 +10,17 @@ struct ProxyDepositCalculator {
             return nil
         }
 
-        let currentDeposit = base + BigUInt(proxyCount) * factor
-        let newDeposit = base + BigUInt(proxyCount + 1) * factor
+        let currentDeposit = proxyCount > 0 ? calculate(base: base, factor: factor, proxyCount: proxyCount) : 0
+        let newDeposit = calculate(base: base, factor: factor, proxyCount: proxyCount + 1)
 
         return .init(
             current: currentDeposit,
             new: newDeposit
         )
+    }
+
+    func calculate(base: BigUInt, factor: BigUInt, proxyCount: Int) -> BigUInt {
+        base + BigUInt(proxyCount) * factor
     }
 }
 
