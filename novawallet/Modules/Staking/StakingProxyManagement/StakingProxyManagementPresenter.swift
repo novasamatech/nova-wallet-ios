@@ -7,6 +7,7 @@ final class StakingProxyManagementPresenter {
     let wireframe: StakingProxyManagementWireframeProtocol
     let interactor: StakingProxyManagementInteractorInputProtocol
     let chainAsset: ChainAsset
+    let logger: LoggerProtocol
 
     private lazy var novaIconGenerator = NovaIconGenerator()
     private lazy var polkadotIconGenerator = PolkadotIconGenerator()
@@ -18,12 +19,14 @@ final class StakingProxyManagementPresenter {
         chainAsset: ChainAsset,
         interactor: StakingProxyManagementInteractorInputProtocol,
         wireframe: StakingProxyManagementWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
         self.localizationManager = localizationManager
+        self.logger = logger
     }
 
     private func imageViewModel(from icon: DrawableIcon?, accountId: AccountId) -> IdentifiableDrawableIconViewModel? {
@@ -131,5 +134,17 @@ extension StakingProxyManagementPresenter: StakingProxyManagementInteractorOutpu
         provideViewModel()
     }
 
-    func didReceive(error _: StakingProxyManagementError) {}
+    func didReceive(error: StakingProxyManagementError) {
+        switch error {
+        case let .identities(error):
+            logger.error("Error occured while fetching identities: \(error.localizedDescription)")
+        case let .proxyDefifnition(error):
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.interactor.setup()
+            }
+        }
+    }
 }

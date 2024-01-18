@@ -18,7 +18,8 @@ protocol StakingProxyManagementInteractorOutputProtocol: AnyObject {
     func didReceive(error: StakingProxyManagementError)
 }
 
-protocol StakingProxyManagementWireframeProtocol: AnyObject, AddressOptionsPresentable {
+protocol StakingProxyManagementWireframeProtocol: AnyObject, AddressOptionsPresentable,
+    AlertPresentable, CommonRetryable, ErrorPresentable {
     func showAddProxy(from view: ControllerBackedProtocol?)
     func showRevokeProxyAccess(from view: ControllerBackedProtocol?)
 }

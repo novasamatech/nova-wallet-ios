@@ -37,7 +37,8 @@ struct StakingProxyManagementViewFactory {
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = StakingProxyManagementViewController(
