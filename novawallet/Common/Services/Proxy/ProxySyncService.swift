@@ -15,16 +15,20 @@ protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
     func syncUp()
 }
 
+typealias ProxySyncChainFilter = (ChainModel) -> Bool
+typealias ProxySyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
+
 final class ProxySyncService {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
-    let chainsFilter: (ChainModel) -> Bool
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
+    let chainFilter: ProxySyncChainFilter?
+    let chainWalletFilter: ProxySyncChainWalletFilter?
 
     private(set) var isActive: Bool = false
 
@@ -46,7 +50,8 @@ final class ProxySyncService {
             attributes: .concurrent
         ),
         logger: LoggerProtocol = Logger.shared,
-        chainsFilter: ((ChainModel) -> Bool)? = nil
+        chainFilter: @escaping ProxySyncChainFilter,
+        chainWalletFilter: ProxySyncChainWalletFilter? = nil
     ) {
         self.chainRegistry = chainRegistry
         self.proxyOperationFactory = proxyOperationFactory
@@ -56,7 +61,9 @@ final class ProxySyncService {
         self.logger = logger
         self.eventCenter = eventCenter
         self.metaAccountsRepository = metaAccountsRepository
-        self.chainsFilter = chainsFilter ?? { $0.hasProxy }
+        self.chainFilter = chainFilter
+        self.chainWalletFilter = chainWalletFilter
+
         subscribeChains()
     }
 
@@ -94,10 +101,11 @@ final class ProxySyncService {
     }
 
     private func setupSyncService(for chain: ChainModel) {
-        if !chainsFilter(chain) {
+        if let chainFilter = chainFilter, !chainFilter(chain) {
             stopSyncSevice(for: chain.chainId)
             return
         }
+
         guard updaters[chain.chainId] == nil else {
             return
         }
