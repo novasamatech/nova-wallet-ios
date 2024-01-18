@@ -1459,7 +1459,7 @@
 "proxy.updates.hint" = "Nova Wallet automatically adds delegated authorities (Proxy) to a separate category for you. You can always manage wallets in Settings.";
 "proxy.updates.hint.link" = "What is a Proxy?";
 "proxy.updates.title" = "Delegated accounts update";
-"proxy.updates.proxy.revoked" = "access was revoked";
+"proxy.updates.proxy.revoked" = "no longer valid";
 "proxy.details.hint" = "This account granted access to perform transactions to the following account:";
 "nft.fungible.price" = "%@ for %@";
 "nft.issuance.fungible.format" = "%@ units of %@";
