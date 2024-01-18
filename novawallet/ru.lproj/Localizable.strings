@@ -1392,6 +1392,8 @@
 "staking.confirm.proxy.type.title" = "Выданный тип доступа";
 "staking.confirm.proxy.type.subtitle" = "Операции стекинга";
 "staking.confirm.proxy.account.proxy" = "Делегировать";
+"staking.proxy.management.title" = "Делегированные полномочия (прокси)";
+"staking.proxy.management.revoke.access" = "Отозвать доступ";
 "common.and" = " и ";
 "common.time.period.after" = "через";
 "common.time.period.every" = "раз в";
