@@ -21,7 +21,16 @@ enum ProxyMessageSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.proxySigningMessage(proxyName, preferredLanguages: locale.rLanguages)
+            let marker = AttributedReplacementStringDecorator.marker
+            let template = R.string.localizable.proxySigningMessage(marker, preferredLanguages: locale.rLanguages)
+
+            let decorator = AttributedReplacementStringDecorator(
+                pattern: marker,
+                replacements: [proxyName],
+                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+            )
+
+            return decorator.decorate(attributedString: NSAttributedString(string: template))
         }
 
         let text = LocalizableResource { locale in
@@ -45,6 +54,7 @@ enum ProxyMessageSheetViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        view.allowsSwipeDown = false
         view.controller.preferredContentSize = CGSize(width: 0, height: 348)
 
         presenter.view = view
@@ -62,21 +72,28 @@ enum ProxyMessageSheetViewFactory {
         type: LocalizableResource<String>,
         completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
-        let wireframe = MessageSheetWireframe()
-
-        let presenter = MessageSheetPresenter(wireframe: wireframe)
-
         let title = LocalizableResource { locale in
             R.string.localizable.proxySigningNotEnoughPermissionsTitle(preferredLanguages: locale.rLanguages)
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.proxySigningNotEnoughPermissionsMessage(
-                proxiedName,
-                proxyName,
-                type.value(for: locale),
+            let marker = AttributedReplacementStringDecorator.marker
+            let template = R.string.localizable.proxySigningNotEnoughPermissionsMessage(
+                marker,
+                marker,
+                marker,
                 preferredLanguages: locale.rLanguages
             )
+
+            let replacements = [proxiedName, proxyName, type.value(for: locale)]
+
+            let decorator = AttributedReplacementStringDecorator(
+                pattern: marker,
+                replacements: replacements,
+                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+            )
+
+            return decorator.decorate(attributedString: NSAttributedString(string: template))
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
@@ -88,19 +105,12 @@ enum ProxyMessageSheetViewFactory {
             secondaryAction: nil
         )
 
-        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
-            presenter: presenter,
-            viewModel: viewModel,
-            localizationManager: LocalizationManager.shared
-        )
-
-        view.controller.preferredContentSize = CGSize(width: 0.0, height: 284.0)
-
-        presenter.view = view
+        let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 284.0)
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-        view.controller.modalTransitioningFactory = factory
-        view.controller.modalPresentationStyle = .custom
+        view?.controller.modalTransitioningFactory = factory
+        view?.controller.modalPresentationStyle = .custom
 
         return view
     }
