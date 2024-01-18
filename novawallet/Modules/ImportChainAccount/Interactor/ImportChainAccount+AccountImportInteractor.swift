@@ -64,7 +64,7 @@ extension ImportChainAccount {
                 DispatchQueue.main.async {
                     switch saveOperation.result {
                     case .success:
-                        self?.eventCenter.notify(with: ChainAccountChanged())
+                        self?.eventCenter.notify(with: ChainAccountChanged(method: .manually))
                         self?.presenter?.didCompleteAccountImport()
 
                     case let .failure(error):

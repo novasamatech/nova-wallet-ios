@@ -67,7 +67,7 @@ final class ChangeWatchOnlyInteractor {
             DispatchQueue.main.async {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
-                    self?.eventCenter.notify(with: ChainAccountChanged())
+                    self?.eventCenter.notify(with: ChainAccountChanged(method: .manually))
                     self?.presenter?.didSaveAddress(newAddress)
                 } catch {
                     self?.presenter?.didReceiveError(error)

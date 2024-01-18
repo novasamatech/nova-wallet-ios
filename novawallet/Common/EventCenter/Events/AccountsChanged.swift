@@ -1,10 +1,10 @@
-struct AccountsChanged: EventProtocol {
-    enum ChangeType {
-        case manually
-        case automatically
-    }
+enum AccountChangeType {
+    case manually
+    case automatically
+}
 
-    var method: ChangeType
+struct AccountsChanged: EventProtocol {
+    let method: AccountChangeType
 
     func accept(visitor: EventVisitorProtocol) {
         visitor.processAccountsChanged(event: self)
