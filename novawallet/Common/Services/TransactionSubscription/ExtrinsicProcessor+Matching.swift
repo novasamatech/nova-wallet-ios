@@ -267,12 +267,34 @@ extension ExtrinsicProcessor {
                 with: runtimeJsonContext.toRawContext()
             ).accountId
 
-            let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
+            guard let extrinsicSender = maybeSender else {
+                return nil
+            }
+
+            let call: RuntimeCall<NoRuntimeArgs>
+            let isAccountMatched: Bool
+            let callSender: AccountId
+
+            if extrinsicSender == accountId {
+                call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
+                isAccountMatched = true
+                callSender = extrinsicSender
+            } else {
+                let callMapper = NestedExtrinsicCallMapper(extrinsicSender: extrinsicSender)
+                let result: NestedExtrinsicCallMapResult<RuntimeCall<NoRuntimeArgs>>
+                result = try callMapper.mapRuntimeCall(
+                    call: extrinsic.call,
+                    context: runtimeJsonContext
+                )
+
+                call = result.call
+                isAccountMatched = accountId == result.callSender
+                callSender = result.callSender
+            }
+
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == maybeSender
 
             guard
-                let sender = maybeSender,
                 isAccountMatched,
                 let isSuccess = matchStatus(
                     for: extrinsicIndex,
@@ -284,7 +306,7 @@ extension ExtrinsicProcessor {
 
             let fee = findFee(
                 for: extrinsicIndex,
-                sender: sender,
+                sender: extrinsicSender,
                 eventRecords: eventRecords,
                 metadata: metadata,
                 runtimeJsonContext: runtimeJsonContext
@@ -295,7 +317,7 @@ extension ExtrinsicProcessor {
             }
 
             return ExtrinsicProcessingResult(
-                sender: sender,
+                sender: callSender,
                 callPath: callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
