@@ -83,6 +83,10 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         let viewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
         view?.didReceiveProxyAddress(viewModel: viewModel)
     }
+
+    override func getProxyAddress() -> AccountAddress {
+        proxyAddress
+    }
 }
 
 extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {

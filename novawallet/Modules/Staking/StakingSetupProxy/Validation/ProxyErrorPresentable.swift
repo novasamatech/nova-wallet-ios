@@ -8,12 +8,6 @@ protocol ProxyErrorPresentable: BaseErrorPresentable {
         locale: Locale?
     )
 
-    func presentNotValidAddress(
-        from view: ControllerBackedProtocol,
-        networkName: String,
-        locale: Locale?
-    )
-
     func presentMaximumProxyCount(
         from view: ControllerBackedProtocol?,
         limit: String,
@@ -25,6 +19,12 @@ protocol ProxyErrorPresentable: BaseErrorPresentable {
         from view: ControllerBackedProtocol?,
         account: String,
         locale: Locale
+    )
+
+    func presentNotValidAddress(
+        from view: ControllerBackedProtocol,
+        networkName: String,
+        locale: Locale?
     )
 }
 
@@ -40,23 +40,6 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         let message = R.string.localizable.stakingSetupProxyErrorInsufficientBalanceMessage(
             deposit,
             balance,
-            preferredLanguages: locale?.rLanguages
-        )
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale?.rLanguages)
-
-        present(message: message, title: title, closeAction: closeAction, from: view)
-    }
-
-    func presentNotValidAddress(
-        from view: ControllerBackedProtocol,
-        networkName: String,
-        locale: Locale?
-    ) {
-        let title = R.string.localizable.stakingSetupProxyErrorInvalidAddressTitle(
-            preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingSetupProxyErrorInvalidAddressMessage(
-            networkName,
             preferredLanguages: locale?.rLanguages
         )
         let closeAction = R.string.localizable.commonClose(
@@ -97,6 +80,23 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         )
         let closeAction = R.string.localizable.commonClose(
             preferredLanguages: locale.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentNotValidAddress(
+        from view: ControllerBackedProtocol,
+        networkName: String,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.stakingSetupProxyErrorInvalidAddressTitle(
+            preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.stakingSetupProxyErrorInvalidAddressMessage(
+            networkName,
+            preferredLanguages: locale?.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(
+            preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }

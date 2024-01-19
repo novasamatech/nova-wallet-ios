@@ -927,6 +927,7 @@
 		77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */; };
 		77C35CE52B568ED100308F16 /* YourWalletsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */; };
 		77C35CE72B56D07300308F16 /* ScanAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */; };
+		77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */; };
 		77C976202AF36A170049272C /* SwapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9761F2AF36A170049272C /* SwapModels.swift */; };
 		77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */; };
 		77C976242AF3A5280049272C /* SwapViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976232AF3A5280049272C /* SwapViewModels.swift */; };
@@ -5152,6 +5153,7 @@
 		77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsPoolRewardView.swift; sourceTree = "<group>"; };
 		77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsPresentable.swift; sourceTree = "<group>"; };
 		77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAddressPresentable.swift; sourceTree = "<group>"; };
+		77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceFactory.swift; sourceTree = "<group>"; };
 		77C9761F2AF36A170049272C /* SwapModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapModels.swift; sourceTree = "<group>"; };
 		77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperationTableViewCell.swift; sourceTree = "<group>"; };
 		77C976232AF3A5280049272C /* SwapViewModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapViewModels.swift; sourceTree = "<group>"; };
@@ -17717,6 +17719,7 @@
 				8886020A29D101B000C6344C /* Web3NameServiceError.swift */,
 				84C1E7C829EE990800D37668 /* Web3NameProvider.swift */,
 				77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */,
+				77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */,
 			);
 			path = Web3Name;
 			sourceTree = "<group>";
@@ -20408,6 +20411,7 @@
 				88DA0CD0295F345E0009F70F /* WKWebView+VewportScript.swift in Sources */,
 				84DA3B1224C6D29100B5E27F /* RuntimeVersion.swift in Sources */,
 				0C962F882AA85C7F00C0B551 /* TransactionHistoryAccountPrefixFilter.swift in Sources */,
+				77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */,
 				840E59BD2A188B7B00BA6ADD /* UIImage+Filter.swift in Sources */,
 				0CB06E752A68139C00C7EC99 /* StakingDashboardNominationPoolMapper.swift in Sources */,
 				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,

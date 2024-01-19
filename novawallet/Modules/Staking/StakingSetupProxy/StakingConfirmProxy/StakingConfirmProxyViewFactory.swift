@@ -10,6 +10,7 @@ struct StakingConfirmProxyViewFactory {
               let wallet = SelectedWalletSettings.shared.value,
               let interactor = createInteractor(
                   state: state,
+                  wallet: wallet,
                   proxyAddress: proxyAddress
               ) else {
             return nil
@@ -58,13 +59,14 @@ struct StakingConfirmProxyViewFactory {
 
     private static func createInteractor(
         state: RelaychainStakingSharedStateProtocol,
+        wallet: MetaAccountModel,
         proxyAddress: AccountAddress
     ) -> StakingConfirmProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
 
         guard
-            let selectedAccount = SelectedWalletSettings.shared.value.fetch(
+            let selectedAccount = wallet.fetch(
                 for: chainAsset.chain.accountRequest()
             ),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -73,12 +75,12 @@ struct StakingConfirmProxyViewFactory {
             return nil
         }
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager,
             userStorageFacade: UserDataStorageFacade.shared
-        )
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
 
         let accountProviderFactory = AccountProviderFactory(
             storageFacade: UserDataStorageFacade.shared,
@@ -86,9 +88,14 @@ struct StakingConfirmProxyViewFactory {
             logger: Logger.shared
         )
 
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: wallet.metaId,
+            accountResponse: selectedAccount
+        )
+
         return StakingConfirmProxyInteractor(
             proxyAccount: proxyAddress,
-            signingWrapperFactory: SigningWrapperFactory(),
+            signingWrapper: signingWrapper,
             runtimeService: runtimeRegistry,
             sharedState: state,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
@@ -96,9 +103,8 @@ struct StakingConfirmProxyViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             callFactory: SubstrateCallFactory(),
             feeProxy: ExtrinsicFeeProxy(),
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
-            chainAsset: chainAsset,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
