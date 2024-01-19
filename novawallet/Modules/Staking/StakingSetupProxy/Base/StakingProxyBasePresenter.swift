@@ -135,13 +135,9 @@ extension StakingProxyBasePresenter: StakingProxyBaseInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.interactor.refetchConstants()
             }
-        case .handleProxies, .balance:
+        case .handleProxies, .balance, .price:
             wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
-            }
-        case .stashItem, .price:
-            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
-                self?.interactor.setup()
             }
         case .fee:
             wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in

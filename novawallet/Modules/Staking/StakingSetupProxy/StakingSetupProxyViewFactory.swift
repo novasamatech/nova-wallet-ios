@@ -63,12 +63,12 @@ struct StakingSetupProxyViewFactory {
             return nil
         }
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager,
             userStorageFacade: UserDataStorageFacade.shared
-        )
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
 
         let accountProviderFactory = AccountProviderFactory(
             storageFacade: UserDataStorageFacade.shared,
@@ -93,9 +93,8 @@ struct StakingSetupProxyViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             callFactory: SubstrateCallFactory(),
             feeProxy: ExtrinsicFeeProxy(),
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
-            chainAsset: chainAsset,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

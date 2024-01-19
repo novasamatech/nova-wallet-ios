@@ -20,9 +20,8 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
         selectedAccount: ChainAccountResponse,
-        chainAsset: ChainAsset,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -37,9 +36,8 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             callFactory: callFactory,
             feeProxy: feeProxy,
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
-            chainAsset: chainAsset,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
