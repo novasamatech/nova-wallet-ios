@@ -25,11 +25,15 @@ final class ProxySignConfirmationViewFactory {
 
         let view = ControllerBacked(controller: viewController)
 
-        return ProxySignConfirmationPresenter(
+        let presenter = ProxySignConfirmationPresenter(
             view: view,
             interactor: interactor,
             wireframe: wireframe,
             completionClosure: completionClosure
         )
+
+        interactor.presenter = presenter
+
+        return presenter
     }
 }
