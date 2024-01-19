@@ -15,10 +15,11 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         from view: ControllerBackedProtocol,
         balance: String,
         fee: String,
-        accountName _: String,
+        accountName: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.commonNotEnoughFeeMessage_v380(
+        let message = R.string.localizable.proxyFeeErrorMessage(
+            accountName,
             fee,
             balance,
             preferredLanguages: locale?.rLanguages

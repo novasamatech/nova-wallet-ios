@@ -16,7 +16,7 @@ extension ProxyDataValidatorFactoryProtocol {
     func canPayFeeInPlank(
         balance: BigUInt?,
         fee: ExtrinsicFeeProtocol?,
-        proxyName _: String,
+        proxyName: String,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
@@ -26,6 +26,7 @@ extension ProxyDataValidatorFactoryProtocol {
         return canPayFee(
             balance: balanceDecimal,
             fee: fee,
+            proxyName: proxyName,
             asset: asset,
             locale: locale
         )
