@@ -5,16 +5,24 @@ import SoraUI
 
 enum ProxyMessageSheetViewFactory {
     static func createSigningView(
+        proxiedId: MetaAccountModel.Id,
         proxyName: String,
         completionClosure: @escaping MessageSheetCallback,
         cancelClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe()
 
-        let presenter = ProxyMessageSheetPresenter(
-            settings: SettingsManager.shared,
-            wireframe: wireframe
+        let repositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let repository = repositoryFactory.createProxiedSettingsRepository()
+
+        let interactor = ProxyMessageSheetInteractor(
+            metaId: proxiedId,
+            repository: repository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
+
+        let presenter = ProxyMessageSheetPresenter(interactor: interactor, wireframe: wireframe)
 
         let title = LocalizableResource { locale in
             R.string.localizable.proxySigningTitle(preferredLanguages: locale.rLanguages)
