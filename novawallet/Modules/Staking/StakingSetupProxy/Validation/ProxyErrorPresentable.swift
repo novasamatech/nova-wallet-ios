@@ -20,6 +20,12 @@ protocol ProxyErrorPresentable: BaseErrorPresentable {
         account: String,
         locale: Locale
     )
+
+    func presentNotValidAddress(
+        from view: ControllerBackedProtocol,
+        networkName: String,
+        locale: Locale?
+    )
 }
 
 extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -74,6 +80,23 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         )
         let closeAction = R.string.localizable.commonClose(
             preferredLanguages: locale.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentNotValidAddress(
+        from view: ControllerBackedProtocol,
+        networkName: String,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.stakingSetupProxyErrorInvalidAddressTitle(
+            preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.stakingSetupProxyErrorInvalidAddressMessage(
+            networkName,
+            preferredLanguages: locale?.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(
+            preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }

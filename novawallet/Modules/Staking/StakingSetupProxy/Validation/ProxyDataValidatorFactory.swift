@@ -24,6 +24,12 @@ protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         proxyList: [Proxy.ProxyDefinition]?,
         locale: Locale
     ) -> DataValidating
+
+    func validAddress(
+        _ address: String,
+        chain: ChainModel,
+        locale: Locale
+    ) -> DataValidating
 }
 
 final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
@@ -131,6 +137,26 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             }
             let accountId = try? address.toAccountId(using: chain.chainFormat)
             return proxyList.contains(where: { $0.proxy == accountId }) == false
+        })
+    }
+
+    func validAddress(
+        _ address: String,
+        chain: ChainModel,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentNotValidAddress(
+                from: view,
+                networkName: chain.name,
+                locale: locale
+            )
+        }, preservesCondition: {
+            let accountId = try? address.toAccountId(using: chain.chainFormat)
+            return accountId != nil
         })
     }
 }

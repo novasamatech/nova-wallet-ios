@@ -37,12 +37,6 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
         minBalance: BigUInt?,
         locale: Locale
     ) -> DataValidating
-
-    func validAddress(
-        _ address: String,
-        chain: ChainModel,
-        locale: Locale
-    ) -> DataValidating
 }
 
 extension BaseDataValidatingFactoryProtocol {
@@ -267,26 +261,6 @@ extension BaseDataValidatingFactoryProtocol {
             } else {
                 return false
             }
-        })
-    }
-
-    func validAddress(
-        _ address: String,
-        chain: ChainModel,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-            self?.basePresentable.presentNotValidAddress(
-                from: view,
-                networkName: chain.name,
-                locale: locale
-            )
-        }, preservesCondition: {
-            let accountId = try? address.toAccountId(using: chain.chainFormat)
-            return accountId != nil
         })
     }
 }
