@@ -29,6 +29,9 @@ struct ProxyDeposit {
     let new: BigUInt
 
     var diff: BigUInt {
-        new - current
+        guard new > current else {
+            return 0
+        }
+        return new - current
     }
 }

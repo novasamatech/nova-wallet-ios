@@ -22,9 +22,9 @@ protocol StakingConfirmProxyInteractorOutputProtocol: StakingProxyBaseInteractor
     func didReceive(error: StakingConfirmProxyError)
 }
 
-protocol StakingConfirmProxyWireframeProtocol: StakingSetupProxyBaseWireframeProtocol, AddressOptionsPresentable {
-    func complete(from view: ControllerBackedProtocol?)
-}
+protocol StakingConfirmProxyWireframeProtocol: StakingSetupProxyBaseWireframeProtocol,
+    AddressOptionsPresentable, ExtrinsicSubmissionPresenting, ModalAlertPresenting,
+    ExtrinsicSigningErrorHandling, MessageSheetPresentable, ErrorPresentable {}
 
 enum StakingConfirmProxyError: Error {
     case submit(Error)

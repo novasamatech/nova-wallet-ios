@@ -4,16 +4,10 @@ import SoraFoundation
 
 protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func hasSufficientBalance(
-        available: BigUInt?,
+        available: BigUInt,
         deposit: BigUInt?,
         fee: BigUInt?,
         asset: AssetBalanceDisplayInfo,
-        locale: Locale
-    ) -> DataValidating
-
-    func validAddress(
-        _ address: String,
-        chain: ChainModel,
         locale: Locale
     ) -> DataValidating
 
@@ -28,6 +22,12 @@ protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         address: String,
         chain: ChainModel,
         proxyList: [Proxy.ProxyDefinition]?,
+        locale: Locale
+    ) -> DataValidating
+
+    func validAddress(
+        _ address: String,
+        chain: ChainModel,
         locale: Locale
     ) -> DataValidating
 }
@@ -49,7 +49,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
     }
 
     func hasSufficientBalance(
-        available: BigUInt?,
+        available: BigUInt,
         deposit: BigUInt?,
         fee: BigUInt?,
         asset: AssetBalanceDisplayInfo,
@@ -61,7 +61,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
                 let viewModelFactory = self?.balanceViewModelFactoryFacade else {
                 return
             }
-            let balanceDecimal = available?.decimal(assetInfo: asset)
+            let balanceDecimal = available.decimal(assetInfo: asset)
             let depositDecimal = deposit?.decimal(assetInfo: asset)
 
             let balanceModel = viewModelFactory.amountFromValue(
@@ -81,31 +81,10 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             )
         }, preservesCondition: {
             guard let deposit = deposit,
-                  let fee = fee,
-                  let available = available else {
+                  let fee = fee else {
                 return false
             }
             return available >= deposit + fee
-        })
-    }
-
-    func validAddress(
-        _ address: String,
-        chain: ChainModel,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-            self?.presentable.presentNotValidAddress(
-                from: view,
-                networkName: chain.name,
-                locale: locale
-            )
-        }, preservesCondition: {
-            let accountId = try? address.toAccountId(using: chain.chainFormat)
-            return accountId != nil
         })
     }
 
@@ -133,7 +112,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
                   let limit = limit else {
                 return false
             }
-            return proxyCount < limit
+            return proxyCount <= limit
         })
     }
 
@@ -158,6 +137,26 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             }
             let accountId = try? address.toAccountId(using: chain.chainFormat)
             return proxyList.contains(where: { $0.proxy == accountId }) == false
+        })
+    }
+
+    func validAddress(
+        _ address: String,
+        chain: ChainModel,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+            self?.presentable.presentNotValidAddress(
+                from: view,
+                networkName: chain.name,
+                locale: locale
+            )
+        }, preservesCondition: {
+            let accountId = try? address.toAccountId(using: chain.chainFormat)
+            return accountId != nil
         })
     }
 }

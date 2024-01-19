@@ -6,13 +6,11 @@ final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
     }
 
     let proxyAccount: AccountAddress
-    let signingWrapperFactory: SigningWrapperFactoryProtocol
-
-    private var signingWrapper: SigningWrapperProtocol?
+    let signingWrapper: SigningWrapperProtocol
 
     init(
         proxyAccount: AccountAddress,
-        signingWrapperFactory: SigningWrapperFactoryProtocol,
+        signingWrapper: SigningWrapperProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         sharedState: RelaychainStakingSharedStateProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -20,14 +18,13 @@ final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
         selectedAccount: ChainAccountResponse,
-        chainAsset: ChainAsset,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.proxyAccount = proxyAccount
-        self.signingWrapperFactory = signingWrapperFactory
+        self.signingWrapper = signingWrapper
 
         super.init(
             runtimeService: runtimeService,
@@ -37,37 +34,19 @@ final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             callFactory: callFactory,
             feeProxy: feeProxy,
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
-            chainAsset: chainAsset,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
-    }
-
-    override func handleStashItemChainAccountResponse(
-        _ response: MetaChainAccountResponse?
-    ) {
-        super.handleStashItemChainAccountResponse(response)
-
-        if let response = response {
-            signingWrapper = signingWrapperFactory.createSigningWrapper(
-                for: response.metaId,
-                accountResponse: response.chainAccount
-            )
-        } else {
-            signingWrapper = nil
-        }
     }
 }
 
 extension StakingConfirmProxyInteractor: StakingConfirmProxyInteractorInputProtocol {
     func submit() {
-        guard let extrinsicService = extrinsicService,
-              let signingWrapper = signingWrapper,
-              let proxyAccountId = try? proxyAccount.toAccountId(
-                  using: chainAsset.chain.chainFormat
-              ) else {
+        guard let proxyAccountId = try? proxyAccount.toAccountId(
+            using: chainAsset.chain.chainFormat
+        ) else {
             presenter?.didReceive(error: .submit(CommonError.undefined))
             return
         }

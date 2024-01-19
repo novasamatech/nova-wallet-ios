@@ -17,7 +17,6 @@ enum StakingProxyBaseError: Error {
     case handleProxies(Error)
     case balance(Error)
     case price(Error)
-    case stashItem(Error)
     case fee(Error)
     case fetchMaxProxyCount(Error)
     case fetchED(Error)
