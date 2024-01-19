@@ -4,10 +4,17 @@ import SubstrateSdk
 final class ExtrinsicProxySenderResolver {
     let wallets: [MetaAccountModel]
     let proxiedAccount: ChainAccountResponse
+    let proxyAccountId: AccountId
     let chain: ChainModel
 
-    init(proxiedAccount: ChainAccountResponse, wallets: [MetaAccountModel], chain: ChainModel) {
+    init(
+        proxiedAccount: ChainAccountResponse,
+        proxyAccountId: AccountId,
+        wallets: [MetaAccountModel],
+        chain: ChainModel
+    ) {
         self.proxiedAccount = proxiedAccount
+        self.proxyAccountId = proxyAccountId
         self.wallets = wallets
         self.chain = chain
     }
@@ -96,7 +103,12 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
             }
 
             let proxyTypes = ProxyCallFilter.getProxyTypes(for: callPath)
-            let paths = graph.resolveProxies(for: proxiedAccount.accountId, possibleProxyTypes: proxyTypes)
+            let paths = graph.resolveProxies(
+                for: proxiedAccount.accountId,
+                possibleProxyTypes: proxyTypes
+            ).filter { path in
+                path.components.first?.proxyAccountId == proxyAccountId
+            }
 
             do {
                 try pathMerger.combine(callPath: callPath, paths: paths)
