@@ -138,7 +138,7 @@ extension StakingProxyManagementPresenter: StakingProxyManagementInteractorOutpu
         switch error {
         case let .identities(error):
             logger.error("Error occured while fetching identities: \(error.localizedDescription)")
-        case let .proxyDefifnition(error):
+        case let .proxyDefifnition:
             wireframe.presentRequestStatus(
                 on: view,
                 locale: localizationManager.selectedLocale
