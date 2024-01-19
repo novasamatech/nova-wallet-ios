@@ -5,12 +5,15 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingConfirmProxyViewLayout
 
     let presenter: StakingConfirmProxyPresenterProtocol
+    let localizableTitle: LocalizableResource<String>
 
     init(
         presenter: StakingConfirmProxyPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        title: LocalizableResource<String>
     ) {
         self.presenter = presenter
+        localizableTitle = title
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -61,9 +64,7 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
         rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: languages
         )
-        title = R.string.localizable.delegationsAddTitle(
-            preferredLanguages: languages
-        )
+        title = localizableTitle.value(for: selectedLocale)
     }
 
     private func setupHandlers() {

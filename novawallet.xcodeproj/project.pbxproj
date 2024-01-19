@@ -927,6 +927,7 @@
 		77AB55592AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */; };
 		77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */; };
 		77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */; };
+		77B00A202B5AC6F200EAAEBE /* StakingProxyConfirmOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B00A1F2B5AC6F200EAAEBE /* StakingProxyConfirmOperation.swift */; };
 		77C35CE52B568ED100308F16 /* YourWalletsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */; };
 		77C35CE72B56D07300308F16 /* ScanAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */; };
 		77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */; };
@@ -5160,6 +5161,7 @@
 		77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashModel.swift; sourceTree = "<group>"; };
 		77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationPoolRewardOrSlashViewModel.swift; sourceTree = "<group>"; };
 		77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsPoolRewardView.swift; sourceTree = "<group>"; };
+		77B00A1F2B5AC6F200EAAEBE /* StakingProxyConfirmOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingProxyConfirmOperation.swift; sourceTree = "<group>"; };
 		77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsPresentable.swift; sourceTree = "<group>"; };
 		77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAddressPresentable.swift; sourceTree = "<group>"; };
 		77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceFactory.swift; sourceTree = "<group>"; };
@@ -10054,6 +10056,7 @@
 				B4E64E1B99253D7F875C637C /* StakingConfirmProxyViewController.swift */,
 				3543AE2CAA63AC0A20D532B6 /* StakingConfirmProxyViewLayout.swift */,
 				0E52C5919A1DA8A18297325B /* StakingConfirmProxyViewFactory.swift */,
+				77B00A1F2B5AC6F200EAAEBE /* StakingProxyConfirmOperation.swift */,
 			);
 			path = StakingConfirmProxy;
 			sourceTree = "<group>";
@@ -22888,6 +22891,7 @@
 				88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */,
 				840AE2E529C9AF9C008FF665 /* EtherscanWalletHistoryDecodable.swift in Sources */,
 				772B1C7D2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift in Sources */,
+				77B00A202B5AC6F200EAAEBE /* StakingProxyConfirmOperation.swift in Sources */,
 				77AAE2202AFB00CB006872CC /* OperationSwapModel.swift in Sources */,
 				8465DA35298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift in Sources */,
 				AEE5FB1C264A610C002B8FDC /* StakingRewardDestSetupLayout.swift in Sources */,

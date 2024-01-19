@@ -4,14 +4,16 @@ import SoraFoundation
 struct StakingConfirmProxyViewFactory {
     static func createView(
         state: RelaychainStakingSharedStateProtocol,
-        proxyAddress: AccountAddress
+        proxyAddress: AccountAddress,
+        confirmOperation: StakingProxyConfirmOperation
     ) -> StakingConfirmProxyViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let wallet = SelectedWalletSettings.shared.value,
               let interactor = createInteractor(
                   state: state,
                   wallet: wallet,
-                  proxyAddress: proxyAddress
+                  proxyAddress: proxyAddress,
+                  operation: confirmOperation
               ) else {
             return nil
         }
@@ -47,7 +49,8 @@ struct StakingConfirmProxyViewFactory {
 
         let view = StakingConfirmProxyViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            title: confirmOperation.title
         )
 
         presenter.baseView = view
@@ -60,7 +63,8 @@ struct StakingConfirmProxyViewFactory {
     private static func createInteractor(
         state: RelaychainStakingSharedStateProtocol,
         wallet: MetaAccountModel,
-        proxyAddress: AccountAddress
+        proxyAddress: AccountAddress,
+        operation: StakingProxyConfirmOperation
     ) -> StakingConfirmProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
@@ -106,6 +110,7 @@ struct StakingConfirmProxyViewFactory {
             extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
             currencyManager: currencyManager,
+            operation: operation,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

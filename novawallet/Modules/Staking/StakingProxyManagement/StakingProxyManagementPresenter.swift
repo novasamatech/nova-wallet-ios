@@ -94,7 +94,7 @@ final class StakingProxyManagementPresenter {
             icon: R.image.iconDelete(),
             indicator: .navigation
         ) { [weak self] in
-            self?.wireframe.showRevokeProxyAccess(from: self?.view)
+            self?.wireframe.showRevokeProxyAccess(from: self?.view, proxyAddress: address)
         }
 
         wireframe.presentExtendedAccountOptions(

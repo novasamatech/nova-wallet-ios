@@ -29,4 +29,6 @@ extension Proxy {
         let proxyType: ProxyType
         @StringCodable var delay: BlockNumber
     }
+
+    typealias RemoveProxyCall = AddProxyCall
 }
