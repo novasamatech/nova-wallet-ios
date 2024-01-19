@@ -90,7 +90,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 locale: selectedLocale
             ),
             dataValidatingFactory.notReachedMaximimProxyCount(
-                proxy.map { $0?.definition.count ?? 0 }.value,
+                proxy.map { $0?.definition.count ?? 0 }.value.map { $0 + 1 },
                 limit: maxProxies,
                 chain: chainAsset.chain,
                 locale: selectedLocale

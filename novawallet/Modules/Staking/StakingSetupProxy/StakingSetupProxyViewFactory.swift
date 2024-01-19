@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 struct StakingSetupProxyViewFactory {
     static func createView(state: RelaychainStakingSharedStateProtocol) -> StakingSetupProxyViewProtocol? {
@@ -52,7 +53,6 @@ struct StakingSetupProxyViewFactory {
     ) -> StakingSetupProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
-
         guard
             let selectedAccount = SelectedWalletSettings.shared.value.fetch(
                 for: chainAsset.chain.accountRequest()
@@ -63,20 +63,23 @@ struct StakingSetupProxyViewFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationManager: operationManager,
             userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chainAsset.chain)
 
         let accountProviderFactory = AccountProviderFactory(
             storageFacade: UserDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationManager: operationManager,
             logger: Logger.shared
         )
 
-        let web3NamesService = createWeb3NameService()
+        let web3NamesService = Web3NameServiceFactory(operationQueue: operationQueue).createService()
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
             for: nil,
@@ -96,7 +99,7 @@ struct StakingSetupProxyViewFactory {
             extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
             currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
     }
 
