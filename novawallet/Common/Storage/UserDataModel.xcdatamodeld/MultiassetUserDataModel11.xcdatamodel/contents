@@ -44,7 +44,7 @@
         <relationship name="chainAccounts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDChainAccount" inverseName="metaAccount" inverseEntity="CDChainAccount"/>
     </entity>
     <entity name="CDProxiedSettings" representedClassName="CDProxiedSettings" syncable="YES" codeGenerationType="class">
-        <attribute name="confirmsOperation" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="confirmsOperation" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
     </entity>
     <entity name="CDProxy" representedClassName="CDProxy" syncable="YES" codeGenerationType="class">
