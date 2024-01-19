@@ -281,8 +281,7 @@ extension ExtrinsicProcessor {
                 callSender = extrinsicSender
             } else {
                 let callMapper = NestedExtrinsicCallMapper(extrinsicSender: extrinsicSender)
-                let result: NestedExtrinsicCallMapResult<RuntimeCall<NoRuntimeArgs>>
-                result = try callMapper.mapRuntimeCall(
+                let result = try callMapper.mapNotNestedCall(
                     call: extrinsic.call,
                     context: runtimeJsonContext
                 )
