@@ -112,7 +112,11 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
 
     func confirm() {
         view?.didStartLoading()
-        interactor.submit()
+        let validations = createCommonValidations()
+
+        DataValidationRunner(validators: validations).runValidation { [weak self] in
+            self?.interactor.submit()
+        }
     }
 }
 
@@ -120,17 +124,25 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProto
     func didSubmit() {
         view?.didStopLoading()
 
-        wireframe.complete(from: view)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            completionAction: .dismiss,
+            locale: selectedLocale
+        )
     }
 
     func didReceive(error: StakingConfirmProxyError) {
         view?.didStopLoading()
 
         switch error {
-        case .submit:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.confirm()
-            }
+        case let .submit(error):
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }
