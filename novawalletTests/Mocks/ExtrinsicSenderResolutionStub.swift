@@ -14,6 +14,7 @@ final class ExtrinsicSenderResolutionFactoryStub {
     init(accountId: AccountId, chain: ChainModel) {
         resolver = ExtrinsicCurrentSenderResolver(
             currentAccount: .init(
+                metaId: UUID().uuidString,
                 chainId: chain.chainId,
                 accountId: accountId,
                 publicKey: accountId,

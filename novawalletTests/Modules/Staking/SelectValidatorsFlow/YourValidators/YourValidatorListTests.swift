@@ -45,15 +45,16 @@ class YourValidatorListTests: XCTestCase {
             total: BigUInt(16e+12),
             active: BigUInt(16e+12),
             unlocking: [],
-            claimedRewards: []
+            claimedRewards: [],
+            legacyClaimedRewards: nil
         )
 
         let electedValidators: [EraValidatorInfo] = (0..<16).map { _ in
             let accountId = AccountGenerator.generateMetaAccount().substrateAccountId!
 
-            let nominator = IndividualExposure(who: selectedAccount.accountId, value: BigUInt(1e+12))
+            let nominator = Staking.IndividualExposure(who: selectedAccount.accountId, value: BigUInt(1e+12))
 
-            let exposure = ValidatorExposure(
+            let exposure = Staking.ValidatorExposure(
                 total: BigUInt(2e+12),
                 own: BigUInt(1e+12),
                 others: [nominator]

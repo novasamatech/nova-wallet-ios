@@ -8,33 +8,28 @@ final class ValidatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
         self.chainAssetInfo = chainAssetInfo
     }
 
-    func calculate(
-        for _: AccountId,
-        era: EraIndex,
-        validatorInfo: EraValidatorInfo,
-        erasRewardDistribution: ErasRewardDistribution,
-        identities: [AccountAddress: AccountIdentity]
-    ) throws -> PayoutInfo? {
+    func calculate(for accountId: AccountId, params: PayoutInfoFactoryParams) throws -> PayoutInfo? {
+        let era = params.unclaimedRewards.era
+
         guard
-            let totalRewardAmount = erasRewardDistribution.totalValidatorRewardByEra[era],
+            let totalRewardAmount = params.rewardDistribution.totalValidatorRewardByEra[era],
             let totalReward = Decimal.fromSubstrateAmount(
                 totalRewardAmount,
                 precision: chainAssetInfo.asset.assetPrecision
             ),
-            let points = erasRewardDistribution.validatorPointsDistributionByEra[era] else {
+            let points = params.rewardDistribution.validatorPointsDistributionByEra[era] else {
             return nil
         }
 
         guard
             let ownStake = Decimal.fromSubstrateAmount(
-                validatorInfo.exposure.own,
+                params.exposure.ownStake,
                 precision: chainAssetInfo.asset.assetPrecision
             ),
-            let comission = Decimal.fromSubstratePerbill(value: validatorInfo.prefs.commission),
-            let validatorPoints = points.individual
-            .first(where: { $0.accountId == validatorInfo.accountId })?.rewardPoint,
+            let comission = Decimal.fromSubstratePerbill(value: params.prefs.commission),
+            let validatorPoints = points.individual.first(where: { $0.accountId == accountId })?.rewardPoint,
             let totalStake = Decimal.fromSubstrateAmount(
-                validatorInfo.exposure.total,
+                params.exposure.totalStake,
                 precision: chainAssetInfo.asset.assetPrecision
             ) else {
             return nil
@@ -46,13 +41,14 @@ final class ValidatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
         let stakeReward = validatorTotalReward * (1 - comission) * ownPortion
         let commissionReward = validatorTotalReward * comission
 
-        let validatorAddress = try validatorInfo.accountId.toAddress(using: chainAssetInfo.chain)
+        let validatorAddress = try accountId.toAddress(using: chainAssetInfo.chain)
 
         return PayoutInfo(
+            validator: accountId,
             era: era,
-            validator: validatorInfo.accountId,
+            pages: params.unclaimedRewards.pages,
             reward: commissionReward + stakeReward,
-            identity: identities[validatorAddress]
+            identity: params.identities[validatorAddress]
         )
     }
 }

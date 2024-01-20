@@ -1688,6 +1688,21 @@ import RobinHood
         
     }
     
+    
+    
+     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings> {
+        
+    return cuckoo_manager.call("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createProxiedSettingsRepository())
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountRepositoryFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -1720,6 +1735,11 @@ import RobinHood
 	    func createDAppsGlobalSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DAppGlobalSettings>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", parameterMatchers: matchers))
+	    }
+	    
+	    func createProxiedSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<ProxiedSettings>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1768,6 +1788,12 @@ import RobinHood
 	        return cuckoo_manager.verify("createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createProxiedSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<ProxiedSettings>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -1805,6 +1831,12 @@ import RobinHood
     
      func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppGlobalSettings>).self)
+    }
+    
+    
+    
+     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ProxiedSettings>).self)
     }
     
 }
@@ -6791,16 +6823,16 @@ import RobinHood
     
     
     
-     func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol {
+     func createEraValidatorService(for chainId: ChainModel.Id, localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol) throws -> EraValidatorServiceProtocol {
         
-    return try cuckoo_manager.callThrows("createEraValidatorService(for: ChainModel.Id) throws -> EraValidatorServiceProtocol",
-            parameters: (chainId),
-            escapingParameters: (chainId),
+    return try cuckoo_manager.callThrows("createEraValidatorService(for: ChainModel.Id, localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol) throws -> EraValidatorServiceProtocol",
+            parameters: (chainId, localSubscriptionFactory),
+            escapingParameters: (chainId, localSubscriptionFactory),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createEraValidatorService(for: chainId))
+            defaultCall: __defaultImplStub!.createEraValidatorService(for: chainId, localSubscriptionFactory: localSubscriptionFactory))
         
     }
     
@@ -6843,9 +6875,9 @@ import RobinHood
 	    }
 	    
 	    
-	    func createEraValidatorService<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id), EraValidatorServiceProtocol> where M1.MatchedType == ChainModel.Id {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createEraValidatorService(for: ChainModel.Id) throws -> EraValidatorServiceProtocol", parameterMatchers: matchers))
+	    func createEraValidatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, localSubscriptionFactory: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, StakingLocalSubscriptionFactoryProtocol), EraValidatorServiceProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == StakingLocalSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, StakingLocalSubscriptionFactoryProtocol)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: localSubscriptionFactory) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createEraValidatorService(for: ChainModel.Id, localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol) throws -> EraValidatorServiceProtocol", parameterMatchers: matchers))
 	    }
 	    
 	    func createRewardCalculatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(for chainAsset: M1, stakingType: M2, stakingLocalSubscriptionFactory: M3, stakingDurationFactory: M4, validatorService: M5) -> Cuckoo.ProtocolStubThrowingFunction<(ChainAsset, StakingType, StakingLocalSubscriptionFactoryProtocol, StakingDurationOperationFactoryProtocol, EraValidatorServiceProtocol), RewardCalculatorServiceProtocol> where M1.MatchedType == ChainAsset, M2.MatchedType == StakingType, M3.MatchedType == StakingLocalSubscriptionFactoryProtocol, M4.MatchedType == StakingDurationOperationFactoryProtocol, M5.MatchedType == EraValidatorServiceProtocol {
@@ -6875,9 +6907,9 @@ import RobinHood
 	
 	    
 	    @discardableResult
-	    func createEraValidatorService<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), EraValidatorServiceProtocol> where M1.MatchedType == ChainModel.Id {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
-	        return cuckoo_manager.verify("createEraValidatorService(for: ChainModel.Id) throws -> EraValidatorServiceProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createEraValidatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, localSubscriptionFactory: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, StakingLocalSubscriptionFactoryProtocol), EraValidatorServiceProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == StakingLocalSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, StakingLocalSubscriptionFactoryProtocol)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: localSubscriptionFactory) { $0.1 }]
+	        return cuckoo_manager.verify("createEraValidatorService(for: ChainModel.Id, localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol) throws -> EraValidatorServiceProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6903,7 +6935,7 @@ import RobinHood
     
     
     
-     func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol  {
+     func createEraValidatorService(for chainId: ChainModel.Id, localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol) throws -> EraValidatorServiceProtocol  {
         return DefaultValueRegistry.defaultValue(for: (EraValidatorServiceProtocol).self)
     }
     

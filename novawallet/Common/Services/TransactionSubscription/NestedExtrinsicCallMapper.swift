@@ -98,6 +98,34 @@ extension NestedExtrinsicCallMapperProtocol {
             node: newNode
         )
     }
+
+    func mapNotNestedCall(
+        call: JSON,
+        context: RuntimeJsonContext?
+    ) throws -> NestedExtrinsicCallMapResult<RuntimeCall<NoRuntimeArgs>> {
+        let nestedCallPaths: Set<CallCodingPath> = [
+            Proxy.ProxyCall.callPath
+        ]
+
+        let result = try map(call: call, context: context) { callJson in
+            do {
+                let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context?.toRawContext())
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                return !nestedCallPaths.contains(callPath)
+            } catch {
+                return false
+            }
+        }
+
+        let newNode: NestedExtrinsicCallNode<RuntimeCall<NoRuntimeArgs>> = try result.node.mapCall { callJson in
+            try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context?.toRawContext())
+        }
+
+        return NestedExtrinsicCallMapResult(
+            extrinsicSender: result.extrinsicSender,
+            node: newNode
+        )
+    }
 }
 
 final class NestedExtrinsicCallMapper {

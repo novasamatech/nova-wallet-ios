@@ -67,10 +67,13 @@ final class StakingRecommendationMediatorFactory {
             identityOperationFactory: identityOperationFactory
         )
 
+        let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)
+
         return DirectStakingRecommendationFactory(
             runtimeProvider: runtimeService,
+            connection: connection,
             operationFactory: validatorOperationFactory,
-            defaultMaxNominations: SubstrateConstants.maxNominations,
+            maxNominationsOperationFactory: maxNominationsFactory,
             clusterLimit: StakingConstants.targetsClusterLimit,
             preferredValidators: StakingConstants.preferredValidatorIds(for: chain)
         )

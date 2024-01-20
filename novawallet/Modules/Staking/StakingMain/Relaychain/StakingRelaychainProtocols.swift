@@ -39,7 +39,7 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)
     func didReceive(eraCountdownResult: Result<EraCountdown, Error>)
 
-    func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)
+    func didReceiveMaxNominatorsPerValidator(result: Result<UInt32?, Error>)
 
     func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)
 }

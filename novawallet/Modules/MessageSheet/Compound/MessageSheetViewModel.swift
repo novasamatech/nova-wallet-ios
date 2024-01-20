@@ -7,13 +7,72 @@ struct MessageSheetAction {
     let handler: MessageSheetCallback
 }
 
+enum MessageSheetText {
+    case raw(String)
+    case attributed(NSAttributedString)
+}
+
 struct MessageSheetViewModel<IType, CType> {
     let title: LocalizableResource<String>
-    let message: LocalizableResource<String>
+    let message: LocalizableResource<MessageSheetText>
     let graphics: IType?
     let content: CType?
     let mainAction: MessageSheetAction?
     let secondaryAction: MessageSheetAction?
+
+    init(
+        title: LocalizableResource<String>,
+        message: LocalizableResource<MessageSheetText>,
+        graphics: IType?,
+        content: CType?,
+        mainAction: MessageSheetAction?,
+        secondaryAction: MessageSheetAction?
+    ) {
+        self.title = title
+        self.message = message
+        self.graphics = graphics
+        self.content = content
+        self.mainAction = mainAction
+        self.secondaryAction = secondaryAction
+    }
+
+    init(
+        title: LocalizableResource<String>,
+        message: LocalizableResource<String>,
+        graphics: IType?,
+        content: CType?,
+        mainAction: MessageSheetAction?,
+        secondaryAction: MessageSheetAction?
+    ) {
+        self.title = title
+        self.message = LocalizableResource { locale in
+            let string = message.value(for: locale)
+            return .raw(string)
+        }
+        self.graphics = graphics
+        self.content = content
+        self.mainAction = mainAction
+        self.secondaryAction = secondaryAction
+    }
+
+    init(
+        title: LocalizableResource<String>,
+        message: LocalizableResource<NSAttributedString>,
+        graphics: IType?,
+        content: CType?,
+        mainAction: MessageSheetAction?,
+        secondaryAction: MessageSheetAction?
+    ) {
+        self.title = title
+        self.message = LocalizableResource { locale in
+            let attributedText = message.value(for: locale)
+            return .attributed(attributedText)
+        }
+        self.graphics = graphics
+        self.content = content
+        self.mainAction = mainAction
+        self.secondaryAction = secondaryAction
+    }
 }
 
 extension MessageSheetAction {

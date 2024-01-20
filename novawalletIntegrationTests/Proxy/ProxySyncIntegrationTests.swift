@@ -43,7 +43,7 @@ final class ProxySyncIntegrationTests: XCTestCase {
             chainRegistry: chainRegistry,
             proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: managedAccountRepository, walletUpdateMediator: walletUpdateMediator,
-            chainsFilter: { $0.chainId == chainId }
+            chainFilter: { $0.chainId == chainId }
         )
         
         let completionExpectation = XCTestExpectation()

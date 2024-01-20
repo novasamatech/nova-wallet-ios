@@ -64,6 +64,8 @@ class StakingPayoutsConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
+        
+        let runtimeService = try RuntimeCodingServiceStub.createWestendService()
 
         let interactor = StakingPayoutConfirmationInteractor(
             selectedAccount: selectedAccount,
@@ -71,11 +73,12 @@ class StakingPayoutsConfirmTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicService: extrinsicService,
+            runtimeService: runtimeService,
             feeProxy: MultiExtrinsicFeeProxy(),
             chainRegistry: chainRegistry,
             signer: signer,
             operationManager: OperationManager(),
-            payouts: [PayoutInfo(era: 1000, validator: validatorAccountId, reward: 1, identity: nil)],
+            payouts: [PayoutInfo(validator: validatorAccountId, era: 1000, pages: [0], reward: 1, identity: nil)],
             currencyManager: CurrencyManagerStub()
         )
 

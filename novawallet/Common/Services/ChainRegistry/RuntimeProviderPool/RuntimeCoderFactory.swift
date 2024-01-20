@@ -24,6 +24,10 @@ extension RuntimeCoderFactoryProtocol {
     func hasConstant(for codingPath: ConstantCodingPath) -> Bool {
         getConstant(for: codingPath) != nil
     }
+
+    func hasStorage(for storagePath: StorageCodingPath) -> Bool {
+        metadata.getStorageMetadata(for: storagePath) != nil
+    }
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {

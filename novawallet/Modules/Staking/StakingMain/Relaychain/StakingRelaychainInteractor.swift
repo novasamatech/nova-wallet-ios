@@ -120,16 +120,29 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     func provideMaxNominatorsPerValidator(from runtimeService: RuntimeCodingServiceProtocol) {
         clear(cancellable: &maxNominatorsPerValidatorCancellable)
 
-        maxNominatorsPerValidatorCancellable = fetchConstant(
+        let wrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
             for: .maxNominatorRewardedPerValidator,
-            runtimeCodingService: runtimeService,
-            operationManager: operationManager
-        ) { [weak self] (result: Result<UInt32, Error>) in
-            if self?.maxNominatorsPerValidatorCancellable != nil {
-                self?.maxNominatorsPerValidatorCancellable = nil
-                self?.presenter?.didReceiveMaxNominatorsPerValidator(result: result)
+            runtimeService: runtimeService
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                if self?.maxNominatorsPerValidatorCancellable != nil {
+                    self?.maxNominatorsPerValidatorCancellable = nil
+
+                    do {
+                        let value = try wrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceiveMaxNominatorsPerValidator(result: .success(value))
+                    } catch {
+                        self?.presenter?.didReceiveMaxNominatorsPerValidator(result: .failure(error))
+                    }
+                }
             }
         }
+
+        maxNominatorsPerValidatorCancellable = wrapper
+
+        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
     func provideNewChain() {

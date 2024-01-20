@@ -26,6 +26,7 @@ protocol TransactionSigningPresenting: AnyObject {
 
     func presentProxyFlow(
         for data: Data,
+        proxiedId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
         calls: [JSON],
         completion: @escaping TransactionSigningClosure
@@ -178,6 +179,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
     func presentProxyFlow(
         for data: Data,
+        proxiedId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
         calls: [JSON],
         completion: @escaping TransactionSigningClosure
@@ -185,12 +187,6 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         guard let proxy = resolution.proxyAccount else {
             completion(.failure(CommonError.dataCorruption))
             return
-        }
-
-        let settingsManager = SettingsManager.shared
-
-        let cancelClosure: () -> Void = {
-            completion(.failure(ProxySigningWrapperError.canceled))
         }
 
         let signClosure = createProxySigningClosure(
@@ -202,7 +198,11 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
         let validationClosure = createProxyValidationClosure(resolution: resolution, calls: calls)
 
-        let completionClosure: () -> Void = {
+        let cancelClosure: () -> Void = {
+            completion(.failure(ProxySigningWrapperError.canceled))
+        }
+
+        let confirmSuccessClosure: () -> Void = {
             validationClosure { isSuccess in
                 if isSuccess {
                     signClosure()
@@ -212,30 +212,29 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
             }
         }
 
-        guard !settingsManager.skipProxyFeeInformation else {
-            completionClosure()
-            return
-        }
-
-        guard
-            let proxyConfirmationView = ProxyMessageSheetViewFactory.createSigningView(
-                proxyName: proxy.chainAccount.name,
-                completionClosure: completionClosure,
-                cancelClosure: cancelClosure
-            ) else {
+        guard let presentationController = self.presentationController else {
             completion(.failure(CommonError.dataCorruption))
             return
         }
 
-        let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
-        let optionalController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
+        let confirmationPresenter = ProxySignConfirmationViewFactory.createPresenter(
+            from: proxiedId,
+            proxyName: proxy.chainAccount.name,
+            completionClosure: { [weak self] result in
+                self?.flowHolder = nil
 
-        guard let presentationController = optionalController else {
-            completion(.failure(CommonError.dataCorruption))
-            return
-        }
+                if result {
+                    confirmSuccessClosure()
+                } else {
+                    cancelClosure()
+                }
+            },
+            viewController: presentationController
+        )
 
-        presentationController.present(proxyConfirmationView.controller, animated: true)
+        flowHolder = confirmationPresenter
+
+        confirmationPresenter.setup()
     }
 
     func presentNotEnoughProxyPermissionsFlow(

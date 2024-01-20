@@ -8,35 +8,33 @@ final class NominatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
         self.chainAssetInfo = chainAssetInfo
     }
 
-    func calculate(
-        for accountId: AccountId,
-        era: EraIndex,
-        validatorInfo: EraValidatorInfo,
-        erasRewardDistribution: ErasRewardDistribution,
-        identities: [AccountAddress: AccountIdentity]
-    ) throws -> PayoutInfo? {
+    func calculate(for accountId: AccountId, params: PayoutInfoFactoryParams) throws -> PayoutInfo? {
+        let era = params.unclaimedRewards.era
+        let validatorId = params.exposure.accountId
+
         guard
-            let totalRewardAmount = erasRewardDistribution.totalValidatorRewardByEra[era],
+            let totalRewardAmount = params.rewardDistribution.totalValidatorRewardByEra[era],
             let totalReward = Decimal.fromSubstrateAmount(
                 totalRewardAmount,
                 precision: chainAssetInfo.asset.assetPrecision
             ),
-            let points = erasRewardDistribution.validatorPointsDistributionByEra[era] else {
+            let points = params.rewardDistribution.validatorPointsDistributionByEra[era] else {
             return nil
         }
 
         guard
-            let nominatorStakeAmount = validatorInfo.exposure.others
-            .first(where: { $0.who == accountId })?.value,
+            let page = params.exposure.pages.firstIndex(where: { $0.contains(where: { $0.who == accountId }) }),
+            params.unclaimedRewards.pages.contains(Staking.ValidatorPage(page)),
+            let nominatorStakeAmount = params.exposure.pages[page].first(where: { $0.who == accountId })?.value,
             let nominatorStake = Decimal.fromSubstrateAmount(
                 nominatorStakeAmount,
                 precision: chainAssetInfo.asset.assetPrecision
             ),
-            let comission = Decimal.fromSubstratePerbill(value: validatorInfo.prefs.commission),
+            let comission = Decimal.fromSubstratePerbill(value: params.prefs.commission),
             let validatorPoints = points.individual
-            .first(where: { $0.accountId == validatorInfo.accountId })?.rewardPoint,
+            .first(where: { $0.accountId == validatorId })?.rewardPoint,
             let totalStake = Decimal.fromSubstrateAmount(
-                validatorInfo.exposure.total,
+                params.exposure.totalStake,
                 precision: chainAssetInfo.asset.assetPrecision
             ) else {
             return nil
@@ -47,13 +45,14 @@ final class NominatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
         let nominatorPortion = totalStake > 0 ? nominatorStake / totalStake : 0
         let nominatorReward = validatorTotalReward * (1 - comission) * nominatorPortion
 
-        let validatorAddress = try validatorInfo.accountId.toAddress(using: chainAssetInfo.chain)
+        let validatorAddress = try validatorId.toAddress(using: chainAssetInfo.chain)
 
         return PayoutInfo(
+            validator: validatorId,
             era: era,
-            validator: validatorInfo.accountId,
+            pages: [Staking.ValidatorPage(page)],
             reward: nominatorReward,
-            identity: identities[validatorAddress]
+            identity: params.identities[validatorAddress]
         )
     }
 }
