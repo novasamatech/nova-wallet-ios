@@ -241,6 +241,8 @@
 		0C7C9B9B2AC16D7B009A0362 /* NSAttributedString+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C9B9A2AC16D7B009A0362 /* NSAttributedString+Helpers.swift */; };
 		0C7E7FAB2A9F27FB00596628 /* NominationPoolsRedeemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */; };
 		0C80F0A42B3D7DBD00579E23 /* WalletIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C80F0A32B3D7DBD00579E23 /* WalletIconView.swift */; };
+		0C8102232B5A922B00F75BF9 /* ProxyValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */; };
+		0C8102252B5A928400F75BF9 /* ProxyErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
@@ -4467,6 +4469,8 @@
 		0C7C9B9A2AC16D7B009A0362 /* NSAttributedString+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Helpers.swift"; sourceTree = "<group>"; };
 		0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRedeemCall.swift; sourceTree = "<group>"; };
 		0C80F0A32B3D7DBD00579E23 /* WalletIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletIconView.swift; sourceTree = "<group>"; };
+		0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyValidationFactory.swift; sourceTree = "<group>"; };
+		0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyErrorPresentable.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
@@ -9082,6 +9086,15 @@
 			path = NominationPools;
 			sourceTree = "<group>";
 		};
+		0C8102212B5A921D00F75BF9 /* Validations */ = {
+			isa = PBXGroup;
+			children = (
+				0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */,
+				0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */,
+			);
+			path = Validations;
+			sourceTree = "<group>";
+		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
@@ -10787,6 +10800,7 @@
 		77FF02672B21DCB300B655BC /* Proxy */ = {
 			isa = PBXGroup;
 			children = (
+				0C8102212B5A921D00F75BF9 /* Validations */,
 				0C37AFCD2B598BAB00009ECA /* ProxySignConfirmation */,
 				AC6B93411E3444BFB71691BE /* ProxySignValidation */,
 				773A37582B3B589F006AC4AA /* ProxyMessageSheet */,
@@ -20683,6 +20697,7 @@
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
 				8490141124A92F6D008F705E /* OnboardingMainViewController.swift in Sources */,
 				D9D163642744F60D00681C1F /* ExternalContribution.swift in Sources */,
+				0C8102232B5A922B00F75BF9 /* ProxyValidationFactory.swift in Sources */,
 				84155DED2539817200A27058 /* ApplicationService.swift in Sources */,
 				84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */,
 				777DC2E12B2368EC0060CB2C /* ProxyType+title.swift in Sources */,
@@ -21972,6 +21987,7 @@
 				840D626F29CB39EE00D5E894 /* URLBuilder.swift in Sources */,
 				842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */,
 				8439399C2636FAB40087658D /* YourValidatorViewModel.swift in Sources */,
+				0C8102252B5A928400F75BF9 /* ProxyErrorPresentable.swift in Sources */,
 				84216FDE282B979900479375 /* Decimal+Conversion.swift in Sources */,
 				887404B229826FB100EE270A /* InAppUpdatesServiceFactory.swift in Sources */,
 				841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */,

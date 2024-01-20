@@ -40,8 +40,14 @@ final class ExtrinsicSenderResolutionFactory {
 
         let mappingOperation = ClosureOperation<ExtrinsicSenderResolving> {
             let wallets = try fetchOperation.extractNoCancellableResultData()
+
+            guard let proxy = wallets.first(where: { $0.metaId == proxiedAccount.metaId })?.proxy() else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
             return ExtrinsicProxySenderResolver(
                 proxiedAccount: proxiedAccount,
+                proxyAccountId: proxy.accountId,
                 wallets: wallets,
                 chain: chain
             )

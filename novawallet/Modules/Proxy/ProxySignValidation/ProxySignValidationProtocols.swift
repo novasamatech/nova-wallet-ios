@@ -17,4 +17,4 @@ protocol ProxySignValidationInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol ProxySignValidationWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {}
+protocol ProxySignValidationWireframeProtocol: AlertPresentable, ErrorPresentable, ProxyErrorPresentable {}
