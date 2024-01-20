@@ -85,17 +85,20 @@ final class WalletUpdateMediatorTests: XCTestCase {
         
         var proxiedForProxiedWallet1: ManagedMetaAccountModel
         
-        init() {
+        init(reversedOrder: Bool = false) {
+            let allOrders: [UInt32] = (0...4).map({ $0 })
+            let orders = reversedOrder ? allOrders.reversed() : allOrders
+            
             proxyWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
                 isSelected: false,
-                order: 0
+                order: orders[0]
             )
             
             proxyWallet2 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
                 isSelected: false,
-                order: 1
+                order: orders[1]
             )
             
             let proxied1ChainAccount = AccountGenerator.generateProxiedChainAccount(for: .init(
@@ -107,7 +110,7 @@ final class WalletUpdateMediatorTests: XCTestCase {
             proxiedForWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied1ChainAccount], type: .proxied),
                 isSelected: true,
-                order: 2
+                order: orders[2]
             )
             
             let proxied2ChainAccount = AccountGenerator.generateProxiedChainAccount(for: .init(
@@ -119,7 +122,7 @@ final class WalletUpdateMediatorTests: XCTestCase {
             proxiedForWallet2 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied2ChainAccount], type: .proxied),
                 isSelected: false,
-                order: 3
+                order: orders[3]
             )
             
             // include nested proxied for wallet1
@@ -133,7 +136,7 @@ final class WalletUpdateMediatorTests: XCTestCase {
             proxiedForProxiedWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied3ChainAccount], type: .proxied),
                 isSelected: false,
-                order: 4
+                order: orders[4]
             )
         }
         
@@ -221,7 +224,7 @@ final class WalletUpdateMediatorTests: XCTestCase {
         // given
         
         let common = Common()
-        let proxyWallets = ProxyWallets()
+        let proxyWallets = ProxyWallets(reversedOrder: true)
         
         common.setup(with: proxyWallets.allWallets)
         try common.select(walletId: proxyWallets.proxiedForWallet1.identifier)

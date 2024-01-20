@@ -34,44 +34,57 @@ final class WalletUpdateMediator {
         self.operationQueue = operationQueue
     }
 
-    private func proxiedRemovalOperation(
-        dependingOn allWalletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
-        changesClosure: @escaping () throws -> SyncChanges<ManagedMetaAccountModel>
-    ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
-        ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
-            let allWallets = try allWalletsOperation.extractNoCancellableResultData().sorted { wallet1, wallet2 in
-                wallet1.order < wallet2.order
-            }
+    private static func includeProxiedsToRemoveSet(
+        starting removeIds: Set<MetaAccountModel.Id>,
+        wallets: [ManagedMetaAccountModel]
+    ) -> Set<MetaAccountModel.Id> {
+        var oldRemovedIds = removeIds
+        var newRemovedIds = removeIds
 
-            let changes = try changesClosure()
+        let allProxieds = wallets.filter { $0.info.type == .proxied }
 
-            let allRemovedIds = Set(changes.removedItems.map(\.identifier))
+        // we can have nested proxieds so we make sure to remove them all
 
-            let allProxieds = allWallets.filter {
-                $0.info.type == .proxied && !allRemovedIds.contains($0.identifier)
-            }
-
-            let proxiedsToRemove = allProxieds.filter { proxiedWallet in
+        repeat {
+            let newProxiedIdsToRemove = allProxieds.filter { proxiedWallet in
                 guard
-                    let chainAccount = proxiedWallet.info.chainAccounts.first,
+                    let chainAccount = proxiedWallet.info.chainAccounts.first(where: { $0.proxy != nil }),
                     let proxy = chainAccount.proxy else {
                     return false
                 }
 
-                return allWallets.allSatisfy { wallet in
-                    guard !allRemovedIds.contains(wallet.identifier) else {
+                return wallets.allSatisfy { wallet in
+                    guard !newRemovedIds.contains(wallet.identifier) else {
                         return true
                     }
 
                     return !wallet.info.has(accountId: proxy.accountId, chainId: chainAccount.chainId)
                 }
-            }
+            }.map(\.identifier)
 
-            let newRemovedWallets = changes.removedItems + proxiedsToRemove
-            let newRemovedWalletsIds = Set(newRemovedWallets.map(\.identifier))
+            oldRemovedIds = newRemovedIds
+            newRemovedIds = newRemovedIds.union(Set(newProxiedIdsToRemove))
+        } while oldRemovedIds != newRemovedIds
+
+        return newRemovedIds
+    }
+
+    private func proxiedRemovalOperation(
+        dependingOn allWalletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
+        changesClosure: @escaping () throws -> SyncChanges<ManagedMetaAccountModel>
+    ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
+        ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
+            let allWallets = try allWalletsOperation.extractNoCancellableResultData()
+
+            let changes = try changesClosure()
+
+            let allRemovedIds = Set(changes.removedItems.map(\.identifier))
+            let newRemovedIds = Self.includeProxiedsToRemoveSet(starting: allRemovedIds, wallets: allWallets)
+
+            let newRemovedWallets = allWallets.filter { newRemovedIds.contains($0.identifier) }
 
             let newUpdatedWallets = changes.newOrUpdatedItems.filter {
-                !newRemovedWalletsIds.contains($0.info.identifier)
+                !newRemovedIds.contains($0.identifier)
             }
 
             return SyncChanges(newOrUpdatedItems: newUpdatedWallets, removedItems: newRemovedWallets)

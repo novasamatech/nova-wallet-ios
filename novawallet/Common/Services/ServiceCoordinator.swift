@@ -193,7 +193,21 @@ extension ServiceCoordinator {
             chainRegistry: chainRegistry,
             proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: metaAccountsRepository,
-            walletUpdateMediator: walletUpdateMediator
+            walletUpdateMediator: walletUpdateMediator,
+            chainFilter: { chain in
+                #if F_RELEASE
+                    return chain.hasProxy && !chain.isTestnet
+                #else
+                    return chain.hasProxy
+                #endif
+            },
+            chainWalletFilter: { _, wallet in
+                #if F_RELEASE
+                    return wallet.type != .watchOnly
+                #else
+                    return true
+                #endif
+            }
         )
 
         let walletNotificationService = WalletNotificationService(
