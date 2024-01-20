@@ -18,6 +18,8 @@ protocol AccountRepositoryFactoryProtocol {
     func createAuthorizedDAppsRepository(for metaId: String?) -> AnyDataProviderRepository<DAppSettings>
 
     func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>
+
+    func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>
 }
 
 extension AccountRepositoryFactoryProtocol {
@@ -95,6 +97,12 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings> {
+        let mapper = ProxiedSettingsMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(repository)
     }
 }

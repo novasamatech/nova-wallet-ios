@@ -1688,6 +1688,21 @@ import RobinHood
         
     }
     
+    
+    
+     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings> {
+        
+    return cuckoo_manager.call("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createProxiedSettingsRepository())
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountRepositoryFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -1720,6 +1735,11 @@ import RobinHood
 	    func createDAppsGlobalSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DAppGlobalSettings>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", parameterMatchers: matchers))
+	    }
+	    
+	    func createProxiedSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<ProxiedSettings>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1768,6 +1788,12 @@ import RobinHood
 	        return cuckoo_manager.verify("createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createProxiedSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<ProxiedSettings>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -1805,6 +1831,12 @@ import RobinHood
     
      func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppGlobalSettings>).self)
+    }
+    
+    
+    
+     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ProxiedSettings>).self)
     }
     
 }

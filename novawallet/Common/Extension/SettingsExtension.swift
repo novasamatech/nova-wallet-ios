@@ -16,7 +16,6 @@ enum SettingsKey: String {
     case skippedAddDelegationTracksHint
     case pinConfirmationEnabled
     case polkadotStakingPromoSeen
-    case skipProxyFeeInformation
 }
 
 extension SettingsManagerProtocol {
@@ -172,16 +171,6 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.polkadotStakingPromoSeen.rawValue)
-        }
-    }
-
-    var skipProxyFeeInformation: Bool {
-        get {
-            bool(for: SettingsKey.skipProxyFeeInformation.rawValue) ?? false
-        }
-
-        set {
-            set(value: newValue, for: SettingsKey.skipProxyFeeInformation.rawValue)
         }
     }
 }

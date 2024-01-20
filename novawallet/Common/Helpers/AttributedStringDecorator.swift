@@ -66,6 +66,42 @@ final class RangeAttributedStringDecorator: AttributedStringDecoratorProtocol {
     }
 }
 
+final class AttributedReplacementStringDecorator: AttributedStringDecoratorProtocol {
+    static let marker = "<t_r>"
+
+    let pattern: String
+    let replacements: [String]
+    let attributes: [NSAttributedString.Key: Any]
+
+    init(pattern: String, replacements: [String], attributes: [NSAttributedString.Key: Any]) {
+        self.pattern = pattern
+        self.replacements = replacements
+        self.attributes = attributes
+    }
+
+    func decorate(attributedString: NSAttributedString) -> NSAttributedString {
+        let string = attributedString.string as NSString
+        let components = string.components(separatedBy: pattern)
+
+        let resultAttributedString = NSMutableAttributedString()
+        var currentLocation = 0
+
+        for index in 0 ..< components.count {
+            let range = NSRange(location: currentLocation, length: components[index].count)
+            let attrSubstring = attributedString.attributedSubstring(from: range)
+            let replacement = index < replacements.count ? replacements[index] : ""
+            let attributedReplacement = NSAttributedString(string: replacement, attributes: attributes)
+
+            resultAttributedString.append(attrSubstring)
+            resultAttributedString.append(attributedReplacement)
+
+            currentLocation += components[index].count + pattern.count
+        }
+
+        return resultAttributedString
+    }
+}
+
 final class CompoundAttributedStringDecorator: AttributedStringDecoratorProtocol {
     let decorators: [AttributedStringDecoratorProtocol]
 

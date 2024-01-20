@@ -57,8 +57,16 @@ extension ProxyResolution {
                 }
             }
 
+            // prefer shorter path
+            let optProxyKey = callProxies.keys.min { callPath1, callPath2 in
+                let path1Length = callProxies[callPath1]?.components.count ?? Int.max
+                let path2Length = callProxies[callPath2]?.components.count ?? Int.max
+
+                return path1Length < path2Length
+            }
+
             guard
-                let proxyAccountId = callProxies.keys.first?.proxy,
+                let proxyAccountId = optProxyKey?.proxy,
                 let proxyAccount = accounts[proxyAccountId] else {
                 throw PathFinderError.noAccount
             }
@@ -126,8 +134,7 @@ extension ProxyResolution {
         ) throws -> ProxyResolution.PathFinderResult {
             if let secretBasedResult = find(callPaths: paths, walletTypeFilter: { $0 == .secrets }) {
                 return secretBasedResult
-            } else
-            if let notWatchOnlyResult = find(
+            } else if let notWatchOnlyResult = find(
                 callPaths: paths,
                 walletTypeFilter: { $0 != .watchOnly && $0 != .proxied }
             ) {
