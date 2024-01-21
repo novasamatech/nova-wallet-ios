@@ -2,45 +2,49 @@ import Foundation
 
 extension Proxy.ProxyType {
     func title(locale: Locale) -> String {
+        let typeString: String
+
         switch self {
         case .any:
-            return R.string.localizable.proxyUpdatesAnyTypeTitle(
+            typeString = R.string.localizable.proxyAnyTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .nonTransfer:
-            return R.string.localizable.proxyUpdatesNonTransferTypeTitle(
+            typeString = R.string.localizable.proxyNonTransferTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .governance:
-            return R.string.localizable.proxyUpdatesGovernanceTypeTitle(
+            typeString = R.string.localizable.proxyGovernanceTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .staking:
-            return R.string.localizable.proxyUpdatesStakingTypeTitle(
+            typeString = R.string.localizable.proxyStakingTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .nominationPools:
-            return R.string.localizable.proxyUpdatesNominationPoolsTypeTitle(
+            typeString = R.string.localizable.proxyNominationPoolsTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .identityJudgement:
-            return R.string.localizable.proxyUpdatesIdentityTypeTitle(
+            typeString = R.string.localizable.proxyIdentityTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .cancelProxy:
-            return R.string.localizable.proxyUpdatesCancelProxyTypeTitle(
+            typeString = R.string.localizable.proxyCancelProxyTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .auction:
-            return R.string.localizable.proxyUpdatesAuctionTypeTitle(
+            typeString = R.string.localizable.proxyAuctionTypeTitle(
                 preferredLanguages: locale.rLanguages
             )
         case let .other(type):
-            return R.string.localizable.proxyUpdatesOtherTypeTitle(
-                type,
-                preferredLanguages: locale.rLanguages
-            )
+            typeString = type
         }
+
+        return R.string.localizable.proxyUpdatesOtherTypeTitle(
+            typeString,
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     func subtitle(locale: Locale) -> String {
