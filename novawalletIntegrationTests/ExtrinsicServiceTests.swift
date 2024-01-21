@@ -19,11 +19,9 @@ class ExtrinsicServiceTests: XCTestCase {
     }
 
     private func createExtrinsicBuilderClosure(for batch: [PayoutInfo]) -> ExtrinsicBuilderClosure {
-        let callFactory = SubstrateCallFactory()
-
         let closure: ExtrinsicBuilderClosure = { builder in
             try batch.forEach { payout in
-                let payoutCall = try Staking.PayoutCall.V1(
+                let payoutCall = Staking.PayoutCall.V1(
                     validatorStash: payout.validator,
                     era: payout.era
                 ).runtimeCall()
