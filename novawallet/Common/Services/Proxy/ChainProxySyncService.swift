@@ -27,7 +27,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        chainWalletFilter: ProxySyncChainWalletFilter? = nil
+        chainWalletFilter: ProxySyncChainWalletFilter?
     ) {
         self.chainModel = chainModel
         self.chainRegistry = chainRegistry
