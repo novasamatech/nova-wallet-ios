@@ -69,7 +69,7 @@ struct StakingConfirmProxyViewFactory {
     ) -> StakingConfirmProxyViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let wallet = SelectedWalletSettings.shared.value,
-              let interactor = createAddProxyInteractor(
+              let interactor = createRemoveProxyInteractor(
                   state: state,
                   wallet: wallet,
                   proxyAddress: proxyAddress

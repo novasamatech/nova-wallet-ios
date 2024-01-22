@@ -1,7 +1,10 @@
 import UIKit
 
 final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
-    weak var presenter: StakingConfirmProxyInteractorOutputProtocol?
+    weak var presenter: StakingConfirmProxyInteractorOutputProtocol? {
+        basePresenter as? StakingConfirmProxyInteractorOutputProtocol
+    }
+
     let proxyAccount: AccountAddress
     let signingWrapper: SigningWrapperProtocol
 
