@@ -169,3 +169,20 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProto
         }
     }
 }
+
+extension StakingConfirmProxyPresenter: StakingRemoveProxyInteractorOutputProtocol {
+    func didReceive(removingError: StakingRemoveProxyError) {
+        switch removingError {
+        case let .handleProxies(error):
+            didReceive(baseError: .handleProxies(error))
+        case let .balance(error):
+            didReceive(baseError: .balance(error))
+        case let .price(error):
+            didReceive(baseError: .price(error))
+        case let .fee(error):
+            didReceive(baseError: .fee(error))
+        case let .submit(error):
+            didReceive(error: .submit(error))
+        }
+    }
+}

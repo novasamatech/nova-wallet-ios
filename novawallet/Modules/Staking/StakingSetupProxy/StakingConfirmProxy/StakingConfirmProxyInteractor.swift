@@ -1,13 +1,9 @@
 import UIKit
 
 final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
-    weak var presenter: StakingConfirmProxyInteractorOutputProtocol? {
-        basePresenter as? StakingConfirmProxyInteractorOutputProtocol
-    }
-
+    weak var presenter: StakingConfirmProxyInteractorOutputProtocol?
     let proxyAccount: AccountAddress
     let signingWrapper: SigningWrapperProtocol
-    let operation: StakingProxyConfirmOperation
 
     init(
         proxyAccount: AccountAddress,
@@ -22,12 +18,10 @@ final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
         extrinsicService: ExtrinsicServiceProtocol,
         selectedAccount: ChainAccountResponse,
         currencyManager: CurrencyManagerProtocol,
-        operation: StakingProxyConfirmOperation,
         operationQueue: OperationQueue
     ) {
         self.proxyAccount = proxyAccount
         self.signingWrapper = signingWrapper
-        self.operation = operation
 
         super.init(
             runtimeService: runtimeService,
@@ -54,11 +48,15 @@ extension StakingConfirmProxyInteractor: StakingConfirmProxyInteractorInputProto
             return
         }
 
+        let call = callFactory.addProxy(
+            accountId: proxyAccountId,
+            type: .staking
+        )
+
         extrinsicService.submit(
-            operation.builderClosure(
-                callFactory: callFactory,
-                accountId: proxyAccountId
-            ),
+            { builder in
+                try builder.adding(call: call)
+            },
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] result in

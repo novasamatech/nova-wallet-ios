@@ -15,10 +15,9 @@ final class StakingSetupProxyWireframe: StakingSetupProxyWireframeProtocol {
         from view: ControllerBackedProtocol?,
         proxyAddress: AccountAddress
     ) {
-        guard let confirmView = StakingConfirmProxyViewFactory.createView(
+        guard let confirmView = StakingConfirmProxyViewFactory.createAddProxyView(
             state: state,
-            proxyAddress: proxyAddress,
-            confirmOperation: .add
+            proxyAddress: proxyAddress
         ) else {
             return
         }
