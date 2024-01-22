@@ -51,6 +51,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     override func setup() {
         super.setup()
 
+        provideProxyDeposit()
         provideNetworkViewModel()
         provideProxiedWalletViewModel()
         provideProxiedAddressViewModel()

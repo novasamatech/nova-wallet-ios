@@ -108,8 +108,13 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
 }
 
 extension StakingConfirmProxyViewController: StakingConfirmProxyViewProtocol {
-    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
-        rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>?) {
+        if let viewModel = viewModel {
+            rootView.proxyDepositView.isHidden = false
+            rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+        } else {
+            rootView.proxyDepositView.isHidden = true
+        }
     }
 
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {

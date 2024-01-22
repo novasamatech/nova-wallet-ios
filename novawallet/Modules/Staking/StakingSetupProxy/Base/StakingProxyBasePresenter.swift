@@ -36,7 +36,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
 
     func provideProxyDeposit() {
         guard let amount = proxyDeposit?.diff.decimal(precision: chainAsset.asset.precision) else {
-            baseView?.didReceiveProxyDeposit(viewModel: .loading)
+            baseView?.didReceiveProxyDeposit(viewModel: nil)
             return
         }
         let proxyDepositViewModel = balanceViewModelFactory.balanceFromPrice(
