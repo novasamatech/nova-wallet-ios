@@ -2,13 +2,13 @@ protocol StakingRemoveProxyInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee()
     func remakeSubscriptions()
+    func submit()
 }
 
 protocol StakingRemoveProxyInteractorOutputProtocol: AnyObject {
-    func didReceive(removingError: StakingRemoveProxyError)
+    func didReceive(error: StakingRemoveProxyError)
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(fee: ExtrinsicFeeProtocol?)
-    func didReceive(proxy: ProxyDefinition?)
     func didReceive(price: PriceData?)
     func didSubmit()
 }

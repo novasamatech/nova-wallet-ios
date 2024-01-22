@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-struct StakingConfirmProxyViewFactory {
+struct StakingRemoveProxyViewFactory {
     static func createView(
         state: RelaychainStakingSharedStateProtocol,
         proxyAddress: AccountAddress
@@ -32,17 +32,16 @@ struct StakingConfirmProxyViewFactory {
             )
         )
 
-        let presenter = StakingConfirmProxyPresenter(
+        let presenter = StakingRemoveProxyPresenter(
             chainAsset: chainAsset,
             wallet: wallet,
             proxyAddress: proxyAddress,
             interactor: interactor,
             wireframe: wireframe,
-            balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            validationsFactory: AddProxyValidationsFactory(dataValidatingFactory: dataValidatingFactory),
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             networkViewModelFactory: NetworkViewModelFactory(),
+            balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
@@ -50,14 +49,14 @@ struct StakingConfirmProxyViewFactory {
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
             title: .init {
-                R.string.localizable.delegationsAddTitle(
+                R.string.localizable.stakingProxyManagementRevokeAccess(
                     preferredLanguages: $0.rLanguages
                 )
             }
         )
 
-        presenter.baseView = view
-        interactor.basePresenter = presenter
+        presenter.view = view
+        interactor.presenter = presenter
         dataValidatingFactory.view = view
 
         return view
@@ -67,7 +66,7 @@ struct StakingConfirmProxyViewFactory {
         state: RelaychainStakingSharedStateProtocol,
         wallet: MetaAccountModel,
         proxyAddress: AccountAddress
-    ) -> StakingConfirmProxyInteractor? {
+    ) -> StakingRemoveProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
 
@@ -99,11 +98,10 @@ struct StakingConfirmProxyViewFactory {
             accountResponse: selectedAccount
         )
 
-        return StakingConfirmProxyInteractor(
+        return StakingRemoveProxyInteractor(
             proxyAccount: proxyAddress,
             signingWrapper: signingWrapper,
-            runtimeService: runtimeRegistry,
-            sharedState: state,
+            chainAsset: state.stakingOption.chainAsset,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             accountProviderFactory: accountProviderFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -111,8 +109,7 @@ struct StakingConfirmProxyViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
-            currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            currencyManager: currencyManager
         )
     }
 }

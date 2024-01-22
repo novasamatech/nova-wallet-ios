@@ -294,6 +294,11 @@ extension MetaAccountModel {
 
         return chainAccount.proxy
     }
+
+    func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
+        let request = chainAsset.chain.accountRequest()
+        return try fetchChainAccountId(for: request)?.toAddress(using: chainAsset.chain.chainFormat)
+    }
 }
 
 extension ChainModel {

@@ -9,19 +9,10 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let sharedState: RelaychainStakingSharedStateProtocol
     let extrinsicService: ExtrinsicServiceProtocol
-    var chainAsset: ChainAsset {
-        sharedState.stakingOption.chainAsset
-    }
-
-    private var proxyProvider: AnyDataProvider<DecodedProxyDefinition>?
+    let chainAsset: ChainAsset
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
-
-    var proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol {
-        sharedState.proxyLocalSubscriptionFactory
-    }
 
     let proxyAccount: AccountAddress
     let signingWrapper: SigningWrapperProtocol
@@ -29,7 +20,7 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
     init(
         proxyAccount: AccountAddress,
         signingWrapper: SigningWrapperProtocol,
-        sharedState: RelaychainStakingSharedStateProtocol,
+        chainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         accountProviderFactory: AccountProviderFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -41,9 +32,8 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
     ) {
         self.signingWrapper = signingWrapper
         self.proxyAccount = proxyAccount
-
         self.extrinsicService = extrinsicService
-        self.sharedState = sharedState
+        self.chainAsset = chainAsset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.accountProviderFactory = accountProviderFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -64,18 +54,10 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
-    func performAccountSubscriptions() {
+    func performBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
-        clear(dataProvider: &proxyProvider)
 
-        let chainId = chainAsset.chain.chainId
         let accountId = selectedAccount.accountId
-
-        proxyProvider = subscribeProxies(
-            for: accountId,
-            chainId: chainId,
-            modifyInternalList: ProxyFilter.allProxies
-        )
 
         balanceProvider = subscribeToAssetBalanceProvider(
             for: accountId,
@@ -92,7 +74,7 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
         feeProxy.delegate = self
 
         performPriceSubscription()
-        performAccountSubscriptions()
+        performBalanceSubscription()
     }
 
     func estimateFee() {
@@ -114,14 +96,14 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
 
     func remakeSubscriptions() {
         performPriceSubscription()
-        performAccountSubscriptions()
+        performBalanceSubscription()
     }
 
     func submit() {
         guard let proxyAccountId = try? proxyAccount.toAccountId(
             using: chainAsset.chain.chainFormat
         ) else {
-            presenter?.didReceive(removingError: .submit(CommonError.undefined))
+            presenter?.didReceive(error: .submit(CommonError.undefined))
             return
         }
 
@@ -141,7 +123,7 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
                 case .success:
                     self?.presenter?.didSubmit()
                 case let .failure(error):
-                    self?.presenter?.didReceive(removingError: .submit(error))
+                    self?.presenter?.didReceive(error: .submit(error))
                 }
             }
         )
@@ -155,7 +137,7 @@ extension StakingRemoveProxyInteractor: PriceLocalStorageSubscriber, PriceLocalS
             case let .success(priceData):
                 presenter?.didReceive(price: priceData)
             case let .failure(error):
-                presenter?.didReceive(removingError: .price(error))
+                presenter?.didReceive(error: .price(error))
             }
         }
     }
@@ -172,7 +154,7 @@ extension StakingRemoveProxyInteractor: WalletLocalStorageSubscriber, WalletLoca
         case let .success(assetBalance):
             presenter?.didReceive(assetBalance: assetBalance)
         case let .failure(error):
-            presenter?.didReceive(removingError: .balance(error))
+            presenter?.didReceive(error: .balance(error))
         }
     }
 }
@@ -183,7 +165,7 @@ extension StakingRemoveProxyInteractor: ExtrinsicFeeProxyDelegate {
         case let .success(fee):
             presenter?.didReceive(fee: fee)
         case let .failure(error):
-            presenter?.didReceive(removingError: .fee(error))
+            presenter?.didReceive(error: .fee(error))
         }
     }
 }
@@ -196,16 +178,5 @@ extension StakingRemoveProxyInteractor: SelectedCurrencyDepending {
         }
 
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-    }
-}
-
-extension StakingRemoveProxyInteractor: ProxyListLocalSubscriptionHandler, ProxyListLocalStorageSubscriber {
-    func handleProxies(result: Result<ProxyDefinition?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(proxy):
-            presenter?.didReceive(proxy: proxy)
-        case let .failure(error):
-            presenter?.didReceive(removingError: .handleProxies(error))
-        }
     }
 }

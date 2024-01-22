@@ -2,18 +2,22 @@ import Foundation
 import SoraFoundation
 import SubstrateSdk
 
-final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
-    weak var view: StakingConfirmProxyViewProtocol? {
-        baseView as? StakingConfirmProxyViewProtocol
-    }
+final class StakingRemoveProxyPresenter {
+    weak var view: StakingConfirmProxyViewProtocol?
 
     let wireframe: StakingConfirmProxyWireframeProtocol
-    let interactor: StakingConfirmProxyInteractorInputProtocol
+    let interactor: StakingRemoveProxyInteractorInputProtocol
     let proxyAddress: AccountAddress
     let wallet: MetaAccountModel
+    let chainAsset: ChainAsset
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    let validationsFactory: ProxyConfirmValidationsFactoryProtocol
+    let dataValidatingFactory: ProxyDataValidatorFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+
+    private var assetBalance: AssetBalance?
+    private var priceData: PriceData?
+    private var fee: ExtrinsicFeeProtocol?
 
     private lazy var walletIconGenerator = NovaIconGenerator()
 
@@ -21,41 +25,24 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         chainAsset: ChainAsset,
         wallet: MetaAccountModel,
         proxyAddress: AccountAddress,
-        interactor: StakingConfirmProxyInteractorInputProtocol,
+        interactor: StakingRemoveProxyInteractorInputProtocol,
         wireframe: StakingConfirmProxyWireframeProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: ProxyDataValidatorFactoryProtocol,
-        validationsFactory: ProxyConfirmValidationsFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.proxyAddress = proxyAddress
         self.wallet = wallet
+        self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
-        self.validationsFactory = validationsFactory
-
-        super.init(
-            chainAsset: chainAsset,
-            interactor: interactor,
-            wireframe: wireframe,
-            balanceViewModelFactory: balanceViewModelFactory,
-            dataValidatingFactory: dataValidatingFactory,
-            localizationManager: localizationManager
-        )
-    }
-
-    override func setup() {
-        super.setup()
-
-        provideProxyDeposit()
-        provideNetworkViewModel()
-        provideProxiedWalletViewModel()
-        provideProxiedAddressViewModel()
-        provideProxyAddressViewModel()
+        self.dataValidatingFactory = dataValidatingFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.localizationManager = localizationManager
     }
 
     private func provideNetworkViewModel() {
@@ -88,12 +75,55 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         view?.didReceiveProxyAddress(viewModel: viewModel)
     }
 
-    override func getProxyAddress() -> AccountAddress {
-        proxyAddress
+    private func provideFee() {
+        guard let fee = fee?.amount.decimal(precision: chainAsset.asset.precision) else {
+            view?.didReceiveFee(viewModel: nil)
+            return
+        }
+        let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+            fee,
+            priceData: priceData
+        ).value(for: selectedLocale)
+        view?.didReceiveFee(viewModel: feeViewModel)
+    }
+
+    private func createValidations() -> [DataValidating] {
+        [
+            dataValidatingFactory.validAddress(
+                proxyAddress,
+                chain: chainAsset.chain,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.has(
+                fee: fee,
+                locale: selectedLocale,
+                onError: { [weak self] in
+                    self?.interactor.estimateFee()
+                }
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: assetBalance?.regularTransferrableBalance(),
+                fee: fee,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            )
+        ]
+    }
+
+    private func updateView() {
+        provideNetworkViewModel()
+        provideProxiedWalletViewModel()
+        provideProxiedAddressViewModel()
+        provideProxyAddressViewModel()
     }
 }
 
-extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
+extension StakingRemoveProxyPresenter: StakingConfirmProxyPresenterProtocol {
+    func setup() {
+        updateView()
+        interactor.setup()
+    }
+
     func showProxiedAddressOptions() {
         guard let view = view else {
             return
@@ -129,9 +159,25 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
             self?.interactor.submit()
         }
     }
+
+    func showDepositInfo() {}
 }
 
-extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProtocol {
+extension StakingRemoveProxyPresenter: StakingRemoveProxyInteractorOutputProtocol {
+    func didReceive(price: PriceData?) {
+        priceData = price
+        provideFee()
+    }
+
+    func didReceive(assetBalance: AssetBalance?) {
+        self.assetBalance = assetBalance
+    }
+
+    func didReceive(fee: ExtrinsicFeeProtocol?) {
+        self.fee = fee
+        provideFee()
+    }
+
     func didSubmit() {
         view?.didStopLoading()
 
@@ -142,10 +188,16 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProto
         )
     }
 
-    func didReceive(error: StakingConfirmProxyError) {
+    func didReceive(error: StakingRemoveProxyError) {
         view?.didStopLoading()
 
         switch error {
+        case .handleProxies, .balance, .price:
+            interactor.remakeSubscriptions()
+        case .fee:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.estimateFee()
+            }
         case let .submit(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
@@ -154,6 +206,14 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProto
                 locale: selectedLocale,
                 completionClosure: nil
             )
+        }
+    }
+}
+
+extension StakingRemoveProxyPresenter: Localizable {
+    func applyLocalization() {
+        if view?.isSetup == true {
+            updateView()
         }
     }
 }
