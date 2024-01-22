@@ -17,10 +17,10 @@ final class StakingProxyManagementWireframe: StakingProxyManagementWireframeProt
         )
     }
 
-    func showRevokeProxyAccess(from view: ControllerBackedProtocol?, proxyAddress: AccountAddress) {
+    func showRevokeProxyAccess(from view: ControllerBackedProtocol?, proxyAccount: ProxyAccount) {
         guard let confirmView = StakingRemoveProxyViewFactory.createView(
             state: state,
-            proxyAddress: proxyAddress
+            proxyAccount: proxyAccount
         ) else {
             return
         }

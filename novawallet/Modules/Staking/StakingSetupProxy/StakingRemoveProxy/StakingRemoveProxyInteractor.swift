@@ -14,11 +14,11 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
 
-    let proxyAccount: AccountAddress
+    let proxyAccount: ProxyAccount
     let signingWrapper: SigningWrapperProtocol
 
     init(
-        proxyAccount: AccountAddress,
+        proxyAccount: ProxyAccount,
         signingWrapper: SigningWrapperProtocol,
         chainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -78,15 +78,9 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
     }
 
     func estimateFee() {
-        guard let proxyAccountId = try? proxyAccount.toAccountId(
-            using: chainAsset.chain.chainFormat
-        ) else {
-            return
-        }
-
         let call = callFactory.removeProxy(
-            accountId: proxyAccountId,
-            type: .staking
+            accountId: proxyAccount.accountId,
+            type: proxyAccount.type
         )
 
         feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: call.callName) { builder in
@@ -100,16 +94,9 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
     }
 
     func submit() {
-        guard let proxyAccountId = try? proxyAccount.toAccountId(
-            using: chainAsset.chain.chainFormat
-        ) else {
-            presenter?.didReceive(error: .submit(CommonError.undefined))
-            return
-        }
-
         let call = callFactory.removeProxy(
-            accountId: proxyAccountId,
-            type: .staking
+            accountId: proxyAccount.accountId,
+            type: proxyAccount.type
         )
 
         extrinsicService.submit(

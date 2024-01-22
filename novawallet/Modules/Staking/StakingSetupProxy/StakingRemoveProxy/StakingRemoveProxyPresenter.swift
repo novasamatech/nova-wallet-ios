@@ -7,7 +7,7 @@ final class StakingRemoveProxyPresenter {
 
     let wireframe: StakingConfirmProxyWireframeProtocol
     let interactor: StakingRemoveProxyInteractorInputProtocol
-    let proxyAddress: AccountAddress
+    let proxyAccount: ProxyAccount
     let wallet: MetaAccountModel
     let chainAsset: ChainAsset
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
@@ -20,11 +20,14 @@ final class StakingRemoveProxyPresenter {
     private var fee: ExtrinsicFeeProtocol?
 
     private lazy var walletIconGenerator = NovaIconGenerator()
+    private var proxyAddress: AccountAddress? {
+        try? proxyAccount.accountId.toAddress(using: chainAsset.chain.chainFormat)
+    }
 
     init(
         chainAsset: ChainAsset,
         wallet: MetaAccountModel,
-        proxyAddress: AccountAddress,
+        proxyAccount: ProxyAccount,
         interactor: StakingRemoveProxyInteractorInputProtocol,
         wireframe: StakingConfirmProxyWireframeProtocol,
         dataValidatingFactory: ProxyDataValidatorFactoryProtocol,
@@ -33,7 +36,7 @@ final class StakingRemoveProxyPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.proxyAddress = proxyAddress
+        self.proxyAccount = proxyAccount
         self.wallet = wallet
         self.chainAsset = chainAsset
         self.interactor = interactor
@@ -60,7 +63,7 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func provideProxiedAddressViewModel() {
-        guard let address = wallet.fetch(for: chainAsset.chain.accountRequest())?.toAddress() else {
+        guard let address = try? wallet.address(for: chainAsset) else {
             return
         }
 
@@ -70,7 +73,7 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func provideProxyAddressViewModel() {
-        let displayAddress = DisplayAddress(address: proxyAddress, username: "")
+        let displayAddress = DisplayAddress(address: proxyAddress ?? "", username: "")
         let viewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
         view?.didReceiveProxyAddress(viewModel: viewModel)
     }
@@ -87,10 +90,15 @@ final class StakingRemoveProxyPresenter {
         view?.didReceiveFee(viewModel: feeViewModel)
     }
 
+    private func provideProxyTypeViewModel() {
+        let type = proxyAccount.type.title(locale: selectedLocale)
+        view?.didReceiveProxyType(viewModel: type)
+    }
+
     private func createValidations() -> [DataValidating] {
         [
             dataValidatingFactory.validAddress(
-                proxyAddress,
+                proxyAddress ?? "",
                 chain: chainAsset.chain,
                 locale: selectedLocale
             ),
@@ -111,6 +119,7 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func updateView() {
+        provideProxyTypeViewModel()
         provideNetworkViewModel()
         provideProxiedWalletViewModel()
         provideProxiedAddressViewModel()
@@ -120,6 +129,7 @@ final class StakingRemoveProxyPresenter {
 
 extension StakingRemoveProxyPresenter: StakingConfirmProxyPresenterProtocol {
     func setup() {
+        view?.didReceiveProxyDeposit(viewModel: nil)
         updateView()
         interactor.setup()
     }
@@ -140,7 +150,7 @@ extension StakingRemoveProxyPresenter: StakingConfirmProxyPresenterProtocol {
     }
 
     func showProxyAddressOptions() {
-        guard let view = view else {
+        guard let view = view, let proxyAddress = proxyAddress else {
             return
         }
         wireframe.presentAccountOptions(

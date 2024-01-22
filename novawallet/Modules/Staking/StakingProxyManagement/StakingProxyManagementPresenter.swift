@@ -74,15 +74,22 @@ final class StakingProxyManagementPresenter {
 
             return StakingProxyManagementViewModel(
                 info: info,
-                accountId: definition.proxy
+                account: .init(
+                    accountId: definition.proxy,
+                    type: definition.proxyType,
+                    delay: definition.delay
+                )
             )
         }
 
         view?.didReceive(viewModels: viewModels)
     }
 
-    private func showAddressOptions(address: AccountAddress) {
+    private func showAccountOptions(account: ProxyAccount) {
         guard let view = view else {
+            return
+        }
+        guard let address = try? account.accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return
         }
         let revokeAccess = AccountAdditionalOption(
@@ -94,7 +101,7 @@ final class StakingProxyManagementPresenter {
             icon: R.image.iconDelete(),
             indicator: .navigation
         ) { [weak self] in
-            self?.wireframe.showRevokeProxyAccess(from: self?.view, proxyAddress: address)
+            self?.wireframe.showRevokeProxyAccess(from: self?.view, proxyAccount: account)
         }
 
         wireframe.presentExtendedAccountOptions(
@@ -116,10 +123,8 @@ extension StakingProxyManagementPresenter: StakingProxyManagementPresenterProtoc
         wireframe.showAddProxy(from: view)
     }
 
-    func showOptions(accountId: AccountId) {
-        if let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) {
-            showAddressOptions(address: address)
-        }
+    func showOptions(account: ProxyAccount) {
+        showAccountOptions(account: account)
     }
 }
 

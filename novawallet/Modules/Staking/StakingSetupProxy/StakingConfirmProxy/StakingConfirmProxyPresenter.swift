@@ -51,6 +51,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     override func setup() {
         super.setup()
 
+        provideProxyTypeViewModel()
         provideProxyDeposit()
         provideNetworkViewModel()
         provideProxiedWalletViewModel()
@@ -61,6 +62,13 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     private func provideNetworkViewModel() {
         let viewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         view?.didReceiveNetwork(viewModel: viewModel)
+    }
+
+    private func provideProxyTypeViewModel() {
+        let type = R.string.localizable.stakingConfirmProxyTypeSubtitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveProxyType(viewModel: type)
     }
 
     private func provideProxiedWalletViewModel() {

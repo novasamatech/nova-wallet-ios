@@ -4,22 +4,21 @@ import SoraFoundation
 struct StakingRemoveProxyViewFactory {
     static func createView(
         state: RelaychainStakingSharedStateProtocol,
-        proxyAddress: AccountAddress
+        proxyAccount: ProxyAccount
     ) -> StakingConfirmProxyViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard let currencyManager = CurrencyManager.shared,
               let wallet = SelectedWalletSettings.shared.value,
               let interactor = createInteractor(
                   state: state,
                   wallet: wallet,
-                  proxyAddress: proxyAddress
+                  proxyAccount: proxyAccount
               ) else {
             return nil
         }
 
         let wireframe = StakingConfirmProxyWireframe()
-
-        let chainAsset = state.stakingOption.chainAsset
-
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -35,7 +34,7 @@ struct StakingRemoveProxyViewFactory {
         let presenter = StakingRemoveProxyPresenter(
             chainAsset: chainAsset,
             wallet: wallet,
-            proxyAddress: proxyAddress,
+            proxyAccount: proxyAccount,
             interactor: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidatingFactory,
@@ -65,7 +64,7 @@ struct StakingRemoveProxyViewFactory {
     private static func createInteractor(
         state: RelaychainStakingSharedStateProtocol,
         wallet: MetaAccountModel,
-        proxyAddress: AccountAddress
+        proxyAccount: ProxyAccount
     ) -> StakingRemoveProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
@@ -99,7 +98,7 @@ struct StakingRemoveProxyViewFactory {
         )
 
         return StakingRemoveProxyInteractor(
-            proxyAccount: proxyAddress,
+            proxyAccount: proxyAccount,
             signingWrapper: signingWrapper,
             chainAsset: state.stakingOption.chainAsset,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

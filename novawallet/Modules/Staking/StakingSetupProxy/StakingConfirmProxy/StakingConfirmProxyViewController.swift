@@ -55,9 +55,6 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
         rootView.proxyTypeCell.titleLabel.text = R.string.localizable.stakingConfirmProxyTypeTitle(
             preferredLanguages: languages
         )
-        rootView.proxyTypeCell.detailsLabel.text = R.string.localizable.stakingConfirmProxyTypeSubtitle(
-            preferredLanguages: languages
-        )
         rootView.proxyAddressCell.titleLabel.text = R.string.localizable.stakingConfirmProxyAccountProxy(
             preferredLanguages: languages
         )
@@ -135,6 +132,10 @@ extension StakingConfirmProxyViewController: StakingConfirmProxyViewProtocol {
 
     func didReceiveProxyAddress(viewModel: DisplayAddressViewModel) {
         rootView.proxyAddressCell.bind(viewModel: viewModel.cellViewModel)
+    }
+
+    func didReceiveProxyType(viewModel: String) {
+        rootView.proxyTypeCell.bind(details: viewModel)
     }
 
     func didStartLoading() {
