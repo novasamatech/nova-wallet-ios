@@ -931,6 +931,9 @@
 		77C35CE52B568ED100308F16 /* YourWalletsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */; };
 		77C35CE72B56D07300308F16 /* ScanAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */; };
 		77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */; };
+		77C3D7CF2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C3D7CE2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift */; };
+		77C3D7D12B5E626900997BA0 /* AddProxyValidationsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C3D7D02B5E626900997BA0 /* AddProxyValidationsFactory.swift */; };
+		77C3D7D32B5E628700997BA0 /* RemoveProxyValidationsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C3D7D22B5E628700997BA0 /* RemoveProxyValidationsFactory.swift */; };
 		77C976202AF36A170049272C /* SwapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9761F2AF36A170049272C /* SwapModels.swift */; };
 		77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */; };
 		77C976242AF3A5280049272C /* SwapViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976232AF3A5280049272C /* SwapViewModels.swift */; };
@@ -5165,6 +5168,9 @@
 		77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsPresentable.swift; sourceTree = "<group>"; };
 		77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAddressPresentable.swift; sourceTree = "<group>"; };
 		77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceFactory.swift; sourceTree = "<group>"; };
+		77C3D7CE2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyConfirmValidationsFactoryProtocol.swift; sourceTree = "<group>"; };
+		77C3D7D02B5E626900997BA0 /* AddProxyValidationsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProxyValidationsFactory.swift; sourceTree = "<group>"; };
+		77C3D7D22B5E628700997BA0 /* RemoveProxyValidationsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveProxyValidationsFactory.swift; sourceTree = "<group>"; };
 		77C9761F2AF36A170049272C /* SwapModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapModels.swift; sourceTree = "<group>"; };
 		77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperationTableViewCell.swift; sourceTree = "<group>"; };
 		77C976232AF3A5280049272C /* SwapViewModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapViewModels.swift; sourceTree = "<group>"; };
@@ -10250,6 +10256,9 @@
 		773090542B5591AC002577AE /* Validation */ = {
 			isa = PBXGroup;
 			children = (
+				77C3D7CE2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift */,
+				77C3D7D02B5E626900997BA0 /* AddProxyValidationsFactory.swift */,
+				77C3D7D22B5E628700997BA0 /* RemoveProxyValidationsFactory.swift */,
 				773090522B5591A1002577AE /* ProxyErrorPresentable.swift */,
 				773090502B559196002577AE /* ProxyDataValidatorFactory.swift */,
 			);
@@ -20823,6 +20832,7 @@
 				849013DE24A927E2008F705E /* LocalizationManager+Shared.swift in Sources */,
 				8412AF9B2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift in Sources */,
 				84F1CB3727CE5EC30095D523 /* NftListViewModelFactory.swift in Sources */,
+				77C3D7CF2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift in Sources */,
 				849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */,
 				84DA03DB275A31B500E8B326 /* DAppListHeaderView.swift in Sources */,
 				84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */,
@@ -21274,6 +21284,7 @@
 				84CE69E82566750D00559427 /* ByteLengthProcessor.swift in Sources */,
 				8499FEDA27BFDB8C00712589 /* NFTStreamableSource.swift in Sources */,
 				849976BE27B269A400B14A6C /* DAppTransports.swift in Sources */,
+				77C3D7D32B5E628700997BA0 /* RemoveProxyValidationsFactory.swift in Sources */,
 				842876A724AE049B00D91AD8 /* SelectionListProtocols.swift in Sources */,
 				AE6F7FE22685E812002BBC3E /* ValidatorListFilterWireframe.swift in Sources */,
 				849014DD24AA8F60008F705E /* MainTabBarViewFactory.swift in Sources */,
@@ -23820,6 +23831,7 @@
 				9DE1757D047A4D1E97913774 /* GovernanceUnlockConfirmProtocols.swift in Sources */,
 				2272FB0A01000A46D097634E /* GovernanceUnlockConfirmWireframe.swift in Sources */,
 				0CC2E56A2A6E6EBB004092E7 /* LocalStorageProviderObserving.swift in Sources */,
+				77C3D7D12B5E626900997BA0 /* AddProxyValidationsFactory.swift in Sources */,
 				A3BDFA01A32B6C7463E6EFFA /* GovernanceUnlockConfirmPresenter.swift in Sources */,
 				62649D3FB6AACB508872C67A /* GovernanceUnlockConfirmInteractor.swift in Sources */,
 				6D603098CCF0B65AA726AD38 /* GovernanceUnlockConfirmViewController.swift in Sources */,

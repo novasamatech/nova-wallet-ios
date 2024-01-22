@@ -10,13 +10,13 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
 
     private let interactor: StakingProxyBaseInteractorInputProtocol
     private let wireframe: StakingSetupProxyBaseWireframeProtocol
-    private var assetBalance: AssetBalance?
-    private var proxyDeposit: ProxyDeposit?
-    private var priceData: PriceData?
-    private var fee: ExtrinsicFeeProtocol?
-    private var existensialDeposit: BigUInt?
-    private var maxProxies: Int?
-    private var proxy: UncertainStorage<ProxyDefinition?> = .undefined
+    private(set) var assetBalance: AssetBalance?
+    private(set) var proxyDeposit: ProxyDeposit?
+    private(set) var priceData: PriceData?
+    private(set) var fee: ExtrinsicFeeProtocol?
+    private(set) var existensialDeposit: BigUInt?
+    private(set) var maxProxies: Int?
+    private(set) var proxy: UncertainStorage<ProxyDefinition?> = .undefined
 
     init(
         chainAsset: ChainAsset,
@@ -76,7 +76,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
         wireframe.showProxyDepositInfo(from: baseView)
     }
 
-    func createCommonValidations() -> [DataValidating] {
+    func createValidations() -> [DataValidating] {
         [
             dataValidatingFactory.validAddress(
                 getProxyAddress(),

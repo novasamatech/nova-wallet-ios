@@ -45,4 +45,13 @@ enum StakingProxyConfirmOperation {
             }
         }
     }
+
+    func validationFactory(dataValidatingFactory: ProxyDataValidatorFactoryProtocol) -> ProxyConfirmValidationsFactoryProtocol {
+        switch self {
+        case .add:
+            return AddProxyValidationsFactory(dataValidatingFactory: dataValidatingFactory)
+        case .remove:
+            return RemoveProxyValidationsFactory(dataValidatingFactory: dataValidatingFactory)
+        }
+    }
 }

@@ -138,7 +138,7 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
     }
 
     private func proceedWithValidation() {
-        let validations = createCommonValidations()
+        let validations = createValidations()
 
         DataValidationRunner(validators: validations).runValidation { [weak self] in
             guard

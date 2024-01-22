@@ -13,6 +13,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     let wallet: MetaAccountModel
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    let validationsFactory: ProxyConfirmValidationsFactoryProtocol
 
     private lazy var walletIconGenerator = NovaIconGenerator()
 
@@ -24,6 +25,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         wireframe: StakingConfirmProxyWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: ProxyDataValidatorFactoryProtocol,
+        validationsFactory: ProxyConfirmValidationsFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -34,6 +36,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         self.wireframe = wireframe
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
+        self.validationsFactory = validationsFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -87,6 +90,22 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     override func getProxyAddress() -> AccountAddress {
         proxyAddress
     }
+
+    override func createValidations() -> [DataValidating] {
+        let args = ConfirmProxyValidationArgs(
+            proxyAddress: getProxyAddress(),
+            chainAsset: chainAsset,
+            proxy: proxy,
+            limitProxyCount: maxProxies,
+            feeFetchClosure: { [weak self] in self?.interactor.estimateFee() },
+            assetBalance: assetBalance,
+            proxyDeposit: proxyDeposit,
+            existensialDeposit: existensialDeposit,
+            fee: fee
+        )
+
+        return validationsFactory.validations(args, locale: selectedLocale)
+    }
 }
 
 extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
@@ -116,7 +135,7 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
 
     func confirm() {
         view?.didStartLoading()
-        let validations = createCommonValidations()
+        let validations = createValidations()
 
         DataValidationRunner(validators: validations).runValidation { [weak self] in
             self?.interactor.submit()
