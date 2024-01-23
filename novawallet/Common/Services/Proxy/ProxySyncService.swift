@@ -51,7 +51,7 @@ final class ProxySyncService {
         ),
         logger: LoggerProtocol = Logger.shared,
         chainFilter: @escaping ProxySyncChainFilter,
-        chainWalletFilter: ProxySyncChainWalletFilter? = nil
+        chainWalletFilter: ProxySyncChainWalletFilter?
     ) {
         self.chainRegistry = chainRegistry
         self.proxyOperationFactory = proxyOperationFactory
@@ -118,7 +118,8 @@ final class ProxySyncService {
             proxyOperationFactory: proxyOperationFactory,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
-            workingQueue: workingQueue
+            workingQueue: workingQueue,
+            chainWalletFilter: chainWalletFilter
         )
 
         updaters[chain.chainId] = service

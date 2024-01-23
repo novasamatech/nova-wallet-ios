@@ -8,7 +8,9 @@ extension ChainModel {
         case KnowChainId.statemine:
             return [NftSource(chainId: chainId, type: .uniques)]
         case KnowChainId.polkadot:
-            return [NftSource(chainId: chainId, type: .pdc20)]
+            // TODO: Enable PDC 20 after tests
+            // return [NftSource(chainId: chainId, type: .pdc20)]
+            return []
         default:
             return []
         }

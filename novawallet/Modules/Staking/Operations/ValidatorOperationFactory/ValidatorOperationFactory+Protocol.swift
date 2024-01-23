@@ -78,8 +78,10 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         by nomination: Nomination,
         nominatorAddress: AccountAddress
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+        let targets = nomination.targets.distinct()
+
         let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { nomination.targets },
+            for: { targets },
             engine: engine,
             runtimeService: runtimeService,
             chainFormat: chainInfo.chain
@@ -88,19 +90,19 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let electedValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
         let statusesWrapper = createStatusesOperation(
-            for: nomination.targets,
+            for: targets,
             electedValidatorsOperation: electedValidatorsOperation,
             nominatorAddress: nominatorAddress
         )
 
         statusesWrapper.allOperations.forEach { $0.addDependency(electedValidatorsOperation) }
 
-        let slashesWrapper = createSlashesOperation(for: nomination.targets, nomination: nomination)
+        let slashesWrapper = createSlashesOperation(for: targets, nomination: nomination)
 
         slashesWrapper.allOperations.forEach { $0.addDependency(electedValidatorsOperation) }
 
         let validatorsStakingInfoWrapper = createValidatorsStakeInfoWrapper(
-            for: nomination.targets,
+            for: targets,
             electedValidatorsOperation: electedValidatorsOperation
         )
 
@@ -115,7 +117,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             let validatorsStakingInfo = try validatorsStakingInfoWrapper.targetOperation
                 .extractNoCancellableResultData()
 
-            return try nomination.targets.enumerated().map { index, accountId in
+            return try targets.enumerated().map { index, accountId in
                 let address = try accountId.toAddress(using: chainFormat)
 
                 return SelectedValidatorInfo(
