@@ -95,6 +95,7 @@
 		0C1BE1A02A46F1F00010933C /* ScientificStringParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */; };
 		0C1BE1A22A46F93B0010933C /* BigUInt+Scientific.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */; };
 		0C1BE1A62A47FC240010933C /* MultistakingSyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE1A52A47FC240010933C /* MultistakingSyncServiceFactory.swift */; };
+		0C1CCC3C2B5F79D300A6EA17 /* ProxyErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CCC3B2B5F79D300A6EA17 /* ProxyErrorPresentable.swift */; };
 		0C1FE4F42A52EE51003769E7 /* AssetSearchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */; };
 		0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */; };
 		0C21D77C2AB42A3500EB2DBD /* ScreenOpenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C21D77B2AB42A3500EB2DBD /* ScreenOpenService.swift */; };
@@ -241,8 +242,6 @@
 		0C7C9B9B2AC16D7B009A0362 /* NSAttributedString+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C9B9A2AC16D7B009A0362 /* NSAttributedString+Helpers.swift */; };
 		0C7E7FAB2A9F27FB00596628 /* NominationPoolsRedeemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */; };
 		0C80F0A42B3D7DBD00579E23 /* WalletIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C80F0A32B3D7DBD00579E23 /* WalletIconView.swift */; };
-		0C8102232B5A922B00F75BF9 /* ProxyValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */; };
-		0C8102252B5A928400F75BF9 /* ProxyErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
@@ -845,7 +844,6 @@
 		772B1C7D2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772B1C7C2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift */; };
 		7730904F2B557F46002577AE /* StakingProxyBasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7730904E2B557F46002577AE /* StakingProxyBasePresenter.swift */; };
 		773090512B559196002577AE /* ProxyDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773090502B559196002577AE /* ProxyDataValidatorFactory.swift */; };
-		773090532B5591A1002577AE /* ProxyErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773090522B5591A1002577AE /* ProxyErrorPresentable.swift */; };
 		7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */; };
 		7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */; };
 		773A37542B398CEB006AC4AA /* WalletNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37532B398CEB006AC4AA /* WalletNotificationService.swift */; };
@@ -4348,6 +4346,7 @@
 		0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScientificStringParsing.swift; sourceTree = "<group>"; };
 		0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BigUInt+Scientific.swift"; sourceTree = "<group>"; };
 		0C1BE1A52A47FC240010933C /* MultistakingSyncServiceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultistakingSyncServiceFactory.swift; sourceTree = "<group>"; };
+		0C1CCC3B2B5F79D300A6EA17 /* ProxyErrorPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyErrorPresentable.swift; sourceTree = "<group>"; };
 		0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilder.swift; sourceTree = "<group>"; };
 		0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilderResult.swift; sourceTree = "<group>"; };
 		0C21D77B2AB42A3500EB2DBD /* ScreenOpenService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenOpenService.swift; sourceTree = "<group>"; };
@@ -4501,8 +4500,6 @@
 		0C7C9B9A2AC16D7B009A0362 /* NSAttributedString+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Helpers.swift"; sourceTree = "<group>"; };
 		0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRedeemCall.swift; sourceTree = "<group>"; };
 		0C80F0A32B3D7DBD00579E23 /* WalletIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletIconView.swift; sourceTree = "<group>"; };
-		0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyValidationFactory.swift; sourceTree = "<group>"; };
-		0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyErrorPresentable.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
@@ -5104,7 +5101,6 @@
 		772B1C7C2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingCustomValidatorListWireframe.swift; sourceTree = "<group>"; };
 		7730904E2B557F46002577AE /* StakingProxyBasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingProxyBasePresenter.swift; sourceTree = "<group>"; };
 		773090502B559196002577AE /* ProxyDataValidatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyDataValidatorFactory.swift; sourceTree = "<group>"; };
-		773090522B5591A1002577AE /* ProxyErrorPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyErrorPresentable.swift; sourceTree = "<group>"; };
 		7731E9C32A14DA3F0085B5FF /* BorderedActionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedActionControlView.swift; sourceTree = "<group>"; };
 		7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingRelaychainInteractor.swift; sourceTree = "<group>"; };
 		773A37532B398CEB006AC4AA /* WalletNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNotificationService.swift; sourceTree = "<group>"; };
@@ -9150,15 +9146,6 @@
 			path = NominationPools;
 			sourceTree = "<group>";
 		};
-		0C8102212B5A921D00F75BF9 /* Validations */ = {
-			isa = PBXGroup;
-			children = (
-				0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */,
-				0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */,
-			);
-			path = Validations;
-			sourceTree = "<group>";
-		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
@@ -10375,7 +10362,7 @@
 		773090542B5591AC002577AE /* Validation */ = {
 			isa = PBXGroup;
 			children = (
-				773090522B5591A1002577AE /* ProxyErrorPresentable.swift */,
+				0C1CCC3B2B5F79D300A6EA17 /* ProxyErrorPresentable.swift */,
 				773090502B559196002577AE /* ProxyDataValidatorFactory.swift */,
 			);
 			path = Validation;
@@ -10897,7 +10884,7 @@
 		77FF02672B21DCB300B655BC /* Proxy */ = {
 			isa = PBXGroup;
 			children = (
-				0C8102212B5A921D00F75BF9 /* Validations */,
+				773090542B5591AC002577AE /* Validation */,
 				0C37AFCD2B598BAB00009ECA /* ProxySignConfirmation */,
 				AC6B93411E3444BFB71691BE /* ProxySignValidation */,
 				773A37582B3B589F006AC4AA /* ProxyMessageSheet */,
@@ -18333,7 +18320,6 @@
 			isa = PBXGroup;
 			children = (
 				600A0B1B13D9E0897BC4FDA9 /* StakingConfirmProxy */,
-				773090542B5591AC002577AE /* Validation */,
 				7754BD542B501E3C0099C13E /* Base */,
 				173BB84A4695492A77AE206D /* StakingSetupProxyProtocols.swift */,
 				1399884D5F4905DA0BD1E5C3 /* StakingSetupProxyWireframe.swift */,
@@ -20835,7 +20821,6 @@
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
 				8490141124A92F6D008F705E /* OnboardingMainViewController.swift in Sources */,
 				D9D163642744F60D00681C1F /* ExternalContribution.swift in Sources */,
-				0C8102232B5A922B00F75BF9 /* ProxyValidationFactory.swift in Sources */,
 				84155DED2539817200A27058 /* ApplicationService.swift in Sources */,
 				84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */,
 				777DC2E12B2368EC0060CB2C /* ProxyType+title.swift in Sources */,
@@ -21342,7 +21327,6 @@
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */,
 				77DC54862B1FE5C100C7E45A /* ProxySyncService.swift in Sources */,
-				773090532B5591A1002577AE /* ProxyErrorPresentable.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,
 				77F033972A8142D1006BC67E /* StakingSetupAmountStyles.swift in Sources */,
 				AEF507F72625A3280098574D /* ValidatorState+Status.swift in Sources */,
@@ -21375,6 +21359,7 @@
 				F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */,
 				889F7F3B292373560024CB1E /* RemoteAssetModel+Evm.swift in Sources */,
 				849D3227291CE25E00D25839 /* MarkdownViewContainer.swift in Sources */,
+				0C1CCC3C2B5F79D300A6EA17 /* ProxyErrorPresentable.swift in Sources */,
 				0C59E8E12AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */,
@@ -22128,7 +22113,6 @@
 				840D626F29CB39EE00D5E894 /* URLBuilder.swift in Sources */,
 				842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */,
 				8439399C2636FAB40087658D /* YourValidatorViewModel.swift in Sources */,
-				0C8102252B5A928400F75BF9 /* ProxyErrorPresentable.swift in Sources */,
 				84216FDE282B979900479375 /* Decimal+Conversion.swift in Sources */,
 				887404B229826FB100EE270A /* InAppUpdatesServiceFactory.swift in Sources */,
 				841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */,

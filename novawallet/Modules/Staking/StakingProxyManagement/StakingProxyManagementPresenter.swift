@@ -55,7 +55,7 @@ final class StakingProxyManagementPresenter {
             } else {
                 let icon = try? self.polkadotIconGenerator.generateFromAccountId(definition.proxy)
                 let imageViewModel = self.imageViewModel(from: icon, accountId: definition.proxy)
-                let address = try? definition.proxy.toAddress(using: chainAsset.chain.chainFormat) ?? ""
+                let address = try? definition.proxy.toAddress(using: chainAsset.chain.chainFormat)
                 walletInfo = .init(
                     icon: imageViewModel,
                     name: address ?? ""
@@ -138,7 +138,7 @@ extension StakingProxyManagementPresenter: StakingProxyManagementInteractorOutpu
         switch error {
         case let .identities(error):
             logger.error("Error occured while fetching identities: \(error.localizedDescription)")
-        case let .proxyDefifnition:
+        case .proxyDefifnition:
             wireframe.presentRequestStatus(
                 on: view,
                 locale: localizationManager.selectedLocale
