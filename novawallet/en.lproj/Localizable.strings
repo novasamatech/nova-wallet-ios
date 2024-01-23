@@ -1378,6 +1378,14 @@
 "staking.setup.proxy.deposit.details" = "The deposit stays reserved on your account until the proxy is removed.";
 "staking.setup.your.proxies" = "Your delegations";
 "staking.setup.add.your.proxy" = "Add delegated authority (Proxy)";
+"staking.setup.proxy.error.insufficient.balance.title" = "Not enough tokens";
+"staking.setup.proxy.error.insufficient.balance.message" = "You don’t have enough balance for proxy deposit of %@. Available balance: %@";
+"staking.setup.proxy.error.invalid.address.title" = "Invalid proxy address";
+"staking.setup.proxy.error.invalid.address.message" = "Proxy address should be a valid %@ address";
+"staking.setup.proxy.error.invalid.maximum.proxies.title" = "Maximum number of proxies has been reached";
+"staking.setup.proxy.error.invalid.maximum.proxies.message" = "You have reached the limit of %@ added proxies in %@. Remove proxies to add new ones.";
+"staking.setup.proxy.error.proxy.already.exists.title" = "Delegation already exists";
+"staking.setup.proxy.error.proxy.already.exists.message" = "You are already delegating to this account: %@";
 "common.time.in" = "in";
 "common.and" = " and ";
 "common.time.period.after" = "after";

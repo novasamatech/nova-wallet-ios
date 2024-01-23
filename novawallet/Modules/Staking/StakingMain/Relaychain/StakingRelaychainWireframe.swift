@@ -153,7 +153,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
     }
 
     func showAddProxy(from view: ControllerBackedProtocol?) {
-        guard let setupProxyView = StakingSetupProxyViewFactory.createView() else {
+        guard let setupProxyView = StakingSetupProxyViewFactory.createView(state: state) else {
             return
         }
         let navigationController = NovaNavigationController(rootViewController: setupProxyView.controller)

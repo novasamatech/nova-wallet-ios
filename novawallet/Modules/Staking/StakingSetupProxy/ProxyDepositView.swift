@@ -1,6 +1,6 @@
 import SoraUI
 
-final class ProxyDepositView: RowView<LoadableGenericIconDetailsView<NetworkFeeInfoView>> {
+final class ProxyDepositView: RowView<IconDetailsGenericView<NetworkFeeInfoView>> {
     var imageView: UIImageView { rowContentView.imageView }
     var titleButton: RoundedButton { rowContentView.detailsView.titleButton }
     var valueTopButton: RoundedButton { rowContentView.detailsView.valueTopButton }
@@ -21,5 +21,9 @@ final class ProxyDepositView: RowView<LoadableGenericIconDetailsView<NetworkFeeI
         preferredHeight = 44
         roundedBackgroundView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         borderView.borderType = .none
+    }
+
+    func bind(loadableViewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
+        rowContentView.detailsView.bind(loadableViewModel: loadableViewModel)
     }
 }

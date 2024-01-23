@@ -1378,6 +1378,14 @@
 "staking.setup.proxy.deposit.details" = "Депозит остается зарезервированным на вашем счете до тех пор, пока прокси не будет удален.";
 "staking.setup.your.proxies" = "Ваши делегации";
 "staking.setup.add.your.proxy" = "Добавить делегацию (Прокси)";
+"staking.setup.proxy.error.insufficient.balance.title" = "Недостаточно токенов";
+"staking.setup.proxy.error.insufficient.balance.message" = "У вас недостаточно средств для депозита прокси %@. Доступный баланс: %@";
+"staking.setup.proxy.error.invalid.address.title" = "Некорректный адрес прокси";
+"staking.setup.proxy.error.invalid.address.message" = "Адрес прокси должен быть допустимым адресом в сети %@";
+"staking.setup.proxy.error.invalid.maximum.proxies.title" = "Достигнуто максимальное количество прокси";
+"staking.setup.proxy.error.invalid.maximum.proxies.message" = "Вы достигли лимита добавленных прокси (%@) в %@. Чтобы добавить новые, удалите существующие.";
+"staking.setup.proxy.error.proxy.already.exists.title" = "Прокси уже добавлен";
+"staking.setup.proxy.error.proxy.already.exists.message" = "Вы уже делегируете этой учетной записи: %@";
 "common.time.in" = "через";
 "common.and" = " и ";
 "common.time.period.after" = "через";
