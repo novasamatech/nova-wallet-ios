@@ -14,7 +14,6 @@ protocol StakingRemoveProxyInteractorOutputProtocol: AnyObject {
 }
 
 enum StakingRemoveProxyError: Error {
-    case handleProxies(Error)
     case balance(Error)
     case price(Error)
     case fee(Error)

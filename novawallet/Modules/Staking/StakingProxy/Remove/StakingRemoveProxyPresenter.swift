@@ -202,7 +202,7 @@ extension StakingRemoveProxyPresenter: StakingRemoveProxyInteractorOutputProtoco
         view?.didStopLoading()
 
         switch error {
-        case .handleProxies, .balance, .price:
+        case .balance, .price:
             interactor.remakeSubscriptions()
         case .fee:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

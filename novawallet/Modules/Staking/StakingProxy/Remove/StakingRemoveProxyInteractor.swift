@@ -1,7 +1,7 @@
 import UIKit
 import RobinHood
 
-final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProtocol, AnyProviderAutoCleaning {
+final class StakingRemoveProxyInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingRemoveProxyInteractorOutputProtocol?
     let selectedAccount: ChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -54,7 +54,7 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
-    func performBalanceSubscription() {
+    private func performBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
 
         let accountId = selectedAccount.accountId
@@ -67,9 +67,9 @@ final class StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProto
 
         estimateFee()
     }
+}
 
-    // MARK: - StakingProxyBaseInteractorInputProtocol
-
+extension StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProtocol {
     func setup() {
         feeProxy.delegate = self
 
