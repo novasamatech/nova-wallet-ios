@@ -10170,7 +10170,7 @@
 			path = StakingRewardFilters;
 			sourceTree = "<group>";
 		};
-		600A0B1B13D9E0897BC4FDA9 /* StakingConfirmProxy */ = {
+		600A0B1B13D9E0897BC4FDA9 /* Confirm */ = {
 			isa = PBXGroup;
 			children = (
 				42787EE71C10AD13B8584EFC /* StakingConfirmProxyProtocols.swift */,
@@ -10181,7 +10181,7 @@
 				3543AE2CAA63AC0A20D532B6 /* StakingConfirmProxyViewLayout.swift */,
 				0E52C5919A1DA8A18297325B /* StakingConfirmProxyViewFactory.swift */,
 			);
-			path = StakingConfirmProxy;
+			path = Confirm;
 			sourceTree = "<group>";
 		};
 		6B9FCD7484C894D77EE13328 /* DelegateSearch */ = {
@@ -10458,6 +10458,18 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
+		7750CC352B5FB29300002991 /* StakingProxy */ = {
+			isa = PBXGroup;
+			children = (
+				7754BD542B501E3C0099C13E /* Base */,
+				A4542BFD7BBCF6B05FB2D3E4 /* Add */,
+				600A0B1B13D9E0897BC4FDA9 /* Confirm */,
+				8AE87694A810D25060A567E1 /* Management */,
+				77C3D7D82B5E825600997BA0 /* Remove */,
+			);
+			path = StakingProxy;
+			sourceTree = "<group>";
+		};
 		7752E16B2AD878A4006E2F92 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -10643,7 +10655,7 @@
 			path = canonicalization;
 			sourceTree = "<group>";
 		};
-		77C3D7D82B5E825600997BA0 /* StakingRemoveProxy */ = {
+		77C3D7D82B5E825600997BA0 /* Remove */ = {
 			isa = PBXGroup;
 			children = (
 				77C3D7D42B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift */,
@@ -10651,7 +10663,7 @@
 				7779D1102B5EE39C008966A8 /* StakingRemoveProxyPresenter.swift */,
 				7779D1122B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift */,
 			);
-			path = StakingRemoveProxy;
+			path = Remove;
 			sourceTree = "<group>";
 		};
 		77C9BCBA2ACD1AE800022EA2 /* Model */ = {
@@ -17345,8 +17357,7 @@
 				7066B343B912F72345D541F2 /* StakingSetupAmount */,
 				17432B4B5D8D9DC5C22CA238 /* StakingType */,
 				92CDAD21CEED554306CAF5D8 /* StartStakingConfirm */,
-				A4542BFD7BBCF6B05FB2D3E4 /* StakingSetupProxy */,
-				8AE87694A810D25060A567E1 /* StakingProxyManagement */,
+				7750CC352B5FB29300002991 /* StakingProxy */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -18219,7 +18230,7 @@
 			path = "CAIP-2";
 			sourceTree = "<group>";
 		};
-		8AE87694A810D25060A567E1 /* StakingProxyManagement */ = {
+		8AE87694A810D25060A567E1 /* Management */ = {
 			isa = PBXGroup;
 			children = (
 				DE5C4D40180946CA35A0E2F8 /* StakingProxyManagementProtocols.swift */,
@@ -18230,7 +18241,7 @@
 				DBADD72EE1AFA6E549D779FB /* StakingProxyManagementViewLayout.swift */,
 				7DDEB59CB3BDF9BDAAC4E3C5 /* StakingProxyManagementViewFactory.swift */,
 			);
-			path = StakingProxyManagement;
+			path = Management;
 			sourceTree = "<group>";
 		};
 		8C1DCF40C8BE3290D4BB9843 /* ParaStkStakeConfirm */ = {
@@ -18349,12 +18360,9 @@
 			path = AssetsSearch;
 			sourceTree = "<group>";
 		};
-		A4542BFD7BBCF6B05FB2D3E4 /* StakingSetupProxy */ = {
+		A4542BFD7BBCF6B05FB2D3E4 /* Add */ = {
 			isa = PBXGroup;
 			children = (
-				77C3D7D82B5E825600997BA0 /* StakingRemoveProxy */,
-				600A0B1B13D9E0897BC4FDA9 /* StakingConfirmProxy */,
-				7754BD542B501E3C0099C13E /* Base */,
 				173BB84A4695492A77AE206D /* StakingSetupProxyProtocols.swift */,
 				1399884D5F4905DA0BD1E5C3 /* StakingSetupProxyWireframe.swift */,
 				5B882BFEED7C8CB1EA5A853D /* StakingSetupProxyPresenter.swift */,
@@ -18364,7 +18372,7 @@
 				90D17F206E8C9D755346CFCC /* StakingSetupProxyViewFactory.swift */,
 				779F1F8A2B4D807200EF1EE9 /* ProxyDepositView.swift */,
 			);
-			path = StakingSetupProxy;
+			path = Add;
 			sourceTree = "<group>";
 		};
 		A798A35104CE0BC5AD2645F3 /* DAppTxDetails */ = {
