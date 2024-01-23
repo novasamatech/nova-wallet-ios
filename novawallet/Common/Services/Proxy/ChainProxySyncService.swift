@@ -11,6 +11,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
     let requestFactory: StorageRequestFactoryProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
+    let chainWalletFilter: ProxySyncChainWalletFilter?
 
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
@@ -25,7 +26,8 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         proxyOperationFactory: ProxyOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue
+        workingQueue: DispatchQueue,
+        chainWalletFilter: ProxySyncChainWalletFilter?
     ) {
         self.chainModel = chainModel
         self.chainRegistry = chainRegistry
@@ -35,6 +37,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         self.metaAccountsRepository = metaAccountsRepository
         self.workingQueue = workingQueue
         self.eventCenter = eventCenter
+        self.chainWalletFilter = chainWalletFilter
         changesCalculator = .init(chainModel: chainModel)
         requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -73,11 +76,12 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             connection: connection,
             runtimeProvider: runtimeProvider
         )
-        let metaAccountsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
+
+        let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)
 
         let changesOperation = changesOperation(
             proxyListWrapper: proxyListWrapper,
-            metaAccountsOperation: metaAccountsOperation,
+            metaAccountsWrapper: walletsWrapper,
             connection: connection,
             runtimeProvider: runtimeProvider,
             identityOperationFactory: identityOperationFactory,
@@ -119,9 +123,30 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         }
     }
 
+    private func createWalletsWrapper(
+        for filter: ProxySyncChainWalletFilter?,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
+        let metaAccountsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
+
+        let filterOperation = ClosureOperation<[ManagedMetaAccountModel]> {
+            let allWallets = try metaAccountsOperation.extractNoCancellableResultData()
+
+            guard let filter = filter else {
+                return allWallets
+            }
+
+            return allWallets.filter { filter(chain, $0.info) }
+        }
+
+        filterOperation.addDependency(metaAccountsOperation)
+
+        return CompoundOperationWrapper(targetOperation: filterOperation, dependencies: [metaAccountsOperation])
+    }
+
     private func changesOperation(
         proxyListWrapper: CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>,
-        metaAccountsOperation: BaseOperation<[ManagedMetaAccountModel]>,
+        metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol,
@@ -129,7 +154,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let proxyListOperation = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
             let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
-            let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
+            let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
 
             let notProxiedAccountIdList: [AccountId] = chainMetaAccounts.compactMap { wallet in
                 guard wallet.info.type != .proxied else {
@@ -151,7 +176,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             return proxies
         }
         proxyListOperation.addDependency(proxyListWrapper.targetOperation)
-        proxyListOperation.addDependency(metaAccountsOperation)
+        proxyListOperation.addDependency(metaAccountsWrapper.targetOperation)
 
         let identityWrapper = identityOperationFactory.createIdentityWrapperByAccountId(
             for: {
@@ -167,7 +192,7 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
 
         let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> { [changesCalculator] in
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
-            let chainMetaAccounts = try metaAccountsOperation.extractNoCancellableResultData()
+            let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
             let remoteProxieds = try proxyListOperation.extractNoCancellableResultData()
 
             return try changesCalculator.calculateUpdates(
@@ -178,11 +203,11 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
         }
 
         mapOperation.addDependency(identityWrapper.targetOperation)
-        mapOperation.addDependency(metaAccountsOperation)
+        mapOperation.addDependency(metaAccountsWrapper.targetOperation)
         mapOperation.addDependency(proxyListOperation)
 
         let dependencies = proxyListWrapper.allOperations + identityWrapper.allOperations +
-            [proxyListOperation, metaAccountsOperation]
+            [proxyListOperation] + metaAccountsWrapper.allOperations
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
     }

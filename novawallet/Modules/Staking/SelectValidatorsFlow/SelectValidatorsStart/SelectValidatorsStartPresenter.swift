@@ -191,10 +191,10 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartInteractorOutputP
         }
     }
 
-    func didReceiveMaxNominations(result: Result<Int, Error>) {
+    func didReceiveMaxNominations(result: Result<UInt32, Error>) {
         switch result {
         case let .success(maxNominations):
-            self.maxNominations = maxNominations
+            self.maxNominations = Int(maxNominations)
 
             updateRecommendedValidators()
             updateSelectedValidatorsIfNeeded()

@@ -97,7 +97,6 @@ enum Proxy {
             case .any, .nonTransfer, .staking:
                 return true
             case .governance,
-                 .staking,
                  .nominationPools,
                  .identityJudgement,
                  .cancelProxy,

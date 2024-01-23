@@ -13,7 +13,6 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     let wallet: MetaAccountModel
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    let validationsFactory: ProxyConfirmValidationsFactoryProtocol
 
     private lazy var walletIconGenerator = NovaIconGenerator()
 
@@ -25,7 +24,6 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         wireframe: StakingConfirmProxyWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: ProxyDataValidatorFactoryProtocol,
-        validationsFactory: ProxyConfirmValidationsFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -36,7 +34,6 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         self.wireframe = wireframe
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
-        self.validationsFactory = validationsFactory
 
         super.init(
             chainAsset: chainAsset,

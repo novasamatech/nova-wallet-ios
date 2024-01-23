@@ -215,7 +215,7 @@ final class NominationPoolsSyncTests: XCTestCase {
             executing: { changes in
                 let optMaxPoolMembers: UInt32? = changes.reduceToLastChange()?.item?.value
                 
-                logger.info("Max pool members per pool: \(optMaxPoolMembers)")
+                logger.info("Max pool members per pool: \(String(describing: optMaxPoolMembers))")
                 maxPoolMembersPerPoolExpectation.fulfill()
             }, failing: { error in
                 logger.error("Error: \(error)")

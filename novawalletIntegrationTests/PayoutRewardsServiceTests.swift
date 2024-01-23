@@ -2,51 +2,71 @@ import XCTest
 import SoraKeystore
 import SubstrateSdk
 import IrohaCrypto
+import RobinHood
 @testable import novawallet
 
 class PayoutRewardsServiceTests: XCTestCase {
-
-    func testPayoutRewardsListForNominator() throws {
-        let operationManager = OperationManagerFacade.sharedManager
-
+    
+    func testPayoutsForAzero() throws {
         let selectedAccount = "5HKcmzDLApS5xERzruR6qwiLWjeVyg1RVQmFNoM44Gtni7SX"
-        let chainId = "70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
+        let chainId = KnowChainId.alephZero
+        
+        do {
+            let payouts = try fetchNominatorPayout(for: selectedAccount, chainId: chainId)
+            Logger.shared.info("Payouts: \(payouts)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testWestendNominator() throws {
+        let selectedAccount = "5HKPqdbQGZePdoFKzcjXXHEbFhfGCjFpmGDmcBLnGMXSKAnN"
+        let chainId = KnowChainId.westend
+        
+        do {
+            let payouts = try fetchNominatorPayout(for: selectedAccount, chainId: chainId)
+            Logger.shared.info("Payouts: \(payouts)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testWestendValidator() throws {
+        let selectedAccount = "5CFPcUJgYgWryPaV1aYjSbTpbTLu42V32Ytw1L9rfoMAsfGh"
+        let chainId = KnowChainId.westend
+        
+        do {
+            let payouts = try fetchValidatorPayout(for: selectedAccount, chainId: chainId)
+            Logger.shared.info("Payouts: \(payouts)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testPolkadotNominator() throws {
+        let selectedAccount = "16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD"
+        let chainId = KnowChainId.polkadot
+        
+        do {
+            let payouts = try fetchNominatorPayout(for: selectedAccount, chainId: chainId)
+            Logger.shared.info("Payouts: \(payouts)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    private func fetchNominatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
+        let operationQueue = OperationQueue()
+        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
-        var selectedChain: ChainModel?
-
-        let syncExpectation = XCTestExpectation()
-
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { changes in
-            for change in changes {
-                switch change {
-                case let .insert(chain):
-                    if chain.chainId == chainId {
-                        selectedChain = chain
-                    }
-                case let .update(chain):
-                    if chain.chainId == chainId {
-                        selectedChain = chain
-                    }
-                case .delete:
-                    break
-                }
-            }
-
-            if !changes.isEmpty {
-                syncExpectation.fulfill()
-            }
-        }
-
-        wait(for: [syncExpectation], timeout: 10)
-
         guard
-            let chainAsset = selectedChain.map({ ChainAsset(chain: $0, asset: $0.assets.first!) }),
-            let rewardUrl = selectedChain?.externalApis?.staking()?.first?.url else {
-            XCTFail("Unexpected empty reward api")
-            return
+            let chain = chainRegistry.getChain(for: chainId),
+            let chainAsset = chain.utilityChainAsset(),
+            let rewardUrl = chain.externalApis?.staking()?.first?.url else {
+            throw ChainRegistryError.connectionUnavailable
         }
 
         let storageRequestFactory = StorageRequestFactory(
@@ -60,10 +80,24 @@ class PayoutRewardsServiceTests: XCTestCase {
         let identityOperation = IdentityOperationFactory(requestFactory: storageRequestFactory)
         let payoutInfoFactory = NominatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
+        let exposureSearchFactory = ExposurePagedEraOperationFactory(operationQueue: operationQueue)
+        let unclaimedRewardsFacade = StakingUnclaimedRewardsFacade(
+            requestFactory: storageRequestFactory,
+            operationQueue: operationQueue
+        )
+        
+        let exposureFacade = StakingValidatorExposureFacade(
+            operationQueue: operationQueue,
+            requestFactory: storageRequestFactory
+        )
+        
         let service = PayoutRewardsService(
             selectedAccountAddress: selectedAccount,
             chainFormat: chainAsset.chain.chainFormat,
             validatorsResolutionFactory: validatorsResolutionFactory,
+            erasStakersPagedSearchFactory: exposureSearchFactory,
+            exposureFactoryFacade: exposureFacade,
+            unclaimedRewardsFacade: unclaimedRewardsFacade,
             runtimeCodingService: chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)!,
             storageRequestFactory: storageRequestFactory,
             engine: chainRegistry.getConnection(for: chainAsset.chain.chainId)!,
@@ -72,69 +106,25 @@ class PayoutRewardsServiceTests: XCTestCase {
             payoutInfoFactory: payoutInfoFactory
         )
 
-        let expectation = XCTestExpectation()
-
         let wrapper = service.fetchPayoutsOperationWrapper()
-        wrapper.targetOperation.completionBlock = {
-            do {
-                let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                let totalReward = info.payouts.reduce(Decimal(0.0)) { $0 + $1.reward }
-                let eras = info.payouts.map { $0.era }.sorted()
-                Logger.shared.info("Active era: \(info.activeEra)")
-                Logger.shared.info("Total reward: \(totalReward)")
-                Logger.shared.info("Eras: \(eras)")
-            } catch {
-                Logger.shared.error("Did receive error: \(error)")
-            }
-
-            expectation.fulfill()
-        }
-
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
-
-        wait(for: [expectation], timeout: 30)
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
-
-    func testPayoutRewardsListForValidator() {
-        let selectedAccount = "GqpApQStgzzGxYa1XQZQUq9L3aXhukxDWABccbeHEh7zPYR"
-        let chainId = KnowChainId.kusama
-
+    
+    private func fetchValidatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
-        var selectedChain: ChainModel?
-
-        let syncExpectation = XCTestExpectation()
-
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { changes in
-            for change in changes {
-                switch change {
-                case let .insert(chain):
-                    if chain.chainId == chainId {
-                        selectedChain = chain
-                    }
-                case let .update(chain):
-                    if chain.chainId == chainId {
-                        selectedChain = chain
-                    }
-                case .delete:
-                    break
-                }
-            }
-
-            if !changes.isEmpty {
-                syncExpectation.fulfill()
-            }
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let chainAsset = chain.utilityChainAsset() else {
+            throw ChainRegistryError.connectionUnavailable
         }
 
-        wait(for: [syncExpectation], timeout: 10)
-
-        guard let chainAsset = selectedChain.map({ ChainAsset(chain: $0, asset: $0.assets.first! )}) else {
-            XCTFail("Unexpected chain asset")
-            return
-        }
-
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationQueue()
+        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -145,10 +135,24 @@ class PayoutRewardsServiceTests: XCTestCase {
         let identityOperation = IdentityOperationFactory(requestFactory: storageRequestFactory)
         let payoutInfoFactory = ValidatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
+        let exposureSearchFactory = ExposurePagedEraOperationFactory(operationQueue: operationQueue)
+        let unclaimedRewardsFacade = StakingUnclaimedRewardsFacade(
+            requestFactory: storageRequestFactory,
+            operationQueue: operationQueue
+        )
+        
+        let exposureFacade = StakingValidatorExposureFacade(
+            operationQueue: operationQueue,
+            requestFactory: storageRequestFactory
+        )
+        
         let service = PayoutRewardsService(
             selectedAccountAddress: selectedAccount,
             chainFormat: chainAsset.chain.chainFormat,
             validatorsResolutionFactory: validatorsResolutionFactory,
+            erasStakersPagedSearchFactory: exposureSearchFactory,
+            exposureFactoryFacade: exposureFacade,
+            unclaimedRewardsFacade: unclaimedRewardsFacade,
             runtimeCodingService: chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)!,
             storageRequestFactory: storageRequestFactory,
             engine: chainRegistry.getConnection(for: chainAsset.chain.chainId)!,
@@ -157,31 +161,10 @@ class PayoutRewardsServiceTests: XCTestCase {
             payoutInfoFactory: payoutInfoFactory
         )
 
-        let expectation = XCTestExpectation()
-
         let wrapper = service.fetchPayoutsOperationWrapper()
-        wrapper.targetOperation.completionBlock = {
-            do {
-                let info = try wrapper.targetOperation.extractNoCancellableResultData()
-
-                for payout in info.payouts {
-                    Logger.shared.info("Reward for era \(payout.era): \(payout.reward)")
-                }
-
-                let totalReward = info.payouts.reduce(Decimal(0.0)) { $0 + $1.reward }
-                let eras = info.payouts.map { $0.era }.sorted()
-                Logger.shared.info("Active era: \(info.activeEra)")
-                Logger.shared.info("Total reward: \(totalReward)")
-                Logger.shared.info("Eras: \(eras)")
-            } catch {
-                Logger.shared.error("Did receive error: \(error)")
-            }
-
-            expectation.fulfill()
-        }
-
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
-
-        wait(for: [expectation], timeout: 30)
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

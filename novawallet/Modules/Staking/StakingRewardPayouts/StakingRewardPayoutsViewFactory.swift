@@ -64,6 +64,7 @@ final class StakingRewardPayoutsViewFactory {
         }
 
         let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -72,10 +73,23 @@ final class StakingRewardPayoutsViewFactory {
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
 
+        let exposureFacade = StakingValidatorExposureFacade(
+            operationQueue: operationQueue,
+            requestFactory: storageRequestFactory
+        )
+
+        let unclaimedRewardsFacade = StakingUnclaimedRewardsFacade(
+            requestFactory: storageRequestFactory,
+            operationQueue: operationQueue
+        )
+
         let payoutService = PayoutRewardsService(
             selectedAccountAddress: stashAddress,
             chainFormat: chainAsset.chain.chainFormat,
             validatorsResolutionFactory: validatorsResolutionFactory,
+            erasStakersPagedSearchFactory: ExposurePagedEraOperationFactory(operationQueue: operationQueue),
+            exposureFactoryFacade: exposureFacade,
+            unclaimedRewardsFacade: unclaimedRewardsFacade,
             runtimeCodingService: runtimeService,
             storageRequestFactory: storageRequestFactory,
             engine: connection,

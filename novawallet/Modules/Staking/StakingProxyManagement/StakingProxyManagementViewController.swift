@@ -54,7 +54,7 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
     }
 
     private func makeDataSource() -> DataSource {
-        .init(tableView: rootView.tableView) { [weak self] tableView, _, viewModel in
+        .init(tableView: rootView.tableView) { tableView, _, viewModel in
             let cell = tableView.dequeueReusableCellWithType(WalletsListTableViewCell<UIImageView>.self)
             cell?.contentDisplayView.valueView.image = R.image.iconMore()?.withTintColor(R.color.colorIconSecondary()!)
             cell?.infoView.bind(viewModel: viewModel.info)

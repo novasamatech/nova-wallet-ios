@@ -236,21 +236,21 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
 
             let eraRequest = BatchStorageSubscriptionRequest(
                 innerRequest: UnkeyedSubscriptionRequest(
-                    storagePath: .activeEra,
+                    storagePath: Staking.activeEra,
                     localKey: ""
                 ),
                 mappingKey: Multistaking.NominationPoolStateChange.Key.era.rawValue
             )
 
             let ledgerLocalKey = try localStorageKeyFactory.createFromStoragePath(
-                .stakingLedger,
+                Staking.stakingLedger,
                 accountId: poolAccountId,
                 chainId: chainAsset.chain.chainId
             )
 
             let ledgerRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .stakingLedger,
+                    storagePath: Staking.stakingLedger,
                     localKey: ledgerLocalKey,
                     keyParamClosure: {
                         BytesCodable(wrappedValue: poolAccountId)
@@ -260,14 +260,14 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
             )
 
             let nominationLocalKey = try localStorageKeyFactory.createFromStoragePath(
-                .nominators,
+                Staking.nominators,
                 accountId: poolAccountId,
                 chainId: chainAsset.chain.chainId
             )
 
             let nominationRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .nominators,
+                    storagePath: Staking.nominators,
                     localKey: nominationLocalKey,
                     keyParamClosure: {
                         BytesCodable(wrappedValue: poolAccountId)

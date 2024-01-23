@@ -20,11 +20,13 @@ struct ProxySignValidationViewFactory {
 
         let view = ControllerBacked(controller: viewController)
 
-        let dataValidatorFactory = TransferDataValidatorFactory(
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let dataValidatorFactory = ProxyDataValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: utilityChainAsset.assetDisplayInfo,
-            utilityAssetInfo: utilityChainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
         )
 
         dataValidatorFactory.view = view
@@ -33,6 +35,7 @@ struct ProxySignValidationViewFactory {
             view: view,
             interactor: interactor,
             wireframe: wireframe,
+            proxyName: resolvedProxy.proxyAccount?.chainAccount.name ?? "",
             dataValidationFactory: dataValidatorFactory,
             chainAsset: utilityChainAsset,
             completionClosure: completionClosure,

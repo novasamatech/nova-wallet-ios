@@ -40,7 +40,6 @@ struct StakingConfirmProxyViewFactory {
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            validationsFactory: AddProxyValidationsFactory(dataValidatingFactory: dataValidatingFactory),
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             networkViewModelFactory: NetworkViewModelFactory(),
             localizationManager: LocalizationManager.shared

@@ -2,15 +2,20 @@ import SoraFoundation
 import SoraKeystore
 
 final class ProxyMessageSheetPresenter: MessageSheetPresenter, ProxyMessageSheetPresenterProtocol {
-    private let settings: SettingsManagerProtocol
+    let interactor: ProxyMessageSheetInteractorInputProtocol
 
-    init(settings: SettingsManagerProtocol, wireframe: MessageSheetWireframeProtocol) {
-        self.settings = settings
+    init(interactor: ProxyMessageSheetInteractorInputProtocol, wireframe: MessageSheetWireframeProtocol) {
+        self.interactor = interactor
         super.init(wireframe: wireframe)
     }
 
     func proceed(skipInfoNextTime: Bool, action: MessageSheetAction?) {
-        settings.skipProxyFeeInformation = skipInfoNextTime
-        wireframe.complete(on: view, with: action)
+        if skipInfoNextTime {
+            interactor.saveNoConfirmation { [weak self] in
+                self?.wireframe.complete(on: self?.view, with: action)
+            }
+        } else {
+            wireframe.complete(on: view, with: action)
+        }
     }
 }

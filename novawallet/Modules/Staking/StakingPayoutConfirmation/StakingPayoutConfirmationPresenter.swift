@@ -199,5 +199,6 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
         self.rewardAmount = rewardAmount
 
         provideViewModel()
+        provideAmountViewModel()
     }
 }

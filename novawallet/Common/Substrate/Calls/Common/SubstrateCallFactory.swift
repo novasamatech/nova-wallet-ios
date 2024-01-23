@@ -39,8 +39,6 @@ protocol SubstrateCallFactoryProtocol {
 
     func nominate(targets: [SelectedValidatorInfo]) throws -> RuntimeCall<NominateCall>
 
-    func payout(validatorId: Data, era: EraIndex) throws -> RuntimeCall<PayoutCall>
-
     func setPayee(for destination: Staking.RewardDestinationArg) -> RuntimeCall<SetPayeeCall>
 
     func withdrawUnbonded(for numberOfSlashingSpans: UInt32) -> RuntimeCall<WithdrawUnbondedCall>
@@ -95,15 +93,6 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         let args = NominateCall(targets: addresses)
 
         return RuntimeCall(moduleName: "Staking", callName: "nominate", args: args)
-    }
-
-    func payout(validatorId: Data, era: EraIndex) throws -> RuntimeCall<PayoutCall> {
-        let args = PayoutCall(
-            validatorStash: validatorId,
-            era: era
-        )
-
-        return RuntimeCall(moduleName: "Staking", callName: "payout_stakers", args: args)
     }
 
     func assetsTransfer(

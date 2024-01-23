@@ -100,20 +100,24 @@ final class StakingSharedStateFactory {
         )
 
         let chainId = chainAsset.chain.chainId
-        let eraValidatorService = try stakingServiceFactory.createEraValidatorService(for: chainId)
-
-        let timeModel = try stakingServiceFactory.createTimeModel(for: chainId, consensus: consensus)
-
-        let durationFactory = RelaychainConsensusStateDependingFactory().createStakingDurationOperationFactory(
-            for: chainAsset.chain,
-            timeModel: timeModel
-        )
 
         let localSubscriptionFactory = StakingLocalSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
             operationManager: OperationManager(operationQueue: repositoryOperationQueue),
             logger: logger
+        )
+
+        let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
+            for: chainId,
+            localSubscriptionFactory: localSubscriptionFactory
+        )
+
+        let timeModel = try stakingServiceFactory.createTimeModel(for: chainId, consensus: consensus)
+
+        let durationFactory = RelaychainConsensusStateDependingFactory().createStakingDurationOperationFactory(
+            for: chainAsset.chain,
+            timeModel: timeModel
         )
 
         let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(

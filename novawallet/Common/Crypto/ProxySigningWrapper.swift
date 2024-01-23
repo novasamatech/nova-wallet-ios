@@ -56,6 +56,7 @@ final class ProxySigningWrapper {
 
     private func sign(
         _ originalData: Data,
+        proxiedId: MetaAccountModel.Id,
         proxy: ExtrinsicSenderResolution.ResolvedProxy,
         calls: [JSON]
     ) throws -> IRSignatureProtocol {
@@ -63,6 +64,7 @@ final class ProxySigningWrapper {
             return try signWithUiFlow { completionClosure in
                 self.uiPresenter.presentProxyFlow(
                     for: originalData,
+                    proxiedId: proxiedId,
                     resolution: proxy,
                     calls: calls,
                     completion: completionClosure
@@ -86,7 +88,7 @@ final class ProxySigningWrapper {
     ) throws -> IRSignatureProtocol {
         switch sender {
         case let .proxy(resolvedProxy):
-            return try sign(originalData, proxy: resolvedProxy, calls: calls)
+            return try sign(originalData, proxiedId: metaId, proxy: resolvedProxy, calls: calls)
         case .current:
             throw NoKeysSigningWrapperError.watchOnly
         }

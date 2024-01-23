@@ -74,6 +74,7 @@ class StakingBondMoreTests: XCTestCase {
 
         let publicKeyData = try stashItem.stash.toAccountId()
         let stashAccount = ChainAccountResponse(
+            metaId: UUID().uuidString,
             chainId: chain.chainId,
             accountId: stashAccountId,
             publicKey: publicKeyData,

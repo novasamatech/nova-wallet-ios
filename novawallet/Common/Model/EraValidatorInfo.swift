@@ -7,6 +7,6 @@ struct EraStakersInfo {
 
 struct EraValidatorInfo {
     let accountId: Data
-    let exposure: ValidatorExposure
+    let exposure: Staking.ValidatorExposure
     let prefs: ValidatorPrefs
 }

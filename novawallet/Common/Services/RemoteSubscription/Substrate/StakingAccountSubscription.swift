@@ -123,7 +123,7 @@ final class StakingAccountSubscription: WebSocketSubscribing {
             requests.append(.init(storagePath: .account, accountId: controllerId))
         }
 
-        requests.append(.init(storagePath: .payee, accountId: stashId))
+        requests.append(.init(storagePath: Staking.payee, accountId: stashId))
 
         BagList.possibleModuleNames.forEach { moduleName in
             let storagePath = BagList.bagListNode(for: moduleName)

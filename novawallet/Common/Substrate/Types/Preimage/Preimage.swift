@@ -10,6 +10,10 @@ enum Preimage {
         StorageCodingPath(moduleName: "Preimage", itemName: "StatusFor")
     }
 
+    static var requestStatusForStoragePath: StorageCodingPath {
+        StorageCodingPath(moduleName: "Preimage", itemName: "RequestStatusFor")
+    }
+
     struct PreimageKey: Encodable {
         let hash: Data
         let length: UInt32

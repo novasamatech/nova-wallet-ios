@@ -40,7 +40,7 @@ class DirectStakingRecommendationMediator: BaseStakingRecommendationMediator {
             return
         }
 
-        let wrapper = recommendationFactory.createValidatorsRecommendationWrapper()
+        let wrapper = recommendationFactory.createValidatorsRecommendationWrapper(for: amount)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

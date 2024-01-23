@@ -1,15 +1,14 @@
 import RobinHood
 
-protocol WalletNotificationServiceProtocol {
+protocol WalletNotificationServiceProtocol: ApplicationServiceProtocol {
     var hasUpdatesObservable: Observable<Bool> { get }
-    func setup()
 }
 
-final class WalletNotificationService: WalletNotificationServiceProtocol {
+final class WalletNotificationService: WalletNotificationServiceProtocol, AnyProviderAutoCleaning {
     let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let logger: LoggerProtocol
 
-    private var proxyListSubscription: StreamableProvider<ProxyAccountModel>?
+    private var proxyDataProvider: StreamableProvider<ProxyAccountModel>?
     var hasUpdatesObservable: Observable<Bool> = .init(state: false)
 
     private var proxies: [ProxyAccountModel] = [] {
@@ -29,7 +28,11 @@ final class WalletNotificationService: WalletNotificationServiceProtocol {
     }
 
     func setup() {
-        proxyListSubscription = subscribeAllProxies()
+        proxyDataProvider = subscribeAllProxies()
+    }
+
+    func throttle() {
+        clear(streamableProvider: &proxyDataProvider)
     }
 }
 
