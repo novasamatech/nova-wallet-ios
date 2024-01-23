@@ -5,7 +5,8 @@ protocol StakingAccountUpdatingServiceProtocol {
     func setupSubscription(
         for accountId: AccountId,
         chainId: ChainModel.Id,
-        chainFormat: ChainFormat
+        chainFormat: ChainFormat,
+        chainHasProxy: Bool
     ) throws
 
     func clearSubscription()
@@ -40,7 +41,8 @@ class StakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol {
     func setupSubscription(
         for accountId: AccountId,
         chainId: ChainModel.Id,
-        chainFormat: ChainFormat
+        chainFormat: ChainFormat,
+        chainHasProxy: Bool
     ) throws {
         let address = try accountId.toAddress(using: chainFormat)
         let stashItemProvider = substrateDataProviderFactory.createStashItemProvider(for: address, chainId: chainId)
@@ -49,6 +51,7 @@ class StakingAccountUpdatingService: StakingAccountUpdatingServiceProtocol {
             accountId: accountId,
             chainId: chainId,
             chainFormat: chainFormat,
+            chainHasProxy: chainHasProxy,
             chainRegistry: chainRegistry,
             provider: stashItemProvider,
             childSubscriptionFactory: childSubscriptionFactory,

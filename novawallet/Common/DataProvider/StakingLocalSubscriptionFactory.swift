@@ -61,6 +61,11 @@ protocol StakingLocalSubscriptionFactoryProtocol {
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedBagListNode>
+
+    func getProxyListProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedProxyDefinition>
 }
 
 final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -354,5 +359,26 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         saveProvider(provider, for: identifier)
 
         return provider
+    }
+
+    func getProxyListProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedProxyDefinition> {
+        clearIfNeeded()
+
+        let codingPath = Proxy.proxyList
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            codingPath,
+            accountId: accountId,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            shouldUseFallback: false
+        )
     }
 }

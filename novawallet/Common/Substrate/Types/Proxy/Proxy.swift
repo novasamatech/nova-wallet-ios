@@ -5,7 +5,7 @@ import BigInt
 enum Proxy {
     static var name: String { "Proxy" }
 
-    struct ProxyDefinition: Decodable {
+    struct ProxyDefinition: Decodable, Equatable {
         enum CodingKeys: String, CodingKey {
             case proxy = "delegate"
             case proxyType
@@ -90,6 +90,21 @@ enum Proxy {
             }
 
             try container.encode(JSON.null)
+        }
+
+        var allowStaking: Bool {
+            switch self {
+            case .any, .nonTransfer, .staking:
+                return true
+            case .governance,
+                 .staking,
+                 .nominationPools,
+                 .identityJudgement,
+                 .cancelProxy,
+                 .auction,
+                 .other:
+                return false
+            }
         }
     }
 }

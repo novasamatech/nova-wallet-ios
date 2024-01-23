@@ -5760,16 +5760,16 @@ import RobinHood
     
     
     
-     func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws {
+     func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws {
         
-    return try cuckoo_manager.callThrows("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws",
-            parameters: (accountId, chainId, chainFormat),
-            escapingParameters: (accountId, chainId, chainFormat),
+    return try cuckoo_manager.callThrows("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws",
+            parameters: (accountId, chainId, chainFormat, chainHasProxy),
+            escapingParameters: (accountId, chainId, chainFormat, chainHasProxy),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.setupSubscription(for: accountId, chainId: chainId, chainFormat: chainFormat))
+            defaultCall: __defaultImplStub!.setupSubscription(for: accountId, chainId: chainId, chainFormat: chainFormat, chainHasProxy: chainHasProxy))
         
     }
     
@@ -5797,9 +5797,9 @@ import RobinHood
 	    }
 	    
 	    
-	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3) -> Cuckoo.ProtocolStubNoReturnThrowingFunction<(AccountId, ChainModel.Id, ChainFormat)> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingAccountUpdatingServiceProtocol.self, method: "setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws", parameterMatchers: matchers))
+	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3, chainHasProxy: M4) -> Cuckoo.ProtocolStubNoReturnThrowingFunction<(AccountId, ChainModel.Id, ChainFormat, Bool)> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, Bool)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: chainHasProxy) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingAccountUpdatingServiceProtocol.self, method: "setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws", parameterMatchers: matchers))
 	    }
 	    
 	    func clearSubscription() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -5824,9 +5824,9 @@ import RobinHood
 	
 	    
 	    @discardableResult
-	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat), Void> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }]
-	        return cuckoo_manager.verify("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3, chainHasProxy: M4) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, Bool), Void> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, Bool)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: chainHasProxy) { $0.3 }]
+	        return cuckoo_manager.verify("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5846,7 +5846,7 @@ import RobinHood
     
     
     
-     func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws  {
+     func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -5885,16 +5885,16 @@ import RobinHood
     
     
     
-     override func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws {
+     override func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws {
         
-    return try cuckoo_manager.callThrows("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws",
-            parameters: (accountId, chainId, chainFormat),
-            escapingParameters: (accountId, chainId, chainFormat),
+    return try cuckoo_manager.callThrows("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws",
+            parameters: (accountId, chainId, chainFormat, chainHasProxy),
+            escapingParameters: (accountId, chainId, chainFormat, chainHasProxy),
             superclassCall:
                 
-                super.setupSubscription(for: accountId, chainId: chainId, chainFormat: chainFormat)
+                super.setupSubscription(for: accountId, chainId: chainId, chainFormat: chainFormat, chainHasProxy: chainHasProxy)
                 ,
-            defaultCall: __defaultImplStub!.setupSubscription(for: accountId, chainId: chainId, chainFormat: chainFormat))
+            defaultCall: __defaultImplStub!.setupSubscription(for: accountId, chainId: chainId, chainFormat: chainFormat, chainHasProxy: chainHasProxy))
         
     }
     
@@ -5922,9 +5922,9 @@ import RobinHood
 	    }
 	    
 	    
-	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3) -> Cuckoo.ClassStubNoReturnThrowingFunction<(AccountId, ChainModel.Id, ChainFormat)> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingAccountUpdatingService.self, method: "setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws", parameterMatchers: matchers))
+	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3, chainHasProxy: M4) -> Cuckoo.ClassStubNoReturnThrowingFunction<(AccountId, ChainModel.Id, ChainFormat, Bool)> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, Bool)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: chainHasProxy) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingAccountUpdatingService.self, method: "setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws", parameterMatchers: matchers))
 	    }
 	    
 	    func clearSubscription() -> Cuckoo.ClassStubNoReturnFunction<()> {
@@ -5949,9 +5949,9 @@ import RobinHood
 	
 	    
 	    @discardableResult
-	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat), Void> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }]
-	        return cuckoo_manager.verify("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func setupSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(for accountId: M1, chainId: M2, chainFormat: M3, chainHasProxy: M4) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, Bool), Void> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, Bool)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: chainHasProxy) { $0.3 }]
+	        return cuckoo_manager.verify("setupSubscription(for: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5971,7 +5971,7 @@ import RobinHood
     
     
     
-     override func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws  {
+     override func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, chainHasProxy: Bool) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -342,6 +342,10 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 let stashAddress = validatorState.stashItem.stash
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
+        case .addProxy:
+            wireframe.showAddProxy(from: view)
+        case .editProxies:
+            wireframe.showEditProxies(from: view)
         default:
             logger?.warning("Unsupported action: \(action)")
         }
@@ -600,6 +604,15 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         switch eraCountdownResult {
         case let .success(eraCountdown):
             stateMachine.state.process(eraCountdown: eraCountdown)
+        case let .failure(error):
+            handle(error: error)
+        }
+    }
+
+    func didReceiveProxy(result: Result<ProxyDefinition?, Error>) {
+        switch result {
+        case let .success(proxy):
+            stateMachine.state.process(proxy: proxy)
         case let .failure(error):
             handle(error: error)
         }

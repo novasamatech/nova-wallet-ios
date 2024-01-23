@@ -1372,6 +1372,12 @@
 "staking.pool.is.not.open.title" = "Pool is not open";
 "staking.start.balance" = "Available balance: %@";
 "staking.start.no.account" = "No %@ account";
+"staking.setup.proxy.title" = "Add delegation for %@ staking";
+"staking.setup.proxy.authority" = "Give authority to";
+"staking.setup.proxy.deposit" = "Proxy deposit";
+"staking.setup.proxy.deposit.details" = "The deposit stays reserved on your account until the proxy is removed.";
+"staking.setup.your.proxies" = "Your delegations";
+"staking.setup.add.your.proxy" = "Add delegated authority (Proxy)";
 "common.time.in" = "in";
 "common.and" = " and ";
 "common.time.period.after" = "after";

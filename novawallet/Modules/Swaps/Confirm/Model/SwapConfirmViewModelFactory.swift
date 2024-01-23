@@ -17,7 +17,7 @@ protocol SwapConfirmViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
         chainAsset: ChainAsset,
         priceData: PriceData?,
         locale: Locale
-    ) -> SwapFeeViewModel
+    ) -> NetworkFeeInfoViewModel
 
     func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel?
 }
@@ -79,7 +79,7 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         chainAsset: ChainAsset,
         priceData: PriceData?,
         locale: Locale
-    ) -> SwapFeeViewModel {
+    ) -> NetworkFeeInfoViewModel {
         let amountDecimal = Decimal.fromSubstrateAmount(
             fee,
             precision: chainAsset.assetDisplayInfo.assetPrecision

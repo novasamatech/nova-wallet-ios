@@ -36176,6 +36176,21 @@ import Foundation
         
     }
     
+    
+    
+     func didReceiveProxy(result: Result<ProxyDefinition?, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveProxy(result: Result<ProxyDefinition?, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveProxy(result: result))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingRelaychainInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -36348,6 +36363,11 @@ import Foundation
 	    func didReceiveAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(_ account: M1, for accountId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaChainAccountResponse?, AccountId)> where M1.OptionalMatchedType == MetaChainAccountResponse, M2.MatchedType == AccountId {
 	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse?, AccountId)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: accountId) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainInteractorOutputProtocol.self, method: "didReceiveAccount(_: MetaChainAccountResponse?, for: AccountId)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveProxy<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ProxyDefinition?, Error>)> where M1.MatchedType == Result<ProxyDefinition?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ProxyDefinition?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainInteractorOutputProtocol.self, method: "didReceiveProxy(result: Result<ProxyDefinition?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -36564,6 +36584,12 @@ import Foundation
 	        return cuckoo_manager.verify("didReceiveAccount(_: MetaChainAccountResponse?, for: AccountId)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveProxy<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ProxyDefinition?, Error>), Void> where M1.MatchedType == Result<ProxyDefinition?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ProxyDefinition?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveProxy(result: Result<ProxyDefinition?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -36768,6 +36794,12 @@ import Foundation
     
     
      func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveProxy(result: Result<ProxyDefinition?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36980,6 +37012,36 @@ import Foundation
     
     
     
+     func showAddProxy(from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("showAddProxy(from: ControllerBackedProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAddProxy(from: view))
+        
+    }
+    
+    
+    
+     func showEditProxies(from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("showEditProxies(from: ControllerBackedProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showEditProxies(from: view))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -37075,6 +37137,16 @@ import Foundation
 	    func showYourValidatorInfo<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(_ stashAddress: M1, from view: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountAddress, ControllerBackedProtocol?)> where M1.MatchedType == AccountAddress, M2.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountAddress, ControllerBackedProtocol?)>] = [wrap(matchable: stashAddress) { $0.0 }, wrap(matchable: view) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showYourValidatorInfo(_: AccountAddress, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showAddProxy<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showAddProxy(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showEditProxies<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showEditProxies(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -37176,6 +37248,18 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func showAddProxy<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showAddProxy(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showEditProxies<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showEditProxies(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -37265,6 +37349,18 @@ import Foundation
     
     
      func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showAddProxy(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showEditProxies(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
