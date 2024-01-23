@@ -1384,6 +1384,8 @@
 "staking.confirm.proxy.account.proxy" = "Delegate to";
 "staking.proxy.management.title" = "Delegated authorities (proxy)";
 "staking.proxy.management.revoke.access" = "Revoke access";
+"staking.proxy.revoke.access.type" = "Revoke access type";
+"staking.proxy.revoke.access.proxy.address" = "Revoke for";
 "common.time.in" = "in";
 "common.and" = " and ";
 "common.time.period.after" = "after";

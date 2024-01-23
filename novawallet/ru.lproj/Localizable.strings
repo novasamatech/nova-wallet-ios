@@ -1385,6 +1385,8 @@
 "staking.confirm.proxy.account.proxy" = "Делегировать";
 "staking.proxy.management.title" = "Делегированные полномочия (прокси)";
 "staking.proxy.management.revoke.access" = "Отозвать доступ";
+"staking.proxy.revoke.access.type" = "Отзыввемый доступ";
+"staking.proxy.revoke.access.proxy.address" = "Отозвать для";
 "common.and" = " и ";
 "common.time.period.after" = "через";
 "common.time.period.every" = "раз в";

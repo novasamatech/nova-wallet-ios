@@ -6,6 +6,8 @@ protocol StakingConfirmProxyViewProtocol: StakingSetupProxyBaseViewProtocol {
     func didReceiveProxyType(viewModel: String)
     func didStartLoading()
     func didStopLoading()
+    func didReceiveProxyAddress(title: String)
+    func didReceiveProxyType(title: String)
 }
 
 protocol StakingConfirmProxyPresenterProtocol: StakingSetupProxyBasePresenterProtocol {

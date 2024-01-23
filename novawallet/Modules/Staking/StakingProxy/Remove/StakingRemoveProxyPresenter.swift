@@ -118,18 +118,31 @@ final class StakingRemoveProxyPresenter {
         ]
     }
 
+    private func provideTitles() {
+        let typeTitle = R.string.localizable.stakingProxyRevokeAccessType(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let proxyAddressTitle = R.string.localizable.stakingProxyRevokeAccessProxyAddress(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveProxyType(title: typeTitle)
+        view?.didReceiveProxyAddress(title: proxyAddressTitle)
+    }
+
     private func updateView() {
         provideProxyTypeViewModel()
         provideNetworkViewModel()
         provideProxiedWalletViewModel()
         provideProxiedAddressViewModel()
         provideProxyAddressViewModel()
+        provideTitles()
+
+        view?.didReceiveProxyDeposit(viewModel: nil)
     }
 }
 
 extension StakingRemoveProxyPresenter: StakingConfirmProxyPresenterProtocol {
     func setup() {
-        view?.didReceiveProxyDeposit(viewModel: nil)
         updateView()
         interactor.setup()
     }

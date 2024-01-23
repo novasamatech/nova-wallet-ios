@@ -48,6 +48,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     override func setup() {
         super.setup()
 
+        provideTitles()
         provideProxyTypeViewModel()
         provideProxyDeposit()
         provideNetworkViewModel()
@@ -93,8 +94,24 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         view?.didReceiveProxyAddress(viewModel: viewModel)
     }
 
+    private func provideTitles() {
+        let typeTitle = R.string.localizable.stakingConfirmProxyTypeTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let proxyAddressTitle = R.string.localizable.stakingConfirmProxyAccountProxy(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveProxyType(title: typeTitle)
+        view?.didReceiveProxyAddress(title: proxyAddressTitle)
+    }
+
     override func getProxyAddress() -> AccountAddress {
         proxyAddress
+    }
+
+    override func updateView() {
+        super.updateView()
+        provideTitles()
     }
 }
 
