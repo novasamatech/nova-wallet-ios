@@ -44,10 +44,12 @@ class WalletsListPresenter {
         viewModels[section] = WalletsListSectionViewModel(type: type, items: items)
     }
 
-    func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
+    func filterIgnoredWallet(
+        changes: [DataProviderChange<ManagedMetaAccountModel>]
+    ) -> [DataProviderChange<ManagedMetaAccountModel>] {
         // we don't want display revoked proxied wallets
 
-        let updatedChanges = changes.map { change in
+        changes.map { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
                 if newItem.info.type == .proxied, newItem.info.proxy()?.status == .revoked {
@@ -62,7 +64,10 @@ class WalletsListPresenter {
                 return change
             }
         }
+    }
 
+    func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
+        let updatedChanges = filterIgnoredWallet(changes: changes)
         walletsList.apply(changes: updatedChanges)
 
         updateViewModels()

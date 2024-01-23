@@ -49,7 +49,15 @@ class MessageSheetViewController<
         rootView.contentView.bind(messageSheetContent: viewModel.content, locale: selectedLocale)
 
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
-        rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
+
+        let text = viewModel.message.value(for: selectedLocale)
+
+        switch text {
+        case let .raw(rawString):
+            rootView.detailsLabel.text = rawString
+        case let .attributed(text):
+            rootView.detailsLabel.attributedText = text
+        }
 
         if let action = viewModel.mainAction {
             rootView.mainActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)

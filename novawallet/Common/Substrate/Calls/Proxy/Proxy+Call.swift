@@ -13,8 +13,16 @@ extension Proxy {
         let forceProxyType: Proxy.ProxyType?
         let call: JSON
 
+        static var callPath: CallCodingPath {
+            CallCodingPath(moduleName: Proxy.name, callName: "proxy")
+        }
+
         func runtimeCall() -> RuntimeCall<Self> {
-            RuntimeCall(moduleName: Proxy.name, callName: "proxy", args: self)
+            RuntimeCall(
+                moduleName: Self.callPath.moduleName,
+                callName: Self.callPath.callName,
+                args: self
+            )
         }
     }
 

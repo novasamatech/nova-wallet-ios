@@ -20,12 +20,12 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
     StakingRemoteSubscriptionServiceProtocol {
     private static var globalDataStoragePaths: [StorageCodingPath] {
         [
-            .activeEra,
-            .currentEra,
-            .totalIssuance,
-            .minNominatorBond,
-            .maxNominatorsCount,
-            .counterForNominators
+            Staking.activeEra,
+            Staking.currentEra,
+            StorageCodingPath.totalIssuance,
+            Staking.minNominatorBond,
+            Staking.maxNominatorsCount,
+            Staking.counterForNominators
         ]
     }
 

@@ -67,17 +67,17 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
         let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<ActiveEraInfo>]> =
             storageRequestFactory.queryItems(
                 engine: connection,
-                keys: { [try keyFactory.key(from: .activeEra)] },
+                keys: { [try keyFactory.key(from: Staking.activeEra)] },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .activeEra
+                storagePath: Staking.activeEra
             )
 
         let currentEraWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<EraIndex>>]> =
             storageRequestFactory.queryItems(
                 engine: connection,
-                keys: { [try keyFactory.key(from: .currentEra)] },
+                keys: { [try keyFactory.key(from: Staking.currentEra)] },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .currentEra
+                storagePath: Staking.currentEra
             )
 
         let startSessionWrapper = createEraStartSessionIndex(
@@ -159,7 +159,7 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
                 engine: engine,
                 keyParams: keyParams,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .eraStartSessionIndex
+                storagePath: Staking.eraStartSessionIndex
             )
         wrapper.addDependency(operations: [activeEra])
 

@@ -32,12 +32,13 @@ final class ValidatorInfoViewModelFactory: BaseValidatorInfoViewModelFactory {
         let formatter = NumberFormatter.quantity.localizableResource().value(for: locale)
 
         let nominatorsCount = validatorInfo.stakeInfo?.nominators.count ?? 0
-        let maxNominatorsReward = validatorInfo.stakeInfo?.maxNominatorsRewarded ?? 0
+        let optMaxNominatorsRewarded = validatorInfo.stakeInfo?.maxNominatorsRewarded
+        let maxNominatorsRewarded = optMaxNominatorsRewarded.map { Int($0) } ?? nominatorsCount
 
         let nominators = formatter.string(from: NSNumber(value: nominatorsCount)) ?? ""
 
         let maxNominatorsRewardedString = R.string.localizable.stakingMaxNominatorRewardedFormat(
-            formatter.string(from: NSNumber(value: maxNominatorsReward)) ?? "",
+            formatter.string(from: NSNumber(value: maxNominatorsRewarded)) ?? "",
             preferredLanguages: locale.rLanguages
         )
 

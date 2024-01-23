@@ -56,4 +56,27 @@ extension PrimitiveConstantOperation {
 
         return CompoundOperationWrapper(targetOperation: operation, dependencies: [factoryOperation])
     }
+
+    static func wrapperNilIfMissing(
+        for path: ConstantCodingPath,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<T?> {
+        let fetchWrapper = wrapper(for: path, runtimeService: runtimeService)
+
+        let mappingOperation = ClosureOperation<T?> {
+            do {
+                return try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                if let storageError = error as? StorageDecodingOperationError, storageError == .invalidStoragePath {
+                    return nil
+                } else {
+                    throw error
+                }
+            }
+        }
+
+        mappingOperation.addDependency(fetchWrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: fetchWrapper.allOperations)
+    }
 }

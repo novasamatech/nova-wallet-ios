@@ -7,11 +7,12 @@ final class ProxySignValidationPresenter {
     let wireframe: ProxySignValidationWireframeProtocol
     let interactor: ProxySignValidationInteractorInputProtocol
 
-    let dataValidationFactory: BaseDataValidatingFactoryProtocol
+    let dataValidationFactory: ProxyDataValidatorFactoryProtocol
     let chainAsset: ChainAsset
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
     let completionClosure: ProxySignValidationCompletion
+    let proxyName: String
 
     var balance: AssetBalance?
     var fee: ExtrinsicFeeProtocol?
@@ -21,7 +22,8 @@ final class ProxySignValidationPresenter {
         view: ControllerBackedProtocol,
         interactor: ProxySignValidationInteractorInputProtocol,
         wireframe: ProxySignValidationWireframeProtocol,
-        dataValidationFactory: BaseDataValidatingFactoryProtocol,
+        proxyName: String,
+        dataValidationFactory: ProxyDataValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         completionClosure: @escaping ProxySignValidationCompletion,
         localizationManager: LocalizationManagerProtocol,
@@ -30,6 +32,7 @@ final class ProxySignValidationPresenter {
         self.view = view
         self.interactor = interactor
         self.wireframe = wireframe
+        self.proxyName = proxyName
         self.dataValidationFactory = dataValidationFactory
         self.chainAsset = chainAsset
         self.completionClosure = completionClosure
@@ -48,6 +51,7 @@ final class ProxySignValidationPresenter {
             dataValidationFactory.canPayFeeInPlank(
                 balance: balance.transferable,
                 fee: fee,
+                proxyName: proxyName,
                 asset: chainAsset.assetDisplayInfo,
                 locale: locale
             ),

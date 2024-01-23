@@ -2,7 +2,11 @@ import Foundation
 import RobinHood
 
 protocol StakingServiceFactoryProtocol {
-    func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol
+    func createEraValidatorService(
+        for chainId: ChainModel.Id,
+        localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    ) throws -> EraValidatorServiceProtocol
+
     func createRewardCalculatorService(
         for chainAsset: ChainAsset,
         stakingType: StakingType,
@@ -21,11 +25,6 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private lazy var substrateDataProviderFactory = SubstrateDataProviderFactory(
-        facade: storageFacade,
-        operationManager: OperationManager(operationQueue: operationQueue)
-    )
-
     init(
         chainRegisty: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
@@ -40,7 +39,10 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         self.logger = logger
     }
 
-    func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol {
+    func createEraValidatorService(
+        for chainId: ChainModel.Id,
+        localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    ) throws -> EraValidatorServiceProtocol {
         guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
@@ -54,8 +56,8 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
             storageFacade: storageFacade,
             runtimeCodingService: runtimeService,
             connection: connection,
-            providerFactory: substrateDataProviderFactory,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            providerFactory: localSubscriptionFactory,
+            operationQueue: operationQueue,
             eventCenter: eventCenter,
             logger: logger
         )

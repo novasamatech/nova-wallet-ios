@@ -66,7 +66,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let minNominatorBondModel: DecodedBigUInt = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .minNominatorBond,
+                Staking.minNominatorBond,
                 chainId: chainId
             )
 
@@ -91,7 +91,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let counterForNominatorsModel: DecodedU32 = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .counterForNominators,
+                Staking.counterForNominators,
                 chainId: chainId
             )
 
@@ -116,7 +116,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let maxNominatorsCountModel: DecodedU32 = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .maxNominatorsCount,
+                Staking.maxNominatorsCount,
                 chainId: chainId
             )
 
@@ -166,7 +166,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let nominationModel: DecodedNomination = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .nominators,
+                Staking.nominators,
                 accountId: accountId,
                 chainId: chainId
             )
@@ -189,7 +189,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let validatorModel: DecodedValidator = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .validatorPrefs,
+                Staking.validatorPrefs,
                 accountId: accountId,
                 chainId: chainId
             )
@@ -212,7 +212,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let ledgerInfoModel: DecodedLedgerInfo = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .stakingLedger,
+                Staking.stakingLedger,
                 accountId: accountId,
                 chainId: chainId
             )
@@ -246,7 +246,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let payeeModel: DecodedPayee = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .payee,
+                Staking.payee,
                 accountId: accountId,
                 chainId: chainId
             )
@@ -266,7 +266,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let actveEraModel: DecodedActiveEra = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .activeEra,
+                Staking.activeEra,
                 chainId: chainId
             )
 
@@ -285,7 +285,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
         let currentEraModel: DecodedEraIndex = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
-                .currentEra,
+                Staking.currentEra,
                 chainId: chainId
             )
 

@@ -186,7 +186,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
             engine: connection,
             keyParams: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: .stakingLedger
+            storagePath: Staking.stakingLedger
         )
 
         let mapOperation = ClosureOperation<StakingLedger?> {

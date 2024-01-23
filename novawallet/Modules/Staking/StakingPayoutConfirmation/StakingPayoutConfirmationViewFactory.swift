@@ -108,6 +108,7 @@ final class StakingPayoutConfirmationViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
+            runtimeService: runtimeService,
             feeProxy: MultiExtrinsicFeeProxy(),
             chainRegistry: chainRegistry,
             signer: signer,

@@ -13,14 +13,12 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
                 path: .slashDeferDuration
             )
 
-        let maxNominatorsOperation: BaseOperation<UInt32> =
-            createConstOperation(
-                dependingOn: runtimeOperation,
-                path: .maxNominatorRewardedPerValidator
-            )
+        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
+            for: .maxNominatorRewardedPerValidator,
+            runtimeService: runtimeService
+        )
 
         slashDeferOperation.addDependency(runtimeOperation)
-        maxNominatorsOperation.addDependency(runtimeOperation)
 
         let eraValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
@@ -54,23 +52,22 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let mergeOperation = createElectedValidatorsMergeOperation(
             dependingOn: eraValidatorsOperation,
             rewardOperation: rewardOperation,
-            maxNominatorsOperation: maxNominatorsOperation,
+            maxNominatorsOperation: maxNominatorsWrapper.targetOperation,
             slashesOperation: slashingsWrapper.targetOperation,
             identitiesOperation: identityWrapper.targetOperation
         )
 
         mergeOperation.addDependency(slashingsWrapper.targetOperation)
         mergeOperation.addDependency(identityWrapper.targetOperation)
-        mergeOperation.addDependency(maxNominatorsOperation)
+        mergeOperation.addDependency(maxNominatorsWrapper.targetOperation)
         mergeOperation.addDependency(rewardOperation)
 
         let baseOperations = [
             runtimeOperation,
             eraValidatorsOperation,
             slashDeferOperation,
-            maxNominatorsOperation,
             rewardOperation
-        ]
+        ] + maxNominatorsWrapper.allOperations
 
         let dependencies = baseOperations + identityWrapper.allOperations + slashingsWrapper.allOperations
 
@@ -81,8 +78,10 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         by nomination: Nomination,
         nominatorAddress: AccountAddress
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+        let targets = nomination.targets.distinct()
+
         let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { nomination.targets },
+            for: { targets },
             engine: engine,
             runtimeService: runtimeService,
             chainFormat: chainInfo.chain
@@ -91,19 +90,19 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let electedValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
         let statusesWrapper = createStatusesOperation(
-            for: nomination.targets,
+            for: targets,
             electedValidatorsOperation: electedValidatorsOperation,
             nominatorAddress: nominatorAddress
         )
 
         statusesWrapper.allOperations.forEach { $0.addDependency(electedValidatorsOperation) }
 
-        let slashesWrapper = createSlashesOperation(for: nomination.targets, nomination: nomination)
+        let slashesWrapper = createSlashesOperation(for: targets, nomination: nomination)
 
         slashesWrapper.allOperations.forEach { $0.addDependency(electedValidatorsOperation) }
 
         let validatorsStakingInfoWrapper = createValidatorsStakeInfoWrapper(
-            for: nomination.targets,
+            for: targets,
             electedValidatorsOperation: electedValidatorsOperation
         )
 
@@ -118,7 +117,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             let validatorsStakingInfo = try validatorsStakingInfoWrapper.targetOperation
                 .extractNoCancellableResultData()
 
-            return try nomination.targets.enumerated().map { index, accountId in
+            return try targets.enumerated().map { index, accountId in
                 let address = try accountId.toAddress(using: chainFormat)
 
                 return SelectedValidatorInfo(
@@ -185,7 +184,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
                 let validatorAddress = try validatorAccountId.toAddress(using: chainFormat)
 
                 let nominatorInfo = validatorStakeInfo.nominators[nominatorIndex]
-                let isRewarded = nominatorIndex < validatorStakeInfo.maxNominatorsRewarded
+                let isRewarded = validatorStakeInfo.maxNominatorsRewarded.map { nominatorIndex < $0 } ?? true
                 let allocation = ValidatorTokenAllocation(amount: nominatorInfo.stake, isRewarded: isRewarded)
 
                 return SelectedValidatorInfo(

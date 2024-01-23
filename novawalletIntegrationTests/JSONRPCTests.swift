@@ -323,11 +323,11 @@ class JSONRPCTests: XCTestCase {
 
         // when
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<ValidatorExposure>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorExposure>]> = storageRequestFactory.queryItems(
             engine: connection,
             keys: keys,
             factory: factoryClosure,
-            storagePath: .erasStakers
+            storagePath: Staking.erasStakers
         )
 
         wrapper.allOperations.forEach { $0.addDependency(coderFactoryOperation) }
@@ -392,12 +392,12 @@ class JSONRPCTests: XCTestCase {
 
         // when
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<ValidatorExposure>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorExposure>]> = storageRequestFactory.queryItems(
             engine: connection,
             keyParams1: keyParams1,
             keyParams2: keyParams2,
             factory: factoryClosure,
-            storagePath: .erasStakers
+            storagePath: Staking.erasStakers
         )
 
         wrapper.allOperations.forEach { $0.addDependency(coderFactoryOperation) }

@@ -7,8 +7,9 @@ struct PayoutsInfo {
 }
 
 struct PayoutInfo: Hashable {
+    let validator: AccountId
     let era: EraIndex
-    let validator: Data
+    let pages: Set<Staking.ValidatorPage>
     let reward: Decimal
     let identity: AccountIdentity?
 }

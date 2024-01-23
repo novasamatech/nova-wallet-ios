@@ -8,7 +8,7 @@ protocol ValidatorStakeInfoProtocol {
     var totalStake: Decimal { get }
     var ownStake: Decimal { get }
     var stakeReturn: Decimal { get }
-    var maxNominatorsRewarded: UInt32 { get }
+    var maxNominatorsRewarded: UInt32? { get }
     var oversubscribed: Bool { get }
 }
 

@@ -35,7 +35,7 @@ final class ValidatorOperationFactory {
         runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
         slashDefer: BaseOperation<UInt32>
     ) -> UnappliedSlashesWrapper {
-        let path = StorageCodingPath.unappliedSlashes
+        let path = Staking.unappliedSlashes
 
         let keyParams: () throws -> [String] = {
             let activeEra = try activeEraClosure()
@@ -58,9 +58,10 @@ final class ValidatorOperationFactory {
 
     func createConstOperation<T>(
         dependingOn runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
-        path: ConstantCodingPath
+        path: ConstantCodingPath,
+        fallbackValue: T? = nil
     ) -> PrimitiveConstantOperation<T> where T: LosslessStringConvertible {
-        let operation = PrimitiveConstantOperation<T>(path: path)
+        let operation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
 
         operation.configurationBlock = {
             do {
@@ -84,7 +85,7 @@ final class ValidatorOperationFactory {
                 engine: engine,
                 keyParams: { validatorIds },
                 factory: { try runtimeOperation.extractNoCancellableResultData() },
-                storagePath: .slashingSpans
+                storagePath: Staking.slashingSpans
             )
 
         slashingSpansWrapper.allOperations.forEach { $0.addDependency(runtimeOperation) }
@@ -116,22 +117,17 @@ final class ValidatorOperationFactory {
         electedValidatorsOperation: BaseOperation<EraStakersInfo>,
         nominatorAddress: AccountAddress
     ) -> CompoundOperationWrapper<[ValidatorMyNominationStatus]> {
-        let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
-
-        let maxNominatorsOperation: BaseOperation<UInt32> =
-            createConstOperation(
-                dependingOn: runtimeOperation,
-                path: .maxNominatorRewardedPerValidator
-            )
-
-        maxNominatorsOperation.addDependency(runtimeOperation)
+        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
+            for: .maxNominatorRewardedPerValidator,
+            runtimeService: runtimeService
+        )
 
         let assetInfo = chainInfo.asset
 
         let statusesOperation = ClosureOperation<[ValidatorMyNominationStatus]> {
             let allElectedValidators = try electedValidatorsOperation.extractNoCancellableResultData()
             let nominatorId = try nominatorAddress.toAccountId()
-            let maxNominators = try maxNominatorsOperation.extractNoCancellableResultData()
+            let maxNominators = try maxNominatorsWrapper.targetOperation.extractNoCancellableResultData()
 
             return validatorIds.enumerated().map { _, accountId in
                 if let electedValidator = allElectedValidators.validators
@@ -142,7 +138,7 @@ final class ValidatorOperationFactory {
                            nominators[index].value,
                            precision: assetInfo.assetPrecision
                        ) {
-                        let isRewarded = index < maxNominators
+                        let isRewarded = maxNominators.map { index < $0 } ?? true
                         let allocation = ValidatorTokenAllocation(amount: amountDecimal, isRewarded: isRewarded)
                         return .active(allocation: allocation)
                     } else {
@@ -154,11 +150,11 @@ final class ValidatorOperationFactory {
             }
         }
 
-        statusesOperation.addDependency(maxNominatorsOperation)
+        statusesOperation.addDependency(maxNominatorsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: statusesOperation,
-            dependencies: [runtimeOperation, maxNominatorsOperation]
+            dependencies: maxNominatorsWrapper.allOperations
         )
     }
 
@@ -173,7 +169,7 @@ final class ValidatorOperationFactory {
                 engine: engine,
                 keyParams: { accountIdList },
                 factory: { try runtimeFetchOperation.extractNoCancellableResultData() },
-                storagePath: .validatorPrefs
+                storagePath: Staking.validatorPrefs
             )
 
         fetchOperation.allOperations.forEach { $0.addDependency(runtimeFetchOperation) }
@@ -207,22 +203,17 @@ final class ValidatorOperationFactory {
         let assetInfo = chainInfo.asset
         let chainFormat = chainInfo.chain
 
-        let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
-
         let rewardCalculatorOperation = rewardService.fetchCalculatorOperation()
 
-        let maxNominatorsOperation: BaseOperation<UInt32> = createConstOperation(
-            dependingOn: runtimeOperation,
-            path: .maxNominatorRewardedPerValidator
+        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
+            for: .maxNominatorRewardedPerValidator,
+            runtimeService: runtimeService
         )
-
-        maxNominatorsOperation.addDependency(runtimeOperation)
 
         let validatorsStakeInfoOperation = ClosureOperation<[ValidatorStakeInfo?]> {
             let electedStakers = try electedValidatorsOperation.extractNoCancellableResultData()
             let returnCalculator = try rewardCalculatorOperation.extractNoCancellableResultData()
-            let maxNominatorsRewarded =
-                try maxNominatorsOperation.extractNoCancellableResultData()
+            let maxNominatorsRewarded = try maxNominatorsWrapper.targetOperation.extractNoCancellableResultData()
 
             return try validatorIds.map { validatorId in
                 if let electedValidator = electedStakers.validators
@@ -262,11 +253,11 @@ final class ValidatorOperationFactory {
         }
 
         validatorsStakeInfoOperation.addDependency(rewardCalculatorOperation)
-        validatorsStakeInfoOperation.addDependency(maxNominatorsOperation)
+        validatorsStakeInfoOperation.addDependency(maxNominatorsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: validatorsStakeInfoOperation,
-            dependencies: [runtimeOperation, rewardCalculatorOperation, maxNominatorsOperation]
+            dependencies: [rewardCalculatorOperation] + maxNominatorsWrapper.allOperations
         )
     }
 
@@ -279,27 +270,23 @@ final class ValidatorOperationFactory {
 
         let rewardCalculatorOperation = rewardService.fetchCalculatorOperation()
 
-        let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
-
-        let maxNominatorsOperation: BaseOperation<UInt32> = createConstOperation(
-            dependingOn: runtimeOperation,
-            path: .maxNominatorRewardedPerValidator
+        let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
+            for: .maxNominatorRewardedPerValidator,
+            runtimeService: runtimeService
         )
-
-        maxNominatorsOperation.addDependency(runtimeOperation)
 
         let validatorsStakeInfoOperation = ClosureOperation<[AccountId: ValidatorStakeInfo]> {
             let electedStakers = try electedValidatorsOperation.extractNoCancellableResultData()
             let returnCalculator = try rewardCalculatorOperation.extractNoCancellableResultData()
 
             let nominatorAccountId = try nominatorAddress.toAccountId(using: chainFormat)
-            let maxNominatorsRewarded = try maxNominatorsOperation
-                .extractNoCancellableResultData()
+            let maxNominatorsRewarded = try maxNominatorsWrapper.targetOperation.extractNoCancellableResultData()
 
             return try electedStakers.validators
                 .reduce(into: [AccountId: ValidatorStakeInfo]()) { result, validator in
-                    let exposures = validator.exposure.others
-                        .prefix(Int(maxNominatorsRewarded))
+                    let exposures = maxNominatorsRewarded.map {
+                        Array(validator.exposure.others.prefix(Int($0)))
+                    } ?? validator.exposure.others
 
                     guard exposures.contains(where: { $0.who == nominatorAccountId }) else {
                         return
@@ -339,18 +326,18 @@ final class ValidatorOperationFactory {
         }
 
         validatorsStakeInfoOperation.addDependency(rewardCalculatorOperation)
-        validatorsStakeInfoOperation.addDependency(maxNominatorsOperation)
+        validatorsStakeInfoOperation.addDependency(maxNominatorsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: validatorsStakeInfoOperation,
-            dependencies: [rewardCalculatorOperation, runtimeOperation, maxNominatorsOperation]
+            dependencies: [rewardCalculatorOperation] + maxNominatorsWrapper.allOperations
         )
     }
 
     func createElectedValidatorsMergeOperation(
         dependingOn eraValidatorsOperation: BaseOperation<EraStakersInfo>,
         rewardOperation: BaseOperation<RewardCalculatorEngineProtocol>,
-        maxNominatorsOperation: BaseOperation<UInt32>,
+        maxNominatorsOperation: BaseOperation<UInt32?>,
         slashesOperation: UnappliedSlashesOperation,
         identitiesOperation: BaseOperation<[String: AccountIdentity]>
     ) -> BaseOperation<[ElectedValidatorInfo]> {

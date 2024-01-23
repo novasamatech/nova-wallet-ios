@@ -85,6 +85,12 @@ extension MainTabBarInteractor: EventVisitorProtocol {
             serviceCoordinator.updateOnWalletChange()
         }
     }
+
+    func processChainAccountChanged(event: ChainAccountChanged) {
+        if event.method == .manually {
+            serviceCoordinator.updateOnWalletChange()
+        }
+    }
 }
 
 extension MainTabBarInteractor: KeystoreImportObserver {

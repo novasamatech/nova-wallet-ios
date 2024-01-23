@@ -78,6 +78,7 @@ class ControllerAccountTests: XCTestCase {
 
         let controllerId = try controllerAddress.toAccountId()
         let controllerAccount = ChainAccountResponse(
+            metaId: UUID().uuidString,
             chainId: chain.chainId,
             accountId: controllerId,
             publicKey: controllerId,

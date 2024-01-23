@@ -42,7 +42,7 @@ extension SlashesOperationFactory: SlashesOperationFactoryProtocol {
                 keyParams: keyParams,
                 factory: {
                     try runtimeFetchOperation.extractNoCancellableResultData()
-                }, storagePath: .slashingSpans
+                }, storagePath: Staking.slashingSpans
             )
 
         fetchOperation.allOperations.forEach { $0.addDependency(runtimeFetchOperation) }

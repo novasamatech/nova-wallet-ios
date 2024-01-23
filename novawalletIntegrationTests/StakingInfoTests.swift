@@ -51,16 +51,17 @@ class StakingInfoTests: XCTestCase {
             operationQueue: OperationQueue(),
             logger: logger
         )
-
-        let validatorService = try stakingServiceFactory.createEraValidatorService(
-            for: chainId
-        )
-
+        
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
             operationManager: OperationManager(),
             logger: logger
+        )
+
+        let validatorService = try stakingServiceFactory.createEraValidatorService(
+            for: chainId,
+            localSubscriptionFactory: stakingLocalSubscriptionFactory
         )
 
         let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(

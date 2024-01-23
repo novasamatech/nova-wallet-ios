@@ -167,10 +167,12 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        walletNotificationService.hasUpdatesObservable.addObserver(with: self) { [weak self] _, newState in
+        walletNotificationService.hasUpdatesObservable.addObserver(
+            with: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, newState in
             self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
         }
-        walletNotificationService.setup()
     }
 
     private func updateLocksSubscription(from changes: [DataProviderChange<ChainModel>]) {

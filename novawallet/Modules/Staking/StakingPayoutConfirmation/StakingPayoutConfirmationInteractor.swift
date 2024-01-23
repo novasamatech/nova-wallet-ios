@@ -11,6 +11,7 @@ final class StakingPayoutConfirmationInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
+    let runtimeService: RuntimeCodingServiceProtocol
     let feeProxy: MultiExtrinsicFeeProxyProtocol
     let chainRegistry: ChainRegistryProtocol
     let signer: SigningWrapperProtocol
@@ -21,6 +22,8 @@ final class StakingPayoutConfirmationInteractor {
     private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
 
+    private var codingFactory: RuntimeCoderFactoryProtocol?
+
     weak var presenter: StakingPayoutConfirmationInteractorOutputProtocol?
 
     init(
@@ -29,6 +32,7 @@ final class StakingPayoutConfirmationInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         chainRegistry: ChainRegistryProtocol,
         signer: SigningWrapperProtocol,
@@ -41,6 +45,7 @@ final class StakingPayoutConfirmationInteractor {
         self.chainAsset = chainAsset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.runtimeService = runtimeService
         self.feeProxy = feeProxy
         self.extrinsicService = extrinsicService
         self.chainRegistry = chainRegistry
@@ -54,17 +59,20 @@ final class StakingPayoutConfirmationInteractor {
     // MARK: - Private functions
 
     private func createExtrinsicSplitter(for payouts: [PayoutInfo]) throws -> ExtrinsicSplitting {
-        let callFactory = SubstrateCallFactory()
+        guard let codingFactory = codingFactory else {
+            throw CommonError.dataCorruption
+        }
 
-        var splitter = ExtrinsicSplitter(chain: chainAsset.chain, chainRegistry: chainRegistry)
+        var splitter: ExtrinsicSplitting = ExtrinsicSplitter(chain: chainAsset.chain, chainRegistry: chainRegistry)
 
         splitter = try payouts.reduce(splitter) { accum, payout in
-            let payoutCall = try callFactory.payout(
-                validatorId: payout.validator,
-                era: payout.era
+            try Staking.PayoutCall.appendingCall(
+                for: payout.validator,
+                era: payout.era,
+                pages: payout.pages,
+                codingFactory: codingFactory,
+                builder: accum
             )
-
-            return accum.adding(call: payoutCall)
         }
 
         return splitter
@@ -75,12 +83,8 @@ final class StakingPayoutConfirmationInteractor {
 
         presenter?.didRecieve(account: selectedAccount, rewardAmount: rewardAmount)
     }
-}
 
-// MARK: - StakingPayoutConfirmationInteractorInputProtocol
-
-extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteractorInputProtocol {
-    func setup() {
+    private func continueSetup() {
         feeProxy.delegate = self
 
         balanceProvider = subscribeToAssetBalanceProvider(
@@ -98,6 +102,23 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
         provideRewardAmount()
 
         estimateFee()
+    }
+}
+
+// MARK: - StakingPayoutConfirmationInteractorInputProtocol
+
+extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteractorInputProtocol {
+    func setup() {
+        runtimeService.fetchCoderFactory(
+            runningIn: operationManager,
+            completion: { [weak self] codingFactory in
+                self?.codingFactory = codingFactory
+                self?.continueSetup()
+            },
+            errorClosure: { [weak self] error in
+                self?.logger?.error("Unexpected error: \(error)")
+            }
+        )
     }
 
     func submitPayout() {

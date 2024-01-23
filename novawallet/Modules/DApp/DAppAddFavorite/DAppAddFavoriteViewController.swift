@@ -57,8 +57,17 @@ final class DAppAddFavoriteViewController: UIViewController, ViewHolder {
         rootView.saveButton.target = self
         rootView.saveButton.action = #selector(actionSave)
 
-        rootView.titleInputView.addTarget(self, action: #selector(actionFieldChange), for: .editingChanged)
-        rootView.addressInputView.addTarget(self, action: #selector(actionFieldChange), for: .editingChanged)
+        rootView.titleInputView.textField.addTarget(
+            self,
+            action: #selector(actionFieldChange),
+            for: .editingChanged
+        )
+
+        rootView.addressInputView.textField.addTarget(
+            self,
+            action: #selector(actionFieldChange),
+            for: .editingChanged
+        )
     }
 
     private func setupLocalization() {

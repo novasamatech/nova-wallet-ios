@@ -1,41 +1,48 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
+import BigInt
 
 protocol DirectStakingRecommendationFactoryProtocol: AnyObject {
-    func createValidatorsRecommendationWrapper() -> CompoundOperationWrapper<PreparedValidators>
+    func createValidatorsRecommendationWrapper(
+        for amount: BigUInt
+    ) -> CompoundOperationWrapper<PreparedValidators>
 }
 
 final class DirectStakingRecommendationFactory {
     let runtimeProvider: RuntimeCodingServiceProtocol
+    let connection: JSONRPCEngine
     let operationFactory: ValidatorOperationFactoryProtocol
-    let defaultMaxNominations: Int
+    let maxNominationsOperationFactory: MaxNominationsOperationFactoryProtocol
     let clusterLimit: Int
     let preferredValidators: [AccountId]
 
     init(
         runtimeProvider: RuntimeCodingServiceProtocol,
+        connection: JSONRPCEngine,
         operationFactory: ValidatorOperationFactoryProtocol,
-        defaultMaxNominations: Int = SubstrateConstants.maxNominations,
+        maxNominationsOperationFactory: MaxNominationsOperationFactoryProtocol,
         clusterLimit: Int = StakingConstants.targetsClusterLimit,
         preferredValidators: [AccountId]
     ) {
         self.runtimeProvider = runtimeProvider
+        self.connection = connection
         self.operationFactory = operationFactory
-        self.defaultMaxNominations = defaultMaxNominations
+        self.maxNominationsOperationFactory = maxNominationsOperationFactory
         self.clusterLimit = clusterLimit
         self.preferredValidators = preferredValidators
     }
 
     private func createRecommendationOperation(
         dependingOn validatorsWrapper: CompoundOperationWrapper<ElectedAndPrefValidators>,
-        maxNominationsOperation: BaseOperation<Int>,
+        maxNominationsOperation: BaseOperation<UInt32>,
         clusterLimit: Int
     ) -> BaseOperation<PreparedValidators> {
         ClosureOperation {
             let validators = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
             let maxNominations = try maxNominationsOperation.extractNoCancellableResultData()
 
-            let resultLimit = min(validators.electedValidators.count, maxNominations)
+            let resultLimit = min(validators.electedValidators.count, Int(maxNominations))
             let recommendedValidators = RecommendationsComposer(
                 resultSize: resultLimit,
                 clusterSizeLimit: clusterLimit
@@ -55,35 +62,25 @@ final class DirectStakingRecommendationFactory {
 }
 
 extension DirectStakingRecommendationFactory: DirectStakingRecommendationFactoryProtocol {
-    func createValidatorsRecommendationWrapper() -> CompoundOperationWrapper<PreparedValidators> {
+    func createValidatorsRecommendationWrapper(for amount: BigUInt) -> CompoundOperationWrapper<PreparedValidators> {
         let validatorsWrapper = operationFactory.allPreferred(for: preferredValidators)
 
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        let maxNominationsOperation = PrimitiveConstantOperation(
-            path: .maxNominations,
-            fallbackValue: defaultMaxNominations
+        let maxNominationsWrapper = maxNominationsOperationFactory.createNominationsQuotaWrapper(
+            for: amount,
+            connection: connection,
+            runtimeService: runtimeProvider
         )
-
-        maxNominationsOperation.configurationBlock = {
-            do {
-                maxNominationsOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                maxNominationsOperation.result = .failure(error)
-            }
-        }
-
-        maxNominationsOperation.addDependency(codingFactoryOperation)
 
         let recommendationOperation = createRecommendationOperation(
             dependingOn: validatorsWrapper,
-            maxNominationsOperation: maxNominationsOperation,
+            maxNominationsOperation: maxNominationsWrapper.targetOperation,
             clusterLimit: clusterLimit
         )
 
-        recommendationOperation.addDependency(maxNominationsOperation)
+        recommendationOperation.addDependency(maxNominationsWrapper.targetOperation)
         recommendationOperation.addDependency(validatorsWrapper.targetOperation)
 
-        let dependecies = validatorsWrapper.allOperations + [codingFactoryOperation, maxNominationsOperation]
+        let dependecies = validatorsWrapper.allOperations + maxNominationsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: recommendationOperation, dependencies: dependecies)
     }
