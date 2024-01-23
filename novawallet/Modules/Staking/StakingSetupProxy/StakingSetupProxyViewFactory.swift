@@ -10,7 +10,7 @@ struct StakingSetupProxyViewFactory {
         guard let interactor = createInteractor(state: state) else {
             return nil
         }
-        let wireframe = StakingSetupProxyWireframe()
+        let wireframe = StakingSetupProxyWireframe(state: state)
         let chainAsset = state.stakingOption.chainAsset
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

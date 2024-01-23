@@ -1386,6 +1386,11 @@
 "staking.setup.proxy.error.invalid.maximum.proxies.message" = "You have reached the limit of %@ added proxies in %@. Remove proxies to add new ones.";
 "staking.setup.proxy.error.proxy.already.exists.title" = "Delegation already exists";
 "staking.setup.proxy.error.proxy.already.exists.message" = "You are already delegating to this account: %@";
+"staking.confirm.proxy.wallet" = "Delegating wallet";
+"staking.confirm.proxy.account.proxied" = "Delegating account";
+"staking.confirm.proxy.type.title" = "Grant access type";
+"staking.confirm.proxy.type.subtitle" = "Staking operations";
+"staking.confirm.proxy.account.proxy" = "Delegate to";
 "common.time.in" = "in";
 "common.and" = " and ";
 "common.time.period.after" = "after";

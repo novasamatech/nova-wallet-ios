@@ -29,8 +29,7 @@ protocol StakingSetupProxyInteractorOutputProtocol: StakingProxyBaseInteractorOu
     func didReceive(yourWallets: [MetaAccountChainResponse])
 }
 
-protocol StakingSetupProxyWireframeProtocol: StakingSetupProxyBaseWireframeProtocol, ProxyErrorPresentable,
-    AlertPresentable, CommonRetryable, ErrorPresentable, Web3NameAddressListPresentable,
+protocol StakingSetupProxyWireframeProtocol: StakingSetupProxyBaseWireframeProtocol, Web3NameAddressListPresentable,
     AddressOptionsPresentable, YourWalletsPresentable, ScanAddressPresentable {
     func checkDismissing(view: ControllerBackedProtocol?) -> Bool
     func showConfirmation(
