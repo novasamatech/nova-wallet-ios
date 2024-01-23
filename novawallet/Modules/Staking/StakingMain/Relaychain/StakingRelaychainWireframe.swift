@@ -160,7 +160,12 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showEditProxies(from _: ControllerBackedProtocol?) {
-        // TODO: Proxy List
+    func showEditProxies(from view: ControllerBackedProtocol?) {
+        guard let managmentView = StakingProxyManagementViewFactory.createView(state: state) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: managmentView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

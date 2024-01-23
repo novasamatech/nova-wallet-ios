@@ -1391,6 +1391,8 @@
 "staking.confirm.proxy.type.title" = "Grant access type";
 "staking.confirm.proxy.type.subtitle" = "Staking operations";
 "staking.confirm.proxy.account.proxy" = "Delegate to";
+"staking.proxy.management.title" = "Delegated authorities (proxy)";
+"staking.proxy.management.revoke.access" = "Revoke access";
 "common.time.in" = "in";
 "common.and" = " and ";
 "common.time.period.after" = "after";
