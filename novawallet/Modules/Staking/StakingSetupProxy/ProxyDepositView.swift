@@ -1,6 +1,6 @@
 import SoraUI
 
-final class ProxyDepositView: RowView<IconDetailsGenericView<NetworkFeeInfoView>> {
+final class ProxyDepositView: RowView<IconDetailsGenericView<NetworkFeeInfoView>>, StackTableViewCellProtocol {
     var imageView: UIImageView { rowContentView.imageView }
     var titleButton: RoundedButton { rowContentView.detailsView.titleButton }
     var valueTopButton: RoundedButton { rowContentView.detailsView.valueTopButton }

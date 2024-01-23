@@ -1387,6 +1387,11 @@
 "staking.setup.proxy.error.proxy.already.exists.title" = "Прокси уже добавлен";
 "staking.setup.proxy.error.proxy.already.exists.message" = "Вы уже делегируете этой учетной записи: %@";
 "common.time.in" = "через";
+"staking.confirm.proxy.wallet" = "Делегирующий кошелек";
+"staking.confirm.proxy.account.proxied" = "Делегирующий аккаунт";
+"staking.confirm.proxy.type.title" = "Выданный тип доступа";
+"staking.confirm.proxy.type.subtitle" = "Операции стекинга";
+"staking.confirm.proxy.account.proxy" = "Делегировать";
 "common.and" = " и ";
 "common.time.period.after" = "через";
 "common.time.period.every" = "раз в";

@@ -39,5 +39,5 @@ protocol StakingSetupProxyBasePresenterProtocol: AnyObject {
     func showDepositInfo()
 }
 
-protocol StakingSetupProxyBaseWireframeProtocol: ShortTextInfoPresentable, AlertPresentable,
-    ErrorPresentable, CommonRetryable {}
+protocol StakingSetupProxyBaseWireframeProtocol: ShortTextInfoPresentable, ProxyErrorPresentable,
+    AlertPresentable, CommonRetryable, ErrorPresentable {}
