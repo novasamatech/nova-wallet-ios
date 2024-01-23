@@ -2,32 +2,48 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
+struct DAppExtrinsicRawSignatureResult {
+    let sender: ExtrinsicSenderResolution
+    let signedExtrinsic: Data
+}
+
 final class DAppExtrinsicBuilderOperationFactory {
+    struct ExtrinsicSenderBuilderResult {
+        let sender: ExtrinsicSenderResolution
+        let builder: ExtrinsicBuilderProtocol
+    }
+
     let processedResult: DAppOperationProcessedResult
     let runtimeProvider: RuntimeCodingServiceProtocol
 
-    init(processedResult: DAppOperationProcessedResult, runtimeProvider: RuntimeCodingServiceProtocol) {
+    init(
+        processedResult: DAppOperationProcessedResult,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) {
         self.processedResult = processedResult
         self.runtimeProvider = runtimeProvider
     }
 
-    private func createBaseBuilderOperation(
+    private func createBaseBuilderWrapper(
         for result: DAppOperationProcessedResult,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> BaseOperation<ExtrinsicBuilderProtocol> {
-        ClosureOperation<ExtrinsicBuilderProtocol> {
+    ) -> CompoundOperationWrapper<ExtrinsicSenderBuilderResult> {
+        let builderOperation = ClosureOperation<ExtrinsicSenderBuilderResult> {
             let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
 
             let extrinsic = result.extrinsic
 
-            let address = MultiAddress.accoundId(result.account.accountId)
+            // DApp signing currently doesn't allow to modify extrinsic
+            let sender = ExtrinsicSenderResolution.current(result.account)
+
+            let address = MultiAddress.accoundId(sender.account.accountId)
 
             var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
                 specVersion: extrinsic.specVersion,
                 transactionVersion: extrinsic.transactionVersion,
                 genesisHash: extrinsic.genesisHash
             )
-            .with(signaturePayloadFormat: result.account.type.signaturePayloadFormat)
+            .with(signaturePayloadFormat: sender.account.type.signaturePayloadFormat)
             .with(runtimeJsonContext: runtimeContext)
             .with(address: address)
             .with(nonce: UInt32(extrinsic.nonce))
@@ -40,42 +56,51 @@ final class DAppExtrinsicBuilderOperationFactory {
                 builder = builder.with(tip: extrinsic.tip)
             }
 
-            return builder
+            return ExtrinsicSenderBuilderResult(sender: sender, builder: builder)
         }
+
+        return CompoundOperationWrapper(targetOperation: builderOperation)
     }
 
     private func createRawSignatureOperation(
         for result: DAppOperationProcessedResult,
-        signingClosure: @escaping (Data) throws -> Data
-    ) -> CompoundOperationWrapper<Data> {
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<DAppExtrinsicRawSignatureResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let builderOperation = createBaseBuilderOperation(
+        let builderWrapper = createBaseBuilderWrapper(
             for: result,
             codingFactoryOperation: codingFactoryOperation
         )
 
-        builderOperation.addDependency(codingFactoryOperation)
+        builderWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let payloadOperation = ClosureOperation<Data> {
-            let builder = try builderOperation.extractNoCancellableResultData()
+        let payloadOperation = ClosureOperation<DAppExtrinsicRawSignatureResult> {
+            let builderResult = try builderWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            return try builder.signing(
-                with: { try signingClosure($0) },
-                chainFormat: result.account.chainFormat,
-                cryptoType: result.account.cryptoType,
+            let builder = builderResult.builder
+            let context = ExtrinsicSigningContext.Substrate(
+                senderResolution: builderResult.sender,
+                calls: builder.getCalls()
+            )
+
+            let signedExtrinsic = try builder.signing(
+                with: { try signingClosure($0, $1) },
+                context: context,
                 codingFactory: codingFactory
             )
             .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+
+            return DAppExtrinsicRawSignatureResult(sender: builderResult.sender, signedExtrinsic: signedExtrinsic)
         }
 
         payloadOperation.addDependency(codingFactoryOperation)
-        payloadOperation.addDependency(builderOperation)
+        payloadOperation.addDependency(builderWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: payloadOperation,
-            dependencies: [codingFactoryOperation, builderOperation]
+            dependencies: [codingFactoryOperation] + builderWrapper.allOperations
         )
     }
 }
@@ -84,17 +109,17 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     func createWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
-        signingClosure: @escaping (Data) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]> {
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         let signatureWrapper = createRawSignatureOperation(
             for: processedResult,
             signingClosure: signingClosure
         )
 
-        let mappingOperation = ClosureOperation<[Data]> {
-            let data = try signatureWrapper.targetOperation.extractNoCancellableResultData()
+        let mappingOperation = ClosureOperation<ExtrinsicsCreationResult> {
+            let result = try signatureWrapper.targetOperation.extractNoCancellableResultData()
 
-            return [data]
+            return ExtrinsicsCreationResult(extrinsics: [result.signedExtrinsic], sender: result.sender)
         }
 
         mappingOperation.addDependency(signatureWrapper.targetOperation)
@@ -106,36 +131,48 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
         return wrapper
     }
 
-    func createDummySigner() throws -> DummySigner {
-        try DummySigner(cryptoType: processedResult.account.cryptoType)
+    func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner {
+        try DummySigner(cryptoType: cryptoType)
     }
 
     func createRawSignatureWrapper(
-        for signingClosure: @escaping (Data) throws -> Data
-    ) -> CompoundOperationWrapper<Data> {
+        for signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<DAppExtrinsicRawSignatureResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let builderOperation = createBaseBuilderOperation(
+        let builderWrapper = createBaseBuilderWrapper(
             for: processedResult,
             codingFactoryOperation: codingFactoryOperation
         )
 
-        builderOperation.addDependency(codingFactoryOperation)
+        builderWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let signOperation = ClosureOperation<Data> {
-            let builder = try builderOperation.extractNoCancellableResultData()
+        let signOperation = ClosureOperation<DAppExtrinsicRawSignatureResult> {
+            let builderResult = try builderWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            return try builder.buildRawSignature(
-                using: signingClosure,
+            let builder = builderResult.builder
+            let context = ExtrinsicSigningContext.substrateExtrinsic(
+                .init(
+                    senderResolution: builderResult.sender,
+                    calls: builder.getCalls()
+                )
+            )
+
+            let rawSignature = try builder.buildRawSignature(
+                using: { data in
+                    try signingClosure(data, context)
+                },
                 encoder: codingFactory.createEncoder(),
                 metadata: codingFactory.metadata
             )
+
+            return DAppExtrinsicRawSignatureResult(sender: builderResult.sender, signedExtrinsic: rawSignature)
         }
 
-        signOperation.addDependency(builderOperation)
+        signOperation.addDependency(builderWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation, builderOperation]
+        let dependencies = [codingFactoryOperation] + builderWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: signOperation, dependencies: dependencies)
     }

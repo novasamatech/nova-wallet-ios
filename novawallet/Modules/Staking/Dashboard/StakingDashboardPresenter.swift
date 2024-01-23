@@ -13,6 +13,7 @@ final class StakingDashboardPresenter {
 
     private var lastResult: StakingDashboardBuilderResult?
     private var wallet: MetaAccountModel?
+    private var hasWalletsListUpdates: Bool = false
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -35,7 +36,8 @@ final class StakingDashboardPresenter {
 
         let viewModel = walletViewModelFactory.createViewModel(
             from: wallet.walletIdenticonData(),
-            walletType: wallet.type
+            walletType: wallet.type,
+            hasNotification: hasWalletsListUpdates
         )
 
         view?.didReceiveWallet(viewModel: viewModel)
@@ -147,6 +149,11 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
                 self?.interactor.retryDashboardSubscription()
             }
         }
+    }
+
+    func didReceiveWalletsState(hasUpdates: Bool) {
+        hasWalletsListUpdates = hasUpdates
+        updateWalletView()
     }
 }
 

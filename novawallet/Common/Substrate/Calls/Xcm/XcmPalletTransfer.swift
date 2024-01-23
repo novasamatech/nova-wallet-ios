@@ -3,7 +3,6 @@ import SubstrateSdk
 
 extension Xcm {
     struct PalletTransferCall: Codable {
-        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case destination = "dest"
             case beneficiary

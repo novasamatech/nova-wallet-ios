@@ -19,7 +19,7 @@ protocol StakingRewardDestConfirmInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingRewardDestConfirmInteractorOutputProtocol: AnyObject {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
@@ -28,6 +28,6 @@ protocol StakingRewardDestConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRewardDestConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable {
+    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(from view: StakingRewardDestConfirmViewProtocol?)
 }

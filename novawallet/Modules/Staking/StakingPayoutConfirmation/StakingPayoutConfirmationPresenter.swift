@@ -7,7 +7,7 @@ final class StakingPayoutConfirmationPresenter {
     var interactor: StakingPayoutConfirmationInteractorInputProtocol!
 
     private var balance: Decimal?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var rewardAmount: Decimal = 0.0
     private var priceData: PriceData?
     private var account: MetaChainAccountResponse?
@@ -39,7 +39,10 @@ final class StakingPayoutConfirmationPresenter {
 
     private func provideFee() {
         if let fee = fee {
-            let viewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let viewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceive(feeViewModel: viewModel)
         } else {
             view?.didReceive(feeViewModel: nil)
@@ -63,14 +66,13 @@ final class StakingPayoutConfirmationPresenter {
     private func handle(error: Error) {
         let locale = view?.localizationManager?.selectedLocale
 
-        if error.isWatchOnlySigning {
-            wireframe.presentDismissingNoSigningView(from: view)
-        } else if error.isHardwareWalletSigningCancelled {
-            return
-        } else if !wireframe.present(error: error, from: view, locale: locale) {
-            _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
-            logger?.error("Did receive error: \(error)")
-        }
+        wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+            error,
+            view: view,
+            closeAction: .dismiss,
+            locale: locale,
+            completionClosure: nil
+        )
     }
 }
 
@@ -84,6 +86,8 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
     func proceed() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
+        let feeDecimal = fee.map { $0.amount.decimal(assetInfo: assetInfo) }
+
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
                 self?.interactor.estimateFee()
@@ -91,7 +95,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
 
             dataValidatingFactory.rewardIsHigherThanFee(
                 reward: rewardAmount,
-                fee: fee,
+                fee: feeDecimal,
                 locale: locale
             ),
 
@@ -129,7 +133,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
 // MARK: - StakingPayoutConfirmationInteractorOutputProtocol
 
 extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteractorOutputProtocol {
-    func didReceiveFee(result: Result<Decimal, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(fee):
             self.fee = fee
@@ -195,5 +199,6 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
         self.rewardAmount = rewardAmount
 
         provideViewModel()
+        provideAmountViewModel()
     }
 }

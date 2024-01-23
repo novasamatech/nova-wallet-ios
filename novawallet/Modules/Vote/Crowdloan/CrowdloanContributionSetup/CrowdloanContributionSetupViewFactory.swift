@@ -92,7 +92,8 @@ struct CrowdloanContributionSetupViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: accountResponse, chain: chain)
 
         let feeProxy = ExtrinsicFeeProxy()

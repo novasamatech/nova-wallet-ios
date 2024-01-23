@@ -14,7 +14,7 @@ final class StakingRebagConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactory
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
 
-    private var fee: BigUInt?
+    private var fee: ExtrinsicFeeProtocol?
     private var price: PriceData?
     private var balance: AssetBalance?
     private var networkInfo: NetworkStakingInfo?
@@ -71,7 +71,7 @@ final class StakingRebagConfirmPresenter {
     private func provideFeeViewModel() {
         guard let fee = fee,
               let feeDecimal = Decimal.fromSubstrateAmount(
-                  fee,
+                  fee.amount,
                   precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
             view?.didReceiveNetworkFee(viewModel: .loading)
@@ -173,10 +173,9 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
 
     func confirm() {
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision,
                 onError: { [weak self] in
                     self?.refreshFeeIfNeeded()
                 }
@@ -237,7 +236,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
         provideNewBagListViewModel()
     }
 
-    func didReceive(fee: BigUInt?) {
+    func didReceive(fee: ExtrinsicFeeProtocol) {
         self.fee = fee
         provideFeeViewModel()
     }
@@ -284,13 +283,13 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
                 }
             }
         case let .submitFailed(error):
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else {
-                wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 

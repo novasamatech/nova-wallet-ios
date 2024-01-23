@@ -14,6 +14,7 @@ struct AssetListHeaderParams {
         let walletIdenticon: Data?
         let walletType: MetaAccountModelType
         let walletConnectSessionsCount: Int
+        let hasWalletsUpdates: Bool
     }
 
     let title: String
@@ -91,7 +92,8 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         let icon = params.wallet.walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
         let walletSwitch = WalletSwitchViewModel(
             type: WalletsListSectionViewModel.SectionType(walletType: params.wallet.walletType),
-            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
+            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) },
+            hasNotification: params.wallet.hasWalletsUpdates
         )
 
         let walletConnectSessionsCount = params.wallet.walletConnectSessionsCount

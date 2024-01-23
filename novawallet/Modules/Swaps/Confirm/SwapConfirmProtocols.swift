@@ -35,7 +35,7 @@ protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
 }
 
 protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptionsPresentable,
-    ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable {
+    ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(
         on view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,

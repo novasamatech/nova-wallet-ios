@@ -1,6 +1,7 @@
 import Foundation
 import SoraKeystore
 import IrohaCrypto
+import RobinHood
 
 enum ProfileInteractorError: Error {
     case noSelectedAccount
@@ -14,6 +15,7 @@ final class SettingsInteractor {
     let eventCenter: EventCenterProtocol
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -21,13 +23,15 @@ final class SettingsInteractor {
         walletConnect: WalletConnectDelegateInputProtocol,
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
-        biometryAuth: BiometryAuthProtocol
+        biometryAuth: BiometryAuthProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
+        self.walletNotificationService = walletNotificationService
         self.currencyManager = currencyManager
     }
 
@@ -72,6 +76,13 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
+
+        walletNotificationService.hasUpdatesObservable.addObserver(
+            with: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {

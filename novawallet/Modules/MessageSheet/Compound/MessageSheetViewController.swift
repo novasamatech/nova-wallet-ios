@@ -1,14 +1,15 @@
 import UIKit
 import SoraFoundation
 import SoraUI
+import SoraKeystore
 
-final class MessageSheetViewController<
+class MessageSheetViewController<
     I: UIView & MessageSheetGraphicsProtocol,
     C: UIView & MessageSheetContentProtocol
 >: UIViewController, ViewHolder {
     typealias RootViewType = MessageSheetViewLayout<I, C>
 
-    let presenter: MessageSheetPresenterProtocol
+    let basePresenter: MessageSheetPresenterProtocol
     let viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>
 
     var allowsSwipeDown: Bool = true
@@ -19,7 +20,7 @@ final class MessageSheetViewController<
         viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.presenter = presenter
+        basePresenter = presenter
         self.viewModel = viewModel
 
         super.init(nibName: nil, bundle: nil)
@@ -48,7 +49,15 @@ final class MessageSheetViewController<
         rootView.contentView.bind(messageSheetContent: viewModel.content, locale: selectedLocale)
 
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
-        rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
+
+        let text = viewModel.message.value(for: selectedLocale)
+
+        switch text {
+        case let .raw(rawString):
+            rootView.detailsLabel.text = rawString
+        case let .attributed(text):
+            rootView.detailsLabel.attributedText = text
+        }
 
         if let action = viewModel.mainAction {
             rootView.mainActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)
@@ -61,7 +70,7 @@ final class MessageSheetViewController<
         }
     }
 
-    private func setupHandlers() {
+    func setupHandlers() {
         if viewModel.mainAction != nil {
             rootView.setupMainActionButton()
             rootView.mainActionButton?.addTarget(self, action: #selector(actionMain), for: .touchUpInside)
@@ -73,12 +82,12 @@ final class MessageSheetViewController<
         }
     }
 
-    @objc private func actionMain() {
-        presenter.goBack(with: viewModel.mainAction)
+    @objc func actionMain() {
+        basePresenter.goBack(with: viewModel.mainAction)
     }
 
-    @objc private func actionSecondary() {
-        presenter.goBack(with: viewModel.secondaryAction)
+    @objc func actionSecondary() {
+        basePresenter.goBack(with: viewModel.secondaryAction)
     }
 }
 

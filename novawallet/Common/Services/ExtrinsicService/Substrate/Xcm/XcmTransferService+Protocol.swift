@@ -1,7 +1,8 @@
 import Foundation
 import RobinHood
+import BigInt
 
-typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
+typealias XcmTrasferFeeResult = Result<ExtrinsicFeeProtocol, Error>
 typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
 
 struct XcmSubmitExtrinsic {
@@ -68,7 +69,10 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 maxWeight: maxWeight
             )
 
-            let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest())
+            guard let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
             let operationFactory = try createExtrinsicOperationFactory(
                 for: unweighted.origin.chain,
                 chainAccount: chainAccount
@@ -83,13 +87,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             feeWrapper.targetOperation.completionBlock = {
                 switch feeWrapper.targetOperation.result {
-                case let .success(dispatchInfo):
-                    if let feeWithWeight = FeeWithWeight(dispatchInfo: dispatchInfo) {
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .success(feeWithWeight))
-                    } else {
-                        let error = CommonError.dataCorruption
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
+                case let .success(fee):
+                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(fee))
                 case let .failure(error):
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
                 case .none:
@@ -209,7 +208,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             var dependencies = destWrapper.allOperations
 
-            let optReserveWrapper: CompoundOperationWrapper<FeeWithWeight>?
+            let optReserveWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
 
             if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
                 let wrapper = createReserveFeeWrapper(
@@ -225,14 +224,14 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 optReserveWrapper = nil
             }
 
-            let mergeOperation = ClosureOperation<FeeWithWeight> {
+            let mergeOperation = ClosureOperation<ExtrinsicFeeProtocol> {
                 let destFeeWeight = try destWrapper.targetOperation.extractNoCancellableResultData()
                 let optReserveFeeWeight = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
 
                 if let reserveFeeWeight = optReserveFeeWeight {
-                    let fee = destFeeWeight.fee + reserveFeeWeight.fee
+                    let fee = destFeeWeight.amount + reserveFeeWeight.amount
                     let weight = max(destFeeWeight.weight, reserveFeeWeight.weight)
-                    return FeeWithWeight(fee: fee, weight: weight)
+                    return ExtrinsicFee(amount: fee, payer: destFeeWeight.payer, weight: weight)
                 } else {
                     return destFeeWeight
                 }

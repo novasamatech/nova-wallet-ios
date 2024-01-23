@@ -58,10 +58,11 @@ func executeCancellable<T>(
     inOperationQueue operationQueue: OperationQueue,
     backingCallIn callStore: CancellableCallStore,
     runningCallbackIn callbackQueue: DispatchQueue?,
+    mutex: NSLock? = nil,
     callbackClosure: @escaping (Result<T, Error>) -> Void
 ) {
     wrapper.targetOperation.completionBlock = {
-        dispatchInQueueWhenPossible(callbackQueue) {
+        dispatchInQueueWhenPossible(callbackQueue, locking: mutex) {
             guard callStore.clearIfMatches(call: wrapper) else {
                 return
             }
@@ -78,4 +79,24 @@ func executeCancellable<T>(
     callStore.store(call: wrapper)
 
     operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+}
+
+func execute<T>(
+    operation: BaseOperation<T>,
+    inOperationQueue operationQueue: OperationQueue,
+    runningCallbackIn callbackQueue: DispatchQueue?,
+    callbackClosure: @escaping (Result<T, Error>) -> Void
+) {
+    operation.completionBlock = {
+        dispatchInQueueWhenPossible(callbackQueue) {
+            do {
+                let value = try operation.extractNoCancellableResultData()
+                callbackClosure(.success(value))
+            } catch {
+                callbackClosure(.failure(error))
+            }
+        }
+    }
+
+    operationQueue.addOperations([operation], waitUntilFinished: false)
 }

@@ -4,7 +4,7 @@ import BigInt
 struct ExistentialDepositValidationParams {
     let stakingAmount: Decimal?
     let assetBalance: AssetBalance?
-    let fee: BigUInt?
+    let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: BigUInt?
     let amountUpdateClosure: (Decimal) -> Void
 }
@@ -49,7 +49,7 @@ protocol NominationPoolDataValidatorFactoryProtocol: StakingBaseDataValidatingFa
 
     func hasProfitAfterClaim(
         rewards: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating
@@ -283,7 +283,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
 
     func hasProfitAfterClaim(
         rewards: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         chainAsset _: ChainAsset,
         locale: Locale
     ) -> DataValidating {
@@ -300,7 +300,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                 locale: locale
             )
         }, preservesCondition: {
-            guard let rewards = rewards, let fee = fee else {
+            guard let rewards = rewards, let fee = fee?.amount else {
                 return false
             }
 
@@ -314,7 +314,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
         chainAsset: ChainAsset,
         locale: Locale
     ) -> DataValidating {
-        let fee = params.fee ?? 0
+        let fee = params.fee?.amountForCurrentAccount ?? 0
         let minBalance = params.existentialDeposit ?? 0
         let feeAndMinBalance = fee + minBalance
 

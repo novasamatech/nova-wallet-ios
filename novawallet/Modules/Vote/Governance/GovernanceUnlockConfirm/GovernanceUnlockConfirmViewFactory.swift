@@ -99,7 +99,8 @@ struct GovernanceUnlockConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: OperationManager(operationQueue: operationQueue),
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signer = SigningWrapperFactory().createSigningWrapper(

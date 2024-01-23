@@ -198,10 +198,11 @@ class XcmTransfersFeeTests: XCTestCase {
         chainRegistry: ChainRegistryProtocol,
         amount: BigUInt,
         isForDestination: Bool
-    ) throws -> FeeWithWeight {
+    ) throws -> ExtrinsicFeeProtocol {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
+            senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
             operationQueue: OperationQueue()
         )
 

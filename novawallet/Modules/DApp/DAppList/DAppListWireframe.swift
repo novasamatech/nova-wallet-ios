@@ -1,6 +1,12 @@
 import Foundation
 
 final class DAppListWireframe: DAppListWireframeProtocol {
+    let proxySyncService: ProxySyncServiceProtocol
+
+    init(proxySyncService: ProxySyncServiceProtocol) {
+        self.proxySyncService = proxySyncService
+    }
+
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate) {
         guard let searchView = DAppSearchViewFactory.createView(with: nil, delegate: delegate) else {
             return

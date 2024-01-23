@@ -20,7 +20,7 @@ final class GovernanceDelegateSetupPresenter {
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
     var priceData: PriceData?
     var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     var blockTime: BlockTime?
@@ -61,7 +61,7 @@ final class GovernanceDelegateSetupPresenter {
 
     func balanceMinusFee() -> Decimal {
         let balanceValue = assetBalance?.freeInPlank ?? 0
-        let feeValue = fee ?? 0
+        let feeValue = fee?.amountForCurrentAccount ?? 0
 
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,

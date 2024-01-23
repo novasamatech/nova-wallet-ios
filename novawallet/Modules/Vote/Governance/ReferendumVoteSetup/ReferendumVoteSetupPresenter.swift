@@ -19,7 +19,7 @@ final class ReferendumVoteSetupPresenter {
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
-    private var fee: BigUInt?
+    private var fee: ExtrinsicFeeProtocol?
     private var priceData: PriceData?
     private var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var blockNumber: BlockNumber?
@@ -67,7 +67,7 @@ final class ReferendumVoteSetupPresenter {
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = assetBalance?.freeInPlank ?? 0
-        let feeValue = fee ?? 0
+        let feeValue = fee?.amountForCurrentAccount ?? 0
 
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
@@ -462,7 +462,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         self.referendum = referendum
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         updateAmountPriceView()

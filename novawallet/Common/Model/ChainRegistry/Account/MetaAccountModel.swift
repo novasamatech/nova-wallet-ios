@@ -7,10 +7,11 @@ enum MetaAccountModelType: UInt8 {
     case paritySigner
     case ledger
     case polkadotVault
+    case proxied
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .ledger:
+        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied:
             return true
         case .watchOnly:
             return false
@@ -18,7 +19,7 @@ enum MetaAccountModelType: UInt8 {
     }
 }
 
-struct MetaAccountModel: Equatable {
+struct MetaAccountModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
 
@@ -98,5 +99,16 @@ extension MetaAccountModel {
             chainAccounts: chainAccounts,
             type: type
         )
+    }
+
+    func replacingProxy(chainId: ChainModel.Id, proxy: ProxyAccountModel) -> MetaAccountModel {
+        let proxyChainAccount = chainAccounts.first {
+            $0.chainId == chainId && $0.proxy != nil
+        }
+        if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
+            return replacingChainAccount(newProxyChainAccount)
+        } else {
+            return self
+        }
     }
 }

@@ -2,11 +2,11 @@ import Foundation
 import BigInt
 
 extension ParaStkYieldBoostSetupPresenter {
-    func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo) {
+    func didReceiveScheduleAutocompound(feeInfo: ExtrinsicFeeProtocol) {
         // allow fee update is yield boost selected or not enabled previously
         if isYieldBoostSelected ||
             yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator }) == nil {
-            updateExtrinsicFee(BigUInt(feeInfo.fee))
+            updateExtrinsicFee(feeInfo)
 
             provideNetworkFee()
         }

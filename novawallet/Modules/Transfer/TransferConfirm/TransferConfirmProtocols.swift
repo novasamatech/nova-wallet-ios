@@ -28,7 +28,7 @@ protocol TransferConfirmOnChainInteractorInputProtocol: OnChainTransferSetupInte
 }
 
 protocol TransferConfirmCrossChainInteractorInputProtocol: CrossChainTransferSetupInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: BigUInt?)
+    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: ExtrinsicFeeProtocol?)
 }
 
 protocol TransferConfirmOnChainInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {
@@ -40,6 +40,7 @@ protocol TransferConfirmCrossChainInteractorOutputProtocol: CrossChainTransferSe
 }
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable, CommonRetryable, MessageSheetPresentable {
+    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable, CommonRetryable, MessageSheetPresentable,
+    ExtrinsicSigningErrorHandling {
     func complete(on view: TransferConfirmCommonViewProtocol?, locale: Locale, completion: @escaping () -> Void)
 }

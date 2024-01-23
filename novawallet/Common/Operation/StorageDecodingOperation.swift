@@ -210,12 +210,14 @@ final class StorageFallbackDecodingListOperation<T: Decodable>: BaseOperation<[T
     StorageDecodable, StorageModifierHandling {
     var dataList: [Data?]?
     var codingFactory: RuntimeCoderFactoryProtocol?
+    var ignoresFailedItems: Bool
 
     let path: StorageCodingPath
 
-    init(path: StorageCodingPath, dataList: [Data?]? = nil) {
+    init(path: StorageCodingPath, dataList: [Data?]? = nil, ignoresFailedItems: Bool = false) {
         self.path = path
         self.dataList = dataList
+        self.ignoresFailedItems = ignoresFailedItems
 
         super.init()
     }
@@ -238,7 +240,15 @@ final class StorageFallbackDecodingListOperation<T: Decodable>: BaseOperation<[T
 
             let items: [T?] = try dataList.map { data in
                 if let data = data {
-                    return try decode(data: data, path: path, codingFactory: factory).map(to: T.self)
+                    let json: JSON?
+
+                    if ignoresFailedItems {
+                        json = try? decode(data: data, path: path, codingFactory: factory)
+                    } else {
+                        json = try decode(data: data, path: path, codingFactory: factory)
+                    }
+
+                    return try json?.map(to: T.self)
                 } else {
                     return try handleModifier(at: path, codingFactory: factory)?.map(to: T.self)
                 }

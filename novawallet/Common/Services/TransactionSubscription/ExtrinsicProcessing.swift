@@ -12,10 +12,10 @@ protocol ExtrinsicProcessing {
 }
 
 final class ExtrinsicProcessor {
-    let accountId: Data
+    let accountId: AccountId
     let chain: ChainModel
 
-    init(accountId: Data, chain: ChainModel) {
+    init(accountId: AccountId, chain: ChainModel) {
         self.accountId = accountId
         self.chain = chain
     }

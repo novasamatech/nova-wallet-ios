@@ -27,10 +27,10 @@ final class PayoutRewardsServiceStub: PayoutRewardsServiceProtocol {
 extension PayoutRewardsServiceStub {
     static func dummy() -> PayoutRewardsServiceStub {
         let payouts: [PayoutInfo] = [
-            .init(era: 99, validator: Data(), reward: 0.1, identity: nil),
-            .init(era: 98, validator: Data(), reward: 0.2, identity: nil),
-            .init(era: 97, validator: Data(), reward: 0.3, identity: nil),
-            .init(era: 96, validator: Data(), reward: 0.4, identity: nil)
+            .init(validator: Data(), era: 99, pages: [0], reward: 0.1, identity: nil),
+            .init(validator: Data(), era: 98, pages: [0], reward: 0.2, identity: nil),
+            .init(validator: Data(), era: 97, pages: [0], reward: 0.3, identity: nil),
+            .init(validator: Data(), era: 96, pages: [0], reward: 0.4, identity: nil)
         ]
         let payoutsInfo = PayoutsInfo(activeEra: 100, historyDepth: 84, payouts: payouts)
         return PayoutRewardsServiceStub(result: .success(payoutsInfo))

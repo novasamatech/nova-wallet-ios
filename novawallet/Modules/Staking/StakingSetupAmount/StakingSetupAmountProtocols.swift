@@ -32,7 +32,7 @@ protocol StakingSetupAmountInteractorInputProtocol: AnyObject {
 protocol StakingSetupAmountInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance)
-    func didReceive(fee: BigUInt?, feeId: TransactionFeeId)
+    func didReceive(fee: ExtrinsicFeeProtocol, feeId: TransactionFeeId)
     func didReceive(recommendation: RelaychainStakingRecommendation, amount: BigUInt)
     func didReceive(existentialDeposit: BigUInt)
     func didReceive(locks: AssetLocks)

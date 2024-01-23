@@ -20,7 +20,7 @@ protocol SelectValidatorsStartInteractorInputProtocol: AnyObject {
 
 protocol SelectValidatorsStartInteractorOutputProtocol: AnyObject {
     func didReceiveValidators(result: Result<ElectedAndPrefValidators, Error>)
-    func didReceiveMaxNominations(result: Result<Int, Error>)
+    func didReceiveMaxNominations(result: Result<UInt32, Error>)
 }
 
 protocol SelectValidatorsStartWireframeProtocol: WebPresentable, AlertPresentable, ErrorPresentable {

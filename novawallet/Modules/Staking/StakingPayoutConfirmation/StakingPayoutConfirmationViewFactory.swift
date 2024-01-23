@@ -88,7 +88,8 @@ final class StakingPayoutConfirmationViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let extrinsicService = extrinsicServiceFactory.createService(
@@ -107,6 +108,7 @@ final class StakingPayoutConfirmationViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
+            runtimeService: runtimeService,
             feeProxy: MultiExtrinsicFeeProxy(),
             chainRegistry: chainRegistry,
             signer: signer,

@@ -30,7 +30,6 @@ extension Xcm {
         }
     }
 
-    // swiftlint:disable nesting
     enum WildMultiasset: Encodable {
         struct AllOfValue: Encodable {
             enum CodingKeys: String, CodingKey {

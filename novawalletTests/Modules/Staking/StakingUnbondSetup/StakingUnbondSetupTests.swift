@@ -96,7 +96,8 @@ class StakingUnbondSetupTests: XCTestCase {
             total: BigUInt(1e+12),
             active: BigUInt(1e+12),
             unlocking: [],
-            claimedRewards: []
+            claimedRewards: [],
+            legacyClaimedRewards: nil
         )
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(

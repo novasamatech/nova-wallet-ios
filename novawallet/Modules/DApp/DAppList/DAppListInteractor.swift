@@ -12,6 +12,7 @@ final class DAppListInteractor {
     let phishingSyncService: ApplicationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
@@ -22,6 +23,7 @@ final class DAppListInteractor {
         phishingSyncService: ApplicationServiceProtocol,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
+        walletNotificationService: WalletNotificationServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -31,6 +33,7 @@ final class DAppListInteractor {
         self.phishingSyncService = phishingSyncService
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
+        self.walletNotificationService = walletNotificationService
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -101,6 +104,13 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
         phishingSyncService.setup()
 
         eventCenter.add(observer: self, dispatchIn: .main)
+
+        walletNotificationService.hasUpdatesObservable.addObserver(
+            with: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
     }
 
     func refresh() {

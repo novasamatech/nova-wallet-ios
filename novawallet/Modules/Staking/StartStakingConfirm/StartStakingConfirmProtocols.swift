@@ -28,7 +28,7 @@ protocol StartStakingConfirmInteractorInputProtocol: AnyObject {
 protocol StartStakingConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(price: PriceData?)
-    func didReceive(fee: BigUInt?)
+    func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(restrictions: RelaychainStakingRestrictions)
     func didReceiveConfirmation(hash: String)
     func didReceive(error: StartStakingConfirmInteractorError)
@@ -36,7 +36,7 @@ protocol StartStakingConfirmInteractorOutputProtocol: AnyObject {
 
 protocol StartStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, AddressOptionsPresentable, MessageSheetPresentable,
-    ExtrinsicSubmissionPresenting, StakingErrorPresentable {}
+    ExtrinsicSubmissionPresenting, StakingErrorPresentable, ExtrinsicSigningErrorHandling {}
 
 protocol StartStakingDirectConfirmWireframeProtocol: StartStakingConfirmWireframeProtocol {
     func showSelectedValidators(from view: StartStakingConfirmViewProtocol?, validators: PreparedValidators)

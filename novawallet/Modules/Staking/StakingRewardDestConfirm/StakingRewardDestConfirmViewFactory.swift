@@ -79,7 +79,8 @@ struct StakingRewardDestConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let storageFacade = UserDataStorageFacade.shared

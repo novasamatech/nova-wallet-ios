@@ -142,7 +142,8 @@ struct GovernanceDelegateConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: option.chain)
 
         let signer = SigningWrapperFactory.createSigner(from: selectedAccount)

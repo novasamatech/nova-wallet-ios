@@ -69,7 +69,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for chainId: ChainModel.Id,
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<BigUInt>>
     ) throws -> AnyDataProvider<DecodedBigUInt> {
-        let codingPath = StorageCodingPath.minNominatorBond
+        let codingPath = Staking.minNominatorBond
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         let fallback = StorageProviderSourceFallback(
@@ -101,7 +101,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for chainId: ChainModel.Id,
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
-        let codingPath = StorageCodingPath.counterForNominators
+        let codingPath = Staking.counterForNominators
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         let fallback = StorageProviderSourceFallback(
@@ -121,7 +121,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for chainId: ChainModel.Id,
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
-        let codingPath = StorageCodingPath.maxNominatorsCount
+        let codingPath = Staking.maxNominatorsCount
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         let fallback = StorageProviderSourceFallback(
@@ -167,7 +167,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedNomination> {
-        let codingPath = StorageCodingPath.nominators
+        let codingPath = Staking.nominators
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             codingPath,
             accountId: accountId,
@@ -186,7 +186,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedValidator> {
-        let codingPath = StorageCodingPath.validatorPrefs
+        let codingPath = Staking.validatorPrefs
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             codingPath,
             accountId: accountId,
@@ -205,7 +205,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedLedgerInfo> {
-        let codingPath = StorageCodingPath.stakingLedger
+        let codingPath = Staking.stakingLedger
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             codingPath,
             accountId: accountId,
@@ -243,7 +243,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     }
 
     func getActiveEra(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedActiveEra> {
-        let codingPath = StorageCodingPath.activeEra
+        let codingPath = Staking.activeEra
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         return try getDataProvider(
@@ -255,7 +255,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     }
 
     func getCurrentEra(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedEraIndex> {
-        let codingPath = StorageCodingPath.currentEra
+        let codingPath = Staking.currentEra
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         return try getDataProvider(
@@ -270,7 +270,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedPayee> {
-        let codingPath = StorageCodingPath.payee
+        let codingPath = Staking.payee
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             codingPath,
             accountId: accountId,

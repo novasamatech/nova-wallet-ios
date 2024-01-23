@@ -17,6 +17,12 @@ final class WalletSelectionViewController: WalletsListViewController<
         super.viewDidLoad()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter?.viewDidDisappear()
+    }
+
     override func setupLocalization() {
         title = R.string.localizable.commonSelectWallet(preferredLanguages: selectedLocale.rLanguages)
     }

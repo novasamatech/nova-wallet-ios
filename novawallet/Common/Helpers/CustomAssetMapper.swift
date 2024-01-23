@@ -10,7 +10,7 @@ struct CustomAssetMapper {
     let type: String?
     let typeExtras: JSON?
 
-    private func mapAssetWithExtras<T>(
+    func mapAssetWithExtras<T>(
         nativeHandler: () -> T,
         statemineHandler: (StatemineAssetExtras) -> T,
         ormlHandler: (OrmlTokenExtras) -> T,
@@ -60,7 +60,7 @@ struct CustomAssetMapper {
         }
     }
 
-    private func mapAsset<T>(
+    func mapAsset<T>(
         nativeHandler: () -> T,
         statemineHandler: () -> T,
         ormlHandler: () -> T,

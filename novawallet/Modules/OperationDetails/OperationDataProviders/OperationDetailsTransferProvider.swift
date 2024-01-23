@@ -46,7 +46,11 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
             return
         }
 
-        let isOutgoing = transaction.type(for: accountAddress) == .outgoing
+        let isOutgoing = transaction.type(
+            for: accountAddress,
+            chainAssetId: chainAsset.chainAssetId
+        ) == .outgoing
+
         let amount = transaction.amountInPlankIntOrZero
         let priceData = priceCalculator?.calculatePrice(for: UInt64(bitPattern: transaction.timestamp)).map {
             PriceData.amount($0)

@@ -7,6 +7,7 @@ struct ChainAccountRequest {
 }
 
 struct ChainAccountResponse {
+    let metaId: String
     let chainId: ChainModel.Id
     let accountId: AccountId
     let publicKey: Data
@@ -88,6 +89,7 @@ extension MetaAccountModel {
             }
 
             return ChainAccountResponse(
+                metaId: metaId,
                 chainId: request.chainId,
                 accountId: chainAccount.accountId,
                 publicKey: chainAccount.publicKey,
@@ -106,6 +108,7 @@ extension MetaAccountModel {
             }
 
             return ChainAccountResponse(
+                metaId: metaId,
                 chainId: request.chainId,
                 accountId: accountId,
                 publicKey: publicKey,
@@ -127,6 +130,7 @@ extension MetaAccountModel {
         }
 
         return ChainAccountResponse(
+            metaId: metaId,
             chainId: request.chainId,
             accountId: substrateAccountId,
             publicKey: substratePublicKey,
@@ -147,6 +151,7 @@ extension MetaAccountModel {
             ),
             let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) {
             return ChainAccountResponse(
+                metaId: metaId,
                 chainId: chainAccount.chainId,
                 accountId: chainAccount.accountId,
                 publicKey: chainAccount.publicKey,
@@ -165,6 +170,7 @@ extension MetaAccountModel {
             let ethereumAccountId = ethereumAddress,
             ethereumAccountId == accountId {
             return ChainAccountResponse(
+                metaId: metaId,
                 chainId: request.chainId,
                 accountId: ethereumAccountId,
                 publicKey: publicKey,
@@ -185,6 +191,7 @@ extension MetaAccountModel {
             substrateAccountId == accountId,
             let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) {
             return ChainAccountResponse(
+                metaId: metaId,
                 chainId: request.chainId,
                 accountId: substrateAccountId,
                 publicKey: substratePublicKey,
@@ -202,6 +209,7 @@ extension MetaAccountModel {
             let chainAccount = chainAccounts.first(where: { $0.accountId == accountId }),
             let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) {
             return ChainAccountResponse(
+                metaId: metaId,
                 chainId: chainAccount.chainId,
                 accountId: chainAccount.accountId,
                 publicKey: chainAccount.publicKey,
@@ -274,6 +282,25 @@ extension MetaAccountModel {
         } else {
             return substrateAccountId == accountId || ethereumAddress == accountId
         }
+    }
+
+    func isProxied(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
+        type == .proxied && has(accountId: accountId, chainId: chainId)
+    }
+
+    func proxyChainAccount(
+        chainId: ChainModel.Id
+    ) -> ChainAccountModel? {
+        chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
+    }
+
+    func proxy() -> ProxyAccountModel? {
+        guard type == .proxied,
+              let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
+            return nil
+        }
+
+        return chainAccount.proxy
     }
 }
 

@@ -27,7 +27,7 @@ protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
 final class XcmExtrinsicFeeProxy {
     enum State {
         case loading
-        case loaded(result: Result<FeeWithWeight, Error>)
+        case loaded(result: Result<ExtrinsicFeeProtocol, Error>)
     }
 
     private var feeStore: [TransactionFeeId: State] = [:]
@@ -35,7 +35,7 @@ final class XcmExtrinsicFeeProxy {
     weak var delegate: XcmExtrinsicFeeProxyDelegate?
 
     private func handle(
-        result: Result<FeeWithWeight, Error>,
+        result: Result<ExtrinsicFeeProtocol, Error>,
         for identifier: TransactionFeeId,
         origin: Bool
     ) {

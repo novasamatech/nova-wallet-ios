@@ -172,7 +172,7 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
         guard var viewModel = self.viewModel else {
             return
         }
-        var newValue = correctedDefaultDate(
+        let newValue = correctedDefaultDate(
             endDay: viewModel.customPeriod.endDay,
             expandedCalendar: viewModel.customPeriod.endDay.collapsed
         )

@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 final class WalletSelectionInteractor: WalletsListInteractor {
     var presenter: WalletSelectionInteractorOutputProtocol? {
@@ -13,18 +14,22 @@ final class WalletSelectionInteractor: WalletsListInteractor {
 
     let settings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
+    let proxySyncService: ProxySyncServiceProtocol
 
     init(
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        proxySyncService: ProxySyncServiceProtocol,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol
     ) {
         self.settings = settings
         self.eventCenter = eventCenter
+        self.proxySyncService = proxySyncService
 
         super.init(
             balancesStore: balancesStore,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory
         )
     }
@@ -42,11 +47,14 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: SelectedAccountChanged())
-
                 self?.presenter?.didCompleteSelection()
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.presenter?.didReceive(saveError: error)
             }
         }
+    }
+
+    func updateWalletsStatuses() {
+        proxySyncService.updateWalletsStatuses()
     }
 }

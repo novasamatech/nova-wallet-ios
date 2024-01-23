@@ -98,7 +98,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = originFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -116,7 +116,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private func provideCrossChainFeeViewModel() {
         let assetInfo = originChainAsset.assetDisplayInfo
-        if let fee = crossChainFee?.fee {
+        if let fee = crossChainFee?.amount {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
@@ -194,7 +194,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         }
     }
 
-    override func didReceiveOriginFee(result: Result<BigUInt, Error>) {
+    override func didReceiveOriginFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         super.didReceiveOriginFee(result: result)
 
         if case .success = result {
@@ -202,7 +202,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         }
     }
 
-    override func didReceiveCrossChainFee(result: Result<FeeWithWeight, Error>) {
+    override func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         super.didReceiveCrossChainFee(result: result)
 
         if case .success = result {
@@ -250,11 +250,15 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
         view?.didStopLoading()
 
-        if error.isWatchOnlySigning {
-            wireframe.presentDismissingNoSigningView(from: view)
-        } else {
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        let isHandledError = wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+            error,
+            view: view,
+            closeAction: .dismiss,
+            locale: selectedLocale,
+            completionClosure: nil
+        )
 
+        if !isHandledError {
             logger?.error("Did receive error: \(error)")
         }
     }
@@ -299,7 +303,7 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
-                amount: amountInPlank + crossChainFee.fee,
+                amount: amountInPlank + crossChainFee.amount,
                 recepient: strongSelf.recepientAccountAddress,
                 weightLimit: crossChainFee.weight,
                 originFee: strongSelf.originFee

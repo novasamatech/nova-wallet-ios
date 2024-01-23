@@ -49,13 +49,18 @@ class SelectValidatorsStartTests: XCTestCase {
         let wireframe = MockSelectValidatorsStartWireframeProtocol()
         let operationFactory = MockValidatorOperationFactoryProtocol()
 
+        let connection = JSONRPCEngineStub()
         let runtimeService = try RuntimeCodingServiceStub.createWestendService()
-
+        let operationQueue = OperationQueue()
+        
         let interactor = SelectValidatorsStartInteractor(
             runtimeService: runtimeService,
+            connection: connection,
             operationFactory: operationFactory,
-            operationManager: OperationManager(),
-            preferredValidators: []
+            maxNominationsOperationFactory: MaxNominationsOperationFactory(operationQueue: operationQueue),
+            operationQueue: operationQueue,
+            preferredValidators: [],
+            stakingAmount: 0
         )
 
         let presenter = SelectValidatorsStartPresenter(

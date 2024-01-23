@@ -93,7 +93,8 @@ struct StakingRebondConfirmationViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let feeProxy = ExtrinsicFeeProxy()

@@ -27,4 +27,4 @@ protocol ParaStkYieldBoostStopInteractorOutputProtocol: ParaStkYieldBoostCancelI
 protocol ParaStkYieldBoostStopWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable, MessageSheetPresentable,
     ParaStkYieldBoostErrorPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting {}
+    ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

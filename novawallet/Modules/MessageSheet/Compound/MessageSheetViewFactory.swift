@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import UIKit
+import SoraKeystore
 
 struct MessageSheetViewFactory {
     static func createNoSigningView(
@@ -76,6 +77,11 @@ struct MessageSheetViewFactory {
             icon = R.image.iconLedgerInSheet()
             message = LocalizableResource { locale in
                 R.string.localizable.commonLedgerNotSupportedMessage(preferredLanguages: locale.rLanguages)
+            }
+        case .proxy:
+            icon = R.image.imageProxy()
+            message = LocalizableResource { locale in
+                R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
             }
         }
 

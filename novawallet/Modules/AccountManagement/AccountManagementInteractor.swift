@@ -80,6 +80,7 @@ final class AccountManagementInteractor {
 
                     if let wallet = optWallet {
                         self?.fetchChains(for: wallet)
+                        self?.fetchProxyWalletIfNeeded(for: wallet)
                     } else {
                         self?.presenter?.didReceiveChains(.success([:]))
                     }
@@ -88,6 +89,33 @@ final class AccountManagementInteractor {
                 } catch {
                     self?.presenter?.didReceiveWallet(.failure(error))
                     self?.presenter?.didReceiveChains(.failure(error))
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [operation], in: .transient)
+    }
+
+    private func fetchProxyWalletIfNeeded(for wallet: MetaAccountModel) {
+        guard wallet.type == .proxied,
+              let chainAccount = wallet.chainAccounts.first(where: { $0.proxy != nil }),
+              let proxy = chainAccount.proxy else {
+            return
+        }
+
+        let operation = walletRepository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let wallets = try operation.extractNoCancellableResultData()
+                    let proxyWallet = wallets.first(where: { $0.info.has(
+                        accountId: proxy.accountId,
+                        chainId: chainAccount.chainId
+                    ) })?.info
+                    self?.presenter?.didReceiveProxyWallet(.success(proxyWallet))
+                } catch {
+                    self?.presenter?.didReceiveProxyWallet(.failure(error))
                 }
             }
         }

@@ -5,13 +5,16 @@ import SoraUI
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
+    let proxySyncService: ProxySyncServiceProtocol
 
     init(
         dappMediator: DAppInteractionMediating,
-        assetListModelObservable: AssetListModelObservable
+        assetListModelObservable: AssetListModelObservable,
+        proxySyncService: ProxySyncServiceProtocol
     ) {
         self.dappMediator = dappMediator
         self.assetListModelObservable = assetListModelObservable
+        self.proxySyncService = proxySyncService
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {

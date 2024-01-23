@@ -81,10 +81,9 @@ extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
         )
 
         return DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale,
-                precision: assetInfo.assetPrecision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
             dataValidatingFactory.canPayFeeInPlank(

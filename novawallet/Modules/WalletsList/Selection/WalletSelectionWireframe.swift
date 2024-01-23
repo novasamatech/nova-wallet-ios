@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWireframeProtocol {
     func close(view: WalletsListViewProtocol?) {
@@ -28,5 +29,22 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         manageView.controller.hidesBottomBarWhenPushed = true
 
         navigationController?.pushViewController(manageView.controller, animated: true)
+    }
+
+    func showProxiedsUpdates(
+        from view: ControllerBackedProtocol?,
+        initWallets: [ManagedMetaAccountModel]
+    ) {
+        guard let proxiedsUpdatesView = ProxiedsUpdateViewFactory.createView(
+            initWallets: initWallets
+        ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        proxiedsUpdatesView.controller.modalTransitioningFactory = factory
+        proxiedsUpdatesView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(proxiedsUpdatesView.controller, animated: true)
     }
 }

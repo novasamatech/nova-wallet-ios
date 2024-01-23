@@ -53,6 +53,7 @@ extension ImportChainAccount {
                    savedAccountItem.identifier == metaAccountItem.identifier {
                     self.settings.save(value: metaAccountItem)
                     self.eventCenter.notify(with: SelectedAccountChanged())
+                    self.eventCenter.notify(with: AccountsChanged(method: .manually))
                 }
             }
 
@@ -63,7 +64,7 @@ extension ImportChainAccount {
                 DispatchQueue.main.async {
                     switch saveOperation.result {
                     case .success:
-                        self?.eventCenter.notify(with: ChainAccountChanged())
+                        self?.eventCenter.notify(with: ChainAccountChanged(method: .manually))
                         self?.presenter?.didCompleteAccountImport()
 
                     case let .failure(error):

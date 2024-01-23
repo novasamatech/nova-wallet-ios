@@ -10,10 +10,17 @@ protocol ChainAccountViewModelFactoryProtocol {
     ) -> ChainAccountListViewModel
 
     func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
+
+    func createProxyViewModel(
+        proxiedWallet: MetaAccountModel,
+        proxyWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountProxyViewModel
 }
 
 final class ChainAccountViewModelFactory {
     let iconGenerator: IconGenerating
+    private lazy var walletIconGenerator = NovaIconGenerator()
 
     init(iconGenerator: IconGenerating) {
         self.iconGenerator = iconGenerator
@@ -89,7 +96,7 @@ final class ChainAccountViewModelFactory {
             let hasAction: Bool
 
             switch wallet.type {
-            case .secrets, .watchOnly, .ledger:
+            case .secrets, .watchOnly, .ledger, .proxied:
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             case .paritySigner:
@@ -182,12 +189,32 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger:
+        case .ledger, .proxied:
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)
 
             return [section]
         }
+    }
+
+    func createProxyViewModel(
+        proxiedWallet: MetaAccountModel,
+        proxyWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountProxyViewModel {
+        let optIcon = proxyWallet.walletIdenticonData().flatMap {
+            try? walletIconGenerator.generateFromAccountId($0)
+        }
+        let iconViewModel = optIcon.map {
+            DrawableIconViewModel(icon: $0)
+        }
+        let type = proxiedWallet.proxy()?.type.title(locale: locale) ?? ""
+
+        return .init(
+            name: proxyWallet.name,
+            icon: iconViewModel,
+            type: type
+        )
     }
 }

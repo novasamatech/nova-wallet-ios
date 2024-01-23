@@ -22,7 +22,7 @@ class CrowdloanContributionConfirmPresenter {
     private var totalBalanceValue: BigUInt?
     private var balance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
@@ -114,7 +114,12 @@ class CrowdloanContributionConfirmPresenter {
 
     private func provideFeeViewModel() {
         let feeViewModel = fee
-            .map { balanceViewModelFactory.balanceFromPrice($0, priceData: priceData) }?
+            .map {
+                balanceViewModelFactory.balanceFromPrice(
+                    $0.amount.decimal(assetInfo: assetInfo),
+                    priceData: priceData
+                )
+            }?
             .value(for: selectedLocale)
 
         view?.didReceiveFee(viewModel: feeViewModel)
@@ -214,8 +219,7 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmPre
 
     func confirm() {
         let contributionValue = inputAmount.toSubstrateAmount(precision: assetInfo.assetPrecision)
-        let spendingValue = (contributionValue ?? 0) +
-            (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
+        let spendingValue = (contributionValue ?? 0) + (fee?.amountForCurrentAccount ?? 0)
 
         DataValidationRunner(validators: [
             dataValidatingFactory.crowdloanIsNotPrivate(
@@ -319,11 +323,13 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
                 return
             }
 
-            if error.isWatchOnlySigning {
-                wireframe.presentPopingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+            if !wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .pop,
+                locale: selectedLocale,
+                completionClosure: nil
+            ) {
                 wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
             }
         }
@@ -435,12 +441,10 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee).map {
-                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
-            } ?? nil
+        case let .success(feeInfo):
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

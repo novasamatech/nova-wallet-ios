@@ -77,7 +77,19 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
 extension MainTabBarInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        serviceCoordinator.updateOnAccountChange()
+        serviceCoordinator.updateOnWalletSelectionChange()
+    }
+
+    func processAccountsChanged(event: AccountsChanged) {
+        if event.method == .manually {
+            serviceCoordinator.updateOnWalletChange()
+        }
+    }
+
+    func processChainAccountChanged(event: ChainAccountChanged) {
+        if event.method == .manually {
+            serviceCoordinator.updateOnWalletChange()
+        }
     }
 }
 

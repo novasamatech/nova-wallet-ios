@@ -108,7 +108,7 @@ final class EvmTransactionService {
                 .usingGasPrice(price.gasPrice)
                 .usingNonce(nonce)
                 .signing(using: { data in
-                    try signer.sign(data).rawData()
+                    try signer.sign(data, context: .evmTransaction).rawData()
                 })
                 .build()
         }

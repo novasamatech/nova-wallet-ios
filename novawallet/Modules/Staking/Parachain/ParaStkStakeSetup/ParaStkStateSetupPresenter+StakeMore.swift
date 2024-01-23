@@ -9,13 +9,10 @@ extension ParaStkStakeSetupPresenter {
         collatorId: AccountId?,
         assetDisplayInfo: AssetBalanceDisplayInfo
     ) -> DataValidationRunner {
-        let precision = assetDisplayInfo.assetPrecision
-
-        return DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale,
-                precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
 

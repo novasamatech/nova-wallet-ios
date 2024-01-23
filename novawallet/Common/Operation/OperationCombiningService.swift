@@ -3,6 +3,7 @@ import RobinHood
 
 enum OperationCombiningServiceError: Error {
     case alreadyRunningOrFinished
+    case noResult
 }
 
 final class OperationCombiningService<T>: Longrunable {
@@ -138,6 +139,28 @@ extension OperationCombiningService {
             } else {
                 return nil
             }
+        }
+
+        mappingOperation.addDependency(loadingOperation)
+
+        return .init(targetOperation: mappingOperation, dependencies: [loadingOperation])
+    }
+
+    static func compoundNonOptionalWrapper(
+        operationManager: OperationManagerProtocol,
+        wrapperClosure: @escaping () throws -> CompoundOperationWrapper<T>
+    ) -> CompoundOperationWrapper<T> {
+        let loadingOperation: BaseOperation<[T]> = OperationCombiningService<T>(operationManager: operationManager) {
+            let wrapper = try wrapperClosure()
+            return [wrapper]
+        }.longrunOperation()
+
+        let mappingOperation = ClosureOperation<T> {
+            guard let result = try loadingOperation.extractNoCancellableResultData().first else {
+                throw OperationCombiningServiceError.noResult
+            }
+
+            return result
         }
 
         mappingOperation.addDependency(loadingOperation)

@@ -16,7 +16,7 @@ final class ParaStkYieldBoostStopPresenter {
     let collatorIdentity: AccountIdentity?
 
     private(set) var yieldBoostTasks: [ParaStkYieldBoostState.Task]?
-    private(set) var extrinsicFee: BigUInt?
+    private(set) var extrinsicFee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
 
@@ -98,7 +98,7 @@ final class ParaStkYieldBoostStopPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
         if let fee = extrinsicFee {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -132,10 +132,9 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopPresenterProtocol
         let assetInfo = chainAsset.assetDisplayInfo
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: extrinsicFee,
-                locale: selectedLocale,
-                precision: assetInfo.assetPrecision
+                locale: selectedLocale
             ) { [weak self] in
                 self?.refreshFee()
             },
@@ -183,16 +182,18 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopInteractorOutputP
         case let .yieldBoostStopFailed(error):
             view?.didStopLoading()
 
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 
-    func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo) {
-        extrinsicFee = BigUInt(feeInfo.fee)
+    func didReceiveCancelTask(feeInfo: ExtrinsicFeeProtocol) {
+        extrinsicFee = feeInfo
 
         provideNetworkFeeViewModel()
     }

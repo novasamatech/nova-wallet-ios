@@ -121,7 +121,8 @@ struct ReferendumVoteConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signer = SigningWrapperFactory().createSigningWrapper(

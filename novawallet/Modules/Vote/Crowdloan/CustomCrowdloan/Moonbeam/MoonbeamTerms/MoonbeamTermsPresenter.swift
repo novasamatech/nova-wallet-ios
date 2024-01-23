@@ -15,7 +15,7 @@ final class MoonbeamTermsPresenter {
     let dataValidatingFactory: BaseDataValidatingFactoryProtocol
 
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var balance: Decimal?
     private var totalBalanceValue: BigUInt?
     private var minimumBalance: BigUInt?
@@ -54,7 +54,7 @@ final class MoonbeamTermsPresenter {
     private func provideFeeViewModel() {
         guard let fee = fee else { return }
         let feeViewModel = balanceViewModelFactory
-            .balanceFromPrice(fee, priceData: priceData)
+            .balanceFromPrice(fee.amount.decimal(assetInfo: assetInfo), priceData: priceData)
         view?.didReceiveFee(viewModel: feeViewModel)
     }
 }
@@ -66,7 +66,7 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
 
     func handleAction() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
-        let spendingAmount = (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
+        let spendingAmount = fee?.amountForCurrentAccount ?? 0
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
@@ -97,12 +97,10 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
 }
 
 extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee).map {
-                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
-            } ?? nil
+        case let .success(feeInfo):
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

@@ -612,6 +612,7 @@ extension SwapSetupPresenter {
 
     private func switchFeeChainAssetIfNecessary() {
         guard
+            canPayFeeInPayAsset,
             !isManualFeeSet,
             let payChainAsset = getPayChainAsset(),
             !payChainAsset.isUtilityAsset,
@@ -911,6 +912,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         if payChainAsset?.chainAssetId == chainAssetId {
             canPayFeeInPayAsset = value
 
+            switchFeeChainAssetIfNecessary()
             provideFeeViewModel()
         }
     }

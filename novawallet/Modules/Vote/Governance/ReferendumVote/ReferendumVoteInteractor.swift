@@ -296,12 +296,10 @@ extension ReferendumVoteInteractor: PriceLocalSubscriptionHandler, PriceLocalSto
 }
 
 extension ReferendumVoteInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                basePresenter?.didReceiveFee(fee)
-            }
+        case let .success(feeInfo):
+            basePresenter?.didReceiveFee(feeInfo)
         case let .failure(error):
             basePresenter?.didReceiveBaseError(.feeFailed(error))
         }
