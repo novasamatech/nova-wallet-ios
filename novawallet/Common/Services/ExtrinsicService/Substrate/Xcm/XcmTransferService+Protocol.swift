@@ -2,11 +2,11 @@ import Foundation
 import RobinHood
 import BigInt
 
-typealias XcmTrasferOriginFeeResult = Result<ExtrinsicFeeProtocol, Error>
-typealias XcmTransferOriginFeeClosure = (XcmTrasferOriginFeeResult) -> Void
+typealias XcmTransferOriginFeeResult = Result<ExtrinsicFeeProtocol, Error>
+typealias XcmTransferOriginFeeClosure = (XcmTransferOriginFeeResult) -> Void
 
-typealias XcmTrasferCrosschainFeeResult = Result<XcmFeeModelProtocol, Error>
-typealias XcmTransferCrosschainFeeClosure = (XcmTrasferCrosschainFeeResult) -> Void
+typealias XcmTransferCrosschainFeeResult = Result<XcmFeeModelProtocol, Error>
+typealias XcmTransferCrosschainFeeClosure = (XcmTransferCrosschainFeeResult) -> Void
 
 struct XcmSubmitExtrinsic {
     let txHash: String

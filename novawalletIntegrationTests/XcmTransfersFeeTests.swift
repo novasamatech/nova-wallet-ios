@@ -198,7 +198,7 @@ class XcmTransfersFeeTests: XCTestCase {
         chainRegistry: ChainRegistryProtocol,
         amount: BigUInt,
         isForDestination: Bool
-    ) throws -> ExtrinsicFeeProtocol {
+    ) throws -> XcmFeeModelProtocol {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
@@ -208,7 +208,7 @@ class XcmTransfersFeeTests: XCTestCase {
 
         let semaphore = DispatchSemaphore(value: 0)
 
-        var feeResult: XcmTrasferOriginFeeResult?
+        var feeResult: XcmTransferCrosschainFeeResult?
 
         let request = XcmUnweightedTransferRequest(
             origin: parties.origin,

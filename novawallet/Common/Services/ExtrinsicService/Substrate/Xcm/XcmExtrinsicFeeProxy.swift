@@ -2,8 +2,8 @@ import Foundation
 import BigInt
 
 protocol XcmExtrinsicFeeProxyDelegate: AnyObject {
-    func didReceiveOriginFee(result: XcmTrasferOriginFeeResult, for identifier: TransactionFeeId)
-    func didReceiveCrossChainFee(result: XcmTrasferCrosschainFeeResult, for identifier: TransactionFeeId)
+    func didReceiveOriginFee(result: XcmTransferOriginFeeResult, for identifier: TransactionFeeId)
+    func didReceiveCrossChainFee(result: XcmTransferCrosschainFeeResult, for identifier: TransactionFeeId)
 }
 
 protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
