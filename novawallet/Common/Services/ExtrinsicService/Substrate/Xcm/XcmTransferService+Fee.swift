@@ -153,37 +153,84 @@ extension XcmTransferService {
         }
     }
 
-    func createExponentialDeliveryFeeWrapper(
-        for request: XcmDeliveryRequest,
+    private func createExponentialFactorWrapper(
+        for paraId: ParaId?,
+        chainId: ChainModel.Id,
         params: XcmDeliveryFee.Exponential,
-        sendingFromOrigin: Bool
-    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        guard let parachainId = request.toParachainId else {
-            return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
-        }
-
-        guard let connection = chainRegistry.getConnection(for: request.fromChainId) else {
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<BigUInt> {
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
             let error = ChainRegistryError.connectionUnavailable
-            return CompoundOperationWrapper.createWithError(error)
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.fromChainId) else {
-            let error = ChainRegistryError.runtimeMetadaUnavailable
             return CompoundOperationWrapper.createWithError(error)
         }
 
         let opManager = OperationManager(operationQueue: operationQueue)
         let requestFactory = StorageRequestFactory(remoteFactory: StorageKeyFactory(), operationManager: opManager)
 
+        if let paraId = paraId {
+            let wrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BigUInt>>]>
+
+            wrapper = requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [StringScaleMapper(value: paraId)] },
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: params.parachainFactorStoragePath
+            )
+
+            let mapOperation = ClosureOperation<BigUInt> {
+                let optFactorValue = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+                guard let factor = optFactorValue?.value else {
+                    throw XcmTransferServiceError.deliveryFeeNotAvailable
+                }
+
+                return factor
+            }
+
+            mapOperation.addDependency(wrapper.targetOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+        } else {
+            let wrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>>
+            wrapper = requestFactory.queryItem(
+                engine: connection,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: params.upwardFactorStoragePath
+            )
+
+            let mapOperation = ClosureOperation<BigUInt> {
+                let optFactorValue = try wrapper.targetOperation.extractNoCancellableResultData().value
+
+                guard let factor = optFactorValue?.value else {
+                    throw XcmTransferServiceError.deliveryFeeNotAvailable
+                }
+
+                return factor
+            }
+
+            mapOperation.addDependency(wrapper.targetOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+        }
+    }
+
+    func createExponentialDeliveryFeeWrapper(
+        for request: XcmDeliveryRequest,
+        params: XcmDeliveryFee.Exponential,
+        sendingFromOrigin: Bool
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.fromChainId) else {
+            let error = ChainRegistryError.runtimeMetadaUnavailable
+            return CompoundOperationWrapper.createWithError(error)
+        }
+
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let factorWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BigUInt>>]>
-
-        factorWrapper = requestFactory.queryItems(
-            engine: connection,
-            keyParams: { [StringScaleMapper(value: parachainId)] },
-            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: params.factorStoragePath
+        let factorWrapper = createExponentialFactorWrapper(
+            for: request.toParachainId,
+            chainId: request.fromChainId,
+            params: params,
+            dependingOn: codingFactoryOperation
         )
 
         factorWrapper.addDependency(operations: [codingFactoryOperation])
@@ -193,15 +240,15 @@ extension XcmTransferService {
         )
 
         let calculateOperation = ClosureOperation<XcmFeeModelProtocol> {
-            let optFactor = try factorWrapper.targetOperation.extractNoCancellableResultData().first?.value
+            let factorValue = try factorWrapper.targetOperation.extractNoCancellableResultData()
             let optMessageType = try messageTypeWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            guard
-                let messageType = optMessageType,
-                let factor = optFactor.map({ BigRational.fixedU128(value: $0.value) }) else {
+            guard let messageType = optMessageType else {
                 throw XcmTransferServiceError.deliveryFeeNotAvailable
             }
+
+            let factor = BigRational.fixedU128(value: factorValue)
 
             let message = try XcmMessageSerializer.serialize(
                 message: request.message,
@@ -209,7 +256,9 @@ extension XcmTransferService {
                 codingFactory: codingFactory
             )
 
-            let messageSize = message.count
+            // TODO: Currently message doesn't contain setTopic command in the end. It will come with XCMv3 support
+            let setTopicSize = 33
+            let messageSize = message.count + setTopicSize
 
             let feeSize = params.sizeBase + BigUInt(messageSize) * params.sizeFactor
             let amount = factor.mul(value: feeSize)

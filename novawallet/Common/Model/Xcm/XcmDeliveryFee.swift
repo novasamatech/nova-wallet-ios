@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-enum XcmDeliveryFee: Decodable {
+struct XcmDeliveryFee: Decodable {
     struct FeeType: Decodable {
         let type: String
     }
@@ -17,23 +17,32 @@ enum XcmDeliveryFee: Decodable {
             !(alwaysHoldingPays ?? false)
         }
 
-        var factorStoragePath: StorageCodingPath {
+        var parachainFactorStoragePath: StorageCodingPath {
             StorageCodingPath(moduleName: factorPallet, itemName: "DeliveryFeeFactor")
         }
-    }
 
-    case exponential(Exponential)
-    case undefined
-
-    init(from decoder: Decoder) throws {
-        let feeType = try FeeType(from: decoder).type
-
-        switch feeType {
-        case "exponential":
-            let value = try Exponential(from: decoder)
-            self = .exponential(value)
-        default:
-            self = .undefined
+        var upwardFactorStoragePath: StorageCodingPath {
+            StorageCodingPath(moduleName: factorPallet, itemName: "UpwardDeliveryFeeFactor")
         }
     }
+
+    enum Price {
+        case exponential(Exponential)
+        case undefined
+
+        init(from decoder: Decoder) throws {
+            let feeType = try FeeType(from: decoder).type
+
+            switch feeType {
+            case "exponential":
+                let value = try Exponential(from: decoder)
+                self = .exponential(value)
+            default:
+                self = .undefined
+            }
+        }
+    }
+    
+    let toParent: Price?
+    let toParachain: Price?
 }

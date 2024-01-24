@@ -136,6 +136,25 @@ class XcmTransfersFeeTests: XCTestCase {
             amount: amount
         )
     }
+    
+    func testStatemintKusamaCrosschainFee() throws {
+        let originChainId = KnowChainId.statemine
+        let destinationChainId = KnowChainId.kusama
+        let assetId: AssetModel.Id = 0
+        let beneficiary = AccountId.zeroAccountId(of: 32)
+        let amount: BigUInt = 1_000_000_000_00
+
+        let transferDestinationId = XcmTransferDestinationId(
+            chainId: destinationChainId,
+            accountId: beneficiary
+        )
+
+        performTestCrosschainFeeCalculation(
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            transferDestinationId: transferDestinationId,
+            amount: amount
+        )
+    }
 
     func performTestSeparatedFeeCalculation(
         originChainAssetId: ChainAssetId,
