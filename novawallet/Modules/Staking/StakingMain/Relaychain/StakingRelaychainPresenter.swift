@@ -224,6 +224,33 @@ final class StakingRelaychainPresenter {
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
+
+    private func presentSwitchToStashAccountAlert(stashAddress: AccountAddress) {
+        let locale = view?.selectedLocale
+        let displayName: String
+        if let displayAddress = try? accountForAddress(stashAddress)?.toWalletDisplayAddress() {
+            displayName = displayAddress.walletName ?? displayAddress.address
+        } else {
+            displayName = stashAddress
+        }
+        let title = R.string.localizable.stakingAlertSwitchToStashTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        let message = R.string.localizable.stakingAlertSwitchToStashMessage(
+            displayName,
+            preferredLanguages: locale?.rLanguages
+        )
+        let closeTitle = R.string.localizable.commonClose(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        wireframe.present(
+            message: message,
+            title: title,
+            closeAction: closeTitle,
+            from: view
+        )
+    }
 }
 
 extension StakingRelaychainPresenter: StakingStateMachineDelegate {
@@ -343,7 +370,13 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
         case .addProxy:
-            wireframe.showAddProxy(from: view)
+            if let state = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
+                if state.stashItem.controller == state.stashItem.stash {
+                    wireframe.showAddProxy(from: view)
+                } else {
+                    presentSwitchToStashAccountAlert(stashAddress: state.stashItem.stash)
+                }
+            }
         case .editProxies:
             wireframe.showEditProxies(from: view)
         default:

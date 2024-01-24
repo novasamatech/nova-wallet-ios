@@ -1369,6 +1369,8 @@
 "staking.setup.proxy.deposit.details" = "Депозит остается зарезервированным на вашем счете до тех пор, пока прокси не будет удален.";
 "staking.setup.your.proxies" = "Ваши делегации";
 "staking.setup.add.your.proxy" = "Добавить делегацию (Прокси)";
+"staking.alert.switch.to.stash.title" = "Выберите стэш-аккаунт для настройки прокси.";
+"staking.alert.switch.to.stash.message" = "Переключите свой кошелек на %@, чтобы настроить прокси.";
 "staking.setup.proxy.error.insufficient.balance.title" = "Недостаточно токенов";
 "staking.setup.proxy.error.insufficient.balance.message" = "У вас недостаточно средств для депозита прокси %@. Доступный баланс: %@";
 "staking.setup.proxy.error.invalid.address.title" = "Некорректный адрес прокси";
