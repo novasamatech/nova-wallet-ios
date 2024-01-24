@@ -149,9 +149,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v5/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v5/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/feature/delivery-fee/xcm/v6/transfers_dev.json")!
         #endif
     }
 

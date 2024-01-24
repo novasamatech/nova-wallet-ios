@@ -203,11 +203,13 @@ extension XcmTransferService {
                 throw XcmTransferServiceError.deliveryFeeNotAvailable
             }
 
-            let messageSize = try XcmMessageSerializer.serialize(
+            let message = try XcmMessageSerializer.serialize(
                 message: request.message,
                 type: messageType,
                 codingFactory: codingFactory
-            ).count
+            )
+
+            let messageSize = message.count
 
             let feeSize = params.sizeBase + BigUInt(messageSize) * params.sizeFactor
             let amount = factor.mul(value: feeSize)

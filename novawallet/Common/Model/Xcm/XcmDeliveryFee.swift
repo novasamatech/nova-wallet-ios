@@ -18,7 +18,7 @@ enum XcmDeliveryFee: Decodable {
         }
 
         var factorStoragePath: StorageCodingPath {
-            StorageCodingPath(moduleName: factorPallet, itemName: "DeliveryFactor")
+            StorageCodingPath(moduleName: factorPallet, itemName: "DeliveryFeeFactor")
         }
     }
 
