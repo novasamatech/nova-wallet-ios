@@ -2,8 +2,11 @@ import Foundation
 import RobinHood
 import BigInt
 
-typealias XcmTrasferFeeResult = Result<ExtrinsicFeeProtocol, Error>
-typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
+typealias XcmTrasferOriginFeeResult = Result<ExtrinsicFeeProtocol, Error>
+typealias XcmTransferOriginFeeClosure = (XcmTrasferOriginFeeResult) -> Void
+
+typealias XcmTrasferCrosschainFeeResult = Result<XcmFeeModelProtocol, Error>
+typealias XcmTransferCrosschainFeeClosure = (XcmTrasferCrosschainFeeResult) -> Void
 
 struct XcmSubmitExtrinsic {
     let txHash: String
@@ -18,21 +21,21 @@ protocol XcmTransferServiceProtocol {
         request: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferOriginFeeClosure
     )
 
-    func estimateDestinationTransferFee(
+    func estimateDestinationExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
-    func estimateReserveTransferFee(
+    func estimateReserveExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     // Note: weight of the result contains max between reserve and destination weights
@@ -40,7 +43,7 @@ protocol XcmTransferServiceProtocol {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     func submit(
@@ -57,7 +60,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         request: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferOriginFeeClosure
     ) {
         do {
             let unweighted = request.unweighted
@@ -105,11 +108,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         }
     }
 
-    func estimateDestinationTransferFee(
+    func estimateDestinationExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
             let feeMessages = try xcmFactory.createWeightMessages(
@@ -143,11 +146,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         }
     }
 
-    func estimateReserveTransferFee(
+    func estimateReserveExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
             let feeMessages = try xcmFactory.createWeightMessages(
@@ -192,7 +195,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
             let feeMessages = try xcmFactory.createWeightMessages(
@@ -215,13 +218,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 feeMessages: feeMessages
             )
 
-            let mergeOperation = ClosureOperation<ExtrinsicFeeProtocol> {
+            let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
                 let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
                 let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
 
-                let fee = executionFee.amount + deliveryFee.amount
-                let weight = max(executionFee.weight, deliveryFee.weight)
-                return ExtrinsicFee(amount: fee, payer: executionFee.payer, weight: weight)
+                return XcmFeeModel.combine(executionFee, deliveryFee)
             }
 
             let dependencies = executionFeeWrapper.allOperations + deliveryFeeWrapper.allOperations

@@ -11,6 +11,11 @@ enum XcmDeliveryFee: Decodable {
         let factorPallet: String
         @StringCodable var sizeBase: BigUInt
         @StringCodable var sizeFactor: BigUInt
+        let alwaysHoldingPays: Bool?
+
+        var isSenderPaysOriginDelivery: Bool {
+            !(alwaysHoldingPays ?? false)
+        }
 
         var factorStoragePath: StorageCodingPath {
             StorageCodingPath(moduleName: factorPallet, itemName: "DeliveryFactor")

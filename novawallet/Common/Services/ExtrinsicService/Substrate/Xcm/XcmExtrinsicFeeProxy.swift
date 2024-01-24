@@ -2,8 +2,8 @@ import Foundation
 import BigInt
 
 protocol XcmExtrinsicFeeProxyDelegate: AnyObject {
-    func didReceiveOriginFee(result: XcmTrasferFeeResult, for identifier: TransactionFeeId)
-    func didReceiveCrossChainFee(result: XcmTrasferFeeResult, for identifier: TransactionFeeId)
+    func didReceiveOriginFee(result: XcmTrasferOriginFeeResult, for identifier: TransactionFeeId)
+    func didReceiveCrossChainFee(result: XcmTrasferCrosschainFeeResult, for identifier: TransactionFeeId)
 }
 
 protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
@@ -25,32 +25,42 @@ protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
 }
 
 final class XcmExtrinsicFeeProxy {
-    enum State {
+    enum State<FeeType> {
         case loading
-        case loaded(result: Result<ExtrinsicFeeProtocol, Error>)
+        case loaded(result: Result<FeeType, Error>)
     }
 
-    private var feeStore: [TransactionFeeId: State] = [:]
+    private var originFeeStore: [TransactionFeeId: State<ExtrinsicFeeProtocol>] = [:]
+    private var crosschainFeeStore: [TransactionFeeId: State<XcmFeeModelProtocol>] = [:]
 
     weak var delegate: XcmExtrinsicFeeProxyDelegate?
 
-    private func handle(
+    private func handleOrigin(
         result: Result<ExtrinsicFeeProtocol, Error>,
-        for identifier: TransactionFeeId,
-        origin: Bool
+        for identifier: TransactionFeeId
     ) {
         switch result {
         case .success:
-            feeStore[identifier] = .loaded(result: result)
+            originFeeStore[identifier] = .loaded(result: result)
         case .failure:
-            feeStore[identifier] = nil
+            originFeeStore[identifier] = nil
         }
 
-        if origin {
-            delegate?.didReceiveOriginFee(result: result, for: identifier)
-        } else {
-            delegate?.didReceiveCrossChainFee(result: result, for: identifier)
+        delegate?.didReceiveOriginFee(result: result, for: identifier)
+    }
+
+    private func handleCrosschain(
+        result: Result<XcmFeeModelProtocol, Error>,
+        for identifier: TransactionFeeId
+    ) {
+        switch result {
+        case .success:
+            crosschainFeeStore[identifier] = .loaded(result: result)
+        case .failure:
+            crosschainFeeStore[identifier] = nil
         }
+
+        delegate?.didReceiveCrossChainFee(result: result, for: identifier)
     }
 }
 
@@ -61,7 +71,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
         xcmTransfers: XcmTransfers,
         reuseIdentifier: TransactionFeeId
     ) {
-        if let state = feeStore[reuseIdentifier] {
+        if let state = originFeeStore[reuseIdentifier] {
             if case let .loaded(result) = state {
                 delegate?.didReceiveOriginFee(result: result, for: reuseIdentifier)
             }
@@ -69,14 +79,14 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
             return
         }
 
-        feeStore[reuseIdentifier] = .loading
+        originFeeStore[reuseIdentifier] = .loading
 
         service.estimateOriginFee(
             request: xcmTransferRequest,
             xcmTransfers: xcmTransfers,
             runningIn: .main
         ) { [weak self] result in
-            self?.handle(result: result, for: reuseIdentifier, origin: true)
+            self?.handleOrigin(result: result, for: reuseIdentifier)
         }
     }
 
@@ -86,7 +96,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
         xcmTransfers: XcmTransfers,
         reuseIdentifier: TransactionFeeId
     ) {
-        if let state = feeStore[reuseIdentifier] {
+        if let state = crosschainFeeStore[reuseIdentifier] {
             if case let .loaded(result) = state {
                 delegate?.didReceiveCrossChainFee(result: result, for: reuseIdentifier)
             }
@@ -94,14 +104,14 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
             return
         }
 
-        feeStore[reuseIdentifier] = .loading
+        crosschainFeeStore[reuseIdentifier] = .loading
 
         service.estimateCrossChainFee(
             request: xcmTransferRequest,
             xcmTransfers: xcmTransfers,
             runningIn: .main
         ) { [weak self] result in
-            self?.handle(result: result, for: reuseIdentifier, origin: false)
+            self?.handleCrosschain(result: result, for: reuseIdentifier)
         }
     }
 }

@@ -208,7 +208,7 @@ class XcmTransfersFeeTests: XCTestCase {
 
         let semaphore = DispatchSemaphore(value: 0)
 
-        var feeResult: XcmTrasferFeeResult?
+        var feeResult: XcmTrasferOriginFeeResult?
 
         let request = XcmUnweightedTransferRequest(
             origin: parties.origin,
@@ -218,7 +218,7 @@ class XcmTransfersFeeTests: XCTestCase {
         )
 
         if isForDestination {
-            service.estimateDestinationTransferFee(
+            service.estimateDestinationExecutionFee(
                 request: request,
                 xcmTransfers: xcmTransfers,
                 runningIn: .global()
@@ -227,7 +227,7 @@ class XcmTransfersFeeTests: XCTestCase {
                 semaphore.signal()
             }
         } else {
-            service.estimateReserveTransferFee(
+            service.estimateReserveExecutionFee(
                 request: request,
                 xcmTransfers: xcmTransfers,
                 runningIn: .global()

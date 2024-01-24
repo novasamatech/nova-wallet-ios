@@ -116,7 +116,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private func provideCrossChainFeeViewModel() {
         let assetInfo = originChainAsset.assetDisplayInfo
-        if let fee = crossChainFee?.amount {
+        if let fee = crossChainFee?.total {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
@@ -168,7 +168,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         interactor.estimateOriginFee(
             for: amountValue,
             recepient: getRecepientAccountId(),
-            weightLimit: crossChainFee?.weight
+            weightLimit: crossChainFee?.weightLimit
         )
     }
 
@@ -202,7 +202,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         }
     }
 
-    override func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
+    override func didReceiveCrossChainFee(result: Result<XcmFeeModelProtocol, Error>) {
         super.didReceiveCrossChainFee(result: result)
 
         if case .success = result {
@@ -303,9 +303,9 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
-                amount: amountInPlank + crossChainFee.amount,
+                amount: amountInPlank + crossChainFee.holdingPart,
                 recepient: strongSelf.recepientAccountAddress,
-                weightLimit: crossChainFee.weight,
+                weightLimit: crossChainFee.weightLimit,
                 originFee: strongSelf.originFee
             )
         }

@@ -8,7 +8,7 @@ extension XcmTransferService {
         chain: ChainModel,
         message: Xcm.Message,
         maxWeight: BigUInt
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
@@ -39,9 +39,17 @@ extension XcmTransferService {
             wrapper.addDependency(wrapper: moduleWrapper)
             wrapper.addDependency(operations: [coderFactoryOperation])
 
-            let dependencies = [coderFactoryOperation] + moduleWrapper.allOperations + wrapper.dependencies
+            let mappingOperation = ClosureOperation<XcmFeeModelProtocol> {
+                let fee = try wrapper.targetOperation.extractNoCancellableResultData()
 
-            return CompoundOperationWrapper(targetOperation: wrapper.targetOperation, dependencies: dependencies)
+                return XcmFeeModel(senderPart: 0, holdingPart: fee.amount, weightLimit: fee.weight)
+            }
+
+            mappingOperation.addDependency(wrapper.targetOperation)
+
+            let dependencies = [coderFactoryOperation] + moduleWrapper.allOperations + wrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -52,14 +60,14 @@ extension XcmTransferService {
         message: Xcm.Message,
         info: XcmAssetTransferFee,
         baseWeight: BigUInt
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         let maxWeight = baseWeight * BigUInt(message.instructionsCount)
 
         switch info.mode.type {
         case .proportional:
             let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
             let fee = coefficient * maxWeight / Self.weightPerSecond
-            let model = ExtrinsicFee(amount: fee, payer: nil, weight: maxWeight)
+            let model = XcmFeeModel(senderPart: 0, holdingPart: fee, weightLimit: maxWeight)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:
             return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeight)
@@ -70,7 +78,7 @@ extension XcmTransferService {
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let feeInfo = xcmTransfers.destinationFee(
             from: request.origin.chainAssetId,
             to: request.destination.chain.chainId
@@ -100,7 +108,7 @@ extension XcmTransferService {
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
             let error = XcmTransferFactoryError.noReserveFee(request.origin.chainAssetId)
             return CompoundOperationWrapper.createWithError(error)
@@ -121,22 +129,24 @@ extension XcmTransferService {
 
     func createChainDeliveryFeeWrapper(
         for request: XcmDeliveryRequest,
-        xcmTransfers: XcmTransfers
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        xcmTransfers: XcmTransfers,
+        sendingFromOrigin: Bool
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             guard
                 let deliveryFee = try xcmTransfers.deliveryFee(from: request.fromChainId) else {
-                return CompoundOperationWrapper.createWithResult(ExtrinsicFee.zero())
+                return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
             }
 
             switch deliveryFee {
             case let .exponential(params):
                 return createExponentialDeliveryFeeWrapper(
                     for: request,
-                    params: params
+                    params: params,
+                    sendingFromOrigin: sendingFromOrigin
                 )
             case .undefined:
-                return CompoundOperationWrapper.createWithResult(ExtrinsicFee.zero())
+                return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
             }
         } catch {
             return CompoundOperationWrapper.createWithError(error)
@@ -145,10 +155,11 @@ extension XcmTransferService {
 
     func createExponentialDeliveryFeeWrapper(
         for request: XcmDeliveryRequest,
-        params: XcmDeliveryFee.Exponential
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        params: XcmDeliveryFee.Exponential,
+        sendingFromOrigin: Bool
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let parachainId = request.toParachainId else {
-            return CompoundOperationWrapper.createWithResult(ExtrinsicFee.zero())
+            return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
         }
 
         guard let connection = chainRegistry.getConnection(for: request.fromChainId) else {
@@ -181,7 +192,7 @@ extension XcmTransferService {
             for: runtimeProvider
         )
 
-        let calculateOperation = ClosureOperation<ExtrinsicFeeProtocol> {
+        let calculateOperation = ClosureOperation<XcmFeeModelProtocol> {
             let optFactor = try factorWrapper.targetOperation.extractNoCancellableResultData().first?.value
             let optMessageType = try messageTypeWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -201,7 +212,13 @@ extension XcmTransferService {
             let feeSize = params.sizeBase + BigUInt(messageSize) * params.sizeFactor
             let amount = factor.mul(value: feeSize)
 
-            return ExtrinsicFee(amount: amount, payer: nil, weight: 0)
+            let isSenderPart = params.isSenderPaysOriginDelivery && sendingFromOrigin
+
+            return XcmFeeModel(
+                senderPart: isSenderPart ? amount : 0,
+                holdingPart: !isSenderPart ? amount : 0,
+                weightLimit: 0
+            )
         }
 
         calculateOperation.addDependency(factorWrapper.targetOperation)
@@ -216,13 +233,13 @@ extension XcmTransferService {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         feeMessages: XcmWeightMessages
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         let destMsg = feeMessages.destination
         let destWrapper = createDestinationFeeWrapper(for: destMsg, request: request, xcmTransfers: xcmTransfers)
 
         var dependencies = destWrapper.allOperations
 
-        let optReserveWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
+        let optReserveWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>?
 
         if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
             let wrapper = createReserveFeeWrapper(
@@ -238,16 +255,14 @@ extension XcmTransferService {
             optReserveWrapper = nil
         }
 
-        let mergeOperation = ClosureOperation<ExtrinsicFeeProtocol> {
-            let destFeeWeight = try destWrapper.targetOperation.extractNoCancellableResultData()
-            let optReserveFeeWeight = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
+        let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
+            let destFee = try destWrapper.targetOperation.extractNoCancellableResultData()
+            let optReserveFee = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
 
-            if let reserveFeeWeight = optReserveFeeWeight {
-                let fee = destFeeWeight.amount + reserveFeeWeight.amount
-                let weight = max(destFeeWeight.weight, reserveFeeWeight.weight)
-                return ExtrinsicFee(amount: fee, payer: destFeeWeight.payer, weight: weight)
+            if let reserveFee = optReserveFee {
+                return XcmFeeModel.combine(destFee, reserveFee)
             } else {
-                return destFeeWeight
+                return destFee
             }
         }
 
@@ -260,7 +275,7 @@ extension XcmTransferService {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         feeMessages: XcmWeightMessages
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
             let originToReserveWrapper = createChainDeliveryFeeWrapper(
                 for: .init(
@@ -268,7 +283,8 @@ extension XcmTransferService {
                     fromChainId: request.origin.chain.chainId,
                     toParachainId: request.reserve.parachainId
                 ),
-                xcmTransfers: xcmTransfers
+                xcmTransfers: xcmTransfers,
+                sendingFromOrigin: true
             )
 
             let reserveToDestWrapper = createChainDeliveryFeeWrapper(
@@ -277,18 +293,15 @@ extension XcmTransferService {
                     fromChainId: request.reserve.chain.chainId,
                     toParachainId: request.destination.parachainId
                 ),
-                xcmTransfers: xcmTransfers
+                xcmTransfers: xcmTransfers,
+                sendingFromOrigin: false
             )
 
-            let combiningOperation = ClosureOperation<ExtrinsicFeeProtocol> {
+            let combiningOperation = ClosureOperation<XcmFeeModelProtocol> {
                 let originToReserve = try originToReserveWrapper.targetOperation.extractNoCancellableResultData()
                 let reserveToDestination = try reserveToDestWrapper.targetOperation.extractNoCancellableResultData()
 
-                return ExtrinsicFee(
-                    amount: originToReserve.amount + reserveToDestination.amount,
-                    payer: originToReserve.payer,
-                    weight: max(originToReserve.weight, reserveToDestination.weight)
-                )
+                return XcmFeeModel.combine(originToReserve, reserveToDestination)
             }
 
             combiningOperation.addDependency(reserveToDestWrapper.targetOperation)
@@ -305,7 +318,8 @@ extension XcmTransferService {
                     fromChainId: request.origin.chain.chainId,
                     toParachainId: request.destination.parachainId
                 ),
-                xcmTransfers: xcmTransfers
+                xcmTransfers: xcmTransfers,
+                sendingFromOrigin: true
             )
 
             return originToDestinationWrapper
