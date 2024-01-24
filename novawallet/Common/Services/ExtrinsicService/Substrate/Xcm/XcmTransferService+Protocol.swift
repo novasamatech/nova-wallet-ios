@@ -203,39 +203,28 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 xcmTransfers: xcmTransfers
             )
 
-            let destMsg = feeMessages.destination
-            let destWrapper = createDestinationFeeWrapper(for: destMsg, request: request, xcmTransfers: xcmTransfers)
+            let executionFeeWrapper = createExecutionFeeWrapper(
+                request: request,
+                xcmTransfers: xcmTransfers,
+                feeMessages: feeMessages
+            )
 
-            var dependencies = destWrapper.allOperations
-
-            let optReserveWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
-
-            if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
-                    for: reserveMessage,
-                    request: request,
-                    xcmTransfers: xcmTransfers
-                )
-
-                dependencies.append(contentsOf: wrapper.allOperations)
-
-                optReserveWrapper = wrapper
-            } else {
-                optReserveWrapper = nil
-            }
+            let deliveryFeeWrapper = createDeliveryFeeWrapper(
+                request: request,
+                xcmTransfers: xcmTransfers,
+                feeMessages: feeMessages
+            )
 
             let mergeOperation = ClosureOperation<ExtrinsicFeeProtocol> {
-                let destFeeWeight = try destWrapper.targetOperation.extractNoCancellableResultData()
-                let optReserveFeeWeight = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
+                let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
+                let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
 
-                if let reserveFeeWeight = optReserveFeeWeight {
-                    let fee = destFeeWeight.amount + reserveFeeWeight.amount
-                    let weight = max(destFeeWeight.weight, reserveFeeWeight.weight)
-                    return ExtrinsicFee(amount: fee, payer: destFeeWeight.payer, weight: weight)
-                } else {
-                    return destFeeWeight
-                }
+                let fee = executionFee.amount + deliveryFee.amount
+                let weight = max(executionFee.weight, deliveryFee.weight)
+                return ExtrinsicFee(amount: fee, payer: executionFee.payer, weight: weight)
             }
+
+            let dependencies = executionFeeWrapper.allOperations + deliveryFeeWrapper.allOperations
 
             dependencies.forEach { mergeOperation.addDependency($0) }
 

@@ -118,4 +118,197 @@ extension XcmTransferService {
             baseWeight: baseWeight
         )
     }
+
+    func createChainDeliveryFeeWrapper(
+        for request: XcmDeliveryRequest,
+        xcmTransfers: XcmTransfers
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        do {
+            guard
+                let deliveryFee = try xcmTransfers.deliveryFee(from: request.fromChainId) else {
+                return CompoundOperationWrapper.createWithResult(ExtrinsicFee.zero())
+            }
+
+            switch deliveryFee {
+            case let .exponential(params):
+                return createExponentialDeliveryFeeWrapper(
+                    for: request,
+                    params: params
+                )
+            case .undefined:
+                return CompoundOperationWrapper.createWithResult(ExtrinsicFee.zero())
+            }
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
+    }
+
+    func createExponentialDeliveryFeeWrapper(
+        for request: XcmDeliveryRequest,
+        params: XcmDeliveryFee.Exponential
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        guard let parachainId = request.toParachainId else {
+            return CompoundOperationWrapper.createWithResult(ExtrinsicFee.zero())
+        }
+
+        guard let connection = chainRegistry.getConnection(for: request.fromChainId) else {
+            let error = ChainRegistryError.connectionUnavailable
+            return CompoundOperationWrapper.createWithError(error)
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.fromChainId) else {
+            let error = ChainRegistryError.runtimeMetadaUnavailable
+            return CompoundOperationWrapper.createWithError(error)
+        }
+
+        let opManager = OperationManager(operationQueue: operationQueue)
+        let requestFactory = StorageRequestFactory(remoteFactory: StorageKeyFactory(), operationManager: opManager)
+
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let factorWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BigUInt>>]>
+
+        factorWrapper = requestFactory.queryItems(
+            engine: connection,
+            keyParams: { [StringScaleMapper(value: parachainId)] },
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+            storagePath: params.factorStoragePath
+        )
+
+        factorWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let messageTypeWrapper = xcmPalletQueryFactory.createXcmMessageTypeResolutionWrapper(
+            for: runtimeProvider
+        )
+
+        let calculateOperation = ClosureOperation<ExtrinsicFeeProtocol> {
+            let optFactor = try factorWrapper.targetOperation.extractNoCancellableResultData().first?.value
+            let optMessageType = try messageTypeWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            guard
+                let messageType = optMessageType,
+                let factor = optFactor.map({ BigRational.fixedU128(value: $0.value) }) else {
+                throw XcmTransferServiceError.deliveryFeeNotAvailable
+            }
+
+            let messageSize = try XcmMessageSerializer.serialize(
+                message: request.message,
+                type: messageType,
+                codingFactory: codingFactory
+            ).count
+
+            let feeSize = params.sizeBase + BigUInt(messageSize) * params.sizeFactor
+            let amount = factor.mul(value: feeSize)
+
+            return ExtrinsicFee(amount: amount, payer: nil, weight: 0)
+        }
+
+        calculateOperation.addDependency(factorWrapper.targetOperation)
+        calculateOperation.addDependency(messageTypeWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + factorWrapper.allOperations + messageTypeWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
+    }
+
+    func createExecutionFeeWrapper(
+        request: XcmUnweightedTransferRequest,
+        xcmTransfers: XcmTransfers,
+        feeMessages: XcmWeightMessages
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        let destMsg = feeMessages.destination
+        let destWrapper = createDestinationFeeWrapper(for: destMsg, request: request, xcmTransfers: xcmTransfers)
+
+        var dependencies = destWrapper.allOperations
+
+        let optReserveWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
+
+        if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
+            let wrapper = createReserveFeeWrapper(
+                for: reserveMessage,
+                request: request,
+                xcmTransfers: xcmTransfers
+            )
+
+            dependencies.append(contentsOf: wrapper.allOperations)
+
+            optReserveWrapper = wrapper
+        } else {
+            optReserveWrapper = nil
+        }
+
+        let mergeOperation = ClosureOperation<ExtrinsicFeeProtocol> {
+            let destFeeWeight = try destWrapper.targetOperation.extractNoCancellableResultData()
+            let optReserveFeeWeight = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
+
+            if let reserveFeeWeight = optReserveFeeWeight {
+                let fee = destFeeWeight.amount + reserveFeeWeight.amount
+                let weight = max(destFeeWeight.weight, reserveFeeWeight.weight)
+                return ExtrinsicFee(amount: fee, payer: destFeeWeight.payer, weight: weight)
+            } else {
+                return destFeeWeight
+            }
+        }
+
+        dependencies.forEach { mergeOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+    }
+
+    func createDeliveryFeeWrapper(
+        request: XcmUnweightedTransferRequest,
+        xcmTransfers: XcmTransfers,
+        feeMessages: XcmWeightMessages
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
+            let originToReserveWrapper = createChainDeliveryFeeWrapper(
+                for: .init(
+                    message: reserveMessage,
+                    fromChainId: request.origin.chain.chainId,
+                    toParachainId: request.reserve.parachainId
+                ),
+                xcmTransfers: xcmTransfers
+            )
+
+            let reserveToDestWrapper = createChainDeliveryFeeWrapper(
+                for: .init(
+                    message: feeMessages.destination,
+                    fromChainId: request.reserve.chain.chainId,
+                    toParachainId: request.destination.parachainId
+                ),
+                xcmTransfers: xcmTransfers
+            )
+
+            let combiningOperation = ClosureOperation<ExtrinsicFeeProtocol> {
+                let originToReserve = try originToReserveWrapper.targetOperation.extractNoCancellableResultData()
+                let reserveToDestination = try reserveToDestWrapper.targetOperation.extractNoCancellableResultData()
+
+                return ExtrinsicFee(
+                    amount: originToReserve.amount + reserveToDestination.amount,
+                    payer: originToReserve.payer,
+                    weight: max(originToReserve.weight, reserveToDestination.weight)
+                )
+            }
+
+            combiningOperation.addDependency(reserveToDestWrapper.targetOperation)
+            combiningOperation.addDependency(originToReserveWrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: combiningOperation,
+                dependencies: originToReserveWrapper.allOperations + reserveToDestWrapper.allOperations
+            )
+        } else {
+            let originToDestinationWrapper = createChainDeliveryFeeWrapper(
+                for: .init(
+                    message: feeMessages.destination,
+                    fromChainId: request.origin.chain.chainId,
+                    toParachainId: request.destination.parachainId
+                ),
+                xcmTransfers: xcmTransfers
+            )
+
+            return originToDestinationWrapper
+        }
+    }
 }
