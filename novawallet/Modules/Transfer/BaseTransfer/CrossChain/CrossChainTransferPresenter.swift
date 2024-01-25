@@ -32,7 +32,7 @@ class CrossChainTransferPresenter {
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var originFee: ExtrinsicFeeProtocol?
-    private(set) var crossChainFee: ExtrinsicFeeProtocol?
+    private(set) var crossChainFee: XcmFeeModelProtocol?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -88,7 +88,7 @@ class CrossChainTransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
-    func updateCrossChainFee(_ newValue: ExtrinsicFeeProtocol?) {
+    func updateCrossChainFee(_ newValue: XcmFeeModelProtocol?) {
         crossChainFee = newValue
     }
 
@@ -117,7 +117,7 @@ class CrossChainTransferPresenter {
                 return
             },
 
-            dataValidatingFactory.has(fee: crossChainFee, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(crosschainFee: crossChainFee, locale: selectedLocale) { [weak self] in
                 self?.refreshCrossChainFee()
                 return
             },
@@ -209,7 +209,7 @@ class CrossChainTransferPresenter {
         }
     }
 
-    func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
+    func didReceiveCrossChainFee(result: Result<XcmFeeModelProtocol, Error>) {
         switch result {
         case let .success(fee):
             crossChainFee = fee

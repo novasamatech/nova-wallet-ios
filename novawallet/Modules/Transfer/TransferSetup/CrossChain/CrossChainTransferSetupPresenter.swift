@@ -126,7 +126,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func updateCrossChainFeeView() {
         let assetInfo = originChainAsset.assetDisplayInfo
-        if let fee = crossChainFee?.amount {
+        if let fee = crossChainFee?.total {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
@@ -185,7 +185,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
         let originFeeValue = isOriginUtilityTransfer ? (originFee?.amountForCurrentAccount ?? 0) : 0
-        let crossChainFeeValue = crossChainFee?.amountForCurrentAccount ?? 0
+        let crossChainFeeValue = crossChainFee?.total ?? 0
 
         let precision = originChainAsset.assetDisplayInfo.assetPrecision
 
@@ -234,7 +234,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         updateOriginFee(nil)
         updateOriginFeeView()
 
-        let weightLimit = crossChainFee?.weight ?? 0
+        let weightLimit = crossChainFee?.weightLimit ?? 0
 
         interactor.estimateOriginFee(for: amount, recepient: getRecepientAccountId(), weightLimit: weightLimit)
     }
@@ -283,7 +283,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         }
     }
 
-    override func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
+    override func didReceiveCrossChainFee(result: Result<XcmFeeModelProtocol, Error>) {
         super.didReceiveCrossChainFee(result: result)
 
         if case .success = result {

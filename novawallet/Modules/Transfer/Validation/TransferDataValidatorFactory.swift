@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-typealias CrossChainValidationFee = (origin: ExtrinsicFeeProtocol?, crossChain: ExtrinsicFeeProtocol?)
+typealias CrossChainValidationFee = (origin: ExtrinsicFeeProtocol?, crossChain: XcmFeeModelProtocol?)
 
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func willBeReaped(
@@ -49,6 +49,8 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         destinationAsset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
+
+    func has(crosschainFee: XcmFeeModelProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 }
 
 final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
@@ -73,7 +75,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
-    func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
+    func has(crosschainFee: XcmFeeModelProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             defer {
                 onError?()
@@ -84,7 +86,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             }
 
             self?.basePresentable.presentFeeNotReceived(from: view, locale: locale)
-        }, preservesCondition: { fee != nil })
+        }, preservesCondition: { crosschainFee != nil })
     }
 
     func willBeReaped(
@@ -263,7 +265,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             )
 
             let crossChainFeeDecimal = Decimal.fromSubstrateAmount(
-                fee?.crossChain?.amountForCurrentAccount ?? 0,
+                fee?.crossChain?.total ?? 0,
                 precision: destinationAsset.assetPrecision
             ) ?? 0
 
@@ -295,7 +297,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }, preservesCondition: {
             if let sendingAmount = sendingAmount, let transferable = transferable {
                 let originFeeAmount = fee?.origin?.amountForCurrentAccount ?? 0
-                let crosschainFeeAmount = fee?.crossChain?.amountForCurrentAccount ?? 0
+                let crosschainFeeAmount = fee?.crossChain?.total ?? 0
                 return sendingAmount + originFeeAmount + crosschainFeeAmount <= transferable
             } else {
                 return false
