@@ -357,6 +357,7 @@
 		0CCA245D2AC6918800AEF23D /* XcmV3Junction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA245C2AC6918800AEF23D /* XcmV3Junction.swift */; };
 		0CCA245F2AC6974200AEF23D /* XcmV3Multilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA245E2AC6974200AEF23D /* XcmV3Multilocation.swift */; };
 		0CCA24652AC6B51200AEF23D /* AssetHubSwapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA24642AC6B51200AEF23D /* AssetHubSwapTests.swift */; };
+		0CCCDF742B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCCDF732B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift */; };
 		0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */; };
 		0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F1EEBF48485F02BF690A4 /* ParaStkStakeSetupViewController.swift */; };
 		0CD352932ACAD7A500B3E446 /* AssetHubExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */; };
@@ -4591,6 +4592,7 @@
 		0CCA245C2AC6918800AEF23D /* XcmV3Junction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV3Junction.swift; sourceTree = "<group>"; };
 		0CCA245E2AC6974200AEF23D /* XcmV3Multilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV3Multilocation.swift; sourceTree = "<group>"; };
 		0CCA24642AC6B51200AEF23D /* AssetHubSwapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapTests.swift; sourceTree = "<group>"; };
+		0CCCDF732B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkPreferredCollatorFactory.swift; sourceTree = "<group>"; };
 		0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryPhishingFilter.swift; sourceTree = "<group>"; };
 		0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicService.swift; sourceTree = "<group>"; };
 		0CD352942ACAF59900B3E446 /* BigRational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigRational.swift; sourceTree = "<group>"; };
@@ -16204,6 +16206,7 @@
 				841E5558282E6A7700C8438F /* ParaStkDurationOperationFactory.swift */,
 				84C3420628314D9600156569 /* ParaStkScheduledRequestsQueryFactory.swift */,
 				84C11F162840BD46007F7C05 /* ParaStkCollatorsOperationFactory.swift */,
+				0CCCDF732B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift */,
 			);
 			path = ParachainStaking;
 			sourceTree = "<group>";
@@ -22833,6 +22836,7 @@
 				8493D0E326FF571D00A28008 /* PriceProviderFactory.swift in Sources */,
 				8858917629A4BC7D00320896 /* VotesContentView.swift in Sources */,
 				F7EB8F835CFA7FC949EF4C22 /* YourValidatorListWireframe.swift in Sources */,
+				0CCCDF742B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift in Sources */,
 				AEA0C8AC267B6B5200F9666F /* SelectedValidatorListViewFactory.swift in Sources */,
 				84ED6BE428698D2E00B3C558 /* TransferCrossChainConfirmInteractor.swift in Sources */,
 				DBA436B3B1C90965FE8F9B79 /* YourValidatorListPresenter.swift in Sources */,
