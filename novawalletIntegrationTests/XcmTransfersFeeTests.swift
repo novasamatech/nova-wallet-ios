@@ -118,7 +118,7 @@ class XcmTransfersFeeTests: XCTestCase {
         )
     }
     
-    func testKusamaStatemintCrosschainFee() throws {
+    func testKusamaStatemineCrosschainFee() throws {
         let originChainId = KnowChainId.kusama
         let destinationChainId = KnowChainId.statemine
         let assetId: AssetModel.Id = 0
@@ -137,7 +137,7 @@ class XcmTransfersFeeTests: XCTestCase {
         )
     }
     
-    func testStatemintKusamaCrosschainFee() throws {
+    func testStatemineKusamaCrosschainFee() throws {
         let originChainId = KnowChainId.statemine
         let destinationChainId = KnowChainId.kusama
         let assetId: AssetModel.Id = 0
