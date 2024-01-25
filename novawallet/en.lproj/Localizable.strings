@@ -1369,6 +1369,8 @@
 "staking.setup.proxy.deposit.details" = "The deposit stays reserved on your account until the proxy is removed.";
 "staking.setup.your.proxies" = "Your delegations";
 "staking.setup.add.your.proxy" = "Add delegated authority (Proxy)";
+"staking.alert.switch.to.stash.title" = "Select stash account to setup proxy";
+"staking.alert.switch.to.stash.message" = "Please switch your wallet to %@ to setup a proxy";
 "staking.setup.proxy.error.insufficient.balance.title" = "Not enough tokens";
 "staking.setup.proxy.error.insufficient.balance.message" = "You don’t have enough balance for proxy deposit of %@. Available balance: %@";
 "staking.setup.proxy.error.invalid.address.title" = "Invalid proxy address";
