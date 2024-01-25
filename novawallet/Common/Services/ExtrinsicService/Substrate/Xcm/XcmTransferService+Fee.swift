@@ -138,7 +138,19 @@ extension XcmTransferService {
                 return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
             }
 
-            switch deliveryFee {
+            let optPrice: XcmDeliveryFee.Price?
+
+            if request.toParachainId != nil {
+                optPrice = deliveryFee.toParachain
+            } else {
+                optPrice = deliveryFee.toParent
+            }
+
+            guard let price = optPrice else {
+                return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
+            }
+
+            switch price {
             case let .exponential(params):
                 return createExponentialDeliveryFeeWrapper(
                     for: request,

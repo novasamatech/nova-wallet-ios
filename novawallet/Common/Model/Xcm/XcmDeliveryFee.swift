@@ -26,7 +26,7 @@ struct XcmDeliveryFee: Decodable {
         }
     }
 
-    enum Price {
+    enum Price: Decodable {
         case exponential(Exponential)
         case undefined
 
@@ -42,7 +42,7 @@ struct XcmDeliveryFee: Decodable {
             }
         }
     }
-    
+
     let toParent: Price?
     let toParachain: Price?
 }
