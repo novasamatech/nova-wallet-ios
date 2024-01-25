@@ -5,12 +5,15 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingConfirmProxyViewLayout
 
     let presenter: StakingConfirmProxyPresenterProtocol
+    let localizableTitle: LocalizableResource<String>
 
     init(
         presenter: StakingConfirmProxyPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        title: LocalizableResource<String>
     ) {
         self.presenter = presenter
+        localizableTitle = title
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -49,21 +52,10 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
         rootView.feeCell.rowContentView.locale = selectedLocale
-        rootView.proxyTypeCell.titleLabel.text = R.string.localizable.stakingConfirmProxyTypeTitle(
-            preferredLanguages: languages
-        )
-        rootView.proxyTypeCell.detailsLabel.text = R.string.localizable.stakingConfirmProxyTypeSubtitle(
-            preferredLanguages: languages
-        )
-        rootView.proxyAddressCell.titleLabel.text = R.string.localizable.stakingConfirmProxyAccountProxy(
-            preferredLanguages: languages
-        )
         rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: languages
         )
-        title = R.string.localizable.delegationsAddTitle(
-            preferredLanguages: languages
-        )
+        title = localizableTitle.value(for: selectedLocale)
     }
 
     private func setupHandlers() {
@@ -107,8 +99,13 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
 }
 
 extension StakingConfirmProxyViewController: StakingConfirmProxyViewProtocol {
-    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
-        rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>?) {
+        if let viewModel = viewModel {
+            rootView.proxyDepositView.isHidden = false
+            rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+        } else {
+            rootView.proxyDepositView.isHidden = true
+        }
     }
 
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
@@ -127,8 +124,20 @@ extension StakingConfirmProxyViewController: StakingConfirmProxyViewProtocol {
         rootView.proxiedAddressCell.bind(viewModel: viewModel.cellViewModel)
     }
 
+    func didReceiveProxyAddress(title: String) {
+        rootView.proxyAddressCell.titleLabel.text = title
+    }
+
     func didReceiveProxyAddress(viewModel: DisplayAddressViewModel) {
         rootView.proxyAddressCell.bind(viewModel: viewModel.cellViewModel)
+    }
+
+    func didReceiveProxyType(title: String) {
+        rootView.proxyTypeCell.titleLabel.text = title
+    }
+
+    func didReceiveProxyType(viewModel: String) {
+        rootView.proxyTypeCell.bind(details: viewModel)
     }
 
     func didStartLoading() {

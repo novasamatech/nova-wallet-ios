@@ -884,6 +884,8 @@
 		77799AEE2A7CFB6A00B7E564 /* DirectStakingTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799AED2A7CFB6A00B7E564 /* DirectStakingTypeViewModel.swift */; };
 		77799AF02A7CFB7C00B7E564 /* ValidatorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799AEF2A7CFB7C00B7E564 /* ValidatorViewModel.swift */; };
 		77799AF22A7CFB8D00B7E564 /* PoolAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77799AF12A7CFB8D00B7E564 /* PoolAccountViewModel.swift */; };
+		7779D1112B5EE39C008966A8 /* StakingRemoveProxyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7779D1102B5EE39C008966A8 /* StakingRemoveProxyPresenter.swift */; };
+		7779D1132B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7779D1122B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift */; };
 		777AE2AB2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777AE2AA2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift */; };
 		777AE2AD2ABCB4BD004989C0 /* MarkupParsingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777AE2AC2ABCB4BD004989C0 /* MarkupParsingOperationFactory.swift */; };
 		777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */; };
@@ -955,6 +957,8 @@
 		77C35CE52B568ED100308F16 /* YourWalletsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */; };
 		77C35CE72B56D07300308F16 /* ScanAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */; };
 		77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */; };
+		77C3D7D52B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C3D7D42B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift */; };
+		77C3D7D72B5E824700997BA0 /* StakingRemoveProxyProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C3D7D62B5E824700997BA0 /* StakingRemoveProxyProtocols.swift */; };
 		77C976202AF36A170049272C /* SwapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C9761F2AF36A170049272C /* SwapModels.swift */; };
 		77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */; };
 		77C976242AF3A5280049272C /* SwapViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C976232AF3A5280049272C /* SwapViewModels.swift */; };
@@ -5141,6 +5145,8 @@
 		77799AED2A7CFB6A00B7E564 /* DirectStakingTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingTypeViewModel.swift; sourceTree = "<group>"; };
 		77799AEF2A7CFB7C00B7E564 /* ValidatorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorViewModel.swift; sourceTree = "<group>"; };
 		77799AF12A7CFB8D00B7E564 /* PoolAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolAccountViewModel.swift; sourceTree = "<group>"; };
+		7779D1102B5EE39C008966A8 /* StakingRemoveProxyPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingRemoveProxyPresenter.swift; sourceTree = "<group>"; };
+		7779D1122B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingRemoveProxyViewFactory.swift; sourceTree = "<group>"; };
 		777AE2AA2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HtmlParsingOperationFactory.swift; sourceTree = "<group>"; };
 		777AE2AC2ABCB4BD004989C0 /* MarkupParsingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkupParsingOperationFactory.swift; sourceTree = "<group>"; };
 		777BD85F29F9730F004969A2 /* ReferendumsFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsFilterViewModel.swift; sourceTree = "<group>"; };
@@ -5213,6 +5219,11 @@
 		77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsPresentable.swift; sourceTree = "<group>"; };
 		77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAddressPresentable.swift; sourceTree = "<group>"; };
 		77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceFactory.swift; sourceTree = "<group>"; };
+		77C3D7CE2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyConfirmValidationsFactoryProtocol.swift; sourceTree = "<group>"; };
+		77C3D7D02B5E626900997BA0 /* AddProxyValidationsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProxyValidationsFactory.swift; sourceTree = "<group>"; };
+		77C3D7D22B5E628700997BA0 /* RemoveProxyValidationsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveProxyValidationsFactory.swift; sourceTree = "<group>"; };
+		77C3D7D42B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingRemoveProxyInteractor.swift; sourceTree = "<group>"; };
+		77C3D7D62B5E824700997BA0 /* StakingRemoveProxyProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingRemoveProxyProtocols.swift; sourceTree = "<group>"; };
 		77C9761F2AF36A170049272C /* SwapModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapModels.swift; sourceTree = "<group>"; };
 		77C976212AF39F180049272C /* TokenOperationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperationTableViewCell.swift; sourceTree = "<group>"; };
 		77C976232AF3A5280049272C /* SwapViewModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapViewModels.swift; sourceTree = "<group>"; };
@@ -10159,7 +10170,7 @@
 			path = StakingRewardFilters;
 			sourceTree = "<group>";
 		};
-		600A0B1B13D9E0897BC4FDA9 /* StakingConfirmProxy */ = {
+		600A0B1B13D9E0897BC4FDA9 /* Confirm */ = {
 			isa = PBXGroup;
 			children = (
 				42787EE71C10AD13B8584EFC /* StakingConfirmProxyProtocols.swift */,
@@ -10170,7 +10181,7 @@
 				3543AE2CAA63AC0A20D532B6 /* StakingConfirmProxyViewLayout.swift */,
 				0E52C5919A1DA8A18297325B /* StakingConfirmProxyViewFactory.swift */,
 			);
-			path = StakingConfirmProxy;
+			path = Confirm;
 			sourceTree = "<group>";
 		};
 		6B9FCD7484C894D77EE13328 /* DelegateSearch */ = {
@@ -10437,6 +10448,28 @@
 			path = Parsing;
 			sourceTree = "<group>";
 		};
+		7750CC342B5FADE500002991 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				77C3D7CE2B5E624C00997BA0 /* ProxyConfirmValidationsFactoryProtocol.swift */,
+				77C3D7D22B5E628700997BA0 /* RemoveProxyValidationsFactory.swift */,
+				77C3D7D02B5E626900997BA0 /* AddProxyValidationsFactory.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		7750CC352B5FB29300002991 /* StakingProxy */ = {
+			isa = PBXGroup;
+			children = (
+				7754BD542B501E3C0099C13E /* Base */,
+				A4542BFD7BBCF6B05FB2D3E4 /* Add */,
+				600A0B1B13D9E0897BC4FDA9 /* Confirm */,
+				8AE87694A810D25060A567E1 /* Management */,
+				77C3D7D82B5E825600997BA0 /* Remove */,
+			);
+			path = StakingProxy;
+			sourceTree = "<group>";
+		};
 		7752E16B2AD878A4006E2F92 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -10620,6 +10653,17 @@
 				77EA2A172A333C1500B0670B /* output */,
 			);
 			path = canonicalization;
+			sourceTree = "<group>";
+		};
+		77C3D7D82B5E825600997BA0 /* Remove */ = {
+			isa = PBXGroup;
+			children = (
+				77C3D7D42B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift */,
+				77C3D7D62B5E824700997BA0 /* StakingRemoveProxyProtocols.swift */,
+				7779D1102B5EE39C008966A8 /* StakingRemoveProxyPresenter.swift */,
+				7779D1122B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift */,
+			);
+			path = Remove;
 			sourceTree = "<group>";
 		};
 		77C9BCBA2ACD1AE800022EA2 /* Model */ = {
@@ -13859,6 +13903,7 @@
 				849013A924A80984008F705E /* Products */,
 				2698CD398B0412EB85D620AB /* Pods */,
 				6F5BD6E623DF3F7DFEDC3EFA /* Frameworks */,
+				7750CC342B5FADE500002991 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -17312,8 +17357,7 @@
 				7066B343B912F72345D541F2 /* StakingSetupAmount */,
 				17432B4B5D8D9DC5C22CA238 /* StakingType */,
 				92CDAD21CEED554306CAF5D8 /* StartStakingConfirm */,
-				A4542BFD7BBCF6B05FB2D3E4 /* StakingSetupProxy */,
-				8AE87694A810D25060A567E1 /* StakingProxyManagement */,
+				7750CC352B5FB29300002991 /* StakingProxy */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -18186,7 +18230,7 @@
 			path = "CAIP-2";
 			sourceTree = "<group>";
 		};
-		8AE87694A810D25060A567E1 /* StakingProxyManagement */ = {
+		8AE87694A810D25060A567E1 /* Management */ = {
 			isa = PBXGroup;
 			children = (
 				DE5C4D40180946CA35A0E2F8 /* StakingProxyManagementProtocols.swift */,
@@ -18197,7 +18241,7 @@
 				DBADD72EE1AFA6E549D779FB /* StakingProxyManagementViewLayout.swift */,
 				7DDEB59CB3BDF9BDAAC4E3C5 /* StakingProxyManagementViewFactory.swift */,
 			);
-			path = StakingProxyManagement;
+			path = Management;
 			sourceTree = "<group>";
 		};
 		8C1DCF40C8BE3290D4BB9843 /* ParaStkStakeConfirm */ = {
@@ -18316,11 +18360,9 @@
 			path = AssetsSearch;
 			sourceTree = "<group>";
 		};
-		A4542BFD7BBCF6B05FB2D3E4 /* StakingSetupProxy */ = {
+		A4542BFD7BBCF6B05FB2D3E4 /* Add */ = {
 			isa = PBXGroup;
 			children = (
-				600A0B1B13D9E0897BC4FDA9 /* StakingConfirmProxy */,
-				7754BD542B501E3C0099C13E /* Base */,
 				173BB84A4695492A77AE206D /* StakingSetupProxyProtocols.swift */,
 				1399884D5F4905DA0BD1E5C3 /* StakingSetupProxyWireframe.swift */,
 				5B882BFEED7C8CB1EA5A853D /* StakingSetupProxyPresenter.swift */,
@@ -18330,7 +18372,7 @@
 				90D17F206E8C9D755346CFCC /* StakingSetupProxyViewFactory.swift */,
 				779F1F8A2B4D807200EF1EE9 /* ProxyDepositView.swift */,
 			);
-			path = StakingSetupProxy;
+			path = Add;
 			sourceTree = "<group>";
 		};
 		A798A35104CE0BC5AD2645F3 /* DAppTxDetails */ = {
@@ -21893,6 +21935,7 @@
 				840874DE29782DD400ACFA55 /* GovernanceDelegateMetadataFactory.swift in Sources */,
 				77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */,
 				0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */,
+				7779D1132B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift in Sources */,
 				846A835A28B8C5EC00D92892 /* TransactionExpiredPresentable.swift in Sources */,
 				842EBB352890A79500B952D8 /* WalletSelectionViewFactory.swift in Sources */,
 				844C3E602A0635DE00C4305F /* QRScanViewDisplayParams.swift in Sources */,
@@ -22587,6 +22630,7 @@
 				84C1DBBA29C0A11200F295A5 /* XcmTransferService+Fee.swift in Sources */,
 				77C9BCD02ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift in Sources */,
 				845B081529190056005785D3 /* Gov1UnlockReferendum.swift in Sources */,
+				77C3D7D72B5E824700997BA0 /* StakingRemoveProxyProtocols.swift in Sources */,
 				84B24FB02A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift in Sources */,
 				77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */,
 				84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */,
@@ -22782,6 +22826,7 @@
 				841E5567282EAC1000C8438F /* ParachainStakingInitState.swift in Sources */,
 				77799AEC2A7CFB5700B7E564 /* PoolStakingTypeViewModel.swift in Sources */,
 				77AB55592AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift in Sources */,
+				7779D1112B5EE39C008966A8 /* StakingRemoveProxyPresenter.swift in Sources */,
 				0C7945C02ABB259D001C07CA /* XTokensMetadataQueryFactory.swift in Sources */,
 				3250F2C0E12ED42A355853BE /* SelectValidatorsStartProtocols.swift in Sources */,
 				EC978E6C4FBF39BE9ED10C86 /* SelectValidatorsStartWireframe.swift in Sources */,
@@ -23919,6 +23964,7 @@
 				F35B520D7955A70588AB593C /* ReferendumVoteConfirmWireframe.swift in Sources */,
 				F0ADB63765A8EAA19D85C30B /* ReferendumVoteConfirmPresenter.swift in Sources */,
 				84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */,
+				77C3D7D52B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift in Sources */,
 				84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */,
 				DE52F23521D54A07F558EB1B /* ReferendumVoteConfirmInteractor.swift in Sources */,
 				844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */,

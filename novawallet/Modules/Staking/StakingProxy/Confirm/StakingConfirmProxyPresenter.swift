@@ -48,6 +48,9 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     override func setup() {
         super.setup()
 
+        provideTitles()
+        provideProxyTypeViewModel()
+        provideProxyDeposit()
         provideNetworkViewModel()
         provideProxiedWalletViewModel()
         provideProxiedAddressViewModel()
@@ -57,6 +60,13 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     private func provideNetworkViewModel() {
         let viewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         view?.didReceiveNetwork(viewModel: viewModel)
+    }
+
+    private func provideProxyTypeViewModel() {
+        let type = R.string.localizable.stakingConfirmProxyTypeSubtitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveProxyType(viewModel: type)
     }
 
     private func provideProxiedWalletViewModel() {
@@ -84,8 +94,24 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         view?.didReceiveProxyAddress(viewModel: viewModel)
     }
 
+    private func provideTitles() {
+        let typeTitle = R.string.localizable.stakingConfirmProxyTypeTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let proxyAddressTitle = R.string.localizable.stakingConfirmProxyAccountProxy(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveProxyType(title: typeTitle)
+        view?.didReceiveProxyAddress(title: proxyAddressTitle)
+    }
+
     override func getProxyAddress() -> AccountAddress {
         proxyAddress
+    }
+
+    override func updateView() {
+        super.updateView()
+        provideTitles()
     }
 }
 
@@ -94,9 +120,12 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
         guard let view = view else {
             return
         }
+        guard let address = try? wallet.address(for: chainAsset) else {
+            return
+        }
         wireframe.presentAccountOptions(
             from: view,
-            address: "",
+            address: address,
             chain: chainAsset.chain,
             locale: selectedLocale
         )
@@ -116,7 +145,7 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
 
     func confirm() {
         view?.didStartLoading()
-        let validations = createCommonValidations()
+        let validations = createValidations()
 
         DataValidationRunner(validators: validations).runValidation { [weak self] in
             self?.interactor.submit()

@@ -90,7 +90,7 @@ extension StakingProxyManagementViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
 
         if let model = dataSource.itemIdentifier(for: indexPath) {
-            presenter.showOptions(accountId: model.accountId)
+            presenter.showOptions(account: model.account)
         }
     }
 

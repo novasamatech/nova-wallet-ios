@@ -1,6 +1,6 @@
 import SubstrateSdk
 
-struct ProxyAccount {
+struct ProxyAccount: Hashable {
     let accountId: AccountId
     let type: Proxy.ProxyType
     let delay: BlockNumber

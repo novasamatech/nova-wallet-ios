@@ -5,7 +5,7 @@ protocol StakingProxyManagementViewProtocol: ControllerBackedProtocol {
 protocol StakingProxyManagementPresenterProtocol: AnyObject {
     func setup()
     func addProxy()
-    func showOptions(accountId: AccountId)
+    func showOptions(account: ProxyAccount)
 }
 
 protocol StakingProxyManagementInteractorInputProtocol: AnyObject {
@@ -21,7 +21,7 @@ protocol StakingProxyManagementInteractorOutputProtocol: AnyObject {
 protocol StakingProxyManagementWireframeProtocol: AnyObject, AddressOptionsPresentable,
     AlertPresentable, CommonRetryable, ErrorPresentable {
     func showAddProxy(from view: ControllerBackedProtocol?)
-    func showRevokeProxyAccess(from view: ControllerBackedProtocol?)
+    func showRevokeProxyAccess(from view: ControllerBackedProtocol?, proxyAccount: ProxyAccount)
 }
 
 enum StakingProxyManagementError: Error {
@@ -31,5 +31,5 @@ enum StakingProxyManagementError: Error {
 
 struct StakingProxyManagementViewModel: Hashable {
     let info: WalletView.ViewModel
-    let accountId: AccountId
+    let account: ProxyAccount
 }

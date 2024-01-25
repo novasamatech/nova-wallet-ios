@@ -3,8 +3,11 @@ protocol StakingConfirmProxyViewProtocol: StakingSetupProxyBaseViewProtocol {
     func didReceiveWallet(viewModel: StackCellViewModel)
     func didReceiveProxiedAddress(viewModel: DisplayAddressViewModel)
     func didReceiveProxyAddress(viewModel: DisplayAddressViewModel)
+    func didReceiveProxyType(viewModel: String)
     func didStartLoading()
     func didStopLoading()
+    func didReceiveProxyAddress(title: String)
+    func didReceiveProxyType(title: String)
 }
 
 protocol StakingConfirmProxyPresenterProtocol: StakingSetupProxyBasePresenterProtocol {

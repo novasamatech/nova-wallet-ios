@@ -137,8 +137,12 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
 }
 
 extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
-    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
-        rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>?) {
+        if let viewModel = viewModel {
+            rootView.proxyDepositView.bind(loadableViewModel: viewModel)
+        } else {
+            rootView.proxyDepositView.bind(loadableViewModel: .loading)
+        }
     }
 
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {

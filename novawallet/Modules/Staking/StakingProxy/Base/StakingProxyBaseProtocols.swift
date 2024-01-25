@@ -30,7 +30,7 @@ protocol StakingProxyBaseInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingSetupProxyBaseViewProtocol: ControllerBackedProtocol {
-    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveProxyDeposit(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>?)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
 }
 

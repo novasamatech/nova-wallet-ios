@@ -1,25 +1,24 @@
 import Foundation
 import SoraFoundation
 
-struct StakingConfirmProxyViewFactory {
+struct StakingRemoveProxyViewFactory {
     static func createView(
         state: RelaychainStakingSharedStateProtocol,
-        proxyAddress: AccountAddress
+        proxyAccount: ProxyAccount
     ) -> StakingConfirmProxyViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard let currencyManager = CurrencyManager.shared,
               let wallet = SelectedWalletSettings.shared.value,
               let interactor = createInteractor(
                   state: state,
                   wallet: wallet,
-                  proxyAddress: proxyAddress
+                  proxyAccount: proxyAccount
               ) else {
             return nil
         }
 
         let wireframe = StakingConfirmProxyWireframe()
-
-        let chainAsset = state.stakingOption.chainAsset
-
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -32,26 +31,31 @@ struct StakingConfirmProxyViewFactory {
             )
         )
 
-        let presenter = StakingConfirmProxyPresenter(
+        let presenter = StakingRemoveProxyPresenter(
             chainAsset: chainAsset,
             wallet: wallet,
-            proxyAddress: proxyAddress,
+            proxyAccount: proxyAccount,
             interactor: interactor,
             wireframe: wireframe,
-            balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             networkViewModelFactory: NetworkViewModelFactory(),
+            balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
         let view = StakingConfirmProxyViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            title: .init {
+                R.string.localizable.stakingProxyManagementRevokeAccess(
+                    preferredLanguages: $0.rLanguages
+                )
+            }
         )
 
-        presenter.baseView = view
-        interactor.basePresenter = presenter
+        presenter.view = view
+        interactor.presenter = presenter
         dataValidatingFactory.view = view
 
         return view
@@ -60,8 +64,8 @@ struct StakingConfirmProxyViewFactory {
     private static func createInteractor(
         state: RelaychainStakingSharedStateProtocol,
         wallet: MetaAccountModel,
-        proxyAddress: AccountAddress
-    ) -> StakingConfirmProxyInteractor? {
+        proxyAccount: ProxyAccount
+    ) -> StakingRemoveProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset
 
@@ -93,11 +97,10 @@ struct StakingConfirmProxyViewFactory {
             accountResponse: selectedAccount
         )
 
-        return StakingConfirmProxyInteractor(
-            proxyAccount: proxyAddress,
+        return StakingRemoveProxyInteractor(
+            proxyAccount: proxyAccount,
             signingWrapper: signingWrapper,
-            runtimeService: runtimeRegistry,
-            sharedState: state,
+            chainAsset: state.stakingOption.chainAsset,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             accountProviderFactory: accountProviderFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -105,8 +108,7 @@ struct StakingConfirmProxyViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
             selectedAccount: selectedAccount,
-            currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            currencyManager: currencyManager
         )
     }
 }
