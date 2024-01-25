@@ -371,10 +371,10 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
             }
         case .addProxy:
             if let state = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
-                if state.stashItem.controller == state.stashItem.stash {
-                    wireframe.showAddProxy(from: view)
-                } else {
+                if state.commonData.address != state.stashItem.stash {
                     presentSwitchToStashAccountAlert(stashAddress: state.stashItem.stash)
+                } else {
+                    wireframe.showAddProxy(from: view)
                 }
             }
         case .editProxies:

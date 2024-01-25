@@ -26,11 +26,6 @@ extension StakingRelaychainInteractor {
             nominatorProvider = subscribeNomination(for: stashAccountId, chainId: chainId)
             validatorProvider = subscribeValidator(for: stashAccountId, chainId: chainId)
             payeeProvider = subscribePayee(for: stashAccountId, chainId: chainId)
-            proxyProvider = subscribeProxies(
-                for: stashAccountId,
-                chainId: chainId,
-                modifyInternalList: ProxyFilter.filteredStakingProxy
-            )
 
             performTotalRewardSubscription()
 
@@ -38,6 +33,14 @@ extension StakingRelaychainInteractor {
 
             if stashItem.controller != stashItem.stash {
                 subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
+            }
+
+            if selectedAccount?.accountId == stashAccountId {
+                proxyProvider = subscribeProxies(
+                    for: stashAccountId,
+                    chainId: chainId,
+                    modifyInternalList: ProxyFilter.filteredStakingProxy
+                )
             }
         }
 
