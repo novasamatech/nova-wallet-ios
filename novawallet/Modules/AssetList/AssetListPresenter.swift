@@ -21,6 +21,7 @@ final class AssetListPresenter {
     private var name: String?
     private var hidesZeroBalances: Bool?
     private var shouldShowPolkadotPromotion: Bool = true
+    private var hasWalletsUpdates: Bool = false
 
     private(set) var walletConnectSessionsCount: Int = 0
 
@@ -60,7 +61,8 @@ final class AssetListPresenter {
                     wallet: .init(
                         walletIdenticon: walletIdenticon,
                         walletType: walletType,
-                        walletConnectSessionsCount: walletConnectSessionsCount
+                        walletConnectSessionsCount: walletConnectSessionsCount,
+                        hasWalletsUpdates: hasWalletsUpdates
                     ),
                     prices: nil,
                     locks: nil,
@@ -150,7 +152,8 @@ final class AssetListPresenter {
                 wallet: .init(
                     walletIdenticon: walletIdenticon,
                     walletType: walletType,
-                    walletConnectSessionsCount: walletConnectSessionsCount
+                    walletConnectSessionsCount: walletConnectSessionsCount,
+                    hasWalletsUpdates: hasWalletsUpdates
                 ),
                 prices: totalValue,
                 locks: totalLocks,
@@ -547,6 +550,11 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
     func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool) {
         shouldShowPolkadotPromotion = shouldShowPolkadotStaking
         providePolkadotStakingPromotion()
+    }
+
+    func didReceiveWalletsState(hasUpdates: Bool) {
+        hasWalletsUpdates = hasUpdates
+        provideHeaderViewModel()
     }
 }
 

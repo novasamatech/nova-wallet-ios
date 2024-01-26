@@ -16,7 +16,7 @@ final class StakingBondMorePresenter {
     private var freeBalance: Decimal?
     private var transferableBalance: Decimal?
     private var bondBalance: Decimal?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var stashItem: StashItem?
     private var stashAccount: ChainAccountResponse?
 
@@ -58,7 +58,10 @@ final class StakingBondMorePresenter {
 
     private func provideFee() {
         if let fee = fee {
-            let viewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let viewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: viewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -131,7 +134,8 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
 
     func selectAmountPercentage(_ percentage: Float) {
         if let balance = availableAmountToStake, let fee = fee {
-            let newAmount = max(balance - fee, 0.0) * Decimal(Double(percentage))
+            let feeAmount = (fee.amountForCurrentAccount ?? 0).decimal(assetInfo: assetInfo)
+            let newAmount = max(balance - feeAmount, 0.0) * Decimal(Double(percentage))
 
             if newAmount > 0 {
                 amount = newAmount
@@ -202,15 +206,10 @@ extension StakingBondMorePresenter: StakingBondMoreInteractorOutputProtocol {
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let feeValue = BigUInt(dispatchInfo.fee) {
-                fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision)
-            } else {
-                fee = nil
-            }
-
+        case let .success(feeInfo):
+            fee = feeInfo
             provideFee()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")

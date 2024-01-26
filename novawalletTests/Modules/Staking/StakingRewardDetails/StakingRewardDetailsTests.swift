@@ -36,8 +36,9 @@ class StakingRewardDetailsTests: XCTestCase {
         )
 
         let payoutInfo = PayoutInfo(
-            era: 100,
             validator: Data(),
+            era: 100,
+            pages: [0],
             reward: 1,
             identity: nil
         )

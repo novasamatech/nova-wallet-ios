@@ -109,7 +109,7 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
 
     func estimateFee() {
         guard let extrinsicService = extrinisicService,
-              let amount = StakingConstants.maxAmount.toSubstrateAmount(
+              let amount = StakingConstants.feeEstimation.toSubstrateAmount(
                   precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
             return
@@ -208,7 +208,7 @@ extension StakingUnbondSetupInteractor: WalletLocalStorageSubscriber, WalletLoca
 }
 
 extension StakingUnbondSetupInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         presenter.didReceiveFee(result: result)
     }
 }

@@ -24,7 +24,7 @@ final class StakingRewardDestSetupPresenter {
     private var stashItem: StashItem?
     private var bonded: Decimal?
     private var balance: Decimal?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var nomination: Nomination?
 
     init(
@@ -80,7 +80,10 @@ final class StakingRewardDestSetupPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -181,12 +184,10 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
-            }
+        case let .success(feeInfo):
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):

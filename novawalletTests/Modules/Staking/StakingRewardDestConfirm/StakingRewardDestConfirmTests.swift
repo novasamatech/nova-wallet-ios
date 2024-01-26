@@ -105,7 +105,8 @@ class StakingRewardDestConfirmTests: XCTestCase {
             total: BigUInt(2e+12),
             active: BigUInt(2e+12),
             unlocking: [],
-            claimedRewards: []
+            claimedRewards: [],
+            legacyClaimedRewards: nil
         )
 
         let payee = Staking.RewardDestinationArg.staked

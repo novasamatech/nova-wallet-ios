@@ -257,11 +257,10 @@ extension NominationPoolBondMoreBaseInteractor: PriceLocalStorageSubscriber, Pri
 }
 
 extension NominationPoolBondMoreBaseInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            let fee = BigUInt(dispatchInfo.fee)
-            basePresenter?.didReceive(fee: fee)
+        case let .success(feeInfo):
+            basePresenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             basePresenter?.didReceive(error: .fetchFeeFailed(error))
         }

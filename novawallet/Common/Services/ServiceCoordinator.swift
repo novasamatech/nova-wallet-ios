@@ -6,8 +6,12 @@ import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
+    var walletNotificationService: WalletNotificationServiceProtocol { get }
+    var proxySyncService: ProxySyncServiceProtocol { get }
 
-    func updateOnAccountChange()
+    func updateOnWalletSelectionChange()
+
+    func updateOnWalletChange()
 }
 
 final class ServiceCoordinator {
@@ -19,6 +23,9 @@ final class ServiceCoordinator {
     let githubPhishingService: ApplicationServiceProtocol
     let equilibriumService: AssetsUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
+    let proxySyncService: ProxySyncServiceProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
+    let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -28,7 +35,10 @@ final class ServiceCoordinator {
         evmNativeService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
         equilibriumService: AssetsUpdatingServiceProtocol,
-        dappMediator: DAppInteractionMediating
+        proxySyncService: ProxySyncServiceProtocol,
+        dappMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
+        syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
@@ -37,19 +47,27 @@ final class ServiceCoordinator {
         self.evmNativeService = evmNativeService
         self.equilibriumService = equilibriumService
         self.githubPhishingService = githubPhishingService
+        self.proxySyncService = proxySyncService
         self.dappMediator = dappMediator
+        self.walletNotificationService = walletNotificationService
+        self.syncModeUpdateService = syncModeUpdateService
     }
 }
 
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
-    func updateOnAccountChange() {
+    func updateOnWalletSelectionChange() {
         if let selectedMetaAccount = walletSettings.value {
             accountInfoService.update(selectedMetaAccount: selectedMetaAccount)
             assetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmAssetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
+            syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
         }
+    }
+
+    func updateOnWalletChange() {
+        proxySyncService.syncUp()
     }
 
     func setup() {
@@ -59,7 +77,10 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.setup()
         evmNativeService.setup()
         equilibriumService.setup()
+        proxySyncService.setup()
         dappMediator.setup()
+        syncModeUpdateService.setup()
+        walletNotificationService.setup()
     }
 
     func throttle() {
@@ -69,7 +90,10 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.throttle()
         evmNativeService.throttle()
         equilibriumService.throttle()
+        proxySyncService.throttle()
         dappMediator.throttle()
+        syncModeUpdateService.throttle()
+        walletNotificationService.throttle()
     }
 }
 
@@ -95,6 +119,13 @@ extension ServiceCoordinator {
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: assetsSyncOperationManager
+        )
+
+        let userDataStorageFacade = UserDataStorageFacade.shared
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userDataStorageFacade)
+        let metaAccountsRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
         )
 
         let accountInfoService = AccountInfoUpdatingService(
@@ -154,6 +185,44 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let walletUpdateMediator = WalletUpdateMediator(
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            repository: metaAccountsRepository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let proxySyncService = ProxySyncService(
+            chainRegistry: chainRegistry,
+            proxyOperationFactory: ProxyOperationFactory(),
+            metaAccountsRepository: metaAccountsRepository,
+            walletUpdateMediator: walletUpdateMediator,
+            chainFilter: { chain in
+                #if F_RELEASE
+                    return chain.hasProxy && !chain.isTestnet
+                #else
+                    return chain.hasProxy
+                #endif
+            },
+            chainWalletFilter: { _, wallet in
+                #if F_RELEASE
+                    return wallet.type != .watchOnly
+                #else
+                    return true
+                #endif
+            }
+        )
+
+        let walletNotificationService = WalletNotificationService(
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            logger: logger
+        )
+
+        let syncModeUpdateService = ChainSyncModeUpdateService(
+            selectedMetaAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
@@ -162,7 +231,10 @@ extension ServiceCoordinator {
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,
             equilibriumService: equilibriumService,
-            dappMediator: DAppInteractionFactory.createMediator()
+            proxySyncService: proxySyncService,
+            dappMediator: DAppInteractionFactory.createMediator(),
+            walletNotificationService: walletNotificationService,
+            syncModeUpdateService: syncModeUpdateService
         )
     }
 }

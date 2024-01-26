@@ -76,7 +76,8 @@ struct NPoolsUnstakeConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: OperationManager(operationQueue: operationQueue),
+            userStorageFacade: UserDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(for: operationQueue)

@@ -10,7 +10,7 @@ final class SelectValidatorsConfirmPresenter {
     private var freeBalance: Decimal?
     private var transferableBalance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var minimalBalance: Decimal?
     private var minNominatorBond: Decimal?
     private var counterForNominators: UInt32?
@@ -78,7 +78,10 @@ final class SelectValidatorsConfirmPresenter {
 
     private func provideFee() {
         if let fee = fee {
-            let viewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let viewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceive(feeViewModel: viewModel)
         } else {
             view?.didReceive(feeViewModel: nil)
@@ -101,11 +104,7 @@ final class SelectValidatorsConfirmPresenter {
     private func handle(error: Error) {
         let locale = view?.localizationManager?.selectedLocale
 
-        if error.isWatchOnlySigning {
-            wireframe.presentDismissingNoSigningView(from: view)
-        } else if error.isHardwareWalletSigningCancelled {
-            return
-        } else if let confirmError = error as? SelectValidatorsConfirmError {
+        if let confirmError = error as? SelectValidatorsConfirmError {
             guard let view = view else {
                 return
             }
@@ -121,9 +120,13 @@ final class SelectValidatorsConfirmPresenter {
                 wireframe.presentExtrinsicFailed(from: view, locale: locale)
             }
         } else {
-            if !wireframe.present(error: error, from: view, locale: locale) {
-                logger?.error("Did receive error: \(error)")
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: locale,
+                completionClosure: nil
+            )
         }
     }
 }
@@ -327,13 +330,8 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         handle(error: error)
     }
 
-    func didReceive(paymentInfo: RuntimeDispatchInfo) {
-        if let feeValue = BigUInt(paymentInfo.fee),
-           let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision) {
-            self.fee = fee
-        } else {
-            fee = nil
-        }
+    func didReceive(paymentInfo: ExtrinsicFeeProtocol) {
+        fee = paymentInfo
 
         provideFee()
     }

@@ -16,7 +16,7 @@ final class ControllerAccountConfirmationPresenter {
     private let chain: ChainModel
 
     private var stashAccountItem: MetaChainAccountResponse?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var priceData: PriceData?
     private var balance: Decimal?
     private var stakingLedger: StakingLedger?
@@ -62,7 +62,11 @@ final class ControllerAccountConfirmationPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
+
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -148,15 +152,10 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let feeValue = BigUInt(dispatchInfo.fee) {
-                fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision)
-            } else {
-                fee = nil
-            }
-
+        case let .success(feeModel):
+            fee = feeModel
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")
@@ -210,13 +209,13 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         case .success:
             wireframe.complete(from: view)
         case let .failure(error):
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else if error.isHardwareWalletSigningCancelled {
-                return
-            } else {
-                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: view.localizationManager?.selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }

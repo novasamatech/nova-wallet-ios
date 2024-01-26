@@ -28,11 +28,11 @@ protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
     func didReceive(activeEra: ActiveEraInfo?)
     func didReceive(price: PriceData?)
     func didReceive(existentialDeposit: BigUInt?)
-    func didReceive(fee: BigUInt?)
+    func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(submissionResult: Result<String, Error>)
     func didReceive(error: NPoolsRedeemError)
 }
 
 protocol NPoolsRedeemWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable,
     AddressOptionsPresentable, MessageSheetPresentable,
-    NominationPoolErrorPresentable, ExtrinsicSubmissionPresenting {}
+    NominationPoolErrorPresentable, ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

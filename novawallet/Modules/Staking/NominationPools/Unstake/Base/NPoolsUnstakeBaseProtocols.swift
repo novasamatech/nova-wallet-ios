@@ -23,7 +23,7 @@ protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(existentialDeposit: BigUInt?)
     func didReceive(price: PriceData?)
     func didReceive(unstakingLimits: NominationPools.UnstakeLimits)
-    func didReceive(fee: BigUInt?)
+    func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(error: NPoolsUnstakeBaseError)
 }
 

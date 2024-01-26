@@ -171,10 +171,10 @@ extension StakingSetupAmountInteractor: StakingSetupAmountInteractorInputProtoco
 }
 
 extension StakingSetupAmountInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for identifier: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for identifier: TransactionFeeId) {
         switch result {
         case let .success(info):
-            presenter?.didReceive(fee: BigUInt(info.fee), feeId: identifier)
+            presenter?.didReceive(fee: info, feeId: identifier)
         case let .failure(error):
             presenter?.didReceive(error: .fee(error, identifier))
         }

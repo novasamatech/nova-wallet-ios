@@ -16,7 +16,7 @@ final class ParaStkStakeConfirmPresenter {
     let logger: LoggerProtocol
 
     private(set) var balance: AssetBalance?
-    private(set) var fee: BigUInt?
+    private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var price: PriceData?
     private(set) var stakingDuration: ParachainStakingDuration?
     private(set) var delegator: ParachainStaking.Delegator?
@@ -98,9 +98,9 @@ final class ParaStkStakeConfirmPresenter {
     }
 
     private func provideFeeViewModel() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { fee in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                fee.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil
@@ -241,10 +241,10 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
         provideFeeViewModel()
     }
 
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee)
+        case let .success(feeInfo):
+            fee = feeInfo
 
             provideFeeViewModel()
         case let .failure(error):
@@ -303,13 +303,13 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
             applyCurrentState()
             refreshFee()
 
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-
-                logger.error("Extrinsic submission failed: \(error)")
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 

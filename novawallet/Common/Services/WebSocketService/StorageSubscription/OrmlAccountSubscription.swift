@@ -84,14 +84,9 @@ final class OrmlAccountSubscription {
             let localModel = try fetchOperation.extractNoCancellableResultData()
 
             let remoteModel = AssetBalance(
+                ormlAccount: account,
                 chainAssetId: chainAssetId,
-                accountId: accountId,
-                freeInPlank: account?.free ?? 0,
-                reservedInPlank: account?.reserved ?? 0,
-                frozenInPlank: account?.frozen ?? 0,
-                edCountMode: .basedOnTotal,
-                transferrableMode: .regular,
-                blocked: false
+                accountId: accountId
             )
 
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {

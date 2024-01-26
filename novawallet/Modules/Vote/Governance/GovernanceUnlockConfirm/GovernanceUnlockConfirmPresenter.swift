@@ -20,7 +20,7 @@ final class GovernanceUnlockConfirmPresenter {
     private var assetBalance: AssetBalance?
     private var blockNumber: BlockNumber
     private var price: PriceData?
-    private var fee: BigUInt?
+    private var fee: ExtrinsicFeeProtocol?
 
     private lazy var walletDisplayViewModelFactory = WalletAccountViewModelFactory()
     private lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
@@ -95,7 +95,7 @@ final class GovernanceUnlockConfirmPresenter {
             }
 
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: precision
             ) ?? 0.0
 
@@ -166,7 +166,7 @@ final class GovernanceUnlockConfirmPresenter {
         let actions = unlockSchedule.availableUnlock(at: blockNumber).actions
 
         guard !actions.isEmpty else {
-            fee = 0
+            fee = ExtrinsicFee(amount: 0, payer: nil, weight: 0)
 
             provideFeeViewModel()
 
@@ -201,11 +201,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmPresenterProt
 
         DataValidationRunner(
             validators: [
-                dataValidatingFactory.hasInPlank(
-                    fee: fee,
-                    locale: selectedLocale,
-                    precision: assetInfo.assetPrecision
-                ) { [weak self] in
+                dataValidatingFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                     self?.refreshFee()
                 },
                 dataValidatingFactory.canPayFeeInPlank(
@@ -263,7 +259,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
         wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         provideFeeViewModel()
@@ -284,11 +280,13 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
         case let .unlockFailed(internalError):
             view?.didStopLoading()
 
-            if internalError.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: internalError, from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                internalError,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 

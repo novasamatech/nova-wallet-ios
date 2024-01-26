@@ -74,7 +74,7 @@ struct MultiExtrinsicResultActions {
     let onErrorSkip: () -> Void
 }
 
-extension MultiExtrinsicRetryable where Self: AlertPresentable & ErrorPresentable & MessageSheetPresentable {
+extension MultiExtrinsicRetryable where Self: AlertPresentable & ErrorPresentable & ExtrinsicSigningErrorHandling {
     func presentMultiExtrinsicStatusFromResult(
         on view: ControllerBackedProtocol?,
         result: SubmitIndexedExtrinsicResult,
@@ -90,9 +90,16 @@ extension MultiExtrinsicRetryable where Self: AlertPresentable & ErrorPresentabl
 
         let error = errors[0]
 
-        if error.isWatchOnlySigning {
-            presentDismissingNoSigningView(from: view)
-        } else if let builderClosure = result.builderClosure {
+        guard !handleExtrinsicSigningErrorPresentation(
+            error,
+            view: view,
+            closeAction: .dismiss,
+            completionClosure: nil
+        ) else {
+            return
+        }
+
+        if let builderClosure = result.builderClosure {
             presentMultiExtrinsicStatus(
                 on: view,
                 params: .init(errors: errors, totalExtrinsics: result.results.count),

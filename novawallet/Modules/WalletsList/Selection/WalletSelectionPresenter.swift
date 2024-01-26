@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 final class WalletSelectionPresenter: WalletsListPresenter {
     var interactor: WalletSelectionInteractorInputProtocol? {
@@ -25,6 +26,47 @@ final class WalletSelectionPresenter: WalletsListPresenter {
             logger: logger
         )
     }
+
+    private func getProxiedUpdates(
+        for changes: [DataProviderChange<ManagedMetaAccountModel>]
+    ) -> [ManagedMetaAccountModel] {
+        let oldWallets = walletsList.allItems.reduceToDict()
+
+        return changes.compactMap { change in
+            switch change {
+            case let .insert(newWallet):
+                guard let proxy = newWallet.info.proxy() else {
+                    return nil
+                }
+
+                return newWallet.info.type == .proxied && proxy.isNotActive ? newWallet : nil
+            case let .update(newWallet):
+                guard newWallet.info.type == .proxied, let newProxy = newWallet.info.proxy() else {
+                    return nil
+                }
+
+                let oldProxy = oldWallets[newWallet.identifier]?.info.proxy()
+
+                return newProxy.isNotActive && oldProxy?.status != newProxy.status ? newWallet : nil
+            case .delete:
+                return nil
+            }
+        }
+    }
+
+    override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
+        let proxiedUpdates = getProxiedUpdates(for: changes)
+
+        super.updateWallets(changes: changes)
+
+        guard let view = baseView, view.controller.topModalViewController == view.controller else {
+            return
+        }
+
+        if !proxiedUpdates.isEmpty {
+            wireframe?.showProxiedsUpdates(from: baseView, initWallets: proxiedUpdates)
+        }
+    }
 }
 
 extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
@@ -42,6 +84,14 @@ extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
 
     func activateSettings() {
         wireframe?.showSettings(from: baseView)
+    }
+
+    func didReceive(saveError: Error) {
+        super.didReceiveError(saveError)
+    }
+
+    func viewDidDisappear() {
+        interactor?.updateWalletsStatuses()
     }
 }
 

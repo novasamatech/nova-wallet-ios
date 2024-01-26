@@ -44,7 +44,7 @@ extension GovernanceDelegateConfirmPresenter {
             }
 
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: precision
             ) ?? 0.0
 

@@ -2,25 +2,35 @@ import UIKit
 import RobinHood
 import SubstrateSdk
 import IrohaCrypto
+import BigInt
 
 final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
     weak var presenter: SelectValidatorsStartInteractorOutputProtocol!
 
     let operationFactory: ValidatorOperationFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let maxNominationsOperationFactory: MaxNominationsOperationFactoryProtocol
+    let operationQueue: OperationQueue
     let runtimeService: RuntimeCodingServiceProtocol
+    let connection: JSONRPCEngine
     let preferredValidators: [AccountId]
+    let stakingAmount: BigUInt
 
     init(
         runtimeService: RuntimeCodingServiceProtocol,
+        connection: JSONRPCEngine,
         operationFactory: ValidatorOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
-        preferredValidators: [AccountId]
+        maxNominationsOperationFactory: MaxNominationsOperationFactoryProtocol,
+        operationQueue: OperationQueue,
+        preferredValidators: [AccountId],
+        stakingAmount: BigUInt
     ) {
         self.runtimeService = runtimeService
+        self.connection = connection
         self.operationFactory = operationFactory
-        self.operationManager = operationManager
+        self.maxNominationsOperationFactory = maxNominationsOperationFactory
+        self.operationQueue = operationQueue
         self.preferredValidators = preferredValidators
+        self.stakingAmount = stakingAmount
     }
 
     private func prepareRecommendedValidatorList() {
@@ -37,16 +47,21 @@ final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
             }
         }
 
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideMaxNominations() {
-        fetchConstant(
-            for: .maxNominations,
-            runtimeCodingService: runtimeService,
-            operationManager: operationManager,
-            fallbackValue: SubstrateConstants.maxNominations
-        ) { [weak self] (result: Result<Int, Error>) in
+        let wrapper = maxNominationsOperationFactory.createNominationsQuotaWrapper(
+            for: stakingAmount,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             self?.presenter.didReceiveMaxNominations(result: result)
         }
     }

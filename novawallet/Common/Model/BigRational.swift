@@ -14,6 +14,13 @@ extension BigRational {
     static func percent(of numerator: BigUInt) -> BigRational {
         .init(numerator: numerator, denominator: 100)
     }
+
+    static func fixedU128(value: BigUInt) -> BigRational {
+        .init(
+            numerator: value,
+            denominator: 1_000_000_000_000_000_000
+        )
+    }
 }
 
 extension BigRational {

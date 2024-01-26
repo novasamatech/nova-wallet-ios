@@ -44,14 +44,14 @@ enum ParaStkYieldBoostCommonInteractorError: Error {
 }
 
 protocol ParaStkYieldBoostScheduleInteractorOutputProtocol: AnyObject {
-    func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo)
+    func didReceiveScheduleAutocompound(feeInfo: ExtrinsicFeeProtocol)
     func didReceiveTaskExecution(fee: BigUInt)
     func didReceiveTaskExecution(time: AutomationTime.UnixTime)
     func didReceiveScheduleInteractor(error: ParaStkYieldBoostScheduleInteractorError)
 }
 
 protocol ParaStkYieldBoostCancelInteractorOutputProtocol: AnyObject {
-    func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo)
+    func didReceiveCancelTask(feeInfo: ExtrinsicFeeProtocol)
     func didReceiveCancelInteractor(error: ParaStkYieldBoostCancelInteractorError)
 }
 

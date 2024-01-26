@@ -345,10 +345,10 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
 }
 
 extension NPoolsUnstakeBaseInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            basePresenter?.didReceive(fee: BigUInt(dispatchInfo.fee))
+        case let .success(feeInfo):
+            basePresenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             basePresenter?.didReceive(error: .fee(error))
         }

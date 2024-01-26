@@ -17,7 +17,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     var poolMember: NominationPools.PoolMember?
     var bondedPool: NominationPools.BondedPool?
     var price: PriceData?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
     var claimableRewards: BigUInt?
     var assetBalanceExistance: AssetBalanceExistence?
 
@@ -76,21 +76,9 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         baseInteractor.estimateFee(for: inputAmount)
     }
 
-    func getSpendingAmountInPlank() -> BigUInt? {
-        guard let inputAmount = getInputAmountInPlank(),
-              let fee = fee else {
-            return nil
-        }
-        return inputAmount + fee
-    }
-
     func getValidations() -> [DataValidating] {
         let baseValidators = [
-            dataValidatorFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) { [weak self] in
+            dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
             dataValidatorFactory.canSpendAmountInPlank(
@@ -140,7 +128,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.price = price
     }
 
-    func didReceive(fee: BigUInt?) {
+    func didReceive(fee: ExtrinsicFeeProtocol?) {
         self.fee = fee
 
         provideFee()

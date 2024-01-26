@@ -43,7 +43,8 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     }
 
     private func provideZeroFee() {
-        presenter?.didReceive(feeResult: .success(.init(value: 0, validationProvider: nil)))
+        let zeroFee = ExtrinsicFee.zero()
+        presenter?.didReceive(feeResult: .success(.init(value: zeroFee, validationProvider: nil)))
         presenter?.didReceive(priceResult: .success(nil))
     }
 
@@ -91,7 +92,7 @@ extension DAppEthereumSignBytesInteractor: DAppOperationConfirmInteractorInputPr
             let rawBytes = try prepareRawBytes()
 
             let signingOperation = ClosureOperation<Data> {
-                try signer.sign(rawBytes).rawData()
+                try signer.sign(rawBytes, context: .rawBytes).rawData()
             }
 
             signingOperation.completionBlock = { [weak self] in

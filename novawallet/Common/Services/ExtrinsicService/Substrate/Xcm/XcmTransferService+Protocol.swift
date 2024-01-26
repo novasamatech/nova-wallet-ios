@@ -1,8 +1,12 @@
 import Foundation
 import RobinHood
+import BigInt
 
-typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
-typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
+typealias XcmTransferOriginFeeResult = Result<ExtrinsicFeeProtocol, Error>
+typealias XcmTransferOriginFeeClosure = (XcmTransferOriginFeeResult) -> Void
+
+typealias XcmTransferCrosschainFeeResult = Result<XcmFeeModelProtocol, Error>
+typealias XcmTransferCrosschainFeeClosure = (XcmTransferCrosschainFeeResult) -> Void
 
 struct XcmSubmitExtrinsic {
     let txHash: String
@@ -17,21 +21,21 @@ protocol XcmTransferServiceProtocol {
         request: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferOriginFeeClosure
     )
 
-    func estimateDestinationTransferFee(
+    func estimateDestinationExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
-    func estimateReserveTransferFee(
+    func estimateReserveExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     // Note: weight of the result contains max between reserve and destination weights
@@ -39,7 +43,7 @@ protocol XcmTransferServiceProtocol {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     func submit(
@@ -56,7 +60,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         request: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferOriginFeeClosure
     ) {
         do {
             let unweighted = request.unweighted
@@ -68,7 +72,10 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 maxWeight: maxWeight
             )
 
-            let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest())
+            guard let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
             let operationFactory = try createExtrinsicOperationFactory(
                 for: unweighted.origin.chain,
                 chainAccount: chainAccount
@@ -83,13 +90,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             feeWrapper.targetOperation.completionBlock = {
                 switch feeWrapper.targetOperation.result {
-                case let .success(dispatchInfo):
-                    if let feeWithWeight = FeeWithWeight(dispatchInfo: dispatchInfo) {
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .success(feeWithWeight))
-                    } else {
-                        let error = CommonError.dataCorruption
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
+                case let .success(fee):
+                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(fee))
                 case let .failure(error):
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
                 case .none:
@@ -106,11 +108,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         }
     }
 
-    func estimateDestinationTransferFee(
+    func estimateDestinationExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
             let feeMessages = try xcmFactory.createWeightMessages(
@@ -144,11 +146,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         }
     }
 
-    func estimateReserveTransferFee(
+    func estimateReserveExecutionFee(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
             let feeMessages = try xcmFactory.createWeightMessages(
@@ -193,7 +195,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
+        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
             let feeMessages = try xcmFactory.createWeightMessages(
@@ -204,39 +206,26 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 xcmTransfers: xcmTransfers
             )
 
-            let destMsg = feeMessages.destination
-            let destWrapper = createDestinationFeeWrapper(for: destMsg, request: request, xcmTransfers: xcmTransfers)
+            let executionFeeWrapper = createExecutionFeeWrapper(
+                request: request,
+                xcmTransfers: xcmTransfers,
+                feeMessages: feeMessages
+            )
 
-            var dependencies = destWrapper.allOperations
+            let deliveryFeeWrapper = createDeliveryFeeWrapper(
+                request: request,
+                xcmTransfers: xcmTransfers,
+                feeMessages: feeMessages
+            )
 
-            let optReserveWrapper: CompoundOperationWrapper<FeeWithWeight>?
+            let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
+                let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
+                let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
 
-            if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
-                    for: reserveMessage,
-                    request: request,
-                    xcmTransfers: xcmTransfers
-                )
-
-                dependencies.append(contentsOf: wrapper.allOperations)
-
-                optReserveWrapper = wrapper
-            } else {
-                optReserveWrapper = nil
+                return XcmFeeModel.combine(executionFee, deliveryFee)
             }
 
-            let mergeOperation = ClosureOperation<FeeWithWeight> {
-                let destFeeWeight = try destWrapper.targetOperation.extractNoCancellableResultData()
-                let optReserveFeeWeight = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
-
-                if let reserveFeeWeight = optReserveFeeWeight {
-                    let fee = destFeeWeight.fee + reserveFeeWeight.fee
-                    let weight = max(destFeeWeight.weight, reserveFeeWeight.weight)
-                    return FeeWithWeight(fee: fee, weight: weight)
-                } else {
-                    return destFeeWeight
-                }
-            }
+            let dependencies = executionFeeWrapper.allOperations + deliveryFeeWrapper.allOperations
 
             dependencies.forEach { mergeOperation.addDependency($0) }
 

@@ -24,7 +24,7 @@ protocol StakingPayoutConfirmationInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
 
-    func didReceiveFee(result: Result<Decimal, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
 
     func didStartPayout()
     func didCompletePayout(txHashes: [String])
@@ -35,6 +35,6 @@ protocol StakingPayoutConfirmationWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     StakingErrorPresentable,
     AddressOptionsPresentable,
-    MessageSheetPresentable {
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(from view: StakingPayoutConfirmationViewProtocol?)
 }

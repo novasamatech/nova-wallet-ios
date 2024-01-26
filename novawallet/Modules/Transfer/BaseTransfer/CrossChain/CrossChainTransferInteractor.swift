@@ -624,18 +624,18 @@ extension CrossChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalS
 
 extension CrossChainTransferInteractor: XcmExtrinsicFeeProxyDelegate {
     func didReceiveOriginFee(
-        result: XcmTrasferFeeResult,
+        result: XcmTransferOriginFeeResult,
         for _: TransactionFeeId
     ) {
         switch result {
         case let .success(feeWithWeight):
-            presenter?.didReceiveOriginFee(result: .success(feeWithWeight.fee))
+            presenter?.didReceiveOriginFee(result: .success(feeWithWeight))
         case let .failure(error):
             presenter?.didReceiveOriginFee(result: .failure(error))
         }
     }
 
-    func didReceiveCrossChainFee(result: XcmTrasferFeeResult, for _: TransactionFeeId) {
+    func didReceiveCrossChainFee(result: XcmTransferCrosschainFeeResult, for _: TransactionFeeId) {
         presenter?.didReceiveCrossChainFee(result: result)
     }
 }

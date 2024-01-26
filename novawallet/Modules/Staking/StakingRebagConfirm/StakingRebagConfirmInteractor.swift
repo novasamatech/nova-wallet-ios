@@ -393,11 +393,10 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
 }
 
 extension StakingRebagConfirmInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            let fee = BigUInt(dispatchInfo.fee)
-            presenter?.didReceive(fee: fee)
+        case let .success(feeInfo):
+            presenter?.didReceive(fee: feeInfo)
         case let .failure(error):
             presenter?.didReceive(error: .fetchFeeFailed(error))
         }

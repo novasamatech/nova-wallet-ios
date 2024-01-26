@@ -3,6 +3,12 @@ import BigInt
 import SoraFoundation
 
 protocol ParaStkYieldBoostValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
+    func hasExecutionFee(
+        _ fee: BigUInt?,
+        locale: Locale?,
+        errorClosure: @escaping () -> Void
+    ) -> DataValidating
+
     func hasExecutionTime(
         _ time: AutomationTime.UnixTime?,
         locale: Locale?,
@@ -12,7 +18,7 @@ protocol ParaStkYieldBoostValidatorFactoryProtocol: BaseDataValidatingFactoryPro
     func enoughBalanceForThreshold(
         _ threshold: Decimal?,
         balance: BigUInt?,
-        extrinsicFee: BigUInt?,
+        extrinsicFee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
     ) -> DataValidating
@@ -20,7 +26,7 @@ protocol ParaStkYieldBoostValidatorFactoryProtocol: BaseDataValidatingFactoryPro
     func enoughBalanceForExecutionFee(
         _ executionFee: BigUInt?,
         balance: BigUInt?,
-        extrinsicFee: BigUInt?,
+        extrinsicFee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
     ) -> DataValidating
@@ -40,7 +46,7 @@ protocol ParaStkYieldBoostValidatorFactoryProtocol: BaseDataValidatingFactoryPro
 }
 
 final class ParaStkYieldBoostValidatorFactory {
-    weak var view: (Localizable & ControllerBackedProtocol)?
+    weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
@@ -77,7 +83,7 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
     func enoughBalanceForThreshold(
         _ threshold: Decimal?,
         balance: BigUInt?,
-        extrinsicFee: BigUInt?,
+        extrinsicFee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
     ) -> DataValidating {
@@ -94,7 +100,7 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
             guard
                 let balanceDecimal = Decimal.fromSubstrateAmount(balance ?? 0, precision: assetInfo.assetPrecision),
                 let feeDecimal = Decimal.fromSubstrateAmount(
-                    extrinsicFee ?? 0,
+                    extrinsicFee?.amountForCurrentAccount ?? 0,
                     precision: assetInfo.assetPrecision
                 ) else {
                 return
@@ -115,11 +121,11 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
         }, preservesCondition: {
             guard
                 let thresholdInPlank = optThresholdInPlank,
-                let balance = balance,
-                let fee = extrinsicFee else {
+                let balance = balance else {
                 return false
             }
 
+            let fee = extrinsicFee?.amountForCurrentAccount ?? 0
             return balance >= thresholdInPlank + fee
         })
     }
@@ -127,7 +133,7 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
     func enoughBalanceForExecutionFee(
         _ executionFee: BigUInt?,
         balance: BigUInt?,
-        extrinsicFee: BigUInt?,
+        extrinsicFee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
     ) -> DataValidating {
@@ -144,7 +150,10 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
             guard
                 let executionFeeDecimal = Decimal.fromSubstrateAmount(executionFee ?? 0, precision: precision),
                 let balanceDecimal = Decimal.fromSubstrateAmount(balance ?? 0, precision: precision),
-                let extrinsicFeeDecimal = Decimal.fromSubstrateAmount(extrinsicFee ?? 0, precision: precision) else {
+                let extrinsicFeeDecimal = Decimal.fromSubstrateAmount(
+                    extrinsicFee?.amountForCurrentAccount ?? 0,
+                    precision: precision
+                ) else {
                 return
             }
 
@@ -162,10 +171,11 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
         }, preservesCondition: {
             guard
                 let executionFee = executionFee,
-                let balance = balance,
-                let extrinsicFee = extrinsicFee else {
+                let balance = balance else {
                 return false
             }
+
+            let extrinsicFee = extrinsicFee?.amountForCurrentAccount ?? 0
 
             return balance >= executionFee + extrinsicFee
         })
@@ -213,5 +223,23 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
         }, preservesCondition: {
             (tasks ?? []).contains { $0.collatorId == collatorId }
         })
+    }
+
+    func hasExecutionFee(
+        _ fee: BigUInt?,
+        locale: Locale?,
+        errorClosure: @escaping () -> Void
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            defer {
+                errorClosure()
+            }
+
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.basePresentable.presentFeeNotReceived(from: view, locale: locale)
+        }, preservesCondition: { fee != nil })
     }
 }

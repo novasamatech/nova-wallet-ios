@@ -89,7 +89,8 @@ struct SwapConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: OperationManager(operationQueue: operationQueue),
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let feeService = AssetHubFeeService(

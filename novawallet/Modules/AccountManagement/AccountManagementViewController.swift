@@ -132,6 +132,16 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconLedger()
 
             rootView.headerView.bindHint(text: text, icon: icon)
+        case .proxied:
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.proxyDetailsHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let icon = R.image.iconProxiedWallet()
+
+            rootView.headerView.bindHint(text: text, icon: icon)
         }
 
         rootView.updateHeaderLayout()
@@ -241,6 +251,10 @@ extension AccountManagementViewController: AccountManagementViewProtocol {
     func set(nameViewModel: InputViewModelProtocol) {
         walletNameTextField.text = nameViewModel.inputHandler.value
         self.nameViewModel = nameViewModel
+    }
+
+    func setProxy(viewModel: AccountProxyViewModel) {
+        rootView.headerView.hintView?.bindProxy(viewModel: viewModel)
     }
 
     func reload() {

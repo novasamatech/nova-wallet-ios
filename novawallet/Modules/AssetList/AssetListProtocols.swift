@@ -55,6 +55,7 @@ protocol AssetListInteractorOutputProtocol {
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
     func didCompleteRefreshing()
     func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool)
+    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,

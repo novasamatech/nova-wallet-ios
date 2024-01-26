@@ -19,7 +19,7 @@ final class StakingUnbondSetupPresenter {
     private var inputAmount: Decimal?
     private var minimalBalance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var controller: ChainAccountResponse?
     private var stashItem: StashItem?
     private var stakingDuration: StakingDuration?
@@ -47,7 +47,10 @@ final class StakingUnbondSetupPresenter {
 
     private func provideFeeViewModel() {
         if let fee = fee {
-            let feeViewModel = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData)
+            let feeViewModel = balanceViewModelFactory.balanceFromPrice(
+                fee.amount.decimal(assetInfo: assetInfo),
+                priceData: priceData
+            )
             view?.didReceiveFee(viewModel: feeViewModel)
         } else {
             view?.didReceiveFee(viewModel: nil)
@@ -211,13 +214,10 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
-            }
-
+        case let .success(feeInfo):
+            fee = feeInfo
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")

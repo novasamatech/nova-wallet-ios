@@ -2,6 +2,7 @@ import Foundation
 import SubstrateSdk
 import SoraKeystore
 import SoraFoundation
+import RobinHood
 
 final class SelectValidatorsStartViewFactory {
     static func createInitiatedBondingView(
@@ -13,6 +14,7 @@ final class SelectValidatorsStartViewFactory {
             with: wireframe,
             existingStashAddress: nil,
             selectedValidators: nil,
+            amount: state.amount,
             stakingState: stakingState
         )
     }
@@ -30,6 +32,7 @@ final class SelectValidatorsStartViewFactory {
             with: wireframe,
             existingStashAddress: state.stashAddress,
             selectedValidators: state.selectedTargets,
+            amount: state.amount,
             stakingState: stakingState
         )
     }
@@ -43,6 +46,7 @@ final class SelectValidatorsStartViewFactory {
             with: wireframe,
             existingStashAddress: state.stashAddress,
             selectedValidators: state.selectedTargets,
+            amount: state.amount,
             stakingState: stakingState
         )
     }
@@ -51,6 +55,7 @@ final class SelectValidatorsStartViewFactory {
         with wireframe: SelectValidatorsStartWireframeProtocol,
         existingStashAddress: AccountAddress?,
         selectedValidators: [SelectedValidatorInfo]?,
+        amount: Decimal,
         stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsStartViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -58,6 +63,7 @@ final class SelectValidatorsStartViewFactory {
         let chainAsset = stakingState.stakingOption.chainAsset
 
         guard
+            let stakingAmount = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
@@ -66,7 +72,9 @@ final class SelectValidatorsStartViewFactory {
         let eraValidatorService = stakingState.eraValidatorService
         let rewardCalculationService = stakingState.rewardCalculatorService
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
         let storageOperationFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
@@ -83,13 +91,18 @@ final class SelectValidatorsStartViewFactory {
             identityOperationFactory: identityOperationFactory
         )
 
+        let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)
+
         let interactor = SelectValidatorsStartInteractor(
             runtimeService: runtimeService,
+            connection: connection,
             operationFactory: operationFactory,
-            operationManager: operationManager,
+            maxNominationsOperationFactory: maxNominationsFactory,
+            operationQueue: operationQueue,
             preferredValidators: StakingConstants.preferredValidatorIds(
                 for: chainAsset.chain
-            )
+            ),
+            stakingAmount: stakingAmount
         )
 
         let presenter = SelectValidatorsStartPresenter(

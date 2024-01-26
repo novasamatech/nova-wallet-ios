@@ -7,7 +7,14 @@ struct StakingLedger: Decodable, Equatable {
     @StringCodable var total: BigUInt
     @StringCodable var active: BigUInt
     let unlocking: [UnlockChunk]
-    let claimedRewards: [StringScaleMapper<UInt32>]
+    let claimedRewards: [StringScaleMapper<UInt32>]?
+
+    // Claimed rewards will be removed in favor of ClaimedRewards storage
+    let legacyClaimedRewards: [StringScaleMapper<UInt32>]?
+
+    var claimedRewardsOrEmpty: [StringScaleMapper<UInt32>] {
+        claimedRewards ?? legacyClaimedRewards ?? []
+    }
 }
 
 struct UnlockChunk: Decodable, Equatable {

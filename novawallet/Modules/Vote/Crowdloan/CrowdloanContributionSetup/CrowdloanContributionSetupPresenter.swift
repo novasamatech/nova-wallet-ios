@@ -19,7 +19,7 @@ class CrowdloanContributionSetupPresenter {
     private var totalBalanceValue: BigUInt?
     private var balance: Decimal?
     private var priceData: PriceData?
-    private var fee: Decimal?
+    private var fee: ExtrinsicFeeProtocol?
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
@@ -29,7 +29,9 @@ class CrowdloanContributionSetupPresenter {
 
     var bonusService: CrowdloanBonusServiceProtocol?
 
-    var balanceMinusFee: Decimal { (balance ?? 0) - (fee ?? 0) }
+    var balanceMinusFee: Decimal {
+        (balance ?? 0) - (fee?.amountForCurrentAccount?.decimal(assetInfo: assetInfo) ?? 0)
+    }
 
     private var crowdloanMetadata: CrowdloanMetadata? {
         if
@@ -92,7 +94,12 @@ class CrowdloanContributionSetupPresenter {
 
     private func provideFeeViewModel() {
         let feeViewModel = fee
-            .map { balanceViewModelFactory.balanceFromPrice($0, priceData: priceData) }?
+            .map {
+                balanceViewModelFactory.balanceFromPrice(
+                    $0.amount.decimal(assetInfo: assetInfo),
+                    priceData: priceData
+                )
+            }?
             .value(for: selectedLocale)
 
         view?.didReceiveFee(viewModel: feeViewModel)
@@ -252,8 +259,7 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
     func proceed() {
         let contributionDecimal = inputResult?.absoluteValue(from: balanceMinusFee)
         let controbutionValue = contributionDecimal?.toSubstrateAmount(precision: assetInfo.assetPrecision)
-        let spendingValue = (controbutionValue ?? 0) +
-            (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
+        let spendingValue = (controbutionValue ?? 0) + (fee?.amountForCurrentAccount ?? 0)
 
         DataValidationRunner(validators: [
             dataValidatingFactory.crowdloanIsNotPrivate(
@@ -467,12 +473,10 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInterac
         }
     }
 
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
-        case let .success(dispatchInfo):
-            fee = BigUInt(dispatchInfo.fee).map {
-                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
-            } ?? nil
+        case let .success(feeInfo):
+            fee = feeInfo
 
             provideFeeViewModel()
             provideInputViewModelIfRate()

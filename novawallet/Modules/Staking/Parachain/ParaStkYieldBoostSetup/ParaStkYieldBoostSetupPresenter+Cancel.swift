@@ -2,9 +2,9 @@ import Foundation
 import BigInt
 
 extension ParaStkYieldBoostSetupPresenter {
-    func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo) {
+    func didReceiveCancelTask(feeInfo: ExtrinsicFeeProtocol) {
         if !isYieldBoostSelected {
-            updateExtrinsicFee(BigUInt(feeInfo.fee))
+            updateExtrinsicFee(feeInfo)
 
             provideNetworkFee()
         }

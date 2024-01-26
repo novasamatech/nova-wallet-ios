@@ -2,18 +2,18 @@ import Foundation
 
 extension Referenda {
     static var referendumInfo: StorageCodingPath {
-        StorageCodingPath(moduleName: "Referenda", itemName: "ReferendumInfoFor")
+        StorageCodingPath(moduleName: Self.name, itemName: "ReferendumInfoFor")
     }
 
     static var trackQueue: StorageCodingPath {
-        StorageCodingPath(moduleName: "Referenda", itemName: "TrackQueue")
+        StorageCodingPath(moduleName: Self.name, itemName: "TrackQueue")
     }
 
     static var tracks: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Referenda", constantName: "Tracks")
+        ConstantCodingPath(moduleName: Self.name, constantName: "Tracks")
     }
 
     static var undecidingTimeout: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Referenda", constantName: "UndecidingTimeout")
+        ConstantCodingPath(moduleName: Self.name, constantName: "UndecidingTimeout")
     }
 }

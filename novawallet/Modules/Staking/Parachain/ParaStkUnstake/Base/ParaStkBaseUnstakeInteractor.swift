@@ -155,7 +155,7 @@ extension ParaStkBaseUnstakeInteractor: PriceLocalStorageSubscriber, PriceLocalS
 }
 
 extension ParaStkBaseUnstakeInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
         basePresenter?.didReceiveFee(result)
     }
 }

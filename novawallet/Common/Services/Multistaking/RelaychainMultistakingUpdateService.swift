@@ -81,7 +81,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     private func subscribeControllerResolution(for accountId: AccountId) {
         let controllerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .controller,
+                storagePath: Staking.controller,
                 localKey: ""
             ) {
                 BytesCodable(wrappedValue: accountId)
@@ -91,7 +91,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
         let ledgerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .stakingLedger,
+                storagePath: Staking.stakingLedger,
                 localKey: ""
             ) {
                 BytesCodable(wrappedValue: accountId)
@@ -124,26 +124,32 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
         switch result {
         case let .success(accounts):
             if
-                case let .defined(stash) = accounts.stash,
-                case let .defined(controller) = accounts.controller {
+                case let .defined(remoteStash) = accounts.stash,
+                case let .defined(remoteController) = accounts.controller {
                 markSyncingImmediate()
+
+                let stash: AccountId?
+                let controller: AccountId?
+
+                if remoteStash != nil || remoteController != nil {
+                    if remoteStash != nil, remoteController != nil {
+                        // stash and controller at the same time - prefer stash
+                        stash = accountId
+                        controller = remoteController ?? accountId
+                    } else {
+                        stash = remoteStash ?? accountId
+                        controller = remoteController ?? accountId
+                    }
+                } else {
+                    stash = nil
+                    controller = nil
+                }
 
                 saveResolvedAccounts(stash ?? accountId)
 
-                if stash != nil || controller != nil {
-                    saveStashItem(
-                        stash: stash ?? accountId,
-                        controller: controller ?? accountId,
-                        chain: chainAsset.chain
-                    )
-                } else {
-                    saveStashItem(stash: nil, controller: nil, chain: chainAsset.chain)
-                }
+                saveStashItem(stash: stash, controller: controller, chain: chainAsset.chain)
 
-                subscribeState(
-                    for: controller ?? accountId,
-                    stash: stash ?? accountId
-                )
+                subscribeState(for: controller ?? accountId, stash: stash ?? accountId)
             }
         case let .failure(error):
             completeImmediate(error)
@@ -158,14 +164,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             let localKeyFactory = LocalStorageKeyFactory()
 
             let ledgerLocalKey = try localKeyFactory.createFromStoragePath(
-                .stakingLedger,
+                Staking.stakingLedger,
                 accountId: controller,
                 chainId: chainAsset.chain.chainId
             )
 
             let ledgerRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .stakingLedger,
+                    storagePath: Staking.stakingLedger,
                     localKey: ledgerLocalKey
                 ) {
                     BytesCodable(wrappedValue: controller)
@@ -174,14 +180,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             )
 
             let nominationLocalKey = try localKeyFactory.createFromStoragePath(
-                .nominators,
+                Staking.nominators,
                 accountId: stash,
                 chainId: chainAsset.chain.chainId
             )
 
             let nominationRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .nominators,
+                    storagePath: Staking.nominators,
                     localKey: nominationLocalKey
                 ) {
                     BytesCodable(wrappedValue: stash)
@@ -190,14 +196,14 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             )
 
             let validatorLocalKey = try localKeyFactory.createFromStoragePath(
-                .validatorPrefs,
+                Staking.validatorPrefs,
                 accountId: stash,
                 chainId: chainAsset.chain.chainId
             )
 
             let validatorRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .validatorPrefs,
+                    storagePath: Staking.validatorPrefs,
                     localKey: validatorLocalKey
                 ) {
                     BytesCodable(wrappedValue: stash)
@@ -207,7 +213,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
             let eraRequest = BatchStorageSubscriptionRequest(
                 innerRequest: UnkeyedSubscriptionRequest(
-                    storagePath: .activeEra,
+                    storagePath: Staking.activeEra,
                     localKey: ""
                 ),
                 mappingKey: Multistaking.RelaychainStateChange.Key.era.rawValue
@@ -230,7 +236,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
 
             stateSubscription?.subscribe()
         } catch {
-            logger?.error("Local key failed: \(error)")
+            logger.error("Local key failed: \(error)")
             completeImmediate(error)
         }
     }
@@ -295,7 +301,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                 } catch {
-                    self?.logger?.error("Can't save stash account id")
+                    self?.logger.error("Can't save stash account id")
                 }
             }
         }
@@ -335,6 +341,10 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
     }
 
     private func saveStashItem(stash: AccountId?, controller: AccountId?, chain: ChainModel) {
+        logger.debug(
+            "Saving stash item \(chain.name): \(String(describing: stash)) \(String(describing: controller))"
+        )
+
         let saveOperation = stashItemRepository.replaceOperation {
             if let stash = stash, let controller = controller {
                 let stashItem = StashItem(
@@ -354,7 +364,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                 } catch {
-                    self?.logger?.error("Can't save stash item")
+                    self?.logger.error("Can't save stash item")
                 }
             }
         }

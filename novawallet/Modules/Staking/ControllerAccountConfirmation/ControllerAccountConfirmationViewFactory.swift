@@ -85,7 +85,8 @@ struct ControllerAccountConfirmationViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            userStorageFacade: UserDataStorageFacade.shared
         )
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(

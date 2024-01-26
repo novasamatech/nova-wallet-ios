@@ -25,7 +25,7 @@ protocol StakingRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)
@@ -34,6 +34,6 @@ protocol StakingRedeemInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
-    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable {
+    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func complete(from view: StakingRedeemViewProtocol?)
 }

@@ -2,10 +2,10 @@ import Foundation
 import RobinHood
 
 final class WalletManageInteractor: WalletsListInteractor {
-    let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
-    let operationQueue: OperationQueue
-    let selectedWalletSettings: SelectedWalletSettings
+    let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     var presenter: WalletManageInteractorOutputProtocol? {
         get {
@@ -20,51 +20,65 @@ final class WalletManageInteractor: WalletsListInteractor {
     init(
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
-        selectedWalletSettings: SelectedWalletSettings,
+        walletUpdateMediator: WalletUpdateMediating,
         eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
-        self.repository = repository
-        self.operationQueue = operationQueue
-        self.selectedWalletSettings = selectedWalletSettings
+        self.walletUpdateMediator = walletUpdateMediator
         self.eventCenter = eventCenter
+        self.operationQueue = operationQueue
+        self.logger = logger
 
         super.init(
             balancesStore: balancesStore,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory
         )
     }
 
-    private func removeSelectedWalletAndAutoswitch(_ wallet: MetaAccountModel) {
-        selectedWalletSettings.remove(value: wallet, runningCompletionIn: .main) { [weak self] result in
-            if case let .success(newWallet) = result {
-                self?.eventCenter.notify(with: SelectedAccountChanged())
-
-                if newWallet == nil {
-                    self?.presenter?.didRemoveAllWallets()
-                }
+    private func handleWalletsUpdate(result: Result<WalletUpdateMediatingResult, Error>) {
+        switch result {
+        case let .success(update):
+            if update.isWalletSwitched {
+                eventCenter.notify(with: SelectedAccountChanged())
             }
-        }
-    }
 
-    private func removeNotSelectedWallet(_ wallet: MetaAccountModel) {
-        let operation = repository.saveOperation({ [] }, { [wallet.identifier] })
-        operationQueue.addOperation(operation)
+            if update.selectedWallet == nil {
+                presenter?.didRemoveAllWallets()
+            }
+        case let .failure(error):
+            logger.error("Did receive wallet update error: \(error)")
+        }
     }
 }
 
 extension WalletManageInteractor: WalletManageInteractorInputProtocol {
     func save(items: [ManagedMetaAccountModel]) {
-        let operation = repository.saveOperation({ items }, { [] })
-        operationQueue.addOperation(operation)
+        let wrapper = walletUpdateMediator.saveChanges {
+            SyncChanges(newOrUpdatedItems: items, removedItems: [])
+        }
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            self.handleWalletsUpdate(result: result)
+        }
     }
 
     func remove(item: ManagedMetaAccountModel) {
-        if item.isSelected {
-            removeSelectedWalletAndAutoswitch(item.info)
-        } else {
-            removeNotSelectedWallet(item.info)
+        let wrapper = walletUpdateMediator.saveChanges {
+            SyncChanges(newOrUpdatedItems: [], removedItems: [item])
+        }
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            self.handleWalletsUpdate(result: result)
         }
     }
 }

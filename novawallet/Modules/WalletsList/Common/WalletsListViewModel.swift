@@ -3,7 +3,7 @@ import SubstrateSdk
 
 struct WalletsListViewModel {
     let identifier: String
-    let walletAmountViewModel: WalletTotalAmountView.ViewModel
+    let walletViewModel: WalletView.ViewModel
     let isSelected: Bool
 }
 
@@ -14,6 +14,7 @@ struct WalletsListSectionViewModel {
         case paritySigner
         case ledger
         case polkadotVault
+        case proxied
 
         init(walletType: MetaAccountModelType) {
             switch walletType {
@@ -27,6 +28,8 @@ struct WalletsListSectionViewModel {
                 self = .ledger
             case .polkadotVault:
                 self = .polkadotVault
+            case .proxied:
+                self = .proxied
             }
         }
     }

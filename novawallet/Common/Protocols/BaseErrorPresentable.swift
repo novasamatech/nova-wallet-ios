@@ -4,7 +4,6 @@ protocol BaseErrorPresentable {
     func presentAmountTooHigh(from view: ControllerBackedProtocol, locale: Locale?)
     func presentFeeNotReceived(from view: ControllerBackedProtocol, locale: Locale?)
     func presentFeeTooHigh(from view: ControllerBackedProtocol, balance: String, fee: String, locale: Locale?)
-    func presentFeeTooHigh(from view: ControllerBackedProtocol, locale: Locale?)
     func presentExtrinsicFailed(from view: ControllerBackedProtocol, locale: Locale?)
     func presentInvalidAddress(from view: ControllerBackedProtocol, chainName: String, locale: Locale?)
 
@@ -44,15 +43,6 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentExtrinsicFailed(from view: ControllerBackedProtocol, locale: Locale?) {
         let message = R.string.localizable.commonTransactionFailed(preferredLanguages: locale?.rLanguages)
         let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-
-        present(message: message, title: title, closeAction: closeAction, from: view)
-    }
-
-    func presentFeeTooHigh(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.commonNotEnoughFeeMessage(preferredLanguages: locale?.rLanguages)
-
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)

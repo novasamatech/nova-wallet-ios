@@ -385,7 +385,8 @@ class RuntimeProviderTests: XCTestCase {
         let snapshotOperationFactory = RuntimeSnapshotFactory(
             chainId: chainModel.chainId,
             filesOperationFactory: filesOperationFactory,
-            repository: AnyDataProviderRepository(repository)
+            repository: AnyDataProviderRepository(repository),
+            logger: Logger.shared
         )
 
         let operationQueue = OperationQueue()
@@ -394,7 +395,8 @@ class RuntimeProviderTests: XCTestCase {
             chainModel: chainModel,
             snapshotOperationFactory: snapshotOperationFactory,
             eventCenter: eventCenter,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         stub(filesOperationFactory) { stub in

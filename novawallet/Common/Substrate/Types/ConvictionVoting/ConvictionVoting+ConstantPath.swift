@@ -2,10 +2,10 @@ import Foundation
 
 extension ConvictionVoting {
     static var voteLockingPeriodPath: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "ConvictionVoting", constantName: "VoteLockingPeriod")
+        ConstantCodingPath(moduleName: Self.name, constantName: "VoteLockingPeriod")
     }
 
     static var maxVotes: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "ConvictionVoting", constantName: "MaxVotes")
+        ConstantCodingPath(moduleName: Self.name, constantName: "MaxVotes")
     }
 }

@@ -53,6 +53,7 @@ final class DAppListPresenter {
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
     private var selectedCategory: CategoryIndex = .all
+    private var hasWalletsListUpdates: Bool = false
 
     private lazy var iconGenerator = NovaIconGenerator()
 
@@ -77,7 +78,8 @@ final class DAppListPresenter {
         let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
         let viewModel = WalletSwitchViewModel(
             type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
-            iconViewModel: iconViewModel
+            iconViewModel: iconViewModel,
+            hasNotification: hasWalletsListUpdates
         )
 
         view?.didReceiveWalletSwitch(viewModel: viewModel)
@@ -355,6 +357,11 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         updateCategories()
         updateState()
+    }
+
+    func didReceiveWalletsState(hasUpdates: Bool) {
+        hasWalletsListUpdates = hasUpdates
+        provideWalletSwitchViewModel()
     }
 }
 

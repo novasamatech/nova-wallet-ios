@@ -92,9 +92,9 @@ final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
     }
 
     override func provideFee() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { amount in
+        let viewModel: BalanceViewModelProtocol? = fee.flatMap { fee in
             guard let amountDecimal = Decimal.fromSubstrateAmount(
-                amount,
+                fee.amount,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
                 return nil
@@ -175,11 +175,13 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputPro
         case .success:
             wireframe?.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
         case let .failure(error):
-            if error.isWatchOnlySigning {
-                wireframe?.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe?.present(error: error, from: view, locale: selectedLocale)
-            }
+            wireframe?.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 }

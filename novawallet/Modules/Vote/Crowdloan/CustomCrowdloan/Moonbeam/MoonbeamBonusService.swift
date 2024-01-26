@@ -154,7 +154,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
             let statementRawData = try statementOperation.extractNoCancellableResultData()
             let statementData = statementRawData.sha256().toHex().data(using: .utf8)!
-            let signedData = try self.signingWrapper.sign(statementData)
+            let signedData = try self.signingWrapper.sign(statementData, context: .rawBytes)
             let signedMessage = signedData.rawData().toHex()
 
             let remarkRequest = MoonbeamAgreeRemarkRequest(address: self.address, signedMessage: signedMessage)

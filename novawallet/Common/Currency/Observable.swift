@@ -78,6 +78,18 @@ extension Observable where TState: Equatable {
         with owner: AnyObject,
         closure: @escaping StateChangeClosure
     ) {
+        addObserver(with: owner, sendStateOnSubscription: false, closure: closure)
+    }
+
+    func addObserver(
+        with owner: AnyObject,
+        sendStateOnSubscription: Bool,
+        closure: @escaping StateChangeClosure
+    ) {
         addObserver(with: owner, queue: nil, closure: closure)
+
+        if sendStateOnSubscription {
+            closure(state, state)
+        }
     }
 }

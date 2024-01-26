@@ -2,10 +2,17 @@ import Foundation
 import BigInt
 
 extension BigUInt {
-    func decimal(precision: UInt16) -> Decimal {
+    func decimal(precision: UInt16 = 0) -> Decimal {
         Decimal.fromSubstrateAmount(
             self,
             precision: Int16(precision)
+        ) ?? 0
+    }
+
+    func decimal(assetInfo: AssetBalanceDisplayInfo) -> Decimal {
+        Decimal.fromSubstrateAmount(
+            self,
+            precision: assetInfo.assetPrecision
         ) ?? 0
     }
 }

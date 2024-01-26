@@ -9,7 +9,14 @@ final class YourWalletsPresenter {
     let metaAccounts: [MetaAccountChainResponse]
     let accountIconGenerator: IconGenerating
     let chainIconGenerator: IconGenerating
-    let sectionTypes: [MetaAccountModelType] = [.secrets, .polkadotVault, .paritySigner, .ledger, .watchOnly]
+    let sectionTypes: [MetaAccountModelType] = [
+        .secrets,
+        .polkadotVault,
+        .paritySigner,
+        .ledger,
+        .proxied,
+        .watchOnly
+    ]
 
     private(set) var selectedAddress: AccountAddress?
     private(set) var sections: [YourWalletsViewSectionModel] = []
@@ -78,6 +85,13 @@ final class YourWalletsPresenter {
                     preferredLanguages: selectedLocale.rLanguages
                 ).uppercased(),
                 icon: R.image.iconLedger()
+            )
+        case .proxied:
+            return .init(
+                title: R.string.localizable.commonProxieds(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconProxy()
             )
         }
     }

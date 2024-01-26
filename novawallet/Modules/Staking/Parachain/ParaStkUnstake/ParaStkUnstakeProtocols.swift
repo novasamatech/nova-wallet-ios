@@ -31,7 +31,7 @@ protocol ParaStkUnstakeInteractorInputProtocol: ParaStkBaseUnstakeInteractorInpu
 protocol ParaStkBaseUnstakeInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ priceData: PriceData?)
-    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveStakingDuration(_ stakingDuration: ParachainStakingDuration)

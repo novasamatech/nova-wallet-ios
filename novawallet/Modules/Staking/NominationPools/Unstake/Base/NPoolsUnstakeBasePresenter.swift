@@ -24,7 +24,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     var minStake: BigUInt?
     var price: PriceData?
     var unstakingLimits: NominationPools.UnstakeLimits?
-    var fee: BigUInt?
+    var fee: ExtrinsicFeeProtocol?
 
     init(
         baseInteractor: NPoolsUnstakeBaseInteractorInputProtocol,
@@ -87,11 +87,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
 
     func getValidations() -> [DataValidating] {
         [
-            dataValidatorFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) { [weak self] in
+            dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
             dataValidatorFactory.canUnstake(
@@ -248,8 +244,8 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         self.unstakingLimits = unstakingLimits
     }
 
-    func didReceive(fee: BigUInt?) {
-        logger.debug("Fee: \(String(describing: fee))")
+    func didReceive(fee: ExtrinsicFeeProtocol) {
+        logger.debug("Fee: \(fee)")
 
         self.fee = fee
 

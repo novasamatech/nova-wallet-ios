@@ -24,11 +24,13 @@ extension RuntimeCoderFactoryProtocol {
     func hasConstant(for codingPath: ConstantCodingPath) -> Bool {
         getConstant(for: codingPath) != nil
     }
+
+    func hasStorage(for storagePath: StorageCodingPath) -> Bool {
+        metadata.getStorageMetadata(for: storagePath) != nil
+    }
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
-    static let addressTypeName = "Address"
-
     let catalog: TypeRegistryCatalogProtocol
     let specVersion: UInt32
     let txVersion: UInt32
@@ -55,17 +57,15 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
     }
 
     func createRuntimeJsonContext() -> RuntimeJsonContext {
-        if let addressTypeNode = catalog.node(
-            for: Self.addressTypeName,
+        let isMultiaddress = catalog.nodeMatches(
+            closure: { node in
+                node is EnumNode || node is SiVariantNode || node is GenericMultiAddressNode
+            },
+            typeName: KnownType.address.name,
             version: UInt64(specVersion)
-        ) as? ProxyNode {
-            let addressTypeName = addressTypeNode.typeName.components(separatedBy: ".").last
+        )
 
-            let preferresMultiAddress = addressTypeName?.lowercased() == "multiaddress"
-            return RuntimeJsonContext(prefersRawAddress: !preferresMultiAddress)
-        } else {
-            return RuntimeJsonContext(prefersRawAddress: false)
-        }
+        return RuntimeJsonContext(prefersRawAddress: !isMultiaddress)
     }
 
     func hasType(for name: String) -> Bool {

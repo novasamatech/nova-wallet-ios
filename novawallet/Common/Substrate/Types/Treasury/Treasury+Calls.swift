@@ -19,6 +19,10 @@ extension Treasury {
         CallCodingPath(moduleName: "Treasury", callName: "spend")
     }
 
+    static var spendLocalCallPath: CallCodingPath {
+        CallCodingPath(moduleName: "Treasury", callName: "spend_local")
+    }
+
     struct SpendCall: Decodable {
         @StringCodable var amount: BigUInt
         let beneficiary: MultiAddress

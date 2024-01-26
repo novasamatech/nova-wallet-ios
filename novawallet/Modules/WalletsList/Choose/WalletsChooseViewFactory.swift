@@ -48,6 +48,7 @@ final class WalletsChooseViewFactory {
 
         return WalletsListInteractor(
             balancesStore: balancesStore,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared
         )
     }

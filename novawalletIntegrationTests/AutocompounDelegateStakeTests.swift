@@ -193,12 +193,12 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
         let executionTime = try executionTimeWrapper.targetOperation.extractNoCancellableResultData()
 
+        let senderResolutionFactory = ExtrinsicSenderResolutionFactoryStub(accountId: delegator, chain: chain)
+        
         extrinsicService = ExtrinsicService(
-            accountId: delegator,
             chain: chain,
-            cryptoType: .sr25519,
-            walletType: .watchOnly,
             runtimeRegistry: runtimeProvider,
+            senderResolvingFactory: senderResolutionFactory,
             extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -263,13 +263,16 @@ class AutocompounDelegateStakeTests: XCTestCase {
             XCTFail("Can't find chain \(chainId)")
             return
         }
+        
+        let senderResolutionFactory = ExtrinsicSenderResolutionFactoryStub(
+            accountId: AccountId.random(of: chain.accountIdSize)!,
+            chain: chain
+        )
 
         extrinsicService = ExtrinsicService(
-            accountId: AccountId.random(of: chain.accountIdSize)!,
             chain: chain,
-            cryptoType: .sr25519,
-            walletType: .watchOnly,
             runtimeRegistry: runtimeProvider,
+            senderResolvingFactory: senderResolutionFactory,
             extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: OperationQueue())

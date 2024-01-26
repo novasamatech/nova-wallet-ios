@@ -108,6 +108,15 @@ class WalletsListViewController<
 
             view.bind(title: title, icon: icon)
             return view
+        case .proxied:
+            let view = dequeueCommonHeader(from: tableView)
+            let icon = R.image.iconProxy()
+            let title = R.string.localizable.commonProxieds(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
+
+            view.bind(title: title, icon: icon)
+            return view
         }
     }
 
@@ -123,7 +132,7 @@ class WalletsListViewController<
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly, .paritySigner, .polkadotVault, .ledger:
+        case .watchOnly, .paritySigner, .polkadotVault, .ledger, .proxied:
             return 46.0
         }
     }

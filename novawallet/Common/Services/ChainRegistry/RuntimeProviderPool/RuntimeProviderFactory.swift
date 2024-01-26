@@ -11,7 +11,7 @@ final class RuntimeProviderFactory {
     let dataOperationFactory: DataOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     init(
         fileOperationFactory: RuntimeFilesOperationFactoryProtocol,
@@ -19,7 +19,7 @@ final class RuntimeProviderFactory {
         dataOperationFactory: DataOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.fileOperationFactory = fileOperationFactory
         self.repository = repository
@@ -35,7 +35,8 @@ extension RuntimeProviderFactory: RuntimeProviderFactoryProtocol {
         let snapshotOperationFactory = RuntimeSnapshotFactory(
             chainId: chain.chainId,
             filesOperationFactory: fileOperationFactory,
-            repository: repository
+            repository: repository,
+            logger: logger
         )
 
         return RuntimeProvider(

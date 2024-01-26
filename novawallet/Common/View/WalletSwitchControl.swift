@@ -13,6 +13,17 @@ final class WalletSwitchContentView: UIView {
         return imageView
     }()
 
+    let badgeView: RoundedView = .create {
+        let color = R.color.colorIconAccent()!
+        $0.apply(style: .init(
+            shadowOpacity: 0,
+            fillColor: color,
+            highlightedFillColor: color,
+            rounding: .init(radius: 5, corners: .allCorners)
+        ))
+        $0.isHidden = true
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -26,12 +37,25 @@ final class WalletSwitchContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        badgeView.layoutIfNeeded()
+        iconView.layoutIfNeeded()
+
+        cutHole(
+            on: iconView,
+            underView: badgeView,
+            holeWidth: 4
+        )
+    }
+
     private func setupLayout() {
         addSubview(typeImageView)
         typeImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.size.equalTo(24.0)
+            make.size.equalTo(20)
         }
 
         addSubview(iconView)
@@ -39,6 +63,13 @@ final class WalletSwitchContentView: UIView {
             make.trailing.equalToSuperview()
             make.top.bottom.equalToSuperview()
             make.width.equalTo(iconView.snp.height)
+        }
+
+        addSubview(badgeView)
+
+        badgeView.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview()
+            make.width.height.equalTo(10)
         }
     }
 }
@@ -95,7 +126,14 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconLedger()
+        case .proxied:
+            applyCommonStyle(to: controlBackgroundView)
+
+            typeImageView.image = R.image.iconProxiedWallet()
         }
+
+        controlContentView.badgeView.isHidden = !viewModel.hasNotification
+        controlContentView.setNeedsLayout()
     }
 
     private func applyCommonStyle(to backgroundView: RoundedView) {

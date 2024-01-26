@@ -14,18 +14,27 @@ extension GovSpentAmount.TreasurySpentHandler: GovSpentAmountHandling {
     ) throws -> [CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?>]? {
         let path = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
-        guard path == Treasury.spendCallPath else {
+        let spendPaths = [Treasury.spendCallPath, Treasury.spendLocalCallPath]
+
+        guard spendPaths.contains(path) else {
             return nil
         }
 
         let operation = ClosureOperation<ReferendumActionLocal.AmountSpendDetails?> {
             let runtimeContext = context.codingFactory.createRuntimeJsonContext()
-            let spentCall = try call.args.map(to: Treasury.SpendCall.self, with: runtimeContext.toRawContext())
 
-            return ReferendumActionLocal.AmountSpendDetails(
-                amount: spentCall.amount,
-                beneficiary: spentCall.beneficiary
-            )
+            if
+                let spentCall = try? call.args.map(
+                    to: Treasury.SpendCall.self,
+                    with: runtimeContext.toRawContext()
+                ) {
+                return ReferendumActionLocal.AmountSpendDetails(
+                    amount: spentCall.amount,
+                    beneficiary: spentCall.beneficiary
+                )
+            } else {
+                return nil
+            }
         }
 
         let wrapper = CompoundOperationWrapper(targetOperation: operation)

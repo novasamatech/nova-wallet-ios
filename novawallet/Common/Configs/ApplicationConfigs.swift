@@ -35,6 +35,7 @@ protocol ApplicationConfigProtocol {
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
+    var proxyWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
@@ -130,9 +131,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v16/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v16/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains_dev.json")!
         #endif
     }
 
@@ -148,9 +149,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v5/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v5/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers_dev.json")!
         #endif
     }
 
@@ -158,7 +159,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #else
-            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking__bm92Y")!
+            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #endif
     }
 
@@ -255,6 +256,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var wikiURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki")!
+    }
+
+    var proxyWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
     // swiftlint:enable line_length

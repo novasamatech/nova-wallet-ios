@@ -89,7 +89,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
                 self?.mutex.unlock()
             }
         } catch {
-            logger?.error("Subscription error: \(error)")
+            logger.error("Subscription error: \(error)")
 
             completeImmediate(error)
         }

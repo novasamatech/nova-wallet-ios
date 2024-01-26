@@ -14,6 +14,7 @@ final class StakingDashboardInteractor {
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let stateObserver: Observable<StakingDashboardModel>
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     private var syncService: MultistakingSyncServiceProtocol?
     private var modelBuilder: StakingDashboardBuilderProtocol?
@@ -36,6 +37,7 @@ final class StakingDashboardInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stateObserver: Observable<StakingDashboardModel>,
         applicationHandler: ApplicationHandlerProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.syncServiceFactory = syncServiceFactory
@@ -47,6 +49,7 @@ final class StakingDashboardInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.applicationHandler = applicationHandler
         self.stateObserver = stateObserver
+        self.walletNotificationService = walletNotificationService
         self.currencyManager = currencyManager
     }
 
@@ -167,6 +170,13 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
         eventCenter.add(observer: self, dispatchIn: .main)
         applicationHandler.delegate = self
+
+        walletNotificationService.hasUpdatesObservable.addObserver(
+            with: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
     }
 
     func retryBalancesSubscription() {

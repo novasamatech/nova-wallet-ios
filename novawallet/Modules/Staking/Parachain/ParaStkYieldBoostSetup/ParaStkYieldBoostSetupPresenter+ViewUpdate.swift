@@ -114,7 +114,7 @@ extension ParaStkYieldBoostSetupPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
         if let fee = extrinsicFee {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 

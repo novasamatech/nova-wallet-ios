@@ -111,7 +111,7 @@ extension GovernanceDelegateSetupPresenter: GovernanceDelegateSetupInteractorOut
         updateAmountPriceView()
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         updateAmountPriceView()

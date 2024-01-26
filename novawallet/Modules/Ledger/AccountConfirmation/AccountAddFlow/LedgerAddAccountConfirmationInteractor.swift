@@ -52,7 +52,8 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
             chainId: chain.chainId,
             accountId: info.accountId,
             publicKey: info.publicKey,
-            cryptoType: info.cryptoType.rawValue
+            cryptoType: info.cryptoType.rawValue,
+            proxy: nil
         )
 
         let newAccountItem = wallet.replacingChainAccount(chainAccount)
@@ -81,6 +82,7 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
                savedAccountItem.identifier == newAccountItem.identifier {
                 self.settings.save(value: newAccountItem)
                 self.eventCenter.notify(with: SelectedAccountChanged())
+                self.eventCenter.notify(with: AccountsChanged(method: .manually))
             }
         }
 

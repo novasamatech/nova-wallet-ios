@@ -63,7 +63,6 @@ extension VoteStatusSectionView {
     }
 }
 
-// swiftlint:disable nesting
 extension VoteStatusSectionView {
     private enum Constants {
         enum TitleLabelInsets {

@@ -5,6 +5,7 @@ import BigInt
 struct XcmTransfers: Decodable {
     let assetsLocation: [String: JSON]
     let instructions: [String: [String]]
+    let networkDeliveryFee: [String: JSON]?
     let networkBaseWeight: [String: String]
     let chains: [XcmChain]
 
@@ -125,5 +126,13 @@ struct XcmTransfers: Decodable {
         }
 
         return try? assetLocation.reserveFee?.map(to: XcmAssetTransferFee.self, with: nil)
+    }
+
+    func deliveryFee(from chainId: ChainModel.Id) throws -> XcmDeliveryFee? {
+        guard let deliveryFee = networkDeliveryFee?[chainId] else {
+            return nil
+        }
+
+        return try deliveryFee.map(to: XcmDeliveryFee.self, with: nil)
     }
 }

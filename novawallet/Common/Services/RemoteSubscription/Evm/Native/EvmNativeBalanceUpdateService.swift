@@ -26,7 +26,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
         repository: AnyDataProviderRepository<AssetBalance>,
         operationQueue: OperationQueue,
         blockNumber: Core.BlockNumber,
-        logger: LoggerProtocol?,
+        logger: LoggerProtocol,
         completion: EvmNativeUpdateServiceCompletionClosure?
     ) {
         self.holder = holder
@@ -136,12 +136,12 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
             let balanceValue = BigUInt.fromHexString(balance)
 
             if balanceValue == nil {
-                logger?.warning("Unexpected nil balance: \(chainAssetId)")
+                logger.warning("Unexpected nil balance: \(chainAssetId)")
             }
 
             return balanceValue
         case let .failure(error):
-            logger?.error("Unexpected error: \(error)")
+            logger.error("Unexpected error: \(error)")
             return nil
         }
     }

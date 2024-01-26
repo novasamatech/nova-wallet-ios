@@ -23,7 +23,7 @@ enum ExtrinsicSplitterError: Error {
 }
 
 final class ExtrinsicSplitter {
-    static let maxExtrinsicSizePercent: CGFloat = 0.8
+    static let maxExtrinsicSizePercent: CGFloat = 0.6
     static let blockSizeMultiplier: CGFloat = 0.64
 
     typealias CallConverter = (RuntimeJsonContext?) throws -> JSON
@@ -111,7 +111,8 @@ final class ExtrinsicSplitter {
                 let callPath = pair.0.path
                 let feeResult = pair.1.result
 
-                accum[callPath] = try feeResult.get().weight
+                let fee = try feeResult.get()
+                accum[callPath] = UInt64(fee.weight)
             }
         }
 

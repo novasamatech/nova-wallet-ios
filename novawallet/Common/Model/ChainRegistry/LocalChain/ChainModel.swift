@@ -3,12 +3,12 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-struct ChainModel: Equatable, Codable, Hashable {
+struct ChainModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
 
     struct TypesSettings: Codable, Hashable {
-        let url: URL
+        let url: URL?
         let overridesCommon: Bool
     }
 
@@ -23,6 +23,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         case onlyCommon
         case both
         case onlyOwn
+        case none
     }
 
     enum NodeSwitchStrategy: String, Codable, Hashable {
@@ -42,12 +43,13 @@ struct ChainModel: Equatable, Codable, Hashable {
     let addressPrefix: UInt16
     let types: TypesSettings?
     let icon: URL
-    let options: [ChainOptions]?
+    let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
     let explorers: [Explorer]?
     let order: Int64
     let additional: JSON?
+    let syncMode: ChainSyncMode
 
     init(
         chainId: Id,
@@ -59,11 +61,12 @@ struct ChainModel: Equatable, Codable, Hashable {
         addressPrefix: UInt16,
         types: TypesSettings?,
         icon: URL,
-        options: [ChainOptions]?,
+        options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
         order: Int64,
-        additional: JSON?
+        additional: JSON?,
+        syncMode: ChainSyncMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -79,13 +82,15 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.explorers = explorers
         self.order = order
         self.additional = additional
+        self.syncMode = syncMode
     }
 
-    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, order: Int64) {
+    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, syncMode: ChainSyncMode, order: Int64) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
         self.assets = assets
+        self.syncMode = syncMode
 
         let nodeList = remoteModel.nodes.enumerated().map { index, node in
             ChainNodeModel(remoteModel: node, order: Int16(index))
@@ -98,7 +103,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         addressPrefix = remoteModel.addressPrefix
         types = remoteModel.types
         icon = remoteModel.icon
-        options = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) }
+
+        let remoteOptions = remoteModel.options?.compactMap { LocalChainOptions(rawValue: $0) } ?? []
+        options = !remoteOptions.isEmpty ? remoteOptions : nil
+
         externalApis = remoteModel.externalApi.map { LocalChainExternalApiSet(remoteApi: $0) }
         explorers = remoteModel.explorers
         additional = remoteModel.additional
@@ -162,6 +170,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         hasSwapHub
     }
 
+    var hasProxy: Bool {
+        options?.contains(where: { $0 == .proxy }) ?? false
+    }
+
     var noSubstrateRuntime: Bool {
         options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
     }
@@ -217,11 +229,15 @@ struct ChainModel: Equatable, Codable, Hashable {
     }
 
     var typesUsage: TypesUsage {
-        if let types = types {
-            return types.overridesCommon ? .onlyOwn : .both
-        } else {
-            return .onlyCommon
+        guard let types = types else {
+            return .none
         }
+
+        guard !types.overridesCommon else {
+            return .onlyOwn
+        }
+
+        return types.url != nil ? .both : .onlyCommon
     }
 
     var defaultTip: BigUInt? {
@@ -247,13 +263,29 @@ struct ChainModel: Equatable, Codable, Hashable {
 
         return UInt32(value)
     }
+
+    var isDisabled: Bool {
+        syncMode == .disabled
+    }
+
+    var isFullSyncMode: Bool {
+        syncMode == .full
+    }
+
+    var isLightSyncMode: Bool {
+        syncMode == .light
+    }
+
+    var feeViaRuntimeCall: Bool {
+        additional?.feeViaRuntimeCall?.boolValue ?? false
+    }
 }
 
 extension ChainModel: Identifiable {
     var identifier: String { chainId }
 }
 
-enum ChainOptions: String, Codable {
+enum LocalChainOptions: String, Codable {
     case ethereumBased
     case testnet
     case crowdloans
@@ -261,6 +293,7 @@ enum ChainOptions: String, Codable {
     case governanceV1 = "governance-v1"
     case noSubstrateRuntime
     case swapHub = "swap-hub"
+    case proxy
 }
 
 extension ChainModel {
@@ -279,7 +312,8 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -301,7 +335,8 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
         )
     }
 
@@ -323,7 +358,28 @@ extension ChainModel {
             externalApis: externalApis,
             explorers: explorers,
             order: order,
-            additional: additional
+            additional: additional,
+            syncMode: syncMode
+        )
+    }
+
+    func updatingSyncMode(for newMode: ChainSyncMode) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: newMode
         )
     }
 }

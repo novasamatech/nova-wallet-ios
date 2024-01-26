@@ -27,9 +27,11 @@ final class ActiveNominationPoolsTests: XCTestCase {
         let operationQueue = OperationQueue()
         
         let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-        let substrateDataProviderFactory = SubstrateDataProviderFactory(
-            facade: storageFacade,
-            operationManager: OperationManager(operationQueue: operationQueue)
+        let substrateDataProviderFactory = StakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            logger: Logger.shared
         )
         
         let eraValidatorService = EraValidatorService(
@@ -38,7 +40,7 @@ final class ActiveNominationPoolsTests: XCTestCase {
             runtimeCodingService: runtimeService,
             connection: connection,
             providerFactory: substrateDataProviderFactory,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            operationQueue: operationQueue,
             eventCenter: EventCenter.shared,
             logger: Logger.shared
         )

@@ -19,15 +19,13 @@ class ExtrinsicServiceTests: XCTestCase {
     }
 
     private func createExtrinsicBuilderClosure(for batch: [PayoutInfo]) -> ExtrinsicBuilderClosure {
-        let callFactory = SubstrateCallFactory()
-
         let closure: ExtrinsicBuilderClosure = { builder in
             try batch.forEach { payout in
-                let payoutCall = try callFactory.payout(
-                    validatorId: payout.validator,
+                let payoutCall = Staking.PayoutCall.V1(
+                    validatorStash: payout.validator,
                     era: payout.era
-                )
-
+                ).runtimeCall()
+                
                 _ = try builder.adding(call: payoutCall)
             }
 
@@ -40,7 +38,6 @@ class ExtrinsicServiceTests: XCTestCase {
     func testEstimateFeeForBondExtraCall() throws {
         let chainId = KnowChainId.kusama
         let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
-        let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
 
         let storageFacade = SubstrateStorageTestFacade()
@@ -51,12 +48,12 @@ class ExtrinsicServiceTests: XCTestCase {
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
         let chain = chainRegistry.getChain(for: chainId)!
 
+        let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
+        
         let extrinsicService = ExtrinsicService(
-            accountId: selectedAccountId,
             chain: chain,
-            cryptoType: .sr25519,
-            walletType: .secrets,
             runtimeRegistry: runtimeService,
+            senderResolvingFactory: senderResolutionFactory,
             extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
@@ -68,8 +65,7 @@ class ExtrinsicServiceTests: XCTestCase {
             switch result {
             case let .success(paymentInfo):
                 if
-                    let feeValue = BigUInt(paymentInfo.fee),
-                    let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetPrecision),
+                    let fee = Decimal.fromSubstrateAmount(paymentInfo.amount, precision: assetPrecision),
                     fee > 0 {
                     feeExpectation.fulfill()
                 } else {
@@ -96,13 +92,13 @@ class ExtrinsicServiceTests: XCTestCase {
         let connection = chainRegistry.getConnection(for: chainId)!
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
         let chain = chainRegistry.getChain(for: chainId)!
+        
+        let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
 
         let extrinsicService = ExtrinsicService(
-            accountId: selectedAccountId,
             chain: chain,
-            cryptoType: .sr25519,
-            walletType: .secrets,
             runtimeRegistry: runtimeService,
+            senderResolvingFactory: senderResolutionFactory,
             extensions: DefaultExtrinsicExtension.extensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
@@ -110,17 +106,16 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let feeExpectation = XCTestExpectation()
         let payouts = [
-            PayoutInfo(era: 1000, validator: selectedAccountId, reward: 100.0, identity: nil),
-            PayoutInfo(era: 1001, validator: selectedAccountId, reward: 100.0, identity: nil),
-            PayoutInfo(era: 1002, validator: selectedAccountId, reward: 100.0, identity: nil)
+            PayoutInfo(validator: selectedAccountId, era: 1000, pages: [0], reward: 100.0, identity: nil),
+            PayoutInfo(validator: selectedAccountId, era: 1001, pages: [0], reward: 100.0, identity: nil),
+            PayoutInfo(validator: selectedAccountId, era: 1002, pages: [0], reward: 100.0, identity: nil)
         ]
         let closure = createExtrinsicBuilderClosure(for: payouts)
         extrinsicService.estimateFee(closure, runningIn: .main) { result in
             switch result {
             case let .success(paymentInfo):
                 if
-                    let feeValue = BigUInt(paymentInfo.fee),
-                    let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetPrecision),
+                    let fee = Decimal.fromSubstrateAmount(paymentInfo.amount, precision: assetPrecision),
                     fee > 0 {
                     feeExpectation.fulfill()
                 } else {

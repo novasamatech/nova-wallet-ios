@@ -67,7 +67,7 @@ final class SigningWrapper: BaseSigner, SigningWrapperProtocol {
         super.init(settingsManager: settingsManager)
     }
 
-    override func signData(_ data: Data) throws -> IRSignatureProtocol {
+    override func signData(_ data: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         let tag: String = isEthereumBased ?
             KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId) :
             KeystoreTagV2.substrateSecretKeyTagForMetaId(metaId, accountId: accountId)

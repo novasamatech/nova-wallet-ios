@@ -68,15 +68,18 @@ final class ExtrinsicServiceFactory {
     private let runtimeRegistry: RuntimeCodingServiceProtocol
     private let engine: JSONRPCEngine
     private let operationManager: OperationManagerProtocol
+    private let userStorageFacade: StorageFacadeProtocol
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        userStorageFacade: StorageFacadeProtocol
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
         self.operationManager = operationManager
+        self.userStorageFacade = userStorageFacade
     }
 }
 
@@ -86,12 +89,16 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         chain: ChainModel,
         extensions: [ExtrinsicExtension]
     ) -> ExtrinsicServiceProtocol {
-        ExtrinsicService(
-            accountId: account.accountId,
+        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
+            chainAccount: account,
             chain: chain,
-            cryptoType: account.cryptoType,
-            walletType: account.type,
+            userStorageFacade: userStorageFacade
+        )
+
+        return ExtrinsicService(
+            chain: chain,
             runtimeRegistry: runtimeRegistry,
+            senderResolvingFactory: senderResolvingFactory,
             extensions: extensions,
             engine: engine,
             operationManager: operationManager
@@ -103,14 +110,18 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         chain: ChainModel,
         extensions: [ExtrinsicExtension]
     ) -> ExtrinsicOperationFactoryProtocol {
-        ExtrinsicOperationFactory(
-            accountId: account.accountId,
+        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
+            chainAccount: account,
             chain: chain,
-            cryptoType: account.cryptoType,
-            signaturePayloadFormat: account.type.signaturePayloadFormat,
+            userStorageFacade: userStorageFacade
+        )
+
+        return ExtrinsicOperationFactory(
+            chain: chain,
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            senderResolvingFactory: senderResolvingFactory,
             operationManager: operationManager
         )
     }

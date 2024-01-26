@@ -16,7 +16,7 @@ final class ParaStkYieldBoostStartPresenter {
 
     private(set) var yieldBoostTasks: [ParaStkYieldBoostState.Task]?
     private(set) var executionFee: BigUInt?
-    private(set) var extrinsicFee: BigUInt?
+    private(set) var extrinsicFee: ExtrinsicFeeProtocol?
     private(set) var executionTime: AutomationTime.UnixTime?
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
@@ -139,7 +139,7 @@ final class ParaStkYieldBoostStartPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
         if let fee = extrinsicFee {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
+                fee.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -174,20 +174,17 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartPresenterProtoc
 
     func submit() {
         let assetInfo = chainAsset.assetDisplayInfo
-        let precision = assetInfo.assetPrecision
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
+            dataValidatingFactory.has(
                 fee: extrinsicFee,
-                locale: selectedLocale,
-                precision: precision
+                locale: selectedLocale
             ) { [weak self] in
                 self?.refreshFee()
             },
-            dataValidatingFactory.hasInPlank(
-                fee: executionFee,
-                locale: selectedLocale,
-                precision: precision
+            dataValidatingFactory.hasExecutionFee(
+                executionFee,
+                locale: selectedLocale
             ) { [weak self] in
                 self?.refreshExecutionTime()
             },
@@ -264,16 +261,18 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartInteractorOutpu
         case let .yieldBoostScheduleFailed(error):
             view?.didStopLoading()
 
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-            }
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                error,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 
-    func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo) {
-        extrinsicFee = BigUInt(feeInfo.fee)
+    func didReceiveScheduleAutocompound(feeInfo: ExtrinsicFeeProtocol) {
+        extrinsicFee = feeInfo
 
         provideNetworkFeeViewModel()
     }

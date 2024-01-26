@@ -128,7 +128,13 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
         case let .submitFailed(internalError):
             view?.didStopLoading()
 
-            wireframe.presentNoSigningOrError(from: view, error: internalError, locale: selectedLocale)
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                internalError,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
         }
     }
 
@@ -143,7 +149,7 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
         provideFeeViewModel()
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         self.fee = fee
 
         provideFeeViewModel()

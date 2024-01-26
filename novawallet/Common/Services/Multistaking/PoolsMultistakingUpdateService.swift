@@ -104,7 +104,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                 self?.mutex.unlock()
             }
         } catch {
-            logger?.error("Pool resolution failed: \(error)")
+            logger.error("Pool resolution failed: \(error)")
             completeImmediate(error)
         }
     }
@@ -160,7 +160,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
             }
 
             guard self?.poolMemberSubscription === currentPoolSubscription else {
-                self?.logger?.warning("Tried to query pallet id but subscription changed")
+                self?.logger.warning("Tried to query pallet id but subscription changed")
                 return
             }
 
@@ -172,16 +172,16 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                         accountType: .bonded,
                         palletId: palletId.wrappedValue
                     ) {
-                    self?.logger?.debug("Derived pool account id: \(poolAccountId.toHex())")
+                    self?.logger.debug("Derived pool account id: \(poolAccountId.toHex())")
 
                     self?.saveAccountChanges(for: poolAccountId, walletAccountId: accountId)
                     self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
                 } else {
-                    self?.logger?.error("Can't derive pool account id")
+                    self?.logger.error("Can't derive pool account id")
                     self?.completeImmediate(CommonError.dataCorruption)
                 }
             case let .failure(error):
-                self?.logger?.error("Can't get pallet id \(error)")
+                self?.logger.error("Can't get pallet id \(error)")
                 self?.completeImmediate(error)
             }
         }
@@ -221,7 +221,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                 } catch {
-                    self?.logger?.error("Can't save pool account id")
+                    self?.logger.error("Can't save pool account id")
                 }
             }
         }
@@ -236,21 +236,21 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
 
             let eraRequest = BatchStorageSubscriptionRequest(
                 innerRequest: UnkeyedSubscriptionRequest(
-                    storagePath: .activeEra,
+                    storagePath: Staking.activeEra,
                     localKey: ""
                 ),
                 mappingKey: Multistaking.NominationPoolStateChange.Key.era.rawValue
             )
 
             let ledgerLocalKey = try localStorageKeyFactory.createFromStoragePath(
-                .stakingLedger,
+                Staking.stakingLedger,
                 accountId: poolAccountId,
                 chainId: chainAsset.chain.chainId
             )
 
             let ledgerRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .stakingLedger,
+                    storagePath: Staking.stakingLedger,
                     localKey: ledgerLocalKey,
                     keyParamClosure: {
                         BytesCodable(wrappedValue: poolAccountId)
@@ -260,14 +260,14 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
             )
 
             let nominationLocalKey = try localStorageKeyFactory.createFromStoragePath(
-                .nominators,
+                Staking.nominators,
                 accountId: poolAccountId,
                 chainId: chainAsset.chain.chainId
             )
 
             let nominationRequest = BatchStorageSubscriptionRequest(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: .nominators,
+                    storagePath: Staking.nominators,
                     localKey: nominationLocalKey,
                     keyParamClosure: {
                         BytesCodable(wrappedValue: poolAccountId)
@@ -310,7 +310,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
 
             stateSubscription?.subscribe()
         } catch {
-            logger?.error("Subscription failed: \(error)")
+            logger.error("Subscription failed: \(error)")
             completeImmediate(error)
         }
     }
@@ -320,14 +320,14 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
         case let .success(stateChange):
             guard let state = state else {
                 completeImmediate(CommonError.dataCorruption)
-                logger?.error("Expected state but not found")
+                logger.error("Expected state but not found")
                 return
             }
 
             let newState = state.applying(change: stateChange)
             self.state = newState
 
-            logger?.debug("Pool new state: \(newState)")
+            logger.debug("Pool new state: \(newState)")
 
             saveState(newState)
         case let .failure(error):

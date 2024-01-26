@@ -3,23 +3,45 @@ import SubstrateSdk
 import RobinHood
 
 final class Gov2ActionOperationFactory: GovernanceActionOperationFactory {
-    // swiftlint:disable:next function_body_length
+    private func createStatusFetchWrapper(
+        for hash: Data,
+        requestFactory: StorageRequestFactoryProtocol,
+        connection: JSONRPCEngine,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<[StorageResponse<Preimage.RequestStatus>]> {
+        OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let storagePath: StorageCodingPath
+
+            if codingFactory.hasStorage(for: Preimage.requestStatusForStoragePath) {
+                storagePath = Preimage.requestStatusForStoragePath
+            } else {
+                storagePath = Preimage.statusForStoragePath
+            }
+
+            return requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [BytesCodable(wrappedValue: hash)] },
+                factory: { codingFactory },
+                storagePath: storagePath
+            )
+        }
+    }
+
     override func fetchCall(
         for hash: Data,
         connection: JSONRPCEngine,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
-        let statusKeyParams: () throws -> [BytesCodable] = {
-            [BytesCodable(wrappedValue: hash)]
-        }
-
-        let statusFetchWrapper: CompoundOperationWrapper<[StorageResponse<Preimage.RequestStatus>]> =
-            requestFactory.queryItems(
-                engine: connection,
-                keyParams: statusKeyParams,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: Preimage.statusForStoragePath
-            )
+        let statusFetchWrapper = createStatusFetchWrapper(
+            for: hash,
+            requestFactory: requestFactory,
+            connection: connection,
+            codingFactoryOperation: codingFactoryOperation
+        )
 
         let callKeyParams: () throws -> [Preimage.PreimageKey] = {
             let status = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value

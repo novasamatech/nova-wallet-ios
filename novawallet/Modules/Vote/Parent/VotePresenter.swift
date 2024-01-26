@@ -12,6 +12,7 @@ final class VotePresenter {
 
     private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
     private var referendumsState: ReferendumsInitState?
+    private var hasWalletsListUpdates: Bool = false
 
     init(
         interactor: VoteInteractorInputProtocol,
@@ -30,7 +31,8 @@ final class VotePresenter {
 
         let viewModel = walletSwitchViewModelFactory.createViewModel(
             from: wallet.walletIdenticonData(),
-            walletType: wallet.type
+            walletType: wallet.type,
+            hasNotification: hasWalletsListUpdates
         )
 
         view?.didSwitchWallet(with: viewModel)
@@ -96,6 +98,11 @@ extension VotePresenter: VoteInteractorOutputProtocol {
     func didReceiveWallet(_ wallet: MetaAccountModel) {
         self.wallet = wallet
 
+        provideWalletViewModel()
+    }
+
+    func didReceiveWalletsState(hasUpdates: Bool) {
+        hasWalletsListUpdates = hasUpdates
         provideWalletViewModel()
     }
 }

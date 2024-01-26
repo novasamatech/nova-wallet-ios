@@ -6,10 +6,10 @@ protocol ExtrinsicBuilderOperationFactoryProtocol {
     func createWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
-        signingClosure: @escaping (Data) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]>
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult>
 
-    func createDummySigner() throws -> DummySigner
+    func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner
 }
 
 final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
@@ -19,26 +19,28 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
         proxy: ExtrinsicBuilderOperationFactoryProtocol,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        usesStateCallForFee: Bool
     ) {
         self.proxy = proxy
 
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,
-            operationManager: operationManager
+            operationManager: operationManager,
+            usesStateCallForFee: usesStateCallForFee
         )
     }
 
-    override func createDummySigner() throws -> DummySigner {
-        try proxy.createDummySigner()
+    override func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner {
+        try proxy.createDummySigner(for: cryptoType)
     }
 
     override func createExtrinsicWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
-        signingClosure: @escaping (Data) throws -> Data
-    ) -> CompoundOperationWrapper<[Data]> {
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+    ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         proxy.createWrapper(
             customClosure: customClosure,
             indexes: indexes,

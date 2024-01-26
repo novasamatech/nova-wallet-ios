@@ -48,7 +48,7 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
         state = nil
         clearSubscriptions()
 
-        logger?.debug("Stop pool external sync for: \(chainAsset.chain.name) \(accountId.toHexString())")
+        logger.debug("Stop pool external sync for: \(chainAsset.chain.name) \(accountId.toHexString())")
     }
 
     private func clearSubscriptions() {
@@ -134,7 +134,7 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
             }
 
             guard self?.poolMemberSubscription === currentPoolSubscription else {
-                self?.logger?.warning("Tried to query pallet id but subscription changed")
+                self?.logger.warning("Tried to query pallet id but subscription changed")
                 return
             }
 
@@ -146,15 +146,15 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
                         accountType: .bonded,
                         palletId: palletId.wrappedValue
                     ) {
-                    self?.logger?.debug("Derived pool account id: \(poolAccountId.toHex())")
+                    self?.logger.debug("Derived pool account id: \(poolAccountId.toHex())")
 
                     self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
                 } else {
-                    self?.logger?.error("Can't derive pool account id")
+                    self?.logger.error("Can't derive pool account id")
                     self?.completeImmediate(CommonError.dataCorruption)
                 }
             case let .failure(error):
-                self?.logger?.error("Can't get pallet id \(error)")
+                self?.logger.error("Can't get pallet id \(error)")
                 self?.completeImmediate(error)
             }
         }
@@ -165,7 +165,7 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
 
         let ledgerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .stakingLedger,
+                storagePath: Staking.stakingLedger,
                 localKey: .empty,
                 keyParamClosure: {
                     BytesCodable(wrappedValue: poolAccountId)
@@ -219,14 +219,14 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
         case let .success(stateChange):
             guard let state = state else {
                 completeImmediate(CommonError.dataCorruption)
-                logger?.error("Expected state but not found")
+                logger.error("Expected state but not found")
                 return
             }
 
             let newState = state.applying(change: stateChange)
             self.state = newState
 
-            logger?.debug("Pool new state: \(newState)")
+            logger.debug("Pool new state: \(newState)")
 
             saveState(newState)
         case let .failure(error):

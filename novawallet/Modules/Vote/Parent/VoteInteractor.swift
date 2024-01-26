@@ -1,17 +1,21 @@
 import Foundation
+import RobinHood
 
 final class VoteInteractor {
     weak var presenter: VoteInteractorOutputProtocol?
 
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
+    let walletNotificationService: WalletNotificationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
-        eventCenter: EventCenterProtocol
+        eventCenter: EventCenterProtocol,
+        walletNotificationService: WalletNotificationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
+        self.walletNotificationService = walletNotificationService
     }
 
     private func provideSelectedWallet() {
@@ -28,6 +32,13 @@ extension VoteInteractor: VoteInteractorInputProtocol {
         provideSelectedWallet()
 
         eventCenter.add(observer: self, dispatchIn: .main)
+
+        walletNotificationService.hasUpdatesObservable.addObserver(
+            with: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, newState in
+            self?.presenter?.didReceiveWalletsState(hasUpdates: newState)
+        }
     }
 }
 

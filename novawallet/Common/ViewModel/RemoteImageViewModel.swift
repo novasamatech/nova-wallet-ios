@@ -1,6 +1,7 @@
 import UIKit
 import Kingfisher
 import SVGKit
+import RobinHood
 
 final class RemoteImageViewModel: NSObject {
     let url: URL
@@ -52,6 +53,12 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
 
         let url: URL? = nil
         imageView.kf.setImage(with: url) // cancel any cache retrieval task
+    }
+}
+
+extension RemoteImageViewModel: Identifiable {
+    var identifier: String {
+        url.absoluteString
     }
 }
 

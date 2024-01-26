@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-struct ManagedMetaAccountModel: Equatable {
+struct ManagedMetaAccountModel: Equatable, Hashable {
     static let noOrder: UInt32 = 0
 
     let info: MetaAccountModel
@@ -30,5 +30,13 @@ extension ManagedMetaAccountModel {
 
     func replacingSelection(_ isSelected: Bool) -> ManagedMetaAccountModel {
         ManagedMetaAccountModel(info: info, isSelected: isSelected, order: order)
+    }
+}
+
+extension Array where Element == ManagedMetaAccountModel {
+    func has(accountId: AccountId, in chainModel: ChainModel) -> Bool {
+        contains {
+            $0.info.has(accountId: accountId, chainId: chainModel.chainId)
+        }
     }
 }
