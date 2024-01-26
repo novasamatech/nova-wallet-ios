@@ -10,7 +10,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     let selectedAccount: MetaChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let collatorService: ParachainStakingCollatorServiceProtocol
+    let preferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol?
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
@@ -26,6 +26,8 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
+    private var collatorsCancellable = CancellableCallStore()
+    private var delegatorIdentityCancellable = CancellableCallStore()
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -35,7 +37,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        collatorService: ParachainStakingCollatorServiceProtocol,
+        preferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol?,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
@@ -51,7 +53,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.collatorService = collatorService
+        self.preferredCollatorFactory = preferredCollatorFactory
         self.rewardService = rewardService
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
@@ -65,6 +67,9 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
 
     deinit {
         self.collatorSubscription = nil
+
+        collatorsCancellable.cancel()
+        delegatorIdentityCancellable.cancel()
     }
 
     private func provideRewardCalculator() {
@@ -202,10 +207,15 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
             chainFormat: chainAsset.chain.chainFormat
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: delegatorIdentityCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(identities):
                 do {
-                    let identities = try wrapper.targetOperation.extractNoCancellableResultData()
                     let identitiesByAccountId = try identities.reduce(
                         into: [AccountId: AccountIdentity]()
                     ) { result, keyValue in
@@ -214,11 +224,36 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
                     }
 
                     self?.presenter?.didReceiveDelegationIdentities(identitiesByAccountId)
-                } catch {}
+                } catch {
+                    self?.presenter?.didReceiveError(error)
+                }
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
             }
         }
+    }
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    private func providePreferredCollator() {
+        guard let operationFactory = preferredCollatorFactory else {
+            presenter?.didReceivePreferredCollator(nil)
+            return
+        }
+
+        let wrapper = operationFactory.createPreferredCollatorWrapper()
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: collatorsCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(optCollator):
+                self?.presenter?.didReceivePreferredCollator(optCollator)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
     }
 }
 
@@ -231,6 +266,8 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         provideRewardCalculator()
 
         feeProxy.delegate = self
+
+        providePreferredCollator()
 
         provideMinTechStake()
         provideMinDelegationAmount()

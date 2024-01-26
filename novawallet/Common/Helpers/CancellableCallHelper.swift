@@ -100,3 +100,30 @@ func execute<T>(
 
     operationQueue.addOperations([operation], waitUntilFinished: false)
 }
+
+func execute<T>(
+    operation: BaseOperation<T>,
+    inOperationQueue operationQueue: OperationQueue,
+    backingCallIn callStore: CancellableCallStore,
+    runningCallbackIn callbackQueue: DispatchQueue?,
+    callbackClosure: @escaping (Result<T, Error>) -> Void
+) {
+    operation.completionBlock = {
+        dispatchInQueueWhenPossible(callbackQueue) {
+            guard callStore.clearIfMatches(call: operation) else {
+                return
+            }
+
+            do {
+                let value = try operation.extractNoCancellableResultData()
+                callbackClosure(.success(value))
+            } catch {
+                callbackClosure(.failure(error))
+            }
+        }
+    }
+
+    callStore.store(call: operation)
+
+    operationQueue.addOperations([operation], waitUntilFinished: false)
+}

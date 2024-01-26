@@ -17,7 +17,8 @@ struct StakingConstants {
             "DhK6qU2U5kDWeJKvPRtmnWRs8ETUGZ9S9QmNmQFuzrNoKm4",
             "EtETk1FbrDg7FoAfkREuXT7xHxCjbEf28sBvWf6zfB5wFyV"
         ],
-        KnowChainId.alephZero: ["5DBhSX89qijHkzUt9gcqsq9RiXxDfbjxyma1z78JSCdt4SoU"]
+        KnowChainId.alephZero: ["5DBhSX89qijHkzUt9gcqsq9RiXxDfbjxyma1z78JSCdt4SoU"],
+        KnowChainId.polimec: ["5A5Qgq3wn6JeH8Qtu7rakxULpBhtyqyX8iNj1XV8WFg3U58T"]
     ]
 
     static func preferredValidatorIds(for chain: ChainModel) -> [AccountId] {
