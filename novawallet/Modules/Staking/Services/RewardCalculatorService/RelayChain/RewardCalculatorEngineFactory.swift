@@ -43,13 +43,14 @@ final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol
                 treasuryPercentage: treasuryPercentage
             )
         default:
+            let config = InflationCurveRewardConfig.config(for: chainId)
             return InflationCurveRewardEngine(
                 chainId: chainId,
                 assetPrecision: assetPrecision,
                 totalIssuance: totalIssuance,
                 validators: validators,
                 eraDurationInSeconds: eraDurationInSeconds,
-                config: InflationCurveRewardConfig(),
+                config: config,
                 parachainsCount: params.parachainsCount ?? 0
             )
         }
