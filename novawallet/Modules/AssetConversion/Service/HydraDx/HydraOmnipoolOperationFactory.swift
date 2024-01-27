@@ -38,7 +38,7 @@ final class HydraOmnipoolOperationFactory {
             connection: connection
         )
 
-        assetsFetchWrapper.targetOperation.addDependency(codingFactoryOperation)
+        assetsFetchWrapper.addDependency(operations: [codingFactoryOperation])
 
         let mapOperation = ClosureOperation<Set<HydraDx.OmniPoolAssetId>> {
             let allAssets = try assetsFetchWrapper.targetOperation.extractNoCancellableResultData()
