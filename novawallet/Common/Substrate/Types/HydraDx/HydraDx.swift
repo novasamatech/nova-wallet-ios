@@ -20,7 +20,7 @@ enum HydraDx {
             ).value
         }
     }
-    
+
     struct AssetState: Decodable {
         @StringCodable var hubReserve: BigUInt
         @StringCodable var shares: BigUInt

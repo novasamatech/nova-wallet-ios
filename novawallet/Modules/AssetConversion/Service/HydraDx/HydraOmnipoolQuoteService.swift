@@ -10,7 +10,7 @@ final class HydraOmnipoolQuoteService {
     let operationQueue: OperationQueue
     let workQueue: DispatchQueue
 
-    private var subscription: CallbackBatchStorageSubscription<HydraDx.QuoteRemoteState>?
+    private var subscription: CallbackBatchStorageSubscription<HydraDx.QuoteRemoteStateChange>?
 
     init(
         chain: ChainModel,
@@ -37,7 +37,7 @@ final class HydraOmnipoolQuoteService {
     private func getBalanceRequest(
         for accountId: AccountId,
         assetId: HydraDx.LocalRemoteAssetId,
-        mappingKeyClosure: (Bool) -> HydraDx.QuoteRemoteState.Key
+        mappingKeyClosure: (Bool) -> HydraDx.QuoteRemoteStateChange.Key
     ) -> BatchStorageSubscriptionRequest {
         if assetId.localAssetId == chain.utilityChainAssetId() {
             return .init(
@@ -68,7 +68,7 @@ final class HydraOmnipoolQuoteService {
 
     private func getFeeRequest(
         for assetId: HydraDx.LocalRemoteAssetId,
-        mappingKey: HydraDx.QuoteRemoteState.Key
+        mappingKey: HydraDx.QuoteRemoteStateChange.Key
     ) -> BatchStorageSubscriptionRequest {
         .init(
             innerRequest: MapSubscriptionRequest(
@@ -84,7 +84,7 @@ final class HydraOmnipoolQuoteService {
 
     private func getAssetStateRequest(
         for assetId: HydraDx.LocalRemoteAssetId,
-        mappingKey: HydraDx.QuoteRemoteState.Key
+        mappingKey: HydraDx.QuoteRemoteStateChange.Key
     ) -> BatchStorageSubscriptionRequest {
         .init(
             innerRequest: MapSubscriptionRequest(
@@ -101,12 +101,12 @@ extension HydraOmnipoolQuoteService {
     func setup() throws {
         let assetInStateRequest = getAssetStateRequest(
             for: assetIn,
-            mappingKey: HydraDx.QuoteRemoteState.Key.assetInState
+            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInState
         )
 
         let assetOutStateRequest = getAssetStateRequest(
             for: assetOut,
-            mappingKey: HydraDx.QuoteRemoteState.Key.assetOutState
+            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutState
         )
 
         let poolAccountId = try HydraDx.getPoolAccountId(for: chain.accountIdSize)
@@ -115,27 +115,27 @@ extension HydraOmnipoolQuoteService {
             for: poolAccountId,
             assetId: assetIn,
             mappingKeyClosure: {
-                $0 ? HydraDx.QuoteRemoteState.Key.assetInNativeBalance :
-                    HydraDx.QuoteRemoteState.Key.assetInOrmlBalance
+                $0 ? HydraDx.QuoteRemoteStateChange.Key.assetInNativeBalance :
+                    HydraDx.QuoteRemoteStateChange.Key.assetInOrmlBalance
             }
         )
         let assetOutBalanceRequest = getBalanceRequest(
             for: poolAccountId,
             assetId: assetOut,
             mappingKeyClosure: {
-                $0 ? HydraDx.QuoteRemoteState.Key.assetOutNativeBalance :
-                    HydraDx.QuoteRemoteState.Key.assetOutOrmlBalance
+                $0 ? HydraDx.QuoteRemoteStateChange.Key.assetOutNativeBalance :
+                    HydraDx.QuoteRemoteStateChange.Key.assetOutOrmlBalance
             }
         )
 
         let assetInFeeRequest = getFeeRequest(
             for: assetIn,
-            mappingKey: HydraDx.QuoteRemoteState.Key.assetInFee
+            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInFee
         )
 
         let assetOutFeeRequest = getFeeRequest(
             for: assetOut,
-            mappingKey: HydraDx.QuoteRemoteState.Key.assetInFee
+            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInFee
         )
 
         subscription = CallbackBatchStorageSubscription(
