@@ -3,6 +3,28 @@ import SubstrateSdk
 import BigInt
 
 extension HydraDx {
+    struct QuoteRemoteState {
+        let assetInState: HydraDx.AssetState?
+        let assetOutState: HydraDx.AssetState?
+        let assetInBalance: BigUInt?
+        let assetOutBalance: BigUInt?
+        let assetInFee: BigUInt?
+        let assetOutFee: BigUInt?
+        let blockHash: Data?
+
+        func merging(newStateChange: QuoteRemoteStateChange) -> QuoteRemoteState {
+            .init(
+                assetInState: newStateChange.assetInState.valueWhenDefined(else: assetInState),
+                assetOutState: newStateChange.assetOutState.valueWhenDefined(else: assetOutState),
+                assetInBalance: newStateChange.assetInBalance.valueWhenDefined(else: assetInBalance),
+                assetOutBalance: newStateChange.assetInBalance.valueWhenDefined(else: assetOutBalance),
+                assetInFee: newStateChange.assetInFee.valueWhenDefined(else: assetInFee),
+                assetOutFee: newStateChange.assetInFee.valueWhenDefined(else: assetOutFee),
+                blockHash: newStateChange.blockHash
+            )
+        }
+    }
+
     struct QuoteRemoteStateChange: BatchStorageSubscriptionResult {
         enum Key: String {
             case assetInState
@@ -21,10 +43,29 @@ extension HydraDx {
         let assetOutBalance: UncertainStorage<BigUInt?>
         let assetInFee: UncertainStorage<BigUInt?>
         let assetOutFee: UncertainStorage<BigUInt?>
+        let blockHash: Data?
+
+        init(
+            assetInState: UncertainStorage<HydraDx.AssetState?>,
+            assetOutState: UncertainStorage<HydraDx.AssetState?>,
+            assetInBalance: UncertainStorage<BigUInt?>,
+            assetOutBalance: UncertainStorage<BigUInt?>,
+            assetInFee: UncertainStorage<BigUInt?>,
+            assetOutFee: UncertainStorage<BigUInt?>,
+            blockHash: Data?
+        ) {
+            self.assetInState = assetInState
+            self.assetOutState = assetOutState
+            self.assetInBalance = assetInBalance
+            self.assetOutBalance = assetOutBalance
+            self.assetInFee = assetInFee
+            self.assetOutFee = assetOutFee
+            self.blockHash = blockHash
+        }
 
         init(
             values: [BatchStorageSubscriptionResultValue],
-            blockHashJson _: JSON,
+            blockHashJson: JSON,
             context: [CodingUserInfoKey: Any]?
         ) throws {
             assetInState = try UncertainStorage(
@@ -64,6 +105,8 @@ extension HydraDx {
                 mappingKey: Key.assetOutFee.rawValue,
                 context: context
             ).map { $0?.value }
+
+            blockHash = try blockHashJson.map(to: Data?.self, with: context)
         }
 
         static func getBalanceStorage(
