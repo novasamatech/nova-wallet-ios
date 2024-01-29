@@ -5,7 +5,10 @@ import SoraKeystore
 import RobinHood
 
 enum StakingMainViewFactory {
-    static func createView(for stakingOption: Multistaking.ChainAssetOption) -> StakingMainViewProtocol? {
+    static func createView(
+        for stakingOption: Multistaking.ChainAssetOption,
+        proxySyncService: ProxySyncServiceProtocol
+    ) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
         let interactor = createInteractor(with: settings, stakingOption: stakingOption)
@@ -17,6 +20,7 @@ enum StakingMainViewFactory {
         let sharedStateFactory = StakingSharedStateFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            proxySyncService: proxySyncService,
             eventCenter: EventCenter.shared,
             syncOperationQueue: OperationManagerFacade.sharedDefaultQueue,
             repositoryOperationQueue: OperationManagerFacade.sharedDefaultQueue,

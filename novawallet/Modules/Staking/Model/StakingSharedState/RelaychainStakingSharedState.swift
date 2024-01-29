@@ -34,6 +34,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardCalculatorService: RewardCalculatorServiceProtocol
     let logger: LoggerProtocol
+    let proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?
 
     private var globalSubscriptionId: UUID?
 
@@ -46,6 +47,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         stakingOption: Multistaking.ChainAssetOption,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
+        proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?,
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
@@ -57,6 +59,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.stakingOption = stakingOption
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.accountRemoteSubscriptionService = accountRemoteSubscriptionService
+        self.proxyRemoteSubscriptionService = proxyRemoteSubscriptionService
         self.localSubscriptionFactory = localSubscriptionFactory
         self.proxyLocalSubscriptionFactory = proxyLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
@@ -86,9 +89,14 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
             try accountRemoteSubscriptionService.setupSubscription(
                 for: accountId,
                 chainId: chain.chainId,
-                chainFormat: chain.chainFormat,
-                chainHasProxy: chain.hasProxy
+                chainFormat: chain.chainFormat
             )
+            if chain.hasProxy {
+                try proxyRemoteSubscriptionService?.setupSubscription(
+                    for: accountId,
+                    chainId: chain.chainId
+                )
+            }
 
             logger.debug("Relaychain staking account data subscription succeeded")
         } else {
@@ -117,6 +125,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         timeModel.blockTimeService?.throttle()
 
         accountRemoteSubscriptionService.clearSubscription()
+        proxyRemoteSubscriptionService?.clearSubscription()
     }
 
     func createNetworkInfoOperationFactory(
