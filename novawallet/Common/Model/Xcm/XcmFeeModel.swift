@@ -7,15 +7,14 @@ protocol XcmFeeModelProtocol {
     var weightLimit: BigUInt { get }
 }
 
-extension XcmFeeModelProtocol {
-    var total: BigUInt {
-        senderPart + holdingPart
-    }
-}
-
 struct XcmFeeModel: XcmFeeModelProtocol {
+    // fee paid in native token in the origin chain
     let senderPart: BigUInt
+
+    // total fee paid in sending token in reserve and destination chains
     let holdingPart: BigUInt
+
+    // limit of the xcm
     let weightLimit: BigUInt
 }
 
