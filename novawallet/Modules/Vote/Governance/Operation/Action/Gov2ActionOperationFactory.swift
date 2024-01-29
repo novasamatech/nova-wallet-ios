@@ -8,27 +8,51 @@ final class Gov2ActionOperationFactory: GovernanceActionOperationFactory {
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<[StorageResponse<Preimage.RequestStatus>]> {
-        OperationCombiningService.compoundNonOptionalWrapper(
+    ) -> CompoundOperationWrapper<Preimage.RequestStatus?> {
+        let fetchOperation = OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let storagePath: StorageCodingPath
+            var wrappers: [CompoundOperationWrapper<[StorageResponse<Preimage.RequestStatus>]>] = []
 
             if codingFactory.hasStorage(for: Preimage.requestStatusForStoragePath) {
-                storagePath = Preimage.requestStatusForStoragePath
-            } else {
-                storagePath = Preimage.statusForStoragePath
+                wrappers.append(
+                    requestFactory.queryItems(
+                        engine: connection,
+                        keyParams: { [BytesCodable(wrappedValue: hash)] },
+                        factory: { codingFactory },
+                        storagePath: Preimage.requestStatusForStoragePath
+                    )
+                )
             }
 
-            return requestFactory.queryItems(
-                engine: connection,
-                keyParams: { [BytesCodable(wrappedValue: hash)] },
-                factory: { codingFactory },
-                storagePath: storagePath
-            )
+            if codingFactory.hasStorage(for: Preimage.statusForStoragePath) {
+                wrappers.append(
+                    requestFactory.queryItems(
+                        engine: connection,
+                        keyParams: { [BytesCodable(wrappedValue: hash)] },
+                        factory: { codingFactory },
+                        storagePath: Preimage.statusForStoragePath
+                    )
+                )
+            }
+
+            return wrappers
+        }.longrunOperation()
+
+        let mappingOperation = ClosureOperation<Preimage.RequestStatus?> {
+            let results = try fetchOperation.extractNoCancellableResultData()
+
+            return results
+                .flatMap { $0 }
+                .first { $0.value != nil }?
+                .value
         }
+
+        mappingOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [fetchOperation])
     }
 
     override func fetchCall(
@@ -44,7 +68,7 @@ final class Gov2ActionOperationFactory: GovernanceActionOperationFactory {
         )
 
         let callKeyParams: () throws -> [Preimage.PreimageKey] = {
-            let status = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
+            let status = try statusFetchWrapper.targetOperation.extractNoCancellableResultData()
 
             guard let length = status?.length, length <= Self.maxFetchCallSize else {
                 return []
@@ -66,7 +90,7 @@ final class Gov2ActionOperationFactory: GovernanceActionOperationFactory {
             let callKeys = try callKeyParams()
 
             guard !callKeys.isEmpty else {
-                let optStatus = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
+                let optStatus = try statusFetchWrapper.targetOperation.extractNoCancellableResultData()
 
                 if let length = optStatus?.length {
                     return length > Self.maxFetchCallSize ? .tooLong : nil
