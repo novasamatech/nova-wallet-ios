@@ -1,6 +1,6 @@
 import Foundation
 
-protocol GovernanceErrorPresentable: BaseErrorPresentable {
+protocol GovernanceErrorPresentable: BaseErrorPresentable, DelegationErrorPresentable {
     func presentNotEnoughTokensToVote(
         from view: ControllerBackedProtocol,
         available: String,
@@ -20,11 +20,6 @@ protocol GovernanceErrorPresentable: BaseErrorPresentable {
     func presentVotesMaximumNumberReached(
         from view: ControllerBackedProtocol,
         allowed: String,
-        locale: Locale?
-    )
-
-    func presentSelfDelegating(
-        from view: ControllerBackedProtocol,
         locale: Locale?
     )
 
@@ -84,23 +79,6 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
     ) {
         let title = R.string.localizable.govMaxVotesReachedTitle(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable.govMaxVotesReachedMessage(allowed, preferredLanguages: locale?.rLanguages)
-
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-
-        present(message: message, title: title, closeAction: close, from: view)
-    }
-
-    func presentSelfDelegating(
-        from view: ControllerBackedProtocol,
-        locale: Locale?
-    ) {
-        let title = R.string.localizable.govAddDelegateSelfErrorTitle(
-            preferredLanguages: locale?.rLanguages
-        )
-
-        let message = R.string.localizable.govAddDelegateSelfErrorMessage(
-            preferredLanguages: locale?.rLanguages
-        )
 
         let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 

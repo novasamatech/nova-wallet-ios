@@ -1,6 +1,6 @@
 import Foundation
 
-protocol ProxyErrorPresentable: BaseErrorPresentable {
+protocol ProxyErrorPresentable: BaseErrorPresentable, DelegationErrorPresentable {
     func presentNotEnoughBalanceForDeposit(
         from view: ControllerBackedProtocol,
         deposit: String,

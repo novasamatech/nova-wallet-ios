@@ -32,6 +32,7 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
+        wallet: MetaAccountModel,
         chainAsset: ChainAsset,
         interactor: StakingSetupProxyInteractorInputProtocol,
         wireframe: StakingSetupProxyWireframeProtocol,
@@ -45,6 +46,7 @@ final class StakingSetupProxyPresenter: StakingProxyBasePresenter {
         self.web3NameViewModelFactory = web3NameViewModelFactory
 
         super.init(
+            wallet: wallet,
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,

@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
+protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol, DelegationValidatorFactoryProtocol {
     func hasSufficientBalance(
         available: BigUInt,
         deposit: BigUInt?,
@@ -65,6 +65,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
     weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
+    var delegationErrorPresentable: DelegationErrorPresentable { presentable }
 
     let presentable: ProxyErrorPresentable
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
