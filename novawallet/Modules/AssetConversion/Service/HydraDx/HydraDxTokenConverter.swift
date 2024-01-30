@@ -2,10 +2,19 @@ import Foundation
 import SubstrateSdk
 
 extension HydraDx {
-    struct LocalRemoteAssetId {
+    struct LocalRemoteAssetId: Equatable {
         let localAssetId: ChainAssetId
         let remoteAssetId: HydraDx.OmniPoolAssetId
     }
+
+    struct SwapPair {
+        let assetIn: LocalRemoteAssetId
+        let assetOut: LocalRemoteAssetId
+    }
+}
+
+enum HydraDxTokenConverterError: Error {
+    case unexpectedAsset(ChainAsset)
 }
 
 enum HydraDxTokenConverter {
@@ -14,14 +23,11 @@ enum HydraDxTokenConverter {
     static func convertToRemote(
         chainAsset: ChainAsset,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraDx.LocalRemoteAssetId? {
-        guard
-            let storageInfo = try? AssetStorageInfo.extract(
-                from: chainAsset.asset,
-                codingFactory: codingFactory
-            ) else {
-            return nil
-        }
+    ) throws -> HydraDx.LocalRemoteAssetId {
+        let storageInfo = try AssetStorageInfo.extract(
+            from: chainAsset.asset,
+            codingFactory: codingFactory
+        )
 
         switch storageInfo {
         case .native:
@@ -35,7 +41,7 @@ enum HydraDxTokenConverter {
 
             return .init(localAssetId: chainAsset.chainAssetId, remoteAssetId: remoteId)
         default:
-            return nil
+            throw HydraDxTokenConverterError.unexpectedAsset(chainAsset)
         }
     }
 }

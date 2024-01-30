@@ -12,7 +12,7 @@ enum HydraOmnipoolQuoteServiceError: Error {
 
 final class HydraOmnipoolQuoteService: ObservableSyncService {
     let chain: ChainModel
-    let runtimeProvider: RuntimeProviderProtocol
+    let runtimeProvider: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let assetIn: HydraDx.LocalRemoteAssetId
     let assetOut: HydraDx.LocalRemoteAssetId
@@ -27,7 +27,7 @@ final class HydraOmnipoolQuoteService: ObservableSyncService {
         assetIn: HydraDx.LocalRemoteAssetId,
         assetOut: HydraDx.LocalRemoteAssetId,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
+        runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),

@@ -8,8 +8,8 @@ extension HydraDx {
         let assetOutState: HydraDx.AssetState?
         let assetInBalance: BigUInt?
         let assetOutBalance: BigUInt?
-        let assetInFee: BigUInt?
-        let assetOutFee: BigUInt?
+        let assetInFee: FeeEntry?
+        let assetOutFee: FeeEntry?
         let blockHash: Data?
 
         func merging(newStateChange: QuoteRemoteStateChange) -> QuoteRemoteState {
@@ -41,8 +41,8 @@ extension HydraDx {
         let assetOutState: UncertainStorage<HydraDx.AssetState?>
         let assetInBalance: UncertainStorage<BigUInt?>
         let assetOutBalance: UncertainStorage<BigUInt?>
-        let assetInFee: UncertainStorage<BigUInt?>
-        let assetOutFee: UncertainStorage<BigUInt?>
+        let assetInFee: UncertainStorage<FeeEntry?>
+        let assetOutFee: UncertainStorage<FeeEntry?>
         let blockHash: Data?
 
         init(
@@ -50,8 +50,8 @@ extension HydraDx {
             assetOutState: UncertainStorage<HydraDx.AssetState?>,
             assetInBalance: UncertainStorage<BigUInt?>,
             assetOutBalance: UncertainStorage<BigUInt?>,
-            assetInFee: UncertainStorage<BigUInt?>,
-            assetOutFee: UncertainStorage<BigUInt?>,
+            assetInFee: UncertainStorage<FeeEntry?>,
+            assetOutFee: UncertainStorage<FeeEntry?>,
             blockHash: Data?
         ) {
             self.assetInState = assetInState
@@ -94,17 +94,17 @@ extension HydraDx {
                 context: context
             )
 
-            assetInFee = try UncertainStorage<StringScaleMapper<BigUInt>?>(
+            assetInFee = try UncertainStorage<FeeEntry?>(
                 values: values,
                 mappingKey: Key.assetInFee.rawValue,
                 context: context
-            ).map { $0?.value }
+            )
 
-            assetOutFee = try UncertainStorage<StringScaleMapper<BigUInt>?>(
+            assetOutFee = try UncertainStorage<FeeEntry?>(
                 values: values,
                 mappingKey: Key.assetOutFee.rawValue,
                 context: context
-            ).map { $0?.value }
+            )
 
             blockHash = try blockHashJson.map(to: Data?.self, with: context)
         }

@@ -10,9 +10,28 @@ struct BigRational: Hashable {
     }
 }
 
+extension BigUInt {
+    func sub(rational: BigRational) -> BigRational? {
+        let numerator = self * rational.denominator
+
+        guard numerator >= rational.numerator else {
+            return nil
+        }
+
+        return BigRational(
+            numerator: numerator - rational.numerator,
+            denominator: rational.denominator
+        )
+    }
+}
+
 extension BigRational {
     static func percent(of numerator: BigUInt) -> BigRational {
         .init(numerator: numerator, denominator: 100)
+    }
+
+    static func permill(of numerator: BigUInt) -> BigRational {
+        .init(numerator: numerator, denominator: 1_000_000)
     }
 }
 

@@ -28,6 +28,15 @@ enum HydraDx {
         @StringCodable var tradable: UInt8
     }
 
+    struct FeeParameters: Decodable {
+        @StringCodable var minFee: BigUInt
+    }
+
+    struct FeeEntry: Decodable {
+        @StringCodable var assetFee: BigUInt
+        @StringCodable var protocolFee: BigUInt
+    }
+
     static func getPoolAccountId(for size: Int) throws -> AccountId {
         guard let accountIdPrefix = "modlomnipool".data(using: .utf8) else {
             throw CommonError.dataCorruption
