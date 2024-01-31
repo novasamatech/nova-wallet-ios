@@ -11,6 +11,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let applicationConfig: ApplicationConfigProtocol
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
+    let accountManagementFilter: AccountManagementFilterProtocol
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
@@ -25,6 +26,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
+        accountManagementFilter: AccountManagementFilterProtocol = AccountManagementFilter(),
         logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -33,6 +35,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.startStakingViewModelFactory = startStakingViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
         self.applicationConfig = applicationConfig
+        self.accountManagementFilter = accountManagementFilter
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -192,20 +195,16 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         baseInteractor.setup()
     }
 
-    func startStaking() {
+    func showNoAccountAlert() {
         guard let view = view,
-              let wallet = wallet,
-              let accountExistense = accountExistense else {
+              let wallet = wallet else {
             return
         }
-
-        switch accountExistense {
-        case .noAccount:
+        if accountManagementFilter.canAddAccount(to: wallet, chain: chainAsset.chain) {
             let message = R.string.localizable.commonChainAccountMissingMessageFormat(
                 chainAsset.chain.name,
                 preferredLanguages: selectedLocale.rLanguages
             )
-
             wireframe.presentAddAccount(
                 from: view,
                 chainName: chainAsset.chain.name,
@@ -217,6 +216,25 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
                     wallet: wallet
                 )
             }
+        } else {
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chainAsset.chain.name,
+                locale: selectedLocale
+            )
+        }
+    }
+
+    func startStaking() {
+        guard let view = view,
+              let accountExistense = accountExistense else {
+            return
+        }
+
+        switch accountExistense {
+        case .noAccount:
+            showNoAccountAlert()
         case .assetBalance:
             wireframe.showSetupAmount(from: view)
         }

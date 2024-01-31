@@ -17,7 +17,7 @@ struct StakingStateCommonData {
     private(set) var bagListScoreFactor: BigUInt?
     private(set) var eraCountdown: EraCountdown?
     private(set) var totalRewardFilter: StakingRewardFiltersPeriod?
-    private(set) var proxy: ProxyDefinition?
+    private(set) var proxy: UncertainStorage<ProxyDefinition?>
 }
 
 extension StakingStateCommonData {
@@ -38,7 +38,7 @@ extension StakingStateCommonData {
             bagListScoreFactor: nil,
             eraCountdown: nil,
             totalRewardFilter: nil,
-            proxy: nil
+            proxy: .undefined
         )
     }
 
@@ -134,7 +134,7 @@ extension StakingStateCommonData {
 
     func byReplacing(proxy: ProxyDefinition?) -> StakingStateCommonData {
         replace {
-            $0.proxy = proxy
+            $0.proxy = .defined(proxy)
         }
     }
 

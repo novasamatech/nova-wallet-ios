@@ -7,6 +7,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let chainAsset: ChainAsset
     let dataValidatingFactory: ProxyDataValidatorFactoryProtocol
+    let wallet: MetaAccountModel
 
     private let interactor: StakingProxyBaseInteractorInputProtocol
     private let wireframe: StakingSetupProxyBaseWireframeProtocol
@@ -19,6 +20,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     private(set) var proxy: UncertainStorage<ProxyDefinition?> = .undefined
 
     init(
+        wallet: MetaAccountModel,
         chainAsset: ChainAsset,
         interactor: StakingProxyBaseInteractorInputProtocol,
         wireframe: StakingSetupProxyBaseWireframeProtocol,
@@ -26,6 +28,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
         dataValidatingFactory: ProxyDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        self.wallet = wallet
         self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
@@ -83,6 +86,11 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 chain: chainAsset.chain,
                 locale: selectedLocale
             ),
+            dataValidatingFactory.notSelfDelegating(
+                selfId: getAccountId(),
+                delegateId: getProxyAccountId(),
+                locale: selectedLocale
+            ),
             dataValidatingFactory.proxyNotExists(
                 address: getProxyAddress(),
                 chain: chainAsset.chain,
@@ -125,6 +133,16 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
 
     func getProxyAddress() -> AccountAddress {
         fatalError("This function should be overriden")
+    }
+
+    func getProxyAccountId() -> AccountId? {
+        let address = getProxyAddress()
+        return try? address.toAccountId(using: chainAsset.chain.chainFormat)
+    }
+
+    func getAccountId() -> AccountId? {
+        let request = chainAsset.chain.accountRequest()
+        return try? wallet.fetch(for: request)?.accountId
     }
 }
 

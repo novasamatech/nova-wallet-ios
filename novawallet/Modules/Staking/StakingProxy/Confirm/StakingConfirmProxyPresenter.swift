@@ -10,7 +10,6 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     let wireframe: StakingConfirmProxyWireframeProtocol
     let interactor: StakingConfirmProxyInteractorInputProtocol
     let proxyAddress: AccountAddress
-    let wallet: MetaAccountModel
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
 
@@ -29,13 +28,13 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
         localizationManager: LocalizationManagerProtocol
     ) {
         self.proxyAddress = proxyAddress
-        self.wallet = wallet
         self.interactor = interactor
         self.wireframe = wireframe
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
 
         super.init(
+            wallet: wallet,
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,

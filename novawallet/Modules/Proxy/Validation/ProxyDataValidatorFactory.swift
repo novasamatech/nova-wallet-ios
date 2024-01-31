@@ -38,6 +38,12 @@ protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
+
+    func notSelfDelegating(
+        selfId: AccountId?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating
 }
 
 extension ProxyDataValidatorFactoryProtocol {
@@ -65,7 +71,6 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
     weak var view: ControllerBackedProtocol?
 
     var basePresentable: BaseErrorPresentable { presentable }
-
     let presentable: ProxyErrorPresentable
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
@@ -233,6 +238,22 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
             let feeAmount = feeAmountInPlank.decimal(assetInfo: asset)
 
             return feeAmount <= balance
+        })
+    }
+
+    func notSelfDelegating(
+        selfId: AccountId?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentSelfDelegating(from: view, locale: locale)
+        }, preservesCondition: {
+            selfId != nil && delegateId != nil && selfId != delegateId
         })
     }
 }

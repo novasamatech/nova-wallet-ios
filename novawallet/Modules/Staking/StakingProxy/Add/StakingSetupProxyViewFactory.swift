@@ -4,7 +4,8 @@ import RobinHood
 
 struct StakingSetupProxyViewFactory {
     static func createView(state: RelaychainStakingSharedStateProtocol) -> StakingSetupProxyViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard let wallet = SelectedWalletSettings.shared.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
         guard let interactor = createInteractor(state: state) else {
@@ -25,6 +26,7 @@ struct StakingSetupProxyViewFactory {
             )
         )
         let presenter = StakingSetupProxyPresenter(
+            wallet: wallet,
             chainAsset: chainAsset,
             interactor: interactor,
             wireframe: wireframe,

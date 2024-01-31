@@ -34,6 +34,11 @@ protocol ProxyErrorPresentable: BaseErrorPresentable {
         accountName: String,
         locale: Locale?
     )
+
+    func presentSelfDelegating(
+        from view: ControllerBackedProtocol,
+        locale: Locale?
+    )
 }
 
 extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -127,5 +132,22 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentSelfDelegating(
+        from view: ControllerBackedProtocol,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.govAddDelegateSelfErrorTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.govAddDelegateSelfErrorMessage(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: close, from: view)
     }
 }
