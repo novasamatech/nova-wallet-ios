@@ -8,33 +8,45 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
     let proxySyncService: ProxySyncServiceProtocol
+    let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
-    let childSubscriptionFactory: ChildSubscriptionFactoryProtocol
 
     private let mutex = NSLock()
     private let operationQueue: OperationQueue
-    private var subscriptionId: UInt16?
-    private var remoteStorageKey: Data?
+    private let workingQueue: DispatchQueue
+    private var subscription: CallbackBatchStorageSubscription<BatchSubscriptionHandler>?
     private var storageSubscriptionHandler: StorageChildSubscribing?
+
+    private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
+        let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
+            storageFacade.createRepository()
+        return AnyDataProviderRepository(coreDataRepository)
+    }()
 
     init(
         accountId: AccountId,
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
         proxySyncService: ProxySyncServiceProtocol,
-        childSubscriptionFactory: ChildSubscriptionFactoryProtocol,
+        storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
+        workingQueue: DispatchQueue,
         logger: LoggerProtocol? = nil
     ) {
         self.accountId = accountId
         self.chainId = chainId
         self.chainRegistry = chainRegistry
         self.proxySyncService = proxySyncService
-        self.childSubscriptionFactory = childSubscriptionFactory
         self.operationQueue = operationQueue
+        self.workingQueue = workingQueue
         self.logger = logger
+        self.storageFacade = storageFacade
 
-        subscribeRemote(for: accountId)
+        do {
+            try subscribeRemote(for: accountId)
+        } catch {
+            logger?.error(error.localizedDescription)
+        }
     }
 
     deinit {
@@ -42,159 +54,60 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
     }
 
     private func unsubscribeRemote() {
-        mutex.lock()
-
-        if let subscriptionId = subscriptionId {
-            chainRegistry.getConnection(for: chainId)?.cancelForIdentifier(subscriptionId)
-        }
-
-        subscriptionId = nil
-        remoteStorageKey = nil
-        storageSubscriptionHandler = nil
-
-        mutex.unlock()
+        subscription?.unsubscribe()
+        subscription = nil
     }
 
-    private func subscribeRemote(for accountId: AccountId) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
+    private func subscribeRemote(for accountId: AccountId) throws {
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        do {
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                throw ChainRegistryError.runtimeMetadaUnavailable
-            }
-            let path = Proxy.proxyList
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                path,
-                accountId: accountId,
-                chainId: chainId
-            )
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            Proxy.proxyList,
+            accountId: accountId,
+            chainId: chainId
+        )
 
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let request = BatchStorageSubscriptionRequest(
+            innerRequest: MapSubscriptionRequest(
+                storagePath: Proxy.proxyList,
+                localKey: localKey
+            ) {
+                BytesCodable(wrappedValue: accountId)
+            },
+            mappingKey: nil
+        )
 
-            let storageKeyFactory = StorageKeyFactory()
+        subscription = CallbackBatchStorageSubscription(
+            requests: [request],
+            connection: connection,
+            runtimeService: runtimeService,
+            repository: repository,
+            operationQueue: operationQueue,
+            callbackQueue: workingQueue
+        ) { [weak self] result in
+            self?.mutex.lock()
 
-            let codingOperation = MapKeyEncodingOperation(
-                path: path,
-                storageKeyFactory: storageKeyFactory,
-                keyParams: [accountId]
-            )
+            self?.handleSubscription(result)
 
-            codingOperation.addDependency(codingFactoryOperation)
-
-            codingOperation.configurationBlock = {
-                do {
-                    guard let result = try codingFactoryOperation.extractResultData() else {
-                        codingOperation.cancel()
-                        return
-                    }
-
-                    codingOperation.codingFactory = result
-
-                } catch {
-                    codingOperation.result = .failure(error)
-                }
-            }
-
-            let mapOperation = ClosureOperation<Data?> { [weak self] in
-                do {
-                    return try codingOperation.extractNoCancellableResultData().first
-                } catch StorageKeyEncodingOperationError.invalidStoragePath {
-                    self?.logger?.warning("Subscription path missing in runtime: \(codingOperation.path)")
-                    return nil
-                }
-            }
-
-            mapOperation.addDependency(codingOperation)
-
-            mapOperation.completionBlock = { [weak self] in
-                do {
-                    if let remoteKey = try mapOperation.extractNoCancellableResultData() {
-                        let key = SubscriptionStorageKeys(remote: remoteKey, local: localKey)
-                        self?.subscribeToRemote(with: key)
-                    }
-                } catch {
-                    self?.logger?.error("Did receive error: \(error)")
-                }
-            }
-
-            let operations = [codingFactoryOperation, codingOperation, mapOperation]
-
-            operationQueue.addOperations(operations, waitUntilFinished: false)
-
-        } catch {
-            logger?.error("Did receive unexpected error \(error)")
+            self?.mutex.unlock()
         }
+
+        subscription?.subscribe()
     }
 
-    private func subscribeToRemote(
-        with keyPair: SubscriptionStorageKeys
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        do {
-            guard let connection = chainRegistry.getConnection(for: chainId) else {
-                throw ChainRegistryError.connectionUnavailable
+    private func handleSubscription(_ result: Result<BatchSubscriptionHandler, Error>) {
+        switch result {
+        case let .success(handler):
+            if let blockHash = handler.blockHash {
+                proxySyncService.syncUp(chainId: chainId, blockHash: blockHash)
             }
-
-            let storageParam = keyPair.remote.toHex(includePrefix: true)
-
-            let updateClosure: (StorageSubscriptionUpdate) -> Void = { [weak self] update in
-                self?.handleUpdate(update.params.result)
-            }
-
-            let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
-                self?.logger?.error("Did receive subscription error: \(error) \(unsubscribed)")
-            }
-
-            let subscriptionId = try connection.subscribe(
-                RPCMethod.storageSubscribe,
-                params: [[storageParam]],
-                updateClosure: updateClosure,
-                failureClosure: failureClosure
-            )
-
-            self.subscriptionId = subscriptionId
-            remoteStorageKey = keyPair.remote
-            storageSubscriptionHandler = childSubscriptionFactory.createEmptyHandlingSubscription(keys: keyPair)
-        } catch {
-            logger?.error("Can't subscribe to storage: \(error)")
-        }
-    }
-
-    private func handleUpdate(_ update: StorageUpdate) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard let subscriptionId = subscriptionId else {
-            logger?.warning("Staking update received but subscription is missing")
-            return
-        }
-
-        guard let remoteStorageKey = remoteStorageKey else {
-            logger?.warning("Remote storage key is missing")
-            return
-        }
-
-        let storageUpdate = StorageUpdateData(update: update)
-
-        if let change = storageUpdate.changes.first(where: { $0.key == remoteStorageKey }) {
-            let blockHashData = update.blockHash.map { try? Data(hexString: $0) } ?? nil
-            storageSubscriptionHandler?.processUpdate(change.value, blockHash: blockHashData)
-
-            if let blockHashData = blockHashData {
-                proxySyncService.syncUp(chainId: chainId, blockHash: blockHashData)
-            }
+        case let .failure(error):
+            logger?.error(error.localizedDescription)
         }
     }
 }

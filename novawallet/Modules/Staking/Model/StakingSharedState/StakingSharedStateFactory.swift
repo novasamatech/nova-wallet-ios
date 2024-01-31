@@ -173,7 +173,7 @@ final class StakingSharedStateFactory {
             ProxyAccountUpdatingService(
                 chainRegistry: chainRegistry,
                 proxySyncService: $0,
-                childSubscriptionFactory: childSubscriptionFactory,
+                storageFacade: storageFacade,
                 operationQueue: syncOperationQueue,
                 logger: logger
             )

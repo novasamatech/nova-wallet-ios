@@ -96,7 +96,7 @@ final class RelaychainMultistakingUpdateService: ObservableSyncService {
             ) {
                 BytesCodable(wrappedValue: accountId)
             },
-            mappingKey: Multistaking.RelaychainAccountsChange.Key.stash.rawValue
+            mappingKey: nil
         )
 
         controllerSubscription = CallbackBatchStorageSubscription(

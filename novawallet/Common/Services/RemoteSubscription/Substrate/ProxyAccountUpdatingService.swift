@@ -16,18 +16,18 @@ class ProxyAccountUpdatingService: ProxyAccountUpdatingServiceProtocol {
     let proxySyncService: ProxySyncServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
-    let childSubscriptionFactory: ChildSubscriptionFactoryProtocol
+    let storageFacade: StorageFacadeProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
         proxySyncService: ProxySyncServiceProtocol,
-        childSubscriptionFactory: ChildSubscriptionFactoryProtocol,
+        storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
         self.chainRegistry = chainRegistry
         self.proxySyncService = proxySyncService
-        self.childSubscriptionFactory = childSubscriptionFactory
+        self.storageFacade = storageFacade
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -41,8 +41,9 @@ class ProxyAccountUpdatingService: ProxyAccountUpdatingServiceProtocol {
             chainId: chainId,
             chainRegistry: chainRegistry,
             proxySyncService: proxySyncService,
-            childSubscriptionFactory: childSubscriptionFactory,
-            operationQueue: operationQueue
+            storageFacade: storageFacade,
+            operationQueue: operationQueue,
+            workingQueue: DispatchQueue.global()
         )
     }
 
