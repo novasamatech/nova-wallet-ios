@@ -91,8 +91,8 @@ enum StakingManageOption {
         }
     }
 
-    static func proxyAction(from proxyDefinition: UncertainStorage<ProxyDefinition?>) -> StakingManageOption? {
-        guard proxyDefinition.isDefined else {
+    static func proxyAction(from proxyDefinition: UncertainStorage<ProxyDefinition?>, chain: ChainModel) -> StakingManageOption? {
+        guard proxyDefinition.isDefined, chain.hasProxy else {
             return nil
         }
         let proxiesCount = proxyDefinition.value??.definition.count ?? 0

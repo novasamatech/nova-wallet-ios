@@ -807,8 +807,6 @@
 		766FE2FAB8509BF0F56EA3C0 /* ParaStkCollatorInfoProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3B8502E5BF8CDD7ACE2DD0 /* ParaStkCollatorInfoProtocols.swift */; };
 		76B0B7147181747A7CEDDDF6 /* GovernanceUnavailableTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E25CF67173500E0AC19387 /* GovernanceUnavailableTracksViewController.swift */; };
 		76CF8508C6936FC9941F3C3E /* TokensManageAddProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C995D640129977CAB05982EC /* TokensManageAddProtocols.swift */; };
-		770589FA2B695E4600778DCA /* DelegationValidatorFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770589F92B695E4600778DCA /* DelegationValidatorFactoryProtocol.swift */; };
-		770589FC2B695E6700778DCA /* DelegationErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770589FB2B695E6700778DCA /* DelegationErrorPresentable.swift */; };
 		770955712AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */; };
 		770F57882A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */; };
 		770F578B2A8A48FF005FD7C1 /* ButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */; };
@@ -5068,8 +5066,6 @@
 		75ADB95DAB1F29E6A3FDD166 /* WalletConnectSessionDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionDetailsPresenter.swift; sourceTree = "<group>"; };
 		75CFAA1D2D04553B10421C69 /* DAppAuthConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmProtocols.swift; sourceTree = "<group>"; };
 		76AA6A6232B1CF2D5AF74D0D /* ParaStkUnstakeInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeInteractor.swift; sourceTree = "<group>"; };
-		770589F92B695E4600778DCA /* DelegationValidatorFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationValidatorFactoryProtocol.swift; sourceTree = "<group>"; };
-		770589FB2B695E6700778DCA /* DelegationErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationErrorPresentable.swift; sourceTree = "<group>"; };
 		770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBaseDataValidatingFactory.swift; sourceTree = "<group>"; };
 		770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewStyles.swift; sourceTree = "<group>"; };
 		770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewModel.swift; sourceTree = "<group>"; };
@@ -10283,15 +10279,6 @@
 				E83916DF00BA41516B94304E /* DelegationReferendumVotersViewFactory.swift */,
 			);
 			path = DelegationReferendumVoters;
-			sourceTree = "<group>";
-		};
-		770589F82B695E3600778DCA /* Delegation */ = {
-			isa = PBXGroup;
-			children = (
-				770589F92B695E4600778DCA /* DelegationValidatorFactoryProtocol.swift */,
-				770589FB2B695E6700778DCA /* DelegationErrorPresentable.swift */,
-			);
-			path = Delegation;
 			sourceTree = "<group>";
 		};
 		770F57892A8A48F7005FD7C1 /* Model */ = {
@@ -16946,7 +16933,6 @@
 		84DD5F3C263DE5DF00425ACF /* Validation */ = {
 			isa = PBXGroup;
 			children = (
-				770589F82B695E3600778DCA /* Delegation */,
 				84DD5F50263DEB9500425ACF /* Validators */,
 				84DD5F3D263DE5FF00425ACF /* DataValidationProtocols.swift */,
 				84DD5F4B263DE82C00425ACF /* DataValidationRunner.swift */,
@@ -22141,7 +22127,6 @@
 				0C9951CA2AE2ABA400B65615 /* AssetListBannerCell.swift in Sources */,
 				84E172CF28BE468D00DC85B6 /* MessageSheetPresentable.swift in Sources */,
 				8487583727F06AF300495306 /* AddressScanDelegate.swift in Sources */,
-				770589FA2B695E4600778DCA /* DelegationValidatorFactoryProtocol.swift in Sources */,
 				3E480EEAF501AEB5D543506D /* UsernameSetupPresenter.swift in Sources */,
 				880059DA28EF092800E87B9B /* ThumbView.swift in Sources */,
 				84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */,
@@ -23688,7 +23673,6 @@
 				EDD5551608E7ACDDBBC054C4 /* ParaStkRebondProtocols.swift in Sources */,
 				F85F1BCAD47F0596FBFBA110 /* ParaStkRebondWireframe.swift in Sources */,
 				77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */,
-				770589FC2B695E6700778DCA /* DelegationErrorPresentable.swift in Sources */,
 				777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */,
 				B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */,
 				84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */,

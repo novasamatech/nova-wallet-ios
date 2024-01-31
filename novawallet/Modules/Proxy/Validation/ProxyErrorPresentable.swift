@@ -1,6 +1,6 @@
 import Foundation
 
-protocol ProxyErrorPresentable: BaseErrorPresentable, DelegationErrorPresentable {
+protocol ProxyErrorPresentable: BaseErrorPresentable {
     func presentNotEnoughBalanceForDeposit(
         from view: ControllerBackedProtocol,
         deposit: String,
@@ -32,6 +32,11 @@ protocol ProxyErrorPresentable: BaseErrorPresentable, DelegationErrorPresentable
         balance: String,
         fee: String,
         accountName: String,
+        locale: Locale?
+    )
+
+    func presentSelfDelegating(
+        from view: ControllerBackedProtocol,
         locale: Locale?
     )
 }
@@ -127,5 +132,22 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentSelfDelegating(
+        from view: ControllerBackedProtocol,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.govAddDelegateSelfErrorTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.govAddDelegateSelfErrorMessage(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: close, from: view)
     }
 }
