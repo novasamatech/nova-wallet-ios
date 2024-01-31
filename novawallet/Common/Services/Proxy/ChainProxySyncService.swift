@@ -51,10 +51,32 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
     }
 
     override func performSyncUp() {
-        sync(at: nil)
+        performSync(at: nil)
     }
 
     func sync(at blockHash: Data?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        if isSyncing {
+            stopSyncUp()
+
+            isSyncing = false
+        }
+
+        isSyncing = true
+
+        performSync(at: blockHash)
+    }
+
+    func performSync(at blockHash: Data?) {
         let chainId = chainModel.chainId
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             completeImmediate(ChainRegistryError.connectionUnavailable)

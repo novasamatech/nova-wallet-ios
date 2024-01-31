@@ -43,7 +43,7 @@ class ProxyAccountUpdatingService: ProxyAccountUpdatingServiceProtocol {
             proxySyncService: proxySyncService,
             storageFacade: storageFacade,
             operationQueue: operationQueue,
-            workingQueue: DispatchQueue.global()
+            workingQueue: .init(label: "com.novawallet.proxy.updating", qos: .userInitiated)
         )
     }
 
