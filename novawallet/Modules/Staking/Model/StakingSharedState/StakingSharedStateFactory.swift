@@ -44,6 +44,7 @@ final class StakingSharedStateFactory {
         let timeModel: StakingTimeModel
         let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
         let proxySubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
+        let proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?
     }
 
     struct NominationPoolsServices {
@@ -56,6 +57,7 @@ final class StakingSharedStateFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
     let eventCenter: EventCenterProtocol
+    let proxySyncService: ProxySyncServiceProtocol?
     let syncOperationQueue: OperationQueue
     let repositoryOperationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -63,12 +65,14 @@ final class StakingSharedStateFactory {
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
+        proxySyncService: ProxySyncServiceProtocol?,
         eventCenter: EventCenterProtocol,
         syncOperationQueue: OperationQueue,
         repositoryOperationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
+        self.proxySyncService = proxySyncService
         self.chainRegistry = chainRegistry
         self.eventCenter = eventCenter
         self.syncOperationQueue = syncOperationQueue
@@ -165,6 +169,16 @@ final class StakingSharedStateFactory {
             operationQueue: syncOperationQueue
         )
 
+        let proxyRemoteSubscriptionService = proxySyncService.map {
+            ProxyAccountUpdatingService(
+                chainRegistry: chainRegistry,
+                proxySyncService: $0,
+                storageFacade: storageFacade,
+                operationQueue: syncOperationQueue,
+                logger: logger
+            )
+        }
+
         return .init(
             globalRemoteSubscriptionService: globalServices.globalRemoteSubscriptionService,
             accountRemoteSubscriptionService: accountRemoteSubscriptionService,
@@ -172,7 +186,8 @@ final class StakingSharedStateFactory {
             rewardCalculatorService: globalServices.rewardCalculatorService,
             timeModel: globalServices.timeModel,
             localSubscriptionFactory: globalServices.localSubscriptionFactory,
-            proxySubscriptionFactory: ProxyListLocalSubscriptionFactory.shared
+            proxySubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            proxyRemoteSubscriptionService: proxyRemoteSubscriptionService
         )
     }
 
@@ -265,6 +280,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             stakingOption: stakingOption,
             globalRemoteSubscriptionService: services.globalRemoteSubscriptionService,
             accountRemoteSubscriptionService: services.accountRemoteSubscriptionService,
+            proxyRemoteSubscriptionService: services.proxyRemoteSubscriptionService,
             localSubscriptionFactory: services.localSubscriptionFactory,
             proxyLocalSubscriptionFactory: services.proxySubscriptionFactory,
             eraValidatorService: services.eraValidatorService,
@@ -399,7 +415,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             relaychainLocalSubscriptionFactory: relaychainServices.localSubscriptionFactory,
             eraValidatorService: relaychainServices.eraValidatorService,
             relaychainRewardCalculatorService: relaychainServices.rewardCalculatorService,
-            npRemoteSubstriptionService: nominationPoolsService.remoteSubscriptionService,
+            npRemoteSubscriptionService: nominationPoolsService.remoteSubscriptionService,
             npAccountSubscriptionServiceFactory: nominationPoolsService.accountSubscriptionServiceFactory,
             npLocalSubscriptionFactory: nominationPoolsService.localSubscriptionFactory,
             activePoolsService: nominationPoolsService.activePoolsService,

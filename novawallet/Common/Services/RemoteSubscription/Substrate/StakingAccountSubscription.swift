@@ -39,7 +39,6 @@ final class StakingAccountSubscription: WebSocketSubscribing {
     let childSubscriptionFactory: ChildSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
-    let chainHasProxy: Bool
     private let mutex = NSLock()
 
     private var subscription: Subscription?
@@ -48,7 +47,6 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         accountId: AccountId,
         chainId: ChainModel.Id,
         chainFormat: ChainFormat,
-        chainHasProxy: Bool,
         chainRegistry: ChainRegistryProtocol,
         provider: StreamableProvider<StashItem>,
         childSubscriptionFactory: ChildSubscriptionFactoryProtocol,
@@ -58,7 +56,6 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         self.accountId = accountId
         self.chainId = chainId
         self.chainFormat = chainFormat
-        self.chainHasProxy = chainHasProxy
         self.chainRegistry = chainRegistry
         self.provider = provider
         self.childSubscriptionFactory = childSubscriptionFactory
@@ -130,10 +127,6 @@ final class StakingAccountSubscription: WebSocketSubscribing {
             requests.append(
                 .init(remotePath: storagePath, localPath: BagList.defaultBagListNodePath, accountId: stashId)
             )
-        }
-
-        if chainHasProxy {
-            requests.append(.init(storagePath: Proxy.proxyList, accountId: stashId))
         }
 
         return requests

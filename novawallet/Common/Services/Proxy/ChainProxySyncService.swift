@@ -2,7 +2,11 @@ import SubstrateSdk
 import RobinHood
 import BigInt
 
-final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning {
+protocol ChainProxySyncServiceProtocol: ObservableSyncServiceProtocol {
+    func sync(at blockHash: Data?)
+}
+
+final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceProtocol, AnyCancellableCleaning {
     let walletUpdateMediator: WalletUpdateMediating
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let chainRegistry: ChainRegistryProtocol
@@ -47,8 +51,33 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
     }
 
     override func performSyncUp() {
-        let chainId = chainModel.chainId
+        performSync(at: nil)
+    }
 
+    func sync(at blockHash: Data?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        if isSyncing {
+            stopSyncUp()
+
+            isSyncing = false
+        }
+
+        isSyncing = true
+
+        performSync(at: blockHash)
+    }
+
+    func performSync(at blockHash: Data?) {
+        let chainId = chainModel.chainId
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             completeImmediate(ChainRegistryError.connectionUnavailable)
             return
@@ -59,22 +88,13 @@ final class ChainProxySyncService: ObservableSyncService, AnyCancellableCleaning
             return
         }
 
-        performSyncUp(
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
-    }
-
-    private func performSyncUp(
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol
-    ) {
         pendingCall.cancel()
 
         let proxyListWrapper = proxyOperationFactory.fetchProxyList(
             requestFactory: requestFactory,
             connection: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            at: blockHash
         )
 
         let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)

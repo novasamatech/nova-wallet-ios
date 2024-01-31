@@ -1571,6 +1571,21 @@ import RobinHood
     
     
     
+     func syncUp(chainId: ChainModel.Id, blockHash: Data?)  {
+        
+    return cuckoo_manager.call("syncUp(chainId: ChainModel.Id, blockHash: Data?)",
+            parameters: (chainId, blockHash),
+            escapingParameters: (chainId, blockHash),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.syncUp(chainId: chainId, blockHash: blockHash))
+        
+    }
+    
+    
+    
      func setup()  {
         
     return cuckoo_manager.call("setup()",
@@ -1628,6 +1643,11 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp()", parameterMatchers: matchers))
 	    }
 	    
+	    func syncUp<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(chainId: M1, blockHash: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id, Data?)> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == Data {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Data?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: blockHash) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp(chainId: ChainModel.Id, blockHash: Data?)", parameterMatchers: matchers))
+	    }
+	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
@@ -1679,6 +1699,12 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
+	    func syncUp<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(chainId: M1, blockHash: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, Data?), Void> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == Data {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Data?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: blockHash) { $0.1 }]
+	        return cuckoo_manager.verify("syncUp(chainId: ChainModel.Id, blockHash: Data?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -1720,6 +1746,12 @@ import RobinHood
     
     
      func syncUp()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func syncUp(chainId: ChainModel.Id, blockHash: Data?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

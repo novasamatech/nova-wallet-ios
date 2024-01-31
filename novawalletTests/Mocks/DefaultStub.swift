@@ -124,7 +124,7 @@ extension MockStakingRemoteSubscriptionServiceProtocol {
 extension MockStakingAccountUpdatingServiceProtocol {
     func applyDefault() -> MockStakingAccountUpdatingServiceProtocol {
         stub(self) { stub in
-            stub.setupSubscription(for: any(), chainId: any(), chainFormat: any(), chainHasProxy: any()).thenDoNothing()
+            stub.setupSubscription(for: any(), chainId: any(), chainFormat: any()).thenDoNothing()
             stub.clearSubscription().thenDoNothing()
         }
 
