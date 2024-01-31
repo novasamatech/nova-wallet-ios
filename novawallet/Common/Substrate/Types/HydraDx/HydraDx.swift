@@ -5,6 +5,9 @@ import SubstrateSdk
 enum HydraDx {
     typealias OmniPoolAssetId = BigUInt
     static let omniPoolModule = "Omnipool"
+    static let dynamicFeesModule = "DynamicFees"
+    static let multiTxPaymentModule = "MultiTransactionPayment"
+    static let referralsModule = "Referrals"
 
     struct AssetsKey: JSONListConvertible {
         let assetId: OmniPoolAssetId

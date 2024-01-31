@@ -6,10 +6,10 @@ extension HydraDx {
     }
 
     static var assetFeeParametersPath: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "DynamicFees", constantName: "AssetFeeParameters")
+        ConstantCodingPath(moduleName: Self.dynamicFeesModule, constantName: "AssetFeeParameters")
     }
 
     static var protocolFeeParametersPath: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "DynamicFees", constantName: "ProtocolFeeParameters")
+        ConstantCodingPath(moduleName: Self.dynamicFeesModule, constantName: "ProtocolFeeParameters")
     }
 }
