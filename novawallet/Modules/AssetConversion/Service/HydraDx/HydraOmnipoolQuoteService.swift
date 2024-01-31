@@ -197,7 +197,7 @@ final class HydraOmnipoolQuoteService: ObservableSyncService {
 
         let assetOutFeeRequest = getFeeRequest(
             for: assetOut,
-            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInFee
+            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutFee
         )
 
         subscription = CallbackBatchStorageSubscription(

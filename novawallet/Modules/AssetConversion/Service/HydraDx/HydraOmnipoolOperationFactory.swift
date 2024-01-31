@@ -225,11 +225,11 @@ final class HydraOmnipoolOperationFactory {
             throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
         }
 
-        let assetFee = BigRational.permill(
+        let assetFee = BigRational.permillPercent(
             of: remoteState.assetOutFee?.assetFee ?? defaultFee.assetFee
         )
 
-        let protocolFee = BigRational.permill(
+        let protocolFee = BigRational.permillPercent(
             of: remoteState.assetInFee?.protocolFee ?? defaultFee.protocolFee
         )
 
@@ -245,7 +245,7 @@ final class HydraOmnipoolOperationFactory {
 
         let deltaReserveOut = (deltaHubReserveOut * outReserveHp) / (outHubReserveHp + deltaHubReserveOut)
 
-        guard let amountOut = BigUInt(100).sub(rational: assetFee)?.mul(value: deltaReserveOut) else {
+        guard let amountOut = BigUInt(1).sub(rational: assetFee)?.mul(value: deltaReserveOut) else {
             throw AssetConversionOperationError.runtimeError("Fee too big")
         }
 
@@ -265,16 +265,16 @@ final class HydraOmnipoolOperationFactory {
             throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
         }
 
-        let assetFee = BigRational.permill(
+        let assetFee = BigRational.permillPercent(
             of: remoteState.assetOutFee?.assetFee ?? defaultFee.assetFee
         )
 
-        let protocolFee = BigRational.permill(
+        let protocolFee = BigRational.permillPercent(
             of: remoteState.assetInFee?.protocolFee ?? defaultFee.protocolFee
         )
 
         let outReserve = remoteState.assetOutBalance ?? 0
-        guard let outReserveNoFee = BigUInt(100).sub(rational: assetFee)?.mul(value: outReserve) else {
+        guard let outReserveNoFee = BigUInt(1).sub(rational: assetFee)?.mul(value: outReserve) else {
             throw AssetConversionOperationError.runtimeError("Asset fee too big")
         }
 

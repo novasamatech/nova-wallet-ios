@@ -29,6 +29,40 @@ final class HydraDxSwapTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+    
+    func testQuotePolkadotHydraSell() {
+        do {
+            let quote = try performQuoteFetch(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    amount: 10_000_000_000,
+                    direction: .sell
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testQuotePolkadotHydraBuy() {
+        do {
+            let quote = try performQuoteFetch(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    amount: 1_000_000_000_000,
+                    direction: .buy
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 
     private func performAvailableDirectionsFetch(
         for chainId: ChainModel.Id,
@@ -69,5 +103,33 @@ final class HydraDxSwapTests: XCTestCase {
             
             return try wrapper.targetOperation.extractNoCancellableResultData()
         }
+    }
+    
+    private func performQuoteFetch(for args: AssetConversion.QuoteArgs) throws -> AssetConversion.Quote {
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = args.assetIn.chainId
+        
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+        
+        let operationQueue = OperationQueue()
+        
+        let operationFactory = HydraOmnipoolOperationFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+        
+        let quoteWrapper = operationFactory.quote(for: args)
+        
+        operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
+        
+        return try quoteWrapper.targetOperation.extractNoCancellableResultData()
     }
 }

@@ -22,10 +22,14 @@ enum HydraDx {
     }
 
     struct AssetState: Decodable {
+        struct Tradable: Decodable {
+            @StringCodable var bits: UInt8
+        }
+
         @StringCodable var hubReserve: BigUInt
         @StringCodable var shares: BigUInt
         @StringCodable var protocolShares: BigUInt
-        @StringCodable var tradable: UInt8
+        let tradable: Tradable
     }
 
     struct FeeParameters: Decodable {

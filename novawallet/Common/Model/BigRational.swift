@@ -30,7 +30,7 @@ extension BigRational {
         .init(numerator: numerator, denominator: 100)
     }
 
-    static func permill(of numerator: BigUInt) -> BigRational {
+    static func permillPercent(of numerator: BigUInt) -> BigRational {
         .init(numerator: numerator, denominator: 1_000_000)
     }
 }
