@@ -231,6 +231,7 @@ final class AssetHubSwapTests: XCTestCase {
         let feeService = AssetHubFeeService(
             wallet: wallet,
             chainRegistry: chainRegistry,
+            userStorageFacade: UserDataStorageTestFacade(),
             operationQueue: operationQueue
         )
         

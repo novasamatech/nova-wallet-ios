@@ -106,6 +106,7 @@ struct SwapSetupViewFactory {
         let feeService = AssetHubFeeService(
             wallet: selectedWallet,
             chainRegistry: chainRegistry,
+            userStorageFacade: UserDataStorageFacade.shared,
             operationQueue: operationQueue
         )
 

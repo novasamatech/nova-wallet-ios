@@ -11,6 +11,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
 
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
+    let userStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     private var factories: ChainOperationFactory?
@@ -21,10 +22,12 @@ final class AssetHubFeeService: AnyCancellableCleaning {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
+        self.userStorageFacade = userStorageFacade
         self.operationQueue = operationQueue
     }
 
@@ -48,7 +51,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            userStorageFacade: userStorageFacade
         )
 
         let conversionOperationFactory = AssetHubSwapOperationFactory(
