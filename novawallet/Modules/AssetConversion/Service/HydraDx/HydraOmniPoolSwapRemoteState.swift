@@ -2,14 +2,29 @@ import Foundation
 import SubstrateSdk
 
 extension HydraDx {
-    struct SwapRemoteState {
+    struct SwapRemoteState: ObservableSubscriptionStateProtocol {
+        typealias TChange = SwapRemoteStateChange
+
         let feeCurrency: HydraDx.OmniPoolAssetId?
         let referralLink: AccountId?
 
-        func merging(newStateChange: SwapRemoteStateChange) -> SwapRemoteState {
+        init(
+            feeCurrency: HydraDx.OmniPoolAssetId?,
+            referralLink: AccountId?
+        ) {
+            self.feeCurrency = feeCurrency
+            self.referralLink = referralLink
+        }
+
+        init(change: HydraDx.SwapRemoteStateChange) {
+            feeCurrency = change.feeCurrency.valueWhenDefined(else: nil)
+            referralLink = change.referralLink.valueWhenDefined(else: nil)
+        }
+
+        func merging(change: SwapRemoteStateChange) -> SwapRemoteState {
             .init(
-                feeCurrency: newStateChange.feeCurrency.valueWhenDefined(else: feeCurrency),
-                referralLink: newStateChange.referralLink.valueWhenDefined(else: referralLink)
+                feeCurrency: change.feeCurrency.valueWhenDefined(else: feeCurrency),
+                referralLink: change.referralLink.valueWhenDefined(else: referralLink)
             )
         }
     }

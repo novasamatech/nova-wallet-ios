@@ -2,25 +2,10 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-protocol HydraOmnipoolQuoteServiceProtocol {
-    func createFetchOperation() -> BaseOperation<HydraDx.QuoteRemoteState>
-}
-
-enum HydraOmnipoolQuoteServiceError: Error {
-    case unexpectedState
-}
-
-final class HydraOmnipoolQuoteService: ObservableSyncService {
+final class HydraOmnipoolQuoteService: ObservableSubscriptionSyncService<HydraDx.QuoteRemoteState> {
     let chain: ChainModel
-    let runtimeProvider: RuntimeCodingServiceProtocol
-    let connection: JSONRPCEngine
     let assetIn: HydraDx.LocalRemoteAssetId
     let assetOut: HydraDx.LocalRemoteAssetId
-    let operationQueue: OperationQueue
-    let workQueue: DispatchQueue
-
-    private var state: HydraDx.QuoteRemoteState?
-    private var subscription: CallbackBatchStorageSubscription<HydraDx.QuoteRemoteStateChange>?
 
     init(
         chain: ChainModel,
@@ -29,54 +14,24 @@ final class HydraOmnipoolQuoteService: ObservableSyncService {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
-        workQueue: DispatchQueue,
+        repository: AnyDataProviderRepository<ChainStorageItem>? = nil,
+        workQueue: DispatchQueue = .global(),
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol = Logger.shared
     ) {
         self.chain = chain
         self.assetIn = assetIn
         self.assetOut = assetOut
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
-        self.operationQueue = operationQueue
-        self.workQueue = workQueue
 
-        super.init(retryStrategy: retryStrategy, logger: logger)
-    }
-
-    deinit {
-        clearSubscription()
-    }
-
-    private func handleStateChangeResult(_ result: Result<HydraDx.QuoteRemoteStateChange, Error>) {
-        switch result {
-        case let .success(change):
-            // switch sync state manually if needed to allow others track when new state applied
-            if !isSyncing {
-                isSyncing = true
-            }
-
-            logger.debug("Change: \(change)")
-
-            if let currentState = state {
-                state = currentState.merging(newStateChange: change)
-            } else {
-                state = .init(
-                    assetInState: change.assetInState.valueWhenDefined(else: nil),
-                    assetOutState: change.assetOutState.valueWhenDefined(else: nil),
-                    assetInBalance: change.assetInBalance.valueWhenDefined(else: nil),
-                    assetOutBalance: change.assetOutBalance.valueWhenDefined(else: nil),
-                    assetInFee: change.assetInFee.valueWhenDefined(else: nil),
-                    assetOutFee: change.assetOutFee.valueWhenDefined(else: nil),
-                    blockHash: change.blockHash
-                )
-            }
-
-            completeImmediate(nil)
-        case let .failure(error):
-            logger.error("Unexpected error: \(error)")
-            completeImmediate(error)
-        }
+        super.init(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue,
+            repository: repository,
+            workQueue: workQueue,
+            retryStrategy: retryStrategy,
+            logger: logger
+        )
     }
 
     private func getBalanceRequest(
@@ -141,26 +96,7 @@ final class HydraOmnipoolQuoteService: ObservableSyncService {
         )
     }
 
-    private func clearSubscription() {
-        subscription?.unsubscribe()
-        subscription = nil
-    }
-
-    override func stopSyncUp() {
-        clearSubscription()
-    }
-
-    override func performSyncUp() {
-        do {
-            clearSubscription()
-
-            try subscribe()
-        } catch {
-            completeImmediate(error)
-        }
-    }
-
-    func subscribe() throws {
+    override func getRequests() throws -> [BatchStorageSubscriptionRequest] {
         let assetInStateRequest = getAssetStateRequest(
             for: assetIn,
             mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInState
@@ -200,73 +136,13 @@ final class HydraOmnipoolQuoteService: ObservableSyncService {
             mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutFee
         )
 
-        subscription = CallbackBatchStorageSubscription(
-            requests: [
-                assetInStateRequest,
-                assetOutStateRequest,
-                assetInBalanceRequest,
-                assetOutBalanceRequest,
-                assetInFeeRequest,
-                assetOutFeeRequest
-            ],
-            connection: connection,
-            runtimeService: runtimeProvider,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleStateChangeResult(result)
-
-            self?.mutex.unlock()
-        }
-
-        subscription?.subscribe()
-    }
-}
-
-extension HydraOmnipoolQuoteService: HydraOmnipoolQuoteServiceProtocol {
-    private func lockAndFetchState() -> HydraDx.QuoteRemoteState? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return state
-    }
-
-    func createFetchOperation() -> BaseOperation<HydraDx.QuoteRemoteState> {
-        ClosureOperation {
-            if let state = self.lockAndFetchState() {
-                return state
-            }
-
-            var fetchedState: HydraDx.QuoteRemoteState?
-
-            let semaphore = DispatchSemaphore(value: 0)
-
-            let subscriber = NSObject()
-            self.subscribeSyncState(
-                subscriber,
-                queue: self.workQueue
-            ) { _, newIsSyncing in
-                if !newIsSyncing, let state = self.lockAndFetchState() {
-                    fetchedState = state
-                    self.unsubscribeSyncState(subscriber)
-
-                    semaphore.signal()
-                }
-            }
-
-            semaphore.wait()
-
-            guard let state = fetchedState else {
-                throw HydraOmnipoolQuoteServiceError.unexpectedState
-            }
-
-            return state
-        }
+        return [
+            assetInStateRequest,
+            assetOutStateRequest,
+            assetInBalanceRequest,
+            assetOutBalanceRequest,
+            assetInFeeRequest,
+            assetOutFeeRequest
+        ]
     }
 }
