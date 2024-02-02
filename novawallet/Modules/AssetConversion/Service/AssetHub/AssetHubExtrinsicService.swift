@@ -1,73 +1,127 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 final class AssetHubExtrinsicService {
+    let account: ChainAccountResponse
     let chain: ChainModel
+    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let runtimeProvider: RuntimeCodingServiceProtocol
+    let operationQueue: OperationQueue
+    let workQueue: DispatchQueue
 
-    init(chain: ChainModel) {
+    init(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        operationQueue: OperationQueue,
+        workQueue: DispatchQueue = .global()
+    ) {
+        self.account = account
         self.chain = chain
+        self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.runtimeProvider = runtimeProvider
+        self.operationQueue = operationQueue
+        self.workQueue = workQueue
     }
 
-    private func fetchExtrinsicBuilderClosure(
-        for args: AssetConversion.CallArgs,
-        codingFactory: RuntimeCoderFactoryProtocol,
-        chain: ChainModel
-    ) -> ExtrinsicBuilderClosure {
-        { builder in
+    private func performSubmition(
+        remoteFeeAsset: AssetConversionPallet.AssetId?,
+        builderClosure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runCompletionIn queue: DispatchQueue,
+        completion closure: @escaping ExtrinsicSubmitClosure
+    ) {
+        let extrinsicFactory: ExtrinsicOperationFactoryProtocol
 
-            guard
-                let remoteAssetIn = AssetHubTokensConverter.convertToMultilocation(
-                    chainAssetId: args.assetIn,
-                    chain: chain,
-                    codingFactory: codingFactory
-                ) else {
-                throw AssetConversionExtrinsicServiceError.remoteAssetNotFound(args.assetIn)
-            }
-
-            guard
-                let remoteAssetOut = AssetHubTokensConverter.convertToMultilocation(
-                    chainAssetId: args.assetOut,
-                    chain: chain,
-                    codingFactory: codingFactory
-                ) else {
-                throw AssetConversionExtrinsicServiceError.remoteAssetNotFound(args.assetOut)
-            }
-
-            switch args.direction {
-            case .sell:
-                let amountOutMin = args.amountOut - args.slippage.mul(value: args.amountOut)
-
-                let call = AssetConversionPallet.SwapExactTokensForTokensCall(
-                    path: [remoteAssetIn, remoteAssetOut],
-                    amountIn: args.amountIn,
-                    amountOutMin: amountOutMin,
-                    sendTo: args.receiver,
-                    keepAlive: false
-                )
-
-                return try builder.adding(call: call.runtimeCall(for: AssetConversionPallet.name))
-            case .buy:
-                let amountInMax = args.amountIn + args.slippage.mul(value: args.amountIn)
-
-                let call = AssetConversionPallet.SwapTokensForExactTokensCall(
-                    path: [remoteAssetIn, remoteAssetOut],
-                    amountOut: args.amountOut,
-                    amountInMax: amountInMax,
-                    sendTo: args.receiver,
-                    keepAlive: false
-                )
-
-                return try builder.adding(call: call.runtimeCall(for: AssetConversionPallet.name))
-            }
+        if let remoteFeeAsset = remoteFeeAsset {
+            extrinsicFactory = extrinsicServiceFactory.createOperationFactory(
+                account: account,
+                chain: chain,
+                feeAssetConversionId: remoteFeeAsset
+            )
+        } else {
+            extrinsicFactory = extrinsicServiceFactory.createOperationFactory(
+                account: account,
+                chain: chain
+            )
         }
+
+        let wrapper = extrinsicFactory.submit(builderClosure, signer: signer)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: queue,
+            callbackClosure: closure
+        )
     }
 }
 
 extension AssetHubExtrinsicService: AssetConversionExtrinsicServiceProtocol {
-    func fetchExtrinsicBuilderClosure(
-        for args: AssetConversion.CallArgs,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) -> ExtrinsicBuilderClosure {
-        fetchExtrinsicBuilderClosure(for: args, codingFactory: codingFactory, chain: chain)
+    func submit(
+        callArgs: AssetConversion.CallArgs,
+        feeAsset: ChainAsset,
+        signer: SigningWrapperProtocol,
+        runCompletionIn queue: DispatchQueue,
+        completion closure: @escaping ExtrinsicSubmitClosure
+    ) {
+        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let mappingOperation = ClosureOperation<(ExtrinsicBuilderClosure, AssetConversionPallet.AssetId?)> {
+            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+
+            let builderClosure: ExtrinsicBuilderClosure = { builder in
+                try AssetHubExtrinsicConverter.addingOperation(
+                    to: builder,
+                    chain: feeAsset.chain,
+                    args: callArgs,
+                    codingFactory: codingFactory
+                )
+            }
+
+            guard !feeAsset.isUtilityAsset else {
+                return (builderClosure, nil)
+            }
+
+            guard
+                let assetId = AssetHubTokensConverter.convertToMultilocation(
+                    chainAsset: feeAsset,
+                    codingFactory: codingFactory
+                ) else {
+                throw AssetConversionExtrinsicServiceError.remoteAssetNotFound(feeAsset.chainAssetId)
+            }
+
+            return (builderClosure, assetId)
+        }
+
+        mappingOperation.addDependency(coderFactoryOperation)
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: [coderFactoryOperation]
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: workQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success((builder, remoteFeeAsset)):
+                self?.performSubmition(
+                    remoteFeeAsset: remoteFeeAsset,
+                    builderClosure: builder,
+                    signer: signer,
+                    runCompletionIn: queue,
+                    completion: closure
+                )
+            case let .failure(error):
+                dispatchInQueueWhenPossible(queue) {
+                    closure(.failure(error))
+                }
+            }
+        }
     }
 }

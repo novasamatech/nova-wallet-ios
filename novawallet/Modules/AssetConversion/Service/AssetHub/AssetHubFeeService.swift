@@ -6,7 +6,6 @@ final class AssetHubFeeService: AnyCancellableCleaning {
     struct ChainOperationFactory {
         let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
         let conversionOperationFactory: AssetConversionOperationFactoryProtocol
-        let conversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     }
 
     let wallet: MetaAccountModel
@@ -61,12 +60,9 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             operationQueue: operationQueue
         )
 
-        let conversionExtrinsicService = AssetHubExtrinsicService(chain: chain)
-
         let factories = ChainOperationFactory(
             extrinsicServiceFactory: extrinsicServiceFactory,
-            conversionOperationFactory: conversionOperationFactory,
-            conversionExtrinsicService: conversionExtrinsicService
+            conversionOperationFactory: conversionOperationFactory
         )
 
         self.factories = factories
@@ -97,7 +93,6 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             for: callArgs,
             runtimeProvider: runtimeProvider,
             extrinsicServiceFactory: factories.extrinsicServiceFactory,
-            conversionExtrinsicService: factories.conversionExtrinsicService,
             wallet: wallet,
             asset: asset
         )
@@ -138,12 +133,10 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         operationQueue.addOperations(universalFeeWrapper.allOperations, waitUntilFinished: false)
     }
 
-    // swiftlint:disable:next function_parameter_count
     private func createNativeFeeWrapper(
         for callArgs: AssetConversion.CallArgs,
         runtimeProvider: RuntimeProviderProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
-        conversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         wallet: MetaAccountModel,
         asset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
@@ -183,12 +176,12 @@ final class AssetHubFeeService: AnyCancellableCleaning {
             let feeWrapper = extrinsicOperationFactory.estimateFeeOperation { builder in
                 let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
 
-                let builderSetupClosure = conversionExtrinsicService.fetchExtrinsicBuilderClosure(
-                    for: callArgs,
+                return try AssetHubExtrinsicConverter.addingOperation(
+                    to: builder,
+                    chain: asset.chain,
+                    args: callArgs,
                     codingFactory: codingFactory
                 )
-
-                return try builderSetupClosure(builder)
             }
 
             return [feeWrapper]

@@ -100,6 +100,14 @@ struct SwapConfirmViewFactory {
             operationQueue: operationQueue
         )
 
+        let extrinsicService = AssetHubExtrinsicService(
+            account: selectedAccount.chainAccount,
+            chain: chain,
+            extrinsicServiceFactory: extrinsicServiceFactory,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        )
+
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: selectedAccount.metaId,
             accountResponse: selectedAccount.chainAccount
@@ -120,11 +128,9 @@ struct SwapConfirmViewFactory {
             initState: initState,
             assetConversionFeeService: feeService,
             assetConversionAggregator: assetConversionAggregator,
-            assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chain),
+            assetConversionExtrinsicService: extrinsicService,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
-            runtimeService: runtimeService,
-            extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             generalLocalSubscriptionFactory: generalSubscriptonFactory,
@@ -133,7 +139,8 @@ struct SwapConfirmViewFactory {
             currencyManager: currencyManager,
             selectedWallet: wallet,
             operationQueue: operationQueue,
-            signer: signingWrapper
+            signer: signingWrapper,
+            callPathFactory: AssetHubCallPathFactory()
         )
 
         return interactor
