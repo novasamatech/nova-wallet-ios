@@ -3,72 +3,27 @@ import RobinHood
 import BigInt
 
 final class AssetHubFeeService: AnyCancellableCleaning {
-    struct ChainOperationFactory {
-        let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
-        let conversionOperationFactory: AssetConversionOperationFactoryProtocol
-    }
-
     let wallet: MetaAccountModel
+    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let conversionOperationFactory: AssetHubSwapOperationFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
-    let userStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
-    private var factories: ChainOperationFactory?
-    private var chainId: ChainModel.Id?
     private var cancellableCall: CancellableCall?
-    private var lock = NSLock()
+    private let lock = NSLock()
 
     init(
         wallet: MetaAccountModel,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        conversionOperationFactory: AssetHubSwapOperationFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        userStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
+        self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.conversionOperationFactory = conversionOperationFactory
         self.chainRegistry = chainRegistry
-        self.userStorageFacade = userStorageFacade
         self.operationQueue = operationQueue
-    }
-
-    private func updateFactories(for chain: ChainModel) throws -> ChainOperationFactory {
-        if chain.chainId == chainId, let factories = factories {
-            return factories
-        }
-
-        factories = nil
-        chainId = nil
-
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw AssetConversionFeeServiceError.chainConnectionMissing
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw AssetConversionFeeServiceError.chainRuntimeMissing
-        }
-
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: userStorageFacade
-        )
-
-        let conversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let factories = ChainOperationFactory(
-            extrinsicServiceFactory: extrinsicServiceFactory,
-            conversionOperationFactory: conversionOperationFactory
-        )
-
-        self.factories = factories
-        chainId = chain.chainId
-
-        return factories
     }
 
     private func performCalculation(
@@ -78,7 +33,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         completion closure: @escaping AssetConversionFeeServiceClosure
     ) throws {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: asset.chain.chainId) else {
-            throw AssetConversionFeeServiceError.chainRuntimeMissing
+            throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
         guard let utilityAsset = asset.chain.utilityAsset() else {
@@ -87,12 +42,10 @@ final class AssetHubFeeService: AnyCancellableCleaning {
 
         let utilityChainAsset = ChainAsset(chain: asset.chain, asset: utilityAsset)
 
-        let factories = try updateFactories(for: asset.chain)
-
         let nativeFeeWrapper = createNativeFeeWrapper(
             for: callArgs,
             runtimeProvider: runtimeProvider,
-            extrinsicServiceFactory: factories.extrinsicServiceFactory,
+            extrinsicServiceFactory: extrinsicServiceFactory,
             wallet: wallet,
             asset: asset
         )
@@ -107,7 +60,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
                 utilityAsset: utilityChainAsset,
                 nativeFeeWrapper: nativeFeeWrapper,
                 runtimeProvider: runtimeProvider,
-                conversionOperationFactory: factories.conversionOperationFactory
+                conversionOperationFactory: conversionOperationFactory
             )
         }
 
@@ -225,7 +178,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
         utilityAsset: ChainAsset,
         nativeFeeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>,
         runtimeProvider: RuntimeProviderProtocol,
-        conversionOperationFactory: AssetConversionOperationFactoryProtocol
+        conversionOperationFactory: AssetHubSwapOperationFactoryProtocol
     ) -> CompoundOperationWrapper<AssetConversion.FeeModel> {
         let edWrapper = AssetStorageInfoOperationFactory(
             chainRegistry: chainRegistry,
@@ -287,7 +240,7 @@ final class AssetHubFeeService: AnyCancellableCleaning {
     private func createQuoteForCustomTokenWrapper(
         for feeAsset: ChainAsset,
         utilityAsset: ChainAsset,
-        conversionOperationFactory: AssetConversionOperationFactoryProtocol,
+        conversionOperationFactory: AssetHubSwapOperationFactoryProtocol,
         feeWithEdOperation: BaseOperation<(BigUInt, BigUInt)>
     ) -> BaseOperation<[AssetConversion.Quote]> {
         OperationCombiningService(

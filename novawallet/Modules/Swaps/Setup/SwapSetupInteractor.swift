@@ -9,7 +9,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private var canPayFeeInAssetCall = CancellableCallStore()
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
-    private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
     init(
         assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
@@ -119,15 +118,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
         let localKeyFactory = LocalStorageKeyFactory()
 
-        let blockNumberKey = try localKeyFactory.createFromStoragePath(.blockNumber, chainId: chain.chainId)
-        let blockNumberRequest = BatchStorageSubscriptionRequest(
-            innerRequest: UnkeyedSubscriptionRequest(
-                storagePath: .blockNumber,
-                localKey: blockNumberKey
-            ),
-            mappingKey: nil
-        )
-
         let accountInfoKey = try localKeyFactory.createFromStoragePath(
             .account,
             accountId: accountId,
@@ -145,7 +135,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         )
 
         remoteSubscription = CallbackBatchStorageSubscription(
-            requests: [blockNumberRequest, accountInfoRequest],
+            requests: [accountInfoRequest],
             connection: connection,
             runtimeService: runtimeService,
             repository: storageRepository,
@@ -159,18 +149,13 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         remoteSubscription?.subscribe()
     }
 
-    private func updateBlockNumberSubscription(for chain: ChainModel) {
-        clear(dataProvider: &blockNumberSubscription)
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
-    }
-
     override func updateChain(with newChain: ChainModel) {
         let oldChainId = currentChain?.chainId
 
         super.updateChain(with: newChain)
 
         if newChain.chainId != oldChainId {
-            updateBlockNumberSubscription(for: newChain)
+            // TODO: Subscribe to quote change
 
             do {
                 clearRemoteSubscription()
@@ -178,18 +163,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             } catch {
                 presenter?.didReceive(setupError: .remoteSubscription(error))
             }
-        }
-    }
-
-    override func handleBlockNumber(
-        result: Result<BlockNumber?, Error>,
-        chainId: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(blockNumber):
-            presenter?.didReceiveBlockNumber(blockNumber, chainId: chainId)
-        case let .failure(error):
-            presenter?.didReceive(setupError: .blockNumber(error))
         }
     }
 }
@@ -229,13 +202,5 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         } catch {
             presenter?.didReceive(setupError: .remoteSubscription(error))
         }
-    }
-
-    func retryBlockNumberSubscription() {
-        guard let chain = currentChain else {
-            return
-        }
-
-        updateBlockNumberSubscription(for: chain)
     }
 }

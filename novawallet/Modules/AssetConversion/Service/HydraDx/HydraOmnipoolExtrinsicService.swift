@@ -2,7 +2,6 @@ import Foundation
 
 final class HydraOmnipoolExtrinsicService {
     let extrinsicService: ExtrinsicServiceProtocol
-    let conversionOperationFactory: AssetConversionOperationFactoryProtocol
     let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
     let operationQueue: OperationQueue
     let workQueue: DispatchQueue
@@ -10,14 +9,12 @@ final class HydraOmnipoolExtrinsicService {
 
     init(
         extrinsicService: ExtrinsicServiceProtocol,
-        conversionOperationFactory: AssetConversionOperationFactoryProtocol,
         conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global(),
         logger: LoggerProtocol = Logger.shared
     ) {
         self.extrinsicService = extrinsicService
-        self.conversionOperationFactory = conversionOperationFactory
         self.conversionExtrinsicFactory = conversionExtrinsicFactory
         self.operationQueue = operationQueue
         self.workQueue = workQueue
