@@ -31,6 +31,10 @@ final class HydraOmnipoolFeeService {
         self.operationQueue = operationQueue
     }
 
+    deinit {
+        feeCall.cancel()
+    }
+
     private func updateFactories(for chain: ChainModel) throws -> ChainOperationFactory {
         if chain.chainId == chainId, let factories = factories {
             return factories
@@ -226,6 +230,7 @@ extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
                 mutex.unlock()
             }
 
+            feeCall.cancel()
             let factories = try updateFactories(for: asset.chain)
 
             let paramsWrapper = factories.conversionExtrinsicFactory.createOperationWrapper(

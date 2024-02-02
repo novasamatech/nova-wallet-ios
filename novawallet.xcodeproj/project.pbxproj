@@ -252,6 +252,7 @@
 		0C8102232B5A922B00F75BF9 /* ProxyValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */; };
 		0C8102252B5A928400F75BF9 /* ProxyErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
+		0C85FF222B6C001900FC0014 /* HydraOmnipoolExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF212B6C001900FC0014 /* HydraOmnipoolExtrinsicService.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
 		0C893E6F2A65702A00781503 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
@@ -4499,6 +4500,7 @@
 		0C8102222B5A922B00F75BF9 /* ProxyValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyValidationFactory.swift; sourceTree = "<group>"; };
 		0C8102242B5A928400F75BF9 /* ProxyErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyErrorPresentable.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
+		0C85FF212B6C001900FC0014 /* HydraOmnipoolExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExtrinsicService.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
 		0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominationPools+CodingPath.swift"; sourceTree = "<group>"; };
@@ -8825,6 +8827,7 @@
 				0C363E972B6B63280065AFA6 /* HydraOmnipoolConstants.swift */,
 				0C363E992B6B69D60065AFA6 /* HydraOmnipoolFeeService.swift */,
 				0C363E9B2B6B8C400065AFA6 /* HydraOmnipoolExtrinsicConverter.swift */,
+				0C85FF212B6C001900FC0014 /* HydraOmnipoolExtrinsicService.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -21642,6 +21645,7 @@
 				0C363E962B6B591C0065AFA6 /* HydraOmnipoolExtrinsicOperationFactory.swift in Sources */,
 				8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */,
 				778D979B2A24D1D8002BA681 /* BaseAssetsSearchViewLayout.swift in Sources */,
+				0C85FF222B6C001900FC0014 /* HydraOmnipoolExtrinsicService.swift in Sources */,
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
 				880059E328EF128000E87B9B /* ReferendumInfoView.swift in Sources */,
 				84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */,
