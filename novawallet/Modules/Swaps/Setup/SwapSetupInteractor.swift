@@ -82,12 +82,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         canPayFeeInAssetCall.cancel()
 
         // we currently don't allow to pay for swaps in non native token for proxy
-        guard let utilityAssetId = asset.chain.utilityChainAssetId(), selectedWallet.type != .proxied else {
+        guard selectedWallet.type != .proxied else {
             presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
             return
         }
 
-        let wrapper = assetConversionAggregator.createAvailableDirectionsWrapper(for: asset)
+        let wrapper = assetConversionAggregator.createCanPayFeeWrapper(in: asset)
 
         executeCancellable(
             wrapper: wrapper,
@@ -96,8 +96,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(chainAssetIds):
-                let canPayFee = chainAssetIds.contains(utilityAssetId)
+            case let .success(canPayFee):
                 self?.presenter?.didReceiveCanPayFeeInPayAsset(canPayFee, chainAssetId: asset.chainAssetId)
             case let .failure(error):
                 self?.presenter?.didReceive(setupError: .payAssetSetFailed(error))

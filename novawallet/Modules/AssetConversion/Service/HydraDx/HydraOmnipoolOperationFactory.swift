@@ -24,6 +24,28 @@ final class HydraOmnipoolOperationFactory {
         self.operationQueue = operationQueue
     }
 
+    private func createRemoteFeeAssetsWrapper(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<Set<HydraDx.OmniPoolAssetId>> {
+        let keysFactory = StorageKeysOperationFactory(operationQueue: operationQueue)
+        let assetsFetchWrapper: CompoundOperationWrapper<[HydraDx.AssetsKey]> = keysFactory.createKeysFetchWrapper(
+            by: HydraDx.feeCurrencies,
+            codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
+            connection: connection
+        )
+
+        assetsFetchWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mapOperation = ClosureOperation<Set<HydraDx.OmniPoolAssetId>> {
+            let allAssets = try assetsFetchWrapper.targetOperation.extractNoCancellableResultData()
+            return Set(allAssets.map(\.assetId))
+        }
+
+        mapOperation.addDependency(assetsFetchWrapper.targetOperation)
+
+        return assetsFetchWrapper.insertingTail(operation: mapOperation)
+    }
+
     private func fetchAllRemoteAssets() -> CompoundOperationWrapper<Set<HydraDx.OmniPoolAssetId>> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -378,5 +400,43 @@ extension HydraOmnipoolOperationFactory: AssetConversionOperationFactoryProtocol
             defaultFeeWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
+    }
+
+    func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool> {
+        guard let asset = chain.asset(for: chainAssetId.assetId) else {
+            return CompoundOperationWrapper.createWithResult(false)
+        }
+
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
+        if chainAsset.isUtilityAsset {
+            return CompoundOperationWrapper.createWithResult(true)
+        }
+
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let allFeeRemoteAssets = createRemoteFeeAssetsWrapper(dependingOn: codingFactoryOperation)
+
+        allFeeRemoteAssets.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<Bool> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let remoteAssetId = try HydraDxTokenConverter.convertToRemote(
+                chainAsset: chainAsset,
+                codingFactory: codingFactory
+            )
+
+            let allFeeRemoteAssets = try allFeeRemoteAssets.targetOperation.extractNoCancellableResultData()
+
+            return allFeeRemoteAssets.contains(remoteAssetId.remoteAssetId)
+        }
+
+        mappingOperation.addDependency(allFeeRemoteAssets.targetOperation)
+        mappingOperation.addDependency(codingFactoryOperation)
+
+        return allFeeRemoteAssets
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: mappingOperation)
     }
 }
