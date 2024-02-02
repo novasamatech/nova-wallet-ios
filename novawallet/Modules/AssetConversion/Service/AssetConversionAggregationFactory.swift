@@ -14,6 +14,8 @@ protocol AssetConversionAggregationFactoryProtocol {
         for chain: ChainModel,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote>
+
+    func createCanPayFeeWrapper(in chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool>
 }
 
 enum AssetConversionAggregationFactoryError: Error {
@@ -87,6 +89,23 @@ final class AssetConversionAggregationFactory {
             operationQueue: operationQueue
         ).quote(for: args)
     }
+
+    private func createAssetHubCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
+        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+            return .createWithError(ChainRegistryError.connectionUnavailable)
+        }
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
+        return AssetHubSwapOperationFactory(
+            chain: chainAsset.chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        ).canPayFee(in: chainAsset.chainAssetId)
+    }
 }
 
 extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryProtocol {
@@ -123,6 +142,16 @@ extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryPr
         } else {
             return CompoundOperationWrapper.createWithError(
                 AssetConversionAggregationFactoryError.unavailableProvider(chain)
+            )
+        }
+    }
+
+    func createCanPayFeeWrapper(in chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
+        if chainAsset.chain.hasSwapHub {
+            return createAssetHubCanPayFee(for: chainAsset)
+        } else {
+            return CompoundOperationWrapper.createWithError(
+                AssetConversionAggregationFactoryError.unavailableProvider(chainAsset.chain)
             )
         }
     }

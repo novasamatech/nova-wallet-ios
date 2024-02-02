@@ -63,6 +63,18 @@ final class HydraDxSwapTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+    
+    func testCanPayFeeInDot() {
+        do {
+            let canPayFee = try performCanPayFee(
+                in: .init(chainId: KnowChainId.hydra, assetId: 1)
+            )
+            
+            Logger.shared.info("Can pay fee: \(canPayFee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 
     private func performAvailableDirectionsFetch(
         for chainId: ChainModel.Id,
@@ -131,5 +143,33 @@ final class HydraDxSwapTests: XCTestCase {
         operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
         
         return try quoteWrapper.targetOperation.extractNoCancellableResultData()
+    }
+    
+    private func performCanPayFee(in chainAssetId: ChainAssetId) throws -> Bool {
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = chainAssetId.chainId
+        
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+        
+        let operationQueue = OperationQueue()
+        
+        let operationFactory = HydraOmnipoolOperationFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+        
+        let wrapper = operationFactory.canPayFee(in: chainAssetId)
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

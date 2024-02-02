@@ -234,4 +234,26 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
+
+    func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool> {
+        guard let utilityAssetId = chain.utilityChainAssetId() else {
+            return CompoundOperationWrapper.createWithResult(false)
+        }
+
+        if chainAssetId == utilityAssetId {
+            return CompoundOperationWrapper.createWithResult(true)
+        }
+
+        let availableDirectionsWrapper = availableDirectionsForAsset(chainAssetId)
+
+        let mergeOperation = ClosureOperation<Bool> {
+            let directions = try availableDirectionsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return directions.contains(utilityAssetId)
+        }
+
+        mergeOperation.addDependency(availableDirectionsWrapper.targetOperation)
+
+        return availableDirectionsWrapper.insertingTail(operation: mergeOperation)
+    }
 }
