@@ -4,74 +4,15 @@ import RobinHood
 enum AssetConversionFlowState {
     case assetHub(AssetHubFlowState)
     case hydraOmnipool(HydraOmnipoolFlowState)
-
-    static func createHydraFeeService(
-        for flowState: HydraOmnipoolFlowState,
-        wallet: MetaAccountModel,
-        userStorageFacade: StorageFacadeProtocol
-    ) throws -> AssetConversionFeeServiceProtocol {
-        guard let account = wallet.fetch(for: flowState.chain.accountRequest()) else {
-            throw AssetConversionFeeServiceError.accountMissing
-        }
-
-        let extrinsicFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: flowState.runtimeProvider,
-            engine: flowState.connection,
-            operationManager: OperationManager(operationQueue: flowState.operationQueue),
-            userStorageFacade: userStorageFacade
-        ).createOperationFactory(
-            account: account,
-            chain: flowState.chain
-        )
-
-        let conversionOperationFactory = HydraOmnipoolQuoteFactory(flowState: flowState)
-
-        let swapOperationFactory = HydraOmnipoolExtrinsicOperationFactory(
-            chain: flowState.chain,
-            swapService: flowState.setupSwapService(),
-            runtimeProvider: flowState.runtimeProvider
-        )
-
-        return HydraOmnipoolFeeService(
-            extrinsicFactory: extrinsicFactory,
-            conversionOperationFactory: conversionOperationFactory,
-            conversionExtrinsicFactory: swapOperationFactory,
-            operationQueue: flowState.operationQueue
-        )
-    }
-
-    static func createAssetHubFeeService(
-        for flowState: AssetHubFlowState,
-        chainRegistry: ChainRegistryProtocol,
-        wallet: MetaAccountModel,
-        userStorageFacade: StorageFacadeProtocol
-    ) throws -> AssetConversionFeeServiceProtocol {
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: flowState.runtimeProvider,
-            engine: flowState.connection,
-            operationManager: OperationManager(operationQueue: flowState.operationQueue),
-            userStorageFacade: userStorageFacade
-        )
-
-        let conversionOperationFactory = AssetHubSwapOperationFactory(
-            chain: flowState.chain,
-            runtimeService: flowState.runtimeProvider,
-            connection: flowState.connection,
-            operationQueue: flowState.operationQueue
-        )
-
-        return AssetHubFeeService(
-            wallet: wallet,
-            extrinsicServiceFactory: extrinsicServiceFactory,
-            conversionOperationFactory: conversionOperationFactory,
-            chainRegistry: chainRegistry,
-            operationQueue: flowState.operationQueue
-        )
-    }
 }
 
 protocol AssetConversionFlowFacadeProtocol {
+    var generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol { get }
+
     func setup(for chain: ChainModel) throws -> AssetConversionFlowState
+
+    func createFeeService(for chain: ChainModel) throws -> AssetConversionFeeServiceProtocol
+    func createExtrinsicService(for chain: ChainModel) throws -> AssetConversionExtrinsicServiceProtocol
 }
 
 enum AssetConversionFlowFacadeError: Error {
@@ -82,16 +23,22 @@ final class AssetConversionFlowFacade {
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
+    let userStorageFacade: StorageFacadeProtocol
+    let generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
 
     var state: AssetConversionFlowState?
 
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
+        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
+        self.userStorageFacade = userStorageFacade
+        self.generalSubscriptonFactory = generalSubscriptonFactory
         self.operationQueue = operationQueue
     }
 
@@ -112,9 +59,11 @@ final class AssetConversionFlowFacade {
         }
 
         let assetHub = AssetHubFlowState(
+            wallet: wallet,
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeProvider,
+            userStorageFacade: userStorageFacade,
             operationQueue: operationQueue
         )
 
@@ -131,6 +80,28 @@ extension AssetConversionFlowFacade: AssetConversionFlowFacadeProtocol {
             return try setupAssetHub(for: chain)
         } else {
             throw AssetConversionFlowFacadeError.unsupportedChain(chain.chainId)
+        }
+    }
+
+    func createFeeService(for chain: ChainModel) throws -> AssetConversionFeeServiceProtocol {
+        let state = try setup(for: chain)
+
+        switch state {
+        case let .assetHub(assetHub):
+            return try assetHub.createFeeService(using: chainRegistry)
+        case let .hydraOmnipool(hydra):
+            return try hydra.createFeeService()
+        }
+    }
+
+    func createExtrinsicService(for chain: ChainModel) throws -> AssetConversionExtrinsicServiceProtocol {
+        let state = try setup(for: chain)
+
+        switch state {
+        case let .assetHub(assetHub):
+            return try assetHub.createExtrinsicService()
+        case let .hydraOmnipool(hydra):
+            return try hydra.createExtrinsicService()
         }
     }
 }

@@ -108,7 +108,7 @@ final class HydraOmnipoolExtrinsicService {
     }
 }
 
-extension HydraOmnipoolExtrinsicService {
+extension HydraOmnipoolExtrinsicService: AssetConversionExtrinsicServiceProtocol {
     func submit(
         callArgs: AssetConversion.CallArgs,
         feeAsset: ChainAsset,

@@ -11,13 +11,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
 
     init(
+        flowState: AssetConversionFlowFacadeProtocol,
         assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
-        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
@@ -26,13 +25,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         self.storageRepository = storageRepository
 
         super.init(
+            flowState: flowState,
             assetConversionAggregator: assetConversionAggregatorFactory,
-            assetConversionFeeService: assetConversionFeeService,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            generalSubscriptionFactory: generalLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue
@@ -155,8 +153,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         super.updateChain(with: newChain)
 
         if newChain.chainId != oldChainId {
-            // TODO: Subscribe to quote change
-
             do {
                 clearRemoteSubscription()
                 try setupRemoteSubscription(for: newChain)

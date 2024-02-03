@@ -16,15 +16,14 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     let callPathFactory: AssetConversionCallPathFactoryProtocol
 
     init(
+        flowState: AssetConversionFlowFacadeProtocol,
         initState: SwapConfirmInitState,
-        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
         assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
         eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -41,13 +40,12 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         self.callPathFactory = callPathFactory
 
         super.init(
+            flowState: flowState,
             assetConversionAggregator: assetConversionAggregator,
-            assetConversionFeeService: assetConversionFeeService,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            generalSubscriptionFactory: generalLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue
