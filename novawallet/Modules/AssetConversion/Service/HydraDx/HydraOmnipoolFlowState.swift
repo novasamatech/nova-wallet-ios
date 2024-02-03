@@ -6,6 +6,8 @@ protocol HydraOmnipoolFlowStateProtocol {
     func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteService
     func setupSwapService() -> HydraOmnipoolSwapService
 
+    func getReQuoteService() -> ObservableSyncServiceProtocol?
+
     func createFeeService() throws -> AssetConversionFeeServiceProtocol
     func createExtrinsicService() throws -> AssetConversionExtrinsicServiceProtocol
 }
@@ -99,6 +101,16 @@ extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
         service.setup()
 
         return service
+    }
+
+    func getReQuoteService() -> ObservableSyncServiceProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return quoteStateService
     }
 
     func createFeeService() throws -> AssetConversionFeeServiceProtocol {

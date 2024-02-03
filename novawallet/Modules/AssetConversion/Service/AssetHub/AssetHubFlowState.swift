@@ -5,6 +5,8 @@ import RobinHood
 protocol AssetHubFlowStateProtocol {
     func setupReQuoteService() -> AssetHubReQuoteService
 
+    func getReQuoteService() -> ObservableSyncServiceProtocol?
+
     func createFeeService(using chainRegistry: ChainRegistryProtocol) throws -> AssetConversionFeeServiceProtocol
     func createExtrinsicService() throws -> AssetConversionExtrinsicServiceProtocol
 }
@@ -60,6 +62,16 @@ extension AssetHubFlowState: AssetHubFlowStateProtocol {
         service.setup()
 
         return service
+    }
+
+    func getReQuoteService() -> ObservableSyncServiceProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return reQuoteService
     }
 
     func createFeeService(using chainRegistry: ChainRegistryProtocol) throws -> AssetConversionFeeServiceProtocol {

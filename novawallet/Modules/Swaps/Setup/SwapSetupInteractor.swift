@@ -161,6 +161,21 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             }
         }
     }
+
+    override func quote(args: AssetConversion.QuoteArgs) {
+        super.quote(args: args)
+
+        if let reQuoteService = flowState.getReQuoteService(), !reQuoteService.hasSubscription(for: self) {
+            reQuoteService.subscribeSyncState(
+                self,
+                queue: .main
+            ) { [weak self] oldIsSyncing, newIsSyncing in
+                if oldIsSyncing, !newIsSyncing {
+                    self?.presenter?.didReceiveQuoteDataChanged()
+                }
+            }
+        }
+    }
 }
 
 extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
