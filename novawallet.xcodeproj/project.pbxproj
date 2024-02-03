@@ -262,6 +262,8 @@
 		0C85FF302B6D35D600FC0014 /* AssetHubFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF2F2B6D35D600FC0014 /* AssetHubFlowState.swift */; };
 		0C85FF322B6D4A3500FC0014 /* AssetConversionFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF312B6D4A3500FC0014 /* AssetConversionFlowState.swift */; };
 		0C85FF342B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF332B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift */; };
+		0C85FF372B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF362B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift */; };
+		0C85FF392B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF382B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
 		0C893E6F2A65702A00781503 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
@@ -4519,6 +4521,9 @@
 		0C85FF2F2B6D35D600FC0014 /* AssetHubFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubFlowState.swift; sourceTree = "<group>"; };
 		0C85FF312B6D4A3500FC0014 /* AssetConversionFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFlowState.swift; sourceTree = "<group>"; };
 		0C85FF332B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolQuoteFactory.swift; sourceTree = "<group>"; };
+		0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel26.xcdatamodel; sourceTree = "<group>"; };
+		0C85FF362B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionAggregationFactory+AssetHub.swift"; sourceTree = "<group>"; };
+		0C85FF382B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionAggregationFactory+HydraDx.swift"; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
 		0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominationPools+CodingPath.swift"; sourceTree = "<group>"; };
@@ -8757,6 +8762,7 @@
 				0C85FF272B6CBA9D00FC0014 /* AssetHubCallPathFactory.swift */,
 				0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */,
 				0C85FF2F2B6D35D600FC0014 /* AssetHubFlowState.swift */,
+				0C85FF362B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift */,
 			);
 			path = AssetHub;
 			sourceTree = "<group>";
@@ -8854,6 +8860,7 @@
 				0C85FF252B6CB9B400FC0014 /* HydraOmnipoolCallPathFactory.swift */,
 				0C85FF2D2B6D300800FC0014 /* HydraOmnipoolFlowState.swift */,
 				0C85FF332B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift */,
+				0C85FF382B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -23040,6 +23047,7 @@
 				77A6F5AE2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift in Sources */,
 				0C543E972AAB1B350035F45F /* ElectedAndPrefValidators.swift in Sources */,
 				8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */,
+				0C85FF372B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift in Sources */,
 				8455F19E2A1E4956003F072D /* RelaychainMultistakingUpdateService.swift in Sources */,
 				8455F1A42A1F606B003F072D /* OnchainStorage.swift in Sources */,
 				84DED40B266656D400A153BB /* KaruraBonusService.swift in Sources */,
@@ -23197,6 +23205,7 @@
 				880CC0A829E7F13B008C7F65 /* EquilibriumAccountBalancesSubscription.swift in Sources */,
 				849976D227B3AC3000B14A6C /* MetamaskChain.swift in Sources */,
 				84468A112867BCD400BCBE00 /* XcmTransferService+Protocol.swift in Sources */,
+				0C85FF392B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift in Sources */,
 				880855F028D099F2004255E7 /* CrowdloanOnChainSyncService.swift in Sources */,
 				843CE3A627D2098100436F4E /* NftDetailsLabel.swift in Sources */,
 				0C8AF7AA2B33455A00005AC9 /* ExtrinsicFee.swift in Sources */,
@@ -25211,6 +25220,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */,
 				7722739F2B3D44F000EB4BC3 /* SubstrateDataModel25.xcdatamodel */,
 				0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */,
 				0C6941C92B203E2F00A7CF6D /* SubstrateDataModel23.xcdatamodel */,
@@ -25237,7 +25247,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 7722739F2B3D44F000EB4BC3 /* SubstrateDataModel25.xcdatamodel */;
+			currentVersion = 0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

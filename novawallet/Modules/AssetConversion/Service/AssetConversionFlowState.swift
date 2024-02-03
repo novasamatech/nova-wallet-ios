@@ -73,12 +73,49 @@ final class AssetConversionFlowFacade {
 
         return newState
     }
+    
+    func setupHydra(for chain: ChainModel) throws -> AssetConversionFlowState {
+        if
+            let currentState = state,
+            case let .hydraOmnipool(hydra) = currentState,
+            hydra.chain.chainId == chain.chainId {
+            return currentState
+        }
+        
+        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+        
+        guard let account = wallet.fetch(for: chain.accountRequest()) else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+        
+        let hydra = HydraOmnipoolFlowState(
+            account: account,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            userStorageFacade: userStorageFacade,
+            operationQueue: operationQueue
+        )
+        
+        let newState = AssetConversionFlowState.hydraOmnipool(hydra)
+        state = newState
+        
+        return newState
+    }
 }
 
 extension AssetConversionFlowFacade: AssetConversionFlowFacadeProtocol {
     func setup(for chain: ChainModel) throws -> AssetConversionFlowState {
-        if chain.hasSwaps {
+        if chain.hasSwapHub {
             return try setupAssetHub(for: chain)
+        } else if chain.hasSwapHydra {
+            return try setupHydra(for: chain)
         } else {
             throw AssetConversionFlowFacadeError.unsupportedChain(chain.chainId)
         }
