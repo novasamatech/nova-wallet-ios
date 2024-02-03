@@ -73,7 +73,7 @@ final class AssetConversionFlowFacade {
 
         return newState
     }
-    
+
     func setupHydra(for chain: ChainModel) throws -> AssetConversionFlowState {
         if
             let currentState = state,
@@ -81,7 +81,7 @@ final class AssetConversionFlowFacade {
             hydra.chain.chainId == chain.chainId {
             return currentState
         }
-        
+
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
@@ -89,11 +89,11 @@ final class AssetConversionFlowFacade {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
-        
+
         guard let account = wallet.fetch(for: chain.accountRequest()) else {
             throw ChainAccountFetchingError.accountNotExists
         }
-        
+
         let hydra = HydraOmnipoolFlowState(
             account: account,
             chain: chain,
@@ -102,10 +102,10 @@ final class AssetConversionFlowFacade {
             userStorageFacade: userStorageFacade,
             operationQueue: operationQueue
         )
-        
+
         let newState = AssetConversionFlowState.hydraOmnipool(hydra)
         state = newState
-        
+
         return newState
     }
 }

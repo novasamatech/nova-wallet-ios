@@ -122,21 +122,28 @@ final class HydraDxSwapTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = args.assetIn.chainId
         
+        let wallet = AccountGenerator.generateMetaAccount()
+        
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let account = wallet.fetch(for: chain.accountRequest()) else {
             throw ChainRegistryError.noChain(chainId)
         }
         
         let operationQueue = OperationQueue()
         
-        let operationFactory = HydraOmnipoolOperationFactory(
+        let flowState = HydraOmnipoolFlowState(
+            account: account,
             chain: chain,
-            runtimeService: runtimeService,
             connection: connection,
+            runtimeProvider: runtimeService,
+            userStorageFacade: UserDataStorageTestFacade(),
             operationQueue: operationQueue
         )
+        
+        let operationFactory = HydraOmnipoolQuoteFactory(flowState: flowState)
         
         let quoteWrapper = operationFactory.quote(for: args)
         

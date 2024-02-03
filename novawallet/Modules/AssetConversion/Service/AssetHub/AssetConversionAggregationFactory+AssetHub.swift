@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 extension AssetConversionAggregationFactory {
     func createAssetHubAllDirections(
@@ -41,7 +42,7 @@ extension AssetConversionAggregationFactory {
         for state: AssetHubFlowState,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        return AssetHubSwapOperationFactory(
+        AssetHubSwapOperationFactory(
             chain: state.chain,
             runtimeService: state.runtimeProvider,
             connection: state.connection,

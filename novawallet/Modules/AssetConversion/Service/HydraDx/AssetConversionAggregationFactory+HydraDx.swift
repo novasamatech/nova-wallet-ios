@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 extension AssetConversionAggregationFactory {
     func createHydraAllDirections(
@@ -11,7 +12,7 @@ extension AssetConversionAggregationFactory {
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
-        
+
         return HydraOmnipoolOperationFactory(
             chain: chain,
             runtimeService: runtimeService,
@@ -28,7 +29,7 @@ extension AssetConversionAggregationFactory {
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
-        
+
         return HydraOmnipoolOperationFactory(
             chain: chainAsset.chain,
             runtimeService: runtimeService,
@@ -41,7 +42,7 @@ extension AssetConversionAggregationFactory {
         for state: HydraOmnipoolFlowState,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        return HydraOmnipoolQuoteFactory(flowState: state).quote(for: args)
+        HydraOmnipoolQuoteFactory(flowState: state).quote(for: args)
     }
 
     func createHydraCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {

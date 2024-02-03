@@ -161,7 +161,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             }
         }
     }
-    
+
     override func setupReQuoteSubscription() {
         if let reQuoteService = flowState.getReQuoteService(), !reQuoteService.hasSubscription(for: self) {
             reQuoteService.subscribeSyncState(

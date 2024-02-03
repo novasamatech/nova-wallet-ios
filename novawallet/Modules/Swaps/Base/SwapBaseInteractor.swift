@@ -173,11 +173,11 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func quote(args: AssetConversion.QuoteArgs) {
         quoteCall.cancel()
 
-        guard let chain = currentChain else {
+        guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
             return
         }
 
-        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
 
         executeCancellable(
             wrapper: wrapper,
@@ -194,7 +194,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             }
         }
     }
-    
+
     func setupReQuoteSubscription() {
         // by default we always request quote manually
     }
@@ -305,12 +305,12 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         for args: AssetConversion.QuoteArgs,
         completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
     ) {
-        guard let chain = currentChain else {
+        guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
             completion(.failure(ChainRegistryError.connectionUnavailable))
             return
         }
 
-        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
 
         execute(
             wrapper: wrapper,
