@@ -1,5 +1,6 @@
 import XCTest
 @testable import novawallet
+import RobinHood
 
 final class HydraSwapsFeeTests: XCTestCase {
     
@@ -87,12 +88,20 @@ final class HydraSwapsFeeTests: XCTestCase {
             throw ChainRegistryError.noChain(chainId)
         }
         
-        let feeService = HydraOmnipoolFeeService(
+        let generalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: SubstrateStorageTestFacade(),
+            operationManager: OperationManager(operationQueue: operationQueue),
+            logger: Logger.shared
+        )
+        
+        let feeService = try AssetConversionFlowFacade(
             wallet: wallet,
             chainRegistry: chainRegistry,
             userStorageFacade: userFacade,
+            generalSubscriptonFactory: generalSubscriptionFactory,
             operationQueue: operationQueue
-        )
+        ).createFeeService(for: chain)
         
         var feeResult: AssetConversion.FeeResult?
         

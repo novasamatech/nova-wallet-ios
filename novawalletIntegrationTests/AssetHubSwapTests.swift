@@ -228,12 +228,20 @@ final class AssetHubSwapTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let feeService = AssetHubFeeService(
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            logger: Logger.shared
+        )
+        
+        let feeService = try AssetConversionFlowFacade(
             wallet: wallet,
             chainRegistry: chainRegistry,
             userStorageFacade: UserDataStorageTestFacade(),
+            generalSubscriptonFactory: generalLocalSubscriptionFactory,
             operationQueue: operationQueue
-        )
+        ).createFeeService(for: chain)
         
         var feeResult: AssetConversion.FeeResult?
         
