@@ -6,6 +6,7 @@ final class HydraOmnipoolFeeService {
     let extrinsicFactory: ExtrinsicOperationFactoryProtocol
     let conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol
     let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
+    let workQueue: DispatchQueue
     let operationQueue: OperationQueue
 
     private var feeCall = CancellableCallStore()
@@ -15,12 +16,14 @@ final class HydraOmnipoolFeeService {
         extrinsicFactory: ExtrinsicOperationFactoryProtocol,
         conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol,
         conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        workQueue: DispatchQueue = .global()
     ) {
         self.extrinsicFactory = extrinsicFactory
         self.conversionOperationFactory = conversionOperationFactory
         self.conversionExtrinsicFactory = conversionExtrinsicFactory
         self.operationQueue = operationQueue
+        self.workQueue = workQueue
     }
 
     deinit {
@@ -146,49 +149,49 @@ extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
         runCompletionIn queue: DispatchQueue,
         completion closure: @escaping AssetConversionFeeServiceClosure
     ) {
-        do {
-            mutex.lock()
+        mutex.lock()
 
-            defer {
-                mutex.unlock()
-            }
+        defer {
+            mutex.unlock()
+        }
 
-            feeCall.cancel()
+        feeCall.cancel()
 
-            let paramsWrapper = conversionExtrinsicFactory.createOperationWrapper(
-                for: asset,
-                callArgs: callArgs
-            )
+        let paramsWrapper = conversionExtrinsicFactory.createOperationWrapper(
+            for: asset,
+            callArgs: callArgs
+        )
 
-            let nativeFeeWrapper = createNativeFeeWrapper(
-                paramsOperation: paramsWrapper.targetOperation
-            )
+        let nativeFeeWrapper = createNativeFeeWrapper(
+            paramsOperation: paramsWrapper.targetOperation
+        )
 
-            nativeFeeWrapper.addDependency(wrapper: paramsWrapper)
+        nativeFeeWrapper.addDependency(wrapper: paramsWrapper)
 
-            let conversionWrapper = createConversionWrapper(
-                nativeFeeOperation: nativeFeeWrapper.targetOperation,
-                feeAsset: asset
-            )
+        let conversionWrapper = createConversionWrapper(
+            nativeFeeOperation: nativeFeeWrapper.targetOperation,
+            feeAsset: asset
+        )
 
-            conversionWrapper.addDependency(wrapper: nativeFeeWrapper)
-            conversionWrapper.addDependency(wrapper: paramsWrapper)
+        conversionWrapper.addDependency(wrapper: nativeFeeWrapper)
+        conversionWrapper.addDependency(wrapper: paramsWrapper)
 
-            let dependencies = paramsWrapper.allOperations + nativeFeeWrapper.allOperations +
-                conversionWrapper.dependencies
+        let dependencies = paramsWrapper.allOperations + nativeFeeWrapper.allOperations +
+            conversionWrapper.dependencies
 
-            let finalWrapper = CompoundOperationWrapper(
-                targetOperation: conversionWrapper.targetOperation,
-                dependencies: dependencies
-            )
+        let finalWrapper = CompoundOperationWrapper(
+            targetOperation: conversionWrapper.targetOperation,
+            dependencies: dependencies
+        )
 
-            executeCancellable(
-                wrapper: finalWrapper,
-                inOperationQueue: operationQueue,
-                backingCallIn: feeCall,
-                runningCallbackIn: queue,
-                mutex: mutex
-            ) { result in
+        executeCancellable(
+            wrapper: finalWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: feeCall,
+            runningCallbackIn: workQueue,
+            mutex: mutex
+        ) { result in
+            dispatchInQueueWhenPossible(queue) {
                 do {
                     let model = try result.get()
                     closure(.success(model))
@@ -197,11 +200,6 @@ extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
                 } catch {
                     closure(.failure(.calculationFailed("Fee calculation error: \(error)")))
                 }
-            }
-
-        } catch {
-            dispatchInQueueWhenPossible(queue) {
-                closure(.failure(.setupFailed("Fee service setup failed for \(asset.chain.name): \(error)")))
             }
         }
     }
