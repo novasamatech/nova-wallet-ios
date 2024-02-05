@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -860,7 +860,6 @@
 		774A980F2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774A980E2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift */; };
 		7750D6D52B2272DC00E1ABD7 /* ProxiedsUpdateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7750D6D42B2272DC00E1ABD7 /* ProxiedsUpdateFactory.swift */; };
 		7756927D2A20B88200220756 /* TokenOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7756927C2A20B88200220756 /* TokenOperation.swift */; };
-		775999AF2B70B74A0040D884 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 775999AE2B70B74A0040D884 /* GoogleService-Info.plist */; };
 		775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */; };
 		775F19512A5811FA009915B6 /* StartStakingParachainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */; };
 		775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */; };
@@ -5095,7 +5094,6 @@
 		774A980E2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenScreenUrlParsingServiceFactory.swift; sourceTree = "<group>"; };
 		7750D6D42B2272DC00E1ABD7 /* ProxiedsUpdateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxiedsUpdateFactory.swift; sourceTree = "<group>"; };
 		7756927C2A20B88200220756 /* TokenOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperation.swift; sourceTree = "<group>"; };
-		775999AE2B70B74A0040D884 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		775999B02B70C1300040D884 /* novawallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = novawallet.entitlements; sourceTree = "<group>"; };
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
@@ -13840,7 +13838,6 @@
 				849013B424A80986008F705E /* Assets.xcassets */,
 				849013B624A80986008F705E /* LaunchScreen.storyboard */,
 				849013B924A80986008F705E /* Info.plist */,
-				775999AE2B70B74A0040D884 /* GoogleService-Info.plist */,
 				84C07EDA24AF1924008FC35B /* InfoPlist.strings */,
 				8490146024A94373008F705E /* Localizable.strings */,
 				AE74EC1725FCF09000C494E7 /* Localizable.stringsdict */,
@@ -20003,7 +20000,6 @@
 				842876AC24AE049B00D91AD8 /* SelectionTitleTableViewCell.xib in Resources */,
 				848A837E274BB03F004493DD /* PublicSans-Bold.otf in Resources */,
 				849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */,
-				775999AF2B70B74A0040D884 /* GoogleService-Info.plist in Resources */,
 				84D2F19B2771AA140040C680 /* nova_min.js in Resources */,
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
