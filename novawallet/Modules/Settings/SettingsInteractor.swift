@@ -16,7 +16,9 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
-
+    let pushNotificationsSettingsProviderFactory: PushNotificationsSettingsProviderFactoryProtocol
+    let pushNotificationsSettingsProvider: AnySingleValueProvider<PushSettings?>?
+    
     init(
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
@@ -24,7 +26,8 @@ final class SettingsInteractor {
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        pushNotificationsSettingsProviderFactory: PushNotificationsSettingsProviderFactoryProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
@@ -32,6 +35,7 @@ final class SettingsInteractor {
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
+        self.pushNotificationsSettingsProviderFactory = pushNotificationsSettingsProviderFactory
         self.currencyManager = currencyManager
     }
 
@@ -66,6 +70,16 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
+    
+    private func subscribeToPushNotificationsSettings() {
+        pushNotificationsSettingsProvider?.addObserver(self, deliverOn: .main) { changes in
+            if let update = changes.reduceToLastChange() {
+                self?.presenter?.didReceive(pushNotificationsSettings: update)
+            }
+        } failing: { [weak self] error in
+            self?.presenter?.didReceive(error: .pushNotifications(error))
+        }
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -76,6 +90,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
+        subscribeToPushNotificationsSettings()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,
