@@ -10,7 +10,10 @@ protocol AssetConversionFlowFacadeProtocol {
     var generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol { get }
 
     func setup(for chain: ChainModel) throws -> AssetConversionFlowState
-    func getReQuoteService() -> ObservableSyncServiceProtocol?
+    func getReQuoteService(
+        for assetIn: ChainAssetId,
+        assetOut: ChainAssetId
+    ) -> ObservableSyncServiceProtocol?
 
     func createFeeService(for chain: ChainModel) throws -> AssetConversionFeeServiceProtocol
     func createExtrinsicService(for chain: ChainModel) throws -> AssetConversionExtrinsicServiceProtocol
@@ -121,12 +124,15 @@ extension AssetConversionFlowFacade: AssetConversionFlowFacadeProtocol {
         }
     }
 
-    func getReQuoteService() -> ObservableSyncServiceProtocol? {
+    func getReQuoteService(
+        for assetIn: ChainAssetId,
+        assetOut: ChainAssetId
+    ) -> ObservableSyncServiceProtocol? {
         switch state {
         case let .assetHub(assetHub):
             return assetHub.getReQuoteService()
         case let .hydraOmnipool(hydra):
-            return hydra.getReQuoteService()
+            return hydra.getReQuoteService(for: assetIn, assetOut: assetOut)
         case .none:
             return nil
         }

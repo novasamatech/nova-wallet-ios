@@ -188,14 +188,14 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             switch result {
             case let .success(quote):
                 self?.basePresenter?.didReceive(quote: quote, for: args)
-                self?.setupReQuoteSubscription()
+                self?.setupReQuoteSubscription(for: args.assetIn, assetOut: args.assetOut)
             case let .failure(error):
                 self?.basePresenter?.didReceive(baseError: .quote(error, args))
             }
         }
     }
 
-    func setupReQuoteSubscription() {
+    func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
         // by default we always request quote manually
     }
 
