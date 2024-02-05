@@ -96,9 +96,9 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private func provideOriginFeeViewModel() {
         let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = originFee, let assetInfo = optAssetInfo {
+        if let fee = displayOriginFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee.amount,
+                fee,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -116,7 +116,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private func provideCrossChainFeeViewModel() {
         let assetInfo = originChainAsset.assetDisplayInfo
-        if let fee = crossChainFee?.total {
+        if let fee = displayCrosschainFee {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
@@ -206,6 +206,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         super.didReceiveCrossChainFee(result: result)
 
         if case .success = result {
+            provideOriginFeeViewModel()
             provideCrossChainFeeViewModel()
             refreshOriginFee()
         }
@@ -306,7 +307,7 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
                 amount: amountInPlank + crossChainFee.holdingPart,
                 recepient: strongSelf.recepientAccountAddress,
                 weightLimit: crossChainFee.weightLimit,
-                originFee: strongSelf.originFee
+                originFee: strongSelf.networkFee
             )
         }
     }

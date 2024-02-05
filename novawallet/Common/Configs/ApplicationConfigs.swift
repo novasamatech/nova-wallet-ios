@@ -208,12 +208,12 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var paritySignerTroubleshoutingURL: URL {
         // swiftlint:disable:next line_length
-        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/welcome-to-nova-wallet/hardware-wallets/parity-signer/troubleshooting")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/parity-signer/troubleshooting")!
     }
 
     var polkadotVaultTroubleshoutingURL: URL {
         // swiftlint:disable:next line_length
-        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/welcome-to-nova-wallet/hardware-wallets/polkadot-vault/troubleshooting")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/polkadot-vault/troubleshooting")!
     }
 
     var ledgerGuideURL: URL {

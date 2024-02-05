@@ -104,9 +104,9 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func updateOriginFeeView() {
         let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = originFee, let assetInfo = optAssetInfo {
+        if let fee = displayOriginFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee.amount,
+                fee,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -126,7 +126,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func updateCrossChainFeeView() {
         let assetInfo = originChainAsset.assetDisplayInfo
-        if let fee = crossChainFee?.total {
+        if let fee = displayCrosschainFee {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
@@ -184,8 +184,8 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let originFeeValue = isOriginUtilityTransfer ? (originFee?.amountForCurrentAccount ?? 0) : 0
-        let crossChainFeeValue = crossChainFee?.total ?? 0
+        let originFeeValue = isOriginUtilityTransfer ? displayOriginFee ?? 0 : 0
+        let crossChainFeeValue = displayCrosschainFee ?? 0
 
         let precision = originChainAsset.assetDisplayInfo.assetPrecision
 
@@ -287,6 +287,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         super.didReceiveCrossChainFee(result: result)
 
         if case .success = result {
+            updateOriginFeeView()
             updateCrossChainFeeView()
             provideAmountInputViewModelIfRate()
             updateAmountPriceView()
@@ -388,6 +389,18 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
         let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+
+        let originDeliveryFeeSpending = isOriginUtilityTransfer ?
+            crossChainFee?.senderPart.decimal(assetInfo: utilityAssetInfo) :
+            nil
+
+        let crosschainFeeSpending = crossChainFee?.holdingPart.decimal(
+            assetInfo: originChainAsset.assetDisplayInfo
+        )
+
+        let totalSpending = (sendingAmount ?? 0) + (originDeliveryFeeSpending ?? 0) +
+            (crosschainFeeSpending ?? 0)
+
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
             recepientAddress: partialRecepientAddress,
@@ -402,8 +415,8 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
             ),
 
             dataValidatingFactory.willBeReaped(
-                amount: sendingAmount,
-                fee: isOriginUtilityTransfer ? originFee : nil,
+                amount: totalSpending,
+                fee: isOriginUtilityTransfer ? networkFee : nil,
                 totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: originSendingMinBalance,
                 locale: selectedLocale
