@@ -35,9 +35,9 @@ extension StakingRelaychainInteractor {
                 subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
             }
 
-            if selectedAccount?.accountId == stashAccountId, chainAsset.chain.hasProxy {
+            if let accountId = selectedAccount?.accountId, chainAsset.chain.hasProxy {
                 proxyProvider = subscribeProxies(
-                    for: stashAccountId,
+                    for: accountId,
                     chainId: chainId,
                     modifyInternalList: ProxyFilter.filteredStakingProxy
                 )
