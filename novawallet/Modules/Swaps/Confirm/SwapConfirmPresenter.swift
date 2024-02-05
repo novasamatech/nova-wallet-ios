@@ -139,6 +139,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     override func handleNewQuote(_ quote: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {
         quoteResult = .success(quote)
+        
+        view?.didReceiveStopLoading()
 
         updateViews()
         estimateFee()
