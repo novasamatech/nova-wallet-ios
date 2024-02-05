@@ -139,4 +139,10 @@ class BaseStakingState: StakingStateProtocol {
 
         stateMachine?.transit(to: self)
     }
+
+    func process(proxy: ProxyDefinition?) {
+        commonData = commonData.byReplacing(proxy: proxy)
+
+        stateMachine?.transit(to: self)
+    }
 }

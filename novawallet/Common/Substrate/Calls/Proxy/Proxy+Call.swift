@@ -25,4 +25,18 @@ extension Proxy {
             )
         }
     }
+
+    struct AddProxyCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case proxy = "delegate"
+            case proxyType = "proxy_type"
+            case delay
+        }
+
+        let proxy: MultiAddress
+        let proxyType: ProxyType
+        @StringCodable var delay: BlockNumber
+    }
+
+    typealias RemoveProxyCall = AddProxyCall
 }

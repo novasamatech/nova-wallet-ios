@@ -224,6 +224,33 @@ final class StakingRelaychainPresenter {
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
+
+    private func presentSwitchToStashAccountAlert(stashAddress: AccountAddress) {
+        let locale = view?.selectedLocale
+        let displayName: String
+        if let displayAddress = try? accountForAddress(stashAddress)?.toWalletDisplayAddress() {
+            displayName = displayAddress.walletName ?? displayAddress.address
+        } else {
+            displayName = stashAddress
+        }
+        let title = R.string.localizable.stakingAlertSwitchToStashTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        let message = R.string.localizable.stakingAlertSwitchToStashMessage(
+            displayName,
+            preferredLanguages: locale?.rLanguages
+        )
+        let closeTitle = R.string.localizable.commonClose(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        wireframe.present(
+            message: message,
+            title: title,
+            closeAction: closeTitle,
+            from: view
+        )
+    }
 }
 
 extension StakingRelaychainPresenter: StakingStateMachineDelegate {
@@ -342,6 +369,16 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 let stashAddress = validatorState.stashItem.stash
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
+        case .addProxy:
+            if let state = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
+                if state.commonData.address != state.stashItem.stash {
+                    presentSwitchToStashAccountAlert(stashAddress: state.stashItem.stash)
+                } else {
+                    wireframe.showAddProxy(from: view)
+                }
+            }
+        case .editProxies:
+            wireframe.showEditProxies(from: view)
         default:
             logger?.warning("Unsupported action: \(action)")
         }
@@ -602,6 +639,15 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         switch eraCountdownResult {
         case let .success(eraCountdown):
             stateMachine.state.process(eraCountdown: eraCountdown)
+        case let .failure(error):
+            handle(error: error)
+        }
+    }
+
+    func didReceiveProxy(result: Result<ProxyDefinition?, Error>) {
+        switch result {
+        case let .success(proxy):
+            stateMachine.state.process(proxy: proxy)
         case let .failure(error):
             handle(error: error)
         }

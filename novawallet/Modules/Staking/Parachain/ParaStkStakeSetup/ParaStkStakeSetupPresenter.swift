@@ -270,14 +270,14 @@ final class ParaStkStakeSetupPresenter {
         }
     }
 
-    private func changeCollator(with collatorId: AccountId, name: String?) {
+    func changeCollator(with newAddress: DisplayAddress?) {
         guard
-            let newAddress = try? collatorId.toAddress(using: chainAsset.chain.chainFormat),
-            newAddress != collatorDisplayAddress?.address else {
+            let collatorId = try? newAddress?.address.toAccountId(using: chainAsset.chain.chainFormat),
+            newAddress?.address != collatorDisplayAddress?.address else {
             return
         }
 
-        collatorDisplayAddress = DisplayAddress(address: newAddress, username: name ?? "")
+        collatorDisplayAddress = newAddress
 
         collatorMetadata = nil
 
@@ -286,6 +286,14 @@ final class ParaStkStakeSetupPresenter {
         provideRewardsViewModel()
 
         interactor.applyCollator(with: collatorId)
+    }
+
+    func changeCollator(with collatorId: AccountId, name: String?) {
+        guard let newAddress = try? collatorId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return
+        }
+
+        changeCollator(with: DisplayAddress(address: newAddress, username: name ?? ""))
     }
 }
 
@@ -451,6 +459,12 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
 
     func didReceiveMaxDelegations(_ maxDelegations: UInt32) {
         self.maxDelegations = maxDelegations
+    }
+
+    func didReceivePreferredCollator(_ collator: DisplayAddress?) {
+        if collator != nil, collatorDisplayAddress == nil {
+            changeCollator(with: collator)
+        }
     }
 
     func didReceiveError(_ error: Error) {

@@ -39,7 +39,6 @@ final class StakingAccountSubscription: WebSocketSubscribing {
     let childSubscriptionFactory: ChildSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
-
     private let mutex = NSLock()
 
     private var subscription: Subscription?

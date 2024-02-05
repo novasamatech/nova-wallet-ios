@@ -12,7 +12,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmountInputPrice(receiveViewModel: SwapPriceDifferenceViewModel?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
-    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(issues: [SwapSetupViewIssue])
