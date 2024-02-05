@@ -100,7 +100,7 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
         rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel))
     }
 
-    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
     }
 

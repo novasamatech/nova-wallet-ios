@@ -96,9 +96,9 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private func provideOriginFeeViewModel() {
         let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = originFee, let assetInfo = optAssetInfo {
+        if let fee = displayOriginFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee.amount,
+                fee,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -116,7 +116,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private func provideCrossChainFeeViewModel() {
         let assetInfo = originChainAsset.assetDisplayInfo
-        if let fee = crossChainFee?.amount {
+        if let fee = displayCrosschainFee {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
@@ -168,7 +168,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         interactor.estimateOriginFee(
             for: amountValue,
             recepient: getRecepientAccountId(),
-            weightLimit: crossChainFee?.weight
+            weightLimit: crossChainFee?.weightLimit
         )
     }
 
@@ -202,10 +202,11 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         }
     }
 
-    override func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
+    override func didReceiveCrossChainFee(result: Result<XcmFeeModelProtocol, Error>) {
         super.didReceiveCrossChainFee(result: result)
 
         if case .success = result {
+            provideOriginFeeViewModel()
             provideCrossChainFeeViewModel()
             refreshOriginFee()
         }
@@ -303,10 +304,10 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
-                amount: amountInPlank + crossChainFee.amount,
+                amount: amountInPlank + crossChainFee.holdingPart,
                 recepient: strongSelf.recepientAccountAddress,
-                weightLimit: crossChainFee.weight,
-                originFee: strongSelf.originFee
+                weightLimit: crossChainFee.weightLimit,
+                originFee: strongSelf.networkFee
             )
         }
     }

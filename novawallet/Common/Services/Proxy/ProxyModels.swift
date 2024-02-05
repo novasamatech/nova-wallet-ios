@@ -1,6 +1,6 @@
 import SubstrateSdk
 
-struct ProxyAccount {
+struct ProxyAccount: Hashable {
     let accountId: AccountId
     let type: Proxy.ProxyType
     let delay: BlockNumber
@@ -31,11 +31,25 @@ struct AccountIdKey: JSONListConvertible, Hashable {
     }
 }
 
-struct ProxyDefinition: Decodable {
+struct ProxyDefinition: Decodable, Equatable {
     let definition: [Proxy.ProxyDefinition]
 
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         definition = try container.decode([Proxy.ProxyDefinition].self)
+    }
+
+    init(definition: [Proxy.ProxyDefinition]) {
+        self.definition = definition
+    }
+}
+
+enum ProxyFilter {
+    static func filteredStakingProxy(from proxy: ProxyDefinition) -> ProxyDefinition {
+        ProxyDefinition(definition: proxy.definition.filter { $0.proxyType == .staking })
+    }
+
+    static func allProxies(from proxy: ProxyDefinition) -> ProxyDefinition {
+        proxy
     }
 }

@@ -27,6 +27,7 @@ enum KnowChainId {
     static let westend = "e143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e"
     static let westmint = "67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
     static let hydra = "afdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d"
+    static let polimec = "7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd"
 
     static var kiltOnEnviroment: String {
         #if F_DEV

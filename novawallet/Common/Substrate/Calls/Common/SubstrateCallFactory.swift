@@ -59,6 +59,13 @@ protocol SubstrateCallFactoryProtocol {
         extras: EquilibriumAssetExtras,
         amount: BigUInt
     ) -> RuntimeCall<EquilibriumTokenTransfer>
+
+    func addProxy(accountId: AccountId, type: Proxy.ProxyType) -> RuntimeCall<Proxy.AddProxyCall>
+
+    func removeProxy(
+        accountId: AccountId,
+        type: Proxy.ProxyType
+    ) -> RuntimeCall<Proxy.RemoveProxyCall>
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
@@ -209,6 +216,27 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return rebagCall.runtimeCalls.first(where: {
             $0.moduleName == module
         }) ?? rebagCall.defaultRuntimeCall
+    }
+
+    func addProxy(accountId: AccountId, type: Proxy.ProxyType) -> RuntimeCall<Proxy.AddProxyCall> {
+        let proxyCall = Proxy.AddProxyCall(
+            proxy: .accoundId(accountId),
+            proxyType: type,
+            delay: 0
+        )
+        return RuntimeCall(moduleName: Proxy.name, callName: "add_proxy", args: proxyCall)
+    }
+
+    func removeProxy(
+        accountId: AccountId,
+        type: Proxy.ProxyType
+    ) -> RuntimeCall<Proxy.RemoveProxyCall> {
+        let proxyCall = Proxy.RemoveProxyCall(
+            proxy: .accoundId(accountId),
+            proxyType: type,
+            delay: 0
+        )
+        return RuntimeCall(moduleName: Proxy.name, callName: "remove_proxy", args: proxyCall)
     }
 }
 

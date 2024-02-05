@@ -7,6 +7,7 @@ enum XcmTransferServiceError: Error {
     case reserveFeeNotAvailable
     case noXcmPalletFound([String])
     case noArgumentFound(String)
+    case deliveryFeeNotAvailable
 }
 
 final class XcmTransferService {

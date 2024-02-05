@@ -20,7 +20,14 @@ struct ProxySignValidationViewFactory {
 
         let view = ControllerBacked(controller: viewController)
 
-        let dataValidatorFactory = ProxyDataValidatorFactory(presentable: wireframe)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let dataValidatorFactory = ProxyDataValidatorFactory(
+            presentable: wireframe,
+            balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
+        )
 
         dataValidatorFactory.view = view
 

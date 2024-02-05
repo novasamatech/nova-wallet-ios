@@ -33,6 +33,13 @@ extension BigRational {
     static func permillPercent(of numerator: BigUInt) -> BigRational {
         .init(numerator: numerator, denominator: 1_000_000)
     }
+
+    static func fixedU128(value: BigUInt) -> BigRational {
+        .init(
+            numerator: value,
+            denominator: 1_000_000_000_000_000_000
+        )
+    }
 }
 
 extension BigRational {

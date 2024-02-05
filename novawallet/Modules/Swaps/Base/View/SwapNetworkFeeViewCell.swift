@@ -1,11 +1,11 @@
 import SoraUI
 
-final class SwapNetworkFeeViewCell: RowView<SwapNetworkFeeView>, StackTableViewCellProtocol {
+final class SwapNetworkFeeViewCell: RowView<NetworkFeeInfoView>, StackTableViewCellProtocol {
     var titleButton: RoundedButton { rowContentView.titleView }
     var valueTopButton: RoundedButton { rowContentView.valueView.fView }
     var valueBottomLabel: UILabel { rowContentView.valueView.sView }
 
-    func bind(loadableViewModel: LoadableViewModelState<SwapFeeViewModel>) {
+    func bind(loadableViewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rowContentView.bind(loadableViewModel: loadableViewModel)
     }
 

@@ -13,6 +13,7 @@ extension StakingRelaychainInteractor {
         clear(dataProvider: &payeeProvider)
         clear(streamableProvider: &controllerAccountProvider)
         clear(streamableProvider: &stashAccountProvider)
+        clear(dataProvider: &proxyProvider)
 
         if
             let stashItem = stashItem,
@@ -32,6 +33,14 @@ extension StakingRelaychainInteractor {
 
             if stashItem.controller != stashItem.stash {
                 subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
+            }
+
+            if let accountId = selectedAccount?.accountId, chainAsset.chain.hasProxy {
+                proxyProvider = subscribeProxies(
+                    for: accountId,
+                    chainId: chainId,
+                    modifyInternalList: ProxyFilter.filteredStakingProxy
+                )
             }
         }
 
@@ -102,6 +111,7 @@ extension StakingRelaychainInteractor {
         clear(singleValueProvider: &totalRewardProvider)
         clear(dataProvider: &payeeProvider)
         clear(streamableProvider: &stashControllerProvider)
+        clear(dataProvider: &proxyProvider)
     }
 
     func performStashControllerSubscription() {
@@ -258,6 +268,12 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
         case let .failure(error):
             presenter?.didReceiveBagListScoreFactor(result: .failure(error))
         }
+    }
+}
+
+extension StakingRelaychainInteractor: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
+    func handleProxies(result: Result<ProxyDefinition?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+        presenter?.didReceiveProxy(result: result)
     }
 }
 
