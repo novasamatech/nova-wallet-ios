@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class HydraOmnipoolQuoteService: ObservableSubscriptionSyncService<HydraDx.QuoteRemoteState> {
+final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<HydraDx.QuoteRemoteState> {
     let chain: ChainModel
     let assetIn: HydraDx.LocalRemoteAssetId
     let assetOut: HydraDx.LocalRemoteAssetId

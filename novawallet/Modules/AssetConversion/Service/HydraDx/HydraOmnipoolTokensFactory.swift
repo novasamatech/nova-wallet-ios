@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-protocol HydraOmnipoolOperationFactoryProtocol {
+protocol HydraOmnipoolTokensFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
 
     func availableDirectionsForAsset(
@@ -13,7 +13,7 @@ protocol HydraOmnipoolOperationFactoryProtocol {
     func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool>
 }
 
-final class HydraOmnipoolOperationFactory {
+final class HydraOmnipoolTokensFactory {
     let chain: ChainModel
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
@@ -122,7 +122,7 @@ final class HydraOmnipoolOperationFactory {
     }
 }
 
-extension HydraOmnipoolOperationFactory: HydraOmnipoolOperationFactoryProtocol {
+extension HydraOmnipoolTokensFactory: HydraOmnipoolTokensFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         let allAssetsWrapper = fetchAllAssets()
 

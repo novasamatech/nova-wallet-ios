@@ -92,7 +92,7 @@ final class HydraDxSwapTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let operationFactory = HydraOmnipoolOperationFactory(
+        let operationFactory = HydraOmnipoolTokensFactory(
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,
@@ -166,7 +166,7 @@ final class HydraDxSwapTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let operationFactory = HydraOmnipoolOperationFactory(
+        let operationFactory = HydraOmnipoolTokensFactory(
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,

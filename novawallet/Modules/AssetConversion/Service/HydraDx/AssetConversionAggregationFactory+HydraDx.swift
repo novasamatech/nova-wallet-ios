@@ -13,7 +13,7 @@ extension AssetConversionAggregationFactory {
             return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
 
-        return HydraOmnipoolOperationFactory(
+        return HydraOmnipoolTokensFactory(
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,
@@ -30,7 +30,7 @@ extension AssetConversionAggregationFactory {
             return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
 
-        return HydraOmnipoolOperationFactory(
+        return HydraOmnipoolTokensFactory(
             chain: chainAsset.chain,
             runtimeService: runtimeService,
             connection: connection,
@@ -54,7 +54,7 @@ extension AssetConversionAggregationFactory {
             return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
 
-        return HydraOmnipoolOperationFactory(
+        return HydraOmnipoolTokensFactory(
             chain: chainAsset.chain,
             runtimeService: runtimeService,
             connection: connection,

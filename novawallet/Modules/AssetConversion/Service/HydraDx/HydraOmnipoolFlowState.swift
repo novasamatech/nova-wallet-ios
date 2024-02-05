@@ -3,8 +3,8 @@ import SubstrateSdk
 import RobinHood
 
 protocol HydraOmnipoolFlowStateProtocol {
-    func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteService
-    func setupSwapService() -> HydraOmnipoolSwapService
+    func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteParamsService
+    func setupSwapService() -> HydraOmnipoolSwapParamsService
 
     func getReQuoteService(
         for assetIn: ChainAssetId,
@@ -25,8 +25,8 @@ final class HydraOmnipoolFlowState {
 
     let mutex = NSLock()
 
-    private var quoteStateServices: [HydraDx.SwapPair: HydraOmnipoolQuoteService] = [:]
-    private var swapStateService: HydraOmnipoolSwapService?
+    private var quoteStateServices: [HydraDx.SwapPair: HydraOmnipoolQuoteParamsService] = [:]
+    private var swapStateService: HydraOmnipoolSwapParamsService?
 
     init(
         account: ChainAccountResponse,
@@ -58,7 +58,7 @@ final class HydraOmnipoolFlowState {
 }
 
 extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
-    func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteService {
+    func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteParamsService {
         mutex.lock()
 
         defer {
@@ -71,7 +71,7 @@ extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
             return currentService
         }
 
-        let newService = HydraOmnipoolQuoteService(
+        let newService = HydraOmnipoolQuoteParamsService(
             chain: chain,
             assetIn: swapPair.assetIn,
             assetOut: swapPair.assetOut,
@@ -88,7 +88,7 @@ extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
         return newService
     }
 
-    func setupSwapService() -> HydraOmnipoolSwapService {
+    func setupSwapService() -> HydraOmnipoolSwapParamsService {
         mutex.lock()
 
         defer {
@@ -99,7 +99,7 @@ extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
             return swapStateService
         }
 
-        let service = HydraOmnipoolSwapService(
+        let service = HydraOmnipoolSwapParamsService(
             accountId: account.accountId,
             connection: connection,
             runtimeProvider: runtimeProvider,
