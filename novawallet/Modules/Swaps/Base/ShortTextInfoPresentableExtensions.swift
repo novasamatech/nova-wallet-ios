@@ -50,4 +50,18 @@ extension ShortTextInfoPresentable {
             details: details
         )
     }
+
+    func showProxyDepositInfo(from view: ControllerBackedProtocol?) {
+        let title = LocalizableResource {
+            R.string.localizable.stakingSetupProxyDeposit(preferredLanguages: $0.rLanguages)
+        }
+        let details = LocalizableResource {
+            R.string.localizable.stakingSetupProxyDepositDetails(preferredLanguages: $0.rLanguages)
+        }
+        showInfo(
+            from: view,
+            title: title,
+            details: details
+        )
+    }
 }

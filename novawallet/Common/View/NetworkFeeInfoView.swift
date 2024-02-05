@@ -3,7 +3,7 @@ import UIKit
 import SoraUI
 import Kingfisher
 
-final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>,
+final class NetworkFeeInfoView: GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>,
     SkeletonableView {
     var titleButton: RoundedButton { titleView }
     var valueTopButton: RoundedButton { valueView.fView }
@@ -60,8 +60,8 @@ final class SwapNetworkFeeView: GenericTitleValueView<RoundedButton, GenericPair
     }
 }
 
-extension SwapNetworkFeeView {
-    func bind(viewModel: SwapFeeViewModel) {
+extension NetworkFeeInfoView {
+    func bind(viewModel: NetworkFeeInfoViewModel) {
         valueTopButton.imageWithTitleView?.iconImage = viewModel.isEditable ? iconPencil : nil
         valueTopButton.isUserInteractionEnabled = viewModel.isEditable
         valueTopButton.imageWithTitleView?.title = viewModel.balanceViewModel.amount
@@ -69,7 +69,7 @@ extension SwapNetworkFeeView {
         valueTopButton.invalidateLayout()
     }
 
-    func bind(loadableViewModel: LoadableViewModelState<SwapFeeViewModel>) {
+    func bind(loadableViewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         switch loadableViewModel {
         case let .cached(value), let .loaded(value):
             isLoading = false
@@ -82,7 +82,7 @@ extension SwapNetworkFeeView {
     }
 }
 
-extension SwapNetworkFeeView {
+extension NetworkFeeInfoView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let size = CGSize(width: 68, height: 8)
         let offset = CGPoint(

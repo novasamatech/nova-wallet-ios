@@ -321,7 +321,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func scanRecepientCode() {
-        wireframe.showRecepientScan(from: view, delegate: self)
+        wireframe.showAddressScan(from: view, delegate: self)
     }
 
     func applyMyselfRecepient() {
@@ -485,7 +485,7 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
 extension TransferSetupPresenter: AddressScanDelegate {
     func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
-        wireframe.hideRecepientScan(from: view)
+        wireframe.hideAddressScan(from: view)
 
         recipientAddress = .address(address)
         childPresenter?.changeRecepient(address: address)

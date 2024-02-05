@@ -54,6 +54,7 @@ struct StartStakingInfoViewFactory {
         let stateFactory = StakingSharedStateFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            proxySyncService: nil,
             eventCenter: EventCenter.shared,
             syncOperationQueue: operationQueue,
             repositoryOperationQueue: operationQueue,
@@ -153,6 +154,7 @@ struct StartStakingInfoViewFactory {
         let stateFactory = StakingSharedStateFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            proxySyncService: nil,
             eventCenter: EventCenter.shared,
             syncOperationQueue: operationQueue,
             repositoryOperationQueue: operationQueue,
