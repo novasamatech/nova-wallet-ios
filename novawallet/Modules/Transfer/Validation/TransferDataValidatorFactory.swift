@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-typealias CrossChainValidationFee = (origin: ExtrinsicFeeProtocol?, crossChain: ExtrinsicFeeProtocol?)
+typealias CrossChainValidationFee = (origin: BigUInt?, crossChain: BigUInt?)
 
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func willBeReaped(
@@ -42,6 +42,14 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 
     func receiverNotBlocked(_ isBlocked: Bool?, locale: Locale) -> DataValidating
 
+    func canPayOriginDeliveryFee(
+        for amount: Decimal?,
+        networkFee: ExtrinsicFeeProtocol?,
+        crosschainFee: XcmFeeModelProtocol?,
+        transferable: BigUInt?,
+        locale: Locale
+    ) -> DataValidating
+
     func canPayCrossChainFee(
         for amount: Decimal?,
         fee: CrossChainValidationFee?,
@@ -49,6 +57,8 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         destinationAsset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
+
+    func has(crosschainFee: XcmFeeModelProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 }
 
 final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
@@ -73,7 +83,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
-    func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
+    func has(crosschainFee: XcmFeeModelProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             defer {
                 onError?()
@@ -84,7 +94,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             }
 
             self?.basePresentable.presentFeeNotReceived(from: view, locale: locale)
-        }, preservesCondition: { fee != nil })
+        }, preservesCondition: { crosschainFee != nil })
     }
 
     func willBeReaped(
@@ -234,6 +244,36 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         })
     }
 
+    func canPayOriginDeliveryFee(
+        for amount: Decimal?,
+        networkFee: ExtrinsicFeeProtocol?,
+        crosschainFee: XcmFeeModelProtocol?,
+        transferable: BigUInt?,
+        locale: Locale
+    ) -> DataValidating {
+        let feeAmountInPlank = (networkFee?.amountForCurrentAccount ?? 0) + (crosschainFee?.senderPart ?? 0)
+        let feeDecimal = feeAmountInPlank.decimal(assetInfo: assetDisplayInfo)
+        let balanceDecimal = transferable?.decimal(assetInfo: assetDisplayInfo) ?? 0
+        let amountDecimal = amount ?? 0
+
+        return ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view, let assetInfo = self?.assetDisplayInfo else {
+                return
+            }
+
+            let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetInfo)
+
+            let balanceAfterOperation = balanceDecimal >= amountDecimal ? balanceDecimal - amountDecimal : 0
+            let balanceString = tokenFormatter.value(for: locale).stringFromDecimal(balanceAfterOperation) ?? ""
+            let feeString = tokenFormatter.value(for: locale).stringFromDecimal(feeDecimal) ?? ""
+
+            self?.basePresentable.presentFeeTooHigh(from: view, balance: balanceString, fee: feeString, locale: locale)
+
+        }, preservesCondition: {
+            feeDecimal + amountDecimal <= balanceDecimal
+        })
+    }
+
     func canPayCrossChainFee(
         for amount: Decimal?,
         fee: CrossChainValidationFee?,
@@ -263,7 +303,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             )
 
             let crossChainFeeDecimal = Decimal.fromSubstrateAmount(
-                fee?.crossChain?.amountForCurrentAccount ?? 0,
+                fee?.crossChain ?? 0,
                 precision: destinationAsset.assetPrecision
             ) ?? 0
 
@@ -277,12 +317,12 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             ) ?? 0
 
             let originFeeDecimal = Decimal.fromSubstrateAmount(
-                fee?.origin?.amountForCurrentAccount ?? 0,
+                fee?.origin ?? 0,
                 precision: originAsset.assetPrecision
             ) ?? 0
 
             let remainingString = originBalanceViewModelFactory.amountFromValue(
-                transferableDecimal - sendingAmountDecimal - originFeeDecimal
+                max(transferableDecimal - sendingAmountDecimal - originFeeDecimal, 0)
             ).value(for: locale)
 
             self?.presentable.presentCantPayCrossChainFee(
@@ -294,8 +334,8 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
         }, preservesCondition: {
             if let sendingAmount = sendingAmount, let transferable = transferable {
-                let originFeeAmount = fee?.origin?.amountForCurrentAccount ?? 0
-                let crosschainFeeAmount = fee?.crossChain?.amountForCurrentAccount ?? 0
+                let originFeeAmount = fee?.origin ?? 0
+                let crosschainFeeAmount = fee?.crossChain ?? 0
                 return sendingAmount + originFeeAmount + crosschainFeeAmount <= transferable
             } else {
                 return false

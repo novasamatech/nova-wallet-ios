@@ -20,12 +20,14 @@ final class ParaStkSelectCollatorsPresenter {
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let preferredCollators: Set<AccountId>
     let logger: LoggerProtocol
 
     init(
         interactor: ParaStkSelectCollatorsInteractorInputProtocol,
         wireframe: ParaStkSelectCollatorsWireframeProtocol,
         delegate: ParaStkSelectCollatorsDelegate,
+        preferredCollators: Set<AccountId>,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -34,6 +36,7 @@ final class ParaStkSelectCollatorsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.delegate = delegate
+        self.preferredCollators = preferredCollators
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
@@ -206,7 +209,7 @@ final class ParaStkSelectCollatorsPresenter {
 
     private func applySortingAndSaveResult(_ result: Result<[CollatorSelectionInfo], Error>) {
         collatorsInfoResult = result.map {
-            $0.sortedByType(sorting)
+            $0.sortedByType(sorting, preferredCollators: preferredCollators)
         }
     }
 }
