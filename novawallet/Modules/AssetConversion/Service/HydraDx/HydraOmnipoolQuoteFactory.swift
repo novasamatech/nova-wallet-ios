@@ -63,6 +63,10 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
+    private func canTrade(assetIn: HydraDx.AssetState, assetOut: HydraDx.AssetState) -> Bool {
+        assetIn.tradable.canSell() && assetOut.tradable.canBuy()
+    }
+
     private func calculateSellQuote(
         for args: AssetConversion.QuoteArgs,
         remoteState: HydraDx.QuoteRemoteState,
@@ -74,6 +78,10 @@ final class HydraOmnipoolQuoteFactory {
 
         guard let assetOutState = remoteState.assetOutState else {
             throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
+        }
+
+        guard canTrade(assetIn: assetInState, assetOut: assetOutState) else {
+            throw AssetConversionOperationError.tradeDisabled
         }
 
         let assetFee = BigRational.permillPercent(
@@ -114,6 +122,10 @@ final class HydraOmnipoolQuoteFactory {
 
         guard let assetOutState = remoteState.assetOutState else {
             throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
+        }
+
+        guard canTrade(assetIn: assetInState, assetOut: assetOutState) else {
+            throw AssetConversionOperationError.tradeDisabled
         }
 
         let assetFee = BigRational.permillPercent(
