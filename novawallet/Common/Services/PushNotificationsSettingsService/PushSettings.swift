@@ -1,7 +1,8 @@
 import FirebaseCore
 import FirebaseFirestore
+import SubstrateSdk
 
-typealias ChainSelection = PushSettings.Selection<String>
+typealias ChainSelection = PushSettings.Selection<[String]>
 
 struct PushSettings: Codable, Equatable {
     struct Wallet: Codable, Equatable {
@@ -10,63 +11,72 @@ struct PushSettings: Codable, Equatable {
         let chainSpecific: [String: String]
     }
 
+    struct Notifications: Codable, Equatable {
+        let announcements: Bool
+        let stakingReward: ChainSelection
+        let transfer: ChainSelection
+    }
+
+    let pushToken: String
+    let updatedAt: Date
+    let wallets: [Wallet]
+    let notifications: Notifications
+}
+
+extension PushSettings {
     enum Selection<T: Codable & Equatable>: Codable, Equatable {
         case all
         case concrete(T)
 
-        init(from decoder: Decoder) throws {
-            var container = try decoder.singleValueContainer()
-            let type = try container.decode(String.self)
+        private enum CodingKeys: String, CodingKey {
+            case type
+            case value
+        }
 
-            switch type {
-            case "all":
+        private enum Keys: String {
+            case all
+            case concrete
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let type = try container.decode(String.self, forKey: .type)
+
+            switch Keys(rawValue: type) {
+            case .all:
                 self = .all
-            case "concrete":
-                let value = try container.decode(T.self)
+            case .concrete:
+                let value = try container.decode(T.self, forKey: .value)
                 self = .concrete(value)
             default:
                 throw DecodingError.dataCorruptedError(
+                    forKey: .type,
                     in: container,
                     debugDescription: "unexpected value"
                 )
             }
         }
 
-        func encode(to _: Encoder) throws {
-            fatalError()
-        }
-    }
-
-    enum Notification: Codable, Equatable {
-        case stakingReward(ChainSelection)
-        case transfer(ChainSelection)
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            let type = try container.decode(String.self)
-
-            switch type {
-            case "stakingReward":
-                let chains = try container.decode(ChainSelection.self)
-                self = .stakingReward(chains)
-            case "transfer":
-                let chains = try container.decode(ChainSelection.self)
-                self = .transfer(chains)
-            default:
-                throw DecodingError.dataCorruptedError(
-                    in: container,
-                    debugDescription: "unexpected value"
-                )
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            switch self {
+            case .all:
+                try container.encode(Keys.all.rawValue, forKey: .type)
+            case let .concrete(value):
+                try container.encode(Keys.concrete.rawValue, forKey: .type)
+                try container.encode(value, forKey: .value)
             }
         }
-
-        func encode(to _: Encoder) throws {
-            fatalError()
-        }
     }
+}
 
-    let pushToken: String
-    let updatedAt: String
-    let wallets: [Wallet]
-    let notifications: [Notification]
+extension PushSettings {
+    static func createDefault(for token: String) -> PushSettings {
+        .init(
+            pushToken: token,
+            updatedAt: Date(),
+            wallets: [],
+            notifications: .init(announcements: true, stakingReward: .all, transfer: .all)
+        )
+    }
 }

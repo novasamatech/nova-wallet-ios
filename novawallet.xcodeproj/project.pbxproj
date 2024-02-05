@@ -809,6 +809,9 @@
 		770955712AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */; };
 		770F57882A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */; };
 		770F578B2A8A48FF005FD7C1 /* ButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */; };
+		771056022B714B0B00EE2C20 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 771056012B714B0B00EE2C20 /* GoogleService-Info.plist */; };
+		771056062B717E0400EE2C20 /* PushNotificationParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */; };
+		771056082B7183F300EE2C20 /* JSONDecoder+date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771056072B7183F300EE2C20 /* JSONDecoder+date.swift */; };
 		77171CA82A98BBA10032B387 /* NominationPoolErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77171CA72A98BBA10032B387 /* NominationPoolErrorPresentable.swift */; };
 		77171CAA2A98BC420032B387 /* NominationPoolDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */; };
 		7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */; };
@@ -935,6 +938,7 @@
 		77A6F5CF2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */; };
 		77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */; };
 		77A6F5D52A31E046004AFD1A /* JsonCanonicalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */; };
+		77AAC3E52B70DB0300B8B89E /* firestore-settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 77AAC3E42B70DB0300B8B89E /* firestore-settings.json */; };
 		77AAD2992B1731D1007AD86F /* ReferendumsInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAD2982B1731D1007AD86F /* ReferendumsInitState.swift */; };
 		77AAE2202AFB00CB006872CC /* OperationSwapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE21F2AFB00CB006872CC /* OperationSwapModel.swift */; };
 		77AAE2222AFB026E006872CC /* OperationDetailsSwapProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE2212AFB026E006872CC /* OperationDetailsSwapProvider.swift */; };
@@ -5041,6 +5045,9 @@
 		770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBaseDataValidatingFactory.swift; sourceTree = "<group>"; };
 		770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewStyles.swift; sourceTree = "<group>"; };
 		770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewModel.swift; sourceTree = "<group>"; };
+		771056012B714B0B00EE2C20 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationParsingTests.swift; sourceTree = "<group>"; };
+		771056072B7183F300EE2C20 /* JSONDecoder+date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+date.swift"; sourceTree = "<group>"; };
 		77171CA72A98BBA10032B387 /* NominationPoolErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolErrorPresentable.swift; sourceTree = "<group>"; };
 		77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolDataValidatorFactory.swift; sourceTree = "<group>"; };
 		7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDataValidatorFactory.swift; sourceTree = "<group>"; };
@@ -5170,6 +5177,7 @@
 		77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepositoryFactory.swift; sourceTree = "<group>"; };
 		77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizer.swift; sourceTree = "<group>"; };
 		77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonCanonicalizerTests.swift; sourceTree = "<group>"; };
+		77AAC3E42B70DB0300B8B89E /* firestore-settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "firestore-settings.json"; sourceTree = "<group>"; };
 		77AAD2982B1731D1007AD86F /* ReferendumsInitState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferendumsInitState.swift; sourceTree = "<group>"; };
 		77AAE21F2AFB00CB006872CC /* OperationSwapModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationSwapModel.swift; sourceTree = "<group>"; };
 		77AAE2212AFB026E006872CC /* OperationDetailsSwapProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationDetailsSwapProvider.swift; sourceTree = "<group>"; };
@@ -10233,6 +10241,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		771056042B717DF300EE2C20 /* Parsing */ = {
+			isa = PBXGroup;
+			children = (
+				771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */,
+			);
+			path = Parsing;
+			sourceTree = "<group>";
+		};
 		7719018A2AE0E62500D9C918 /* Validation */ = {
 			isa = PBXGroup;
 			children = (
@@ -10563,6 +10579,7 @@
 				77B011722B6CCCFA003A5868 /* PushNotificationsSettingsService.swift */,
 				77DB70ED2B709E4300288F26 /* PushSettings.swift */,
 				77DB70EF2B709E6D00288F26 /* PushNotificationsSettingsProviderFactory.swift */,
+				771056072B7183F300EE2C20 /* JSONDecoder+date.swift */,
 			);
 			path = PushNotificationsSettingsService;
 			sourceTree = "<group>";
@@ -11536,6 +11553,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				771056042B717DF300EE2C20 /* Parsing */,
 				77A6F5D32A31E033004AFD1A /* JsonCanonicalizer */,
 				8846F73629D6F4FB00B8B776 /* Multibase */,
 				844DAAE228AD24E0008E11DA /* Ledger */,
@@ -13837,6 +13855,7 @@
 				849013CF24A9267F008F705E /* R.generated.swift */,
 				849013B424A80986008F705E /* Assets.xcassets */,
 				849013B624A80986008F705E /* LaunchScreen.storyboard */,
+				771056012B714B0B00EE2C20 /* GoogleService-Info.plist */,
 				849013B924A80986008F705E /* Info.plist */,
 				84C07EDA24AF1924008FC35B /* InfoPlist.strings */,
 				8490146024A94373008F705E /* Localizable.strings */,
@@ -13849,10 +13868,10 @@
 			isa = PBXGroup;
 			children = (
 				84FACB2B25F562CB00F32ED4 /* Resources */,
+				842D1E7E24D0BED200C30A7A /* Common */,
 				8467FD3724EACDF8005D486C /* Helper */,
 				8467FD0324E5E07D005D486C /* KeystoreDefinition */,
 				842D1E8A24D208AF00C30A7A /* Mocks */,
-				842D1E7E24D0BED200C30A7A /* Common */,
 				84B7C680289BFA78001A3566 /* Modules */,
 				849013C424A80986008F705E /* Info.plist */,
 				842D1E8F24D20B1500C30A7A /* Constants.swift */,
@@ -17364,6 +17383,7 @@
 			children = (
 				77A6F5D82A31FAA6004AFD1A /* canonicalization */,
 				881BA30829DC1B3000EB8C48 /* kilt-addresses.json */,
+				77AAC3E42B70DB0300B8B89E /* firestore-settings.json */,
 				8836AF4B28AA4E4800A94EDD /* currencies.json */,
 				84F438B125DA548700AEDA56 /* runtimeTestMetadata */,
 				84FACB2C25F562CB00F32ED4 /* westend-metadata */,
@@ -20000,6 +20020,7 @@
 				842876AC24AE049B00D91AD8 /* SelectionTitleTableViewCell.xib in Resources */,
 				848A837E274BB03F004493DD /* PublicSans-Bold.otf in Resources */,
 				849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */,
+				771056022B714B0B00EE2C20 /* GoogleService-Info.plist in Resources */,
 				84D2F19B2771AA140040C680 /* nova_min.js in Resources */,
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
@@ -20034,6 +20055,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */,
+				77AAC3E52B70DB0300B8B89E /* firestore-settings.json in Resources */,
 				77EA2A242A333C1500B0670B /* arrays_output.json in Resources */,
 				846B32A526DD07AF00250E89 /* rewardErrorResponse.json in Resources */,
 				77EA2A232A333C1500B0670B /* french_output.json in Resources */,
@@ -20981,6 +21003,7 @@
 				84CA68D926BE9E7F003B9453 /* SpecVersionSubscription.swift in Sources */,
 				0C13DFCB2AF6182500E5F355 /* SwapModel.swift in Sources */,
 				84C74363251E4C2F009576C6 /* DummySigner.swift in Sources */,
+				771056082B7183F300EE2C20 /* JSONDecoder+date.swift in Sources */,
 				8454C26A2632B8CE00657DAD /* BalanceDepositEvent.swift in Sources */,
 				0C0CB38A2AC56A1600EAC516 /* AssetConversionPallet+Path.swift in Sources */,
 				84DD5F3E263DE5FF00425ACF /* DataValidationProtocols.swift in Sources */,
@@ -24375,6 +24398,7 @@
 				84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */,
 				84B7C730289BFA79001A3566 /* CustomValidatorListTests.swift in Sources */,
 				84B7C741289BFA79001A3566 /* AccountConfirmTests.swift in Sources */,
+				771056062B717E0400EE2C20 /* PushNotificationParsingTests.swift in Sources */,
 				8434C9EA2540AE51009E4191 /* ExtrinsicEraTests.swift in Sources */,
 				84B7C749289BFA79001A3566 /* ControllerAccountTests.swift in Sources */,
 				84B7C719289BFA79001A3566 /* DAppSearchTests.swift in Sources */,
@@ -24704,7 +24728,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawallet.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
@@ -24723,7 +24747,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ruslan't M2 Dev";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan't M2 Dev";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev-gulnaz";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

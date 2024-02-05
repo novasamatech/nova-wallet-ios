@@ -16,6 +16,7 @@ enum SettingsKey: String {
     case skippedAddDelegationTracksHint
     case pinConfirmationEnabled
     case polkadotStakingPromoSeen
+    case pushSettingsDocumentId
 }
 
 extension SettingsManagerProtocol {
@@ -171,6 +172,20 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.polkadotStakingPromoSeen.rawValue)
+        }
+    }
+
+    var pushSettingsDocumentId: String? {
+        get {
+            string(for: SettingsKey.pushSettingsDocumentId.rawValue)
+        }
+
+        set {
+            if let existingValue = newValue {
+                set(value: existingValue, for: SettingsKey.pushSettingsDocumentId.rawValue)
+            } else {
+                removeValue(for: SettingsKey.pushSettingsDocumentId.rawValue)
+            }
         }
     }
 }

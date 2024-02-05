@@ -1,12 +1,12 @@
 import Foundation
 import RobinHood
 
-protocol PushNotificationsSettingsProviderFactoryProtocol {
-    func fetchSettings(for token: String) -> AnySingleValueProvider<PushSettings>
-    func save(settings: PushSettings) -> ClosureOperation<Void>
+protocol PushNotificationsSettingsServiceProtocol {
+    func settingsProvider(for documentId: String) -> AnySingleValueProvider<PushSettings>
+    func save(documentId: String, settings: PushSettings) -> CompoundOperationWrapper<Void>
 }
 
-final class PushNotificationsSettingsProviderFactory: PushNotificationsSettingsProviderFactoryProtocol {
+final class PushNotificationsSettingsService: PushNotificationsSettingsServiceProtocol {
     private var providers: [String: WeakWrapper] = [:]
     let storageFacade: StorageFacadeProtocol
 
@@ -14,13 +14,13 @@ final class PushNotificationsSettingsProviderFactory: PushNotificationsSettingsP
         self.storageFacade = storageFacade
     }
 
-    func fetchSettings(for token: String) -> AnySingleValueProvider<PushSettings> {
-        let localKey = "push-settings-\(token)"
+    func settingsProvider(for documentId: String) -> AnySingleValueProvider<PushSettings> {
+        let localKey = "push-settings-\(documentId)"
         if let provider = providers[localKey]?.target as? SingleValueProvider<PushSettings> {
             return AnySingleValueProvider(provider)
         }
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> = storageFacade.createRepository()
-        let source = PushNotificationsSettingsSource(uuid: token)
+        let source = PushNotificationsSettingsSource(uuid: documentId)
 
         let singleValueProvider = SingleValueProvider(
             targetIdentifier: localKey,
@@ -33,7 +33,7 @@ final class PushNotificationsSettingsProviderFactory: PushNotificationsSettingsP
         return AnySingleValueProvider(singleValueProvider)
     }
 
-    func save(settings _: PushSettings) -> ClosureOperation<Void> {
-        .init {}
+    func save(documentId: String, settings: PushSettings) -> CompoundOperationWrapper<Void> {
+        PushNotificationsSettingsSource(uuid: documentId).save(settings: settings)
     }
 }

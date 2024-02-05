@@ -71,6 +71,10 @@ final class SettingsTests: XCTestCase {
                 completion(nil)
             }
         }
+        
+        let pushNotificationsSettingsProviderFactory = PushNotificationsSettingsProviderFactory(
+            storageFacade: SubstrateStorageTestFacade()
+        )
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: walletSettings,
@@ -79,7 +83,8 @@ final class SettingsTests: XCTestCase {
             currencyManager: CurrencyManagerStub(),
             settingsManager: InMemorySettingsManager(),
             biometryAuth: biometryAuthMock,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            pushNotificationsSettingsProviderFactory: pushNotificationsSettingsProviderFactory
         )
 
         let viewModelFactory = SettingsViewModelFactory(

@@ -16,9 +16,9 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
-    let pushNotificationsSettingsProviderFactory: PushNotificationsSettingsProviderFactoryProtocol
-    let pushNotificationsSettingsProvider: AnySingleValueProvider<PushSettings?>?
-    
+    let pushNotificationsSettingsProviderFactory: PushNotificationsSettingsServiceProtocol
+    private var pushNotificationsSettingsProvider: AnySingleValueProvider<PushSettings>?
+
     init(
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
@@ -27,7 +27,7 @@ final class SettingsInteractor {
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        pushNotificationsSettingsProviderFactory: PushNotificationsSettingsProviderFactoryProtocol
+        pushNotificationsSettingsProviderFactory: PushNotificationsSettingsServiceProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
@@ -70,9 +70,13 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
-    
+
     private func subscribeToPushNotificationsSettings() {
-        pushNotificationsSettingsProvider?.addObserver(self, deliverOn: .main) { changes in
+        guard let documentId = settingsManager.pushSettingsDocumentId else {
+            return
+        }
+        pushNotificationsSettingsProvider = pushNotificationsSettingsProviderFactory.settingsProvider(for: documentId)
+        pushNotificationsSettingsProvider?.addObserver(self, deliverOn: .main) { [weak self] changes in
             if let update = changes.reduceToLastChange() {
                 self?.presenter?.didReceive(pushNotificationsSettings: update)
             }

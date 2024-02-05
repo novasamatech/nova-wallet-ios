@@ -60,6 +60,12 @@ extension DateFormatter {
             .withThisYear(dateFormatter: dateFormatter.localizableResource())
             .build(defaultFormat: "dd MMMM yyyy")
     }
+
+    static func with(format: String) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        return formatter
+    }
 }
 
 extension DateComponentsFormatter {

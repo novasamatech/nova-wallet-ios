@@ -283,6 +283,8 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             )
         case .walletConnectFailed:
             wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case .pushNotifications:
+            break
         }
     }
 
@@ -295,6 +297,10 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsListUpdates = hasUpdates
         updateAccountView()
+    }
+
+    func didReceive(pushNotificationsSettings _: PushSettings?) {
+        // TODO:
     }
 }
 
