@@ -66,10 +66,10 @@ final class HydraOmnipoolFeeService {
 
         let quoteWrapper = conversionOperationFactory.quote(
             for: .init(
-                assetIn: utilityAssetId,
-                assetOut: feeAsset.chainAssetId,
+                assetIn: feeAsset.chainAssetId,
+                assetOut: utilityAssetId,
                 amount: nativeFee.amount,
-                direction: .sell
+                direction: .buy
             )
         )
 
@@ -77,8 +77,8 @@ final class HydraOmnipoolFeeService {
             let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
             let model = AssetConversion.AmountWithNative(
-                targetAmount: quote.amountOut,
-                nativeAmount: quote.amountIn
+                targetAmount: quote.amountIn,
+                nativeAmount: quote.amountOut
             )
 
             return .init(totalFee: model, networkFee: model, networkFeePayer: nativeFee.payer)
