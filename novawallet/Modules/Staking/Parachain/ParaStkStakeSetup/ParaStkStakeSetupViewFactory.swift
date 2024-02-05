@@ -13,7 +13,7 @@ struct ParaStkStakeSetupViewFactory {
 
         guard
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(from: state) else {
+            let interactor = createInteractor(from: state, initialDelegator: initialDelegator) else {
             return nil
         }
 
@@ -88,7 +88,8 @@ struct ParaStkStakeSetupViewFactory {
     }
 
     private static func createInteractor(
-        from state: ParachainStakingSharedStateProtocol
+        from state: ParachainStakingSharedStateProtocol,
+        initialDelegator: ParachainStaking.Delegator?
     ) -> ParaStkStakeSetupInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = state.chainRegistry
@@ -125,13 +126,31 @@ struct ParaStkStakeSetupViewFactory {
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
 
+        let preferredCollatorFactory: ParaStkPreferredCollatorFactory?
+
+        if initialDelegator == nil {
+            // add pref collators only for first staking
+
+            preferredCollatorFactory = ParaStkPreferredCollatorFactory(
+                chain: chainAsset.chain,
+                connection: connection,
+                runtimeService: runtimeProvider,
+                collatorService: collatorService,
+                rewardService: rewardService,
+                identityOperationFactory: identityOperationFactory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
+        } else {
+            preferredCollatorFactory = nil
+        }
+
         return ParaStkStakeSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            collatorService: collatorService,
+            preferredCollatorFactory: preferredCollatorFactory,
             rewardService: rewardService,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),

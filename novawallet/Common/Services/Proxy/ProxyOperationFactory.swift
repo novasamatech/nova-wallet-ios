@@ -7,7 +7,8 @@ protocol ProxyOperationFactoryProtocol {
     func fetchProxyList(
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>
 }
 
@@ -15,12 +16,16 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
     func fetchProxyList(
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]> {
         let request = UnkeyedRemoteStorageRequest(storagePath: Proxy.proxyList)
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let options = StorageQueryListOptions(ignoresFailedItems: true)
+        let options = StorageQueryListOptions(
+            atBlock: blockHash,
+            ignoresFailedItems: true
+        )
         let fetchWrapper: CompoundOperationWrapper<[AccountIdKey: ProxyDefinition]> =
             requestFactory.queryByPrefix(
                 engine: connection,

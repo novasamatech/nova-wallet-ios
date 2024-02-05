@@ -7,7 +7,7 @@ protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?)
     func didReceiveSlippage(viewModel: String)
-    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveWallet(viewModel: WalletAccountViewModel?)
     func didReceiveWarning(viewModel: String?)
     func didReceiveNotification(viewModel: String?)

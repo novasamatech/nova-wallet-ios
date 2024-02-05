@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 protocol XcmPalletMetadataQueryFactoryProtocol {
     func createModuleNameResolutionWrapper(
@@ -18,6 +19,10 @@ protocol XcmPalletMetadataQueryFactoryProtocol {
     func createLowestMultilocationVersionWrapper(
         for runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<Xcm.Version?>
+
+    func createXcmMessageTypeResolutionWrapper(
+        for runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<String?>
 }
 
 final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalletMetadataQueryFactoryProtocol {
@@ -54,6 +59,33 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
         createModuleNameResolutionWrapper(
             for: runtimeProvider,
             possibleNames: Xcm.possibleModuleNames
+        )
+    }
+
+    func createXcmMessageTypeResolutionWrapper(
+        for runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<String?> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        let moduleResolutionWrapper = createModuleNameResolutionWrapper(for: runtimeProvider)
+
+        let resolutionOperation = ClosureOperation<String?> {
+            let palletName = try moduleResolutionWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let callPath = CallCodingPath(moduleName: palletName, callName: Xcm.executeCallName)
+            let argName = Xcm.ExecuteCall<BigUInt>.CodingKeys.message.rawValue
+            return codingFactory.getCall(for: callPath)?.mapOptionalArgumentTypeOf(
+                argName,
+                closure: { $0 }
+            )
+        }
+
+        resolutionOperation.addDependency(codingFactoryOperation)
+        resolutionOperation.addDependency(moduleResolutionWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resolutionOperation,
+            dependencies: [codingFactoryOperation] + moduleResolutionWrapper.allOperations
         )
     }
 }

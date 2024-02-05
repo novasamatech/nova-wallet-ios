@@ -251,7 +251,7 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.rateCell.bind(loadableViewModel: viewModel)
     }
 
-    func didReceiveNetworkFee(viewModel: LoadableViewModelState<SwapFeeViewModel>) {
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
 
         if !toggledDetailsManually, !rootView.detailsView.expanded {

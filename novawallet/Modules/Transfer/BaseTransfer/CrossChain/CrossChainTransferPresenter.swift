@@ -31,8 +31,8 @@ class CrossChainTransferPresenter {
 
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
-    private(set) var originFee: ExtrinsicFeeProtocol?
-    private(set) var crossChainFee: ExtrinsicFeeProtocol?
+    private(set) var networkFee: ExtrinsicFeeProtocol?
+    private(set) var crossChainFee: XcmFeeModelProtocol?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -48,6 +48,22 @@ class CrossChainTransferPresenter {
 
     var isDestUtilityTransfer: Bool {
         destinationChainAsset.chain.utilityAssets().first?.assetId == destinationChainAsset.asset.assetId
+    }
+
+    var displayOriginFee: BigUInt? {
+        // this is paid in the native token
+
+        if networkFee != nil {
+            return (networkFee?.amountForCurrentAccount ?? 0) + (crossChainFee?.senderPart ?? 0)
+        } else {
+            return nil
+        }
+    }
+
+    var displayCrosschainFee: BigUInt? {
+        // this is paid in the sending token
+
+        crossChainFee.map(\.holdingPart)
     }
 
     init(
@@ -77,7 +93,7 @@ class CrossChainTransferPresenter {
     }
 
     func updateOriginFee(_ newValue: ExtrinsicFeeProtocol?) {
-        originFee = newValue
+        networkFee = newValue
     }
 
     func refreshCrossChainFee() {
@@ -88,7 +104,7 @@ class CrossChainTransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
-    func updateCrossChainFee(_ newValue: ExtrinsicFeeProtocol?) {
+    func updateCrossChainFee(_ newValue: XcmFeeModelProtocol?) {
         crossChainFee = newValue
     }
 
@@ -112,12 +128,12 @@ class CrossChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.has(fee: originFee, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(fee: networkFee, locale: selectedLocale) { [weak self] in
                 self?.refreshOriginFee()
                 return
             },
 
-            dataValidatingFactory.has(fee: crossChainFee, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(crosschainFee: crossChainFee, locale: selectedLocale) { [weak self] in
                 self?.refreshCrossChainFee()
                 return
             },
@@ -133,23 +149,34 @@ class CrossChainTransferPresenter {
 
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: senderUtilityAssetTransferable,
-                fee: originFee,
+                fee: networkFee,
                 spendingAmount: isOriginUtilityTransfer ? sendingAmount : nil,
                 asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.notViolatingMinBalancePaying(
-                fee: originFee,
+                fee: networkFee,
                 total: senderUtilityBalanceCountingEd,
                 minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.canPayOriginDeliveryFee(
+                for: isOriginUtilityTransfer ? sendingAmount : 0,
+                networkFee: networkFee,
+                crosschainFee: crossChainFee,
+                transferable: senderUtilityAssetTransferable,
                 locale: selectedLocale
             ),
 
             // check whether cross chain fee can be paid after sending amount and paying origin fee
             dataValidatingFactory.canPayCrossChainFee(
                 for: sendingAmount,
-                fee: (origin: isOriginUtilityTransfer ? originFee : nil, crossChain: crossChainFee),
+                fee: (
+                    origin: isOriginUtilityTransfer ? displayOriginFee : nil,
+                    crossChain: displayCrosschainFee
+                ),
                 transferable: senderSendingAssetBalance?.transferable,
                 destinationAsset: destinationChainAsset.assetDisplayInfo,
                 locale: selectedLocale
@@ -201,7 +228,7 @@ class CrossChainTransferPresenter {
     func didReceiveOriginFee(result: Result<ExtrinsicFeeProtocol, Error>) {
         switch result {
         case let .success(fee):
-            originFee = fee
+            networkFee = fee
         case let .failure(error):
             logger?.error("Origin fee error: \(error)")
 
@@ -209,7 +236,7 @@ class CrossChainTransferPresenter {
         }
     }
 
-    func didReceiveCrossChainFee(result: Result<ExtrinsicFeeProtocol, Error>) {
+    func didReceiveCrossChainFee(result: Result<XcmFeeModelProtocol, Error>) {
         switch result {
         case let .success(fee):
             crossChainFee = fee
