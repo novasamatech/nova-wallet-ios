@@ -897,10 +897,6 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                     self?.interactor.update(payChainAsset: payChainAsset)
                 }
             }
-        case .blockNumber:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryBlockNumberSubscription()
-            }
         case .remoteSubscription:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryRemoteSubscription()
@@ -917,8 +913,8 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
     }
 
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber?, chainId _: ChainModel.Id) {
-        logger.debug("New block number: \(String(describing: blockNumber))")
+    func didReceiveQuoteDataChanged() {
+        logger.debug("Requote request received")
 
         refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
         estimateFee()

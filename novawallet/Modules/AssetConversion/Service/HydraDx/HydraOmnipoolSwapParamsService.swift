@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-class HydraOmnipoolSwapService: ObservableSubscriptionSyncService<HydraDx.SwapRemoteState> {
+class HydraOmnipoolSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemoteState> {
     let accountId: AccountId
 
     init(

@@ -11,7 +11,7 @@ protocol AssetConversionAggregationFactoryProtocol {
     ) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
 
     func createQuoteWrapper(
-        for chain: ChainModel,
+        for state: AssetConversionFlowState,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote>
 
@@ -33,79 +33,6 @@ final class AssetConversionAggregationFactory {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
     }
-
-    private func createAssetHubAllDirections(
-        for chain: ChainModel
-    ) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
-        return AssetHubSwapOperationFactory(
-            chain: chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).availableDirections()
-    }
-
-    private func createAssetHubDirections(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Set<ChainAssetId>> {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
-        return AssetHubSwapOperationFactory(
-            chain: chainAsset.chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).availableDirectionsForAsset(chainAsset.chainAssetId)
-    }
-
-    private func createAssetHubQuote(
-        for chain: ChainModel,
-        args: AssetConversion.QuoteArgs
-    ) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
-        return AssetHubSwapOperationFactory(
-            chain: chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).quote(for: args)
-    }
-
-    private func createAssetHubCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
-        return AssetHubSwapOperationFactory(
-            chain: chainAsset.chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).canPayFee(in: chainAsset.chainAssetId)
-    }
 }
 
 extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryProtocol {
@@ -114,6 +41,8 @@ extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryPr
     ) -> CompoundOperationWrapper<Set<ChainAssetId>> {
         if chainAsset.chain.hasSwapHub {
             return createAssetHubDirections(for: chainAsset)
+        } else if chainAsset.chain.hasSwapHydra {
+            return createHydraDirections(for: chainAsset)
         } else {
             return CompoundOperationWrapper.createWithError(
                 AssetConversionAggregationFactoryError.unavailableProvider(chainAsset.chain)
@@ -126,6 +55,8 @@ extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryPr
     ) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         if chain.hasSwapHub {
             return createAssetHubAllDirections(for: chain)
+        } else if chain.hasSwapHydra {
+            return createHydraAllDirections(for: chain)
         } else {
             return CompoundOperationWrapper.createWithError(
                 AssetConversionAggregationFactoryError.unavailableProvider(chain)
@@ -134,21 +65,23 @@ extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryPr
     }
 
     func createQuoteWrapper(
-        for chain: ChainModel,
+        for state: AssetConversionFlowState,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        if chain.hasSwapHub {
-            return createAssetHubQuote(for: chain, args: args)
-        } else {
-            return CompoundOperationWrapper.createWithError(
-                AssetConversionAggregationFactoryError.unavailableProvider(chain)
-            )
+        switch state {
+        case let .assetHub(assetHub):
+            _ = assetHub.setupReQuoteService()
+            return createAssetHubQuote(for: assetHub, args: args)
+        case let .hydraOmnipool(hydra):
+            return createHydraQuote(for: hydra, args: args)
         }
     }
 
     func createCanPayFeeWrapper(in chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
         if chainAsset.chain.hasSwapHub {
             return createAssetHubCanPayFee(for: chainAsset)
+        } else if chainAsset.chain.hasSwapHydra {
+            return createHydraCanPayFee(for: chainAsset)
         } else {
             return CompoundOperationWrapper.createWithError(
                 AssetConversionAggregationFactoryError.unavailableProvider(chainAsset.chain)

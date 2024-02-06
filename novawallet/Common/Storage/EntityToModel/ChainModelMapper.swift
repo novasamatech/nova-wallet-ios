@@ -309,6 +309,10 @@ final class ChainModelMapper {
             options.append(.swapHub)
         }
 
+        if entity.hasSwapHydra {
+            options.append(.swapHydra)
+        }
+
         if entity.hasProxy {
             options.append(.proxy)
         }
@@ -397,6 +401,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasGovernance = model.hasGovernanceV2
         entity.noSubstrateRuntime = model.noSubstrateRuntime
         entity.hasSwapHub = model.hasSwapHub
+        entity.hasSwapHydra = model.hasSwapHydra
         entity.hasProxy = model.hasProxy
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue

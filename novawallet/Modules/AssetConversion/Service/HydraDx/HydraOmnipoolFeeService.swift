@@ -3,100 +3,34 @@ import SubstrateSdk
 import RobinHood
 
 final class HydraOmnipoolFeeService {
-    struct ChainOperationFactory {
-        let extrinsicFactory: ExtrinsicOperationFactoryProtocol
-        let conversionOperationFactory: AssetConversionOperationFactoryProtocol
-        let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
-    }
-
-    let wallet: MetaAccountModel
-    let chainRegistry: ChainRegistryProtocol
-    let userStorageFacade: StorageFacadeProtocol
+    let extrinsicFactory: ExtrinsicOperationFactoryProtocol
+    let conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol
+    let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
+    let workQueue: DispatchQueue
     let operationQueue: OperationQueue
 
-    private var chainId: ChainModel.Id?
-    private var factories: ChainOperationFactory?
     private var feeCall = CancellableCallStore()
-    private var mutex = NSLock()
+    private let mutex = NSLock()
 
     init(
-        wallet: MetaAccountModel,
-        chainRegistry: ChainRegistryProtocol,
-        userStorageFacade: StorageFacadeProtocol,
-        operationQueue: OperationQueue
+        extrinsicFactory: ExtrinsicOperationFactoryProtocol,
+        conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol,
+        conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
+        operationQueue: OperationQueue,
+        workQueue: DispatchQueue = .global()
     ) {
-        self.wallet = wallet
-        self.chainRegistry = chainRegistry
-        self.userStorageFacade = userStorageFacade
+        self.extrinsicFactory = extrinsicFactory
+        self.conversionOperationFactory = conversionOperationFactory
+        self.conversionExtrinsicFactory = conversionExtrinsicFactory
         self.operationQueue = operationQueue
+        self.workQueue = workQueue
     }
 
-    private func updateFactories(for chain: ChainModel) throws -> ChainOperationFactory {
-        if chain.chainId == chainId, let factories = factories {
-            return factories
-        }
-
-        factories = nil
-        chainId = nil
-
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw AssetConversionFeeServiceError.chainConnectionMissing
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw AssetConversionFeeServiceError.chainRuntimeMissing
-        }
-
-        guard let account = wallet.fetch(for: chain.accountRequest()) else {
-            throw AssetConversionFeeServiceError.accountMissing
-        }
-
-        let extrinsicFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: userStorageFacade
-        ).createOperationFactory(
-            account: account,
-            chain: chain
-        )
-
-        let conversionOperationFactory = HydraOmnipoolOperationFactory(
-            chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let swapService = HydraOmnipoolSwapService(
-            accountId: account.accountId,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            operationQueue: operationQueue
-        )
-
-        let swapOperationFactory = HydraOmnipoolExtrinsicOperationFactory(
-            chain: chain,
-            swapService: swapService,
-            runtimeProvider: runtimeProvider
-        )
-
-        let factories = ChainOperationFactory(
-            extrinsicFactory: extrinsicFactory,
-            conversionOperationFactory: conversionOperationFactory,
-            conversionExtrinsicFactory: swapOperationFactory
-        )
-
-        self.factories = factories
-        chainId = chain.chainId
-
-        swapService.setup()
-
-        return factories
+    deinit {
+        feeCall.cancel()
     }
 
     private func createNativeFeeWrapper(
-        factories: ChainOperationFactory,
         paramsOperation: BaseOperation<HydraOmnipoolSwapParams>
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
@@ -104,9 +38,7 @@ final class HydraOmnipoolFeeService {
         ) {
             let swap = try paramsOperation.extractNoCancellableResultData()
 
-            let operationFactory = factories.extrinsicFactory
-
-            return operationFactory.estimateFeeOperation({ builder, index in
+            return self.extrinsicFactory.estimateFeeOperation({ builder, index in
                 if index == 0, swap.params.shouldSetFeeCurrency {
                     return try HydraOmnipoolExtrinsicConverter.addingSetCurrencyCall(
                         from: swap,
@@ -124,8 +56,7 @@ final class HydraOmnipoolFeeService {
 
     private func createNonNativeFeeWrapper(
         for nativeFee: ExtrinsicFeeProtocol,
-        feeAsset: ChainAsset,
-        factories: ChainOperationFactory
+        feeAsset: ChainAsset
     ) -> CompoundOperationWrapper<AssetConversion.FeeModel> {
         guard let utilityAssetId = feeAsset.chain.utilityChainAssetId() else {
             return CompoundOperationWrapper<AssetConversion.FeeModel>.createWithError(
@@ -133,12 +64,12 @@ final class HydraOmnipoolFeeService {
             )
         }
 
-        let quoteWrapper = factories.conversionOperationFactory.quote(
+        let quoteWrapper = conversionOperationFactory.quote(
             for: .init(
-                assetIn: utilityAssetId,
-                assetOut: feeAsset.chainAssetId,
+                assetIn: feeAsset.chainAssetId,
+                assetOut: utilityAssetId,
                 amount: nativeFee.amount,
-                direction: .sell
+                direction: .buy
             )
         )
 
@@ -146,8 +77,8 @@ final class HydraOmnipoolFeeService {
             let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
             let model = AssetConversion.AmountWithNative(
-                targetAmount: quote.amountOut,
-                nativeAmount: quote.amountIn
+                targetAmount: quote.amountIn,
+                nativeAmount: quote.amountOut
             )
 
             return .init(totalFee: model, networkFee: model, networkFeePayer: nativeFee.payer)
@@ -159,7 +90,6 @@ final class HydraOmnipoolFeeService {
     }
 
     private func createConversionWrapper(
-        factories: ChainOperationFactory,
         nativeFeeOperation: BaseOperation<FeeIndexedExtrinsicResult>,
         feeAsset: ChainAsset
     ) -> CompoundOperationWrapper<AssetConversion.FeeModel> {
@@ -207,7 +137,7 @@ final class HydraOmnipoolFeeService {
                 return CompoundOperationWrapper.createWithResult(convertedFee)
             }
 
-            return self.createNonNativeFeeWrapper(for: totalFee, feeAsset: feeAsset, factories: factories)
+            return self.createNonNativeFeeWrapper(for: totalFee, feeAsset: feeAsset)
         }
     }
 }
@@ -219,51 +149,49 @@ extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
         runCompletionIn queue: DispatchQueue,
         completion closure: @escaping AssetConversionFeeServiceClosure
     ) {
-        do {
-            mutex.lock()
+        mutex.lock()
 
-            defer {
-                mutex.unlock()
-            }
+        defer {
+            mutex.unlock()
+        }
 
-            let factories = try updateFactories(for: asset.chain)
+        feeCall.cancel()
 
-            let paramsWrapper = factories.conversionExtrinsicFactory.createOperationWrapper(
-                for: asset,
-                callArgs: callArgs
-            )
+        let paramsWrapper = conversionExtrinsicFactory.createOperationWrapper(
+            for: asset,
+            callArgs: callArgs
+        )
 
-            let nativeFeeWrapper = createNativeFeeWrapper(
-                factories: factories,
-                paramsOperation: paramsWrapper.targetOperation
-            )
+        let nativeFeeWrapper = createNativeFeeWrapper(
+            paramsOperation: paramsWrapper.targetOperation
+        )
 
-            nativeFeeWrapper.addDependency(wrapper: paramsWrapper)
+        nativeFeeWrapper.addDependency(wrapper: paramsWrapper)
 
-            let conversionWrapper = createConversionWrapper(
-                factories: factories,
-                nativeFeeOperation: nativeFeeWrapper.targetOperation,
-                feeAsset: asset
-            )
+        let conversionWrapper = createConversionWrapper(
+            nativeFeeOperation: nativeFeeWrapper.targetOperation,
+            feeAsset: asset
+        )
 
-            conversionWrapper.addDependency(wrapper: nativeFeeWrapper)
-            conversionWrapper.addDependency(wrapper: paramsWrapper)
+        conversionWrapper.addDependency(wrapper: nativeFeeWrapper)
+        conversionWrapper.addDependency(wrapper: paramsWrapper)
 
-            let dependencies = paramsWrapper.allOperations + nativeFeeWrapper.allOperations +
-                conversionWrapper.dependencies
+        let dependencies = paramsWrapper.allOperations + nativeFeeWrapper.allOperations +
+            conversionWrapper.dependencies
 
-            let finalWrapper = CompoundOperationWrapper(
-                targetOperation: conversionWrapper.targetOperation,
-                dependencies: dependencies
-            )
+        let finalWrapper = CompoundOperationWrapper(
+            targetOperation: conversionWrapper.targetOperation,
+            dependencies: dependencies
+        )
 
-            executeCancellable(
-                wrapper: finalWrapper,
-                inOperationQueue: operationQueue,
-                backingCallIn: feeCall,
-                runningCallbackIn: queue,
-                mutex: mutex
-            ) { result in
+        executeCancellable(
+            wrapper: finalWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: feeCall,
+            runningCallbackIn: workQueue,
+            mutex: mutex
+        ) { result in
+            dispatchInQueueWhenPossible(queue) {
                 do {
                     let model = try result.get()
                     closure(.success(model))
@@ -272,11 +200,6 @@ extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
                 } catch {
                     closure(.failure(.calculationFailed("Fee calculation error: \(error)")))
                 }
-            }
-
-        } catch {
-            dispatchInQueueWhenPossible(queue) {
-                closure(.failure(.setupFailed("Fee service setup failed for \(asset.chain.name): \(error)")))
             }
         }
     }

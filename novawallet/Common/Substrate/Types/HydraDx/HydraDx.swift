@@ -28,6 +28,18 @@ enum HydraDx {
     struct AssetState: Decodable {
         struct Tradable: Decodable {
             @StringCodable var bits: UInt8
+
+            func matches(flags: UInt8) -> Bool {
+                (bits & flags) == flags
+            }
+
+            func canSell() -> Bool {
+                matches(flags: 1 << 0)
+            }
+
+            func canBuy() -> Bool {
+                matches(flags: 1 << 1)
+            }
         }
 
         @StringCodable var hubReserve: BigUInt

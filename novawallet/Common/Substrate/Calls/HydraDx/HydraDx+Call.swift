@@ -16,8 +16,16 @@ extension HydraDx {
         @StringCodable var amount: BigUInt
         @StringCodable var minBuyAmount: BigUInt
 
+        static var callPath: CallCodingPath {
+            .init(moduleName: HydraDx.omniPoolModule, callName: "sell")
+        }
+
         func runtimeCall() -> RuntimeCall<Self> {
-            .init(moduleName: HydraDx.omniPoolModule, callName: "sell", args: self)
+            .init(
+                moduleName: Self.callPath.moduleName,
+                callName: Self.callPath.callName,
+                args: self
+            )
         }
     }
 
@@ -34,8 +42,16 @@ extension HydraDx {
         @StringCodable var amount: BigUInt
         @StringCodable var maxSellAmount: BigUInt
 
+        static var callPath: CallCodingPath {
+            .init(moduleName: HydraDx.omniPoolModule, callName: "buy")
+        }
+
         func runtimeCall() -> RuntimeCall<Self> {
-            .init(moduleName: HydraDx.omniPoolModule, callName: "buy", args: self)
+            .init(
+                moduleName: Self.callPath.moduleName,
+                callName: Self.callPath.callName,
+                args: self
+            )
         }
     }
 

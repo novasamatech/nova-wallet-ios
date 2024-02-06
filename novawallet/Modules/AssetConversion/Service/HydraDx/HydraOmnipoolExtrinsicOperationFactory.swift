@@ -44,12 +44,12 @@ protocol HydraOmnipoolExtrinsicOperationFactoryProtocol {
 
 final class HydraOmnipoolExtrinsicOperationFactory {
     let chain: ChainModel
-    let swapService: HydraOmnipoolSwapService
+    let swapService: HydraOmnipoolSwapParamsService
     let runtimeProvider: RuntimeCodingServiceProtocol
 
     init(
         chain: ChainModel,
-        swapService: HydraOmnipoolSwapService,
+        swapService: HydraOmnipoolSwapParamsService,
         runtimeProvider: RuntimeCodingServiceProtocol
     ) {
         self.chain = chain
