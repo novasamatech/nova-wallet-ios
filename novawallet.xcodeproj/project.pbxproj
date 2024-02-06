@@ -815,7 +815,6 @@
 		770955712AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */; };
 		770F57882A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */; };
 		770F578B2A8A48FF005FD7C1 /* ButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */; };
-		771056022B714B0B00EE2C20 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 771056012B714B0B00EE2C20 /* GoogleService-Info.plist */; };
 		771056062B717E0400EE2C20 /* PushNotificationParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */; };
 		771056082B7183F300EE2C20 /* JSONDecoder+date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771056072B7183F300EE2C20 /* JSONDecoder+date.swift */; };
 		77171CA82A98BBA10032B387 /* NominationPoolErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77171CA72A98BBA10032B387 /* NominationPoolErrorPresentable.swift */; };
@@ -5088,7 +5087,6 @@
 		770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBaseDataValidatingFactory.swift; sourceTree = "<group>"; };
 		770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewStyles.swift; sourceTree = "<group>"; };
 		770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewModel.swift; sourceTree = "<group>"; };
-		771056012B714B0B00EE2C20 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationParsingTests.swift; sourceTree = "<group>"; };
 		771056072B7183F300EE2C20 /* JSONDecoder+date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+date.swift"; sourceTree = "<group>"; };
 		77171CA72A98BBA10032B387 /* NominationPoolErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolErrorPresentable.swift; sourceTree = "<group>"; };
@@ -13985,7 +13983,6 @@
 				849013CF24A9267F008F705E /* R.generated.swift */,
 				849013B424A80986008F705E /* Assets.xcassets */,
 				849013B624A80986008F705E /* LaunchScreen.storyboard */,
-				771056012B714B0B00EE2C20 /* GoogleService-Info.plist */,
 				849013B924A80986008F705E /* Info.plist */,
 				84C07EDA24AF1924008FC35B /* InfoPlist.strings */,
 				8490146024A94373008F705E /* Localizable.strings */,
@@ -20187,7 +20184,6 @@
 				842876AC24AE049B00D91AD8 /* SelectionTitleTableViewCell.xib in Resources */,
 				848A837E274BB03F004493DD /* PublicSans-Bold.otf in Resources */,
 				849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */,
-				771056022B714B0B00EE2C20 /* GoogleService-Info.plist in Resources */,
 				84D2F19B2771AA140040C680 /* nova_min.js in Resources */,
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
