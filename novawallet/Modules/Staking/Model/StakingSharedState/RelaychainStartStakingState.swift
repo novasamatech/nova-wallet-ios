@@ -78,7 +78,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         relaychainRewardCalculatorService: RewardCalculatorServiceProtocol,
-        npRemoteSubstriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?,
+        npRemoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?,
         npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?,
         npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         activePoolsService: EraNominationPoolsServiceProtocol?,
@@ -93,7 +93,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         self.relaychainLocalSubscriptionFactory = relaychainLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.relaychainRewardCalculatorService = relaychainRewardCalculatorService
-        npRemoteSubscriptionService = npRemoteSubstriptionService
+        self.npRemoteSubscriptionService = npRemoteSubscriptionService
         self.npAccountSubscriptionServiceFactory = npAccountSubscriptionServiceFactory
         self.npLocalSubscriptionFactory = npLocalSubscriptionFactory
         self.activePoolsService = activePoolsService

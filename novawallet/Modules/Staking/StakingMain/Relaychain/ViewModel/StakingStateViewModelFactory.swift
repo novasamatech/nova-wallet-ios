@@ -255,8 +255,9 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .unstake,
             .rewardDestination,
             .setupValidators,
+            .proxyAction(from: state.commonData.proxy, chain: chainAsset.chain),
             .controllerAccount
-        ]
+        ].compactMap { $0 }
 
         let unbondings = state.commonData.eraCountdown.flatMap { countdown in
             createUnbondingViewModel(
@@ -319,8 +320,9 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .rewardDestination,
             .pendingRewards,
             .changeValidators(count: state.nomination.targets.count),
+            .proxyAction(from: state.commonData.proxy, chain: chainAsset.chain),
             .controllerAccount
-        ]
+        ].compactMap { $0 }
 
         let unbondings = state.commonData.eraCountdown.flatMap { countdown in
             createUnbondingViewModel(
@@ -383,8 +385,9 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .rewardDestination,
             .pendingRewards,
             .yourValidator,
+            .proxyAction(from: state.commonData.proxy, chain: chainAsset.chain),
             .controllerAccount
-        ]
+        ].compactMap { $0 }
 
         let unbondings = state.commonData.eraCountdown.flatMap { countdown in
             createUnbondingViewModel(

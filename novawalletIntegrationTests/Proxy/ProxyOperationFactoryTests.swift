@@ -25,7 +25,8 @@ final class ProxyOperationFactoryTests: XCTestCase {
         )
         let wrapper = operationFactory.fetchProxyList(requestFactory: storageRequestFactory,
                                                       connection: connection,
-                                                      runtimeProvider: runtimeService)
+                                                      runtimeProvider: runtimeService,
+                                                      at: nil)
         
         queue.addOperations(
             wrapper.allOperations,

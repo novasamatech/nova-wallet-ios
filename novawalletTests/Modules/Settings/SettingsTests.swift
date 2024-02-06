@@ -47,9 +47,15 @@ final class SettingsTests: XCTestCase {
         let wireframe = MockSettingsWireframeProtocol()
 
         let eventCenter = MockEventCenterProtocol()
-
+        let streamableProviderFactory = SubstrateDataProviderFactory(
+            facade: SubstrateStorageTestFacade(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+        
         let walletConnect = MockWalletConnectDelegateInputProtocol()
         let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
+            chainRegistry: ChainRegistryProtocolStub(),
+            streamableProviderFactory: streamableProviderFactory,
             storageFacade: storageFacade,
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared

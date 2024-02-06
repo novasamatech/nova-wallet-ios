@@ -7,6 +7,7 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
     var stakingOption: Multistaking.ChainAssetOption { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
+    var proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol { get }
     var localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var rewardCalculatorService: RewardCalculatorServiceProtocol { get }
@@ -29,9 +30,11 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol
     let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardCalculatorService: RewardCalculatorServiceProtocol
     let logger: LoggerProtocol
+    let proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?
 
     private var globalSubscriptionId: UUID?
 
@@ -44,7 +47,9 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         stakingOption: Multistaking.ChainAssetOption,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
+        proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?,
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         rewardCalculatorService: RewardCalculatorServiceProtocol,
         timeModel: StakingTimeModel,
@@ -54,7 +59,9 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.stakingOption = stakingOption
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.accountRemoteSubscriptionService = accountRemoteSubscriptionService
+        self.proxyRemoteSubscriptionService = proxyRemoteSubscriptionService
         self.localSubscriptionFactory = localSubscriptionFactory
+        self.proxyLocalSubscriptionFactory = proxyLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.rewardCalculatorService = rewardCalculatorService
         self.timeModel = timeModel
@@ -84,6 +91,12 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
                 chainId: chain.chainId,
                 chainFormat: chain.chainFormat
             )
+            if chain.hasProxy {
+                try proxyRemoteSubscriptionService?.setupSubscription(
+                    for: accountId,
+                    chainId: chain.chainId
+                )
+            }
 
             logger.debug("Relaychain staking account data subscription succeeded")
         } else {
@@ -112,6 +125,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         timeModel.blockTimeService?.throttle()
 
         accountRemoteSubscriptionService.clearSubscription()
+        proxyRemoteSubscriptionService?.clearSubscription()
     }
 
     func createNetworkInfoOperationFactory(
