@@ -78,7 +78,7 @@ final class SettingsTests: XCTestCase {
             }
         }
         
-        let pushNotificationsSettingsProviderFactory = PushNotificationsSettingsProviderFactory(
+        let pushNotificationsSettingsProviderFactory = PushNotificationsSettingsService(
             storageFacade: SubstrateStorageTestFacade()
         )
 
