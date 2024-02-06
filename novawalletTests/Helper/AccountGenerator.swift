@@ -2,6 +2,20 @@ import Foundation
 @testable import novawallet
 
 enum AccountGenerator {
+    static func createWatchOnly(for accountId: AccountId, name: String = "Test") -> MetaAccountModel {
+        MetaAccountModel(
+            metaId: UUID().uuidString,
+            name: name,
+            substrateAccountId: accountId,
+            substrateCryptoType: MultiassetCryptoType.sr25519.rawValue,
+            substratePublicKey: accountId,
+            ethereumAddress: nil,
+            ethereumPublicKey: nil,
+            chainAccounts: [],
+            type: .watchOnly
+        )
+    }
+    
     static func generateMetaAccount(generatingChainAccounts count: Int) -> MetaAccountModel {
         let chainAccounts = (0..<count).map { _ in generateChainAccount() }
         return generateMetaAccount(with: Set(chainAccounts))

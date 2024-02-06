@@ -3,7 +3,9 @@ import SubstrateSdk
 import BigInt
 
 extension HydraDx {
-    struct QuoteRemoteState {
+    struct QuoteRemoteState: ObservableSubscriptionStateProtocol {
+        typealias TChange = QuoteRemoteStateChange
+
         let assetInState: HydraDx.AssetState?
         let assetOutState: HydraDx.AssetState?
         let assetInBalance: BigUInt?
@@ -12,15 +14,43 @@ extension HydraDx {
         let assetOutFee: FeeEntry?
         let blockHash: Data?
 
-        func merging(newStateChange: QuoteRemoteStateChange) -> QuoteRemoteState {
+        init(
+            assetInState: HydraDx.AssetState?,
+            assetOutState: HydraDx.AssetState?,
+            assetInBalance: BigUInt?,
+            assetOutBalance: BigUInt?,
+            assetInFee: FeeEntry?,
+            assetOutFee: FeeEntry?,
+            blockHash: Data?
+        ) {
+            self.assetInState = assetInState
+            self.assetOutState = assetOutState
+            self.assetInBalance = assetInBalance
+            self.assetOutBalance = assetOutBalance
+            self.assetInFee = assetInFee
+            self.assetOutFee = assetOutFee
+            self.blockHash = blockHash
+        }
+
+        init(change: HydraDx.QuoteRemoteStateChange) {
+            assetInState = change.assetInState.valueWhenDefined(else: nil)
+            assetOutState = change.assetOutState.valueWhenDefined(else: nil)
+            assetInBalance = change.assetInBalance.valueWhenDefined(else: nil)
+            assetOutBalance = change.assetOutBalance.valueWhenDefined(else: nil)
+            assetInFee = change.assetInFee.valueWhenDefined(else: nil)
+            assetOutFee = change.assetOutFee.valueWhenDefined(else: nil)
+            blockHash = change.blockHash
+        }
+
+        func merging(change: QuoteRemoteStateChange) -> QuoteRemoteState {
             .init(
-                assetInState: newStateChange.assetInState.valueWhenDefined(else: assetInState),
-                assetOutState: newStateChange.assetOutState.valueWhenDefined(else: assetOutState),
-                assetInBalance: newStateChange.assetInBalance.valueWhenDefined(else: assetInBalance),
-                assetOutBalance: newStateChange.assetInBalance.valueWhenDefined(else: assetOutBalance),
-                assetInFee: newStateChange.assetInFee.valueWhenDefined(else: assetInFee),
-                assetOutFee: newStateChange.assetInFee.valueWhenDefined(else: assetOutFee),
-                blockHash: newStateChange.blockHash
+                assetInState: change.assetInState.valueWhenDefined(else: assetInState),
+                assetOutState: change.assetOutState.valueWhenDefined(else: assetOutState),
+                assetInBalance: change.assetInBalance.valueWhenDefined(else: assetInBalance),
+                assetOutBalance: change.assetOutBalance.valueWhenDefined(else: assetOutBalance),
+                assetInFee: change.assetInFee.valueWhenDefined(else: assetInFee),
+                assetOutFee: change.assetOutFee.valueWhenDefined(else: assetOutFee),
+                blockHash: change.blockHash
             )
         }
     }

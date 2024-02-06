@@ -6,6 +6,18 @@ extension HydraDx {
     }
 
     static var dynamicFees: StorageCodingPath {
-        StorageCodingPath(moduleName: "DynamicFees", itemName: "AssetFee")
+        StorageCodingPath(moduleName: Self.dynamicFeesModule, itemName: "AssetFee")
+    }
+
+    static var feeCurrencies: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.multiTxPaymentModule, itemName: "AcceptedCurrencies")
+    }
+
+    static var accountFeeCurrency: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.multiTxPaymentModule, itemName: "AccountCurrencyMap")
+    }
+
+    static var referralLinkedAccount: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.referralsModule, itemName: "LinkedAccounts")
     }
 }

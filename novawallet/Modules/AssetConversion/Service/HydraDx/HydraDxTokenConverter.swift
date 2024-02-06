@@ -2,12 +2,12 @@ import Foundation
 import SubstrateSdk
 
 extension HydraDx {
-    struct LocalRemoteAssetId: Equatable {
+    struct LocalRemoteAssetId: Equatable, Hashable {
         let localAssetId: ChainAssetId
         let remoteAssetId: HydraDx.OmniPoolAssetId
     }
 
-    struct SwapPair {
+    struct SwapPair: Equatable, Hashable {
         let assetIn: LocalRemoteAssetId
         let assetOut: LocalRemoteAssetId
     }

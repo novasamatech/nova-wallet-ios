@@ -63,6 +63,18 @@ final class HydraDxSwapTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+    
+    func testCanPayFeeInDot() {
+        do {
+            let canPayFee = try performCanPayFee(
+                in: .init(chainId: KnowChainId.hydra, assetId: 1)
+            )
+            
+            Logger.shared.info("Can pay fee: \(canPayFee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 
     private func performAvailableDirectionsFetch(
         for chainId: ChainModel.Id,
@@ -80,7 +92,7 @@ final class HydraDxSwapTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let operationFactory = HydraOmnipoolOperationFactory(
+        let operationFactory = HydraOmnipoolTokensFactory(
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,
@@ -110,6 +122,41 @@ final class HydraDxSwapTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = args.assetIn.chainId
         
+        let wallet = AccountGenerator.generateMetaAccount()
+        
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let account = wallet.fetch(for: chain.accountRequest()) else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+        
+        let operationQueue = OperationQueue()
+        
+        let flowState = HydraOmnipoolFlowState(
+            account: account,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            userStorageFacade: UserDataStorageTestFacade(),
+            operationQueue: operationQueue
+        )
+        
+        let operationFactory = HydraOmnipoolQuoteFactory(flowState: flowState)
+        
+        let quoteWrapper = operationFactory.quote(for: args)
+        
+        operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
+        
+        return try quoteWrapper.targetOperation.extractNoCancellableResultData()
+    }
+    
+    private func performCanPayFee(in chainAssetId: ChainAssetId) throws -> Bool {
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = chainAssetId.chainId
+        
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let connection = chainRegistry.getConnection(for: chainId),
@@ -119,17 +166,17 @@ final class HydraDxSwapTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let operationFactory = HydraOmnipoolOperationFactory(
+        let operationFactory = HydraOmnipoolTokensFactory(
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,
             operationQueue: operationQueue
         )
         
-        let quoteWrapper = operationFactory.quote(for: args)
+        let wrapper = operationFactory.canPayFee(in: chainAssetId)
         
-        operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
         
-        return try quoteWrapper.targetOperation.extractNoCancellableResultData()
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

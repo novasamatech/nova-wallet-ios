@@ -8,6 +8,8 @@ protocol ObservableSyncServiceProtocol: SyncServiceProtocol {
     )
 
     func unsubscribeSyncState(_ target: AnyObject)
+
+    func hasSubscription(for target: AnyObject) -> Bool
 }
 
 class ObservableSyncService: BaseSyncService, ObservableSyncServiceProtocol {
@@ -47,6 +49,16 @@ class ObservableSyncService: BaseSyncService, ObservableSyncServiceProtocol {
         }
 
         syncState.removeObserver(by: target)
+    }
+
+    func hasSubscription(for target: AnyObject) -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return syncState.hasObserver(target)
     }
 
     private func updateSyncState() {
