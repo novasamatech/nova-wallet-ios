@@ -1477,7 +1477,7 @@
 "staking.setup.proxy.error.proxy.already.exists.title" = "Делегация уже существует";
 "staking.setup.proxy.error.proxy.already.exists.message" = "Вы уже делегируете полномочия этому аккаунту: %@";
 "staking.setup.proxy.error.invalid.address.title" = "Неверный адрес прокси";
-"staking.setup.proxy.error.invalid.address.message" = "Адрес прокси должен быть действительным адресом %s";
+"staking.setup.proxy.error.invalid.address.message" = "Адрес прокси должен быть действительным адресом %@";
 "staking.setup.proxy.deposit.details" = "Депозит остается зарезервированным на вашем счете до тех пор, пока прокси не будет удален.";
 "staking.setup.proxy.error.invalid.maximum.proxies.title" = "Достигнуто максимальное количество прокси";
 "staking.setup.proxy.error.invalid.maximum.proxies.message" = "Вы достигли лимита добавленных прокси (%@) в %@ . Удалите прокси, чтобы добавить новые.";
