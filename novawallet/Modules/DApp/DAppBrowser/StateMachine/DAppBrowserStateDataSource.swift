@@ -75,10 +75,8 @@ final class DAppBrowserStateDataSource {
             return nil
         }
 
-        let addressPrefix = UInt16(addressPrefixValue)
-
         return chainStore.values.first { model in
-            model.isEthereumBased && model.addressPrefix == addressPrefix
+            model.isEthereumBased && BigUInt(model.addressPrefix) == addressPrefixValue
         }
     }
 
