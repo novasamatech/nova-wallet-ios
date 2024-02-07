@@ -91,7 +91,10 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func provideProxyTypeViewModel() {
-        let type = proxyAccount.type.title(locale: selectedLocale)
+        let type = R.string.localizable.stakingConfirmProxyTypeSubtitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
         view?.didReceiveProxyType(viewModel: type)
     }
 
