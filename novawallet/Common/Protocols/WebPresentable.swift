@@ -17,12 +17,7 @@ extension WebPresentable {
     }
 
     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle) {
-        let defaultController = UIApplication.shared.delegate?.window??.rootViewController
-        guard let viewController = view.controller.presentingViewController ?? defaultController else {
-            return
-        }
-
-        showWeb(url: url, from: viewController, style: style)
+        showWeb(url: url, from: view.controller, style: style)
     }
 
     func showWeb(url: URL, from viewController: UIViewController, style: WebPresentableStyle) {

@@ -170,7 +170,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
                 return false
             }
             let accountId = try? address.toAccountId(using: chain.chainFormat)
-            return proxyList.contains(where: { $0.proxy == accountId }) == false
+            return !proxyList.contains(where: { $0.proxy == accountId && $0.proxyType == .staking })
         })
     }
 

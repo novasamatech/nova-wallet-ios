@@ -42,9 +42,9 @@ enum SubqueryMultistaking {
     }
 
     struct StatsResponse: Decodable {
-        let activeStakers: SubqueryNodes<ActiveStaker>
+        let activeStakers: SubqueryNodes<ActiveStaker>?
         let stakingApies: SubqueryNodes<Apy>
-        let rewards: SubqueryAggregates<AccumulatedReward>
-        let slashes: SubqueryAggregates<AccumulatedReward>
+        let rewards: SubqueryAggregates<AccumulatedReward>?
+        let slashes: SubqueryAggregates<AccumulatedReward>?
     }
 }
