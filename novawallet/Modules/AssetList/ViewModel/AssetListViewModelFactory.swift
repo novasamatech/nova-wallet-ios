@@ -55,8 +55,8 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
 
     private lazy var iconGenerator = NovaIconGenerator()
 
-    private func formatTotalPrice(from prices: [AssetListAssetAccountPrice], locale: Locale) -> String {
-        let totalPrice = prices.reduce(Decimal(0)) { result, item in
+    private func calculateTotalPrice(from prices: [AssetListAssetAccountPrice]) -> Decimal {
+        prices.reduce(Decimal(0)) { result, item in
             let balance = Decimal.fromSubstrateAmount(
                 item.balance,
                 precision: item.assetInfo.assetPrecision
@@ -66,8 +66,18 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
 
             return result + balance * price
         }
+    }
 
-        return formatPrice(amount: totalPrice, priceData: prices.first?.price, locale: locale)
+    private func createTotalPriceString(
+        from price: Decimal,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> String {
+        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetFormatterFactory.createTotalPriceFormatter(for: assetDisplayInfo)
+
+        return priceFormatter.value(for: locale).stringFromDecimal(price) ?? ""
     }
 
     private func createTotalPrice(
@@ -78,10 +88,20 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
         case .loading:
             return .loading
         case let .cached(value):
-            let formattedPrice = formatTotalPrice(from: value, locale: locale)
+            let formattedPrice = createTotalPriceString(
+                from: calculateTotalPrice(from: value),
+                priceData: value.first?.price,
+                locale: locale
+            )
+
             return .cached(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
         case let .loaded(value):
-            let formattedPrice = formatTotalPrice(from: value, locale: locale)
+            let formattedPrice = createTotalPriceString(
+                from: calculateTotalPrice(from: value),
+                priceData: value.first?.price,
+                locale: locale
+            )
+
             return .loaded(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
         }
     }
@@ -107,7 +127,13 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 walletConnectSessionsCount: formattedWalletConnectSessionsCount,
                 title: params.title,
                 amount: totalPrice,
-                locksAmount: params.locks.map { formatTotalPrice(from: $0, locale: locale) },
+                locksAmount: params.locks.map { lock in
+                    formatPrice(
+                        amount: calculateTotalPrice(from: lock),
+                        priceData: lock.first?.price,
+                        locale: locale
+                    )
+                },
                 walletSwitch: walletSwitch,
                 hasSwaps: params.hasSwaps
             )
