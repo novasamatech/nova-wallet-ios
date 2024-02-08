@@ -96,8 +96,10 @@ final class Web3AlertsSyncService: BaseSyncService {
         let fetchSettingsOperation: AsyncClosureOperation<LocalPushSettings?> = AsyncClosureOperation(cancelationClosure: {}) { responseClosure in
             let database = Firestore.firestore()
             let documentRef = database.collection("users").document(documentUUID)
+            let decoder = Firestore.Decoder()
+            decoder.dateDecodingStrategy = .iso8601
 
-            documentRef.getDocument(as: RemotePushSettings.self) { result in
+            documentRef.getDocument(as: RemotePushSettings.self, decoder: decoder) { result in
                 switch result {
                 case let .success(settings):
                     responseClosure(.success(.init(from: settings, identifier: documentUUID)))
@@ -118,7 +120,9 @@ final class Web3AlertsSyncService: BaseSyncService {
         let saveSettingsOperation: AsyncClosureOperation<Void> = AsyncClosureOperation(cancelationClosure: {}) { responseClosure in
             let database = Firestore.firestore()
             let documentRef = database.collection("users").document(documentUUID)
-            try documentRef.setData(from: RemotePushSettings(from: settings), merge: true) { error in
+            let encoder = Firestore.Encoder()
+            encoder.dateEncodingStrategy = .iso8601
+            try documentRef.setData(from: RemotePushSettings(from: settings), merge: true, encoder: encoder) { error in
                 if let error = error {
                     responseClosure(.failure(error))
                 } else {
