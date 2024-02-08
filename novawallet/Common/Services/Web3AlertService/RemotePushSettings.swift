@@ -6,7 +6,7 @@ import RobinHood
 typealias ChainSelection = RemotePushSettings.Selection<[String]>
 
 struct Web3AlertWallet: Codable, Equatable {
-    let baseSubstrate: AccountAddress
+    let baseSubstrate: AccountAddress?
     let baseEthereum: AccountAddress?
     let chainSpecific: [String: String]
 }
@@ -27,36 +27,6 @@ struct RemotePushSettings: Codable, Equatable {
         updatedAt = local.updatedAt
         wallets = local.wallets
         notifications = local.notifications
-    }
-}
-
-struct LocalPushSettings: Codable, Equatable, Identifiable {
-    let identifier: String
-    var pushToken: String
-    var updatedAt: Date
-    let wallets: [Web3AlertWallet]
-    let notifications: Web3AlertNotification
-
-    init(from remote: RemotePushSettings, identifier: String) {
-        self.identifier = identifier
-        pushToken = remote.pushToken
-        updatedAt = remote.updatedAt
-        wallets = remote.wallets
-        notifications = remote.notifications
-    }
-
-    init(
-        identifier: String,
-        pushToken: String,
-        updatedAt: Date,
-        wallets: [Web3AlertWallet],
-        notifications: Web3AlertNotification
-    ) {
-        self.identifier = identifier
-        self.pushToken = pushToken
-        self.updatedAt = updatedAt
-        self.wallets = wallets
-        self.notifications = notifications
     }
 }
 
@@ -104,17 +74,5 @@ extension RemotePushSettings {
                 try container.encode(value, forKey: .value)
             }
         }
-    }
-}
-
-extension LocalPushSettings {
-    static func createDefault(token: String = "", uuid: String = "") -> LocalPushSettings {
-        .init(
-            identifier: uuid,
-            pushToken: token,
-            updatedAt: Date(),
-            wallets: [],
-            notifications: .init(stakingReward: .all, transfer: .all)
-        )
     }
 }

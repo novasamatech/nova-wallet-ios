@@ -11,7 +11,6 @@ final class Web3AlertsSyncServiceFactory: Web3AlertsSyncServiceFactoryProtocol {
     let storageFacade: StorageFacadeProtocol
     let settingsManager: SettingsManagerProtocol
     let operationQueue: OperationQueue
-    private var service: Web3AlertsSyncServiceProtocol?
 
     static var shared: Web3AlertsSyncServiceFactory = .init(
         storageFacade: UserDataStorageFacade.shared,
@@ -29,11 +28,6 @@ final class Web3AlertsSyncServiceFactory: Web3AlertsSyncServiceFactoryProtocol {
     }
 
     func createService() -> Web3AlertsSyncServiceProtocol {
-        if let service = service {
-            return service
-        }
-
-        FirebaseApp.configure()
         let repository: CoreDataRepository<LocalPushSettings, CDUserSingleValue> =
             storageFacade.createRepository(mapper: AnyCoreDataMapper(Web3AlertSettingsMapper()))
 
@@ -42,7 +36,6 @@ final class Web3AlertsSyncServiceFactory: Web3AlertsSyncServiceFactoryProtocol {
             settingsManager: settingsManager,
             operationQueue: operationQueue
         )
-        self.service = service
 
         return service
     }

@@ -18,6 +18,7 @@ final class SettingsInteractor {
     let walletNotificationService: WalletNotificationServiceProtocol
     let alertNotificationsService: Web3AlertsSyncServiceProtocol
     let operationQueue: OperationQueue
+    let pushNotificationsService: PushNotificationsServiceProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -28,6 +29,7 @@ final class SettingsInteractor {
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
         alertNotificationsService: Web3AlertsSyncServiceProtocol,
+        pushNotificationsService: PushNotificationsServiceProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -37,6 +39,7 @@ final class SettingsInteractor {
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
         self.alertNotificationsService = alertNotificationsService
+        self.pushNotificationsService = pushNotificationsService
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -72,6 +75,19 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
+
+    private func setupAlertNotificationsService() {
+        guard let wallet = selectedWalletSettings.value else {
+            return
+        }
+
+        let saveOperation = alertNotificationsService.save(settings: .createDefault(metaAccount: wallet))
+        saveOperation.completionBlock = {
+            self.alertNotificationsService.setup()
+            self.pushNotificationsService.register()
+        }
+        operationQueue.addOperations([saveOperation], waitUntilFinished: false)
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -82,12 +98,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
-
-        let saveOperation = alertNotificationsService.save(settings: .createDefault())
-        saveOperation.completionBlock = {
-            self.alertNotificationsService.setup()
-        }
-        operationQueue.addOperations([saveOperation], waitUntilFinished: false)
+        setupAlertNotificationsService()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,

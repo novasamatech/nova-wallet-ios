@@ -36,9 +36,10 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
+        FirebaseHolder.shared.configureApp()
+
         let localSettingsOperation = fetchLocalSettingsOperation()
         let wrapper = saveWrapper(dependsOn: localSettingsOperation, forceUpdate: false)
-
         wrapper.addDependency(operations: [localSettingsOperation])
         let targetWrapper = wrapper.insertingHead(operations: [localSettingsOperation])
 
@@ -63,17 +64,17 @@ final class Web3AlertsSyncService: BaseSyncService {
     ) -> CompoundOperationWrapper<Void?> {
         let newSettingsOperation = ClosureOperation<LocalPushSettings?> {
             guard var localSettings = try fetchOperation.extractNoCancellableResultData() else {
-                let uuid = self.settingsManager.pushSettingsDocumentId ?? ""
-                return .createDefault(uuid: uuid)
+                return nil
             }
             guard !forceUpdate else {
                 return localSettings
             }
-            let updatedMoreThanDayAgo = (Date() - localSettings.updatedAt).seconds >= 0
-            guard updatedMoreThanDayAgo else {
+            let now = Date()
+            let lastUpdate = now.timeIntervalSinceReferenceDate - localSettings.updatedAt.timeIntervalSinceReferenceDate
+            if lastUpdate.daysFromSeconds < 1 {
                 return nil
             }
-            localSettings.updatedAt = Date()
+            localSettings.updatedAt = now
             return localSettings
         }
         newSettingsOperation.addDependency(fetchOperation)
@@ -95,7 +96,6 @@ final class Web3AlertsSyncService: BaseSyncService {
 
             return .init(targetOperation: mapOperation, dependencies: [remoteSaveOperation, localSaveOperation])
         }
-
         wrapper.addDependency(operations: [newSettingsOperation])
         return wrapper.insertingHead(operations: [newSettingsOperation])
     }
@@ -105,13 +105,9 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     private func remoteSaveOperation(settings: LocalPushSettings) -> BaseOperation<Void> {
-        guard let documentUUID = settingsManager.pushSettingsDocumentId else {
-            return .createWithError(Web3AlertsSyncServiceError.documentNotFound)
-        }
-
         let saveSettingsOperation: AsyncClosureOperation<Void> = AsyncClosureOperation(cancelationClosure: {}) { responseClosure in
             let database = Firestore.firestore()
-            let documentRef = database.collection("users").document(documentUUID)
+            let documentRef = database.collection("users").document(settings.identifier)
             let encoder = Firestore.Encoder()
             encoder.dateEncodingStrategy = .iso8601
             try documentRef.setData(from: RemotePushSettings(from: settings), merge: true, encoder: encoder) { error in
@@ -147,24 +143,9 @@ final class Web3AlertsSyncService: BaseSyncService {
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
     func save(settings: LocalPushSettings) -> BaseOperation<Void> {
-        let savingSettings: LocalPushSettings
-
-        if settings.identifier.isEmpty {
-            let uuid = UUID().uuidString
-            savingSettings = .init(
-                identifier: uuid,
-                pushToken: settings.pushToken,
-                updatedAt: settings.updatedAt,
-                wallets: settings.wallets,
-                notifications: settings.notifications
-            )
-        } else {
-            savingSettings = settings
-        }
-        settingsManager.pushSettingsDocumentId = savingSettings.identifier
-        let localSaveOperation = localSaveOperation(settings: savingSettings)
-
-        return localSaveOperation
+        FirebaseHolder.shared.configureApp()
+        settingsManager.pushSettingsDocumentId = settings.identifier
+        return localSaveOperation(settings: settings)
     }
 
     func update(token: String) -> CompoundOperationWrapper<Void?> {
@@ -172,6 +153,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
             return .createWithError(Web3AlertsSyncServiceError.documentNotFound)
         }
 
+        FirebaseHolder.shared.configureApp()
         let fetchOperation = repository.fetchOperation(by: { documentUUID }, options: .init())
         let updateOperation = repository.saveOperation({
             if var localSettings = try fetchOperation.extractNoCancellableResultData() {
@@ -191,11 +173,5 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         wrapper.addDependency(operations: [updateOperation, fetchNewSettingsOperation])
 
         return wrapper.insertingHead(operations: [updateOperation, fetchNewSettingsOperation])
-    }
-}
-
-extension Date {
-    static func - (lhs: Date, rhs: Date) -> TimeInterval {
-        lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
     }
 }
