@@ -21604,16 +21604,16 @@ import UIKit.UIImage
     
     
     
-     func didReceive(pushNotificationsSettings: PushSettings?)  {
+     func didReceive(web3AlertSettings: LocalPushSettings?)  {
         
-    return cuckoo_manager.call("didReceive(pushNotificationsSettings: PushSettings?)",
-            parameters: (pushNotificationsSettings),
-            escapingParameters: (pushNotificationsSettings),
+    return cuckoo_manager.call("didReceive(web3AlertSettings: LocalPushSettings?)",
+            parameters: (web3AlertSettings),
+            escapingParameters: (web3AlertSettings),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(pushNotificationsSettings: pushNotificationsSettings))
+            defaultCall: __defaultImplStub!.didReceive(web3AlertSettings: web3AlertSettings))
         
     }
     
@@ -21666,9 +21666,9 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceiveWalletsState(hasUpdates: Bool)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.OptionalMatchable>(pushNotificationsSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PushSettings?)> where M1.OptionalMatchedType == PushSettings {
-	        let matchers: [Cuckoo.ParameterMatcher<(PushSettings?)>] = [wrap(matchable: pushNotificationsSettings) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(pushNotificationsSettings: PushSettings?)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.OptionalMatchable>(web3AlertSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LocalPushSettings?)> where M1.OptionalMatchedType == LocalPushSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(LocalPushSettings?)>] = [wrap(matchable: web3AlertSettings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(web3AlertSettings: LocalPushSettings?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -21736,9 +21736,9 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.OptionalMatchable>(pushNotificationsSettings: M1) -> Cuckoo.__DoNotUse<(PushSettings?), Void> where M1.OptionalMatchedType == PushSettings {
-	        let matchers: [Cuckoo.ParameterMatcher<(PushSettings?)>] = [wrap(matchable: pushNotificationsSettings) { $0 }]
-	        return cuckoo_manager.verify("didReceive(pushNotificationsSettings: PushSettings?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.OptionalMatchable>(web3AlertSettings: M1) -> Cuckoo.__DoNotUse<(LocalPushSettings?), Void> where M1.OptionalMatchedType == LocalPushSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(LocalPushSettings?)>] = [wrap(matchable: web3AlertSettings) { $0 }]
+	        return cuckoo_manager.verify("didReceive(web3AlertSettings: LocalPushSettings?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -21800,7 +21800,7 @@ import UIKit.UIImage
     
     
     
-     func didReceive(pushNotificationsSettings: PushSettings?)   {
+     func didReceive(web3AlertSettings: LocalPushSettings?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

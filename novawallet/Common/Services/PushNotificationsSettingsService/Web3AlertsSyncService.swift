@@ -51,9 +51,10 @@ final class Web3AlertsSyncService: BaseSyncService {
         }
 
         wrapper.addDependency(operations: [remoteSettingsOperation, localSettingsOperation])
+        let targetWrapper = wrapper.insertingHead(operations: [remoteSettingsOperation, localSettingsOperation])
 
         executeCancellable(
-            wrapper: wrapper,
+            wrapper: targetWrapper,
             inOperationQueue: operationQueue,
             backingCallIn: syncCancellable,
             runningCallbackIn: workingQueue
