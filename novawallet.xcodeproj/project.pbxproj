@@ -395,6 +395,11 @@
 		0CCDB2E62B7496C9007BC5D6 /* HydraStableswap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2E52B7496C9007BC5D6 /* HydraStableswap.swift */; };
 		0CCDB2E82B749798007BC5D6 /* HydraStableswap+Storages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2E72B749798007BC5D6 /* HydraStableswap+Storages.swift */; };
 		0CCDB2EB2B74DA55007BC5D6 /* GraphModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2EA2B74DA55007BC5D6 /* GraphModel.swift */; };
+		0CCDB2ED2B751E5B007BC5D6 /* HydraStableswapReservesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2EC2B751E5B007BC5D6 /* HydraStableswapReservesService.swift */; };
+		0CCDB2EF2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2EE2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift */; };
+		0CCDB2F12B75394D007BC5D6 /* HydraAssetRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F02B75394D007BC5D6 /* HydraAssetRegistry.swift */; };
+		0CCDB2F32B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F22B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift */; };
+		0CCDB2F52B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F42B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift */; };
 		0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */; };
 		0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F1EEBF48485F02BF690A4 /* ParaStkStakeSetupViewController.swift */; };
 		0CD352932ACAD7A500B3E446 /* AssetHubExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */; };
@@ -4705,6 +4710,11 @@
 		0CCDB2E52B7496C9007BC5D6 /* HydraStableswap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswap.swift; sourceTree = "<group>"; };
 		0CCDB2E72B749798007BC5D6 /* HydraStableswap+Storages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraStableswap+Storages.swift"; sourceTree = "<group>"; };
 		0CCDB2EA2B74DA55007BC5D6 /* GraphModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphModel.swift; sourceTree = "<group>"; };
+		0CCDB2EC2B751E5B007BC5D6 /* HydraStableswapReservesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapReservesService.swift; sourceTree = "<group>"; };
+		0CCDB2EE2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapQuoteParamsService.swift; sourceTree = "<group>"; };
+		0CCDB2F02B75394D007BC5D6 /* HydraAssetRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAssetRegistry.swift; sourceTree = "<group>"; };
+		0CCDB2F22B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraAssetRegistry+Storages.swift"; sourceTree = "<group>"; };
+		0CCDB2F42B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapReserversRemoteState.swift; sourceTree = "<group>"; };
 		0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryPhishingFilter.swift; sourceTree = "<group>"; };
 		0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicService.swift; sourceTree = "<group>"; };
 		0CD352942ACAF59900B3E446 /* BigRational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigRational.swift; sourceTree = "<group>"; };
@@ -8964,6 +8974,9 @@
 				0CCDB2DF2B748B59007BC5D6 /* HydraStableswapPoolState.swift */,
 				0CCDB2E12B749504007BC5D6 /* HydraStableswapsTokensFactory.swift */,
 				0CCDB2E32B749523007BC5D6 /* HydraTokensFactory.swift */,
+				0CCDB2EC2B751E5B007BC5D6 /* HydraStableswapReservesService.swift */,
+				0CCDB2EE2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift */,
+				0CCDB2F42B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -9535,6 +9548,8 @@
 				0CCCDF812B64C19C00473D42 /* HydraDx+Storages.swift */,
 				0CCDB2E52B7496C9007BC5D6 /* HydraStableswap.swift */,
 				0CCDB2E72B749798007BC5D6 /* HydraStableswap+Storages.swift */,
+				0CCDB2F02B75394D007BC5D6 /* HydraAssetRegistry.swift */,
+				0CCDB2F22B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -20818,6 +20833,7 @@
 				8425EA9525EA82CE00C307C9 /* AccountIdentity.swift in Sources */,
 				841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */,
 				845BB8DB25E462B100E5FCDC /* SubstrateConstansts.swift in Sources */,
+				0CCDB2F12B75394D007BC5D6 /* HydraAssetRegistry.swift in Sources */,
 				847012662982AE5700F29C87 /* StackTableView+Cell.swift in Sources */,
 				849014C824AA8A28008F705E /* BiometryAuth.swift in Sources */,
 				84690797264154E80030E693 /* SlashesOperationFactory.swift in Sources */,
@@ -20829,6 +20845,7 @@
 				843612C3278FF0C700DC739E /* FeeRetryable.swift in Sources */,
 				8849AD6029C3526700F4F7FF /* Caip2.swift in Sources */,
 				8424A8C7262EC0E50091BFB1 /* PayoutInfo.swift in Sources */,
+				0CCDB2EF2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift in Sources */,
 				84F523FF298AA64A0026AD08 /* ReferendumsModelFactory+Votes.swift in Sources */,
 				843910C7253F56EA00E3C217 /* BaseOperation+Result.swift in Sources */,
 				77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */,
@@ -22966,6 +22983,7 @@
 				8459A9C827469E4B000D6278 /* AcalaContributionSource.swift in Sources */,
 				88AC5ADC2948A9090056DD40 /* TransactionHistoryHeaderView.swift in Sources */,
 				8499FE6F27BE1AE800712589 /* BaseFetchOperationFactory.swift in Sources */,
+				0CCDB2F52B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift in Sources */,
 				845532D226846B6800C2645D /* ParachainLeaseInfo.swift in Sources */,
 				84B5DE59283F8B5400193ED3 /* CollatorSelectionViewModel.swift in Sources */,
 				84E4932727325D4E000534F2 /* AssetListViewModelFactory.swift in Sources */,
@@ -23281,6 +23299,7 @@
 				8455F19E2A1E4956003F072D /* RelaychainMultistakingUpdateService.swift in Sources */,
 				8455F1A42A1F606B003F072D /* OnchainStorage.swift in Sources */,
 				7754BD582B50232C0099C13E /* ProxyDepositCalculator.swift in Sources */,
+				0CCDB2ED2B751E5B007BC5D6 /* HydraStableswapReservesService.swift in Sources */,
 				84DED40B266656D400A153BB /* KaruraBonusService.swift in Sources */,
 				845B07EF2915951A005785D3 /* DemocracyVoteThreshold.swift in Sources */,
 				885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */,
@@ -23406,6 +23425,7 @@
 				88421064289BBD9100306F2C /* Currency.swift in Sources */,
 				0CB261D92A9893E500287305 /* NPoolsUnstakeBaseProtocols.swift in Sources */,
 				921E4891E85C0DC6FDD8A0D0 /* CrowdloanContributionConfirmInteractor.swift in Sources */,
+				0CCDB2F32B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift in Sources */,
 				88A6BCFF28CA15400047E4C2 /* LocksBalanceViewModelFactory.swift in Sources */,
 				5C796EF8ED29F564B5D1126B /* CrowdloanContributionConfirmViewController.swift in Sources */,
 				2793D406FD618A892D54EA84 /* CrowdloanContributionConfirmViewLayout.swift in Sources */,
