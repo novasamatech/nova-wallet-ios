@@ -10,12 +10,8 @@ enum Web3AlertsSyncServiceError: Error {
 }
 
 protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
-    func configure()
-    func save(settings: LocalPushSettings) -> CompoundOperationWrapper<Void>
-    func getLastSettings() -> BaseOperation<LocalPushSettings?>
-    func update(token: String) -> CompoundOperationWrapper<Void>
-    func subscribe(to topic: NotificationTopic)
-    func unsubscribe(from topic: NotificationTopic)
+    func save(settings: LocalPushSettings) -> BaseOperation<Void>
+    func update(token: String) -> CompoundOperationWrapper<Void?>
 }
 
 final class Web3AlertsSyncService: BaseSyncService {
@@ -40,18 +36,11 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        let remoteSettingsOperation = fetchRemoteSettingsOperation()
         let localSettingsOperation = fetchLocalSettingsOperation()
+        let wrapper = saveWrapper(dependsOn: localSettingsOperation, forceUpdate: false)
 
-        let wrapper = OperationCombiningService.compoundWrapper(operationManager: operationManager) {
-            let remoteSettings = try remoteSettingsOperation.extractNoCancellableResultData()
-            let localSettings = try localSettingsOperation.extractNoCancellableResultData()
-            let saveOperation = self.saveWrapper(localSettings: localSettings, remoteSettings: remoteSettings)
-            return .init(targetOperation: saveOperation)
-        }
-
-        wrapper.addDependency(operations: [remoteSettingsOperation, localSettingsOperation])
-        let targetWrapper = wrapper.insertingHead(operations: [remoteSettingsOperation, localSettingsOperation])
+        wrapper.addDependency(operations: [localSettingsOperation])
+        let targetWrapper = wrapper.insertingHead(operations: [localSettingsOperation])
 
         executeCancellable(
             wrapper: targetWrapper,
@@ -69,48 +58,50 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     private func saveWrapper(
-        localSettings: LocalPushSettings?,
-        remoteSettings: LocalPushSettings?
-    ) -> BaseOperation<Void> {
-        if let localSettings = localSettings {
-            if let remoteSettings = remoteSettings, localSettings.updatedAt > remoteSettings.updatedAt {
-                return localSaveOperation(settings: remoteSettings)
-            } else {
-                return remoteSaveOperation(settings: localSettings)
+        dependsOn fetchOperation: BaseOperation<LocalPushSettings?>,
+        forceUpdate: Bool
+    ) -> CompoundOperationWrapper<Void?> {
+        let newSettingsOperation = ClosureOperation<LocalPushSettings?> {
+            guard var localSettings = try fetchOperation.extractNoCancellableResultData() else {
+                let uuid = self.settingsManager.pushSettingsDocumentId ?? ""
+                return .createDefault(uuid: uuid)
             }
-        } else if let remoteSettings = remoteSettings {
-            return localSaveOperation(settings: remoteSettings)
-        } else {
-            return .createWithError(CommonError.undefined)
+            guard !forceUpdate else {
+                return localSettings
+            }
+            let updatedMoreThanDayAgo = (Date() - localSettings.updatedAt).seconds >= 0
+            guard updatedMoreThanDayAgo else {
+                return nil
+            }
+            localSettings.updatedAt = Date()
+            return localSettings
         }
+        newSettingsOperation.addDependency(fetchOperation)
+
+        let wrapper: CompoundOperationWrapper<Void?> = OperationCombiningService.compoundWrapper(operationManager: operationManager) {
+            guard var newSettings = try newSettingsOperation.extractNoCancellableResultData() else {
+                return nil
+            }
+            let remoteSaveOperation = self.remoteSaveOperation(settings: newSettings)
+            let localSaveOperation = self.localSaveOperation(settings: newSettings)
+
+            let mapOperation = ClosureOperation {
+                try remoteSaveOperation.extractNoCancellableResultData()
+                try localSaveOperation.extractNoCancellableResultData()
+            }
+
+            mapOperation.addDependency(remoteSaveOperation)
+            mapOperation.addDependency(localSaveOperation)
+
+            return .init(targetOperation: mapOperation, dependencies: [remoteSaveOperation, localSaveOperation])
+        }
+
+        wrapper.addDependency(operations: [newSettingsOperation])
+        return wrapper.insertingHead(operations: [newSettingsOperation])
     }
 
     override func stopSyncUp() {
         syncCancellable.cancel()
-    }
-
-    private func fetchRemoteSettingsOperation() -> BaseOperation<LocalPushSettings?> {
-        guard let documentUUID = settingsManager.pushSettingsDocumentId else {
-            return .createWithResult(nil)
-        }
-
-        let fetchSettingsOperation: AsyncClosureOperation<LocalPushSettings?> = AsyncClosureOperation(cancelationClosure: {}) { responseClosure in
-            let database = Firestore.firestore()
-            let documentRef = database.collection("users").document(documentUUID)
-            let decoder = Firestore.Decoder()
-            decoder.dateDecodingStrategy = .iso8601
-
-            documentRef.getDocument(as: RemotePushSettings.self, decoder: decoder) { result in
-                switch result {
-                case let .success(settings):
-                    responseClosure(.success(.init(from: settings, identifier: documentUUID)))
-                case let .failure(error):
-                    responseClosure(.failure(error))
-                }
-            }
-        }
-
-        return fetchSettingsOperation
     }
 
     private func remoteSaveOperation(settings: LocalPushSettings) -> BaseOperation<Void> {
@@ -136,9 +127,11 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     private func localSaveOperation(settings: LocalPushSettings) -> BaseOperation<Void> {
-        repository.replaceOperation {
+        repository.saveOperation({
             [settings]
-        }
+        }, {
+            []
+        })
     }
 
     private func fetchLocalSettingsOperation() -> BaseOperation<LocalPushSettings?> {
@@ -150,34 +143,10 @@ final class Web3AlertsSyncService: BaseSyncService {
             options: .init()
         )
     }
-
-    private func subscribe(channel: String) {
-        Messaging.messaging().subscribe(toTopic: channel) { [weak self] error in
-            if let error = error {
-                self?.logger.error(error.localizedDescription)
-            }
-        }
-    }
-
-    private func unsubscribe(channel: String) {
-        Messaging.messaging().unsubscribe(fromTopic: channel) { [weak self] error in
-            if let error = error {
-                self?.logger.error(error.localizedDescription)
-            }
-        }
-    }
 }
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
-    func configure() {
-        FirebaseApp.configure()
-    }
-
-    func getLastSettings() -> BaseOperation<LocalPushSettings?> {
-        fetchLocalSettingsOperation()
-    }
-
-    func save(settings: LocalPushSettings) -> CompoundOperationWrapper<Void> {
+    func save(settings: LocalPushSettings) -> BaseOperation<Void> {
         let savingSettings: LocalPushSettings
 
         if settings.identifier.isEmpty {
@@ -192,22 +161,18 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         } else {
             savingSettings = settings
         }
-
         settingsManager.pushSettingsDocumentId = savingSettings.identifier
-
         let localSaveOperation = localSaveOperation(settings: savingSettings)
-        let remoteSaveOperation = remoteSaveOperation(settings: savingSettings)
-        remoteSaveOperation.addDependency(localSaveOperation)
-        return .init(targetOperation: remoteSaveOperation, dependencies: [localSaveOperation])
+
+        return localSaveOperation
     }
 
-    func update(token: String) -> CompoundOperationWrapper<Void> {
+    func update(token: String) -> CompoundOperationWrapper<Void?> {
         guard let documentUUID = settingsManager.pushSettingsDocumentId else {
-            return save(settings: .createDefault(for: token))
+            return .createWithError(Web3AlertsSyncServiceError.documentNotFound)
         }
 
         let fetchOperation = repository.fetchOperation(by: { documentUUID }, options: .init())
-
         let updateOperation = repository.saveOperation({
             if var localSettings = try fetchOperation.extractNoCancellableResultData() {
                 localSettings.pushToken = token
@@ -219,14 +184,18 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         }, { [] })
         updateOperation.addDependency(fetchOperation)
 
-        return .init(targetOperation: updateOperation, dependencies: [fetchOperation])
-    }
+        let fetchNewSettingsOperation = repository.fetchOperation(by: { documentUUID }, options: .init())
+        fetchNewSettingsOperation.addDependency(updateOperation)
 
-    func subscribe(to topic: NotificationTopic) {
-        subscribe(channel: topic.identifier)
-    }
+        let wrapper = saveWrapper(dependsOn: fetchNewSettingsOperation, forceUpdate: true)
+        wrapper.addDependency(operations: [updateOperation, fetchNewSettingsOperation])
 
-    func unsubscribe(from topic: NotificationTopic) {
-        unsubscribe(channel: topic.identifier)
+        return wrapper.insertingHead(operations: [updateOperation, fetchNewSettingsOperation])
+    }
+}
+
+extension Date {
+    static func - (lhs: Date, rhs: Date) -> TimeInterval {
+        lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
     }
 }

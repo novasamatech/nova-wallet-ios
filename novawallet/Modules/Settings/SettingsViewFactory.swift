@@ -26,11 +26,7 @@ struct SettingsViewFactory {
         )
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let alertNotificationsService = Web3AlertsSyncServiceFactory(
-            storageFacade: UserDataStorageFacade.shared,
-            settingsManager: SettingsManager.shared,
-            operationQueue: operationQueue
-        ).createService()
+        let alertNotificationsService = Web3AlertsSyncServiceFactory.shared.createService()
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,

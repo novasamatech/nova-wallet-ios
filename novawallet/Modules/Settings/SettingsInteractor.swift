@@ -72,22 +72,6 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
-
-    private func provideNotificationsSettings() {
-        let fetchSettingsOperation = alertNotificationsService.getLastSettings()
-        execute(
-            operation: fetchSettingsOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(settings):
-                self?.presenter?.didReceive(web3AlertSettings: settings)
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .web3AlertSettings(error))
-            }
-        }
-    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -99,7 +83,11 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideWalletConnectSessionsCount()
         applyCurrency()
 
-        alertNotificationsService.setup()
+        let saveOperation = alertNotificationsService.save(settings: .createDefault())
+        saveOperation.completionBlock = {
+            self.alertNotificationsService.setup()
+        }
+        operationQueue.addOperations([saveOperation], waitUntilFinished: false)
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,

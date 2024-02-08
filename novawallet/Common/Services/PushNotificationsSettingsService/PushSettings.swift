@@ -108,9 +108,9 @@ extension RemotePushSettings {
 }
 
 extension LocalPushSettings {
-    static func createDefault(for token: String) -> LocalPushSettings {
+    static func createDefault(token: String = "", uuid: String = "") -> LocalPushSettings {
         .init(
-            identifier: "",
+            identifier: uuid,
             pushToken: token,
             updatedAt: Date(),
             wallets: [],

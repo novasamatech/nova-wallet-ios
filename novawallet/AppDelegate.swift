@@ -2,6 +2,7 @@ import UIKit
 import UserNotifications
 import SoraKeystore
 import RobinHood
+import FirebaseMessaging
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -33,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func registerForPushNotifications() {
+        Messaging.messaging().isAutoInitEnabled = true
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(
             options: [.alert, .sound, .badge]
@@ -56,16 +58,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        Messaging.messaging().delegate = self
+        Messaging.messaging().apnsToken = deviceToken
+    }
 
-        let service = Web3AlertsSyncServiceFactory(
-            storageFacade: UserDataStorageFacade.shared,
-            settingsManager: SettingsManager.shared,
-            operationQueue: operationQueue
-        ).createService()
-        service.configure()
-        let wrapper = service.update(token: token)
+    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        Logger.shared.error(error.localizedDescription)
+    }
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        let service = Web3AlertsSyncServiceFactory.shared.createService()
         self.service = service
+        let wrapper = service.update(token: fcmToken ?? "")
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -78,9 +84,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 Logger.shared.error(error.localizedDescription)
             }
         }
-    }
-
-    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        Logger.shared.error(error.localizedDescription)
     }
 }
