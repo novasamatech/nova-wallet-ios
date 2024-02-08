@@ -5,6 +5,7 @@ import FirebaseMessaging
 import RobinHood
 
 protocol PushNotificationsServiceProtocol {
+    func setup()
     func register()
     func update(deviceToken: Data)
 }
@@ -28,8 +29,6 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
     }
 
     private func register(withOptions options: UNAuthorizationOptions) {
-        Messaging.messaging().delegate = self
-        notificationCenter.delegate = self
         notificationCenter.requestAuthorization(options: options) {
             granted, _ in
             guard granted else { return }
@@ -38,6 +37,11 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
                 UIApplication.shared.registerForRemoteNotifications()
             }
         }
+    }
+
+    func setup() {
+        Messaging.messaging().delegate = self
+        notificationCenter.delegate = self
     }
 
     func register() {
@@ -71,7 +75,6 @@ extension PushNotificationsService: MessagingDelegate {
 
 extension PushNotificationsService: UNUserNotificationCenterDelegate {
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        Messaging.messaging().delegate = self
         Messaging.messaging().apnsToken = deviceToken
     }
 

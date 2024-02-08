@@ -11,7 +11,7 @@ final class FirebaseHolder {
         defer {
             mutex.unlock()
         }
-        mutex.unlock()
+        mutex.lock()
 
         guard !isConfigured else {
             return

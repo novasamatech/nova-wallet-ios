@@ -84,6 +84,7 @@ final class SettingsInteractor {
         let saveOperation = alertNotificationsService.save(settings: .createDefault(metaAccount: wallet))
         saveOperation.completionBlock = {
             self.alertNotificationsService.setup()
+            self.pushNotificationsService.setup()
             self.pushNotificationsService.register()
         }
         operationQueue.addOperations([saveOperation], waitUntilFinished: false)

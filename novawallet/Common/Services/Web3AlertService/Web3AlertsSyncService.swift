@@ -155,23 +155,20 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         FirebaseHolder.shared.configureApp()
         let fetchOperation = repository.fetchOperation(by: { documentUUID }, options: .init())
-        let updateOperation = repository.saveOperation({
+        let updateSettingsOperation: BaseOperation<LocalPushSettings?> = ClosureOperation {
             if var localSettings = try fetchOperation.extractNoCancellableResultData() {
                 localSettings.pushToken = token
                 localSettings.updatedAt = Date()
-                return [localSettings]
+                return localSettings
             } else {
-                return []
+                return nil
             }
-        }, { [] })
-        updateOperation.addDependency(fetchOperation)
+        }
+        updateSettingsOperation.addDependency(fetchOperation)
 
-        let fetchNewSettingsOperation = repository.fetchOperation(by: { documentUUID }, options: .init())
-        fetchNewSettingsOperation.addDependency(updateOperation)
+        let wrapper = saveWrapper(dependsOn: updateSettingsOperation, forceUpdate: true)
+        wrapper.addDependency(operations: [fetchOperation, updateSettingsOperation])
 
-        let wrapper = saveWrapper(dependsOn: fetchNewSettingsOperation, forceUpdate: true)
-        wrapper.addDependency(operations: [updateOperation, fetchNewSettingsOperation])
-
-        return wrapper.insertingHead(operations: [updateOperation, fetchNewSettingsOperation])
+        return wrapper.insertingHead(operations: [fetchOperation, updateSettingsOperation])
     }
 }
