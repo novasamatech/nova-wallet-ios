@@ -7,6 +7,7 @@ import RobinHood
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let operationQueue = OperationQueue()
+    var service: Web3AlertsSyncServiceProtocol?
 
     var isUnitTesting: Bool {
         ProcessInfo.processInfo.arguments.contains("-UNITTEST")
@@ -57,17 +58,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
 
-        let wrapper: CompoundOperationWrapper<Void>
-        if let documentId = SettingsManager.shared.pushSettingsDocumentId {
-            let source = PushNotificationsSettingsSource(uuid: documentId)
-            wrapper = source.update(token: token)
-        } else {
-            let uuid = UUID().uuidString
-            SettingsManager.shared.pushSettingsDocumentId = uuid
-            let source = PushNotificationsSettingsSource(uuid: uuid)
-            wrapper = source.save(settings: PushSettings.createDefault(for: token))
-        }
-
+        let service = Web3AlertsSyncServiceFactory(
+            storageFacade: UserDataStorageFacade.shared,
+            settingsManager: SettingsManager.shared,
+            operationQueue: operationQueue
+        ).createService()
+        service.configure()
+        let wrapper = service.update(token: token)
+        self.service = service
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,

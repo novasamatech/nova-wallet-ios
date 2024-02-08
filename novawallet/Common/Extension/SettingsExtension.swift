@@ -17,6 +17,7 @@ enum SettingsKey: String {
     case pinConfirmationEnabled
     case polkadotStakingPromoSeen
     case pushSettingsDocumentId
+    case announcements
 }
 
 extension SettingsManagerProtocol {
@@ -186,6 +187,16 @@ extension SettingsManagerProtocol {
             } else {
                 removeValue(for: SettingsKey.pushSettingsDocumentId.rawValue)
             }
+        }
+    }
+
+    var announcements: Bool {
+        get {
+            bool(for: SettingsKey.announcements.rawValue) ?? true
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.announcements.rawValue)
         }
     }
 }

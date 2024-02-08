@@ -28,6 +28,7 @@ abstract_target 'novawalletAll' do
   pod 'ZMarkupParser', '= 1.6.1'
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
+  pod 'FirebaseMessaging'
   
   target 'novawalletTests' do
     inherit! :search_paths

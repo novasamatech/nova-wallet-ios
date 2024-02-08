@@ -283,7 +283,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             )
         case .walletConnectFailed:
             wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
-        case .pushNotifications:
+        case .web3AlertSettings:
             break
         }
     }
@@ -299,7 +299,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         updateAccountView()
     }
 
-    func didReceive(pushNotificationsSettings _: PushSettings?) {
+    func didReceive(web3AlertSettings _: LocalPushSettings?) {
         // TODO:
     }
 }

@@ -16,8 +16,8 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
-    let pushNotificationsSettingsProviderFactory: PushNotificationsSettingsServiceProtocol
-    private var pushNotificationsSettingsProvider: AnySingleValueProvider<PushSettings>?
+    let alertNotificationsService: Web3AlertsSyncServiceProtocol
+    let operationQueue: OperationQueue
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -27,7 +27,8 @@ final class SettingsInteractor {
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        pushNotificationsSettingsProviderFactory: PushNotificationsSettingsServiceProtocol
+        alertNotificationsService: Web3AlertsSyncServiceProtocol,
+        operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
@@ -35,7 +36,8 @@ final class SettingsInteractor {
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
-        self.pushNotificationsSettingsProviderFactory = pushNotificationsSettingsProviderFactory
+        self.alertNotificationsService = alertNotificationsService
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -71,17 +73,19 @@ final class SettingsInteractor {
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
 
-    private func subscribeToPushNotificationsSettings() {
-        guard let documentId = settingsManager.pushSettingsDocumentId else {
-            return
-        }
-        pushNotificationsSettingsProvider = pushNotificationsSettingsProviderFactory.settingsProvider(for: documentId)
-        pushNotificationsSettingsProvider?.addObserver(self, deliverOn: .main) { [weak self] changes in
-            if let update = changes.reduceToLastChange() {
-                self?.presenter?.didReceive(pushNotificationsSettings: update)
+    private func provideNotificationsSettings() {
+        let fetchSettingsOperation = alertNotificationsService.getLastSettings()
+        execute(
+            operation: fetchSettingsOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(settings):
+                self?.presenter?.didReceive(web3AlertSettings: settings)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .web3AlertSettings(error))
             }
-        } failing: { [weak self] error in
-            self?.presenter?.didReceive(error: .pushNotifications(error))
         }
     }
 }
@@ -94,7 +98,8 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
-        subscribeToPushNotificationsSettings()
+
+        alertNotificationsService.setup()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,

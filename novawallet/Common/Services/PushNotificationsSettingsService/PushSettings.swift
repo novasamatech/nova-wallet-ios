@@ -1,29 +1,66 @@
 import FirebaseCore
 import FirebaseFirestore
 import SubstrateSdk
+import RobinHood
 
-typealias ChainSelection = PushSettings.Selection<[String]>
+typealias ChainSelection = RemotePushSettings.Selection<[String]>
 
-struct PushSettings: Codable, Equatable {
-    struct Wallet: Codable, Equatable {
-        let baseSubstrate: AccountAddress
-        let baseEthereum: AccountAddress?
-        let chainSpecific: [String: String]
-    }
-
-    struct Notifications: Codable, Equatable {
-        let announcements: Bool
-        let stakingReward: ChainSelection
-        let transfer: ChainSelection
-    }
-
-    let pushToken: String
-    let updatedAt: Date
-    let wallets: [Wallet]
-    let notifications: Notifications
+struct Web3AlertWallet: Codable, Equatable {
+    let baseSubstrate: AccountAddress
+    let baseEthereum: AccountAddress?
+    let chainSpecific: [String: String]
 }
 
-extension PushSettings {
+struct Web3AlertNotification: Codable, Equatable {
+    let stakingReward: ChainSelection
+    let transfer: ChainSelection
+}
+
+struct RemotePushSettings: Codable, Equatable {
+    let pushToken: String
+    let updatedAt: Date
+    let wallets: [Web3AlertWallet]
+    let notifications: Web3AlertNotification
+
+    init(from local: LocalPushSettings) {
+        pushToken = local.pushToken
+        updatedAt = local.updatedAt
+        wallets = local.wallets
+        notifications = local.notifications
+    }
+}
+
+struct LocalPushSettings: Codable, Equatable, Identifiable {
+    let identifier: String
+    var pushToken: String
+    var updatedAt: Date
+    let wallets: [Web3AlertWallet]
+    let notifications: Web3AlertNotification
+
+    init(from remote: RemotePushSettings, identifier: String) {
+        self.identifier = identifier
+        pushToken = remote.pushToken
+        updatedAt = remote.updatedAt
+        wallets = remote.wallets
+        notifications = remote.notifications
+    }
+
+    init(
+        identifier: String,
+        pushToken: String,
+        updatedAt: Date,
+        wallets: [Web3AlertWallet],
+        notifications: Web3AlertNotification
+    ) {
+        self.identifier = identifier
+        self.pushToken = pushToken
+        self.updatedAt = updatedAt
+        self.wallets = wallets
+        self.notifications = notifications
+    }
+}
+
+extension RemotePushSettings {
     enum Selection<T: Codable & Equatable>: Codable, Equatable {
         case all
         case concrete(T)
@@ -70,13 +107,14 @@ extension PushSettings {
     }
 }
 
-extension PushSettings {
-    static func createDefault(for token: String) -> PushSettings {
+extension LocalPushSettings {
+    static func createDefault(for token: String) -> LocalPushSettings {
         .init(
+            identifier: "",
             pushToken: token,
             updatedAt: Date(),
             wallets: [],
-            notifications: .init(announcements: true, stakingReward: .all, transfer: .all)
+            notifications: .init(stakingReward: .all, transfer: .all)
         )
     }
 }

@@ -681,8 +681,26 @@ PODS:
     - "gRPC-C++ (~> 1.49.1)"
     - leveldb-library (~> 1.22)
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - FirebaseInstallations (10.21.0):
+    - FirebaseCore (~> 10.0)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/UserDefaults (~> 7.8)
+    - PromisesObjC (~> 2.1)
+  - FirebaseMessaging (10.21.0):
+    - FirebaseCore (~> 10.0)
+    - FirebaseInstallations (~> 10.0)
+    - GoogleDataTransport (~> 9.3)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/Reachability (~> 7.8)
+    - GoogleUtilities/UserDefaults (~> 7.8)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
   - FirebaseSharedSwift (10.20.0)
   - FireMock (3.1)
+  - GoogleDataTransport (9.3.0):
+    - GoogleUtilities/Environment (~> 7.7)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
   - GoogleUtilities/AppDelegateSwizzler (7.12.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -697,6 +715,8 @@ PODS:
     - GoogleUtilities/Reachability
   - "GoogleUtilities/NSData+zlib (7.12.0)"
   - GoogleUtilities/Reachability (7.12.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (7.12.0):
     - GoogleUtilities/Logger
   - "gRPC-C++ (1.49.1)":
     - "gRPC-C++/Implementation (= 1.49.1)"
@@ -909,6 +929,7 @@ DEPENDENCIES:
   - EthereumSignTypedDataUtil (from `https://github.com/ERussel/EthereumSignTypedDataUtil.git`, tag `0.1.3`)
   - FirebaseAuth
   - FirebaseFirestore
+  - FirebaseMessaging
   - FireMock
   - Kingfisher
   - R.swift
@@ -946,8 +967,11 @@ SPEC REPOS:
     - FirebaseCoreInternal
     - FirebaseFirestore
     - FirebaseFirestoreInternal
+    - FirebaseInstallations
+    - FirebaseMessaging
     - FirebaseSharedSwift
     - FireMock
+    - GoogleDataTransport
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
@@ -1057,8 +1081,11 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: efeeb171ac02d623bdaefe121539939821e10811
   FirebaseFirestore: 21be9ea244830f6cac15464550c2975c43f9dffc
   FirebaseFirestoreInternal: 0dc0762afd68192e9d45c31d3dd3017accc84333
+  FirebaseInstallations: 390ea1d10a4d02b20c965cbfd527ee9b3b412acb
+  FirebaseMessaging: b285329399cc6edd73b5b32864c68454177bcf3f
   FirebaseSharedSwift: 2fbf73618288b7a36b2014b957745dcdd781389e
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
+  GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   "gRPC-C++": 2df8cba576898bdacd29f0266d5236fa0e26ba6a
   gRPC-Core: a21a60aefc08c68c247b439a9ef97174b0c54f96
@@ -1097,6 +1124,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 513fc5f97cc27e70746385b7dfb0c466bb4b5c64
+PODFILE CHECKSUM: dd7e381db55524849ffb893ac7dba296e10d0407
 
 COCOAPODS: 1.13.0
