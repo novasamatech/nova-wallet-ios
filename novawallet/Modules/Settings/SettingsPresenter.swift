@@ -15,7 +15,8 @@ final class SettingsPresenter {
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
-
+    private var notificationsSettings: LocalPushSettings?
+    
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
@@ -204,6 +205,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
         case .wiki:
             show(url: config.wikiURL)
+        case .notifications:
+            wireframe.showSetupNotifications(from: view, settings: notificationsSettings)
         }
     }
 
