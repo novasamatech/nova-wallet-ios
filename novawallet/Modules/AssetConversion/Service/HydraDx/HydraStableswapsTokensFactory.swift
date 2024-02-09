@@ -22,7 +22,7 @@ final class HydraStableSwapsTokensFactory {
 
     private func fetchAllPoolAssets(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<[HydraDx.OmniPoolAssetId]> {
+    ) -> CompoundOperationWrapper<[HydraDx.AssetId]> {
         let keysFactory = StorageKeysOperationFactory(operationQueue: operationQueue)
         let poolAssetsFetchWrapper: CompoundOperationWrapper<[HydraDx.AssetsKey]> = keysFactory.createKeysFetchWrapper(
             by: HydraStableswap.pools,
@@ -32,7 +32,7 @@ final class HydraStableSwapsTokensFactory {
 
         poolAssetsFetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let poolAssetsMapOperation = ClosureOperation<[HydraDx.OmniPoolAssetId]> {
+        let poolAssetsMapOperation = ClosureOperation<[HydraDx.AssetId]> {
             let allAssets = try poolAssetsFetchWrapper.targetOperation.extractNoCancellableResultData()
             return Array(allAssets.map(\.assetId))
         }
@@ -44,7 +44,7 @@ final class HydraStableSwapsTokensFactory {
 
     private func fetchAllPools(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<[HydraDx.OmniPoolAssetId: [HydraDx.OmniPoolAssetId]]> {
+    ) -> CompoundOperationWrapper<[HydraDx.AssetId: [HydraDx.AssetId]]> {
         let poolAssetsWrapper = fetchAllPoolAssets(dependingOn: codingFactoryOperation)
 
         let requestFactory = StorageRequestFactory(
@@ -68,12 +68,12 @@ final class HydraStableSwapsTokensFactory {
 
         poolsWrapper.addDependency(wrapper: poolAssetsWrapper)
 
-        let mapOperation = ClosureOperation<[HydraDx.OmniPoolAssetId: [HydraDx.OmniPoolAssetId]]> {
+        let mapOperation = ClosureOperation<[HydraDx.AssetId: [HydraDx.AssetId]]> {
             let poolAssets = try poolAssetsWrapper.targetOperation.extractNoCancellableResultData()
             let pools = try poolsWrapper.targetOperation.extractNoCancellableResultData()
 
             return zip(poolAssets, pools).reduce(
-                into: [HydraDx.OmniPoolAssetId: [HydraDx.OmniPoolAssetId]]()
+                into: [HydraDx.AssetId: [HydraDx.AssetId]]()
             ) { accum, poolAndInfo in
                 let poolAsset = poolAndInfo.0
                 let assets = poolAndInfo.1.value.map { $0.assets.map(\.value) }
@@ -101,7 +101,7 @@ final class HydraStableSwapsTokensFactory {
 
             let allLocalAssets = chain.assets.map { ChainAsset(chain: chain, asset: $0) }
             let localRemoteAssets = try allLocalAssets.reduce(
-                into: [HydraDx.OmniPoolAssetId: ChainAssetId]()
+                into: [HydraDx.AssetId: ChainAssetId]()
             ) { accum, chainAsset in
                 let pair = try HydraDxTokenConverter.convertToRemote(
                     chainAsset: chainAsset,

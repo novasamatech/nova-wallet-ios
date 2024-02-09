@@ -2,11 +2,13 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class HydraStableswapQuoteParamsService: ObservableSyncService {
+final class HydraStableswapQuoteParamsService: ObservableSyncService, ObservableSubscriptionSyncServiceProtocol {
+    typealias TState = HydraStableswap.QuoteParams
+
     let userAccountId: AccountId
-    let poolAsset: HydraDx.OmniPoolAssetId
-    let assetIn: HydraDx.OmniPoolAssetId
-    let assetOut: HydraDx.OmniPoolAssetId
+    let poolAsset: HydraDx.AssetId
+    let assetIn: HydraDx.AssetId
+    let assetOut: HydraDx.AssetId
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
@@ -18,9 +20,9 @@ final class HydraStableswapQuoteParamsService: ObservableSyncService {
 
     init(
         userAccountId: AccountId,
-        poolAsset: HydraDx.OmniPoolAssetId,
-        assetIn: HydraDx.OmniPoolAssetId,
-        assetOut: HydraDx.OmniPoolAssetId,
+        poolAsset: HydraDx.AssetId,
+        assetIn: HydraDx.AssetId,
+        assetOut: HydraDx.AssetId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -127,5 +129,19 @@ final class HydraStableswapQuoteParamsService: ObservableSyncService {
 
     override func stopSyncUp() {
         clearServices()
+    }
+
+    func getState() -> HydraStableswap.QuoteParams? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let poolInfo = poolService?.getState(), let reserves = reservesService?.getState() {
+            return .init(poolInfo: poolInfo, reserves: reserves)
+        } else {
+            return nil
+        }
     }
 }

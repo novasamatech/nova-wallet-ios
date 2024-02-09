@@ -3,14 +3,14 @@ import SubstrateSdk
 import RobinHood
 
 final class HydraStableswapReservesService: ObservableSubscriptionSyncService<HydraStableswap.ReservesRemoteState> {
-    let poolAsset: HydraDx.OmniPoolAssetId
-    let otherAssets: [HydraDx.OmniPoolAssetId]
+    let poolAsset: HydraDx.AssetId
+    let otherAssets: [HydraDx.AssetId]
     let userAccountId: AccountId
 
     init(
         userAccountId: AccountId,
-        poolAsset: HydraDx.OmniPoolAssetId,
-        otherAssets: [HydraDx.OmniPoolAssetId],
+        poolAsset: HydraDx.AssetId,
+        otherAssets: [HydraDx.AssetId],
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -35,7 +35,7 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
     }
 
     func getReserveRequests(
-        for asset: HydraDx.OmniPoolAssetId,
+        for asset: HydraDx.AssetId,
         poolAccountId: AccountId
     ) -> [BatchStorageSubscriptionRequest] {
         let balanceRequest = BatchStorageSubscriptionRequest(
@@ -64,8 +64,8 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
     }
 
     func getRequests(
-        poolAsset: HydraDx.OmniPoolAssetId,
-        otherAssets: [HydraDx.OmniPoolAssetId],
+        poolAsset: HydraDx.AssetId,
+        otherAssets: [HydraDx.AssetId],
         userAccountId: AccountId,
         poolAccount: AccountId
     ) throws -> [BatchStorageSubscriptionRequest] {

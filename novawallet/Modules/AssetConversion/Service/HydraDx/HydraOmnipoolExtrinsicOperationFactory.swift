@@ -3,8 +3,8 @@ import RobinHood
 
 struct HydraOmnipoolSwapParams {
     struct Params {
-        let currentFeeCurrency: HydraDx.OmniPoolAssetId
-        let newFeeCurrency: HydraDx.OmniPoolAssetId
+        let currentFeeCurrency: HydraDx.AssetId
+        let newFeeCurrency: HydraDx.AssetId
         let referral: AccountId?
 
         var shouldSetFeeCurrency: Bool {
@@ -59,8 +59,8 @@ final class HydraOmnipoolExtrinsicOperationFactory {
 
     private func createSwapParams(
         from params: HydraOmnipoolSwapParams.Params,
-        remoteAssetIn: HydraDx.OmniPoolAssetId,
-        remoteAssetOut: HydraDx.OmniPoolAssetId,
+        remoteAssetIn: HydraDx.AssetId,
+        remoteAssetOut: HydraDx.AssetId,
         callArgs: AssetConversion.CallArgs
     ) throws -> HydraOmnipoolSwapParams {
         let setCurrencyCall: HydraDx.SetCurrencyCall?

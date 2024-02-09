@@ -11,8 +11,8 @@ extension HydraDx {
             case minBuyAmount = "min_buy_amount"
         }
 
-        @StringCodable var assetIn: HydraDx.OmniPoolAssetId
-        @StringCodable var assetOut: HydraDx.OmniPoolAssetId
+        @StringCodable var assetIn: HydraDx.AssetId
+        @StringCodable var assetOut: HydraDx.AssetId
         @StringCodable var amount: BigUInt
         @StringCodable var minBuyAmount: BigUInt
 
@@ -37,8 +37,8 @@ extension HydraDx {
             case maxSellAmount = "max_sell_amount"
         }
 
-        @StringCodable var assetOut: HydraDx.OmniPoolAssetId
-        @StringCodable var assetIn: HydraDx.OmniPoolAssetId
+        @StringCodable var assetOut: HydraDx.AssetId
+        @StringCodable var assetIn: HydraDx.AssetId
         @StringCodable var amount: BigUInt
         @StringCodable var maxSellAmount: BigUInt
 
@@ -56,7 +56,7 @@ extension HydraDx {
     }
 
     struct SetCurrencyCall: Codable {
-        @StringCodable var currency: HydraDx.OmniPoolAssetId
+        @StringCodable var currency: HydraDx.AssetId
 
         func runtimeCall() -> RuntimeCall<Self> {
             .init(moduleName: HydraDx.multiTxPaymentModule, callName: "set_currency", args: self)

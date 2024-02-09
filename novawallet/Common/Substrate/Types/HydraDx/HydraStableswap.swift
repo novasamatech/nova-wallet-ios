@@ -7,7 +7,7 @@ enum HydraStableswap {
     static let module = "Stableswap"
 
     struct PoolInfo: Decodable {
-        let assets: [StringScaleMapper<HydraDx.OmniPoolAssetId>]
+        let assets: [StringScaleMapper<HydraDx.AssetId>]
         @StringCodable var initialAmplification: BigUInt
         @StringCodable var finalAmplification: BigUInt
         @StringCodable var fee: BigUInt
@@ -37,7 +37,7 @@ enum HydraStableswap {
         }
     }
 
-    static func poolAccountId(for asset: HydraDx.OmniPoolAssetId) throws -> AccountId {
+    static func poolAccountId(for asset: HydraDx.AssetId) throws -> AccountId {
         guard let accountIdPrefix = "sts".data(using: .utf8) else {
             throw CommonError.dataCorruption
         }

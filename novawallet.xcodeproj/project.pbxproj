@@ -400,6 +400,8 @@
 		0CCDB2F12B75394D007BC5D6 /* HydraAssetRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F02B75394D007BC5D6 /* HydraAssetRegistry.swift */; };
 		0CCDB2F32B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F22B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift */; };
 		0CCDB2F52B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F42B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift */; };
+		0CCDB2F72B75DFD4007BC5D6 /* HydraStableswapFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F62B75DFD4007BC5D6 /* HydraStableswapFlowState.swift */; };
+		0CCDB2F92B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F82B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift */; };
 		0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */; };
 		0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F1EEBF48485F02BF690A4 /* ParaStkStakeSetupViewController.swift */; };
 		0CD352932ACAD7A500B3E446 /* AssetHubExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */; };
@@ -4715,6 +4717,8 @@
 		0CCDB2F02B75394D007BC5D6 /* HydraAssetRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAssetRegistry.swift; sourceTree = "<group>"; };
 		0CCDB2F22B7539D8007BC5D6 /* HydraAssetRegistry+Storages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraAssetRegistry+Storages.swift"; sourceTree = "<group>"; };
 		0CCDB2F42B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapReserversRemoteState.swift; sourceTree = "<group>"; };
+		0CCDB2F62B75DFD4007BC5D6 /* HydraStableswapFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapFlowState.swift; sourceTree = "<group>"; };
+		0CCDB2F82B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapQuoteParams.swift; sourceTree = "<group>"; };
 		0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryPhishingFilter.swift; sourceTree = "<group>"; };
 		0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicService.swift; sourceTree = "<group>"; };
 		0CD352942ACAF59900B3E446 /* BigRational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigRational.swift; sourceTree = "<group>"; };
@@ -8977,6 +8981,8 @@
 				0CCDB2EC2B751E5B007BC5D6 /* HydraStableswapReservesService.swift */,
 				0CCDB2EE2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift */,
 				0CCDB2F42B753DDC007BC5D6 /* HydraStableswapReserversRemoteState.swift */,
+				0CCDB2F62B75DFD4007BC5D6 /* HydraStableswapFlowState.swift */,
+				0CCDB2F82B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -22169,6 +22175,7 @@
 				840D891D26242AE500AB231B /* StorageRequest.swift in Sources */,
 				8401AEC82642A71D000B03E3 /* StakingRebondConfirmationProtocols.swift in Sources */,
 				849014BA24AA87E4008F705E /* PinSetupProtocol.swift in Sources */,
+				0CCDB2F92B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift in Sources */,
 				F418E887264D308700699085 /* StakingAlert.swift in Sources */,
 				0CB64E5A2AFE9947008F268F /* GetTokenOperation.swift in Sources */,
 				84DD5F7C263DFEC600425ACF /* StakingDataValidatorFactory.swift in Sources */,
@@ -24091,6 +24098,7 @@
 				E488F3E052650FF525D41D63 /* LedgerTxConfirmInteractor.swift in Sources */,
 				75DAB313623E900EC475E215 /* LedgerTxConfirmViewFactory.swift in Sources */,
 				44D9F74D7851B874F2045E7E /* LedgerInstructionsProtocols.swift in Sources */,
+				0CCDB2F72B75DFD4007BC5D6 /* HydraStableswapFlowState.swift in Sources */,
 				84AC794A297FEAFF00E284DE /* GovernanceDelegateDetails.swift in Sources */,
 				77E304B22AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,

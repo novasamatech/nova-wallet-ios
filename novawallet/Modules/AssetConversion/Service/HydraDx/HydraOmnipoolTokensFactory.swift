@@ -21,10 +21,10 @@ final class HydraOmnipoolTokensFactory {
         self.operationQueue = operationQueue
     }
 
-    private func fetchAllRemoteAssets() -> CompoundOperationWrapper<Set<HydraDx.OmniPoolAssetId>> {
+    private func fetchAllRemoteAssets() -> CompoundOperationWrapper<Set<HydraDx.AssetId>> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let hubAssetIdOperation = PrimitiveConstantOperation<HydraDx.OmniPoolAssetId>.operation(
+        let hubAssetIdOperation = PrimitiveConstantOperation<HydraDx.AssetId>.operation(
             for: HydraDx.hubAssetIdPath,
             dependingOn: codingFactoryOperation
         )
@@ -40,7 +40,7 @@ final class HydraOmnipoolTokensFactory {
 
         assetsFetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<Set<HydraDx.OmniPoolAssetId>> {
+        let mapOperation = ClosureOperation<Set<HydraDx.AssetId>> {
             let allAssets = try assetsFetchWrapper.targetOperation.extractNoCancellableResultData()
             let hubAssetId = try hubAssetIdOperation.extractNoCancellableResultData()
 
@@ -66,7 +66,7 @@ final class HydraOmnipoolTokensFactory {
         let localAssetsOperation = ClosureOperation<Set<ChainAssetId>> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let localRemoteAssets = try allLocalAssets.reduce(
-                into: [HydraDx.OmniPoolAssetId: ChainAssetId]()
+                into: [HydraDx.AssetId: ChainAssetId]()
             ) { accum, chainAsset in
                 let pair = try HydraDxTokenConverter.convertToRemote(
                     chainAsset: chainAsset,

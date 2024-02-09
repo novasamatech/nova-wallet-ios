@@ -3,14 +3,14 @@ import SubstrateSdk
 import RobinHood
 
 final class HydraStableswapPoolService: ObservableSubscriptionSyncService<HydraStableswap.PoolRemoteState> {
-    let poolAsset: HydraDx.OmniPoolAssetId
-    let assetIn: HydraDx.OmniPoolAssetId
-    let assetOut: HydraDx.OmniPoolAssetId
+    let poolAsset: HydraDx.AssetId
+    let assetIn: HydraDx.AssetId
+    let assetOut: HydraDx.AssetId
 
     init(
-        poolAsset: HydraDx.OmniPoolAssetId,
-        assetIn: HydraDx.OmniPoolAssetId,
-        assetOut: HydraDx.OmniPoolAssetId,
+        poolAsset: HydraDx.AssetId,
+        assetIn: HydraDx.AssetId,
+        assetOut: HydraDx.AssetId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -35,9 +35,9 @@ final class HydraStableswapPoolService: ObservableSubscriptionSyncService<HydraS
     }
 
     func getRequest(
-        for poolAsset: HydraDx.OmniPoolAssetId,
-        assetIn: HydraDx.OmniPoolAssetId,
-        assetOut: HydraDx.OmniPoolAssetId
+        for poolAsset: HydraDx.AssetId,
+        assetIn: HydraDx.AssetId,
+        assetOut: HydraDx.AssetId
     ) throws -> [BatchStorageSubscriptionRequest] {
         let poolRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(

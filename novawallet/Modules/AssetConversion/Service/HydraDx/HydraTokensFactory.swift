@@ -37,7 +37,7 @@ final class HydraTokensFactory {
 
     private func createRemoteFeeAssetsWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<Set<HydraDx.OmniPoolAssetId>> {
+    ) -> CompoundOperationWrapper<Set<HydraDx.AssetId>> {
         let keysFactory = StorageKeysOperationFactory(operationQueue: operationQueue)
         let assetsFetchWrapper: CompoundOperationWrapper<[HydraDx.AssetsKey]> = keysFactory.createKeysFetchWrapper(
             by: HydraDx.feeCurrencies,
@@ -47,7 +47,7 @@ final class HydraTokensFactory {
 
         assetsFetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<Set<HydraDx.OmniPoolAssetId>> {
+        let mapOperation = ClosureOperation<Set<HydraDx.AssetId>> {
             let allAssets = try assetsFetchWrapper.targetOperation.extractNoCancellableResultData()
             return Set(allAssets.map(\.assetId))
         }

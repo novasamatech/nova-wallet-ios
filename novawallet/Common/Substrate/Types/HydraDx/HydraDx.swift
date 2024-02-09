@@ -3,15 +3,15 @@ import BigInt
 import SubstrateSdk
 
 enum HydraDx {
-    typealias OmniPoolAssetId = BigUInt
-    static let nativeAssetId = OmniPoolAssetId(0)
+    typealias AssetId = BigUInt
+    static let nativeAssetId = AssetId(0)
     static let omniPoolModule = "Omnipool"
     static let dynamicFeesModule = "DynamicFees"
     static let multiTxPaymentModule = "MultiTransactionPayment"
     static let referralsModule = "Referrals"
 
     struct AssetsKey: JSONListConvertible {
-        let assetId: OmniPoolAssetId
+        let assetId: AssetId
 
         init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
             guard jsonList.count == 1 else {
@@ -19,7 +19,7 @@ enum HydraDx {
             }
 
             assetId = try jsonList[0].map(
-                to: StringScaleMapper<OmniPoolAssetId>.self,
+                to: StringScaleMapper<AssetId>.self,
                 with: context
             ).value
         }
