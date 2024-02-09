@@ -1232,6 +1232,7 @@
 "settings.error.biometry.disabled.in.settings.title" = "%@ is disabled in settings";
 "settings.error.biometry.disabled.in.settings.message" = "Please, make sure to Nova has access to %@ in Settings";
 "settings.biometry.auth.alert.disable.button" = "Don’t Allow";
+"settings.push.notifications" = "Push notifications";
 "governance.referendums.filter.all" = "All referenda";
 "governance.referendums.filter.voted" = "Voted";
 "governance.referendums.filter.not.voted" = "Not voted";

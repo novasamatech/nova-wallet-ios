@@ -1232,6 +1232,7 @@
 "settings.error.biometry.disabled.in.settings.title" = "Похоже что %@ выключен в настройках";
 "settings.error.biometry.disabled.in.settings.message" = "Пожалуйста, убедитесь, что приложению дан доступ к %@ в настройках.";
 "settings.biometry.auth.alert.disable.button" = "Не разрешать";
+"settings.push.notifications" = "Пуш-уведомления";
 "governance.referendums.filter.all" = "Все референдумы";
 "governance.referendums.filter.voted" = "Проголосованные";
 "governance.referendums.filter.not.voted" = "Не проголосованные";
