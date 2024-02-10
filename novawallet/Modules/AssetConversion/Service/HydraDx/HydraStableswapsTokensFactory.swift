@@ -127,6 +127,38 @@ final class HydraStableSwapsTokensFactory {
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: conversionOperation)
     }
+    
+    func fetchAllLocalPoolAssets(for chain: ChainModel) -> CompoundOperationWrapper<Set<ChainAssetId>> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let fetchWrapper = fetchAllPoolAssets(dependingOn: codingFactoryOperation)
+        
+        fetchWrapper.addDependency(operations: [codingFactoryOperation])
+        
+        let conversionOperation = ClosureOperation<Set<ChainAssetId>> {
+            let poolAssets = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let allLocalAssets = chain.assets.map { ChainAsset(chain: chain, asset: $0) }
+            let localRemoteAssets = try allLocalAssets.reduce(
+                into: [HydraDx.AssetId: ChainAssetId]()
+            ) { accum, chainAsset in
+                let pair = try HydraDxTokenConverter.convertToRemote(
+                    chainAsset: chainAsset,
+                    codingFactory: codingFactory
+                )
+
+                accum[pair.remoteAssetId] = pair.localAssetId
+            }
+
+            return Set(poolAssets.compactMap({ localRemoteAssets[$0] }))
+        }
+        
+        conversionOperation.addDependency(fetchWrapper.targetOperation)
+
+        return fetchWrapper
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: conversionOperation)
+    }
 }
 
 extension HydraStableSwapsTokensFactory: HydraPoolTokensFactoryProtocol {

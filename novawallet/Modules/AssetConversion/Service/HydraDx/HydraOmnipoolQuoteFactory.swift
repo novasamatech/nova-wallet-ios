@@ -3,10 +3,6 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-protocol HydraOmnipoolQuoteFactoryProtocol {
-    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
-}
-
 final class HydraOmnipoolQuoteFactory {
     let flowState: HydraOmnipoolFlowState
 
