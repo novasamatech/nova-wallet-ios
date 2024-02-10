@@ -29,7 +29,7 @@ final class HydraStableswapQuoteFactory {
 
     struct CalculationInfo {
         let poolInfo: HydraStableswap.PoolInfo
-        let tradability: HydraStableswap.Tradability
+        let tradability: HydraStableswap.Tradability?
         let shareAssetIssuance: BigUInt
         let reserves: [AssetReserveInfo]
         let currentBlock: BlockNumber
@@ -47,7 +47,6 @@ final class HydraStableswapQuoteFactory {
     ) throws -> CalculationInfo {
         guard
             let poolInfo = quoteState.poolInfo.poolInfo,
-            let tradability = quoteState.poolInfo.tradability,
             let currentBlock = quoteState.poolInfo.currentBlock else {
             throw CommonError.dataCorruption
         }
@@ -68,7 +67,7 @@ final class HydraStableswapQuoteFactory {
 
         return CalculationInfo(
             poolInfo: poolInfo,
-            tradability: tradability,
+            tradability: quoteState.poolInfo.tradability,
             shareAssetIssuance: try quoteState.reserves.getPoolTotalIssuance(with: context) ?? 0,
             reserves: reserves,
             currentBlock: currentBlock
