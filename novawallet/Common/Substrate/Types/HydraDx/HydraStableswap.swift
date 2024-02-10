@@ -6,10 +6,18 @@ import IrohaCrypto
 enum HydraStableswap {
     static let module = "Stableswap"
 
+    struct PoolPair: Equatable, Hashable {
+        let poolAsset: HydraDx.AssetId
+        let assetIn: HydraDx.AssetId
+        let assetOut: HydraDx.AssetId
+    }
+
     struct PoolInfo: Decodable {
         let assets: [StringScaleMapper<HydraDx.AssetId>]
         @StringCodable var initialAmplification: BigUInt
         @StringCodable var finalAmplification: BigUInt
+        @StringCodable var initialBlock: BlockNumber
+        @StringCodable var finalBlock: BlockNumber
         @StringCodable var fee: BigUInt
     }
 

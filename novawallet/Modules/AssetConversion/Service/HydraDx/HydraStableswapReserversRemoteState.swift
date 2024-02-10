@@ -53,10 +53,6 @@ extension HydraStableswap {
             return try json.map(to: StringScaleMapper<BigUInt>?.self, with: context)?.value
         }
 
-        func getPoolShare(with context: [CodingUserInfoKey: Any]?) throws -> BigUInt? {
-            try decodeAccount(for: Self.poolShareKey, with: context)?.free
-        }
-
         func getReserve(for asset: HydraDx.AssetId, with context: [CodingUserInfoKey: Any]?) throws -> BigUInt? {
             try decodeAccount(
                 for: Self.assetReserveKey(asset),

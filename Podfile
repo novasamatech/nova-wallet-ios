@@ -26,6 +26,7 @@ abstract_target 'novawalletAll' do
   pod 'EthereumSignTypedDataUtil', :git => 'https://github.com/ERussel/EthereumSignTypedDataUtil.git', :tag => '0.1.3'
   pod 'SwiftAlgorithms', '~> 1.0.0'
   pod 'ZMarkupParser', '= 1.6.1'
+  pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :commit => '06aa794d04adcfbf64c1c5eb212b95207a919f03'
   
   target 'novawalletTests' do
     inherit! :search_paths
@@ -39,7 +40,8 @@ abstract_target 'novawalletAll' do
     pod 'RobinHood', '~> 2.6.0'
     pod 'Sourcery', '~> 1.4'
     pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.8'
-
+    pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :commit => '06aa794d04adcfbf64c1c5eb212b95207a919f03'
+    
   end
 
   target 'novawalletIntegrationTests'

@@ -66,7 +66,7 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
     func getRequests(
         poolAsset: HydraDx.AssetId,
         otherAssets: [HydraDx.AssetId],
-        userAccountId: AccountId,
+        userAccountId _: AccountId,
         poolAccount: AccountId
     ) throws -> [BatchStorageSubscriptionRequest] {
         let poolAssetTotalIssuanceRequest = BatchStorageSubscriptionRequest(
@@ -80,20 +80,9 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
             mappingKey: HydraStableswap.ReservesRemoteState.poolIssuanceKey
         )
 
-        let poolShareRequest = BatchStorageSubscriptionRequest(
-            innerRequest: DoubleMapSubscriptionRequest(
-                storagePath: StorageCodingPath.ormlTokenAccount,
-                localKey: "",
-                keyParamClosure: {
-                    (BytesCodable(wrappedValue: userAccountId), StringScaleMapper(value: poolAsset))
-                }
-            ),
-            mappingKey: HydraStableswap.ReservesRemoteState.poolShareKey
-        )
-
         let reserves = otherAssets.flatMap { getReserveRequests(for: $0, poolAccountId: poolAccount) }
 
-        return [poolAssetTotalIssuanceRequest, poolShareRequest] + reserves
+        return [poolAssetTotalIssuanceRequest] + reserves
     }
 
     override func getRequests() throws -> [BatchStorageSubscriptionRequest] {

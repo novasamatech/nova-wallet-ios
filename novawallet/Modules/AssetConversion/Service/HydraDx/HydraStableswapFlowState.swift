@@ -12,7 +12,7 @@ final class HydraStableswapFlowState {
 
     let mutex = NSLock()
 
-    private var quoteStateServices: [HydraDx.SwapPair: HydraStableswapQuoteParamsService] = [:]
+    private var quoteStateServices: [HydraStableswap.PoolPair: HydraStableswapQuoteParamsService] = [:]
 
     init(
         account: ChainAccountResponse,
@@ -37,8 +37,7 @@ final class HydraStableswapFlowState {
 
 extension HydraStableswapFlowState {
     func setupQuoteService(
-        for swapPair: HydraDx.SwapPair,
-        poolAsset: HydraDx.LocalRemoteAssetId
+        for poolPair: HydraStableswap.PoolPair
     ) -> HydraStableswapQuoteParamsService {
         mutex.lock()
 
@@ -46,22 +45,22 @@ extension HydraStableswapFlowState {
             mutex.unlock()
         }
 
-        if let currentService = quoteStateServices[swapPair] {
+        if let currentService = quoteStateServices[poolPair] {
             return currentService
         }
 
         let newService = HydraStableswapQuoteParamsService(
             userAccountId: account.accountId,
-            poolAsset: poolAsset.remoteAssetId,
-            assetIn: swapPair.assetIn.remoteAssetId,
-            assetOut: swapPair.assetOut.remoteAssetId,
+            poolAsset: poolPair.poolAsset,
+            assetIn: poolPair.assetIn,
+            assetOut: poolPair.assetOut,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue
         )
 
-        quoteStateServices[swapPair]?.throttle()
-        quoteStateServices[swapPair] = newService
+        quoteStateServices[poolPair]?.throttle()
+        quoteStateServices[poolPair] = newService
 
         newService.setup()
 

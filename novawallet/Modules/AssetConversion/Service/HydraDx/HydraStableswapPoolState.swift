@@ -8,24 +8,29 @@ extension HydraStableswap {
 
         let poolInfo: HydraStableswap.PoolInfo?
         let tradability: HydraStableswap.Tradability?
+        let currentBlock: BlockNumber?
 
         init(
             poolInfo: HydraStableswap.PoolInfo?,
-            tradability: HydraStableswap.Tradability?
+            tradability: HydraStableswap.Tradability?,
+            currentBlock: BlockNumber?
         ) {
             self.poolInfo = poolInfo
             self.tradability = tradability
+            self.currentBlock = currentBlock
         }
 
         init(change: TChange) {
             poolInfo = change.poolInfo.valueWhenDefined(else: nil)
             tradability = change.tradability.valueWhenDefined(else: nil)
+            currentBlock = change.currentBlock.valueWhenDefined(else: nil)
         }
 
         func merging(change: HydraStableswap.PoolRemoteStateChange) -> HydraStableswap.PoolRemoteState {
             .init(
                 poolInfo: change.poolInfo.valueWhenDefined(else: poolInfo),
-                tradability: change.tradability.valueWhenDefined(else: tradability)
+                tradability: change.tradability.valueWhenDefined(else: tradability),
+                currentBlock: change.currentBlock.valueWhenDefined(else: currentBlock)
             )
         }
     }
@@ -34,10 +39,12 @@ extension HydraStableswap {
         enum Key: String {
             case poolInfo
             case tradability
+            case currentBlock
         }
 
         let poolInfo: UncertainStorage<HydraStableswap.PoolInfo?>
         let tradability: UncertainStorage<HydraStableswap.Tradability?>
+        let currentBlock: UncertainStorage<BlockNumber?>
 
         init(
             values: [BatchStorageSubscriptionResultValue],
@@ -55,6 +62,12 @@ extension HydraStableswap {
                 mappingKey: Key.tradability.rawValue,
                 context: context
             )
+
+            currentBlock = try UncertainStorage<StringScaleMapper<BlockNumber>?>(
+                values: values,
+                mappingKey: Key.currentBlock.rawValue,
+                context: context
+            ).map { $0?.value }
         }
     }
 }
