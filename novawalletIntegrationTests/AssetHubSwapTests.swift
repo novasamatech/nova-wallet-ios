@@ -95,7 +95,8 @@ final class AssetHubSwapTests: XCTestCase {
             amountOut: quote.amountOut,
             receiver: AccountId.zeroAccountId(of: 32),
             direction: .sell,
-            slippage: .percent(of: 1)
+            slippage: .percent(of: 1),
+            context: nil
         )
         
         let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 0))
@@ -121,7 +122,8 @@ final class AssetHubSwapTests: XCTestCase {
             amountOut: quote.amountOut,
             receiver: AccountId.zeroAccountId(of: 32),
             direction: .sell,
-            slippage: .percent(of: 1)
+            slippage: .percent(of: 1),
+            context: nil
         )
         
         let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 1))

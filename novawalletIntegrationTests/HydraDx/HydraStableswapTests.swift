@@ -112,11 +112,29 @@ final class HydraStableswapTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+    
+    func testSellUSDTUSDC() {
+        do {
+            let quote = try performQuoteFetch(
+                for: .init(
+                    assetIn: 10,
+                    assetOut: 22,
+                    poolAsset: 102,
+                    amount: 1_000_000,
+                    direction: .sell
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 
     private func performQuoteFetch(
         for args: HydraStableswap.QuoteArgs,
         chainId: ChainModel.Id = KnowChainId.hydra
-    ) throws -> HydraStableswap.Quote {
+    ) throws -> String {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         
@@ -147,6 +165,8 @@ final class HydraStableswapTests: XCTestCase {
         
         operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
         
-        return try quoteWrapper.targetOperation.extractNoCancellableResultData()
+        let amount = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+        
+        return String(amount)
     }
 }

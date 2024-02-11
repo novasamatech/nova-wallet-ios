@@ -181,12 +181,7 @@ final class HydraOmnipoolQuoteFactory {
 }
 
 extension HydraOmnipoolQuoteFactory {
-    // TODO: get rid of it
-    func quote(for _: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
-    }
-
-    func quoteRemote(for args: HydraOmnipool.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
+    func quote(for args: HydraOmnipool.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
         let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 

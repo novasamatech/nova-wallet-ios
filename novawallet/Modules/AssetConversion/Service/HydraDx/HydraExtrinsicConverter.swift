@@ -52,13 +52,13 @@ enum HydraExtrinsicConverter {
             switch component.type {
             case .omnipool:
                 return HydraRouter.Trade(
-                    poolType: .omnipool,
+                    pool: .omnipool,
                     assetIn: component.assetIn,
                     assetOut: component.assetOut
                 )
             case let .stableswap(poolAsset):
                 return HydraRouter.Trade(
-                    poolType: .stableswap(poolAsset),
+                    pool: .stableswap(poolAsset),
                     assetIn: component.assetIn,
                     assetOut: component.assetOut
                 )

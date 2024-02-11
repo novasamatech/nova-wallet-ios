@@ -37,7 +37,7 @@ final class HydraQuoteFactory {
                 let omnipoolState = flowState.getOmnipoolFlowState()
                 let quoteFactory = HydraOmnipoolQuoteFactory(flowState: omnipoolState)
 
-                return quoteFactory.quoteRemote(
+                return quoteFactory.quote(
                     for: .init(
                         assetIn: component.assetIn,
                         assetOut: component.assetOut,
@@ -101,7 +101,7 @@ final class HydraQuoteFactory {
 
         mapOperation.addDependency(quoteWrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: quoteWrapper.dependencies)
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: quoteWrapper.allOperations)
     }
 
     private func createQuoteWrapper(
@@ -204,7 +204,7 @@ final class HydraQuoteFactory {
                 let outAssets = stableswapPairs[assetIn],
                 outAssets.contains(assetOut) {
                 let localRoutes = poolAssets
-                    .filter { outAssets.contains($0) }
+                    .filter { outAssets.contains($0) && (stableswapPairs[$0]?.contains(assetOut) ?? false) }
                     .map { poolAsset in
                         let component = HydraDx.SwapRoute<ChainAssetId>.Component(
                             assetIn: assetIn,

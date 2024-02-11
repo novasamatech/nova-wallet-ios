@@ -59,7 +59,7 @@ enum HydraRouter {
     }
 
     struct Trade: Codable {
-        let poolType: PoolType
+        let pool: PoolType
         @StringCodable var assetIn: HydraDx.AssetId
         @StringCodable var assetOut: HydraDx.AssetId
     }
