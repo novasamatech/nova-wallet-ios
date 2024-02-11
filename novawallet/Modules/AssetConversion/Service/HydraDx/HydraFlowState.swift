@@ -188,7 +188,7 @@ extension HydraFlowState {
             runtimeProvider: runtimeProvider
         )
 
-        return HydraOmnipoolExtrinsicService(
+        return HydraExtrinsicService(
             extrinsicService: extrinsicService,
             conversionExtrinsicFactory: operationFactory,
             operationQueue: operationQueue

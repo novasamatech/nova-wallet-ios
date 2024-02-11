@@ -40,12 +40,12 @@ final class HydraFeeService {
 
             return self.extrinsicFactory.estimateFeeOperation({ builder, index in
                 if index == 0, swap.params.shouldSetFeeCurrency {
-                    return try HydraOmnipoolExtrinsicConverter.addingSetCurrencyCall(
+                    return try HydraExtrinsicConverter.addingSetCurrencyCall(
                         from: swap,
                         builder: builder
                     )
                 } else {
-                    return try HydraOmnipoolExtrinsicConverter.addingOperation(
+                    return try HydraExtrinsicConverter.addingOperation(
                         from: swap,
                         builder: builder
                     )

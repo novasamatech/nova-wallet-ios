@@ -1,6 +1,6 @@
 import Foundation
 
-final class HydraOmnipoolExtrinsicService {
+final class HydraExtrinsicService {
     let extrinsicService: ExtrinsicServiceProtocol
     let conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -34,7 +34,7 @@ final class HydraOmnipoolExtrinsicService {
         completion closure: @escaping ExtrinsicSubmitClosure
     ) {
         let builderClosure: ExtrinsicBuilderClosure = { builder in
-            try HydraOmnipoolExtrinsicConverter.addingOperation(
+            try HydraExtrinsicConverter.addingOperation(
                 from: swapParams,
                 builder: builder
             )
@@ -62,7 +62,7 @@ final class HydraOmnipoolExtrinsicService {
         var extrinsicSubscriptionId: UInt16?
 
         let builderClosure: ExtrinsicBuilderClosure = { builder in
-            try HydraOmnipoolExtrinsicConverter.addingSetCurrencyCall(
+            try HydraExtrinsicConverter.addingSetCurrencyCall(
                 from: swapParams,
                 builder: builder
             )
@@ -108,7 +108,7 @@ final class HydraOmnipoolExtrinsicService {
     }
 }
 
-extension HydraOmnipoolExtrinsicService: AssetConversionExtrinsicServiceProtocol {
+extension HydraExtrinsicService: AssetConversionExtrinsicServiceProtocol {
     func submit(
         callArgs: AssetConversion.CallArgs,
         feeAsset: ChainAsset,

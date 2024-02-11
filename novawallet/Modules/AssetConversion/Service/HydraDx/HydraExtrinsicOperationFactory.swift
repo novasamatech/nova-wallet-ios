@@ -19,6 +19,8 @@ struct HydraSwapParams {
     enum Operation {
         case sell(HydraDx.SellCall)
         case buy(HydraDx.BuyCall)
+        case routedSell(HydraRouter.SellCall)
+        case routedBuy(HydraRouter.BuyCall)
     }
 
     let params: Params
@@ -93,34 +95,66 @@ final class HydraExtrinsicOperationFactory {
         case .sell:
             let amountOutMin = callArgs.amountOut - callArgs.slippage.mul(value: callArgs.amountOut)
 
-            let sellCall = HydraDx.SellCall(
-                assetIn: remoteAssetIn,
-                assetOut: remoteAssetOut,
-                amount: callArgs.amountIn,
-                minBuyAmount: amountOutMin
-            )
+            let operation: HydraSwapParams.Operation
+
+            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
+                operation = .sell(
+                    HydraDx.SellCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amount: callArgs.amountIn,
+                        minBuyAmount: amountOutMin
+                    )
+                )
+            } else {
+                operation = .routedSell(
+                    HydraRouter.SellCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amountIn: callArgs.amountIn,
+                        minAmountOut: amountOutMin,
+                        route: HydraExtrinsicConverter.convertLocalRouteToRemote(route)
+                    )
+                )
+            }
 
             return HydraSwapParams(
                 params: params,
                 changeFeeCurrency: setCurrencyCall,
                 updateReferral: referralCall,
-                swap: .sell(sellCall)
+                swap: operation
             )
         case .buy:
             let amountInMax = callArgs.amountIn + callArgs.slippage.mul(value: callArgs.amountIn)
 
-            let buyCall = HydraDx.BuyCall(
-                assetOut: remoteAssetOut,
-                assetIn: remoteAssetIn,
-                amount: callArgs.amountOut,
-                maxSellAmount: amountInMax
-            )
+            let operation: HydraSwapParams.Operation
+
+            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
+                operation = .buy(
+                    HydraDx.BuyCall(
+                        assetOut: remoteAssetOut,
+                        assetIn: remoteAssetIn,
+                        amount: callArgs.amountOut,
+                        maxSellAmount: amountInMax
+                    )
+                )
+            } else {
+                operation = .routedBuy(
+                    HydraRouter.BuyCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amountOut: callArgs.amountOut,
+                        maxAmountIn: amountInMax,
+                        route: HydraExtrinsicConverter.convertLocalRouteToRemote(route)
+                    )
+                )
+            }
 
             return HydraSwapParams(
                 params: params,
                 changeFeeCurrency: setCurrencyCall,
                 updateReferral: referralCall,
-                swap: .buy(buyCall)
+                swap: operation
             )
         }
     }

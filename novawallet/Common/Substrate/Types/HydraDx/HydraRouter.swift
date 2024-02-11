@@ -2,6 +2,8 @@ import Foundation
 import SubstrateSdk
 
 enum HydraRouter {
+    static let moduleName = "Router"
+
     enum PoolType: Codable {
         static let xykField = "XYK"
         static let lbpField = "LBP"
@@ -30,7 +32,7 @@ enum HydraRouter {
                 self = .omnipool
             default:
                 throw DecodingError.dataCorruptedError(
-                    in: container,
+                    in: unkeyedContainer,
                     debugDescription: "unexpected pool type"
                 )
             }
@@ -58,7 +60,7 @@ enum HydraRouter {
 
     struct Trade: Codable {
         let poolType: PoolType
-        @StringCodable var assetId: HydraDx.AssetId
+        @StringCodable var assetIn: HydraDx.AssetId
         @StringCodable var assetOut: HydraDx.AssetId
     }
 }
