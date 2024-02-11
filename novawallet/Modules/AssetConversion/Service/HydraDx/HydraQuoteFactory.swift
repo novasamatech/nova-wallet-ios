@@ -281,6 +281,10 @@ final class HydraQuoteFactory {
 
 extension HydraQuoteFactory: HydraQuoteFactoryProtocol {
     func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
+        flowState.resetServicesIfNotMatchingPair(
+            .init(assetIn: args.assetIn, assetOut: args.assetOut)
+        )
+
         let omnipoolPairsWrapper = fetchOmnipoolPairs()
         let stableswapPairsWrapper = fetchStableswapPairs()
         let stableswapPoolAssetsWrapper = stableswapTokensFactory.fetchAllLocalPoolAssets(for: flowState.chain)

@@ -36,6 +36,27 @@ final class HydraStableswapFlowState {
 }
 
 extension HydraStableswapFlowState {
+    func getAllStateServices() -> [HydraStableswapQuoteParamsService] {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return Array(quoteStateServices.values)
+    }
+
+    func resetServices() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        quoteStateServices.values.forEach { $0.throttle() }
+        quoteStateServices = [:]
+    }
+
     func setupQuoteService(
         for poolPair: HydraStableswap.PoolPair
     ) -> HydraStableswapQuoteParamsService {

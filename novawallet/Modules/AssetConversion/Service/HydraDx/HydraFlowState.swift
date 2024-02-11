@@ -24,7 +24,10 @@ final class HydraFlowState {
 
     private var omnipoolFlowState: HydraOmnipoolFlowState?
     private var stableswapFlowState: HydraStableswapFlowState?
+    private var reQuoteService: HydraReQuoteService?
     private var swapStateService: HydraSwapParamsService?
+
+    private var currentSwapPair: HydraDx.LocalSwapPair?
 
     init(
         account: ChainAccountResponse,
@@ -41,9 +44,33 @@ final class HydraFlowState {
         self.userStorageFacade = userStorageFacade
         self.operationQueue = operationQueue
     }
+
+    deinit {
+        reQuoteService?.throttle()
+    }
 }
 
 extension HydraFlowState {
+    func resetServicesIfNotMatchingPair(_ swapPair: HydraDx.LocalSwapPair) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard swapPair != currentSwapPair else {
+            return
+        }
+
+        omnipoolFlowState?.resetServices()
+        stableswapFlowState?.resetServices()
+
+        reQuoteService?.throttle()
+        reQuoteService = nil
+
+        currentSwapPair = swapPair
+    }
+
     func getOmnipoolFlowState() -> HydraOmnipoolFlowState {
         mutex.lock()
 
@@ -95,11 +122,34 @@ extension HydraFlowState {
     }
 
     func getReQuoteService(
-        for _: ChainAssetId,
-        assetOut _: ChainAssetId
+        for assetIn: ChainAssetId,
+        assetOut: ChainAssetId
     ) -> ObservableSyncServiceProtocol? {
-        // TODO: Fix me
-        nil
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let swapPair = HydraDx.LocalSwapPair(assetIn: assetIn, assetOut: assetOut)
+
+        guard currentSwapPair == swapPair else {
+            return nil
+        }
+
+        if let reQuoteService = reQuoteService {
+            return reQuoteService
+        }
+
+        let services: [ObservableSyncServiceProtocol] = (omnipoolFlowState?.getAllStateServices() ?? []) +
+            (stableswapFlowState?.getAllStateServices() ?? [])
+
+        let reQuoteService = HydraReQuoteService(childServices: services)
+        self.reQuoteService = reQuoteService
+
+        reQuoteService.setup()
+
+        return reQuoteService
     }
 
     func setupSwapService() -> HydraSwapParamsService {
