@@ -2,14 +2,14 @@ import Foundation
 
 final class HydraOmnipoolExtrinsicService {
     let extrinsicService: ExtrinsicServiceProtocol
-    let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
+    let conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol
     let operationQueue: OperationQueue
     let workQueue: DispatchQueue
     let logger: LoggerProtocol
 
     init(
         extrinsicService: ExtrinsicServiceProtocol,
-        conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
+        conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global(),
         logger: LoggerProtocol = Logger.shared
@@ -28,7 +28,7 @@ final class HydraOmnipoolExtrinsicService {
     }
 
     private func performSwapSubmission(
-        for swapParams: HydraOmnipoolSwapParams,
+        for swapParams: HydraSwapParams,
         signer: SigningWrapperProtocol,
         runCompletionIn queue: DispatchQueue,
         completion closure: @escaping ExtrinsicSubmitClosure
@@ -44,7 +44,7 @@ final class HydraOmnipoolExtrinsicService {
     }
 
     private func performSubmission(
-        for swapParams: HydraOmnipoolSwapParams,
+        for swapParams: HydraSwapParams,
         signer: SigningWrapperProtocol,
         runCompletionIn queue: DispatchQueue,
         completion closure: @escaping ExtrinsicSubmitClosure

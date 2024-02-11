@@ -72,7 +72,7 @@ extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryPr
         case let .assetHub(assetHub):
             _ = assetHub.setupReQuoteService()
             return createAssetHubQuote(for: assetHub, args: args)
-        case let .hydraOmnipool(hydra):
+        case let .hydra(hydra):
             return createHydraQuote(for: hydra, args: args)
         }
     }

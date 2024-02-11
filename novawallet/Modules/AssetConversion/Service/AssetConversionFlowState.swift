@@ -3,7 +3,7 @@ import RobinHood
 
 enum AssetConversionFlowState {
     case assetHub(AssetHubFlowState)
-    case hydraOmnipool(HydraOmnipoolFlowState)
+    case hydra(HydraFlowState)
 }
 
 protocol AssetConversionFlowFacadeProtocol {
@@ -80,7 +80,7 @@ final class AssetConversionFlowFacade {
     func setupHydra(for chain: ChainModel) throws -> AssetConversionFlowState {
         if
             let currentState = state,
-            case let .hydraOmnipool(hydra) = currentState,
+            case let .hydra(hydra) = currentState,
             hydra.chain.chainId == chain.chainId {
             return currentState
         }
@@ -97,7 +97,7 @@ final class AssetConversionFlowFacade {
             throw ChainAccountFetchingError.accountNotExists
         }
 
-        let hydra = HydraOmnipoolFlowState(
+        let hydra = HydraFlowState(
             account: account,
             chain: chain,
             connection: connection,
@@ -106,7 +106,7 @@ final class AssetConversionFlowFacade {
             operationQueue: operationQueue
         )
 
-        let newState = AssetConversionFlowState.hydraOmnipool(hydra)
+        let newState = AssetConversionFlowState.hydra(hydra)
         state = newState
 
         return newState
@@ -131,7 +131,7 @@ extension AssetConversionFlowFacade: AssetConversionFlowFacadeProtocol {
         switch state {
         case let .assetHub(assetHub):
             return assetHub.getReQuoteService()
-        case let .hydraOmnipool(hydra):
+        case let .hydra(hydra):
             return hydra.getReQuoteService(for: assetIn, assetOut: assetOut)
         case .none:
             return nil
@@ -144,7 +144,7 @@ extension AssetConversionFlowFacade: AssetConversionFlowFacadeProtocol {
         switch state {
         case let .assetHub(assetHub):
             return try assetHub.createFeeService(using: chainRegistry)
-        case let .hydraOmnipool(hydra):
+        case let .hydra(hydra):
             return try hydra.createFeeService()
         }
     }
@@ -155,7 +155,7 @@ extension AssetConversionFlowFacade: AssetConversionFlowFacadeProtocol {
         switch state {
         case let .assetHub(assetHub):
             return try assetHub.createExtrinsicService()
-        case let .hydraOmnipool(hydra):
+        case let .hydra(hydra):
             return try hydra.createExtrinsicService()
         }
     }

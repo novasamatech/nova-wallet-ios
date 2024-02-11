@@ -3,7 +3,7 @@ import SubstrateSdk
 
 enum HydraOmnipoolExtrinsicConverter {
     static func addingSetCurrencyCall(
-        from params: HydraOmnipoolSwapParams,
+        from params: HydraSwapParams,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         guard let setCurrencyCall = params.changeFeeCurrency else {
@@ -14,7 +14,7 @@ enum HydraOmnipoolExtrinsicConverter {
     }
 
     static func addingOperation(
-        from params: HydraOmnipoolSwapParams,
+        from params: HydraSwapParams,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         var currentBuilder = builder

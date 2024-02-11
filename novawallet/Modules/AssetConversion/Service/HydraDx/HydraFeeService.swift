@@ -2,10 +2,10 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class HydraOmnipoolFeeService {
+final class HydraFeeService {
     let extrinsicFactory: ExtrinsicOperationFactoryProtocol
-    let conversionOperationFactory: HydraOmnipoolQuoteFactory
-    let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
+    let conversionOperationFactory: HydraQuoteFactory
+    let conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol
     let workQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -14,8 +14,8 @@ final class HydraOmnipoolFeeService {
 
     init(
         extrinsicFactory: ExtrinsicOperationFactoryProtocol,
-        conversionOperationFactory: HydraOmnipoolQuoteFactory,
-        conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
+        conversionOperationFactory: HydraQuoteFactory,
+        conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global()
     ) {
@@ -31,7 +31,7 @@ final class HydraOmnipoolFeeService {
     }
 
     private func createNativeFeeWrapper(
-        paramsOperation: BaseOperation<HydraOmnipoolSwapParams>
+        paramsOperation: BaseOperation<HydraSwapParams>
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -142,7 +142,7 @@ final class HydraOmnipoolFeeService {
     }
 }
 
-extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
+extension HydraFeeService: AssetConversionFeeServiceProtocol {
     func calculate(
         in asset: ChainAsset,
         callArgs: AssetConversion.CallArgs,

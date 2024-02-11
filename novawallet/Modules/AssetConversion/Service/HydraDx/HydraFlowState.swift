@@ -1,5 +1,16 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
+
+protocol HydraFlowStateProtocol {
+    func getReQuoteService(
+        for assetIn: ChainAssetId,
+        assetOut: ChainAssetId
+    ) -> ObservableSyncServiceProtocol?
+
+    func createFeeService() throws -> AssetConversionFeeServiceProtocol
+    func createExtrinsicService() throws -> AssetConversionExtrinsicServiceProtocol
+}
 
 final class HydraFlowState {
     let account: ChainAccountResponse
@@ -13,6 +24,7 @@ final class HydraFlowState {
 
     private var omnipoolFlowState: HydraOmnipoolFlowState?
     private var stableswapFlowState: HydraStableswapFlowState?
+    private var swapStateService: HydraSwapParamsService?
 
     init(
         account: ChainAccountResponse,
@@ -80,5 +92,106 @@ extension HydraFlowState {
         stableswapFlowState = newState
 
         return newState
+    }
+
+    func getReQuoteService(
+        for _: ChainAssetId,
+        assetOut _: ChainAssetId
+    ) -> ObservableSyncServiceProtocol? {
+        // TODO: Fix me
+        nil
+    }
+
+    func setupSwapService() -> HydraSwapParamsService {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let swapStateService = swapStateService {
+            return swapStateService
+        }
+
+        let service = HydraSwapParamsService(
+            accountId: account.accountId,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue
+        )
+
+        swapStateService = service
+        service.setup()
+
+        return service
+    }
+
+    func createFeeService() throws -> AssetConversionFeeServiceProtocol {
+        let extrinsicFactory = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            userStorageFacade: userStorageFacade
+        ).createOperationFactory(
+            account: account,
+            chain: chain
+        )
+
+        let omnipoolTokensFactory = HydraOmnipoolTokensFactory(
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
+        let stableswapTokensFactory = HydraStableSwapsTokensFactory(
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
+        let conversionOperationFactory = HydraQuoteFactory(
+            flowState: self,
+            omnipoolTokensFactory: omnipoolTokensFactory,
+            stableswapTokensFactory: stableswapTokensFactory
+        )
+
+        let swapOperationFactory = HydraExtrinsicOperationFactory(
+            chain: chain,
+            swapService: setupSwapService(),
+            runtimeProvider: runtimeProvider
+        )
+
+        return HydraFeeService(
+            extrinsicFactory: extrinsicFactory,
+            conversionOperationFactory: conversionOperationFactory,
+            conversionExtrinsicFactory: swapOperationFactory,
+            operationQueue: operationQueue
+        )
+    }
+
+    func createExtrinsicService() throws -> AssetConversionExtrinsicServiceProtocol {
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            userStorageFacade: userStorageFacade
+        ).createService(
+            account: account,
+            chain: chain
+        )
+
+        let operationFactory = HydraExtrinsicOperationFactory(
+            chain: chain,
+            swapService: setupSwapService(),
+            runtimeProvider: runtimeProvider
+        )
+
+        return HydraOmnipoolExtrinsicService(
+            extrinsicService: extrinsicService,
+            conversionExtrinsicFactory: operationFactory,
+            operationQueue: operationQueue
+        )
     }
 }
