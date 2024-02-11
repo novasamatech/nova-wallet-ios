@@ -316,19 +316,12 @@ final class HydraStableswapQuoteFactory {
         for params: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
-        let amount = try calculateLiquidityOutOneAsset(
+    ) throws -> BigUInt {
+        try calculateLiquidityOutOneAsset(
             for: params,
             asset: args.assetOut,
             shareAmount: args.amount,
             codingFactory: codingFactory
-        )
-
-        return HydraStableswap.Quote(
-            amountIn: args.amount,
-            assetIn: args.assetIn,
-            amountOut: amount,
-            assetOut: args.assetOut
         )
     }
 
@@ -336,19 +329,12 @@ final class HydraStableswapQuoteFactory {
         for params: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
-        let amount = try calculateShares(
+    ) throws -> BigUInt {
+        try calculateShares(
             for: params,
             asset: args.assetIn,
             assetAmount: args.amount,
             codingFactory: codingFactory
-        )
-
-        return HydraStableswap.Quote(
-            amountIn: args.amount,
-            assetIn: args.assetIn,
-            amountOut: amount,
-            assetOut: args.assetOut
         )
     }
 
@@ -356,19 +342,12 @@ final class HydraStableswapQuoteFactory {
         for params: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
-        let amount = try calculateSharesForAmount(
+    ) throws -> BigUInt {
+        try calculateSharesForAmount(
             for: params,
             asset: args.assetOut,
             assetAmount: args.amount,
             codingFactory: codingFactory
-        )
-
-        return HydraStableswap.Quote(
-            amountIn: amount,
-            assetIn: args.assetIn,
-            amountOut: args.amount,
-            assetOut: args.assetOut
         )
     }
 
@@ -376,19 +355,12 @@ final class HydraStableswapQuoteFactory {
         for params: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
-        let amount = try calculateAddOneAsset(
+    ) throws -> BigUInt {
+        try calculateAddOneAsset(
             for: params,
             asset: args.assetIn,
             shareAmount: args.amount,
             codingFactory: codingFactory
-        )
-
-        return HydraStableswap.Quote(
-            amountIn: amount,
-            assetIn: args.assetIn,
-            amountOut: args.amount,
-            assetOut: args.assetOut
         )
     }
 
@@ -396,20 +368,13 @@ final class HydraStableswapQuoteFactory {
         for params: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
-        let amount = try calculateOutGivenIn(
+    ) throws -> BigUInt {
+        try calculateOutGivenIn(
             for: params,
             assetIn: args.assetIn,
             assetOut: args.assetOut,
             amountIn: args.amount,
             codingFactory: codingFactory
-        )
-
-        return HydraStableswap.Quote(
-            amountIn: args.amount,
-            assetIn: args.assetIn,
-            amountOut: amount,
-            assetOut: args.assetOut
         )
     }
 
@@ -417,20 +382,13 @@ final class HydraStableswapQuoteFactory {
         for params: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
-        let amount = try calculateInGivenOut(
+    ) throws -> BigUInt {
+        try calculateInGivenOut(
             for: params,
             assetIn: args.assetIn,
             assetOut: args.assetOut,
             amountOut: args.amount,
             codingFactory: codingFactory
-        )
-
-        return HydraStableswap.Quote(
-            amountIn: amount,
-            assetIn: args.assetIn,
-            amountOut: args.amount,
-            assetOut: args.assetOut
         )
     }
 
@@ -438,7 +396,7 @@ final class HydraStableswapQuoteFactory {
         for quoteState: HydraStableswap.QuoteParams,
         args: HydraStableswap.QuoteArgs,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraStableswap.Quote {
+    ) throws -> BigUInt {
         if args.assetIn == args.poolAsset {
             switch args.direction {
             case .sell:
@@ -489,7 +447,7 @@ final class HydraStableswapQuoteFactory {
 }
 
 extension HydraStableswapQuoteFactory {
-    func quote(for args: HydraStableswap.QuoteArgs) -> CompoundOperationWrapper<HydraStableswap.Quote> {
+    func quote(for args: HydraStableswap.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let poolPair = HydraStableswap.PoolPair(
             poolAsset: args.poolAsset,
             assetIn: args.assetIn,
@@ -501,7 +459,7 @@ extension HydraStableswapQuoteFactory {
         let quoteStateOperation = quoteService.createFetchOperation()
         let codingFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
 
-        let calculationOperation = ClosureOperation<HydraStableswap.Quote> {
+        let calculationOperation = ClosureOperation<BigUInt> {
             let params = try quoteStateOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 

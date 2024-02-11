@@ -4,7 +4,7 @@ import RobinHood
 
 final class HydraOmnipoolFeeService {
     let extrinsicFactory: ExtrinsicOperationFactoryProtocol
-    let conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol
+    let conversionOperationFactory: HydraOmnipoolQuoteFactory
     let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
     let workQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -14,7 +14,7 @@ final class HydraOmnipoolFeeService {
 
     init(
         extrinsicFactory: ExtrinsicOperationFactoryProtocol,
-        conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol,
+        conversionOperationFactory: HydraOmnipoolQuoteFactory,
         conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global()

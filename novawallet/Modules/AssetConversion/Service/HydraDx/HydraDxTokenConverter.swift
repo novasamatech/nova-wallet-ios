@@ -11,6 +11,16 @@ extension HydraDx {
         let assetIn: LocalRemoteAssetId
         let assetOut: LocalRemoteAssetId
     }
+
+    struct LocalSwapPair: Equatable, Hashable {
+        let assetIn: ChainAssetId
+        let assetOut: ChainAssetId
+    }
+
+    struct RemoteSwapPair: Equatable, Hashable {
+        let assetIn: HydraDx.AssetId
+        let assetOut: HydraDx.AssetId
+    }
 }
 
 enum HydraDxTokenConverterError: Error {

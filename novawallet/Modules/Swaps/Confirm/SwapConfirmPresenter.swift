@@ -96,7 +96,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
                 amountOut: quote.amountOut,
                 receiver: accountId,
                 direction: quoteArgs.direction,
-                slippage: initState.slippage
+                slippage: initState.slippage,
+                context: quote.context
             )
         )
     }
@@ -325,7 +326,8 @@ extension SwapConfirmPresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: initState.quoteArgs.direction,
-            slippage: initState.slippage
+            slippage: initState.slippage,
+            context: quote.context
         )
 
         view?.didReceiveStartLoading()

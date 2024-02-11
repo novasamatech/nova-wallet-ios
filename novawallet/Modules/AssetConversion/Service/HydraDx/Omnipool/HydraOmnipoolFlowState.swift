@@ -3,7 +3,7 @@ import SubstrateSdk
 import RobinHood
 
 protocol HydraOmnipoolFlowStateProtocol {
-    func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteParamsService
+    func setupQuoteService(for swapPair: HydraDx.RemoteSwapPair) -> HydraOmnipoolQuoteParamsService
     func setupSwapService() -> HydraOmnipoolSwapParamsService
 
     func getReQuoteService(
@@ -25,7 +25,7 @@ final class HydraOmnipoolFlowState {
 
     let mutex = NSLock()
 
-    private var quoteStateServices: [HydraDx.SwapPair: HydraOmnipoolQuoteParamsService] = [:]
+    private var quoteStateServices: [HydraDx.RemoteSwapPair: HydraOmnipoolQuoteParamsService] = [:]
     private var swapStateService: HydraOmnipoolSwapParamsService?
 
     init(
@@ -48,24 +48,15 @@ final class HydraOmnipoolFlowState {
         quoteStateServices.values.forEach { $0.throttle() }
         swapStateService?.throttle()
     }
-
-    private func filterQuoteServices(by assetIn: HydraDx.LocalRemoteAssetId) {
-        let servicesToThrottle = quoteStateServices.filter { $0.key.assetIn != assetIn }
-        servicesToThrottle.forEach { $0.value.throttle() }
-
-        quoteStateServices = quoteStateServices.filter { $0.key.assetIn == assetIn }
-    }
 }
 
 extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
-    func setupQuoteService(for swapPair: HydraDx.SwapPair) -> HydraOmnipoolQuoteParamsService {
+    func setupQuoteService(for swapPair: HydraDx.RemoteSwapPair) -> HydraOmnipoolQuoteParamsService {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
-
-        filterQuoteServices(by: swapPair.assetIn)
 
         if let currentService = quoteStateServices[swapPair] {
             return currentService
@@ -112,9 +103,10 @@ extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
         return service
     }
 
+    // TODO: Fix me
     func getReQuoteService(
-        for assetIn: ChainAssetId,
-        assetOut: ChainAssetId
+        for _: ChainAssetId,
+        assetOut _: ChainAssetId
     ) -> ObservableSyncServiceProtocol? {
         mutex.lock()
 
@@ -122,9 +114,7 @@ extension HydraOmnipoolFlowState: HydraOmnipoolFlowStateProtocol {
             mutex.unlock()
         }
 
-        return quoteStateServices.first { keyValue in
-            keyValue.key.assetIn.localAssetId == assetIn && keyValue.key.assetOut.localAssetId == assetOut
-        }?.value
+        return nil
     }
 
     func createFeeService() throws -> AssetConversionFeeServiceProtocol {

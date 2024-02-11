@@ -12,4 +12,14 @@ enum JsonStringify {
 
         return string
     }
+
+    static func decodeFromString<T: Decodable>(_ jsonString: String) throws -> T {
+        let decoder = JSONDecoder()
+
+        guard let data = jsonString.data(using: .utf8) else {
+            throw CommonError.dataCorruption
+        }
+
+        return try decoder.decode(T.self, from: data)
+    }
 }
