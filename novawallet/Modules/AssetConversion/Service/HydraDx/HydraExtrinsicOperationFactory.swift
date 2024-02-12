@@ -76,7 +76,7 @@ final class HydraExtrinsicOperationFactory {
         let referralCall: HydraDx.LinkReferralCodeCall?
 
         if params.shouldSetReferral {
-            guard let code = HydraOmnipoolConstants.novaReferralCode.data(using: .utf8) else {
+            guard let code = HydraConstants.novaReferralCode.data(using: .utf8) else {
                 throw CommonError.dataCorruption
             }
 
@@ -89,7 +89,7 @@ final class HydraExtrinsicOperationFactory {
             throw CommonError.dataCorruption
         }
 
-        let route: HydraDx.SwapRoute<HydraDx.AssetId> = try JsonStringify.decodeFromString(context)
+        let route: HydraDx.RemoteSwapRoute = try JsonStringify.decodeFromString(context)
 
         switch callArgs.direction {
         case .sell:
@@ -113,7 +113,7 @@ final class HydraExtrinsicOperationFactory {
                         assetOut: remoteAssetOut,
                         amountIn: callArgs.amountIn,
                         minAmountOut: amountOutMin,
-                        route: HydraExtrinsicConverter.convertLocalRouteToRemote(route)
+                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
                     )
                 )
             }
@@ -145,7 +145,7 @@ final class HydraExtrinsicOperationFactory {
                         assetOut: remoteAssetOut,
                         amountOut: callArgs.amountOut,
                         maxAmountIn: amountInMax,
-                        route: HydraExtrinsicConverter.convertLocalRouteToRemote(route)
+                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
                     )
                 )
             }

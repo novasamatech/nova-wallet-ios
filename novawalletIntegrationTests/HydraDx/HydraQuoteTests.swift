@@ -2,6 +2,39 @@ import XCTest
 @testable import novawallet
 
 final class HydraQuoteTests: XCTestCase {
+    func testDotHDXSell() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    amount: 10_000_000_000,
+                    direction: .sell
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
+    
+    func testDotHDXBuy() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    amount: 1_000_000_000_000,
+                    direction: .buy
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
     
     func testDotUSDTSell() {
         do {
@@ -20,7 +53,91 @@ final class HydraQuoteTests: XCTestCase {
         }
     }
     
+    func testDotUSDTBuy() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 9),
+                    amount: 1_000_000,
+                    direction: .buy
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
+    
+    func testHydraUSDCSell() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 15),
+                    amount: 1_000_000_000_000,
+                    direction: .sell
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
+    
+    func testHydraUSDCBuy() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 15),
+                    amount: 1_000_000,
+                    direction: .buy
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
 
+    func testUSDTUSDCSell() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 9),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 15),
+                    amount: 1_000_000,
+                    direction: .sell
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
+    
+    func testUSDTUSDCBuy() {
+        do {
+            let quote = try fetchQuote(
+                for: .init(
+                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 9),
+                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 15),
+                    amount: 1_000_000,
+                    direction: .buy
+                )
+            )
+            
+            Logger.shared.info("Quote: \(quote)")
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
+    
     func fetchQuote(for args: AssetConversion.QuoteArgs) throws -> AssetConversion.Quote {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)

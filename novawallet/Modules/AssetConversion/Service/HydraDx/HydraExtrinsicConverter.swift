@@ -35,7 +35,7 @@ enum HydraExtrinsicConverter {
         }
     }
 
-    static func isOmnipoolSwap(route: HydraDx.SwapRoute<HydraDx.AssetId>) -> Bool {
+    static func isOmnipoolSwap(route: HydraDx.RemoteSwapRoute) -> Bool {
         guard route.components.count == 1 else {
             return false
         }
@@ -47,7 +47,7 @@ enum HydraExtrinsicConverter {
         }
     }
 
-    static func convertLocalRouteToRemote(_ route: HydraDx.SwapRoute<HydraDx.AssetId>) -> [HydraRouter.Trade] {
+    static func convertRouteToTrade(_ route: HydraDx.RemoteSwapRoute) -> [HydraRouter.Trade] {
         route.components.map { component in
             switch component.type {
             case .omnipool:

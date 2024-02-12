@@ -1,5 +1,5 @@
 import Foundation
 
-enum HydraOmnipoolConstants {
+enum HydraConstants {
     static let novaReferralCode = "NOVA"
 }

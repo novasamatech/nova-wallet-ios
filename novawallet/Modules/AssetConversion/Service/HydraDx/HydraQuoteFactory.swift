@@ -55,10 +55,10 @@ final class HydraQuoteFactory {
     }
 
     private func createQuoteWrapper(
-        route: HydraDx.SwapRoute<HydraDx.AssetId>,
+        route: HydraDx.RemoteSwapRoute,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        let components: [HydraDx.SwapRoute<HydraDx.AssetId>.Component]
+        let components: [HydraDx.RemoteSwapRoute.Component]
 
         switch args.direction {
         case .sell:
@@ -97,7 +97,7 @@ final class HydraQuoteFactory {
     }
 
     private func createQuoteWrapper(
-        dependingOn routesOperation: BaseOperation<[HydraDx.SwapRoute<HydraDx.AssetId>]>,
+        dependingOn routesOperation: BaseOperation<[HydraDx.RemoteSwapRoute]>,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
         let quoteOperation = OperationCombiningService(

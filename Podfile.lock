@@ -153,7 +153,7 @@ DEPENDENCIES:
   - Cuckoo
   - EthereumSignTypedDataUtil (from `https://github.com/ERussel/EthereumSignTypedDataUtil.git`, tag `0.1.3`)
   - FireMock
-  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, commit `06aa794d04adcfbf64c1c5eb212b95207a919f03`)
+  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.1`)
   - Kingfisher
   - R.swift
   - ReachabilitySwift
@@ -212,8 +212,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   HydraMath:
-    :commit: 06aa794d04adcfbf64c1c5eb212b95207a919f03
     :git: https://github.com/novasamatech/hydra-math-swift.git
+    :tag: '0.1'
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -246,8 +246,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   HydraMath:
-    :commit: 06aa794d04adcfbf64c1c5eb212b95207a919f03
     :git: https://github.com/novasamatech/hydra-math-swift.git
+    :tag: '0.1'
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -312,6 +312,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 79ad81f963e595a06ed7b22a6d19b91d83c6a3aa
+PODFILE CHECKSUM: 48386bef02489f8bff7ab515c23a48ab812460b6
 
 COCOAPODS: 1.13.0
