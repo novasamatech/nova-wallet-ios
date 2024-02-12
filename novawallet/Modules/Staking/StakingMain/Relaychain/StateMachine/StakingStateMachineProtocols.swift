@@ -37,6 +37,7 @@ protocol StakingStateProtocol {
     func process(bagListScoreFactor: BigUInt?)
     func process(eraCountdown: EraCountdown)
     func process(totalRewardFilter: StakingRewardFiltersPeriod?)
+    func process(proxy: ProxyDefinition?)
 }
 
 protocol StakingStateMachineProtocol: AnyObject {

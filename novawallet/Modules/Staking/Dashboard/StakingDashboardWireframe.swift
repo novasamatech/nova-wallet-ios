@@ -29,7 +29,10 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
         from view: StakingDashboardViewProtocol?,
         option: Multistaking.ChainAssetOption
     ) {
-        guard let detailsView = StakingMainViewFactory.createView(for: option) else {
+        guard let detailsView = StakingMainViewFactory.createView(
+            for: option,
+            proxySyncService: proxySyncService
+        ) else {
             return
         }
 

@@ -13,6 +13,10 @@ protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
     func unsubscribeSyncState(_ target: AnyObject)
     func updateWalletsStatuses()
     func syncUp()
+    func syncUp(
+        chainId: ChainModel.Id,
+        blockHash: Data?
+    )
 }
 
 typealias ProxySyncChainFilter = (ChainModel) -> Bool
@@ -32,7 +36,7 @@ final class ProxySyncService {
 
     private(set) var isActive: Bool = false
 
-    private(set) var updaters: [ChainModel.Id: ObservableSyncServiceProtocol & ApplicationServiceProtocol] = [:]
+    private(set) var updaters: [ChainModel.Id: ChainProxySyncServiceProtocol & ApplicationServiceProtocol] = [:]
     private let mutex = NSLock()
 
     private var stateObserver = Observable<ProxySyncServiceState>(state: [:])
@@ -271,5 +275,12 @@ extension ProxySyncService: ProxySyncServiceProtocol {
 
     func syncUp() {
         updaters.values.forEach { $0.syncUp() }
+    }
+
+    func syncUp(
+        chainId: ChainModel.Id,
+        blockHash: Data?
+    ) {
+        updaters[chainId]?.sync(at: blockHash)
     }
 }
