@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 final class HydraReQuoteService: ObservableSyncService {
     let childServices: [ObservableSyncServiceProtocol]
@@ -6,10 +7,14 @@ final class HydraReQuoteService: ObservableSyncService {
 
     init(
         childServices: [ObservableSyncServiceProtocol],
-        workQueue: DispatchQueue = .global()
+        workQueue: DispatchQueue = .global(),
+        retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.childServices = childServices
         self.workQueue = workQueue
+
+        super.init(retryStrategy: retryStrategy, logger: logger)
     }
 
     private func updateSyncState() {
@@ -33,8 +38,10 @@ final class HydraReQuoteService: ObservableSyncService {
             child.subscribeSyncState(
                 self,
                 queue: workQueue
-            ) { [weak self] _, _ in
+            ) { [weak self] oldState, _ in
                 self?.mutex.lock()
+
+                self?.isSyncing = oldState
 
                 self?.updateSyncState()
 
