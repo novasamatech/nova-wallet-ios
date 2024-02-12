@@ -48,7 +48,11 @@ final class HydraStableswapQuoteFactory {
         for apiParams: HydraStableswapApi.Params,
         args: HydraStableswap.QuoteArgs
     ) throws -> BigUInt {
-        try HydraStableswapApi.calculateLiquidityOutOneAsset(
+        if let tradeability = apiParams.tradability, !tradeability.canRemoveLiquidity() {
+            throw AssetConversionOperationError.quoteCalcFailed
+        }
+
+        return try HydraStableswapApi.calculateLiquidityOutOneAsset(
             for: apiParams,
             asset: args.assetOut,
             shareAmount: args.amount
@@ -59,7 +63,11 @@ final class HydraStableswapQuoteFactory {
         for apiParams: HydraStableswapApi.Params,
         args: HydraStableswap.QuoteArgs
     ) throws -> BigUInt {
-        try HydraStableswapApi.calculateShares(
+        if let tradeability = apiParams.tradability, !tradeability.canAddLiquidity() {
+            throw AssetConversionOperationError.quoteCalcFailed
+        }
+
+        return try HydraStableswapApi.calculateShares(
             for: apiParams,
             asset: args.assetIn,
             assetAmount: args.amount
@@ -70,7 +78,11 @@ final class HydraStableswapQuoteFactory {
         for apiParams: HydraStableswapApi.Params,
         args: HydraStableswap.QuoteArgs
     ) throws -> BigUInt {
-        try HydraStableswapApi.calculateSharesForAmount(
+        if let tradeability = apiParams.tradability, !tradeability.canRemoveLiquidity() {
+            throw AssetConversionOperationError.quoteCalcFailed
+        }
+
+        return try HydraStableswapApi.calculateSharesForAmount(
             for: apiParams,
             asset: args.assetOut,
             assetAmount: args.amount
@@ -81,6 +93,8 @@ final class HydraStableswapQuoteFactory {
         for apiParams: HydraStableswapApi.Params,
         args: HydraStableswap.QuoteArgs
     ) throws -> BigUInt {
+        // no checks for tradeability in runtime, added for safety
+
         try HydraStableswapApi.calculateAddOneAsset(
             for: apiParams,
             asset: args.assetIn,
@@ -92,7 +106,11 @@ final class HydraStableswapQuoteFactory {
         for apiParams: HydraStableswapApi.Params,
         args: HydraStableswap.QuoteArgs
     ) throws -> BigUInt {
-        try HydraStableswapApi.calculateOutGivenIn(
+        if let tradeability = apiParams.tradability, !tradeability.canSell() {
+            throw AssetConversionOperationError.quoteCalcFailed
+        }
+
+        return try HydraStableswapApi.calculateOutGivenIn(
             for: apiParams,
             assetIn: args.assetIn,
             assetOut: args.assetOut,
@@ -104,7 +122,11 @@ final class HydraStableswapQuoteFactory {
         for apiParams: HydraStableswapApi.Params,
         args: HydraStableswap.QuoteArgs
     ) throws -> BigUInt {
-        try HydraStableswapApi.calculateInGivenOut(
+        if let tradeability = apiParams.tradability, !tradeability.canBuy() {
+            throw AssetConversionOperationError.quoteCalcFailed
+        }
+
+        return try HydraStableswapApi.calculateInGivenOut(
             for: apiParams,
             assetIn: args.assetIn,
             assetOut: args.assetOut,

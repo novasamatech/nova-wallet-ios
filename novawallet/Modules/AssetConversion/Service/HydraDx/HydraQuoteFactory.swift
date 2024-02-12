@@ -105,11 +105,22 @@ final class HydraQuoteFactory {
         ) {
             let routes = try routesOperation.extractNoCancellableResultData()
 
-            return routes.map { self.createQuoteWrapper(route: $0, args: args) }
+            return routes.map { route in
+                let wrapper = self.createQuoteWrapper(route: route, args: args)
+
+                // silence error for particular route as we can have other results to select
+                let mappingOperation = ClosureOperation<AssetConversion.Quote?> {
+                    try? wrapper.targetOperation.extractNoCancellableResultData()
+                }
+
+                mappingOperation.addDependency(wrapper.targetOperation)
+
+                return wrapper.insertingTail(operation: mappingOperation)
+            }
         }.longrunOperation()
 
         let mapOperation = ClosureOperation<AssetConversion.Quote> {
-            let quotes = try quoteOperation.extractNoCancellableResultData()
+            let quotes = try quoteOperation.extractNoCancellableResultData().compactMap { $0 }
 
             switch args.direction {
             case .sell:
