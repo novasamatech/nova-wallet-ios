@@ -89,7 +89,7 @@ final class HydraStableSwapsTokensFactory {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    func fetchAllLocalPairs(for chain: ChainModel) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
+    private func fetchAllLocalPairs(for chain: ChainModel) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
         let remotePoolsWrapper = fetchAllPools(dependingOn: codingFactoryOperation)
 
@@ -128,7 +128,7 @@ final class HydraStableSwapsTokensFactory {
             .insertingTail(operation: conversionOperation)
     }
 
-    func fetchAllLocalPoolAssets(for chain: ChainModel) -> CompoundOperationWrapper<Set<ChainAssetId>> {
+    private func fetchAllLocalPoolAssets(for chain: ChainModel) -> CompoundOperationWrapper<Set<ChainAssetId>> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
         let fetchWrapper = fetchAllPoolAssets(dependingOn: codingFactoryOperation)
 
@@ -180,5 +180,9 @@ extension HydraStableSwapsTokensFactory: HydraPoolTokensFactoryProtocol {
         mapOperation.addDependency(allPairsWrapper.targetOperation)
 
         return allPairsWrapper.insertingTail(operation: mapOperation)
+    }
+
+    func fetchAllLocalPoolAssets() -> CompoundOperationWrapper<Set<ChainAssetId>> {
+        fetchAllLocalPoolAssets(for: chain)
     }
 }

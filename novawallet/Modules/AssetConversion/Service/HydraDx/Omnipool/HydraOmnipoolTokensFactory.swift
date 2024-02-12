@@ -25,7 +25,7 @@ final class HydraOmnipoolTokensFactory {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let hubAssetIdOperation = PrimitiveConstantOperation<HydraDx.AssetId>.operation(
-            for: HydraDx.hubAssetIdPath,
+            for: HydraOmnipool.hubAssetIdPath,
             dependingOn: codingFactoryOperation
         )
 
@@ -33,7 +33,7 @@ final class HydraOmnipoolTokensFactory {
 
         let keysFactory = StorageKeysOperationFactory(operationQueue: operationQueue)
         let assetsFetchWrapper: CompoundOperationWrapper<[HydraDx.AssetsKey]> = keysFactory.createKeysFetchWrapper(
-            by: HydraDx.omnipoolAssets,
+            by: HydraOmnipool.assetsPath,
             codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
             connection: connection
         )

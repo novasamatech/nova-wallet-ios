@@ -74,7 +74,7 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
-    private func canTrade(assetIn: HydraDx.AssetState, assetOut: HydraDx.AssetState) -> Bool {
+    private func canTrade(assetIn: HydraOmnipool.AssetState, assetOut: HydraOmnipool.AssetState) -> Bool {
         assetIn.tradable.canSell() && assetOut.tradable.canBuy()
     }
 

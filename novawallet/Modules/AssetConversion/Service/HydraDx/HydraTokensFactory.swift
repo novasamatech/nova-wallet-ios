@@ -40,7 +40,7 @@ final class HydraTokensFactory {
     ) -> CompoundOperationWrapper<Set<HydraDx.AssetId>> {
         let keysFactory = StorageKeysOperationFactory(operationQueue: operationQueue)
         let assetsFetchWrapper: CompoundOperationWrapper<[HydraDx.AssetsKey]> = keysFactory.createKeysFetchWrapper(
-            by: HydraDx.feeCurrencies,
+            by: HydraDx.feeCurrenciesPath,
             codingFactoryClosure: { try codingFactoryOperation.extractNoCancellableResultData() },
             connection: connection
         )

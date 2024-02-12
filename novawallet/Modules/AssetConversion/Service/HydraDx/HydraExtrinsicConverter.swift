@@ -24,9 +24,9 @@ enum HydraExtrinsicConverter {
         }
 
         switch params.swap {
-        case let .sell(call):
+        case let .omniSell(call):
             return try currentBuilder.adding(call: call.runtimeCall())
-        case let .buy(call):
+        case let .omniBuy(call):
             return try currentBuilder.adding(call: call.runtimeCall())
         case let .routedSell(call):
             return try currentBuilder.adding(call: call.runtimeCall())

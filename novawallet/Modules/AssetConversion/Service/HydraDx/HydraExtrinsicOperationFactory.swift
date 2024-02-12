@@ -17,8 +17,8 @@ struct HydraSwapParams {
     }
 
     enum Operation {
-        case sell(HydraDx.SellCall)
-        case buy(HydraDx.BuyCall)
+        case omniSell(HydraOmnipool.SellCall)
+        case omniBuy(HydraOmnipool.BuyCall)
         case routedSell(HydraRouter.SellCall)
         case routedBuy(HydraRouter.BuyCall)
     }
@@ -98,8 +98,8 @@ final class HydraExtrinsicOperationFactory {
             let operation: HydraSwapParams.Operation
 
             if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
-                operation = .sell(
-                    HydraDx.SellCall(
+                operation = .omniSell(
+                    HydraOmnipool.SellCall(
                         assetIn: remoteAssetIn,
                         assetOut: remoteAssetOut,
                         amount: callArgs.amountIn,
@@ -130,8 +130,8 @@ final class HydraExtrinsicOperationFactory {
             let operation: HydraSwapParams.Operation
 
             if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
-                operation = .buy(
-                    HydraDx.BuyCall(
+                operation = .omniBuy(
+                    HydraOmnipool.BuyCall(
                         assetOut: remoteAssetOut,
                         assetIn: remoteAssetIn,
                         amount: callArgs.amountOut,

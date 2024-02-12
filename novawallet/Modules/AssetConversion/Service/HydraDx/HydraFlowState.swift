@@ -26,6 +26,7 @@ final class HydraFlowState {
     private var stableswapFlowState: HydraStableswapFlowState?
     private var reQuoteService: HydraReQuoteService?
     private var swapStateService: HydraSwapParamsService?
+    private var routesFactory: HydraRoutesOperationFactoryProtocol?
 
     private var currentSwapPair: HydraDx.LocalSwapPair?
 
@@ -67,6 +68,8 @@ extension HydraFlowState {
 
         reQuoteService?.throttle()
         reQuoteService = nil
+
+        routesFactory = nil
 
         currentSwapPair = swapPair
     }
@@ -119,6 +122,29 @@ extension HydraFlowState {
         stableswapFlowState = newState
 
         return newState
+    }
+
+    func getRoutesFactory() -> HydraRoutesOperationFactoryProtocol {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let factory = routesFactory {
+            return factory
+        }
+
+        let factory = HydraRoutesOperationFactory(
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue
+        )
+
+        routesFactory = factory
+
+        return factory
     }
 
     func getReQuoteService(
@@ -187,25 +213,7 @@ extension HydraFlowState {
             chain: chain
         )
 
-        let omnipoolTokensFactory = HydraOmnipoolTokensFactory(
-            chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let stableswapTokensFactory = HydraStableSwapsTokensFactory(
-            chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let conversionOperationFactory = HydraQuoteFactory(
-            flowState: self,
-            omnipoolTokensFactory: omnipoolTokensFactory,
-            stableswapTokensFactory: stableswapTokensFactory
-        )
+        let conversionOperationFactory = HydraQuoteFactory(flowState: self)
 
         let swapOperationFactory = HydraExtrinsicOperationFactory(
             chain: chain,

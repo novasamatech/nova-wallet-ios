@@ -72,7 +72,7 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
     ) -> BatchStorageSubscriptionRequest {
         .init(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.dynamicFees,
+                storagePath: HydraDx.dynamicFeesPath,
                 localKey: "",
                 keyParamClosure: {
                     StringScaleMapper(value: assetId)
@@ -88,7 +88,7 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
     ) -> BatchStorageSubscriptionRequest {
         .init(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.omnipoolAssets,
+                storagePath: HydraOmnipool.assetsPath,
                 localKey: "",
                 keyParamClosure: { StringScaleMapper(value: assetId) }
             ),
@@ -107,7 +107,7 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
             mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutState
         )
 
-        let poolAccountId = try HydraDx.getPoolAccountId(for: chain.accountIdSize)
+        let poolAccountId = try HydraOmnipool.getPoolAccountId(for: chain.accountIdSize)
 
         let assetInBalanceRequest = getBalanceRequest(
             for: poolAccountId,

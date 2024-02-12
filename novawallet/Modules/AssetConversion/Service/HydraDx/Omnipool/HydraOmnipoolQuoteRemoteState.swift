@@ -6,8 +6,8 @@ extension HydraDx {
     struct QuoteRemoteState: ObservableSubscriptionStateProtocol {
         typealias TChange = QuoteRemoteStateChange
 
-        let assetInState: HydraDx.AssetState?
-        let assetOutState: HydraDx.AssetState?
+        let assetInState: HydraOmnipool.AssetState?
+        let assetOutState: HydraOmnipool.AssetState?
         let assetInBalance: BigUInt?
         let assetOutBalance: BigUInt?
         let assetInFee: FeeEntry?
@@ -15,8 +15,8 @@ extension HydraDx {
         let blockHash: Data?
 
         init(
-            assetInState: HydraDx.AssetState?,
-            assetOutState: HydraDx.AssetState?,
+            assetInState: HydraOmnipool.AssetState?,
+            assetOutState: HydraOmnipool.AssetState?,
             assetInBalance: BigUInt?,
             assetOutBalance: BigUInt?,
             assetInFee: FeeEntry?,
@@ -67,8 +67,8 @@ extension HydraDx {
             case assetOutFee
         }
 
-        let assetInState: UncertainStorage<HydraDx.AssetState?>
-        let assetOutState: UncertainStorage<HydraDx.AssetState?>
+        let assetInState: UncertainStorage<HydraOmnipool.AssetState?>
+        let assetOutState: UncertainStorage<HydraOmnipool.AssetState?>
         let assetInBalance: UncertainStorage<BigUInt?>
         let assetOutBalance: UncertainStorage<BigUInt?>
         let assetInFee: UncertainStorage<FeeEntry?>
@@ -76,8 +76,8 @@ extension HydraDx {
         let blockHash: Data?
 
         init(
-            assetInState: UncertainStorage<HydraDx.AssetState?>,
-            assetOutState: UncertainStorage<HydraDx.AssetState?>,
+            assetInState: UncertainStorage<HydraOmnipool.AssetState?>,
+            assetOutState: UncertainStorage<HydraOmnipool.AssetState?>,
             assetInBalance: UncertainStorage<BigUInt?>,
             assetOutBalance: UncertainStorage<BigUInt?>,
             assetInFee: UncertainStorage<FeeEntry?>,

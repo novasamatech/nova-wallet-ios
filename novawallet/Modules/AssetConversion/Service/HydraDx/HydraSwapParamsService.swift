@@ -31,7 +31,7 @@ class HydraSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemo
     func getRequests(for accountId: AccountId) -> [BatchStorageSubscriptionRequest] {
         let feeCurrencyRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.accountFeeCurrency,
+                storagePath: HydraDx.accountFeeCurrencyPath,
                 localKey: "",
                 keyParamClosure: { BytesCodable(wrappedValue: accountId) }
             ),
@@ -40,7 +40,7 @@ class HydraSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemo
 
         let referralRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.referralLinkedAccount,
+                storagePath: HydraDx.referralLinkedAccountPath,
                 localKey: "",
                 keyParamClosure: { BytesCodable(wrappedValue: accountId) }
             ),

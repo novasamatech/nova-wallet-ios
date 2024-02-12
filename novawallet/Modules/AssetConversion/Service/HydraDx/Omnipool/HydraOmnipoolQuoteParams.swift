@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-enum HydraOmnipool {
+extension HydraOmnipool {
     struct QuoteArgs: Equatable {
         let assetIn: HydraDx.AssetId
         let assetOut: HydraDx.AssetId

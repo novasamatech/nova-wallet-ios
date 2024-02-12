@@ -47,25 +47,7 @@ final class HydraQuoteTests: XCTestCase {
             operationQueue: operationQueue
         )
         
-        let omniFactory = HydraOmnipoolTokensFactory(
-            chain: chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-        
-        let stableswapFactory = HydraStableSwapsTokensFactory(
-            chain: chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-        
-        let quoteFactory = HydraQuoteFactory(
-            flowState: flowState,
-            omnipoolTokensFactory: omniFactory,
-            stableswapTokensFactory: stableswapFactory
-        )
+        let quoteFactory = HydraQuoteFactory(flowState: flowState)
         
         let quoteWrapper = quoteFactory.quote(for: args)
         
