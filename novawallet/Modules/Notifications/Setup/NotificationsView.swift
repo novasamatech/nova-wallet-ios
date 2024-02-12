@@ -52,7 +52,7 @@ final class NotificationsView: UIView {
 
 final class NotificationView: UIView {
     let backgroundView: RoundedView = .create {
-        //TODO: fix
+        // TODO: fix
         $0.fillColor = UIColor(red: 153 / 255, green: 158 / 255, blue: 199 / 255, alpha: 0.16)
         $0.cornerRadius = 18
         $0.shadowOpacity = 0.6
@@ -94,7 +94,7 @@ final class NotificationView: UIView {
         [
             iconView,
             UIView.hStack(alignment: .top, [
-                UIView.vStack([
+                UIView.vStack(spacing: 4, [
                     titleView,
                     subtitleView
                 ]),

@@ -18,6 +18,8 @@
 "onboarding.terms.and.conditions.1" = "Я подтверждаю, что прочитал и согласен с \nУсловиями использования и Политикой конфиденциальности";
 "onboarding.terms.and.conditions.2" = "Условиями использования";
 "onboarding.privacy.policy" = "Политикой конфиденциальности";
+"common.terms.and.conditions" = "Условиями использования";
+"common.privacy.policy" = "Политикой конфиденциальности";
 "pincode.enter.pin.code" = "Введите PIN-код";
 "pincode.confirm.your.pin.code" = "Подтвердите свой PIN-код";
 "pincode.set.your.pin.code" = "Установите свой PIN-код";
@@ -1492,6 +1494,6 @@
 "notifications.setup.notification.subtitle" = "Получено +0.6068 KSM ($20.35) из Kusama стекинга";
 "notifications.setup.notification.accessory" = "Сейчас";
 "notifications.setup.title" = "Не упустите ни одного момента!";
-"notifications.setup.subtitle" = "Получайте уведомления о действиях в кошельке, обновлениях\nв голосовании, активности стейкинга и безопасности, чтобы быть всегда в курсе.";
+"notifications.setup.subtitle" = "Получайте уведомления о действиях в кошельке, обновлениях в голосовании, активности стейкинга и безопасности, чтобы быть всегда в курсе.";
 "notifications.setup.enable.push.notifications" = "Включить пуш-уведомления";
 "notifications.setup.terms" = "Включая уведомления, вы соглашаетесь с нашими\nУсловиями использования и Политикой конфиденциальности";

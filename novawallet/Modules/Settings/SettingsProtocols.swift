@@ -56,5 +56,5 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showAuthorization(completion: @escaping (Bool) -> Void)
     func showWalletConnect(from view: ControllerBackedProtocol?)
     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)
-    func showSetupNotifications(from view: ControllerBackedProtocol?, settings: LocalPushSettings?)
+    func showSetupNotifications(from view: ControllerBackedProtocol?)
 }

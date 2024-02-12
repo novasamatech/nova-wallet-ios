@@ -104,8 +104,8 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 
-    func showSetupNotifications(from view: ControllerBackedProtocol?, settings: LocalPushSettings?) {
-        guard let setupNotificationsView = NotificationsSetupViewFactory.createView(settings: settings) else {
+    func showSetupNotifications(from view: ControllerBackedProtocol?) {
+        guard let setupNotificationsView = NotificationsSetupViewFactory.createView() else {
             return
         }
 

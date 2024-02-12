@@ -14,6 +14,7 @@ final class NotificationsSetupViewLayout: UIView {
     let subtitleLabel: UILabel = .create {
         $0.apply(style: .footnoteSecondary)
         $0.numberOfLines = 0
+        $0.textAlignment = .center
     }
 
     let notifications = NotificationsView()

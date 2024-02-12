@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct NotificationsSetupViewFactory {
-    static func createView(settings _: LocalPushSettings?) -> NotificationsSetupViewProtocol? {
+    static func createView() -> NotificationsSetupViewProtocol? {
         let applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared
 
         let legalData = LegalData(
