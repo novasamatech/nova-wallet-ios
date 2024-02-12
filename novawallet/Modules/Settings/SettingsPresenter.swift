@@ -16,7 +16,8 @@ final class SettingsPresenter {
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
     private var notificationsSettings: LocalPushSettings?
-    
+    private var notificationsEnabled: Bool = true
+
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
@@ -39,7 +40,8 @@ final class SettingsPresenter {
         let parameters = SettingsParameters(
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
-            isPinConfirmationOn: isPinConfirmationOn
+            isPinConfirmationOn: isPinConfirmationOn,
+            isNotificationsOn: notificationsEnabled
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(

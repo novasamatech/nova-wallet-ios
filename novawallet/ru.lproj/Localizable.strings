@@ -1488,3 +1488,10 @@
 "proxy.signing.checkmark.title" = "Автоматически проводить в будущем";
 "deeplink.error.invalid.referendum.id.message" = "Референдум не найден";
 "governance.referendum.not.found.message" = "Референдум не найден";
+"notifications.setup.notification.title" = "⭐️ Новое вознаграждение";
+"notifications.setup.notification.subtitle" = "Получено +0.6068 KSM ($20.35) из Kusama стекинга";
+"notifications.setup.notification.accessory" = "Сейчас";
+"notifications.setup.title" = "Не упустите ни одного момента!";
+"notifications.setup.subtitle" = "Получайте уведомления о действиях в кошельке, обновлениях\nв голосовании, активности стейкинга и безопасности, чтобы быть всегда в курсе.";
+"notifications.setup.enable.push.notifications" = "Включить пуш-уведомления";
+"notifications.setup.terms" = "Включая уведомления, вы соглашаетесь с нашими\nУсловиями использования и Политикой конфиденциальности";

@@ -103,14 +103,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         walletConnectView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
-    
+
     func showSetupNotifications(from view: ControllerBackedProtocol?, settings: LocalPushSettings?) {
-        guard let setupNotificationsView = NotificationsViewFactory.createView(settings: settings) else {
+        guard let setupNotificationsView = NotificationsSetupViewFactory.createView(settings: settings) else {
             return
         }
-        
-        setupNotificationsView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController.pushViewController(setupNotificationsView.controller, animated: true)
+
+        let navigationController = NovaNavigationController(
+            rootViewController: setupNotificationsView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     // MARK: Private

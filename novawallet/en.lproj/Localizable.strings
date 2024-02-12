@@ -17,6 +17,8 @@
 "import.chain.account.title" = "Import account";
 "onboarding.terms.and.conditions.1" = "I have read and agreed to\nTerms and Conditions and Privacy Policy";
 "onboarding.terms.and.conditions.2" = "Terms and Conditions";
+"common.terms.and.conditions" = "Terms and Conditions";
+"common.privacy.policy" = "Privacy Policy";
 "onboarding.privacy.policy" = "Privacy Policy";
 "pincode.enter.pin.code" = "Enter PIN code";
 "pincode.confirm.your.pin.code" = "Confirm your pin code";
@@ -1488,3 +1490,10 @@
 "proxy.signing.checkmark.title" = "Automatically continue in the future";
 "deeplink.error.invalid.referendum.id.message" = "Referendum is not found";
 "governance.referendum.not.found.message" = "Referendum is not found";
+"notifications.setup.notification.title" = "⭐️ New reward";
+"notifications.setup.notification.subtitle" = "Received +0.6068 KSM ($20.35) from Kusama staking";
+"notifications.setup.notification.accessory" = "Now";
+"notifications.setup.title" = "Don’t miss a thing!";
+"notifications.setup.subtitle" = "Get notified about Wallet operations, Governance\nupdates, Staking activity and Security, so you’re always in the know";
+"notifications.setup.enable.push.notifications" = "Enable push notifications";
+"notifications.setup.terms" = "By enabling push notifications, you agree to our\nTerms and Conditions and Privacy Policy";
