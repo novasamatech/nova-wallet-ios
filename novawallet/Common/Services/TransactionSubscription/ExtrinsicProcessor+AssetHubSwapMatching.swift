@@ -2,14 +2,14 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-private struct SwapExtrinsicCallArgs {
+private struct AssetHubSwapExtrinsicCallArgs {
     let receiver: AccountId
     let amountIn: BigUInt
     let amountOut: BigUInt
     let path: [AssetConversionPallet.AssetId]
 }
 
-private struct SwapExtrinsicParsingResult {
+private struct AssetHubSwapExtrinsicParsingResult {
     let callSender: AccountId
     let receiver: AccountId
     let assetIdIn: UInt32
@@ -117,7 +117,7 @@ extension ExtrinsicProcessor {
         extrinsicIndex: UInt32,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> SwapExtrinsicParsingResult? {
+    ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let context = codingFactory.createRuntimeJsonContext()
 
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
@@ -135,7 +135,7 @@ extension ExtrinsicProcessor {
         }
 
         guard let mappingResult = optResult,
-              let call = try? mappingResult.call.map(
+              let call = try? mappingResult.getFirstCallOrThrow().map(
                   to: RuntimeCall<JSON>.self,
                   with: context.toRawContext()
               ) else {
@@ -180,7 +180,7 @@ extension ExtrinsicProcessor {
         eventRecords: [EventRecord],
         customFee: AssetTxPaymentPallet.AssetTxFeePaid?,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> SwapExtrinsicParsingResult? {
+    ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
         let context = codingFactory.createRuntimeJsonContext()
@@ -198,7 +198,7 @@ extension ExtrinsicProcessor {
         }
 
         guard
-            let swap = findSwap(swapEvents, customFee: customFee),
+            let swap = findAssetHubSwap(swapEvents, customFee: customFee),
             let remoteAssetIn = swap.path.first,
             let remoteAssetOut = swap.path.last
         else {
@@ -243,7 +243,7 @@ extension ExtrinsicProcessor {
         callSender: AccountId,
         customFee: AssetTxPaymentPallet.AssetTxFeePaid?,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> SwapExtrinsicParsingResult? {
+    ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
         let conversionClosure = AssetHubTokensConverter.createPoolAssetToLocalClosure(
@@ -252,7 +252,7 @@ extension ExtrinsicProcessor {
         )
 
         let context = codingFactory.createRuntimeJsonContext()
-        let args: SwapExtrinsicCallArgs
+        let args: AssetHubSwapExtrinsicCallArgs
 
         switch callPath {
         case AssetConversionPallet.swapExactTokenForTokensPath:
@@ -300,7 +300,7 @@ extension ExtrinsicProcessor {
         )
     }
 
-    private func findSwap(
+    private func findAssetHubSwap(
         _ swapEvents: [AssetConversionPallet.SwapExecutedEvent],
         customFee: AssetTxPaymentPallet.AssetTxFeePaid?
     ) -> AssetConversionPallet.SwapExecutedEvent? {

@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-struct EventCodingPath: Equatable {
+struct EventCodingPath: Equatable, Hashable {
     let moduleName: String
     let eventName: String
 
