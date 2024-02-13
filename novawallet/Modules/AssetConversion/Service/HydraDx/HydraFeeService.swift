@@ -2,10 +2,10 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class HydraOmnipoolFeeService {
+final class HydraFeeService {
     let extrinsicFactory: ExtrinsicOperationFactoryProtocol
-    let conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol
-    let conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol
+    let conversionOperationFactory: HydraQuoteFactory
+    let conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol
     let workQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -14,8 +14,8 @@ final class HydraOmnipoolFeeService {
 
     init(
         extrinsicFactory: ExtrinsicOperationFactoryProtocol,
-        conversionOperationFactory: HydraOmnipoolQuoteFactoryProtocol,
-        conversionExtrinsicFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol,
+        conversionOperationFactory: HydraQuoteFactory,
+        conversionExtrinsicFactory: HydraExtrinsicOperationFactoryProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global()
     ) {
@@ -31,7 +31,7 @@ final class HydraOmnipoolFeeService {
     }
 
     private func createNativeFeeWrapper(
-        paramsOperation: BaseOperation<HydraOmnipoolSwapParams>
+        paramsOperation: BaseOperation<HydraSwapParams>
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -40,12 +40,12 @@ final class HydraOmnipoolFeeService {
 
             return self.extrinsicFactory.estimateFeeOperation({ builder, index in
                 if index == 0, swap.params.shouldSetFeeCurrency {
-                    return try HydraOmnipoolExtrinsicConverter.addingSetCurrencyCall(
+                    return try HydraExtrinsicConverter.addingSetCurrencyCall(
                         from: swap,
                         builder: builder
                     )
                 } else {
-                    return try HydraOmnipoolExtrinsicConverter.addingOperation(
+                    return try HydraExtrinsicConverter.addingOperation(
                         from: swap,
                         builder: builder
                     )
@@ -142,7 +142,7 @@ final class HydraOmnipoolFeeService {
     }
 }
 
-extension HydraOmnipoolFeeService: AssetConversionFeeServiceProtocol {
+extension HydraFeeService: AssetConversionFeeServiceProtocol {
     func calculate(
         in asset: ChainAsset,
         callArgs: AssetConversion.CallArgs,

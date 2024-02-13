@@ -3,7 +3,7 @@ import XCTest
 import BigInt
 import RobinHood
 
-final class HydraDxSwapTests: XCTestCase {
+final class HydraOmnipoolSwapTests: XCTestCase {
     func testAllAvailableDirections() {
         do {
             let directions = try performAvailableDirectionsFetch(
@@ -34,8 +34,8 @@ final class HydraDxSwapTests: XCTestCase {
         do {
             let quote = try performQuoteFetch(
                 for: .init(
-                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
-                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    assetIn: 1,
+                    assetOut: 0,
                     amount: 10_000_000_000,
                     direction: .sell
                 )
@@ -51,8 +51,8 @@ final class HydraDxSwapTests: XCTestCase {
         do {
             let quote = try performQuoteFetch(
                 for: .init(
-                    assetIn: .init(chainId: KnowChainId.hydra, assetId: 1),
-                    assetOut: .init(chainId: KnowChainId.hydra, assetId: 0),
+                    assetIn: 1,
+                    assetOut: 0,
                     amount: 1_000_000_000_000,
                     direction: .buy
                 )
@@ -117,10 +117,12 @@ final class HydraDxSwapTests: XCTestCase {
         }
     }
     
-    private func performQuoteFetch(for args: AssetConversion.QuoteArgs) throws -> AssetConversion.Quote {
+    private func performQuoteFetch(
+        for args: HydraOmnipool.QuoteArgs,
+        chainId: ChainModel.Id = KnowChainId.hydra
+    ) throws -> String {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let chainId = args.assetIn.chainId
         
         let wallet = AccountGenerator.generateMetaAccount()
         
@@ -149,7 +151,9 @@ final class HydraDxSwapTests: XCTestCase {
         
         operationQueue.addOperations(quoteWrapper.allOperations, waitUntilFinished: true)
         
-        return try quoteWrapper.targetOperation.extractNoCancellableResultData()
+        let amount = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+        
+        return String(amount)
     }
     
     private func performCanPayFee(in chainAssetId: ChainAssetId) throws -> Bool {

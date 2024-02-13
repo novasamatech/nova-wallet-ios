@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-class HydraOmnipoolSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemoteState> {
+class HydraSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemoteState> {
     let accountId: AccountId
 
     init(
@@ -31,7 +31,7 @@ class HydraOmnipoolSwapParamsService: ObservableSubscriptionSyncService<HydraDx.
     func getRequests(for accountId: AccountId) -> [BatchStorageSubscriptionRequest] {
         let feeCurrencyRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.accountFeeCurrency,
+                storagePath: HydraDx.accountFeeCurrencyPath,
                 localKey: "",
                 keyParamClosure: { BytesCodable(wrappedValue: accountId) }
             ),
@@ -40,7 +40,7 @@ class HydraOmnipoolSwapParamsService: ObservableSubscriptionSyncService<HydraDx.
 
         let referralRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.referralLinkedAccount,
+                storagePath: HydraDx.referralLinkedAccountPath,
                 localKey: "",
                 keyParamClosure: { BytesCodable(wrappedValue: accountId) }
             ),

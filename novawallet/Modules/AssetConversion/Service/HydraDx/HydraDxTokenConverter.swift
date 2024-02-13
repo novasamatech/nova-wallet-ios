@@ -4,12 +4,22 @@ import SubstrateSdk
 extension HydraDx {
     struct LocalRemoteAssetId: Equatable, Hashable {
         let localAssetId: ChainAssetId
-        let remoteAssetId: HydraDx.OmniPoolAssetId
+        let remoteAssetId: HydraDx.AssetId
     }
 
     struct SwapPair: Equatable, Hashable {
         let assetIn: LocalRemoteAssetId
         let assetOut: LocalRemoteAssetId
+    }
+
+    struct LocalSwapPair: Equatable, Hashable {
+        let assetIn: ChainAssetId
+        let assetOut: ChainAssetId
+    }
+
+    struct RemoteSwapPair: Equatable, Hashable {
+        let assetIn: HydraDx.AssetId
+        let assetOut: HydraDx.AssetId
     }
 }
 
@@ -18,7 +28,7 @@ enum HydraDxTokenConverterError: Error {
 }
 
 enum HydraDxTokenConverter {
-    static let nativeRemoteAssetId = HydraDx.OmniPoolAssetId(0)
+    static let nativeRemoteAssetId = HydraDx.AssetId(0)
 
     static func convertToRemote(
         chainAsset: ChainAsset,
@@ -35,7 +45,7 @@ enum HydraDxTokenConverter {
         case let .orml(info):
             let context = codingFactory.createRuntimeJsonContext()
             let remoteId = try info.currencyId.map(
-                to: StringScaleMapper<HydraDx.OmniPoolAssetId>.self,
+                to: StringScaleMapper<HydraDx.AssetId>.self,
                 with: context.toRawContext()
             ).value
 

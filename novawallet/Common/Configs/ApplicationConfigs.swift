@@ -133,7 +133,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/feature/stableswap-pools/chains/v18/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains_dev.json")!
         #endif
     }
 

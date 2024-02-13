@@ -4,13 +4,13 @@ import RobinHood
 
 final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<HydraDx.QuoteRemoteState> {
     let chain: ChainModel
-    let assetIn: HydraDx.LocalRemoteAssetId
-    let assetOut: HydraDx.LocalRemoteAssetId
+    let assetIn: HydraDx.AssetId
+    let assetOut: HydraDx.AssetId
 
     init(
         chain: ChainModel,
-        assetIn: HydraDx.LocalRemoteAssetId,
-        assetOut: HydraDx.LocalRemoteAssetId,
+        assetIn: HydraDx.AssetId,
+        assetOut: HydraDx.AssetId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -36,10 +36,10 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
 
     private func getBalanceRequest(
         for accountId: AccountId,
-        assetId: HydraDx.LocalRemoteAssetId,
+        assetId: HydraDx.AssetId,
         mappingKeyClosure: (Bool) -> HydraDx.QuoteRemoteStateChange.Key
     ) -> BatchStorageSubscriptionRequest {
-        if assetId.localAssetId == chain.utilityChainAssetId() {
+        if assetId == HydraDx.nativeAssetId {
             return .init(
                 innerRequest: MapSubscriptionRequest(
                     storagePath: StorageCodingPath.account,
@@ -56,7 +56,7 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
                     storagePath: StorageCodingPath.ormlTokenAccount,
                     localKey: "",
                     keyParamClosure: {
-                        (BytesCodable(wrappedValue: accountId), StringScaleMapper(value: assetId.remoteAssetId))
+                        (BytesCodable(wrappedValue: accountId), StringScaleMapper(value: assetId))
                     },
                     param1Encoder: nil,
                     param2Encoder: nil
@@ -67,15 +67,15 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
     }
 
     private func getFeeRequest(
-        for assetId: HydraDx.LocalRemoteAssetId,
+        for assetId: HydraDx.AssetId,
         mappingKey: HydraDx.QuoteRemoteStateChange.Key
     ) -> BatchStorageSubscriptionRequest {
         .init(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.dynamicFees,
+                storagePath: HydraDx.dynamicFeesPath,
                 localKey: "",
                 keyParamClosure: {
-                    StringScaleMapper(value: assetId.remoteAssetId)
+                    StringScaleMapper(value: assetId)
                 }
             ),
             mappingKey: mappingKey.rawValue
@@ -83,14 +83,14 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
     }
 
     private func getAssetStateRequest(
-        for assetId: HydraDx.LocalRemoteAssetId,
+        for assetId: HydraDx.AssetId,
         mappingKey: HydraDx.QuoteRemoteStateChange.Key
     ) -> BatchStorageSubscriptionRequest {
         .init(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.omnipoolAssets,
+                storagePath: HydraOmnipool.assetsPath,
                 localKey: "",
-                keyParamClosure: { StringScaleMapper(value: assetId.remoteAssetId) }
+                keyParamClosure: { StringScaleMapper(value: assetId) }
             ),
             mappingKey: mappingKey.rawValue
         )
@@ -107,7 +107,7 @@ final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<H
             mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutState
         )
 
-        let poolAccountId = try HydraDx.getPoolAccountId(for: chain.accountIdSize)
+        let poolAccountId = try HydraOmnipool.getPoolAccountId(for: chain.accountIdSize)
 
         let assetInBalanceRequest = getBalanceRequest(
             for: poolAccountId,

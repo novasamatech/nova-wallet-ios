@@ -39,10 +39,10 @@ extension AssetConversionAggregationFactory {
     }
 
     func createHydraQuote(
-        for state: HydraOmnipoolFlowState,
+        for state: HydraFlowState,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        HydraOmnipoolQuoteFactory(flowState: state).quote(for: args)
+        HydraQuoteFactory(flowState: state).quote(for: args)
     }
 
     func createHydraCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {

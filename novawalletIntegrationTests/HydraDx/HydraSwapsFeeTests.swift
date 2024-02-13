@@ -19,7 +19,8 @@ final class HydraSwapsFeeTests: XCTestCase {
                     amountOut: 199_000_000_000_000,
                     receiver: accountId,
                     direction: .sell,
-                    slippage: SlippageConfig.defaultConfig.defaultSlippage
+                    slippage: SlippageConfig.defaultConfig.defaultSlippage,
+                    context: nil
                 ),
                 feeAssetId: .init(chainId: KnowChainId.hydra, assetId: 0)
             )
@@ -45,7 +46,8 @@ final class HydraSwapsFeeTests: XCTestCase {
                     amountOut: 199_000_000_000_000,
                     receiver: accountId,
                     direction: .sell,
-                    slippage: SlippageConfig.defaultConfig.defaultSlippage
+                    slippage: SlippageConfig.defaultConfig.defaultSlippage,
+                    context: nil
                 ),
                 feeAssetId: .init(chainId: KnowChainId.hydra, assetId: 1)
             )

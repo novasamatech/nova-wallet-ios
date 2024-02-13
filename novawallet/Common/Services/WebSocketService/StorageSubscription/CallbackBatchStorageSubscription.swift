@@ -96,7 +96,7 @@ final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> 
             let updateClosure: (StorageSubscriptionUpdate) -> Void = { [weak self] update in
                 let updateData = StorageUpdateData(update: update.params.result)
                 self?.processUpdate(
-                    updateData.changes,
+                    updateData.getChangesOrdered(by: keys),
                     keys: keys,
                     blockHash: updateData.blockHash
                 )

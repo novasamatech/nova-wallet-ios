@@ -116,7 +116,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: quoteArgs.direction,
-            slippage: slippage
+            slippage: slippage,
+            context: quote.context
         )
 
         let newIdentifier = SwapSetupFeeIdentifier(

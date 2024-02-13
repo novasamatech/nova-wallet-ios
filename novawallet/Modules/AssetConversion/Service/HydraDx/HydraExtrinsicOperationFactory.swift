@@ -1,10 +1,10 @@
 import Foundation
 import RobinHood
 
-struct HydraOmnipoolSwapParams {
+struct HydraSwapParams {
     struct Params {
-        let currentFeeCurrency: HydraDx.OmniPoolAssetId
-        let newFeeCurrency: HydraDx.OmniPoolAssetId
+        let currentFeeCurrency: HydraDx.AssetId
+        let newFeeCurrency: HydraDx.AssetId
         let referral: AccountId?
 
         var shouldSetFeeCurrency: Bool {
@@ -17,8 +17,10 @@ struct HydraOmnipoolSwapParams {
     }
 
     enum Operation {
-        case sell(HydraDx.SellCall)
-        case buy(HydraDx.BuyCall)
+        case omniSell(HydraOmnipool.SellCall)
+        case omniBuy(HydraOmnipool.BuyCall)
+        case routedSell(HydraRouter.SellCall)
+        case routedBuy(HydraRouter.BuyCall)
     }
 
     let params: Params
@@ -35,21 +37,21 @@ struct HydraOmnipoolSwapParams {
     }
 }
 
-protocol HydraOmnipoolExtrinsicOperationFactoryProtocol {
+protocol HydraExtrinsicOperationFactoryProtocol {
     func createOperationWrapper(
         for feeAsset: ChainAsset,
         callArgs: AssetConversion.CallArgs
-    ) -> CompoundOperationWrapper<HydraOmnipoolSwapParams>
+    ) -> CompoundOperationWrapper<HydraSwapParams>
 }
 
-final class HydraOmnipoolExtrinsicOperationFactory {
+final class HydraExtrinsicOperationFactory {
     let chain: ChainModel
-    let swapService: HydraOmnipoolSwapParamsService
+    let swapService: HydraSwapParamsService
     let runtimeProvider: RuntimeCodingServiceProtocol
 
     init(
         chain: ChainModel,
-        swapService: HydraOmnipoolSwapParamsService,
+        swapService: HydraSwapParamsService,
         runtimeProvider: RuntimeCodingServiceProtocol
     ) {
         self.chain = chain
@@ -58,11 +60,11 @@ final class HydraOmnipoolExtrinsicOperationFactory {
     }
 
     private func createSwapParams(
-        from params: HydraOmnipoolSwapParams.Params,
-        remoteAssetIn: HydraDx.OmniPoolAssetId,
-        remoteAssetOut: HydraDx.OmniPoolAssetId,
+        from params: HydraSwapParams.Params,
+        remoteAssetIn: HydraDx.AssetId,
+        remoteAssetOut: HydraDx.AssetId,
         callArgs: AssetConversion.CallArgs
-    ) throws -> HydraOmnipoolSwapParams {
+    ) throws -> HydraSwapParams {
         let setCurrencyCall: HydraDx.SetCurrencyCall?
 
         if params.shouldSetFeeCurrency {
@@ -74,7 +76,7 @@ final class HydraOmnipoolExtrinsicOperationFactory {
         let referralCall: HydraDx.LinkReferralCodeCall?
 
         if params.shouldSetReferral {
-            guard let code = HydraOmnipoolConstants.novaReferralCode.data(using: .utf8) else {
+            guard let code = HydraConstants.novaReferralCode.data(using: .utf8) else {
                 throw CommonError.dataCorruption
             }
 
@@ -83,38 +85,76 @@ final class HydraOmnipoolExtrinsicOperationFactory {
             referralCall = nil
         }
 
+        guard let context = callArgs.context else {
+            throw CommonError.dataCorruption
+        }
+
+        let route: HydraDx.RemoteSwapRoute = try JsonStringify.decodeFromString(context)
+
         switch callArgs.direction {
         case .sell:
             let amountOutMin = callArgs.amountOut - callArgs.slippage.mul(value: callArgs.amountOut)
 
-            let sellCall = HydraDx.SellCall(
-                assetIn: remoteAssetIn,
-                assetOut: remoteAssetOut,
-                amount: callArgs.amountIn,
-                minBuyAmount: amountOutMin
-            )
+            let operation: HydraSwapParams.Operation
 
-            return HydraOmnipoolSwapParams(
+            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
+                operation = .omniSell(
+                    HydraOmnipool.SellCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amount: callArgs.amountIn,
+                        minBuyAmount: amountOutMin
+                    )
+                )
+            } else {
+                operation = .routedSell(
+                    HydraRouter.SellCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amountIn: callArgs.amountIn,
+                        minAmountOut: amountOutMin,
+                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
+                    )
+                )
+            }
+
+            return HydraSwapParams(
                 params: params,
                 changeFeeCurrency: setCurrencyCall,
                 updateReferral: referralCall,
-                swap: .sell(sellCall)
+                swap: operation
             )
         case .buy:
             let amountInMax = callArgs.amountIn + callArgs.slippage.mul(value: callArgs.amountIn)
 
-            let buyCall = HydraDx.BuyCall(
-                assetOut: remoteAssetOut,
-                assetIn: remoteAssetIn,
-                amount: callArgs.amountOut,
-                maxSellAmount: amountInMax
-            )
+            let operation: HydraSwapParams.Operation
 
-            return HydraOmnipoolSwapParams(
+            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
+                operation = .omniBuy(
+                    HydraOmnipool.BuyCall(
+                        assetOut: remoteAssetOut,
+                        assetIn: remoteAssetIn,
+                        amount: callArgs.amountOut,
+                        maxSellAmount: amountInMax
+                    )
+                )
+            } else {
+                operation = .routedBuy(
+                    HydraRouter.BuyCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amountOut: callArgs.amountOut,
+                        maxAmountIn: amountInMax,
+                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
+                    )
+                )
+            }
+
+            return HydraSwapParams(
                 params: params,
                 changeFeeCurrency: setCurrencyCall,
                 updateReferral: referralCall,
-                swap: .buy(buyCall)
+                swap: operation
             )
         }
     }
@@ -124,12 +164,12 @@ final class HydraOmnipoolExtrinsicOperationFactory {
         assetOut: ChainAsset,
         feeAsset: ChainAsset,
         callArgs: AssetConversion.CallArgs
-    ) -> CompoundOperationWrapper<HydraOmnipoolSwapParams> {
+    ) -> CompoundOperationWrapper<HydraSwapParams> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let swapParamsOperation = swapService.createFetchOperation()
 
-        let mergeOperation = ClosureOperation<HydraOmnipoolSwapParams> {
+        let mergeOperation = ClosureOperation<HydraSwapParams> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let swapParams = try swapParamsOperation.extractNoCancellableResultData()
 
@@ -148,7 +188,7 @@ final class HydraOmnipoolExtrinsicOperationFactory {
                 codingFactory: codingFactory
             ).remoteAssetId
 
-            let params = HydraOmnipoolSwapParams.Params(
+            let params = HydraSwapParams.Params(
                 currentFeeCurrency: swapParams.feeCurrency ?? HydraDx.nativeAssetId,
                 newFeeCurrency: remoteFeeAsset,
                 referral: swapParams.referralLink
@@ -172,11 +212,11 @@ final class HydraOmnipoolExtrinsicOperationFactory {
     }
 }
 
-extension HydraOmnipoolExtrinsicOperationFactory: HydraOmnipoolExtrinsicOperationFactoryProtocol {
+extension HydraExtrinsicOperationFactory: HydraExtrinsicOperationFactoryProtocol {
     func createOperationWrapper(
         for feeAsset: ChainAsset,
         callArgs: AssetConversion.CallArgs
-    ) -> CompoundOperationWrapper<HydraOmnipoolSwapParams> {
+    ) -> CompoundOperationWrapper<HydraSwapParams> {
         guard let assetIn = chain.asset(for: callArgs.assetIn.assetId) else {
             return CompoundOperationWrapper.createWithError(
                 ChainModelFetchError.noAsset(assetId: callArgs.assetIn.assetId)

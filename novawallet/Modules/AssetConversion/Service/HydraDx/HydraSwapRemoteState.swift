@@ -5,11 +5,11 @@ extension HydraDx {
     struct SwapRemoteState: ObservableSubscriptionStateProtocol {
         typealias TChange = SwapRemoteStateChange
 
-        let feeCurrency: HydraDx.OmniPoolAssetId?
+        let feeCurrency: HydraDx.AssetId?
         let referralLink: AccountId?
 
         init(
-            feeCurrency: HydraDx.OmniPoolAssetId?,
+            feeCurrency: HydraDx.AssetId?,
             referralLink: AccountId?
         ) {
             self.feeCurrency = feeCurrency
@@ -35,7 +35,7 @@ extension HydraDx {
             case referralLink
         }
 
-        let feeCurrency: UncertainStorage<HydraDx.OmniPoolAssetId?>
+        let feeCurrency: UncertainStorage<HydraDx.AssetId?>
         let referralLink: UncertainStorage<AccountId?>
 
         init(
@@ -43,7 +43,7 @@ extension HydraDx {
             blockHashJson _: JSON,
             context: [CodingUserInfoKey: Any]?
         ) throws {
-            feeCurrency = try UncertainStorage<StringScaleMapper<HydraDx.OmniPoolAssetId>?>(
+            feeCurrency = try UncertainStorage<StringScaleMapper<HydraDx.AssetId>?>(
                 values: values,
                 mappingKey: Key.feeCurrency.rawValue,
                 context: context

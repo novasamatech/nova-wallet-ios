@@ -3,10 +3,6 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
-protocol HydraOmnipoolQuoteFactoryProtocol {
-    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
-}
-
 final class HydraOmnipoolQuoteFactory {
     let flowState: HydraOmnipoolFlowState
 
@@ -22,12 +18,27 @@ final class HydraOmnipoolQuoteFactory {
         ) {
             let swapPair = try swapPairOperation.extractNoCancellableResultData()
 
-            let quoteService = self.flowState.setupQuoteService(for: swapPair)
+            let remoteSwapPair = HydraDx.RemoteSwapPair(
+                assetIn: swapPair.assetIn.remoteAssetId,
+                assetOut: swapPair.assetOut.remoteAssetId
+            )
+
+            let quoteService = self.flowState.setupQuoteService(for: remoteSwapPair)
 
             let operation = quoteService.createFetchOperation()
 
             return CompoundOperationWrapper(targetOperation: operation)
         }
+    }
+
+    private func createQuoteStateWrapper(
+        for remoteSwapPair: HydraDx.RemoteSwapPair
+    ) -> CompoundOperationWrapper<HydraDx.QuoteRemoteState> {
+        let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
+
+        let operation = quoteService.createFetchOperation()
+
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 
     private func createDefaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
@@ -63,21 +74,21 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
-    private func canTrade(assetIn: HydraDx.AssetState, assetOut: HydraDx.AssetState) -> Bool {
+    private func canTrade(assetIn: HydraOmnipool.AssetState, assetOut: HydraOmnipool.AssetState) -> Bool {
         assetIn.tradable.canSell() && assetOut.tradable.canBuy()
     }
 
     private func calculateSellQuote(
-        for args: AssetConversion.QuoteArgs,
+        for amount: BigUInt,
         remoteState: HydraDx.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
-    ) throws -> AssetConversion.Quote {
+    ) throws -> BigUInt {
         guard let assetInState = remoteState.assetInState else {
-            throw AssetConversionOperationError.remoteAssetNotFound(args.assetIn)
+            throw AssetConversionOperationError.runtimeError("Asset in state not found")
         }
 
         guard let assetOutState = remoteState.assetOutState else {
-            throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
+            throw AssetConversionOperationError.runtimeError("Asset out state not found")
         }
 
         guard canTrade(assetIn: assetInState, assetOut: assetOutState) else {
@@ -94,7 +105,7 @@ final class HydraOmnipoolQuoteFactory {
 
         let inHubReserve = assetInState.hubReserve
         let inReserve = remoteState.assetInBalance ?? 0
-        let deltaHubReserveIn = (args.amount * inHubReserve) / (inReserve + args.amount)
+        let deltaHubReserveIn = (amount * inHubReserve) / (inReserve + amount)
 
         let protocolFeeAmount = protocolFee.mul(value: deltaHubReserveIn)
         let deltaHubReserveOut = deltaHubReserveIn - protocolFeeAmount
@@ -108,20 +119,20 @@ final class HydraOmnipoolQuoteFactory {
             throw AssetConversionOperationError.runtimeError("Fee too big")
         }
 
-        return .init(args: args, amount: amountOut)
+        return amountOut
     }
 
     private func calculateBuyQuote(
-        for args: AssetConversion.QuoteArgs,
+        for amount: BigUInt,
         remoteState: HydraDx.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
-    ) throws -> AssetConversion.Quote {
+    ) throws -> BigUInt {
         guard let assetInState = remoteState.assetInState else {
-            throw AssetConversionOperationError.remoteAssetNotFound(args.assetIn)
+            throw AssetConversionOperationError.runtimeError("Asset in state not found")
         }
 
         guard let assetOutState = remoteState.assetOutState else {
-            throw AssetConversionOperationError.remoteAssetNotFound(args.assetOut)
+            throw AssetConversionOperationError.runtimeError("Asset out state not found")
         }
 
         guard canTrade(assetIn: assetInState, assetOut: assetOutState) else {
@@ -141,12 +152,12 @@ final class HydraOmnipoolQuoteFactory {
             throw AssetConversionOperationError.runtimeError("Asset fee too big")
         }
 
-        guard outReserveNoFee > args.amount else {
+        guard outReserveNoFee > amount else {
             throw AssetConversionOperationError.quoteCalcFailed
         }
 
         let outHubReserve = assetOutState.hubReserve
-        let deltaHubReserveOut = (outHubReserve * args.amount) / (outReserveNoFee - args.amount) + 1
+        let deltaHubReserveOut = (outHubReserve * amount) / (outReserveNoFee - amount) + 1
 
         guard protocolFee.denominator > protocolFee.numerator else {
             throw AssetConversionOperationError.runtimeError("Protocol fee too big")
@@ -165,73 +176,32 @@ final class HydraOmnipoolQuoteFactory {
 
         let amountIn = (inReserveHp * deltaHubReserveIn) / (inHubReserveHp - deltaHubReserveIn) + 1
 
-        return .init(args: args, amount: amountIn)
-    }
-
-    private func getTokensPairWrapper(
-        for assetIn: ChainAssetId,
-        assetOut: ChainAssetId
-    ) -> CompoundOperationWrapper<HydraDx.SwapPair> {
-        let chain = flowState.chain
-        guard let chainAssetIn = chain.asset(for: assetIn.assetId).map({ ChainAsset(chain: chain, asset: $0) }) else {
-            return CompoundOperationWrapper.createWithError(
-                ChainModelFetchError.noAsset(assetId: assetIn.assetId)
-            )
-        }
-
-        guard let chainAssetOut = chain.asset(for: assetOut.assetId).map({ ChainAsset(chain: chain, asset: $0) }) else {
-            return CompoundOperationWrapper.createWithError(
-                ChainModelFetchError.noAsset(assetId: assetOut.assetId)
-            )
-        }
-
-        let coderFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
-
-        let parsingOperation = ClosureOperation<HydraDx.SwapPair> {
-            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
-
-            let localRemoteIn = try HydraDxTokenConverter.convertToRemote(
-                chainAsset: chainAssetIn,
-                codingFactory: codingFactory
-            )
-
-            let localRemoteOut = try HydraDxTokenConverter.convertToRemote(
-                chainAsset: chainAssetOut,
-                codingFactory: codingFactory
-            )
-
-            return HydraDx.SwapPair(assetIn: localRemoteIn, assetOut: localRemoteOut)
-        }
-
-        parsingOperation.addDependency(coderFactoryOperation)
-
-        return CompoundOperationWrapper(targetOperation: parsingOperation, dependencies: [coderFactoryOperation])
+        return amountIn
     }
 }
 
-extension HydraOmnipoolQuoteFactory: HydraOmnipoolQuoteFactoryProtocol {
-    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
-        let swapPairWrapper = getTokensPairWrapper(for: args.assetIn, assetOut: args.assetOut)
-        let quoteStateWrapper = createQuoteStateWrapper(dependingOn: swapPairWrapper.targetOperation)
-
-        quoteStateWrapper.addDependency(operations: [swapPairWrapper.targetOperation])
+extension HydraOmnipoolQuoteFactory {
+    func quote(for args: HydraOmnipool.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
+        let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
+        let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 
         let defaultFeeWrapper = createDefaultFeeWrapper()
 
-        let calculateOperation = ClosureOperation<AssetConversion.Quote> {
+        let calculateOperation = ClosureOperation<BigUInt> {
             let quoteState = try quoteStateWrapper.targetOperation.extractNoCancellableResultData()
             let defaultFee = try defaultFeeWrapper.targetOperation.extractNoCancellableResultData()
 
             switch args.direction {
             case .sell:
                 return try self.calculateSellQuote(
-                    for: args,
+                    for: args.amount,
                     remoteState: quoteState,
                     defaultFee: defaultFee
                 )
+
             case .buy:
                 return try self.calculateBuyQuote(
-                    for: args,
+                    for: args.amount,
                     remoteState: quoteState,
                     defaultFee: defaultFee
                 )
@@ -241,8 +211,7 @@ extension HydraOmnipoolQuoteFactory: HydraOmnipoolQuoteFactoryProtocol {
         calculateOperation.addDependency(defaultFeeWrapper.targetOperation)
         calculateOperation.addDependency(quoteStateWrapper.targetOperation)
 
-        let dependencies = swapPairWrapper.allOperations + quoteStateWrapper.allOperations +
-            defaultFeeWrapper.allOperations
+        let dependencies = quoteStateWrapper.allOperations + defaultFeeWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
     }
