@@ -1497,3 +1497,14 @@
 "notifications.setup.subtitle" = "Get notified about Wallet operations, Governance updates, Staking activity and Security, so you’re always in the know";
 "notifications.setup.enable.push.notifications" = "Enable push notifications";
 "notifications.setup.terms" = "By enabling push notifications, you agree to our\nTerms and Conditions and Privacy Policy";
+"notifications.management.powered.by" = "Powered by";
+"notifications.management.enable.notifications" = "Enable notifications";
+"notifications.management.wallets" = "Wallets";
+"notifications.management.announcements" = "Nova announcements";
+"notifications.management.sent.tokens" = "Sent tokens";
+"notifications.management.received.tokens" = "Received tokens";
+"notifications.management.gov" = "Governance";
+"notifications.management.staking.rewards" = "Staking rewards";
+"notifications.management.general" = "General";
+"notifications.management.balances" = "Balances";
+"notifications.management.others" = "Others";

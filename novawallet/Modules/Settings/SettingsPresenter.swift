@@ -208,7 +208,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .wiki:
             show(url: config.wikiURL)
         case .notifications:
-            wireframe.showSetupNotifications(from: view)
+            wireframe.showManageNotifications(from: view)
+            //   wireframe.showSetupNotifications(from: view)
         }
     }
 

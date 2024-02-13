@@ -117,4 +117,8 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
             rightView.snp.removeConstraints()
         }
     }
+
+    func hideImageViewIfNeeded(titleViewModel: TitleIconViewModel) {
+        iconImageView.isHidden = titleViewModel.icon == nil
+    }
 }
