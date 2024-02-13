@@ -53,13 +53,13 @@ extension ExtrinsicProcessor {
                 extrinsic,
                 params: params,
                 extrinsicIndex: extrinsicIndex,
-                eventRecords: eventRecords,
+                eventRecords: extrinsicEvents,
                 codingFactory: codingFactory
             ) else {
                 return nil
             }
 
-            guard let fee = try? findHydraFee(
+            guard let fee = try findHydraFee(
                 for: params,
                 extrinsicIndex: extrinsicIndex,
                 eventRecords: extrinsicEvents,

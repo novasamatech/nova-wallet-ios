@@ -36,7 +36,7 @@ enum HydraDxTokenConverter {
         chain: ChainModel,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> ChainAssetId {
-        guard remoteAsset == nativeRemoteAssetId else {
+        if remoteAsset == nativeRemoteAssetId {
             if let assetId = chain.utilityChainAssetId() {
                 return assetId
             } else {
