@@ -142,6 +142,10 @@ extension ExtrinsicProcessor {
             return nil
         }
 
+        guard mappingResult.callSender == accountId else {
+            return nil
+        }
+
         let customFee = try findFeeInCustomAsset(
             in: eventRecords,
             codingFactory: codingFactory
