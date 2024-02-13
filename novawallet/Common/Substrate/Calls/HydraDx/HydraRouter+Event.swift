@@ -3,7 +3,7 @@ import BigInt
 import SubstrateSdk
 
 extension HydraRouter {
-    static var routeExecutedEvent: EventCodingPath {
+    static var routeExecutedPath: EventCodingPath {
         .init(moduleName: HydraRouter.moduleName, eventName: "RouteExecuted")
     }
 

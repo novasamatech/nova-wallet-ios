@@ -19,7 +19,7 @@ private struct HydraSwapExtrinsicParsingParams {
     let events: Set<EventCodingPath>
     let eventParser: (Event, EventCodingPath) throws -> HydraSwapExtrinsicCallArgs
     let calls: Set<CallCodingPath>
-    let callParser: (RuntimeCall<JSON>, CallCodingPath) throws -> HydraSwapExtrinsicCallArgs
+    let callParser: (RuntimeCall<JSON>) throws -> HydraSwapExtrinsicCallArgs
 }
 
 private struct HydraSwapExtrinsicParsingResult {
@@ -47,9 +47,11 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            guard let swapResult = try parseHydraRoutedSwapExtrinsic(
+            let params = prepareParsingParams(for: sender, codingFactory: codingFactory)
+
+            guard let swapResult = try parseHydraSwapExtrinsic(
                 extrinsic,
-                sender: sender,
+                params: params,
                 extrinsicIndex: extrinsicIndex,
                 eventRecords: eventRecords,
                 codingFactory: codingFactory
@@ -58,7 +60,7 @@ extension ExtrinsicProcessor {
             }
 
             guard let fee = try? findHydraFee(
-                sender: sender,
+                for: params,
                 extrinsicIndex: extrinsicIndex,
                 eventRecords: extrinsicEvents,
                 codingFactory: codingFactory
@@ -90,9 +92,117 @@ extension ExtrinsicProcessor {
         }
     }
 
+    // swiftlint:disable:next function_body_length
+    private func prepareParsingParams(
+        for sender: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> HydraSwapExtrinsicParsingParams {
+        let context = codingFactory.createRuntimeJsonContext()
+
+        return HydraSwapExtrinsicParsingParams(
+            sender: sender,
+            events: [
+                HydraRouter.routeExecutedPath,
+                HydraOmnipool.sellExecutedPath,
+                HydraOmnipool.buyExecutedPath
+            ],
+            eventParser: { event, eventPath in
+                switch eventPath {
+                case HydraRouter.routeExecutedPath:
+                    let model: HydraRouter.RouteExecutedEvent = try ExtrinsicExtraction.getEventParams(
+                        from: event,
+                        context: context
+                    )
+
+                    return HydraSwapExtrinsicCallArgs(
+                        assetIn: model.assetIn,
+                        assetOut: model.assetOut,
+                        amountIn: model.amountIn,
+                        amountOut: model.amountOut
+                    )
+                default:
+                    // omnipool events has similar model
+
+                    let model: HydraOmnipool.SwapExecuted = try ExtrinsicExtraction.getEventParams(
+                        from: event,
+                        context: context
+                    )
+
+                    return HydraSwapExtrinsicCallArgs(
+                        assetIn: model.assetIn,
+                        assetOut: model.assetOut,
+                        amountIn: model.amountIn,
+                        amountOut: model.amountOut
+                    )
+                }
+
+            },
+            calls: [
+                HydraRouter.SellCall.callPath,
+                HydraRouter.BuyCall.callPath,
+                HydraOmnipool.SellCall.callPath,
+                HydraOmnipool.BuyCall.callPath
+            ],
+            callParser: { call in
+                switch CallCodingPath(moduleName: call.moduleName, callName: call.callName) {
+                case HydraRouter.SellCall.callPath:
+                    let model: HydraRouter.SellCall = try ExtrinsicExtraction.getCallArgs(
+                        from: call.args,
+                        context: context
+                    )
+
+                    return HydraSwapExtrinsicCallArgs(
+                        assetIn: model.assetIn,
+                        assetOut: model.assetOut,
+                        amountIn: model.amountIn,
+                        amountOut: model.minAmountOut
+                    )
+                case HydraRouter.BuyCall.callPath:
+                    let model: HydraRouter.BuyCall = try ExtrinsicExtraction.getCallArgs(
+                        from: call.args,
+                        context: context
+                    )
+
+                    return HydraSwapExtrinsicCallArgs(
+                        assetIn: model.assetIn,
+                        assetOut: model.assetOut,
+                        amountIn: model.maxAmountIn,
+                        amountOut: model.amountOut
+                    )
+                case HydraOmnipool.SellCall.callPath:
+                    let model: HydraOmnipool.SellCall = try ExtrinsicExtraction.getCallArgs(
+                        from: call.args,
+                        context: context
+                    )
+
+                    return HydraSwapExtrinsicCallArgs(
+                        assetIn: model.assetIn,
+                        assetOut: model.assetOut,
+                        amountIn: model.amount,
+                        amountOut: model.minBuyAmount
+                    )
+                case HydraOmnipool.BuyCall.callPath:
+                    let model: HydraOmnipool.BuyCall = try ExtrinsicExtraction.getCallArgs(
+                        from: call.args,
+                        context: context
+                    )
+
+                    return HydraSwapExtrinsicCallArgs(
+                        assetIn: model.assetIn,
+                        assetOut: model.assetOut,
+                        amountIn: model.maxSellAmount,
+                        amountOut: model.amount
+                    )
+                default:
+                    throw CommonError.dataCorruption
+                }
+            }
+        )
+    }
+
     private func parseHydraSwapExtrinsic(
-        _ params: HydraSwapExtrinsicParsingParams,
-        extrinsic: Extrinsic,
+        _ extrinsic: Extrinsic,
+        params: HydraSwapExtrinsicParsingParams,
         extrinsicIndex: UInt32,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
@@ -198,7 +308,7 @@ extension ExtrinsicProcessor {
     ) throws -> HydraSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
-        guard let swapArgs = try? params.callParser(call, callPath) else {
+        guard let swapArgs = try? params.callParser(call) else {
             return nil
         }
 
@@ -227,7 +337,7 @@ extension ExtrinsicProcessor {
     }
 
     private func findHydraFee(
-        sender: AccountId,
+        for params: HydraSwapExtrinsicParsingParams,
         extrinsicIndex: UInt32,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
@@ -235,14 +345,14 @@ extension ExtrinsicProcessor {
         if
             let customFee = try findHydraCustomFee(
                 in: eventRecords,
-                swapEvents: [HydraRouter.routeExecutedEvent],
+                swapEvents: params.events,
                 codingFactory: codingFactory
             ) {
             return customFee
         } else {
             let optNativeFee = findFee(
                 for: extrinsicIndex,
-                sender: sender,
+                sender: params.sender,
                 eventRecords: eventRecords,
                 metadata: codingFactory.metadata,
                 runtimeJsonContext: codingFactory.createRuntimeJsonContext()
