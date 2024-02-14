@@ -3,6 +3,13 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
+protocol AssetHubSwapOperationFactoryProtocol {
+    func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
+    func availableDirectionsForAsset(_ chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Set<ChainAssetId>>
+    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
+    func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool>
+}
+
 final class AssetHubSwapOperationFactory {
     static let sellQuoteApi = "AssetConversionApi_quote_price_exact_tokens_for_tokens"
     static let buyQuoteApi = "AssetConversionApi_quote_price_exact_tokens_for_tokens"
@@ -165,7 +172,7 @@ final class AssetHubSwapOperationFactory {
     }
 }
 
-extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol {
+extension AssetHubSwapOperationFactory: AssetHubSwapOperationFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
         let fetchRemoteWrapper = fetchAllPairsWrapper(dependingOn: codingFactoryOperation, chain: chain)
@@ -225,7 +232,7 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
                 codingFactory: codingFactory
             )
 
-            return .init(args: args, amount: amount)
+            return .init(args: args, amount: amount, context: nil)
         }
 
         mappingOperation.addDependency(quoteOperation)
@@ -233,5 +240,27 @@ extension AssetHubSwapOperationFactory: AssetConversionOperationFactoryProtocol 
         let dependencies = [codingFactoryOperation, quoteOperation]
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+
+    func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool> {
+        guard let utilityAssetId = chain.utilityChainAssetId() else {
+            return CompoundOperationWrapper.createWithResult(false)
+        }
+
+        if chainAssetId == utilityAssetId {
+            return CompoundOperationWrapper.createWithResult(true)
+        }
+
+        let availableDirectionsWrapper = availableDirectionsForAsset(chainAssetId)
+
+        let mergeOperation = ClosureOperation<Bool> {
+            let directions = try availableDirectionsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return directions.contains(utilityAssetId)
+        }
+
+        mergeOperation.addDependency(availableDirectionsWrapper.targetOperation)
+
+        return availableDirectionsWrapper.insertingTail(operation: mergeOperation)
     }
 }

@@ -19,8 +19,9 @@ enum AssetConversion {
         let assetIn: ChainAssetId
         let amountOut: BigUInt
         let assetOut: ChainAssetId
+        let context: String?
 
-        init(args: QuoteArgs, amount: BigUInt) {
+        init(args: QuoteArgs, amount: BigUInt, context: String?) {
             switch args.direction {
             case .sell:
                 amountIn = args.amount
@@ -32,6 +33,7 @@ enum AssetConversion {
 
             assetIn = args.assetIn
             assetOut = args.assetOut
+            self.context = context
         }
 
         func matches(other quote: Quote, slippage: BigRational, direction: Direction) -> Bool {
@@ -56,6 +58,7 @@ enum AssetConversion {
         let receiver: AccountId
         let direction: Direction
         let slippage: BigRational
+        let context: String?
     }
 }
 

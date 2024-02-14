@@ -32,6 +32,12 @@ final class SwapSetupPresenter: SwapBasePresenter {
         !quoteResult.hasError() && quoteArgs != nil
     }
 
+    /*
+     *  We might have cases when quote recalcution triggers fee recalculation and vice versa
+     *  and we want to bound such triggers to avoid deadlock.
+     */
+    private var maxCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
@@ -116,7 +122,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: quoteArgs.direction,
-            slippage: slippage
+            slippage: slippage,
+            context: quote.context
         )
 
         let newIdentifier = SwapSetupFeeIdentifier(
@@ -201,8 +208,15 @@ final class SwapSetupPresenter: SwapBasePresenter {
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
 
-            // as fee changes the max amount we might also refresh the quote
-            refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
+            /*
+             * As fee changes the max amount we might also refresh the quote but make sure
+             * no deadlock.
+             */
+            if maxCorrectionCounter.incrementCounterIfPossible() {
+                refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
+            } else {
+                maxCorrectionCounter.resetCounter()
+            }
         }
 
         provideButtonState()
@@ -771,6 +785,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectMaxPayAmount() {
+        maxCorrectionCounter.resetCounter()
+
         applySwapMax()
     }
 
@@ -897,10 +913,6 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
                     self?.interactor.update(payChainAsset: payChainAsset)
                 }
             }
-        case .blockNumber:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryBlockNumberSubscription()
-            }
         case .remoteSubscription:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryRemoteSubscription()
@@ -917,8 +929,8 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
         }
     }
 
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber?, chainId _: ChainModel.Id) {
-        logger.debug("New block number: \(String(describing: blockNumber))")
+    func didReceiveQuoteDataChanged() {
+        logger.debug("Requote request received")
 
         refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
         estimateFee()

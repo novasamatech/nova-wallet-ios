@@ -22,6 +22,7 @@ final class ExtrinsicProcessor {
 }
 
 extension ExtrinsicProcessor: ExtrinsicProcessing {
+    // swiftlint:disable:next function_body_length
     func process(
         extrinsicIndex: UInt32,
         extrinsicData: Data,
@@ -73,6 +74,15 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
             }
 
             if let processingResult = matchAssetHubSwap(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchHydraSwap(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,

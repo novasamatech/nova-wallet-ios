@@ -10,7 +10,14 @@ extension ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
     ) -> BigUInt? {
-        if let fee = findFeeOfBalancesWithdraw(
+        if let fee = findTransactionFeePaid(
+            for: index,
+            eventRecords: eventRecords,
+            metadata: metadata,
+            runtimeJsonContext: runtimeJsonContext
+        ) {
+            return fee
+        } else if let fee = findFeeOfBalancesWithdraw(
             for: index,
             sender: sender,
             eventRecords: eventRecords,
@@ -26,6 +33,27 @@ extension ExtrinsicProcessor {
                 runtimeJsonContext: runtimeJsonContext
             )
         }
+    }
+
+    private func findTransactionFeePaid(
+        for index: UInt32,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
+    ) -> BigUInt? {
+        let extrinsicEvents = eventRecords.filter { $0.extrinsicIndex == index }
+
+        let path = TransactionPaymentPallet.feePaidPath
+        guard let record = extrinsicEvents.last(where: { metadata.eventMatches($0.event, path: path) }) else {
+            return nil
+        }
+
+        let feePaidEvent: TransactionPaymentPallet.TransactionFeePaid? = try? ExtrinsicExtraction.getEventParams(
+            from: record.event,
+            context: runtimeJsonContext
+        )
+
+        return feePaidEvent?.amount
     }
 
     private func findFeeOfBalancesWithdraw(
