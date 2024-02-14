@@ -5,20 +5,25 @@ final class NotificationsSetupPresenter {
     let wireframe: NotificationsSetupWireframeProtocol
     let interactor: NotificationsSetupInteractorInputProtocol
     let legalData: LegalData
+    private weak var delegate: PushNotificationsStatusDelegate?
 
     init(
         interactor: NotificationsSetupInteractorInputProtocol,
         wireframe: NotificationsSetupWireframeProtocol,
-        legalData: LegalData
+        legalData: LegalData,
+        delegate: PushNotificationsStatusDelegate?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.legalData = legalData
+        self.delegate = delegate
     }
 }
 
 extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 
     func enablePushNotifications() {
         interactor.enablePushNotifications()
@@ -51,4 +56,9 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
     }
 }
 
-extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtocol {}
+extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtocol {
+    func didRegister(notificationStatus: PushNotificationsStatus) {
+        delegate?.pushNotificationsStatusDidUpdate(notificationStatus)
+        wireframe.complete(on: view)
+    }
+}

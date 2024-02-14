@@ -6,13 +6,18 @@ final class NotificationsView: UIView {
         topNotificationView
     }
 
-    let topNotificationView = NotificationView()
+    let topNotificationView: NotificationView = .create {
+        $0.backgroundView.fillColor = R.color.colorNotificationFirstLayerBackground()!
+    }
+
     let middleNotificationView: NotificationView = .create {
         $0.contentView.isHidden = true
+        $0.backgroundView.fillColor = R.color.colorNotificationSecondLayerBackground()!
     }
 
     let bottomNotificationView: NotificationView = .create {
         $0.contentView.isHidden = true
+        $0.backgroundView.fillColor = R.color.colorNotificationThirdLayerBackground()!
     }
 
     override init(frame: CGRect) {
@@ -52,8 +57,6 @@ final class NotificationsView: UIView {
 
 final class NotificationView: UIView {
     let backgroundView: RoundedView = .create {
-        // TODO: fix
-        $0.fillColor = UIColor(red: 153 / 255, green: 158 / 255, blue: 199 / 255, alpha: 0.16)
         $0.cornerRadius = 18
         $0.shadowOpacity = 0.6
         $0.shadowRadius = 10
@@ -132,4 +135,8 @@ final class NotificationView: UIView {
             make.trailing.equalToSuperview().inset(18)
         }
     }
+}
+
+protocol PushNotificationsStatusDelegate: AnyObject {
+    func pushNotificationsStatusDidUpdate(_: PushNotificationsStatus)
 }

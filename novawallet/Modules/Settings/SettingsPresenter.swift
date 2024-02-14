@@ -16,8 +16,6 @@ final class SettingsPresenter {
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
-    private var notificationsSettings: LocalPushSettings?
-    private var notificationsEnabled: Bool = true
 
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
@@ -42,7 +40,7 @@ final class SettingsPresenter {
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
-            isNotificationsOn: notificationsEnabled
+            isNotificationsOn: pushNotificationsStatus == .on
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -209,7 +207,14 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .wiki:
             show(url: config.wikiURL)
         case .notifications:
-            wireframe.showSetupNotifications(from: view)
+            switch pushNotificationsStatus {
+            case .notDetermined:
+                wireframe.showSetupNotifications(from: view, delegate: self)
+            case .off, .on:
+                wireframe.showManageNotifications(from: view)
+            case .none:
+                break
+            }
         }
     }
 
@@ -305,6 +310,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
     func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
         self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
     }
 }
 
@@ -321,5 +327,12 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension SettingsPresenter: PushNotificationsStatusDelegate {
+    func pushNotificationsStatusDidUpdate(_ pushNotificationsStatus: PushNotificationsStatus) {
+        self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
     }
 }

@@ -13,7 +13,7 @@ enum PushNotificationsStatus {
 
 protocol PushNotificationsServiceProtocol {
     func setup()
-    func register()
+    func register(completion: @escaping () -> Void)
     func status(completion: @escaping (PushNotificationsStatus) -> Void)
 }
 
@@ -33,14 +33,17 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         self.logger = logger
     }
 
-    private func register(withOptions options: UNAuthorizationOptions) {
-        notificationCenter.requestAuthorization(options: options) {
-            granted, _ in
-            guard granted else { return }
-
-            DispatchQueue.main.async {
-                UIApplication.shared.registerForRemoteNotifications()
+    private func register(withOptions options: UNAuthorizationOptions, completion: @escaping (Bool) -> Void) {
+        notificationCenter.requestAuthorization(options: options) { [weak self] granted, error in
+            if granted {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
             }
+            if let error = error {
+                self?.logger.error(error.localizedDescription)
+            }
+            completion(granted)
         }
     }
 
@@ -63,8 +66,11 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         notificationCenter.delegate = self
     }
 
-    func register() {
-        register(withOptions: [.alert, .badge, .sound])
+    func register(completion: @escaping () -> Void) {
+        register(withOptions: [.alert, .badge, .sound]) { [weak self] success in
+            self?.settingsManager.notificationsEnabled = success
+            completion()
+        }
     }
 }
 
