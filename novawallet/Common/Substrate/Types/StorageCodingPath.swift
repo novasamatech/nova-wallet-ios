@@ -90,6 +90,10 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "Tokens", itemName: "Locks")
     }
 
+    static var ormlTotalIssuance: StorageCodingPath {
+        StorageCodingPath(moduleName: "Tokens", itemName: "TotalIssuance")
+    }
+
     static var uniquesAccount: StorageCodingPath {
         StorageCodingPath(moduleName: "Uniques", itemName: "Account")
     }

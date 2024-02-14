@@ -232,7 +232,7 @@ extension AssetHubSwapOperationFactory: AssetHubSwapOperationFactoryProtocol {
                 codingFactory: codingFactory
             )
 
-            return .init(args: args, amount: amount)
+            return .init(args: args, amount: amount, context: nil)
         }
 
         mappingOperation.addDependency(quoteOperation)

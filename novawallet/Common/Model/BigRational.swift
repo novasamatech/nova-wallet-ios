@@ -73,4 +73,12 @@ extension BigRational {
     var decimalOrZeroValue: Decimal {
         decimalValue ?? 0
     }
+
+    func decimalOrError() throws -> Decimal {
+        guard let value = decimalValue else {
+            throw CommonError.dataCorruption
+        }
+
+        return value
+    }
 }

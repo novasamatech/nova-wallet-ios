@@ -13,6 +13,10 @@ protocol ObservableSubscriptionStateProtocol {
 protocol ObservableSubscriptionSyncServiceProtocol {
     associatedtype TState
 
+    var workQueue: DispatchQueue { get }
+
+    func getState() -> TState?
+
     func createFetchOperation() -> BaseOperation<TState>
 }
 
@@ -136,14 +140,14 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
     }
 }
 
-extension ObservableSubscriptionSyncService {
-    func createFetchOperation() -> BaseOperation<T> {
+extension ObservableSubscriptionSyncServiceProtocol where Self: ObservableSyncService {
+    func createFetchOperation() -> BaseOperation<TState> {
         ClosureOperation {
             if let state = self.getState() {
                 return state
             }
 
-            var fetchedState: T?
+            var fetchedState: TState?
 
             let semaphore = DispatchSemaphore(value: 0)
 
