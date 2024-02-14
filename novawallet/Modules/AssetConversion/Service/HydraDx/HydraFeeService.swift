@@ -73,20 +73,35 @@ final class HydraFeeService {
             )
         )
 
+        /**
+         *      We are adding ed to final fee amount as currently runtime has a bug that leads to extrinsic fail
+         *      when fee paid in non native asset and balance goes below ed.
+         */
+        let balanceExistenceWrapper = AssetStorageInfoOperationFactory().createAssetBalanceExistenceOperation(
+            chainId: feeAsset.chain.chainId,
+            asset: feeAsset.asset,
+            runtimeProvider: conversionOperationFactory.flowState.runtimeProvider,
+            operationQueue: conversionOperationFactory.flowState.operationQueue
+        )
+
         let mappingOperation = ClosureOperation<AssetConversion.FeeModel> {
             let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+            let balanceExistence = try balanceExistenceWrapper.targetOperation.extractNoCancellableResultData()
 
             let model = AssetConversion.AmountWithNative(
-                targetAmount: quote.amountIn,
+                targetAmount: quote.amountIn + balanceExistence.minBalance,
                 nativeAmount: quote.amountOut
             )
 
             return .init(totalFee: model, networkFee: model, networkFeePayer: nativeFee.payer)
         }
 
+        mappingOperation.addDependency(balanceExistenceWrapper.targetOperation)
         mappingOperation.addDependency(quoteWrapper.targetOperation)
 
-        return quoteWrapper.insertingTail(operation: mappingOperation)
+        return quoteWrapper
+            .insertingHead(operations: balanceExistenceWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
     }
 
     private func createConversionWrapper(

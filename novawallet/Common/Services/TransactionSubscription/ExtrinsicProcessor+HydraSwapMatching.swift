@@ -229,6 +229,10 @@ extension ExtrinsicProcessor {
             return nil
         }
 
+        guard mappingResult.callSender == accountId else {
+            return nil
+        }
+
         guard
             let isSuccess = matchStatus(
                 for: extrinsicIndex,

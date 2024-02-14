@@ -173,6 +173,7 @@
 		0C38B5032B7A86CE00882A8B /* TokensPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5022B7A86CE00882A8B /* TokensPallet.swift */; };
 		0C38B5052B7B22F000882A8B /* ExtrinsicExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5042B7B22F000882A8B /* ExtrinsicExtraction.swift */; };
 		0C38B5072B7B3B4B00882A8B /* HydraOmnipool+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5062B7B3B4B00882A8B /* HydraOmnipool+Events.swift */; };
+		0C38B5092B7CB96800882A8B /* MaxCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5082B7CB96800882A8B /* MaxCounter.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
@@ -4508,6 +4509,7 @@
 		0C38B5022B7A86CE00882A8B /* TokensPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensPallet.swift; sourceTree = "<group>"; };
 		0C38B5042B7B22F000882A8B /* ExtrinsicExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicExtraction.swift; sourceTree = "<group>"; };
 		0C38B5062B7B3B4B00882A8B /* HydraOmnipool+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraOmnipool+Events.swift"; sourceTree = "<group>"; };
+		0C38B5082B7CB96800882A8B /* MaxCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxCounter.swift; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
@@ -14709,6 +14711,7 @@
 				0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */,
 				0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */,
 				0CA719782B768ABC000B086E /* JsonStringify.swift */,
+				0C38B5082B7CB96800882A8B /* MaxCounter.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -23009,6 +23012,7 @@
 				AE89720825F12143008EC414 /* ValidatorInfoViewModel.swift in Sources */,
 				8499FE7327BE305100712589 /* JSONListConvertible.swift in Sources */,
 				845B821726EF7FED00D25C72 /* SelectedWalletSettings.swift in Sources */,
+				0C38B5092B7CB96800882A8B /* MaxCounter.swift in Sources */,
 				84DC3CE12795DEBF0038E2ED /* SubqueryHistoryOperationFactory.swift in Sources */,
 				848FFE9A25E6E0E400652AA5 /* Staking+Validator.swift in Sources */,
 				8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */,
