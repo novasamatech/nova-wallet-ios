@@ -3,6 +3,10 @@ import SubstrateSdk
 import BigInt
 
 extension HydraRouter {
+    static func isSwap(_ callPath: CallCodingPath) -> Bool {
+        callPath == SellCall.callPath || callPath == BuyCall.callPath
+    }
+
     struct SellCall: Codable {
         enum CodingKeys: String, CodingKey {
             case assetIn = "asset_in"
