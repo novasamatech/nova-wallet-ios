@@ -1,5 +1,4 @@
 import UIKit
-import SoraKeystore
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

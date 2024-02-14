@@ -6,53 +6,62 @@ import FirebaseFirestore
 import FirebaseMessaging
 
 enum Web3AlertsSyncServiceError: Error {
-    case documentNotFound
+    case notificationsDisabled
 }
 
 protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
-    func save(settings: LocalPushSettings) -> BaseOperation<Void>
-    func update(token: String) -> CompoundOperationWrapper<Void?>
+    func save(
+        notificationsEnabled: Bool,
+
+        settings: LocalPushSettings,
+        completionHandler: @escaping () -> Void
+    )
+    func update(
+        token: String,
+        completionHandler: @escaping () -> Void
+    )
 }
 
 final class Web3AlertsSyncService: BaseSyncService {
+    static let settingsKey = "Web3AlertsSettingsKey"
+
     let repository: AnyDataProviderRepository<LocalPushSettings>
     let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
-    private let workingQueue: DispatchQueue
-    private var syncCancellable = CancellableCallStore()
-
+    private var executingOperationWrapper: CompoundOperationWrapper<Void>?
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     init(
         repository: AnyDataProviderRepository<LocalPushSettings>,
         settingsManager: SettingsManagerProtocol,
-        operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = .global()
+        operationQueue: OperationQueue
     ) {
         self.repository = repository
         self.settingsManager = settingsManager
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
+
+        FirebaseHolder.shared.configureApp()
     }
 
     override func performSyncUp() {
-        FirebaseHolder.shared.configureApp()
+        guard executingOperationWrapper == nil else {
+            return
+        }
 
         let localSettingsOperation = fetchLocalSettingsOperation()
         let wrapper = saveWrapper(dependsOn: localSettingsOperation, forceUpdate: false)
         wrapper.addDependency(operations: [localSettingsOperation])
         let targetWrapper = wrapper.insertingHead(operations: [localSettingsOperation])
 
-        executeCancellable(
-            wrapper: targetWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: syncCancellable,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
-            switch result {
-            case let .success:
+        targetWrapper.targetOperation.completionBlock = { [weak self] in
+            guard targetWrapper === self?.executingOperationWrapper else {
+                return
+            }
+            self?.executingOperationWrapper = nil
+            do {
+                let value = try targetWrapper.targetOperation.extractNoCancellableResultData()
                 self?.complete(nil)
-            case let .failure(error):
+            } catch {
                 self?.complete(error)
             }
         }
@@ -101,7 +110,8 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     override func stopSyncUp() {
-        syncCancellable.cancel()
+        executingOperationWrapper?.cancel()
+        executingOperationWrapper = nil
     }
 
     private func remoteSaveOperation(settings: LocalPushSettings) -> BaseOperation<Void> {
@@ -131,30 +141,44 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     private func fetchLocalSettingsOperation() -> BaseOperation<LocalPushSettings?> {
-        guard let documentUUID = settingsManager.pushSettingsDocumentId else {
+        guard settingsManager.notificationsEnabled else {
             return .createWithResult(nil)
         }
         return repository.fetchOperation(
-            by: { documentUUID },
+            by: { Self.settingsKey },
             options: .init()
         )
     }
 }
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
-    func save(settings: LocalPushSettings) -> BaseOperation<Void> {
-        FirebaseHolder.shared.configureApp()
-        settingsManager.pushSettingsDocumentId = settings.identifier
-        return localSaveOperation(settings: settings)
-    }
-
-    func update(token: String) -> CompoundOperationWrapper<Void?> {
-        guard let documentUUID = settingsManager.pushSettingsDocumentId else {
-            return .createWithError(Web3AlertsSyncServiceError.documentNotFound)
+    func save(
+        notificationsEnabled: Bool,
+        settings: LocalPushSettings,
+        completionHandler: @escaping () -> Void
+    ) {
+        settingsManager.notificationsEnabled = notificationsEnabled
+        let saveOperation = localSaveOperation(settings: settings)
+        saveOperation.completionBlock = { [weak self] in
+            completionHandler()
         }
 
-        FirebaseHolder.shared.configureApp()
-        let fetchOperation = repository.fetchOperation(by: { documentUUID }, options: .init())
+        executingOperationWrapper?.allOperations.forEach {
+            saveOperation.addDependency($0)
+        }
+
+        operationQueue.addOperation(saveOperation)
+    }
+
+    func update(
+        token: String,
+        completionHandler: @escaping () -> Void
+    ) {
+        guard settingsManager.notificationsEnabled else {
+            completionHandler()
+            return
+        }
+        let fetchOperation = repository.fetchOperation(by: { Self.settingsKey }, options: .init())
         let updateSettingsOperation: BaseOperation<LocalPushSettings?> = ClosureOperation {
             if var localSettings = try fetchOperation.extractNoCancellableResultData() {
                 localSettings.pushToken = token
@@ -169,6 +193,16 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         let wrapper = saveWrapper(dependsOn: updateSettingsOperation, forceUpdate: true)
         wrapper.addDependency(operations: [fetchOperation, updateSettingsOperation])
 
-        return wrapper.insertingHead(operations: [fetchOperation, updateSettingsOperation])
+        let updatingWrapper = wrapper.insertingHead(operations: [fetchOperation, updateSettingsOperation])
+
+        updatingWrapper.targetOperation.completionBlock = {
+            completionHandler()
+        }
+
+        executingOperationWrapper.map {
+            updatingWrapper.addDependency(wrapper: $0)
+        }
+
+        operationQueue.addOperations(updatingWrapper.allOperations, waitUntilFinished: false)
     }
 }

@@ -16,7 +16,6 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
-    let alertNotificationsService: Web3AlertsSyncServiceProtocol
     let operationQueue: OperationQueue
     let pushNotificationsService: PushNotificationsServiceProtocol
 
@@ -28,7 +27,6 @@ final class SettingsInteractor {
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        alertNotificationsService: Web3AlertsSyncServiceProtocol,
         pushNotificationsService: PushNotificationsServiceProtocol,
         operationQueue: OperationQueue
     ) {
@@ -38,7 +36,6 @@ final class SettingsInteractor {
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
-        self.alertNotificationsService = alertNotificationsService
         self.pushNotificationsService = pushNotificationsService
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -76,18 +73,12 @@ final class SettingsInteractor {
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
 
-    private func setupAlertNotificationsService() {
-        guard let wallet = selectedWalletSettings.value else {
-            return
+    private func providePushNotificationsStatus() {
+        pushNotificationsService.status { [weak self] status in
+            DispatchQueue.main.async {
+                self?.presenter?.didReceive(pushNotificationsStatus: status)
+            }
         }
-
-        let saveOperation = alertNotificationsService.save(settings: .createDefault(metaAccount: wallet))
-        saveOperation.completionBlock = {
-            self.alertNotificationsService.setup()
-            self.pushNotificationsService.setup()
-            self.pushNotificationsService.register()
-        }
-        operationQueue.addOperations([saveOperation], waitUntilFinished: false)
     }
 }
 
@@ -99,7 +90,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
-        setupAlertNotificationsService()
+        providePushNotificationsStatus()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,
