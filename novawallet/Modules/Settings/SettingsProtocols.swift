@@ -41,7 +41,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(pinConfirmationEnabled: Bool)
     func didReceive(error: SettingsError)
     func didReceiveWalletsState(hasUpdates: Bool)
-    func didReceive(web3AlertSettings: LocalPushSettings?)
+    func didReceive(pushNotificationsStatus: PushNotificationsStatus)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,

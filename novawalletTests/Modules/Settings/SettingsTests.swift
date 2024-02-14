@@ -79,13 +79,13 @@ final class SettingsTests: XCTestCase {
         }
         
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let web3AlertsSyncService = Web3AlertsSyncServiceFactory(
-            storageFacade: SubstrateStorageTestFacade(),
-            operationQueue: operationQueue
-        ).createService()
-        let pushNotificationsService = PushNotificationsService(service: web3AlertsSyncService,
-                                                                operationQueue: operationQueue,
-                                                                logger: Logger.shared)
+      
+        let pushNotificationsService = MockPushNotificationsServiceProtocol()
+        stub(pushNotificationsService) { stub in
+            when(stub).status(completion: any()).then { closure in
+                closure(.off)
+            }
+        }
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: walletSettings,
@@ -95,7 +95,6 @@ final class SettingsTests: XCTestCase {
             settingsManager: InMemorySettingsManager(),
             biometryAuth: biometryAuthMock,
             walletNotificationService: walletNotificationService,
-            alertNotificationsService: web3AlertsSyncService,
             pushNotificationsService: pushNotificationsService,
             operationQueue: operationQueue
         )

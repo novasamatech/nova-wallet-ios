@@ -12,6 +12,7 @@ final class SettingsPresenter {
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
     private var hasWalletsListUpdates: Bool = false
+    private var pushNotificationsStatus: PushNotificationsStatus?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -288,8 +289,6 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             )
         case .walletConnectFailed:
             wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
-        case .web3AlertSettings:
-            break
         }
     }
 
@@ -304,8 +303,8 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         updateAccountView()
     }
 
-    func didReceive(web3AlertSettings _: LocalPushSettings?) {
-        // TODO:
+    func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
+        self.pushNotificationsStatus = pushNotificationsStatus
     }
 }
 

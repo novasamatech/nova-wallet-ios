@@ -30,26 +30,3 @@ struct LocalPushSettings: Codable, Equatable, Identifiable {
         self.notifications = notifications
     }
 }
-
-// TODO: Remove
-extension LocalPushSettings {
-    static func createDefault(
-        token: String = "",
-        uuid: String? = nil,
-        metaAccount: MetaAccountModel
-    ) -> LocalPushSettings {
-        let chainFormat = ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
-        let wallet = Web3AlertWallet(
-            baseSubstrate: try? metaAccount.substrateAccountId?.toAddress(using: chainFormat),
-            baseEthereum: try? metaAccount.ethereumAddress?.toAddress(using: .ethereum),
-            chainSpecific: [:]
-        )
-        return .init(
-            identifier: uuid ?? UUID().uuidString,
-            pushToken: token,
-            updatedAt: Date(),
-            wallets: [wallet],
-            notifications: .init(stakingReward: .all, transfer: .all)
-        )
-    }
-}

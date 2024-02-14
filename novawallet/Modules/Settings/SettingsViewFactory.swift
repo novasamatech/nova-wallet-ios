@@ -26,10 +26,9 @@ struct SettingsViewFactory {
         )
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let alertNotificationsService = Web3AlertsSyncServiceFactory.shared.createService()
         let pushNotificationsService = PushNotificationsService(
-            service: alertNotificationsService,
-            operationQueue: operationQueue,
+            service: nil,
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
@@ -41,7 +40,6 @@ struct SettingsViewFactory {
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
             walletNotificationService: walletNotificationService,
-            alertNotificationsService: alertNotificationsService,
             pushNotificationsService: pushNotificationsService,
             operationQueue: operationQueue
         )

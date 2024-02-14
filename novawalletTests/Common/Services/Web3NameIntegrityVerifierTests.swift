@@ -1,5 +1,4 @@
 import XCTest
-import Foundation
 @testable import novawallet
 
 final class Web3NameIntegrityVerifierTests: XCTestCase {

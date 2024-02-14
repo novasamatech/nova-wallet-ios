@@ -3,28 +3,33 @@ import UserNotifications
 import UIKit
 import FirebaseMessaging
 import RobinHood
+import SoraKeystore
+
+enum PushNotificationsStatus {
+    case on
+    case off
+    case notDetermined
+}
 
 protocol PushNotificationsServiceProtocol {
     func setup()
     func register()
-    func update(deviceToken: Data)
+    func status(completion: @escaping (PushNotificationsStatus) -> Void)
 }
 
 final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol {
-    let service: Web3AlertsSyncServiceProtocol
+    let service: Web3AlertsSyncServiceProtocol?
+    let settingsManager: SettingsManagerProtocol
     let logger: LoggerProtocol
-    let callStore = CancellableCallStore()
-
     private let notificationCenter = UNUserNotificationCenter.current()
-    private let operationQueue: OperationQueue
 
     init(
-        service: Web3AlertsSyncServiceProtocol,
-        operationQueue: OperationQueue,
+        service: Web3AlertsSyncServiceProtocol?,
+        settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.service = service
-        self.operationQueue = operationQueue
+        self.settingsManager = settingsManager
         self.logger = logger
     }
 
@@ -39,6 +44,20 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         }
     }
 
+    func status(completion: @escaping (PushNotificationsStatus) -> Void) {
+        let notificationsEnabled = settingsManager.notificationsEnabled
+        notificationCenter.getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .provisional:
+                completion(notificationsEnabled ? .on : .off)
+            case .denied, .ephemeral:
+                completion(.off)
+            case .notDetermined:
+                completion(.notDetermined)
+            }
+        }
+    }
+
     func setup() {
         Messaging.messaging().delegate = self
         notificationCenter.delegate = self
@@ -47,28 +66,12 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
     func register() {
         register(withOptions: [.alert, .badge, .sound])
     }
-
-    func update(deviceToken: Data) {
-        Messaging.messaging().apnsToken = deviceToken
-    }
 }
 
 extension PushNotificationsService: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        let wrapper = service.update(token: fcmToken ?? "")
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: callStore,
-            runningCallbackIn: nil
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.logger.debug("Push token was updated")
-            case let .failure(error):
-                self?.logger.error(error.localizedDescription)
-            }
+        service?.update(token: fcmToken ?? "") { [weak self] in
+            self?.logger.debug("Push token was updated")
         }
     }
 }

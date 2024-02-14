@@ -1,23 +1,22 @@
 {
- "pushToken": "test-token",
- "updatedAt": "2024-02-02T16:02:34.504051Z",
- "wallets": [
-    {
-      "baseSubstrate": "5GecoStYi2bHzKz6LwE2LWa8MWJxaZYAGjx2WeH8r4RTnQ6e",
-      "baseEthereum": "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      "chainSpecific": {
-        "polkadot": "13b6hRRYPHTxFzs9prvL2YGHQepvd4YhdDb9Tc7khySp3hMN"
+   "updatedAt":"2024-02-08T22:02:29Z",
+   "pushToken":"test-token",
+   "notifications":{
+      "stakingReward":{
+         "type":"all"
+      },
+      "transfer":{
+         "type":"all"
       }
-    }
-  ],
-  "notifications": {
-    "announcements": true,
-    "stakingReward": {
-      "type": "all"
-    },
-    "transfer": {
-      "type": "concrete",
-      "value": ["polkadot"]
-    }
-  }
+   },
+   "identifier":"F586C3FE-34AB-4668-AC10-A1CA24A6D7B1",
+   "wallets":[
+      {
+         "baseEthereum":"0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00",
+         "baseSubstrate":"1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ",
+         "chainSpecific":{
+            
+         }
+      }
+   ]
 }
