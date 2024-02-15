@@ -9,7 +9,6 @@ protocol NotificationsManagementPresenterProtocol: AnyObject {
     func setup()
     func actionRow(_ row: NotificationsManagementRow)
     func save()
-    func viewWillAppear()
 }
 
 protocol NotificationsManagementInteractorInputProtocol: AnyObject {
@@ -21,7 +20,6 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
         announcementsEnabled: Bool
     )
     func remakeSubscription()
-    func checkNotificationsStatus()
 }
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {

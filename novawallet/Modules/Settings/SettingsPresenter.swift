@@ -213,7 +213,7 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             if pushNotificationsStatus == .notDetermined {
                 wireframe.showSetupNotifications(from: view, delegate: self)
             } else {
-                wireframe.showManageNotifications(from: view)
+                wireframe.showManageNotifications(from: view, delegate: self)
             }
         }
     }
@@ -331,8 +331,7 @@ extension SettingsPresenter: Localizable {
 }
 
 extension SettingsPresenter: PushNotificationsStatusDelegate {
-    func pushNotificationsStatusDidUpdate(_ pushNotificationsStatus: PushNotificationsStatus) {
-        self.pushNotificationsStatus = pushNotificationsStatus
-        updateView()
+    func pushNotificationsStatusDidUpdate() {
+        interactor.syncPushNotificationsStatus()
     }
 }

@@ -35,11 +35,6 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
         presenter.setup()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        presenter.viewWillAppear()
-    }
-
     private func setupTableView() {
         tableDataSource.registerCells(for: rootView.tableView)
         rootView.tableView.dataSource = tableDataSource

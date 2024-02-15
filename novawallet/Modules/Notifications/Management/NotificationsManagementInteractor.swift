@@ -39,7 +39,10 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
             pushService = alertServiceFactory.createPushNotificationsService()
         }
 
-        pushService?.status { [weak self] status in
+        pushService?.statusObservable.addObserver(with: self, sendStateOnSubscription: true) { [weak self] _, status in
+            guard let status = status else {
+                return
+            }
             DispatchQueue.main.async {
                 self?.presenter?.didReceive(notificationsEnabled: status == .on)
             }
@@ -55,12 +58,9 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
     }
 
     func enableNotifications() {
-        pushService?.status { [weak self] status in
-            if status == .denied {
-                DispatchQueue.main.async {
-                    self?.presenter?.didReceive(error: .notificationsDisabledInSettings)
-                    self?.presenter?.didReceive(notificationsEnabled: false)
-                }
+        if pushService?.statusObservable.state == .denied {
+            DispatchQueue.main.async {
+                self.presenter?.didReceive(error: .notificationsDisabledInSettings)
             }
         }
     }
@@ -85,11 +85,6 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
 
     func remakeSubscription() {
         subscribeToSettings()
-    }
-
-    func checkNotificationsStatus() {
-        modifiedNotificationsEnabled = nil
-        provideNotificationsStatus()
     }
 }
 

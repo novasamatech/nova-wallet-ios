@@ -52,10 +52,13 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
             syncService = createSyncService()
         }
 
-        return PushNotificationsService(
+        let service = PushNotificationsService(
             service: syncService,
             settingsManager: settingsManager,
             logger: logger
         )
+        service.setup()
+
+        return service
     }
 }

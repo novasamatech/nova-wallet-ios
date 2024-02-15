@@ -1,3 +1,3 @@
 protocol PushNotificationsStatusDelegate: AnyObject {
-    func pushNotificationsStatusDidUpdate(_: PushNotificationsStatus)
+    func pushNotificationsStatusDidUpdate()
 }

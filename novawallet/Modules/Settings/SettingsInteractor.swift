@@ -74,7 +74,13 @@ final class SettingsInteractor {
     }
 
     private func providePushNotificationsStatus() {
-        pushNotificationsService.status { [weak self] status in
+        pushNotificationsService.statusObservable.addObserver(
+            with: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, status in
+            guard let status = status else {
+                return
+            }
             DispatchQueue.main.async {
                 self?.presenter?.didReceive(pushNotificationsStatus: status)
             }
@@ -90,6 +96,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
+        pushNotificationsService.setup()
         providePushNotificationsStatus()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
@@ -122,6 +129,10 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
                 self?.presenter?.didReceive(error: .walletConnectFailed(error))
             }
         }
+    }
+
+    func syncPushNotificationsStatus() {
+        pushNotificationsService.updateStatus()
     }
 }
 

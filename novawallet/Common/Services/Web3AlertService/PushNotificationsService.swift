@@ -13,16 +13,20 @@ enum PushNotificationsStatus {
 }
 
 protocol PushNotificationsServiceProtocol {
+    var statusObservable: Observable<PushNotificationsStatus?> { get set }
     func setup()
-    func register(completion: @escaping () -> Void)
-    func status(completion: @escaping (PushNotificationsStatus) -> Void)
+    func register(completion: @escaping (PushNotificationsStatus) -> Void)
+    func updateStatus()
 }
 
 final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol {
     let service: Web3AlertsSyncServiceProtocol?
     let settingsManager: SettingsManagerProtocol
     let logger: LoggerProtocol
+    var statusObservable: Observable<PushNotificationsStatus?> = .init(state: nil)
+
     private let notificationCenter = UNUserNotificationCenter.current()
+    private let appNotificationCenter = NotificationCenter.default
 
     init(
         service: Web3AlertsSyncServiceProtocol?,
@@ -34,7 +38,14 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         self.logger = logger
     }
 
-    private func register(withOptions options: UNAuthorizationOptions, completion: @escaping (Bool) -> Void) {
+    deinit {
+        appNotificationCenter.removeObserver(self)
+    }
+
+    private func register(
+        withOptions options: UNAuthorizationOptions,
+        completion: @escaping (PushNotificationsStatus) -> Void
+    ) {
         notificationCenter.requestAuthorization(options: options) { [weak self] granted, error in
             if granted {
                 DispatchQueue.main.async {
@@ -44,11 +55,14 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
             if let error = error {
                 self?.logger.error(error.localizedDescription)
             }
-            completion(granted)
+            self?.status { [weak self] newStatus in
+                self?.statusObservable.state = newStatus
+                completion(newStatus)
+            }
         }
     }
 
-    func status(completion: @escaping (PushNotificationsStatus) -> Void) {
+    private func status(completion: @escaping (PushNotificationsStatus) -> Void) {
         let notificationsEnabled = settingsManager.notificationsEnabled
         notificationCenter.getNotificationSettings { settings in
             switch settings.authorizationStatus {
@@ -69,11 +83,28 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
     func setup() {
         Messaging.messaging().delegate = self
         notificationCenter.delegate = self
+        appNotificationCenter.addObserver(
+            self,
+            selector: #selector(appMovedToForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        updateStatus()
     }
 
-    func register(completion: @escaping () -> Void) {
-        register(withOptions: [.alert, .badge, .sound]) { [weak self] _ in
-            completion()
+    func register(completion: @escaping (PushNotificationsStatus) -> Void) {
+        register(withOptions: [.alert, .badge, .sound]) { status in
+            completion(status)
+        }
+    }
+
+    @objc private func appMovedToForeground() {
+        updateStatus()
+    }
+
+    func updateStatus() {
+        status { [weak self] newStatus in
+            self?.statusObservable.state = newStatus
         }
     }
 }

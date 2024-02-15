@@ -7,6 +7,7 @@ final class NotificationsManagementPresenter {
     let interactor: NotificationsManagementInteractorInputProtocol
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
+    weak var delegate: PushNotificationsStatusDelegate?
     private var settings: LocalPushSettings?
     private var notificationsEnabled: Bool?
     private var announcementsEnabled: Bool?
@@ -36,11 +37,13 @@ final class NotificationsManagementPresenter {
         interactor: NotificationsManagementInteractorInputProtocol,
         wireframe: NotificationsManagementWireframeProtocol,
         viewModelFactory: NotificationsManagemenViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        delegate: PushNotificationsStatusDelegate?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.delegate = delegate
         self.localizationManager = localizationManager
     }
 
@@ -80,10 +83,6 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         updateView()
     }
 
-    func viewWillAppear() {
-        interactor.checkNotificationsStatus()
-    }
-
     func actionRow(_ row: NotificationsManagementRow) {
         switch row {
         case .enableNotifications:
@@ -91,8 +90,8 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                 return
             }
             if modifiedNotificationsEnabled == false {
-                interactor.enableNotifications()
                 modifiedNotificationsEnabled = true
+                interactor.enableNotifications()
                 updateView()
             } else {
                 modifiedNotificationsEnabled = false
@@ -145,10 +144,10 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
     }
 
     func didReceive(notificationsEnabled: Bool) {
-        if notificationsEnabled == nil {
-            self.notificationsEnabled = notificationsEnabled
+        self.notificationsEnabled = notificationsEnabled
+        if modifiedNotificationsEnabled == nil {
+            modifiedNotificationsEnabled = notificationsEnabled
         }
-        modifiedNotificationsEnabled = notificationsEnabled
         updateView()
     }
 
@@ -162,7 +161,7 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
 
     func didReceive(error: NotificationsManagementError) {
         switch error {
-        case let .settingsSubscription(error):
+        case .settingsSubscription:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscription()
             }
@@ -179,11 +178,13 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
                 from: view,
                 locale: selectedLocale
             )
+            modifiedNotificationsEnabled = notificationsEnabled
         }
     }
 
     func didReceiveSaveCompletion() {
         view?.stopLoading()
+        delegate?.pushNotificationsStatusDidUpdate()
         wireframe.complete(from: view)
     }
 }

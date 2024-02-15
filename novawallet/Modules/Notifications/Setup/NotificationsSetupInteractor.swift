@@ -26,24 +26,14 @@ final class NotificationsSetupInteractor {
         self.settingsMananger = settingsMananger
     }
 
-    private func provideStatus() {
-        guard let pushNotificationsService = pushNotificationsService else {
-            return
-        }
-        pushNotificationsService.status { [weak self] status in
-            DispatchQueue.main.async {
-                self?.presenter?.didRegister(notificationStatus: status)
-            }
-        }
-    }
-
     private func registerPushNotifications() {
         guard let pushNotificationsService = pushNotificationsService else {
             return
         }
-        pushNotificationsService.setup()
-        pushNotificationsService.register { [weak self] in
-            self?.provideStatus()
+        pushNotificationsService.register { [weak self] status in
+            DispatchQueue.main.async {
+                self?.presenter?.didRegister(notificationStatus: status)
+            }
         }
     }
 
