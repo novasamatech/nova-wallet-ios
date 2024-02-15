@@ -64,7 +64,9 @@ final class NotificationsSetupViewController: UIViewController, ViewHolder {
         )
 
         let attributedText = NSAttributedString(string: termsText)
-        rootView.termsLabel.attributedText = termDecorator.value(for: selectedLocale).decorate(attributedString: attributedText)
+        rootView.termsLabel.attributedText = termDecorator.value(
+            for: selectedLocale
+        ).decorate(attributedString: attributedText)
     }
 
     private func setupHandlers() {

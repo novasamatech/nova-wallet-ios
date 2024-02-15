@@ -136,7 +136,3 @@ final class NotificationView: UIView {
         }
     }
 }
-
-protocol PushNotificationsStatusDelegate: AnyObject {
-    func pushNotificationsStatusDidUpdate(_: PushNotificationsStatus)
-}

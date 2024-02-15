@@ -4,6 +4,11 @@ import SoraKeystore
 
 struct NotificationsSetupViewFactory {
     static func createView(delegate: PushNotificationsStatusDelegate?) -> NotificationsSetupViewProtocol? {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
         let applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared
 
         let legalData = LegalData(
@@ -11,13 +16,11 @@ struct NotificationsSetupViewFactory {
             privacyPolicyUrl: applicationConfig.privacyPolicyURL
         )
 
-        let alertService = Web3AlertsSyncServiceFactory.shared.createService()
-        let pushNotificationsService = PushNotificationsService(
-            service: alertService,
-            settingsManager: SettingsManager.shared,
-            logger: Logger.shared
+        let interactor = NotificationsSetupInteractor(
+            servicesFactory: Web3AlertsServicesFactory.shared,
+            selectedWallet: selectedWallet,
+            chainRegistry: ChainRegistryFacade.sharedRegistry
         )
-        let interactor = NotificationsSetupInteractor(pushNotificationsService: pushNotificationsService)
         let wireframe = NotificationsSetupWireframe()
 
         let presenter = NotificationsSetupPresenter(

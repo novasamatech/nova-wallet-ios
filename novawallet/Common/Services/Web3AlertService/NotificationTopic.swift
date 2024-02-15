@@ -1,6 +1,7 @@
 enum NotificationTopic {
     case appUpdates
     case chainReferendums(chainId: String, trackId: String?)
+    case newChainReferendums(chainId: String, trackId: String?)
 
     var identifier: String {
         switch self {
@@ -8,10 +9,16 @@ enum NotificationTopic {
             return "appUpdates"
         case let .chainReferendums(chainId, trackId):
             return [
-                "chainReferendums",
+                "govState",
                 chainId,
                 trackId
-            ].compactMap { $0 }.joined(separator: "-")
+            ].compactMap { $0 }.joined(separator: ":")
+        case let .newChainReferendums(chainId, trackId):
+            return [
+                "govNewRef",
+                chainId,
+                trackId
+            ].compactMap { $0 }.joined(separator: ":")
         }
     }
 }

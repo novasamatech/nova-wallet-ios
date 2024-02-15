@@ -67,8 +67,7 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
     }
 
     func register(completion: @escaping () -> Void) {
-        register(withOptions: [.alert, .badge, .sound]) { [weak self] success in
-            self?.settingsManager.notificationsEnabled = success
+        register(withOptions: [.alert, .badge, .sound]) { [weak self] _ in
             completion()
         }
     }
