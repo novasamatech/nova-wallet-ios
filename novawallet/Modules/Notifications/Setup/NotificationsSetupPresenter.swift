@@ -34,25 +34,11 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
     }
 
     func activateTerms() {
-        guard let view = view else {
-            return
-        }
-        wireframe.showWeb(
-            url: legalData.termsUrl,
-            from: view,
-            style: .modal
-        )
+        wireframe.show(url: legalData.termsUrl, from: view)
     }
 
     func activatePrivacy() {
-        guard let view = view else {
-            return
-        }
-        wireframe.showWeb(
-            url: legalData.privacyPolicyUrl,
-            from: view,
-            style: .modal
-        )
+        wireframe.show(url: legalData.privacyPolicyUrl, from: view)
     }
 }
 

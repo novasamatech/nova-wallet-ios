@@ -42,13 +42,14 @@ final class NotificationsView: UIView {
         insertSubview(bottomNotificationView, belowSubview: middleNotificationView)
 
         middleNotificationView.snp.makeConstraints { make in
-            make.bottom.equalTo(topNotificationView).offset(20)
+            make.bottom.equalTo(topNotificationView).offset(16)
             make.centerX.equalTo(topNotificationView)
             make.size.equalTo(topNotificationView).multipliedBy(0.9)
         }
 
         bottomNotificationView.snp.makeConstraints { make in
-            make.bottom.equalTo(middleNotificationView).offset(20)
+            make.bottom.equalTo(middleNotificationView).offset(16)
+            make.bottom.equalToSuperview()
             make.centerX.equalTo(middleNotificationView)
             make.size.equalTo(middleNotificationView).multipliedBy(0.9)
         }
@@ -77,7 +78,7 @@ final class NotificationView: UIView {
 
     let subtitleView: UILabel = .create {
         $0.apply(style: .init(
-            textColor: R.color.colorTextSecondary(),
+            textColor: R.color.colorTextPrimary(),
             font: .systemFont(ofSize: 12)
         ))
         $0.numberOfLines = 0
@@ -96,13 +97,16 @@ final class NotificationView: UIView {
         spacing: 10,
         [
             iconView,
-            UIView.hStack(alignment: .top, [
-                UIView.vStack(spacing: 4, [
-                    titleView,
-                    subtitleView
-                ]),
-                accessoryView
-            ])
+            UIView.hStack(
+                alignment: .top,
+                [
+                    UIView.vStack(spacing: 4, [
+                        titleView,
+                        subtitleView
+                    ]),
+                    accessoryView
+                ]
+            )
         ]
     )
 
@@ -116,10 +120,6 @@ final class NotificationView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        .init(width: UIView.noIntrinsicMetric, height: 73)
     }
 
     private func setupLayout() {

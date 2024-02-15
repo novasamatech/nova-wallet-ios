@@ -1,3 +1,5 @@
+import Foundation
+
 protocol NotificationsSetupViewProtocol: ControllerBackedProtocol {}
 
 protocol NotificationsSetupPresenterProtocol: AnyObject {
@@ -19,4 +21,5 @@ protocol NotificationsSetupInteractorOutputProtocol: AnyObject {
 
 protocol NotificationsSetupWireframeProtocol: WebPresentable {
     func complete(on view: ControllerBackedProtocol?)
+    func show(url: URL, from view: ControllerBackedProtocol?)
 }
