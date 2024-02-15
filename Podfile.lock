@@ -95,7 +95,7 @@ PODS:
   - SoraUI/Skrull (1.12.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.8)
-  - SubstrateSdk (1.16.1):
+  - SubstrateSdk (1.17.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -164,7 +164,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.12.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.8`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.16.1`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.17.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -225,7 +225,7 @@ EXTERNAL SOURCES:
     :tag: 4.0.8
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.16.1
+    :tag: 1.17.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -259,7 +259,7 @@ CHECKOUT OPTIONS:
     :tag: 4.0.8
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.16.1
+    :tag: 1.17.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -297,7 +297,7 @@ SPEC CHECKSUMS:
   SoraUI: a3c1163a95c9dd1b6758ca90eb5bda2f4639d634
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: b676ee89781677a2d8d36029a78c970710e2d3eb
-  SubstrateSdk: 15ba30c832d76d336c4986acb3a57b10065ff8ab
+  SubstrateSdk: a67e5c58fc9a7b31f24e1dc43e7dd44568018c83
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -312,6 +312,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 48386bef02489f8bff7ab515c23a48ab812460b6
+PODFILE CHECKSUM: aa3fb53d81d4ec88f1cc632534e55682e7632451
 
 COCOAPODS: 1.13.0

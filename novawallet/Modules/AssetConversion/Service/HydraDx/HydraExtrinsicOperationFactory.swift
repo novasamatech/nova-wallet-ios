@@ -26,6 +26,7 @@ struct HydraSwapParams {
     let params: Params
     let changeFeeCurrency: HydraDx.SetCurrencyCall?
     let updateReferral: HydraDx.LinkReferralCodeCall?
+    let revertFeeCurrency: HydraDx.SetCurrencyCall?
     let swap: Operation
 
     var numberOfExtrinsics: Int {
@@ -57,6 +58,62 @@ final class HydraExtrinsicOperationFactory {
         self.chain = chain
         self.swapService = swapService
         self.runtimeProvider = runtimeProvider
+    }
+
+    private func createOperation(
+        for remoteAssetIn: HydraDx.AssetId,
+        remoteAssetOut: HydraDx.AssetId,
+        callArgs: AssetConversion.CallArgs,
+        route: HydraDx.RemoteSwapRoute
+    ) -> HydraSwapParams.Operation {
+        switch callArgs.direction {
+        case .sell:
+            let amountOutMin = callArgs.amountOut - callArgs.slippage.mul(value: callArgs.amountOut)
+
+            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
+                return .omniSell(
+                    HydraOmnipool.SellCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amount: callArgs.amountIn,
+                        minBuyAmount: amountOutMin
+                    )
+                )
+            } else {
+                return .routedSell(
+                    HydraRouter.SellCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amountIn: callArgs.amountIn,
+                        minAmountOut: amountOutMin,
+                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
+                    )
+                )
+            }
+        case .buy:
+            let amountInMax = callArgs.amountIn + callArgs.slippage.mul(value: callArgs.amountIn)
+
+            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
+                return .omniBuy(
+                    HydraOmnipool.BuyCall(
+                        assetOut: remoteAssetOut,
+                        assetIn: remoteAssetIn,
+                        amount: callArgs.amountOut,
+                        maxSellAmount: amountInMax
+                    )
+                )
+            } else {
+                return .routedBuy(
+                    HydraRouter.BuyCall(
+                        assetIn: remoteAssetIn,
+                        assetOut: remoteAssetOut,
+                        amountOut: callArgs.amountOut,
+                        maxAmountIn: amountInMax,
+                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
+                    )
+                )
+            }
+        }
     }
 
     private func createSwapParams(
@@ -91,72 +148,28 @@ final class HydraExtrinsicOperationFactory {
 
         let route: HydraDx.RemoteSwapRoute = try JsonStringify.decodeFromString(context)
 
-        switch callArgs.direction {
-        case .sell:
-            let amountOutMin = callArgs.amountOut - callArgs.slippage.mul(value: callArgs.amountOut)
+        let operation = createOperation(
+            for: remoteAssetIn,
+            remoteAssetOut: remoteAssetOut,
+            callArgs: callArgs,
+            route: route
+        )
 
-            let operation: HydraSwapParams.Operation
+        let revertCurrencyCall: HydraDx.SetCurrencyCall?
 
-            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
-                operation = .omniSell(
-                    HydraOmnipool.SellCall(
-                        assetIn: remoteAssetIn,
-                        assetOut: remoteAssetOut,
-                        amount: callArgs.amountIn,
-                        minBuyAmount: amountOutMin
-                    )
-                )
-            } else {
-                operation = .routedSell(
-                    HydraRouter.SellCall(
-                        assetIn: remoteAssetIn,
-                        assetOut: remoteAssetOut,
-                        amountIn: callArgs.amountIn,
-                        minAmountOut: amountOutMin,
-                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
-                    )
-                )
-            }
-
-            return HydraSwapParams(
-                params: params,
-                changeFeeCurrency: setCurrencyCall,
-                updateReferral: referralCall,
-                swap: operation
-            )
-        case .buy:
-            let amountInMax = callArgs.amountIn + callArgs.slippage.mul(value: callArgs.amountIn)
-
-            let operation: HydraSwapParams.Operation
-
-            if HydraExtrinsicConverter.isOmnipoolSwap(route: route) {
-                operation = .omniBuy(
-                    HydraOmnipool.BuyCall(
-                        assetOut: remoteAssetOut,
-                        assetIn: remoteAssetIn,
-                        amount: callArgs.amountOut,
-                        maxSellAmount: amountInMax
-                    )
-                )
-            } else {
-                operation = .routedBuy(
-                    HydraRouter.BuyCall(
-                        assetIn: remoteAssetIn,
-                        assetOut: remoteAssetOut,
-                        amountOut: callArgs.amountOut,
-                        maxAmountIn: amountInMax,
-                        route: HydraExtrinsicConverter.convertRouteToTrade(route)
-                    )
-                )
-            }
-
-            return HydraSwapParams(
-                params: params,
-                changeFeeCurrency: setCurrencyCall,
-                updateReferral: referralCall,
-                swap: operation
-            )
+        if params.shouldSetFeeCurrency {
+            revertCurrencyCall = .init(currency: params.currentFeeCurrency)
+        } else {
+            revertCurrencyCall = nil
         }
+
+        return HydraSwapParams(
+            params: params,
+            changeFeeCurrency: setCurrencyCall,
+            updateReferral: referralCall,
+            revertFeeCurrency: revertCurrencyCall,
+            swap: operation
+        )
     }
 
     private func createSwapOperationWrapper(
