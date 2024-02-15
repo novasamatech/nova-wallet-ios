@@ -174,6 +174,11 @@
 		0C38B5052B7B22F000882A8B /* ExtrinsicExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5042B7B22F000882A8B /* ExtrinsicExtraction.swift */; };
 		0C38B5072B7B3B4B00882A8B /* HydraOmnipool+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5062B7B3B4B00882A8B /* HydraOmnipool+Events.swift */; };
 		0C38B5092B7CB96800882A8B /* MaxCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5082B7CB96800882A8B /* MaxCounter.swift */; };
+		0C38B50C2B7DC40600882A8B /* KodaDotNft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B50B2B7DC40600882A8B /* KodaDotNft.swift */; };
+		0C38B50E2B7DC42500882A8B /* KodaDotNftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B50D2B7DC42500882A8B /* KodaDotNftOperationFactory.swift */; };
+		0C38B5102B7DCADF00882A8B /* KodaDotNftSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B50F2B7DCADF00882A8B /* KodaDotNftSyncService.swift */; };
+		0C38B5122B7DCB4400882A8B /* KodaDotNftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5112B7DCB4400882A8B /* KodaDotNftModelConverter.swift */; };
+		0C38B5142B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
@@ -4510,6 +4515,11 @@
 		0C38B5042B7B22F000882A8B /* ExtrinsicExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicExtraction.swift; sourceTree = "<group>"; };
 		0C38B5062B7B3B4B00882A8B /* HydraOmnipool+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraOmnipool+Events.swift"; sourceTree = "<group>"; };
 		0C38B5082B7CB96800882A8B /* MaxCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxCounter.swift; sourceTree = "<group>"; };
+		0C38B50B2B7DC40600882A8B /* KodaDotNft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotNft.swift; sourceTree = "<group>"; };
+		0C38B50D2B7DC42500882A8B /* KodaDotNftOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotNftOperationFactory.swift; sourceTree = "<group>"; };
+		0C38B50F2B7DCADF00882A8B /* KodaDotNftSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotNftSyncService.swift; sourceTree = "<group>"; };
+		0C38B5112B7DCB4400882A8B /* KodaDotNftModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotNftModelConverter.swift; sourceTree = "<group>"; };
+		0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotDetailsInteractor.swift; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
@@ -9169,6 +9179,17 @@
 				0C38B5022B7A86CE00882A8B /* TokensPallet.swift */,
 			);
 			path = TokensPallet;
+			sourceTree = "<group>";
+		};
+		0C38B50A2B7DC3F500882A8B /* KodaDot */ = {
+			isa = PBXGroup;
+			children = (
+				0C38B50B2B7DC40600882A8B /* KodaDotNft.swift */,
+				0C38B50D2B7DC42500882A8B /* KodaDotNftOperationFactory.swift */,
+				0C38B50F2B7DCADF00882A8B /* KodaDotNftSyncService.swift */,
+				0C38B5112B7DCB4400882A8B /* KodaDotNftModelConverter.swift */,
+			);
+			path = KodaDot;
 			sourceTree = "<group>";
 		};
 		0C3C49D12AAF3D5900F0F274 /* Predicate */ = {
@@ -15350,6 +15371,7 @@
 		8499FED027BFA30800712589 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0C38B50A2B7DC3F500882A8B /* KodaDot */,
 				0C8AF7B02B36A86900005AC9 /* Pdc20 */,
 				84E8AC7327BB972500402635 /* RMRK */,
 				8499FE7727BE547C00712589 /* Uniques */,
@@ -19613,6 +19635,7 @@
 				84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */,
 				84AE7ABA27D411CE00495267 /* RMRKV2DetailsInteractor.swift */,
 				0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */,
+				0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */,
 			);
 			path = NftDetails;
 			sourceTree = "<group>";
@@ -21131,6 +21154,7 @@
 				84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */,
 				84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */,
 				84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */,
+				0C38B50E2B7DC42500882A8B /* KodaDotNftOperationFactory.swift in Sources */,
 				84E8BA1F29FFB38600FD9F40 /* EthereumOperationFactory.swift in Sources */,
 				F4C201822728678400B0F3D0 /* ExtrinsicStatus.swift in Sources */,
 				842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */,
@@ -22351,6 +22375,7 @@
 				848F5FE1298911B80058CD74 /* SubqueryDelegationsOperationFactory.swift in Sources */,
 				84BB3CF8267D276D00676FFE /* CrowdloanTableViewCell.swift in Sources */,
 				0C962F8A2AA8614500C0B551 /* TransactionHistoryLocalFilterFactory.swift in Sources */,
+				0C38B5142B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift in Sources */,
 				844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */,
 				2A9F8D52274E4EC4003720E0 /* AccountCreateViewController.swift in Sources */,
 				84113B91255B2CA0009BD21A /* MainTransitionHelper.swift in Sources */,
@@ -22911,6 +22936,7 @@
 				84EBAB06265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift in Sources */,
 				84CA68DF26BEAA0F003B9453 /* ChainModelMapper.swift in Sources */,
 				846A682C274693F700D1A47A /* CrowdloanExternalContributionSource.swift in Sources */,
+				0C38B50C2B7DC40600882A8B /* KodaDotNft.swift in Sources */,
 				AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */,
 				84C34204283124C600156569 /* StakingParachainWireframe.swift in Sources */,
 				0C59E8D12AA5FAC5001E11F3 /* PooledAssetBalance.swift in Sources */,
@@ -23070,6 +23096,7 @@
 				88F34FD428FFE64400712BDE /* ReferendumDAppCellView.swift in Sources */,
 				0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */,
 				8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */,
+				0C38B5102B7DCADF00882A8B /* KodaDotNftSyncService.swift in Sources */,
 				88421059289BBA8D00306F2C /* CurrencyViewFactory.swift in Sources */,
 				84F76ED829006BC400D7206C /* DiscreteGradientSlider+Style.swift in Sources */,
 				841E6AFE25EC12DE0007DDFE /* SelectedValidatorInfo.swift in Sources */,
@@ -24368,6 +24395,7 @@
 				6D603098CCF0B65AA726AD38 /* GovernanceUnlockConfirmViewController.swift in Sources */,
 				7DB7E81CC2F880E4736DE062 /* GovernanceUnlockConfirmViewLayout.swift in Sources */,
 				84B8AA8D29FA41F600347A37 /* WalletConnectStateNewMessage.swift in Sources */,
+				0C38B5122B7DCB4400882A8B /* KodaDotNftModelConverter.swift in Sources */,
 				D5BB3A36DB9ADD25EE43109F /* GovernanceUnlockConfirmViewFactory.swift in Sources */,
 				65CD159259A06EC3E92FD4B0 /* AssetDetailsProtocols.swift in Sources */,
 				AE87017F784657CBEBF49C45 /* AssetDetailsWireframe.swift in Sources */,

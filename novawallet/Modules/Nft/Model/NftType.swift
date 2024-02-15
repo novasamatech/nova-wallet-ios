@@ -5,4 +5,5 @@ enum NftType: UInt16, Equatable {
     case rmrkV1 // this type was deprecated but we keep him for cache purpose
     case rmrkV2
     case pdc20
+    case kodadot
 }

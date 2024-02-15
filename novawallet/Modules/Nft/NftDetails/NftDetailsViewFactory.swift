@@ -88,6 +88,13 @@ struct NftDetailsViewFactory {
                 nftMetadataService: nftMetadataService,
                 operationQueue: operationQueue
             )
+        case .kodadot:
+            return createKodaDotInteractor(
+                from: nftChainModel,
+                accountRepository: accountRepository,
+                nftMetadataService: nftMetadataService,
+                operationQueue: operationQueue
+            )
         case .none:
             return nil
         }
@@ -149,6 +156,21 @@ struct NftDetailsViewFactory {
             nftChainModel: nftChainModel,
             accountRepository: accountRepository,
             nftMetadataService: nftMetadataService,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createKodaDotInteractor(
+        from nftChainModel: NftChainModel,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> KodaDotDetailsInteractor? {
+        KodaDotDetailsInteractor(
+            nftChainModel: nftChainModel,
+            nftMetadataService: nftMetadataService,
+            operationFactory: KodaDotNftOperationFactory(url: KodaDotApi.url),
+            accountRepository: accountRepository,
             operationQueue: operationQueue
         )
     }

@@ -110,7 +110,7 @@ final class NftListViewModelFactory {
 
     private func createPrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
         switch NftType(rawValue: model.nft.type) {
-        case .rmrkV1, .rmrkV2, .uniques, .none:
+        case .rmrkV1, .rmrkV2, .uniques, .kodadot, .none:
             return createNonFungiblePrice(from: model, locale: locale)
         case .pdc20:
             return createFungiblePrice(from: model, locale: locale)
@@ -277,6 +277,8 @@ final class NftListViewModelFactory {
             return createRMRKV2Metadata(from: model.nft, locale: locale)
         case .pdc20:
             return createPdc20Metadata(from: model.nft, locale: locale)
+        case .kodadot:
+            return createRMRKV2Metadata(from: <#T##NftModel#>, locale: <#T##Locale#>)
         case .none:
             return createStaticMetadata(from: model.nft)
         }
