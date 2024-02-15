@@ -125,7 +125,8 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
             manageNotificationsView.controller,
             animated: true
         )
-     }
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

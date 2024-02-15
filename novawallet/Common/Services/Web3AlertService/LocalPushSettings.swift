@@ -3,7 +3,7 @@ import RobinHood
 
 struct LocalPushSettings: Codable, Equatable, Identifiable {
     var identifier: String { Self.getIdentifier() }
-    var remoteIdentifier: String
+    let remoteIdentifier: String
     var pushToken: String
     var updatedAt: Date
     let wallets: [Web3AlertWallet]
@@ -25,5 +25,20 @@ struct LocalPushSettings: Codable, Equatable, Identifiable {
 
     static func getIdentifier() -> String {
         "LocalPushSettingsIdentifier"
+    }
+}
+
+extension LocalPushSettings {
+    func with(_ modifier: (inout Web3AlertNotification) -> Void) -> LocalPushSettings {
+        var editedNotifications = notifications
+        modifier(&editedNotifications)
+
+        return .init(
+            remoteIdentifier: remoteIdentifier,
+            pushToken: pushToken,
+            updatedAt: updatedAt,
+            wallets: wallets,
+            notifications: editedNotifications
+        )
     }
 }

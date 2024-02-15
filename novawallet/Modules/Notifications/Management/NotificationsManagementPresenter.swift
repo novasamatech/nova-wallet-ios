@@ -7,13 +7,30 @@ final class NotificationsManagementPresenter {
     let interactor: NotificationsManagementInteractorInputProtocol
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
-    private var notificationsEnabled: Bool = true
-    private var selectedWallets: [MetaAccountModel] = []
-    private var announcementsEnabled: Bool = true
-    private var sentTokensEnabled: Bool = true
-    private var receiveTokensEnabled: Bool = true
-    private var govEnabled: Bool = true
-    private var stakingRewardsEnabled: Bool = true
+    private var settings: LocalPushSettings?
+    private var notificationsEnabled: Bool?
+    private var announcementsEnabled: Bool?
+
+    @Atomic(defaultValue: nil)
+    private var modifiedSettings: LocalPushSettings?
+    @Atomic(defaultValue: nil)
+    private var modifiedAnnouncementsEnabled: Bool?
+    @Atomic(defaultValue: nil)
+    private var modifiedNotificationsEnabled: Bool?
+
+    private var isSaveAvailable: Bool {
+        guard let settings = settings,
+              let announcementsEnabled = announcementsEnabled,
+              let notificationsEnabled = notificationsEnabled else {
+            return false
+        }
+
+        let parametersWasModified = settings != modifiedSettings ||
+            announcementsEnabled != modifiedAnnouncementsEnabled ||
+            notificationsEnabled != modifiedNotificationsEnabled
+
+        return parametersWasModified
+    }
 
     init(
         interactor: NotificationsManagementInteractorInputProtocol,
@@ -27,15 +44,20 @@ final class NotificationsManagementPresenter {
         self.localizationManager = localizationManager
     }
 
-    func getParameters() -> NotificationsManagementParameters? {
-        .init(
+    private func getParameters() -> NotificationsManagementParameters? {
+        guard let settings = modifiedSettings,
+              let notificationsEnabled = modifiedNotificationsEnabled,
+              let announcementsEnabled = modifiedAnnouncementsEnabled else {
+            return nil
+        }
+        return .init(
             isNotificationsOn: notificationsEnabled,
-            wallets: selectedWallets.count,
+            wallets: settings.wallets.count,
             isAnnouncementsOn: announcementsEnabled,
-            isSentTokensOn: sentTokensEnabled,
-            isReceiveTokensOn: receiveTokensEnabled,
-            isGovernanceOn: govEnabled,
-            isStakingOn: stakingRewardsEnabled
+            isSentTokensOn: settings.notifications.tokenSent,
+            isReceiveTokensOn: settings.notifications.tokenReceived,
+            isGovernanceOn: settings.notifications.govMyDelegatorVoted.notificationsEnabled,
+            isStakingOn: settings.notifications.stakingReward.notificationsEnabled
         )
     }
 
@@ -48,27 +70,46 @@ final class NotificationsManagementPresenter {
             locale: selectedLocale
         )
         view?.didReceive(sections: viewModel)
+        view?.didReceive(isSaveActionAvailabe: isSaveAvailable)
     }
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementPresenterProtocol {
     func setup() {
+        interactor.setup()
         updateView()
+    }
+
+    func viewWillAppear() {
+        interactor.checkNotificationsStatus()
     }
 
     func actionRow(_ row: NotificationsManagementRow) {
         switch row {
         case .enableNotifications:
-            notificationsEnabled.toggle()
-            updateView()
+            guard modifiedNotificationsEnabled != nil else {
+                return
+            }
+            if modifiedNotificationsEnabled == false {
+                interactor.enableNotifications()
+                modifiedNotificationsEnabled = true
+                updateView()
+            } else {
+                modifiedNotificationsEnabled = false
+                updateView()
+            }
         case .announcements:
-            announcementsEnabled.toggle()
+            modifiedAnnouncementsEnabled?.toggle()
             updateView()
         case .sentTokens:
-            sentTokensEnabled.toggle()
+            modifiedSettings = modifiedSettings?.with {
+                $0.tokenSent.toggle()
+            }
             updateView()
         case .receivedTokens:
-            receiveTokensEnabled.toggle()
+            modifiedSettings = modifiedSettings?.with {
+                $0.tokenReceived.toggle()
+            }
             updateView()
         case .wallets:
             wireframe.showWallets(from: view)
@@ -79,10 +120,73 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         }
     }
 
-    func save() {}
+    func save() {
+        guard let settings = modifiedSettings,
+              let notificationsEnabled = modifiedNotificationsEnabled,
+              let modifiedAnnouncementsEnabled = modifiedAnnouncementsEnabled else {
+            return
+        }
+        view?.startLoading()
+        interactor.save(
+            settings: settings,
+            notificationsEnabled: notificationsEnabled,
+            announcementsEnabled: modifiedAnnouncementsEnabled
+        )
+    }
 }
 
-extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {}
+extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
+    func didReceive(settings: LocalPushSettings) {
+        self.settings = settings
+        if modifiedSettings == nil {
+            modifiedSettings = settings
+        }
+        updateView()
+    }
+
+    func didReceive(notificationsEnabled: Bool) {
+        if notificationsEnabled == nil {
+            self.notificationsEnabled = notificationsEnabled
+        }
+        modifiedNotificationsEnabled = notificationsEnabled
+        updateView()
+    }
+
+    func didReceive(announcementsEnabled: Bool) {
+        self.announcementsEnabled = announcementsEnabled
+        if modifiedAnnouncementsEnabled == nil {
+            modifiedAnnouncementsEnabled = announcementsEnabled
+        }
+        updateView()
+    }
+
+    func didReceive(error: NotificationsManagementError) {
+        switch error {
+        case let .settingsSubscription(error):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscription()
+            }
+        case .notificationsDisabledInSettings:
+            let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let title = R.string.localizable.notificationsErrorDisabledInSettingsTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            wireframe.askOpenApplicationSettings(
+                with: message,
+                title: title,
+                from: view,
+                locale: selectedLocale
+            )
+        }
+    }
+
+    func didReceiveSaveCompletion() {
+        view?.stopLoading()
+        wireframe.complete(from: view)
+    }
+}
 
 extension NotificationsManagementPresenter: Localizable {
     func applyLocalization() {

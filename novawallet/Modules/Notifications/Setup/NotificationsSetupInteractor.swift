@@ -1,10 +1,13 @@
 import UIKit
+import SoraKeystore
 
 final class NotificationsSetupInteractor {
     weak var presenter: NotificationsSetupInteractorOutputProtocol?
 
     let servicesFactory: Web3AlertsServicesFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
+    let settingsMananger: SettingsManagerProtocol
+
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushNotificationsService: PushNotificationsServiceProtocol?
 
@@ -14,11 +17,13 @@ final class NotificationsSetupInteractor {
     init(
         servicesFactory: Web3AlertsServicesFactoryProtocol,
         selectedWallet: MetaAccountModel,
-        chainRegistry: ChainRegistryProtocol
+        chainRegistry: ChainRegistryProtocol,
+        settingsMananger: SettingsManagerProtocol
     ) {
         self.servicesFactory = servicesFactory
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
+        self.settingsMananger = settingsMananger
     }
 
     private func provideStatus() {
@@ -73,10 +78,11 @@ final class NotificationsSetupInteractor {
                 govMyReferendumFinished: .concrete([])
             )
         )
+
         syncService.save(
-            notificationsEnabled: true,
             settings: settings
         ) { [weak self] in
+            self?.settingsMananger.notificationsEnabled = true
             self?.registerPushNotifications()
         }
     }

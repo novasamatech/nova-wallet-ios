@@ -11,7 +11,6 @@ enum Web3AlertsSyncServiceError: Error {
 
 protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
     func save(
-        notificationsEnabled: Bool,
         settings: LocalPushSettings,
         completionHandler: @escaping () -> Void
     )
@@ -152,11 +151,9 @@ final class Web3AlertsSyncService: BaseSyncService {
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
     func save(
-        notificationsEnabled: Bool,
         settings: LocalPushSettings,
         completionHandler: @escaping () -> Void
     ) {
-        settingsManager.notificationsEnabled = notificationsEnabled
         let saveOperation = localSaveOperation(settings: settings)
         saveOperation.completionBlock = completionHandler
 

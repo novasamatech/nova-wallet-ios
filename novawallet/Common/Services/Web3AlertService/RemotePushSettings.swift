@@ -12,12 +12,12 @@ struct Web3AlertWallet: Codable, Equatable {
 }
 
 struct Web3AlertNotification: Codable, Equatable {
-    let stakingReward: RemotePushSettings.ChainSelection
-    let transfer: RemotePushSettings.ChainSelection
-    let tokenSent: Bool
-    let tokenReceived: Bool
-    let govMyDelegatorVoted: RemotePushSettings.ChainSelection
-    let govMyReferendumFinished: RemotePushSettings.ChainSelection
+    var stakingReward: RemotePushSettings.ChainSelection
+    var transfer: RemotePushSettings.ChainSelection
+    var tokenSent: Bool
+    var tokenReceived: Bool
+    var govMyDelegatorVoted: RemotePushSettings.ChainSelection
+    var govMyReferendumFinished: RemotePushSettings.ChainSelection
 }
 
 struct RemotePushSettings: Codable, Equatable {
@@ -79,6 +79,17 @@ extension RemotePushSettings {
                 try container.encode(Keys.concrete.rawValue, forKey: .type)
                 try container.encode(value, forKey: .value)
             }
+        }
+    }
+}
+
+extension RemotePushSettings.ChainSelection {
+    var notificationsEnabled: Bool {
+        switch self {
+        case .all:
+            return true
+        case let .concrete(chains):
+            return !chains.isEmpty
         }
     }
 }

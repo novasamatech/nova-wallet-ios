@@ -1,10 +1,12 @@
 import SoraFoundation
 
 final class NotificationsManagementViewController: UIViewController, ViewHolder {
+    typealias DataSource = SettingsTableDataSource<NotificationsManagementRow, NotificationsManagementSection>
     typealias RootViewType = NotificationsManagementViewLayout
 
     let presenter: NotificationsManagementPresenterProtocol
-    lazy var tableDataSource: SettingsTableDataSource<NotificationsManagementRow, NotificationsManagementSection> = .init()
+    lazy var tableDataSource: DataSource = .init()
+    private var saveButtonEnabled: Bool = false
 
     init(
         presenter: NotificationsManagementPresenterProtocol,
@@ -33,6 +35,11 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
+
     private func setupTableView() {
         tableDataSource.registerCells(for: rootView.tableView)
         rootView.tableView.dataSource = tableDataSource
@@ -41,8 +48,12 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.settingsPushNotifications(preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.title = R.string.localizable.commonSave(preferredLanguages: selectedLocale.rLanguages)
+        let rightBarButtonItemTitle = R.string.localizable.commonSave(
+            preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.title = R.string.localizable.settingsPushNotifications(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        navigationItem.rightBarButtonItem?.title = rightBarButtonItemTitle
         rootView.footerView.titleLabel.text = R.string.localizable.notificationsManagementPoweredBy(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -51,8 +62,14 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
 
     private func setupNavigationItem() {
         let title = R.string.localizable.commonSave(preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(saveAction))
-        navigationItem.rightBarButtonItem?.isEnabled = false
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: title,
+            style: .plain,
+            target: self,
+            action: #selector(saveAction)
+        )
+        navigationItem.rightBarButtonItem?.isEnabled = saveButtonEnabled
+        navigationItem.rightBarButtonItem?.tintColor = R.color.colorButtonTextAccent()
     }
 
     @objc private func saveAction() {
@@ -61,7 +78,7 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
 }
 
 extension NotificationsManagementViewController: NotificationsManagementViewProtocol {
-    func didReceive(sections: [(NotificationsManagementSection, [CommonSettingsCellViewModel<NotificationsManagementRow>])]) {
+    func didReceive(sections: [(NotificationsManagementSection, [NotificationsManagementCellModel])]) {
         tableDataSource.sections = sections
         tableDataSource.switchDelegate = self
         rootView.tableView.reloadData()
@@ -69,6 +86,16 @@ extension NotificationsManagementViewController: NotificationsManagementViewProt
 
     func didReceive(isSaveActionAvailabe: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isSaveActionAvailabe
+    }
+
+    func startLoading() {
+        let activityIndicator = UIActivityIndicatorView()
+        navigationItem.rightBarButtonItem = .init(customView: activityIndicator)
+        activityIndicator.startAnimating()
+    }
+
+    func stopLoading() {
+        setupNavigationItem()
     }
 }
 

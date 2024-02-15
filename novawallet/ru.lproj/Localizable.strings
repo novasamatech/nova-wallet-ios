@@ -1508,3 +1508,7 @@
 "notifications.management.general" = "Основное";
 "notifications.management.balances" = "Балансы";
 "notifications.management.others" = "Другое";
+"notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
+"notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
+"notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
+"notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";

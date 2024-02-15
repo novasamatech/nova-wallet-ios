@@ -6,8 +6,9 @@ import RobinHood
 import SoraKeystore
 
 enum PushNotificationsStatus {
+    case authorized
     case on
-    case off
+    case denied
     case notDetermined
 }
 
@@ -52,9 +53,13 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         notificationCenter.getNotificationSettings { settings in
             switch settings.authorizationStatus {
             case .authorized, .provisional:
-                completion(notificationsEnabled ? .on : .off)
+                if notificationsEnabled {
+                    completion(.on)
+                } else {
+                    completion(.authorized)
+                }
             case .denied, .ephemeral:
-                completion(.off)
+                completion(.denied)
             case .notDetermined:
                 completion(.notDetermined)
             }

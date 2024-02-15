@@ -14,7 +14,7 @@ protocol NotificationsManagemenViewModelFactoryProtocol {
     func createSectionViewModels(
         parameters: NotificationsManagementParameters,
         locale: Locale
-    ) -> [(NotificationsManagementSection, [CommonSettingsCellViewModel<NotificationsManagementRow>])]
+    ) -> [(NotificationsManagementSection, [NotificationsManagementCellModel])]
 }
 
 final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewModelFactoryProtocol {
@@ -29,7 +29,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
     func createSectionViewModels(
         parameters: NotificationsManagementParameters,
         locale: Locale
-    ) -> [(NotificationsManagementSection, [CommonSettingsCellViewModel<NotificationsManagementRow>])] {
+    ) -> [(NotificationsManagementSection, [NotificationsManagementCellModel])] {
         [
             (.main, [
                 createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, locale: locale),
@@ -53,7 +53,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         row: NotificationsManagementRow,
         isOn: Bool,
         locale: Locale
-    ) -> CommonSettingsCellViewModel<NotificationsManagementRow> {
+    ) -> NotificationsManagementCellModel {
         .init(
             row: row,
             title: .init(
@@ -68,7 +68,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         row: NotificationsManagementRow,
         isOn: Bool,
         locale: Locale
-    ) -> CommonSettingsCellViewModel<NotificationsManagementRow> {
+    ) -> NotificationsManagementCellModel {
         let accessory = isOn ? R.string.localizable.commonOn(preferredLanguages: locale.rLanguages) :
             R.string.localizable.commonOff(preferredLanguages: locale.rLanguages)
 
@@ -86,7 +86,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         row: NotificationsManagementRow,
         count: Int,
         locale: Locale
-    ) -> CommonSettingsCellViewModel<NotificationsManagementRow> {
+    ) -> NotificationsManagementCellModel {
         let count = quantityFormatter.value(for: locale).string(from: .init(value: count)) ?? ""
 
         return .init(

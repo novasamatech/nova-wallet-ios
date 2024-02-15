@@ -207,15 +207,14 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .wiki:
             show(url: config.wikiURL)
         case .notifications:
-            switch pushNotificationsStatus {
-            case .notDetermined:
-                wireframe.showSetupNotifications(from: view, delegate: self)
-            case .off, .on:
-                wireframe.showManageNotifications(from: view)
-            case .none:
-                break
+            guard pushNotificationsStatus != nil else {
+                return
             }
-
+            if pushNotificationsStatus == .notDetermined {
+                wireframe.showSetupNotifications(from: view, delegate: self)
+            } else {
+                wireframe.showManageNotifications(from: view)
+            }
         }
     }
 
