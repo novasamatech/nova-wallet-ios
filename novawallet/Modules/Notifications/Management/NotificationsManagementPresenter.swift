@@ -12,11 +12,8 @@ final class NotificationsManagementPresenter {
     private var notificationsEnabled: Bool?
     private var announcementsEnabled: Bool?
 
-    @Atomic(defaultValue: nil)
     private var modifiedSettings: LocalPushSettings?
-    @Atomic(defaultValue: nil)
     private var modifiedAnnouncementsEnabled: Bool?
-    @Atomic(defaultValue: nil)
     private var modifiedNotificationsEnabled: Bool?
 
     private var isSaveAvailable: Bool {
@@ -49,8 +46,8 @@ final class NotificationsManagementPresenter {
 
     private func getParameters() -> NotificationsManagementParameters? {
         guard let settings = modifiedSettings,
-              let notificationsEnabled = modifiedNotificationsEnabled,
-              let announcementsEnabled = modifiedAnnouncementsEnabled else {
+              let notificationsEnabled = modifiedNotificationsEnabled ?? notificationsEnabled,
+              let announcementsEnabled = modifiedAnnouncementsEnabled ?? announcementsEnabled else {
             return nil
         }
         return .init(
@@ -178,7 +175,8 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
                 from: view,
                 locale: selectedLocale
             )
-            modifiedNotificationsEnabled = notificationsEnabled
+            modifiedNotificationsEnabled = false
+            updateView()
         }
     }
 

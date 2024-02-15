@@ -80,6 +80,7 @@ extension NotificationsManagementViewController: NotificationsManagementViewProt
     }
 
     func didReceive(isSaveActionAvailabe: Bool) {
+        saveButtonEnabled = isSaveActionAvailabe
         navigationItem.rightBarButtonItem?.isEnabled = isSaveActionAvailabe
     }
 

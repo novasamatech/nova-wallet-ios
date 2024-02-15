@@ -7,6 +7,7 @@ final class NotificationsManagementViewLayout: UIView {
         let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()
         view.separatorStyle = .none
+        view.rowHeight = 48
         return view
     }()
 
@@ -25,7 +26,7 @@ final class NotificationsManagementViewLayout: UIView {
         super.layoutSubviews()
 
         footerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 106))
-        tableView.contentInset = .init(top: 16, left: 0, bottom: footerView.frame.height + 8, right: 0)
+        tableView.contentInset = .init(top: 16, left: 0, bottom: 8, right: 0)
     }
 
     private func setupLayout() {
