@@ -3,38 +3,60 @@ import UserNotifications
 import UIKit
 import FirebaseMessaging
 import RobinHood
+import SoraKeystore
+
+enum PushNotificationsStatus {
+    case on
+    case off
+    case notDetermined
+}
 
 protocol PushNotificationsServiceProtocol {
     func setup()
-    func register()
-    func update(deviceToken: Data)
+    func register(completion: @escaping () -> Void)
+    func status(completion: @escaping (PushNotificationsStatus) -> Void)
 }
 
 final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol {
-    let service: Web3AlertsSyncServiceProtocol
+    let service: Web3AlertsSyncServiceProtocol?
+    let settingsManager: SettingsManagerProtocol
     let logger: LoggerProtocol
-    let callStore = CancellableCallStore()
-
     private let notificationCenter = UNUserNotificationCenter.current()
-    private let operationQueue: OperationQueue
 
     init(
-        service: Web3AlertsSyncServiceProtocol,
-        operationQueue: OperationQueue,
+        service: Web3AlertsSyncServiceProtocol?,
+        settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.service = service
-        self.operationQueue = operationQueue
+        self.settingsManager = settingsManager
         self.logger = logger
     }
 
-    private func register(withOptions options: UNAuthorizationOptions) {
-        notificationCenter.requestAuthorization(options: options) {
-            granted, _ in
-            guard granted else { return }
+    private func register(withOptions options: UNAuthorizationOptions, completion: @escaping (Bool) -> Void) {
+        notificationCenter.requestAuthorization(options: options) { [weak self] granted, error in
+            if granted {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
+            if let error = error {
+                self?.logger.error(error.localizedDescription)
+            }
+            completion(granted)
+        }
+    }
 
-            DispatchQueue.main.async {
-                UIApplication.shared.registerForRemoteNotifications()
+    func status(completion: @escaping (PushNotificationsStatus) -> Void) {
+        let notificationsEnabled = settingsManager.notificationsEnabled
+        notificationCenter.getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .provisional:
+                completion(notificationsEnabled ? .on : .off)
+            case .denied, .ephemeral:
+                completion(.off)
+            case .notDetermined:
+                completion(.notDetermined)
             }
         }
     }
@@ -44,31 +66,17 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         notificationCenter.delegate = self
     }
 
-    func register() {
-        register(withOptions: [.alert, .badge, .sound])
-    }
-
-    func update(deviceToken: Data) {
-        Messaging.messaging().apnsToken = deviceToken
+    func register(completion: @escaping () -> Void) {
+        register(withOptions: [.alert, .badge, .sound]) { [weak self] _ in
+            completion()
+        }
     }
 }
 
 extension PushNotificationsService: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        let wrapper = service.update(token: fcmToken ?? "")
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: callStore,
-            runningCallbackIn: nil
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.logger.debug("Push token was updated")
-            case let .failure(error):
-                self?.logger.error(error.localizedDescription)
-            }
+        service?.update(token: fcmToken ?? "") { [weak self] in
+            self?.logger.debug("Push token was updated")
         }
     }
 }

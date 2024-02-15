@@ -12,11 +12,10 @@ final class SettingsPresenter {
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
     private var hasWalletsListUpdates: Bool = false
+    private var pushNotificationsStatus: PushNotificationsStatus?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
-    private var notificationsSettings: LocalPushSettings?
-    private var notificationsEnabled: Bool = true
 
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
@@ -41,7 +40,7 @@ final class SettingsPresenter {
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
-            isNotificationsOn: notificationsEnabled
+            isNotificationsOn: pushNotificationsStatus == .on
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -208,8 +207,15 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .wiki:
             show(url: config.wikiURL)
         case .notifications:
-            wireframe.showManageNotifications(from: view)
-            //   wireframe.showSetupNotifications(from: view)
+            switch pushNotificationsStatus {
+            case .notDetermined:
+                wireframe.showSetupNotifications(from: view, delegate: self)
+            case .off, .on:
+                wireframe.showManageNotifications(from: view)
+            case .none:
+                break
+            }
+
         }
     }
 
@@ -289,8 +295,6 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             )
         case .walletConnectFailed:
             wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
-        case .web3AlertSettings:
-            break
         }
     }
 
@@ -305,8 +309,9 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         updateAccountView()
     }
 
-    func didReceive(web3AlertSettings _: LocalPushSettings?) {
-        // TODO:
+    func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
+        self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
     }
 }
 
@@ -323,5 +328,12 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension SettingsPresenter: PushNotificationsStatusDelegate {
+    func pushNotificationsStatusDidUpdate(_ pushNotificationsStatus: PushNotificationsStatus) {
+        self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
     }
 }

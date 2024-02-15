@@ -104,8 +104,8 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 
-    func showSetupNotifications(from view: ControllerBackedProtocol?) {
-        guard let setupNotificationsView = NotificationsSetupViewFactory.createView() else {
+    func showSetupNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate?) {
+        guard let setupNotificationsView = NotificationsSetupViewFactory.createView(delegate: delegate) else {
             return
         }
 
@@ -125,8 +125,7 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
             manageNotificationsView.controller,
             animated: true
         )
-    }
-
+     }
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

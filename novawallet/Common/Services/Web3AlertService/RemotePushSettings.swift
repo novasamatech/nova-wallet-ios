@@ -3,17 +3,21 @@ import FirebaseFirestore
 import SubstrateSdk
 import RobinHood
 
-typealias ChainSelection = RemotePushSettings.Selection<[String]>
-
 struct Web3AlertWallet: Codable, Equatable {
+    typealias ChainId = String
+
     let baseSubstrate: AccountAddress?
     let baseEthereum: AccountAddress?
-    let chainSpecific: [String: String]
+    let chainSpecific: [ChainId: AccountAddress]
 }
 
 struct Web3AlertNotification: Codable, Equatable {
-    let stakingReward: ChainSelection
-    let transfer: ChainSelection
+    let stakingReward: RemotePushSettings.ChainSelection
+    let transfer: RemotePushSettings.ChainSelection
+    let tokenSent: Bool
+    let tokenReceived: Bool
+    let govMyDelegatorVoted: RemotePushSettings.ChainSelection
+    let govMyReferendumFinished: RemotePushSettings.ChainSelection
 }
 
 struct RemotePushSettings: Codable, Equatable {
@@ -31,6 +35,8 @@ struct RemotePushSettings: Codable, Equatable {
 }
 
 extension RemotePushSettings {
+    typealias ChainSelection = Selection<[String]>
+
     enum Selection<T: Codable & Equatable>: Codable, Equatable {
         case all
         case concrete(T)

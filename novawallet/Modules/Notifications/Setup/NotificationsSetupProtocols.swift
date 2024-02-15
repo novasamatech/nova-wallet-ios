@@ -1,3 +1,5 @@
+import Foundation
+
 protocol NotificationsSetupViewProtocol: ControllerBackedProtocol {}
 
 protocol NotificationsSetupPresenterProtocol: AnyObject {
@@ -9,11 +11,15 @@ protocol NotificationsSetupPresenterProtocol: AnyObject {
 }
 
 protocol NotificationsSetupInteractorInputProtocol: AnyObject {
+    func setup()
     func enablePushNotifications()
 }
 
-protocol NotificationsSetupInteractorOutputProtocol: AnyObject {}
+protocol NotificationsSetupInteractorOutputProtocol: AnyObject {
+    func didRegister(notificationStatus: PushNotificationsStatus)
+}
 
 protocol NotificationsSetupWireframeProtocol: WebPresentable {
     func complete(on view: ControllerBackedProtocol?)
+    func show(url: URL, from view: ControllerBackedProtocol?)
 }
