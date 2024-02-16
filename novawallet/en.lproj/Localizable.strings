@@ -5,6 +5,7 @@
 "common.use" = "Use";
 "common.error.general.title" = "Error";
 "common.copy.address" = "Copy address";
+"common.clear" = "Clear";
 "operation.error.title" = "Operation Failed";
 "operation.error.message" = "Please, try again later";
 "connection.error.title" = "Connection Failed";

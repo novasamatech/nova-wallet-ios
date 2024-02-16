@@ -6,6 +6,7 @@
 "common.error.general.title" = "Ошибка";
 "common.copy.address" = "Копировать адрес";
 "operation.error.title" = "Ошибка операции";
+"common.clear" = "Очистить";
 "operation.error.message" = "Пожалуйста, попробуйте позже";
 "connection.error.title" = "Ошибка соединения";
 "connection.error.message" = "Пожалуйста, проверьте подключение к Интернету и повторите попытку.";

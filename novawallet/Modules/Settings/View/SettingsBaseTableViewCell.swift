@@ -91,16 +91,15 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
 
         iconImageView.snp.makeConstraints { $0.size.equalTo(24) }
 
-        roundView.addSubview(content)
-        content.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.top.equalToSuperview().inset(12)
-        }
-
         roundView.addSubview(separatorView)
         separatorView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.top.equalToSuperview().inset(separatorView.strokeWidth)
+        }
+        roundView.addSubview(content)
+        content.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.top.equalToSuperview().inset(12)
         }
 
         contentView.addSubview(roundView)
