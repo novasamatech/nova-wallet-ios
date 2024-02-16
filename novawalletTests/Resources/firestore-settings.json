@@ -1,0 +1,22 @@
+{
+   "updatedAt":"2024-02-08T22:02:29Z",
+   "pushToken":"test-token",
+   "notifications":{
+      "stakingReward":{
+         "type":"all"
+      },
+      "transfer":{
+         "type":"all"
+      }
+   },
+   "identifier":"F586C3FE-34AB-4668-AC10-A1CA24A6D7B1",
+   "wallets":[
+      {
+         "baseEthereum":"0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00",
+         "baseSubstrate":"1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ",
+         "chainSpecific":{
+            
+         }
+      }
+   ]
+}

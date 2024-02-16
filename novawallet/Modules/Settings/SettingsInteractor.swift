@@ -16,6 +16,8 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
+    let operationQueue: OperationQueue
+    let pushNotificationsService: PushNotificationsServiceProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -24,7 +26,9 @@ final class SettingsInteractor {
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        pushNotificationsService: PushNotificationsServiceProtocol,
+        operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
@@ -32,6 +36,8 @@ final class SettingsInteractor {
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
+        self.pushNotificationsService = pushNotificationsService
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -66,6 +72,14 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
+
+    private func providePushNotificationsStatus() {
+        pushNotificationsService.status { [weak self] status in
+            DispatchQueue.main.async {
+                self?.presenter?.didReceive(pushNotificationsStatus: status)
+            }
+        }
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -76,6 +90,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
+        providePushNotificationsStatus()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,

@@ -12,6 +12,7 @@ final class SettingsPresenter {
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
     private var hasWalletsListUpdates: Bool = false
+    private var pushNotificationsStatus: PushNotificationsStatus?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -295,6 +296,10 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsListUpdates = hasUpdates
         updateAccountView()
+    }
+
+    func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
+        self.pushNotificationsStatus = pushNotificationsStatus
     }
 }
 

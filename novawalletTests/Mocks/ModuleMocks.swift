@@ -21602,6 +21602,21 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     func didReceive(pushNotificationsStatus: PushNotificationsStatus)  {
+        
+    return cuckoo_manager.call("didReceive(pushNotificationsStatus: PushNotificationsStatus)",
+            parameters: (pushNotificationsStatus),
+            escapingParameters: (pushNotificationsStatus),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(pushNotificationsStatus: pushNotificationsStatus))
+        
+    }
+    
 
 	 struct __StubbingProxy_SettingsInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -21649,6 +21664,11 @@ import UIKit.UIImage
 	    func didReceiveWalletsState<M1: Cuckoo.Matchable>(hasUpdates: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hasUpdates) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceiveWalletsState(hasUpdates: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(pushNotificationsStatus: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PushNotificationsStatus)> where M1.MatchedType == PushNotificationsStatus {
+	        let matchers: [Cuckoo.ParameterMatcher<(PushNotificationsStatus)>] = [wrap(matchable: pushNotificationsStatus) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(pushNotificationsStatus: PushNotificationsStatus)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -21715,6 +21735,12 @@ import UIKit.UIImage
 	        return cuckoo_manager.verify("didReceiveWalletsState(hasUpdates: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(pushNotificationsStatus: M1) -> Cuckoo.__DoNotUse<(PushNotificationsStatus), Void> where M1.MatchedType == PushNotificationsStatus {
+	        let matchers: [Cuckoo.ParameterMatcher<(PushNotificationsStatus)>] = [wrap(matchable: pushNotificationsStatus) { $0 }]
+	        return cuckoo_manager.verify("didReceive(pushNotificationsStatus: PushNotificationsStatus)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -21769,6 +21795,12 @@ import UIKit.UIImage
     
     
      func didReceiveWalletsState(hasUpdates: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(pushNotificationsStatus: PushNotificationsStatus)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

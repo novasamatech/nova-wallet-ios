@@ -77,6 +77,15 @@ final class SettingsTests: XCTestCase {
                 completion(nil)
             }
         }
+        
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+      
+        let pushNotificationsService = MockPushNotificationsServiceProtocol()
+        stub(pushNotificationsService) { stub in
+            when(stub).status(completion: any()).then { closure in
+                closure(.off)
+            }
+        }
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: walletSettings,
@@ -85,7 +94,9 @@ final class SettingsTests: XCTestCase {
             currencyManager: CurrencyManagerStub(),
             settingsManager: InMemorySettingsManager(),
             biometryAuth: biometryAuthMock,
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            pushNotificationsService: pushNotificationsService,
+            operationQueue: operationQueue
         )
 
         let viewModelFactory = SettingsViewModelFactory(

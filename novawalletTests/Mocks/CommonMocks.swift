@@ -6794,6 +6794,174 @@ import Cuckoo
 @testable import novawallet
 @testable import SoraKeystore
 
+import FirebaseMessaging
+import Foundation
+import RobinHood
+import SoraKeystore
+import UIKit
+import UserNotifications
+
+
+ class MockPushNotificationsServiceProtocol: PushNotificationsServiceProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = PushNotificationsServiceProtocol
+    
+     typealias Stubbing = __StubbingProxy_PushNotificationsServiceProtocol
+     typealias Verification = __VerificationProxy_PushNotificationsServiceProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: PushNotificationsServiceProtocol?
+
+     func enableDefaultImplementation(_ stub: PushNotificationsServiceProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func register()  {
+        
+    return cuckoo_manager.call("register()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.register())
+        
+    }
+    
+    
+    
+     func status(completion: @escaping (PushNotificationsStatus) -> Void)  {
+        
+    return cuckoo_manager.call("status(completion: @escaping (PushNotificationsStatus) -> Void)",
+            parameters: (completion),
+            escapingParameters: (completion),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.status(completion: completion))
+        
+    }
+    
+
+	 struct __StubbingProxy_PushNotificationsServiceProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func register() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register()", parameterMatchers: matchers))
+	    }
+	    
+	    func status<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((PushNotificationsStatus) -> Void)> where M1.MatchedType == (PushNotificationsStatus) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((PushNotificationsStatus) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "status(completion: @escaping (PushNotificationsStatus) -> Void)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_PushNotificationsServiceProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func register() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("register()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func status<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((PushNotificationsStatus) -> Void), Void> where M1.MatchedType == (PushNotificationsStatus) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<((PushNotificationsStatus) -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return cuckoo_manager.verify("status(completion: @escaping (PushNotificationsStatus) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class PushNotificationsServiceProtocolStub: PushNotificationsServiceProtocol {
+    
+
+    
+
+    
+    
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func register()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func status(completion: @escaping (PushNotificationsStatus) -> Void)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+@testable import SoraKeystore
+
 import Foundation
 import RobinHood
 

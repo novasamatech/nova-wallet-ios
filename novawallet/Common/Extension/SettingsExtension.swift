@@ -16,6 +16,8 @@ enum SettingsKey: String {
     case skippedAddDelegationTracksHint
     case pinConfirmationEnabled
     case polkadotStakingPromoSeen
+    case notificationsEnabled
+    case announcements
 }
 
 extension SettingsManagerProtocol {
@@ -171,6 +173,26 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.polkadotStakingPromoSeen.rawValue)
+        }
+    }
+
+    var notificationsEnabled: Bool {
+        get {
+            bool(for: SettingsKey.notificationsEnabled.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.notificationsEnabled.rawValue)
+        }
+    }
+
+    var announcements: Bool {
+        get {
+            bool(for: SettingsKey.announcements.rawValue) ?? true
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.announcements.rawValue)
         }
     }
 }
