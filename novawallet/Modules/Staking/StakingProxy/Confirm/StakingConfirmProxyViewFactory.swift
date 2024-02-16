@@ -49,7 +49,7 @@ struct StakingConfirmProxyViewFactory {
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
             title: .init {
-                R.string.localizable.delegationsAddTitle(
+                R.string.localizable.stakingAddProxyConfirmationTitle(
                     preferredLanguages: $0.rLanguages
                 )
             }

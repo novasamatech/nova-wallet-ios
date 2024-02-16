@@ -44,7 +44,7 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingProxyManagementTitle(
+        title = R.string.localizable.stakingSetupYourProxies(
             preferredLanguages: selectedLocale.rLanguages
         )
 
