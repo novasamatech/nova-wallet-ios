@@ -242,14 +242,16 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        if isSuccess {
-            return try findSuccessHydraSwapResult(
-                from: params,
-                callSender: mappingResult.callSender,
-                call: call,
-                eventRecords: eventRecords,
-                codingFactory: codingFactory
-            )
+        let optSuccessResult = try findSuccessHydraSwapResult(
+            from: params,
+            callSender: mappingResult.callSender,
+            call: call,
+            eventRecords: eventRecords,
+            codingFactory: codingFactory
+        )
+
+        if isSuccess, let result = optSuccessResult {
+            return result
         } else {
             return try findFailedHydraSwapResult(
                 from: params,

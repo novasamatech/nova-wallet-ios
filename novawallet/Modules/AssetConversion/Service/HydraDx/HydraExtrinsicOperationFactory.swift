@@ -14,6 +14,10 @@ struct HydraSwapParams {
         var shouldSetReferral: Bool {
             referral == nil
         }
+
+        var isFeeInNativeCurrency: Bool {
+            newFeeCurrency == HydraDx.nativeAssetId
+        }
     }
 
     enum Operation {
@@ -34,7 +38,7 @@ struct HydraSwapParams {
     }
 
     var isFeeInNativeCurrency: Bool {
-        params.newFeeCurrency == HydraDx.nativeAssetId
+        params.isFeeInNativeCurrency
     }
 }
 
@@ -157,7 +161,8 @@ final class HydraExtrinsicOperationFactory {
 
         let revertCurrencyCall: HydraDx.SetCurrencyCall?
 
-        if params.shouldSetFeeCurrency {
+        // if we pay fee in custom asset then revert it to previos one after tx
+        if !params.isFeeInNativeCurrency, params.shouldSetFeeCurrency {
             revertCurrencyCall = .init(currency: params.currentFeeCurrency)
         } else {
             revertCurrencyCall = nil
