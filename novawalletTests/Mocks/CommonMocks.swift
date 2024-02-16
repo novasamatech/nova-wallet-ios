@@ -6842,16 +6842,16 @@ import UserNotifications
     
     
     
-     func register()  {
+     func register(completion: @escaping () -> Void)  {
         
-    return cuckoo_manager.call("register()",
-            parameters: (),
-            escapingParameters: (),
+    return cuckoo_manager.call("register(completion: @escaping () -> Void)",
+            parameters: (completion),
+            escapingParameters: (completion),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.register())
+            defaultCall: __defaultImplStub!.register(completion: completion))
         
     }
     
@@ -6884,9 +6884,9 @@ import UserNotifications
 	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func register() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register()", parameterMatchers: matchers))
+	    func register<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(() -> Void)> where M1.MatchedType == () -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(() -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register(completion: @escaping () -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func status<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((PushNotificationsStatus) -> Void)> where M1.MatchedType == (PushNotificationsStatus) -> Void {
@@ -6917,9 +6917,9 @@ import UserNotifications
 	    }
 	    
 	    @discardableResult
-	    func register() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("register()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func register<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<(() -> Void), Void> where M1.MatchedType == () -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(() -> Void)>] = [wrap(matchable: completion) { $0 }]
+	        return cuckoo_manager.verify("register(completion: @escaping () -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6945,7 +6945,7 @@ import UserNotifications
     
     
     
-     func register()   {
+     func register(completion: @escaping () -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
