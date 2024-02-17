@@ -91,6 +91,14 @@ jobs:
           bundle-version: ${{github.run_number}}
           print-file: true
 
+      - name: Push Notifications Setup
+        env:
+          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
+        run: |
+          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info.plist
+
+          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
+
       - name: Archive
         env:
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
