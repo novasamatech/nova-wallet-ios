@@ -4,7 +4,7 @@ import RobinHood
 final class KodaDotDetailsInteractor: NftDetailsInteractor {
     let operationFactory: KodaDotNftOperationFactoryProtocol
 
-    let issuerCancellable = CancellableCallStore()
+    let metadataCancellable = CancellableCallStore()
     let collectionCancellable = CancellableCallStore()
 
     init(
@@ -25,107 +25,106 @@ final class KodaDotDetailsInteractor: NftDetailsInteractor {
     }
 
     deinit {
-        issuerCancellable.cancel()
+        metadataCancellable.cancel()
         collectionCancellable.cancel()
     }
 
-    private func provideInstanceDetails() {
-        if let image = nftChainModel.nft.media, let url = URL(string: image) {
-            let mediaViewModel = NftImageViewModel(url: url)
+    private func provideMedia(from reference: String?) {
+        if let reference = reference, let imageUrl = nftMetadataService.imageUrl(from: reference) {
+            let mediaViewModel = NftImageViewModel(url: imageUrl)
 
             presenter?.didReceive(media: mediaViewModel)
-
-            provideInstanceMetadata(false)
         } else {
-            provideInstanceMetadata(true)
+            presenter?.didReceive(media: nil)
         }
     }
 
-    private func provideCollection(from model: RMRKV2Collection) {
-        if
-            let issuer = model.issuer,
-            let issuerId = try? issuer.toAccountId(using: chain.chainFormat) {
-            if issuerOperation == nil {
-                issuerOperation = fetchDisplayAddress(for: issuerId, chain: chain) { [weak self] result in
-                    self?.issuerOperation = nil
+    private func provideDefaultInstanceDetails() {
+        let nftModel = nftChainModel.nft
+        let name = nftModel.name ?? nftModel.instanceId
+        presenter?.didReceive(name: name)
+        provideMedia(from: nftModel.media)
+        presenter?.didReceive(description: nil)
+    }
 
-                    switch result {
-                    case let .success(displayAddress):
-                        self?.presenter?.didReceive(issuer: displayAddress)
-                    case let .failure(error):
-                        self?.presenter?.didReceive(error: error)
-                    }
-                }
-            }
-        } else {
-            presenter?.didReceive(issuer: nil)
+    private func provideInstanceDetails(from metadataResponse: KodaDotNftMetadataResponse) {
+        guard let metadata = metadataResponse.metadataEntityById else {
+            provideDefaultInstanceDetails()
+            return
         }
 
-        if let metadata = model.metadata {
-            if collectionOperation == nil {
-                collectionOperation = nftMetadataService.downloadMetadata(
-                    for: metadata,
-                    dispatchQueue: .main
-                ) { [weak self] result in
-                    self?.collectionOperation = nil
+        presenter?.didReceive(name: metadata.name)
+        provideMedia(from: metadata.image)
+        presenter?.didReceive(description: metadata.description)
+    }
 
-                    switch result {
-                    case let .success(json):
-                        let name = json.name?.stringValue ?? model.symbol
+    private func provideInstanceDetails() {
+        metadataCancellable.cancel()
 
-                        let url: URL? = NftMediaAlias.list.compactMap { alias in
-                            if let imageReference = json.dictValue?[alias]?.stringValue {
-                                return self?.nftMetadataService.imageUrl(from: imageReference)
-                            } else {
-                                return nil
-                            }
-                        }.first
-
-                        let collection = NftDetailsCollection(name: name ?? "", imageUrl: url)
-                        self?.presenter?.didReceive(collection: collection)
-                    case let .failure(error):
-                        self?.presenter?.didReceive(error: error)
-                    }
-                }
-            }
-        } else {
-            let collection = NftDetailsCollection(name: model.symbol ?? "", imageUrl: nil)
-            presenter?.didReceive(collection: collection)
+        guard let metadataId = nftChainModel.nft.metadata.flatMap({ String(data: $0, encoding: .utf8) }) else {
+            provideDefaultInstanceDetails()
+            return
         }
+
+        let metadataWrapper = operationFactory.fetchMetadata(for: metadataId)
+
+        executeCancellable(
+            wrapper: metadataWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: metadataCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(reponse):
+                self?.provideInstanceDetails(from: reponse)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    private func provideDefaultCollectionDetails() {
+        presenter?.didReceive(issuer: nil)
+        presenter?.didReceive(collection: nil)
+    }
+
+    private func provideCollectionDetails(from response: KodaDotNftCollectionResponse) {
+        guard let collection = response.collectionEntityById else {
+            provideDefaultCollectionDetails()
+            return
+        }
+
+        provideIssuer(from: collection.issuer)
+
+        let optImageUrl = collection.image.flatMap { nftMetadataService.imageUrl(from: $0) }
+
+        let collectionModel = NftDetailsCollection(name: collection.name ?? "", imageUrl: optImageUrl)
+        presenter?.didReceive(collection: collectionModel)
     }
 
     private func provideCollection() {
-        guard collectionOperation == nil, issuerOperation == nil else {
-            return
-        }
+        collectionCancellable.cancel()
 
         guard let collectionId = nftChainModel.nft.collectionId else {
-            presenter?.didReceive(collection: nil)
-            presenter?.didReceive(issuer: nil)
+            provideDefaultCollectionDetails()
             return
         }
 
-        let fetchOperation = operationFactory.fetchCollection(for: collectionId)
+        let collectionWrapper = operationFactory.fetchCollection(for: collectionId)
 
-        collectionOperation = fetchOperation
-
-        fetchOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                self?.collectionOperation = nil
-
-                do {
-                    if let collection = try fetchOperation.extractNoCancellableResultData().first {
-                        self?.provideCollection(from: collection)
-                    } else {
-                        self?.presenter?.didReceive(collection: nil)
-                    }
-                } catch {
-                    self?.presenter?.didReceive(error: error)
-                }
+        executeCancellable(
+            wrapper: collectionWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: collectionCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(response):
+                self?.provideCollectionDetails(from: response)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
             }
         }
-
-        operationQueue.addOperation(fetchOperation)
     }
 
     private func provideLabel() {

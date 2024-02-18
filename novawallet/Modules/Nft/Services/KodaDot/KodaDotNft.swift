@@ -14,7 +14,7 @@ struct KodaDotNftRemoteModel: Codable {
         }
 
         let identifier: String
-        @OptionStringCodable var max: BigUInt?
+        let max: UInt?
     }
 
     enum CodingKeys: String, CodingKey {
@@ -36,4 +36,25 @@ struct KodaDotNftRemoteModel: Codable {
     let serialNumber: String?
     let currentOwner: AccountAddress
     let collection: Collection?
+}
+
+struct KodaDotNftMetadataResponse: Codable {
+    let metadataEntityById: KodaDotNftMetadataRemoteModel?
+}
+
+struct KodaDotNftMetadataRemoteModel: Codable {
+    let name: String?
+    let description: String?
+    let type: String?
+    let image: String?
+}
+
+struct KodaDotNftCollectionResponse: Codable {
+    let collectionEntityById: KodaDotNftCollectionRemoteModel?
+}
+
+struct KodaDotNftCollectionRemoteModel: Codable {
+    let name: String?
+    let image: String?
+    let issuer: String?
 }

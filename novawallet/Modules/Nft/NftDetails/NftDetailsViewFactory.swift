@@ -91,7 +91,7 @@ struct NftDetailsViewFactory {
         case .kodadot:
             return createKodaDotInteractor(
                 from: nftChainModel,
-                accountRepository: accountRepository,
+                accountRepository: AnyDataProviderRepository(accountRepository),
                 nftMetadataService: nftMetadataService,
                 operationQueue: operationQueue
             )

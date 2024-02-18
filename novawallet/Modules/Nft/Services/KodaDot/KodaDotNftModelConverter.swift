@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 enum KodaDotNftModelConverter {
     static func convert(response: KodaDotNftResponse, chain: ChainModel) throws -> [RemoteNftModel] {
@@ -14,8 +15,8 @@ enum KodaDotNftModelConverter {
                 ownerId: owner,
                 collectionId: entity.collection?.identifier,
                 instanceId: entity.identifier,
-                metadata: entity.metadata,
-                issuanceTotal: entity.collection.flatMap(\.max),
+                metadata: entity.metadata.flatMap { $0.data(using: .utf8) },
+                issuanceTotal: entity.collection?.max.flatMap { BigUInt($0) },
                 issuanceMyAmount: nil,
                 name: entity.name,
                 label: entity.serialNumber,
