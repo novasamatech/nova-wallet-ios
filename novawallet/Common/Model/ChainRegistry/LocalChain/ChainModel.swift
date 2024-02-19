@@ -166,8 +166,12 @@ struct ChainModel: Equatable, Hashable {
         options?.contains(where: { $0 == .swapHub }) ?? false
     }
 
+    var hasSwapHydra: Bool {
+        options?.contains(where: { $0 == .swapHydra }) ?? false
+    }
+
     var hasSwaps: Bool {
-        hasSwapHub
+        hasSwapHub || hasSwapHydra
     }
 
     var hasProxy: Bool {
@@ -293,6 +297,7 @@ enum LocalChainOptions: String, Codable {
     case governanceV1 = "governance-v1"
     case noSubstrateRuntime
     case swapHub = "swap-hub"
+    case swapHydra = "hydradx-swaps"
     case proxy
 }
 

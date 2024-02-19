@@ -4,16 +4,16 @@ import SoraUI
 
 final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     let assetListObservable: AssetListModelObservable
-    let state: GeneralStorageSubscriptionFactoryProtocol
+    let flowState: AssetConversionFlowFacadeProtocol
     let swapCompletionClosure: SwapCompletionClosure?
 
     init(
         assetListObservable: AssetListModelObservable,
-        state: GeneralStorageSubscriptionFactoryProtocol,
+        flowState: AssetConversionFlowFacadeProtocol,
         swapCompletionClosure: SwapCompletionClosure?
     ) {
         self.assetListObservable = assetListObservable
-        self.state = state
+        self.flowState = flowState
         self.swapCompletionClosure = swapCompletionClosure
     }
 
@@ -83,7 +83,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     ) {
         guard let confimView = SwapConfirmViewFactory.createView(
             initState: initState,
-            generalSubscriptonFactory: state,
+            flowState: flowState,
             completionClosure: swapCompletionClosure
         ) else {
             return

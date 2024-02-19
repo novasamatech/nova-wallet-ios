@@ -13,6 +13,8 @@ public protocol ObservableProtocol: AnyObject {
     )
 
     func removeObserver(by owner: AnyObject)
+
+    func hasObserver(_ owner: AnyObject) -> Bool
 }
 
 public class Observable<TState>: ObservableProtocol where TState: Equatable {
@@ -58,6 +60,10 @@ public class Observable<TState>: ObservableProtocol where TState: Equatable {
 
     public func removeObserver(by owner: AnyObject) {
         observers = observers.filter { $0.owner !== owner && $0.owner !== nil }
+    }
+
+    public func hasObserver(_ owner: AnyObject) -> Bool {
+        observers.contains { $0.owner === owner }
     }
 
     private func notify(oldState: TState, newState: TState) {
