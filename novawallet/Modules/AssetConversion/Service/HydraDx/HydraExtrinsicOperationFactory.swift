@@ -161,8 +161,8 @@ final class HydraExtrinsicOperationFactory {
 
         let revertCurrencyCall: HydraDx.SetCurrencyCall?
 
-        // if we pay fee in custom asset then revert it to previos one after tx
-        if !params.isFeeInNativeCurrency, params.shouldSetFeeCurrency {
+        // we always revert to native currency after swap if it is not native
+        if !params.isFeeInNativeCurrency {
             revertCurrencyCall = .init(currency: params.currentFeeCurrency)
         } else {
             revertCurrencyCall = nil
