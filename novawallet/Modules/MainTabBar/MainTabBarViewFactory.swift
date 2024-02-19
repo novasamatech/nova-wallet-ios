@@ -19,7 +19,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let localizationManager = LocalizationManager.shared
         let securedLayer = SecurityLayerService.shared
 
-        let serviceCoordinator = ServiceCoordinator.createDefault()
+        let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingService.shared)
         let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
 
         let interactor = MainTabBarInteractor(
