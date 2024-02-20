@@ -67,7 +67,7 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
             presenter?.didReceive(error: .fetchMetaAccounts(error))
             presenter?.didReceive(yourWallets: [])
         case let .success(accounts):
-            let excludedWalletTypes: [MetaAccountModelType] = [.watchOnly, .proxied]
+            let excludedWalletTypes: [MetaAccountModelType] = [.watchOnly]
             let filteredAccounts = accounts.filter {
                 !excludedWalletTypes.contains($0.metaAccount.type) && $0.chainAccountResponse != nil
             }

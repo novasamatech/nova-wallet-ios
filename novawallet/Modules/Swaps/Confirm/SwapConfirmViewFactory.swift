@@ -5,7 +5,7 @@ import RobinHood
 struct SwapConfirmViewFactory {
     static func createView(
         initState: SwapConfirmInitState,
-        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol,
+        flowState: AssetConversionFlowFacadeProtocol,
         completionClosure: SwapCompletionClosure?
     ) -> SwapConfirmViewProtocol? {
         guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
@@ -15,7 +15,7 @@ struct SwapConfirmViewFactory {
         guard let interactor = createInteractor(
             wallet: wallet,
             initState: initState,
-            generalSubscriptonFactory: generalSubscriptonFactory
+            flowState: flowState
         ) else {
             return nil
         }
@@ -65,7 +65,7 @@ struct SwapConfirmViewFactory {
     private static func createInteractor(
         wallet: MetaAccountModel,
         initState: SwapConfirmInitState,
-        generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
+        flowState: AssetConversionFlowFacadeProtocol
     ) -> SwapConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
@@ -93,11 +93,9 @@ struct SwapConfirmViewFactory {
             userStorageFacade: UserDataStorageFacade.shared
         )
 
-        let feeService = AssetHubFeeService(
-            wallet: wallet,
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue
-        )
+        guard let extrinsicService = try? flowState.createExtrinsicService(for: chain) else {
+            return nil
+        }
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: selectedAccount.metaId,
@@ -116,23 +114,21 @@ struct SwapConfirmViewFactory {
         )
 
         let interactor = SwapConfirmInteractor(
+            flowState: flowState,
             initState: initState,
-            assetConversionFeeService: feeService,
             assetConversionAggregator: assetConversionAggregator,
-            assetConversionExtrinsicService: AssetHubExtrinsicService(chain: chain),
+            assetConversionExtrinsicService: extrinsicService,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
-            runtimeService: runtimeService,
-            extrinsicServiceFactory: extrinsicServiceFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            generalLocalSubscriptionFactory: generalSubscriptonFactory,
             persistExtrinsicService: persistExtrinsicService,
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             selectedWallet: wallet,
             operationQueue: operationQueue,
-            signer: signingWrapper
+            signer: signingWrapper,
+            callPathFactory: AssetHubCallPathFactory()
         )
 
         return interactor

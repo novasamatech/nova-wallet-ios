@@ -80,3 +80,23 @@ extension PrimitiveConstantOperation {
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: fetchWrapper.allOperations)
     }
 }
+
+extension StorageConstantOperation {
+    static func operation(
+        path: ConstantCodingPath,
+        dependingOn factoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        fallbackValue: T? = nil
+    ) -> BaseOperation<T> {
+        let operation = StorageConstantOperation(path: path, fallbackValue: fallbackValue)
+
+        operation.configurationBlock = {
+            do {
+                operation.codingFactory = try factoryOperation.extractNoCancellableResultData()
+            } catch {
+                operation.result = .failure(error)
+            }
+        }
+
+        return operation
+    }
+}

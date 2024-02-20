@@ -9,16 +9,14 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private var canPayFeeInAssetCall = CancellableCallStore()
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
-    private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
     init(
+        flowState: AssetConversionFlowFacadeProtocol,
         assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
-        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
@@ -27,13 +25,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         self.storageRepository = storageRepository
 
         super.init(
+            flowState: flowState,
             assetConversionAggregator: assetConversionAggregatorFactory,
-            assetConversionFeeService: assetConversionFeeService,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            generalSubscriptionFactory: generalLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue
@@ -82,12 +79,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         canPayFeeInAssetCall.cancel()
 
         // we currently don't allow to pay for swaps in non native token for proxy
-        guard let utilityAssetId = asset.chain.utilityChainAssetId(), selectedWallet.type != .proxied else {
+        guard selectedWallet.type != .proxied else {
             presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
             return
         }
 
-        let wrapper = assetConversionAggregator.createAvailableDirectionsWrapper(for: asset)
+        let wrapper = assetConversionAggregator.createCanPayFeeWrapper(in: asset)
 
         executeCancellable(
             wrapper: wrapper,
@@ -96,8 +93,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(chainAssetIds):
-                let canPayFee = chainAssetIds.contains(utilityAssetId)
+            case let .success(canPayFee):
                 self?.presenter?.didReceiveCanPayFeeInPayAsset(canPayFee, chainAssetId: asset.chainAssetId)
             case let .failure(error):
                 self?.presenter?.didReceive(setupError: .payAssetSetFailed(error))
@@ -120,15 +116,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
         let localKeyFactory = LocalStorageKeyFactory()
 
-        let blockNumberKey = try localKeyFactory.createFromStoragePath(.blockNumber, chainId: chain.chainId)
-        let blockNumberRequest = BatchStorageSubscriptionRequest(
-            innerRequest: UnkeyedSubscriptionRequest(
-                storagePath: .blockNumber,
-                localKey: blockNumberKey
-            ),
-            mappingKey: nil
-        )
-
         let accountInfoKey = try localKeyFactory.createFromStoragePath(
             .account,
             accountId: accountId,
@@ -146,7 +133,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         )
 
         remoteSubscription = CallbackBatchStorageSubscription(
-            requests: [blockNumberRequest, accountInfoRequest],
+            requests: [accountInfoRequest],
             connection: connection,
             runtimeService: runtimeService,
             repository: storageRepository,
@@ -160,19 +147,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         remoteSubscription?.subscribe()
     }
 
-    private func updateBlockNumberSubscription(for chain: ChainModel) {
-        clear(dataProvider: &blockNumberSubscription)
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
-    }
-
     override func updateChain(with newChain: ChainModel) {
         let oldChainId = currentChain?.chainId
 
         super.updateChain(with: newChain)
 
         if newChain.chainId != oldChainId {
-            updateBlockNumberSubscription(for: newChain)
-
             do {
                 clearRemoteSubscription()
                 try setupRemoteSubscription(for: newChain)
@@ -182,15 +162,18 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         }
     }
 
-    override func handleBlockNumber(
-        result: Result<BlockNumber?, Error>,
-        chainId: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(blockNumber):
-            presenter?.didReceiveBlockNumber(blockNumber, chainId: chainId)
-        case let .failure(error):
-            presenter?.didReceive(setupError: .blockNumber(error))
+    override func setupReQuoteSubscription(for assetIn: ChainAssetId, assetOut: ChainAssetId) {
+        if
+            let reQuoteService = flowState.getReQuoteService(for: assetIn, assetOut: assetOut),
+            !reQuoteService.hasSubscription(for: self) {
+            reQuoteService.subscribeSyncState(
+                self,
+                queue: .main
+            ) { [weak self] oldIsSyncing, newIsSyncing in
+                if oldIsSyncing, !newIsSyncing {
+                    self?.presenter?.didReceiveQuoteDataChanged()
+                }
+            }
         }
     }
 }
@@ -230,13 +213,5 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         } catch {
             presenter?.didReceive(setupError: .remoteSubscription(error))
         }
-    }
-
-    func retryBlockNumberSubscription() {
-        guard let chain = currentChain else {
-            return
-        }
-
-        updateBlockNumberSubscription(for: chain)
     }
 }

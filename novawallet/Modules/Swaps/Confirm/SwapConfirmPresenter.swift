@@ -96,7 +96,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
                 amountOut: quote.amountOut,
                 receiver: accountId,
                 direction: quoteArgs.direction,
-                slippage: initState.slippage
+                slippage: initState.slippage,
+                context: quote.context
             )
         )
     }
@@ -139,6 +140,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     override func handleNewQuote(_ quote: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {
         quoteResult = .success(quote)
+
+        view?.didReceiveStopLoading()
 
         updateViews()
         estimateFee()
@@ -323,7 +326,8 @@ extension SwapConfirmPresenter {
             amountOut: quote.amountOut,
             receiver: accountId,
             direction: initState.quoteArgs.direction,
-            slippage: initState.slippage
+            slippage: initState.slippage,
+            context: quote.context
         )
 
         view?.didReceiveStartLoading()

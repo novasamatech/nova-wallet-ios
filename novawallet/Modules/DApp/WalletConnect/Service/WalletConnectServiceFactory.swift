@@ -7,7 +7,8 @@ struct WalletConnectServiceFactory {
         chainsStore: ChainsStoreProtocol,
         settingsRepository: AnyDataProviderRepository<DAppSettings>,
         walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        urlHandlingFacade: URLHandlingServiceFacadeProtocol
     ) -> WalletConnectInteractor {
         let metadata = WalletConnectMetadata.nova(with: WalletConnectSecret.getProjectId())
         let service = WalletConnectService(metadata: metadata)
@@ -31,10 +32,11 @@ struct WalletConnectServiceFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        return .init(
+        return WalletConnectInteractor(
             transport: transport,
             presenter: presenter,
-            securedLayer: SecurityLayerService.shared
+            securedLayer: SecurityLayerService.shared,
+            urlHandlingFacade: urlHandlingFacade
         )
     }
 }

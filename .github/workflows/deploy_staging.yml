@@ -91,6 +91,14 @@ jobs:
           bundle-version: ${{github.run_number}}
           print-file: true
 
+      - name: Push Notifications Setup
+        env:
+          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
+        run: |
+          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info.plist
+
+          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
+
       - name: Archive
         env:
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
@@ -134,20 +142,20 @@ jobs:
 
       - name: Upload artifact to Firebase with Dev Id
         if: ${{ github.event.inputs.config == 'Dev' }}
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
           groups: ${{ github.event.inputs.userGroup }}
           file: export/novawallet.ipa
           releaseNotes: ${{ github.event.head_commit.message }}
 
       - name: Upload artifact to Firebase with Staging Id
         if: ${{ github.event.inputs.config == 'Staging' }}
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
         with:
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
           groups: ${{ github.event.inputs.userGroup }}
           file: export/novawallet.ipa
           releaseNotes: ${{ github.event.head_commit.message }}
