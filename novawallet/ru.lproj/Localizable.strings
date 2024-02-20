@@ -962,7 +962,7 @@
 "yield.boost.change.title" = "Изменить коллатора с Yield Boost?";
 "common.yield.boosted" = "С Yield Boost";
 "yield.boost.period.title" = "Частота увеличения стейка";
-"yield.boost.terms.message" = "Yield Boost будет автома��ически стейкать %@ все мои переводные токены выше %@";
+"yield.boost.terms.message" = "Yield Boost будет автоматически стейкать %@ все мои переводные токены выше %@";
 "common.accept.terms" = "Примите условия...";
 "common.not.enough.fee.title" = "Недостаточно токенов для оплаты комиссии";
 "common.days.everyday" = "ежедневно";
@@ -1166,7 +1166,7 @@
 "gov.add.delegation.tracks.title" = "Выберите треки для делегирования";
 "gov.revoke.delegation.title" = "Отменить делегацию";
 "gov.edit.delegation" = "Изменить делегацию";
-"gov.revoke.delegation.confirm.hint" = "После истечения периода выхода и�� делегации не забудьте разблокировать токены";
+"gov.revoke.delegation.confirm.hint" = "После истечения периода выхода из делегации не забудьте разблокировать токены";
 "governance.abstain" = "Воздержался";
 "delegations.sort.delegations" = "Делегациям";
 "delegations.sort.delegatedVotes" = "Голосам делегаторов";
