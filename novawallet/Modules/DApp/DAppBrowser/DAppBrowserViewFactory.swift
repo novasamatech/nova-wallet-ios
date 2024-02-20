@@ -55,6 +55,7 @@ struct DAppBrowserViewFactory {
 
         let view = DAppBrowserViewController(
             presenter: presenter,
+            localRouter: URLLocalRouter.createWithDeeplinks(),
             localizationManager: localizationManager
         )
 
