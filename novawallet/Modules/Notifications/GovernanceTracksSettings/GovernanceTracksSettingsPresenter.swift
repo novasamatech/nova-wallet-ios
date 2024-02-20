@@ -10,15 +10,11 @@ final class GovernanceTracksSettingsPresenter: GovernanceSelectTracksPresenter {
         baseWireframe as? GovernanceTracksSettingsWireframeProtocol
     }
 
-    var interactor: GovernanceTracksSettingsInteractorInputProtocol? {
-        baseInteractor as? GovernanceTracksSettingsInteractorInputProtocol
-    }
-
     private let initialSelectedTracks: Set<TrackIdLocal>?
 
     init(
         initialSelectedTracks: Set<TrackIdLocal>?,
-        interactor: GovernanceTracksSettingsInteractorInputProtocol,
+        interactor: GovernanceSelectTracksInteractorInputProtocol,
         wireframe: GovernanceTracksSettingsWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         chain: ChainModel,
@@ -91,7 +87,3 @@ final class GovernanceTracksSettingsPresenter: GovernanceSelectTracksPresenter {
         wireframe?.proceed(from: view, tracks: selectedTracks, totalCount: tracksCount)
     }
 }
-
-extension GovernanceTracksSettingsPresenter: GovernanceTracksSettingsPresenterProtocol {}
-
-extension GovernanceTracksSettingsPresenter: GovernanceTracksSettingsInteractorOutputProtocol {}

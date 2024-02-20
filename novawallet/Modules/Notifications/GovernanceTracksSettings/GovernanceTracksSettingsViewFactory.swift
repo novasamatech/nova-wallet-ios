@@ -16,8 +16,7 @@ enum GovernanceTracksSettingsViewFactory {
             return nil
         }
 
-        guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()),
-              let runtimeProvider = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chain.chainId) else {
+        guard let runtimeProvider = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chain.chainId) else {
             return nil
         }
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -51,7 +50,7 @@ enum GovernanceTracksSettingsViewFactory {
         )
 
         let view = GovernanceTracksSettingsViewController(
-            presenter: presenter,
+            basePresenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 

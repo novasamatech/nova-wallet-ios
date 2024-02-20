@@ -62,7 +62,7 @@ final class GovernanceNotificationsPresenter {
 
     private func disableChainNotificationsIfNeeded(network: ChainModel.Id) {
         if settings[network]?.allNotificationsIsOff == true {
-            changeSettings(network: network, isEnabled: false)
+            changeSettings(chainId: network, isEnabled: false)
             settings[network].map {
                 self.view?.didReceiveUpdates(for: $0)
             }
@@ -81,28 +81,28 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
         provideClearButtonState()
     }
 
-    func changeSettings(network: ChainModel.Id, isEnabled: Bool) {
-        settings[network]?.enabled = isEnabled
+    func changeSettings(chainId: ChainModel.Id, isEnabled: Bool) {
+        settings[chainId]?.enabled = isEnabled
         provideClearButtonState()
     }
 
-    func changeSettings(network: ChainModel.Id, newReferendum: Bool) {
-        settings[network]?.newReferendum = newReferendum
-        disableChainNotificationsIfNeeded(network: network)
+    func changeSettings(chainId: ChainModel.Id, newReferendum: Bool) {
+        settings[chainId]?.newReferendum = newReferendum
+        disableChainNotificationsIfNeeded(network: chainId)
     }
 
-    func changeSettings(network: ChainModel.Id, referendumUpdate: Bool) {
-        settings[network]?.referendumUpdate = referendumUpdate
-        disableChainNotificationsIfNeeded(network: network)
+    func changeSettings(chainId: ChainModel.Id, referendumUpdate: Bool) {
+        settings[chainId]?.referendumUpdate = referendumUpdate
+        disableChainNotificationsIfNeeded(network: chainId)
     }
 
-    func changeSettings(network: ChainModel.Id, delegateHasVoted: Bool) {
-        settings[network]?.delegateHasVoted = delegateHasVoted
-        disableChainNotificationsIfNeeded(network: network)
+    func changeSettings(chainId: ChainModel.Id, delegateHasVoted: Bool) {
+        settings[chainId]?.delegateHasVoted = delegateHasVoted
+        disableChainNotificationsIfNeeded(network: chainId)
     }
 
-    func selectTracks(network: ChainModel.Id) {
-        guard let chain = chainList.allItems.first(where: { $0.identifier == network }) else {
+    func selectTracks(chainId: ChainModel.Id) {
+        guard let chain = chainList.allItems.first(where: { $0.identifier == chainId }) else {
             return
         }
 

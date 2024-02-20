@@ -5,7 +5,6 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ChainNotificationSettingsViewLayout
 
     private let presenter: ChainNotificationSettingsPresenterProtocol
-    private var clearButtonEnabled: Bool = false
     private var models: [Section] = []
 
     init(
@@ -59,7 +58,7 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
             target: self,
             action: #selector(clearAction)
         )
-        navigationItem.rightBarButtonItem?.isEnabled = clearButtonEnabled
+        navigationItem.rightBarButtonItem?.isEnabled = false
         navigationItem.rightBarButtonItem?.tintColor = R.color.colorButtonTextAccent()
     }
 
@@ -89,14 +88,13 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
         cell.bind(title: model.title, accessoryViewModel: model.accessory)
         cell.iconImageView.isHidden = true
         cell.roundView.fillColor = R.color.colorBlockBackgroundOpaque()!
-
         return cell
     }
 
     private func action(section: Int, row: Int) {
         var model = models[section]
         switch model {
-        case var .rich(cells):
+        case var .collapsable(cells):
             switch cells[row] {
             case let .accessoryCell(accessory):
                 accessory.action()
@@ -120,7 +118,6 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
 
 extension ChainNotificationSettingsViewController {
     func set(isClearActionAvailabe: Bool) {
-        clearButtonEnabled = isClearActionAvailabe
         navigationItem.rightBarButtonItem?.isEnabled = isClearActionAvailabe
     }
 
@@ -142,7 +139,7 @@ extension ChainNotificationSettingsViewController: UITableViewDataSource {
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch models[section] {
-        case let .rich(cells):
+        case let .collapsable(cells):
             guard !cells.isEmpty, case let .switchCell(model) = cells[0] else {
                 return 0
             }
@@ -160,7 +157,7 @@ extension ChainNotificationSettingsViewController: UITableViewDataSource {
             let cell = switchCell(tableView, indexPath: indexPath, model: cell)
             cell.apply(position: .single)
             return cell
-        case let .rich(cells):
+        case let .collapsable(cells):
             switch cells[indexPath.row] {
             case let .accessoryCell(accessoryModel):
                 let cell = accessoryCell(tableView, indexPath: indexPath, model: accessoryModel)
@@ -218,18 +215,18 @@ extension ChainNotificationSettingsViewController {
     }
 
     enum Section {
-        case rich([Row])
+        case collapsable([Row])
         case common(SwitchTitleIconViewModel)
 
         func togglingSwitch(at index: Int) -> Section {
             switch self {
-            case var .rich(cells):
+            case var .collapsable(cells):
                 guard case var .switchCell(model) = cells[index] else {
                     return self
                 }
                 model.isOn.toggle()
                 cells[index] = .switchCell(model)
-                return .rich(cells)
+                return .collapsable(cells)
             case var .common(cell):
                 cell.isOn.toggle()
                 return .common(cell)
@@ -238,7 +235,7 @@ extension ChainNotificationSettingsViewController {
 
         func isOn(at index: Int) -> Bool? {
             switch self {
-            case var .rich(cells):
+            case var .collapsable(cells):
                 return cells[index].isOn
             case var .common(cell):
                 return cell.isOn

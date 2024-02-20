@@ -32,7 +32,7 @@ final class NetworkTracksContainerView: UIView {
         super.layoutSubviews()
 
         let labelSize = titleLabel.intrinsicContentSize
-        let networkViewSize = networkView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize) ?? .zero
+        let networkViewSize = networkView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
 
         let totalOneLineWidth = labelSize.width + horizontalSpacing +
             networkViewSize.width

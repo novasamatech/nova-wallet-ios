@@ -8,11 +8,11 @@ protocol GovernanceNotificationsViewProtocol: ControllerBackedProtocol {
 }
 
 protocol GovernanceNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
-    func changeSettings(network: ChainModel.Id, isEnabled: Bool)
-    func changeSettings(network: ChainModel.Id, newReferendum: Bool)
-    func changeSettings(network: ChainModel.Id, referendumUpdate: Bool)
-    func changeSettings(network: ChainModel.Id, delegateHasVoted: Bool)
-    func selectTracks(network: ChainModel.Id)
+    func changeSettings(chainId: ChainModel.Id, isEnabled: Bool)
+    func changeSettings(chainId: ChainModel.Id, newReferendum: Bool)
+    func changeSettings(chainId: ChainModel.Id, referendumUpdate: Bool)
+    func changeSettings(chainId: ChainModel.Id, delegateHasVoted: Bool)
+    func selectTracks(chainId: ChainModel.Id)
     func proceed()
 }
 

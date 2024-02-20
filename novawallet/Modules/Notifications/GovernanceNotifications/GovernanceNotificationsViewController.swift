@@ -46,19 +46,19 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         let tracks = R.string.localizable.notificationsManagementGovTracks(
             preferredLanguages: selectedLocale.rLanguages
         )
-        return .rich([
+        return .collapsable([
             .switchCell(.init(
                 title: model.name,
                 icon: model.icon,
                 isOn: model.enabled,
-                action: { self.presenter.changeSettings(network: model.identifier, isEnabled: $0) }
+                action: { self.presenter.changeSettings(chainId: model.identifier, isEnabled: $0) }
             )),
             .switchCell(.init(
                 title: newRefendumTitle,
                 icon: nil,
                 isOn: model.newReferendum,
                 action: { self.presenter.changeSettings(
-                    network: model.identifier,
+                    chainId: model.identifier,
                     newReferendum: $0
                 ) }
             )),
@@ -67,7 +67,7 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
                 icon: nil,
                 isOn: model.referendumUpdate,
                 action: { self.presenter.changeSettings(
-                    network: model.identifier,
+                    chainId: model.identifier,
                     referendumUpdate: $0
                 ) }
             )),
@@ -76,14 +76,14 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
                 icon: nil,
                 isOn: model.delegateHasVoted,
                 action: { self.presenter.changeSettings(
-                    network: model.identifier,
+                    chainId: model.identifier,
                     delegateHasVoted: $0
                 ) }
             )),
             .accessoryCell(.init(
                 title: tracks,
                 accessory: tracksSubtitle(from: model.tracks),
-                action: { self.presenter.selectTracks(network: model.identifier) }
+                action: { self.presenter.selectTracks(chainId: model.identifier) }
             ))
         ])
     }
