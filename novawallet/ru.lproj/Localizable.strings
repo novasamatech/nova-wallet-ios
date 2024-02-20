@@ -370,7 +370,7 @@
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.submit.agreement" = "Подтвердить согласие";
-"crowdloan.moonbeam.terms.description" = "Для участия вам необходимо предоставить своё согласие с Условиями использования и Политикой конф��денциальности он-чейн.\nДанная процедура выполняется единоразово и распространяется на все последующие взносы в краудлоун Moonbeam";
+"crowdloan.moonbeam.terms.description" = "Для участия вам необходимо предоставить своё согласие с Условиями использования и Политикой конфиденциальности он-чейн.\nДанная процедура выполняется единоразово и распространяется на все последующие взносы в краудлоун Moonbeam";
 "crowdloan.moonbeam.terms.title" = "Условия использования Moonbeam";
 "crowdloan.moonbeam.missing.account.title" = "Отсутствует аккаунт Moonbeam";
 "crowdloan.moonbeam.missing.account.message" = "Добавьте аккаунт Moonbeam в кошелек, чтобы участвовать в краудлоуне Moonbeam";
