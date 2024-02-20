@@ -21,4 +21,16 @@ extension RuntimeMetadataProtocol {
     func createEventCodingPath(from event: Event) -> EventCodingPath? {
         createEventCodingPath(from: event.moduleIndex, eventIndex: event.eventIndex)
     }
+
+    func eventMatches(_ event: Event, oneOf paths: Set<EventCodingPath>) -> Bool {
+        guard let eventCodingPath = createEventCodingPath(from: event) else {
+            return false
+        }
+
+        return paths.contains(eventCodingPath)
+    }
+
+    func eventMatches(_ event: Event, path: EventCodingPath) -> Bool {
+        eventMatches(event, oneOf: [path])
+    }
 }

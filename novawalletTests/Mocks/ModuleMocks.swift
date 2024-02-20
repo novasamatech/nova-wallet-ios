@@ -21982,6 +21982,36 @@ import UIKit.UIImage
     
     
     
+     func showSetupNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate?)  {
+        
+    return cuckoo_manager.call("showSetupNotifications(from: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate?)",
+            parameters: (view, delegate),
+            escapingParameters: (view, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showSetupNotifications(from: view, delegate: delegate))
+        
+    }
+    
+    
+    
+     func showManageNotifications(from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("showManageNotifications(from: ControllerBackedProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showManageNotifications(from: view))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -22114,6 +22144,16 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showPincodeAuthorization(completion: @escaping (Bool) -> Void)", parameterMatchers: matchers))
 	    }
 	    
+	    func showSetupNotifications<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, PushNotificationsStatusDelegate?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == PushNotificationsStatusDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, PushNotificationsStatusDelegate?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showSetupNotifications(from: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showManageNotifications<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showManageNotifications(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -22215,6 +22255,18 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
+	    func showSetupNotifications<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, PushNotificationsStatusDelegate?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == PushNotificationsStatusDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, PushNotificationsStatusDelegate?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
+	        return cuckoo_manager.verify("showSetupNotifications(from: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showManageNotifications<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showManageNotifications(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -22313,6 +22365,18 @@ import UIKit.UIImage
     
     
      func showPincodeAuthorization(completion: @escaping (Bool) -> Void)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showSetupNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showManageNotifications(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

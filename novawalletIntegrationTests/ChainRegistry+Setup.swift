@@ -3,7 +3,8 @@ import Foundation
 
 extension ChainRegistryFacade {
     static func setupForIntegrationTest(
-        with storageFacade: StorageFacadeProtocol
+        with storageFacade: StorageFacadeProtocol,
+        logger: LoggerProtocol = Logger.shared
     ) -> ChainRegistryProtocol {
         let chainRegistry = ChainRegistryFactory.createDefaultRegistry(from: storageFacade)
         chainRegistry.syncUp()
@@ -15,6 +16,7 @@ extension ChainRegistryFacade {
             target, runningInQueue: .global()
         ) { changes in
             if !changes.isEmpty {
+                logger.debug("Integration Test setup: \(changes)")
                 semaphore.signal()
             }
         }

@@ -95,7 +95,8 @@ final class AssetHubSwapTests: XCTestCase {
             amountOut: quote.amountOut,
             receiver: AccountId.zeroAccountId(of: 32),
             direction: .sell,
-            slippage: .percent(of: 1)
+            slippage: .percent(of: 1),
+            context: nil
         )
         
         let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 0))
@@ -121,7 +122,8 @@ final class AssetHubSwapTests: XCTestCase {
             amountOut: quote.amountOut,
             receiver: AccountId.zeroAccountId(of: 32),
             direction: .sell,
-            slippage: .percent(of: 1)
+            slippage: .percent(of: 1),
+            context: nil
         )
         
         let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 1))
@@ -228,11 +230,20 @@ final class AssetHubSwapTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let feeService = AssetHubFeeService(
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            logger: Logger.shared
+        )
+        
+        let feeService = try AssetConversionFlowFacade(
             wallet: wallet,
             chainRegistry: chainRegistry,
+            userStorageFacade: UserDataStorageTestFacade(),
+            generalSubscriptonFactory: generalLocalSubscriptionFactory,
             operationQueue: operationQueue
-        )
+        ).createFeeService(for: chain)
         
         var feeResult: AssetConversion.FeeResult?
         

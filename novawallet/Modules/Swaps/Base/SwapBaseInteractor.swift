@@ -4,19 +4,24 @@ import BigInt
 
 class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapBaseInteractorInputProtocol {
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
+
+    let flowState: AssetConversionFlowFacadeProtocol
     let assetConversionAggregator: AssetConversionAggregationFactoryProtocol
-    let assetConversionFeeService: AssetConversionFeeServiceProtocol
     let chainRegistry: ChainRegistryProtocol
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let selectedWallet: MetaAccountModel
     let operationQueue: OperationQueue
 
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+        flowState.generalSubscriptonFactory
+    }
+
     private var quoteCall = CancellableCallStore()
 
+    private var assetConversionFeeService: AssetConversionFeeServiceProtocol?
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var feeModelBuilder: AssetHubFeeModelBuilder?
@@ -25,24 +30,22 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     var currentChain: ChainModel?
 
     init(
+        flowState: AssetConversionFlowFacadeProtocol,
         assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
-        assetConversionFeeService: AssetConversionFeeServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        generalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue
     ) {
+        self.flowState = flowState
         self.assetConversionAggregator = assetConversionAggregator
-        self.assetConversionFeeService = assetConversionFeeService
         self.chainRegistry = chainRegistry
         self.assetStorageFactory = assetStorageFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        generalLocalSubscriptionFactory = generalSubscriptionFactory
         self.currencyManager = currencyManager
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
@@ -110,6 +113,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         currentChain = newChain
 
         if newChain.chainId != oldChainId {
+            assetConversionFeeService = try? flowState.createFeeService(for: newChain)
+
             updateAccountInfoProvider(for: newChain)
         }
     }
@@ -168,11 +173,11 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func quote(args: AssetConversion.QuoteArgs) {
         quoteCall.cancel()
 
-        guard let chain = currentChain else {
+        guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
             return
         }
 
-        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
 
         executeCancellable(
             wrapper: wrapper,
@@ -183,10 +188,15 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             switch result {
             case let .success(quote):
                 self?.basePresenter?.didReceive(quote: quote, for: args)
+                self?.setupReQuoteSubscription(for: args.assetIn, assetOut: args.assetOut)
             case let .failure(error):
                 self?.basePresenter?.didReceive(baseError: .quote(error, args))
             }
         }
+    }
+
+    func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
+        // by default we always request quote manually
     }
 
     func fee(args: AssetConversion.CallArgs) {
@@ -194,7 +204,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             return
         }
 
-        assetConversionFeeService.calculate(
+        assetConversionFeeService?.calculate(
             in: feeAsset,
             callArgs: args,
             runCompletionIn: .main
@@ -295,12 +305,12 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         for args: AssetConversion.QuoteArgs,
         completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
     ) {
-        guard let chain = currentChain else {
+        guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
             completion(.failure(ChainRegistryError.connectionUnavailable))
             return
         }
 
-        let wrapper = assetConversionAggregator.createQuoteWrapper(for: chain, args: args)
+        let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
 
         execute(
             wrapper: wrapper,
@@ -309,13 +319,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             callbackClosure: completion
         )
     }
-
-    // MARK: Overridable General Subscription Handlers
-
-    func handleBlockNumber(
-        result _: Result<BlockNumber?, Error>,
-        chainId _: ChainModel.Id
-    ) {}
 }
 
 extension SwapBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {

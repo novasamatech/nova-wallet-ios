@@ -17,6 +17,8 @@ protocol AssetBalanceFormatterFactoryProtocol {
 
     func createAssetPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
 
+    func createTotalPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
+
     func createInputTokenFormatter(
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter>
@@ -40,12 +42,14 @@ class AssetBalanceFormatterFactory {
     private func createTokenFormatterCommon(
         for info: AssetBalanceDisplayInfo,
         roundingMode: NumberFormatter.RoundingMode,
-        preferredPrecisionOffset: UInt8 = 0
+        preferredPrecisionOffset: UInt8 = 0,
+        usesSuffixForBigNumbers: Bool = true
     ) -> LocalizableResource<TokenFormatter> {
         let formatter = createCompoundFormatter(
             for: info.displayPrecision,
             roundingMode: roundingMode,
-            prefferedPrecisionOffset: preferredPrecisionOffset
+            prefferedPrecisionOffset: preferredPrecisionOffset,
+            usesSuffixForBigNumber: usesSuffixForBigNumbers
         )
 
         let tokenFormatter = TokenFormatter(
@@ -65,9 +69,10 @@ class AssetBalanceFormatterFactory {
     private func createCompoundFormatter(
         for preferredPrecision: UInt16,
         roundingMode: NumberFormatter.RoundingMode = .down,
-        prefferedPrecisionOffset: UInt8 = 0
+        prefferedPrecisionOffset: UInt8 = 0,
+        usesSuffixForBigNumber: Bool = true
     ) -> LocalizableDecimalFormatting {
-        let abbreviations: [BigNumberAbbreviation] = [
+        var abbreviations: [BigNumberAbbreviation] = [
             BigNumberAbbreviation(
                 threshold: 0,
                 divisor: 1.0,
@@ -93,26 +98,31 @@ class AssetBalanceFormatterFactory {
                 divisor: 1.0,
                 suffix: "",
                 formatter: nil
-            ),
-            BigNumberAbbreviation(
-                threshold: 1_000_000,
-                divisor: 1_000_000.0,
-                suffix: "M",
-                formatter: nil
-            ),
-            BigNumberAbbreviation(
-                threshold: 1_000_000_000,
-                divisor: 1_000_000_000.0,
-                suffix: "B",
-                formatter: nil
-            ),
-            BigNumberAbbreviation(
-                threshold: 1_000_000_000_000,
-                divisor: 1_000_000_000_000.0,
-                suffix: "T",
-                formatter: nil
             )
         ]
+
+        if usesSuffixForBigNumber {
+            abbreviations.append(contentsOf: [
+                BigNumberAbbreviation(
+                    threshold: 1_000_000,
+                    divisor: 1_000_000.0,
+                    suffix: "M",
+                    formatter: nil
+                ),
+                BigNumberAbbreviation(
+                    threshold: 1_000_000_000,
+                    divisor: 1_000_000_000.0,
+                    suffix: "B",
+                    formatter: nil
+                ),
+                BigNumberAbbreviation(
+                    threshold: 1_000_000_000_000,
+                    divisor: 1_000_000_000_000.0,
+                    suffix: "T",
+                    formatter: nil
+                )
+            ])
+        }
 
         return BigNumberFormatter(
             abbreviations: abbreviations,
@@ -152,6 +162,15 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
 
     func createAssetPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
         createTokenFormatterCommon(for: info, roundingMode: .down, preferredPrecisionOffset: 2)
+    }
+
+    func createTotalPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
+        createTokenFormatterCommon(
+            for: info,
+            roundingMode: .down,
+            preferredPrecisionOffset: 2,
+            usesSuffixForBigNumbers: false
+        )
     }
 
     func createInputTokenFormatter(

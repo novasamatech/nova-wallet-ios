@@ -253,7 +253,7 @@ extension StakingSetupProxyPresenter: StakingSetupProxyInteractorOutputProtocol 
                     recipient: .loaded(value: nil)
                 ))
             }
-        case let .fetchMetaAccounts(error):
+        case .fetchMetaAccounts:
             wireframe.presentRequestStatus(
                 on: view,
                 locale: selectedLocale
