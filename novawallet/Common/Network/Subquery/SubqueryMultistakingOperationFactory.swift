@@ -138,9 +138,9 @@ extension SubqueryMultistakingOperationFactory: MultistakingOffchainOperationFac
         do {
             let query = try buildQuery(for: request)
             let operation = createOperation(for: query) { (result: SubqueryMultistaking.StatsResponse) in
-                let activeStakers = result.activeStakers.groupByNetworkAccountStaking()
-                let rewards = result.rewards.groupByNetworkStaking()
-                let slashes = result.slashes.groupByNetworkStaking()
+                let activeStakers = result.activeStakers?.groupByNetworkAccountStaking() ?? [:]
+                let rewards = result.rewards?.groupByNetworkStaking() ?? [:]
+                let slashes = result.slashes?.groupByNetworkStaking() ?? [:]
 
                 let stateFilterByNetworkStaking = request.stateFilters.groupByNetworkStaking()
 

@@ -48,4 +48,18 @@ struct StorageUpdateData {
 
         changes = update.changes?.compactMap { StorageUpdateChangeData(change: $0) } ?? []
     }
+
+    func getChangesOrdered(by keys: [Data]) -> [StorageUpdateChangeData] {
+        let keyedChanges = changes.reduce(into: [Data: StorageUpdateChangeData]()) { accum, change in
+            accum[change.key] = change
+        }
+
+        return keys.reduce([StorageUpdateChangeData]()) { accum, key in
+            guard let change = keyedChanges[key] else {
+                return accum
+            }
+
+            return accum + [change]
+        }
+    }
 }

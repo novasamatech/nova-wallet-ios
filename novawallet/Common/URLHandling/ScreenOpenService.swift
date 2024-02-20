@@ -56,6 +56,10 @@ final class ScreenOpenService {
 extension ScreenOpenService: ScreenOpenServiceProtocol {
     func handle(url: URL) -> Bool {
         // we are expecting nova/open/{screen}
+        guard url.host == "nova" else {
+            return false
+        }
+
         let pathComponents = url.pathComponents
         guard pathComponents.count == 3 else {
             return false

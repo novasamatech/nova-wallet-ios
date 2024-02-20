@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 final class DAppInteractionFactory {
-    static func createMediator() -> DAppInteractionMediating {
+    static func createMediator(for urlHandlingFacade: URLHandlingServiceFacadeProtocol) -> DAppInteractionMediating {
         let logger = Logger.shared
 
         let presenter = DAppInteractionPresenter(
@@ -26,7 +26,8 @@ final class DAppInteractionFactory {
             chainsStore: chainsStore,
             settingsRepository: settingsRepository,
             walletsRepository: walletsRepository,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            urlHandlingFacade: urlHandlingFacade
         )
 
         let mediator = DAppInteractionMediator(

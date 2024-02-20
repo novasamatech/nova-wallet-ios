@@ -2,12 +2,19 @@ import Foundation
 import RobinHood
 
 protocol AssetConversionExtrinsicServiceProtocol {
-    func fetchExtrinsicBuilderClosure(
-        for args: AssetConversion.CallArgs,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) -> ExtrinsicBuilderClosure
+    func submit(
+        callArgs: AssetConversion.CallArgs,
+        feeAsset: ChainAsset,
+        signer: SigningWrapperProtocol,
+        runCompletionIn queue: DispatchQueue,
+        completion closure: @escaping ExtrinsicSubmitClosure
+    )
 }
 
 enum AssetConversionExtrinsicServiceError: Error {
     case remoteAssetNotFound(ChainAssetId)
+}
+
+protocol AssetConversionCallPathFactoryProtocol {
+    func createHistoryCallPath(for args: AssetConversion.CallArgs) -> CallCodingPath
 }

@@ -36,13 +36,21 @@ struct SwapSetupViewFactory {
             logger: Logger.shared
         )
 
-        guard let interactor = createInteractor(with: generalLocalSubscriptionFactory) else {
+        let flowState = AssetConversionFlowFacade(
+            wallet: selectedWallet,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            userStorageFacade: UserDataStorageFacade.shared,
+            generalSubscriptonFactory: generalLocalSubscriptionFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        guard let interactor = createInteractor(for: flowState) else {
             return nil
         }
 
         let wireframe = SwapSetupWireframe(
             assetListObservable: assetListObservable,
-            state: generalLocalSubscriptionFactory,
+            flowState: flowState,
             swapCompletionClosure: swapCompletionClosure
         )
 
@@ -87,9 +95,7 @@ struct SwapSetupViewFactory {
         return view
     }
 
-    private static func createInteractor(
-        with generalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    ) -> SwapSetupInteractor? {
+    private static func createInteractor(for flowState: AssetConversionFlowFacadeProtocol) -> SwapSetupInteractor? {
         guard let currencyManager = CurrencyManager.shared,
               let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -103,25 +109,18 @@ struct SwapSetupViewFactory {
             operationQueue: operationQueue
         )
 
-        let feeService = AssetHubFeeService(
-            wallet: selectedWallet,
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue
-        )
-
         let assetStorageFactory = AssetStorageInfoOperationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
         let interactor = SwapSetupInteractor(
+            flowState: flowState,
             assetConversionAggregatorFactory: assetConversionAggregator,
-            assetConversionFeeService: feeService,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            generalLocalSubscriptionFactory: generalSubscriptionFactory,
             storageRepository: SubstrateRepositoryFactory().createChainStorageItemRepository(),
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,

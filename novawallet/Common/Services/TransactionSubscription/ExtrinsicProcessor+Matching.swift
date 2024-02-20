@@ -159,9 +159,8 @@ extension ExtrinsicProcessor {
             context: context
         )
 
-        if
-            let callResult = optResult {
-            let call = callResult.call
+        if let callResult = optResult {
+            let call = try callResult.getFirstCallOrThrow()
             let callAccountId = call.args.dest.accountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
             let isAccountMatched = accountId == callResult.callSender || accountId == callAccountId
@@ -175,7 +174,7 @@ extension ExtrinsicProcessor {
                 context: context
             )
 
-            let call = callResult.call
+            let call = try callResult.getFirstCallOrThrow()
 
             let callAccountId = call.args.dest.accountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
@@ -286,7 +285,8 @@ extension ExtrinsicProcessor {
                     context: runtimeJsonContext
                 )
 
-                call = result.call
+                call = try result.getFirstCallOrThrow()
+
                 isAccountMatched = accountId == result.callSender
                 callSender = result.callSender
             }
@@ -427,7 +427,8 @@ extension ExtrinsicProcessor {
             context: context
         )
 
-        let call = callResult.call
+        let call = try callResult.getFirstCallOrThrow()
+
         let callAccountId = call.args.target.accountId
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
         let isAccountMatched = accountId == callResult.callSender || accountId == callAccountId
@@ -520,7 +521,8 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 context: context
             ) {
-            let call = callResult.call
+            let call = try callResult.getFirstCallOrThrow()
+
             let callAccountId = call.args.dest.accountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
             let isAccountMatched = accountId == callResult.callSender || accountId == callAccountId
@@ -532,7 +534,7 @@ extension ExtrinsicProcessor {
                 context: context
             )
 
-            let call = callResult.call
+            let call = try callResult.getFirstCallOrThrow()
 
             let callAccountId = call.args.dest.accountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
@@ -613,7 +615,7 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            let call = callResult.call
+            let call = try callResult.getFirstCallOrThrow()
             let callAccountId = call.args.destinationAccountId
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
             let isAccountMatched = accountId == callResult.callSender || accountId == callAccountId

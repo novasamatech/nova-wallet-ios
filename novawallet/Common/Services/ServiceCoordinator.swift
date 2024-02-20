@@ -99,7 +99,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
 
 extension ServiceCoordinator {
     // swiftlint:disable:next function_body_length
-    static func createDefault() -> ServiceCoordinatorProtocol {
+    static func createDefault(for urlHandlingFacade: URLHandlingServiceFacadeProtocol) -> ServiceCoordinatorProtocol {
         let githubPhishingAPIService = GitHubPhishingServiceFactory.createService()
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -232,7 +232,7 @@ extension ServiceCoordinator {
             githubPhishingService: githubPhishingAPIService,
             equilibriumService: equilibriumService,
             proxySyncService: proxySyncService,
-            dappMediator: DAppInteractionFactory.createMediator(),
+            dappMediator: DAppInteractionFactory.createMediator(for: urlHandlingFacade),
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService
         )

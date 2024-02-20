@@ -29,6 +29,7 @@ protocol ProxiedsUpdateInteractorOutputProtocol: AnyObject {
 
 protocol ProxiedsUpdateWireframeProtocol: AnyObject, WebPresentable {
     func close(from view: ControllerBackedProtocol?)
+    func close(from view: ControllerBackedProtocol?, andPresent url: URL)
 }
 
 enum ProxiedsUpdateError: Error {

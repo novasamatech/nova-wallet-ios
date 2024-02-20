@@ -3,16 +3,8 @@ import SubstrateSdk
 
 indirect enum NestedExtrinsicCallNode<T: Codable> {
     case proxy(proxiedAccountId: AccountId, child: NestedExtrinsicCallNode<T>)
+    case batch(children: [NestedExtrinsicCallNode<T>])
     case call(T)
-
-    var isCall: Bool {
-        switch self {
-        case .proxy:
-            return false
-        case .call:
-            return true
-        }
-    }
 
     var callSender: AccountId? {
         switch self {
@@ -22,17 +14,22 @@ indirect enum NestedExtrinsicCallNode<T: Codable> {
             } else {
                 return proxiedAccountId
             }
+        case let .batch(children):
+            let callSenders = children.compactMap(\.callSender)
+            return callSenders.first
         case .call:
             return nil
         }
     }
 
-    var call: T {
+    var calls: [T] {
         switch self {
         case let .proxy(_, child):
-            return child.call
+            return child.calls
+        case let .batch(children):
+            return children.flatMap(\.calls)
         case let .call(runtimeCall):
-            return runtimeCall
+            return [runtimeCall]
         }
     }
 }
@@ -43,11 +40,18 @@ extension NestedExtrinsicCallNode where T == JSON {
         case let .proxy(proxiedAccountId, child):
             let newChild = try child.mapCall(closure: closure)
             return .proxy(proxiedAccountId: proxiedAccountId, child: newChild)
+        case let .batch(children):
+            let newChildren = try children.map { try $0.mapCall(closure: closure) }
+            return .batch(children: newChildren)
         case let .call(call):
             let newCall = try closure(call)
             return .call(newCall)
         }
     }
+}
+
+enum NestedExtrinsicCallMapResultError: Error {
+    case noCall
 }
 
 struct NestedExtrinsicCallMapResult<T: Codable> {
@@ -62,8 +66,12 @@ struct NestedExtrinsicCallMapResult<T: Codable> {
         }
     }
 
-    var call: T {
-        node.call
+    func getFirstCallOrThrow() throws -> T {
+        if let call = node.calls.first {
+            return call
+        } else {
+            throw NestedExtrinsicCallMapResultError.noCall
+        }
     }
 }
 
@@ -104,7 +112,10 @@ extension NestedExtrinsicCallMapperProtocol {
         context: RuntimeJsonContext?
     ) throws -> NestedExtrinsicCallMapResult<RuntimeCall<NoRuntimeArgs>> {
         let nestedCallPaths: Set<CallCodingPath> = [
-            Proxy.ProxyCall.callPath
+            Proxy.ProxyCall.callPath,
+            UtilityPallet.batchPath,
+            UtilityPallet.batchPath,
+            UtilityPallet.forceBatchPath
         ]
 
         let result = try map(call: call, context: context) { callJson in
@@ -153,7 +164,11 @@ final class NestedExtrinsicCallMapper {
         context: RuntimeJsonContext?,
         matchingClosure: (JSON) -> Bool
     ) throws -> NestedExtrinsicCallNode<JSON> {
-        let proxyCall = try call.map(to: RuntimeCall<Proxy.ProxyCall>.self, with: context?.toRawContext())
+        let proxyCall: RuntimeCall<Proxy.ProxyCall> = try ExtrinsicExtraction.getTypedCall(
+            from: call,
+            context: context
+        )
+
         let node: NestedExtrinsicCallNode<JSON> = try mapNested(
             call: proxyCall.args.call,
             context: context,
@@ -167,6 +182,35 @@ final class NestedExtrinsicCallMapper {
         return .proxy(proxiedAccountId: proxiedAccountId, child: node)
     }
 
+    func mapBatch(
+        call: JSON,
+        context: RuntimeJsonContext?,
+        matchingClosure: (JSON) -> Bool
+    ) throws -> NestedExtrinsicCallNode<JSON> {
+        let batchCall: RuntimeCall<UtilityPallet.Call> = try ExtrinsicExtraction.getTypedCall(
+            from: call,
+            context: context
+        )
+
+        let children: [NestedExtrinsicCallNode<JSON>] = batchCall.args.calls.compactMap { childCall in
+            guard let jsonCall = try? childCall.toScaleCompatibleJSON(with: context?.toRawContext()) else {
+                return nil
+            }
+
+            return try? mapNested(
+                call: jsonCall,
+                context: context,
+                matchingClosure: matchingClosure
+            )
+        }
+
+        guard !children.isEmpty else {
+            throw NestedExtrinsicCallMapperError.noMatch(call)
+        }
+
+        return .batch(children: children)
+    }
+
     func mapNested(
         call: JSON,
         context: RuntimeJsonContext?,
@@ -176,8 +220,10 @@ final class NestedExtrinsicCallMapper {
 
         if let node = optNode {
             return node
+        } else if let proxyNode = try? mapProxy(call: call, context: context, matchingClosure: matchingClosure) {
+            return proxyNode
         } else {
-            return try mapProxy(call: call, context: context, matchingClosure: matchingClosure)
+            return try mapBatch(call: call, context: context, matchingClosure: matchingClosure)
         }
     }
 }
