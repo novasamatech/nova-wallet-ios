@@ -110,9 +110,17 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         case .wallets:
             wireframe.showWallets(from: view)
         case .gov:
-            wireframe.showGovSetup(from: view)
+            wireframe.showGovSetup(
+                from: view,
+                settings: getGovSettings(),
+                completion: changeGovSettings
+            )
         case .staking:
-            wireframe.showStakingRewardsSetup(from: view)
+            wireframe.showStakingRewardsSetup(
+                from: view,
+                selectedChains: getStakingRewardsSettings(),
+                completion: changeStakingRewardsSettings
+            )
         }
     }
 
@@ -128,6 +136,22 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             notificationsEnabled: notificationsEnabled,
             announcementsEnabled: modifiedAnnouncementsEnabled
         )
+    }
+
+    func changeGovSettings(settings _: [ChainModel.Id: GovernanceNotificationsModel]) {
+        // TODO:
+    }
+
+    func getGovSettings() -> [ChainModel.Id: GovernanceNotificationsModel] {
+        [:]
+    }
+
+    func changeStakingRewardsSettings(selectedChains _: Set<ChainModel.Id>, totalChainsCount _: Int) {
+        // TODO:
+    }
+
+    func getStakingRewardsSettings() -> Set<ChainModel.Id> {
+        .init()
     }
 }
 

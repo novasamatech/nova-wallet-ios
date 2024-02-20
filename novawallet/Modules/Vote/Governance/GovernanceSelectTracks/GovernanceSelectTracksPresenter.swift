@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-class GovernanceSelectTracksPresenter {
+class GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtocol {
     weak var baseView: GovernanceSelectTracksViewProtocol?
     let baseWireframe: GovernanceSelectTracksWireframeProtocol
     let baseInteractor: GovernanceSelectTracksInteractorInputProtocol
@@ -138,11 +138,20 @@ class GovernanceSelectTracksPresenter {
 
         updateTracksView()
     }
-}
 
-extension GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtocol {
+    // MARK: - GovernanceSelectTracksPresenterProtocol
+
     func setup() {
         baseInteractor.setup()
+    }
+
+    func select(group: GovernanceSelectTrackViewModel.Group) {
+        switch group {
+        case .all:
+            performSelectAll()
+        case let .concrete(trackGroup, _):
+            performSelect(group: trackGroup)
+        }
     }
 
     func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track) {
@@ -153,15 +162,6 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtoc
         }
 
         updateTracksView()
-    }
-
-    func select(group: GovernanceSelectTrackViewModel.Group) {
-        switch group {
-        case .all:
-            performSelectAll()
-        case let .concrete(trackGroup, _):
-            performSelect(group: trackGroup)
-        }
     }
 
     func proceed() {

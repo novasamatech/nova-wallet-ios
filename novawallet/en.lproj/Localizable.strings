@@ -1511,3 +1511,8 @@
 "notifications.management.others" = "Others";
 "notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
+"notifications.management.gov.new.referendum" = "New Referendum";
+"notifications.management.gov.referendum.update" = "Referendum Update";
+"notifications.management.gov.delegate.has.voted" = "Delegate has voted";
+"notifications.management.gov.tracks" = "Tracks";
+"notifications.management.gov.tracks.title" = "Select tracks for";

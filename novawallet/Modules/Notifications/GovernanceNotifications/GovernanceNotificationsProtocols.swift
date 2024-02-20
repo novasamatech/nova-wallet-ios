@@ -1,45 +1,35 @@
 import UIKit
+import RobinHood
 
 protocol GovernanceNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(isClearActionAvailabe: Bool)
-    func didReceive(viewModel: GovernanceNotificationsViewModel)
+    func didReceive(viewModels: [GovernanceNotificationsModel])
+    func didReceiveUpdates(for viewModel: GovernanceNotificationsModel)
 }
 
 protocol GovernanceNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
-    func changeSettings(network: String, isEnabled: Bool)
-    func changeSettings(network: String, new: Bool)
-    func changeSettings(network: String, update: Bool)
-    func changeSettings(network: String, delegate: Bool)
-    func selectTracks(network: String)
+    func changeSettings(network: ChainModel.Id, isEnabled: Bool)
+    func changeSettings(network: ChainModel.Id, newReferendum: Bool)
+    func changeSettings(network: ChainModel.Id, referendumUpdate: Bool)
+    func changeSettings(network: ChainModel.Id, delegateHasVoted: Bool)
+    func selectTracks(network: ChainModel.Id)
+    func proceed()
 }
 
-protocol GovernanceNotificationsInteractorInputProtocol: AnyObject {}
+protocol GovernanceNotificationsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol GovernanceNotificationsInteractorOutputProtocol: AnyObject {}
+protocol GovernanceNotificationsInteractorOutputProtocol: AnyObject {
+    func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])
+}
 
-protocol GovernanceNotificationsWireframeProtocol: AnyObject {}
-
-struct GovernanceNotificationsViewModel {
-    let extendedSettings: [ExtendedNetworkSettings]
-    let settings: [NetworkSettings]
-
-    struct ExtendedNetworkSettings {
-        let icon: UIImage?
-        let name: String
-        let settings: RichSettings
-        let enabled: Bool
-    }
-
-    struct RichSettings {
-        let new: Bool
-        let update: Bool
-        let delegate: Bool
-        let tracks: String
-    }
-
-    struct NetworkSettings {
-        let icon: UIImage?
-        let name: String
-        let enabled: Bool
-    }
+protocol GovernanceNotificationsWireframeProtocol: AnyObject {
+    func showTracks(
+        from view: ControllerBackedProtocol?,
+        for chain: ChainModel,
+        selectedTracks: Set<TrackIdLocal>?,
+        completion: @escaping SelectTracksClosure
+    )
+    func complete(settings: [ChainModel.Id: GovernanceNotificationsModel])
 }

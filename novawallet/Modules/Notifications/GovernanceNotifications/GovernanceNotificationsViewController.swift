@@ -3,12 +3,16 @@ import SoraFoundation
 
 final class GovernanceNotificationsViewController: ChainNotificationSettingsViewController {
     let presenter: GovernanceNotificationsPresenterProtocol
+    let quantityFormatter: LocalizableResource<NumberFormatter>
+    private var viewModels: [GovernanceNotificationsModel] = []
 
     init(
         presenter: GovernanceNotificationsPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.presenter = presenter
+        self.quantityFormatter = quantityFormatter
         super.init(
             presenter: presenter,
             localizationManager: localizationManager
@@ -20,42 +24,80 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createSections(from model: GovernanceNotificationsViewModel) -> [ChainNotificationSettingsViewController.Section] {
-        let richSections = model.extendedSettings.map { settings in
-            Section.rich([
-                .switchCell(.init(
-                    title: .init(title: settings.name, icon: settings.icon),
-                    isOn: settings.enabled,
-                    action: { self.presenter.changeSettings(network: settings.name, isEnabled: $0) }
-                )),
-                .switchCell(.init(
-                    title: .init(title: "New Referendum", icon: settings.icon),
-                    isOn: settings.settings.new,
-                    action: { self.presenter.changeSettings(network: settings.name, new: $0) }
-                )),
-                .switchCell(.init(
-                    title: .init(title: "Referendum Update", icon: settings.icon),
-                    isOn: settings.settings.update,
-                    action: { self.presenter.changeSettings(network: settings.name, update: $0) }
-                )),
-                .switchCell(.init(
-                    title: .init(title: "Delegate has voted", icon: settings.icon),
-                    isOn: settings.settings.delegate,
-                    action: { self.presenter.changeSettings(network: settings.name, delegate: $0) }
-                )),
-                .accessoryCell(.init(
-                    title: .init(title: "Tracks", icon: nil),
-                    accessory: settings.settings.tracks,
-                    action: { self.presenter.selectTracks(network: settings.name) }
-                ))
-            ])
-        }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        presenter.proceed()
+    }
 
-        let sections = model.settings.map {
-            Section.common(.init(title: .init(title: $0.name, icon: $0.icon), isOn: $0.enabled, action: { print($0) }))
-        }
+    private func createSections() -> [ChainNotificationSettingsViewController.Section] {
+        viewModels.map(createSection)
+    }
 
-        return richSections + sections
+    private func createSection(from model: GovernanceNotificationsModel) -> Section {
+        let newRefendumTitle = R.string.localizable.notificationsManagementGovNewReferendum(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let referendumUpdate = R.string.localizable.notificationsManagementGovReferendumUpdate(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let delegateHasVoted = R.string.localizable.notificationsManagementGovDelegateHasVoted(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let tracks = R.string.localizable.notificationsManagementGovTracks(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        return .rich([
+            .switchCell(.init(
+                title: model.name,
+                icon: model.icon,
+                isOn: model.enabled,
+                action: { self.presenter.changeSettings(network: model.identifier, isEnabled: $0) }
+            )),
+            .switchCell(.init(
+                title: newRefendumTitle,
+                icon: nil,
+                isOn: model.newReferendum,
+                action: { self.presenter.changeSettings(
+                    network: model.identifier,
+                    newReferendum: $0
+                ) }
+            )),
+            .switchCell(.init(
+                title: referendumUpdate,
+                icon: nil,
+                isOn: model.referendumUpdate,
+                action: { self.presenter.changeSettings(
+                    network: model.identifier,
+                    referendumUpdate: $0
+                ) }
+            )),
+            .switchCell(.init(
+                title: delegateHasVoted,
+                icon: nil,
+                isOn: model.delegateHasVoted,
+                action: { self.presenter.changeSettings(
+                    network: model.identifier,
+                    delegateHasVoted: $0
+                ) }
+            )),
+            .accessoryCell(.init(
+                title: tracks,
+                accessory: tracksSubtitle(from: model.tracks),
+                action: { self.presenter.selectTracks(network: model.identifier) }
+            ))
+        ])
+    }
+
+    private func tracksSubtitle(from count: GovernanceNotificationsModel.SelectedTracks) -> String {
+        switch count {
+        case .all:
+            return R.string.localizable.commonAll(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case let .concrete(tracks):
+            let formatter = quantityFormatter.value(for: selectedLocale)
+            return formatter.string(from: .init(value: tracks.count)) ?? ""
+        }
     }
 }
 
@@ -64,8 +106,17 @@ extension GovernanceNotificationsViewController: GovernanceNotificationsViewProt
         super.set(isClearActionAvailabe: isClearActionAvailabe)
     }
 
-    func didReceive(viewModel: GovernanceNotificationsViewModel) {
-        let sections = createSections(from: viewModel)
+    func didReceive(viewModels: [GovernanceNotificationsModel]) {
+        self.viewModels = viewModels
+        let sections = createSections()
         super.set(models: sections)
+    }
+
+    func didReceiveUpdates(for viewModel: GovernanceNotificationsModel) {
+        guard let index = viewModels.firstIndex(where: { $0.identifier == viewModel.identifier }) else {
+            return
+        }
+        let section = createSection(from: viewModel)
+        super.update(model: section, at: index)
     }
 }

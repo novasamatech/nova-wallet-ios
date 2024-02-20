@@ -19,6 +19,12 @@ final class StakingRewardsNotificationsViewController: ChainNotificationSettings
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        presenter.proceed()
+    }
 }
 
 extension StakingRewardsNotificationsViewController: StakingRewardsNotificationsViewProtocol {
@@ -29,9 +35,10 @@ extension StakingRewardsNotificationsViewController: StakingRewardsNotifications
     func didReceive(viewModels: [StakingRewardsNotificationsViewModel]) {
         let sections = viewModels.map { settings in
             Section.common(.init(
-                title: .init(title: settings.name, icon: settings.icon),
+                title: settings.name,
+                icon: settings.icon,
                 isOn: settings.enabled,
-                action: { self.presenter.changeSettings(network: settings.name, isEnabled: $0) }
+                action: { self.presenter.changeSettings(network: settings.identifier, isEnabled: $0) }
             ))
         }
 

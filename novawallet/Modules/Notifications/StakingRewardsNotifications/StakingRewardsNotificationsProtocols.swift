@@ -1,4 +1,5 @@
 import UIKit
+import RobinHood
 
 protocol StakingRewardsNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(isClearActionAvailabe: Bool)
@@ -6,17 +7,25 @@ protocol StakingRewardsNotificationsViewProtocol: ControllerBackedProtocol {
 }
 
 protocol StakingRewardsNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
-    func changeSettings(network: String, isEnabled: Bool)
+    func changeSettings(network: ChainModel.Id, isEnabled: Bool)
+    func proceed()
 }
 
-protocol StakingRewardsNotificationsInteractorInputProtocol: AnyObject {}
+protocol StakingRewardsNotificationsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol StakingRewardsNotificationsInteractorOutputProtocol: AnyObject {}
+protocol StakingRewardsNotificationsInteractorOutputProtocol: AnyObject {
+    func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])
+}
 
-protocol StakingRewardsNotificationsWireframeProtocol: AnyObject {}
+protocol StakingRewardsNotificationsWireframeProtocol: AnyObject {
+    func complete(selectedChains: Set<ChainModel.Id>, totalChainsCount: Int)
+}
 
 struct StakingRewardsNotificationsViewModel {
-    let icon: UIImage?
+    let identifier: ChainModel.Id
+    let icon: ImageViewModelProtocol?
     let name: String
     let enabled: Bool
 }

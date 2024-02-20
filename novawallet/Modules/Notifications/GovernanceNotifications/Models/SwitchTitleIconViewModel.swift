@@ -1,5 +1,6 @@
 struct SwitchTitleIconViewModel {
-    let title: TitleIconViewModel
+    let title: String
+    let icon: ImageViewModelProtocol?
     var isOn: Bool
     let action: (Bool) -> Void
 }

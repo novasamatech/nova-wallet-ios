@@ -33,8 +33,16 @@ protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
 protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, ErrorPresentable,
     ApplicationSettingsPresentable, CommonRetryable {
     func showWallets(from view: ControllerBackedProtocol?)
-    func showStakingRewardsSetup(from view: ControllerBackedProtocol?)
-    func showGovSetup(from view: ControllerBackedProtocol?)
+    func showStakingRewardsSetup(
+        from view: ControllerBackedProtocol?,
+        selectedChains: Set<ChainModel.Id>,
+        completion: @escaping (Set<ChainModel.Id>, StakingChainsCount) -> Void
+    )
+    func showGovSetup(
+        from view: ControllerBackedProtocol?,
+        settings: [ChainModel.Id: GovernanceNotificationsModel],
+        completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+    )
     func complete(from view: ControllerBackedProtocol?)
 }
 

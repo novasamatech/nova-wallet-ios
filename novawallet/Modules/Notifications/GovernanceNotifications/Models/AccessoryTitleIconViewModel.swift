@@ -1,5 +1,5 @@
 struct AccessoryTitleIconViewModel {
-    let title: TitleIconViewModel
+    let title: String
     let accessory: String
     let action: () -> Void
 }

@@ -73,8 +73,8 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
         model: SwitchTitleIconViewModel
     ) -> SwitchSettingsTableViewCell {
         let cell: SwitchSettingsTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        cell.bind(titleViewModel: model.title, isOn: model.isOn)
-        cell.hideImageViewIfNeeded(titleViewModel: model.title)
+        cell.bind(icon: model.icon, title: model.title, isOn: model.isOn)
+        cell.iconImageView.isHidden = model.icon == nil
         cell.delegate = self
         cell.roundView.fillColor = R.color.colorBlockBackgroundOpaque()!
         return cell
@@ -86,8 +86,8 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
         model: AccessoryTitleIconViewModel
     ) -> SettingsSubtitleTableViewCell {
         let cell: SettingsSubtitleTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        cell.bind(titleViewModel: model.title, accessoryViewModel: model.accessory)
-        cell.hideImageViewIfNeeded(titleViewModel: model.title)
+        cell.bind(title: model.title, accessoryViewModel: model.accessory)
+        cell.iconImageView.isHidden = true
         cell.roundView.fillColor = R.color.colorBlockBackgroundOpaque()!
 
         return cell
@@ -128,6 +128,11 @@ extension ChainNotificationSettingsViewController {
         self.models = models
         rootView.tableView.reloadData()
     }
+
+    func update(model: Section, at index: Int) {
+        models[index] = model
+        rootView.tableView.reloadSections([index], with: .automatic)
+    }
 }
 
 extension ChainNotificationSettingsViewController: UITableViewDataSource {
@@ -142,7 +147,7 @@ extension ChainNotificationSettingsViewController: UITableViewDataSource {
                 return 0
             }
             return model.isOn ? cells.count : 1
-        case let .common:
+        case .common:
             return 1
         }
     }

@@ -3,8 +3,15 @@ import Foundation
 final class NotificationsManagementWireframe: NotificationsManagementWireframeProtocol {
     func showWallets(from _: ControllerBackedProtocol?) {}
 
-    func showStakingRewardsSetup(from view: ControllerBackedProtocol?) {
-        guard let stakingRewardsView = StakingRewardsNotificationsViewFactory.createView() else {
+    func showStakingRewardsSetup(
+        from view: ControllerBackedProtocol?,
+        selectedChains: Set<ChainModel.Id>,
+        completion: @escaping (Set<ChainModel.Id>, StakingChainsCount) -> Void
+    ) {
+        guard let stakingRewardsView = StakingRewardsNotificationsViewFactory.createView(
+            selectedChains: selectedChains,
+            completion: completion
+        ) else {
             return
         }
         view?.controller.navigationController?.pushViewController(
@@ -13,8 +20,15 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         )
     }
 
-    func showGovSetup(from view: ControllerBackedProtocol?) {
-        guard let govNotificationsView = GovernanceNotificationsViewFactory.createView() else {
+    func showGovSetup(
+        from view: ControllerBackedProtocol?,
+        settings: [ChainModel.Id: GovernanceNotificationsModel],
+        completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+    ) {
+        guard let govNotificationsView = GovernanceNotificationsViewFactory.createView(
+            settings: settings,
+            completion: completion
+        ) else {
             return
         }
         view?.controller.navigationController?.pushViewController(

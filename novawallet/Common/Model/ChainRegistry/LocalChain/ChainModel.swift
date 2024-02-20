@@ -182,6 +182,10 @@ struct ChainModel: Equatable, Hashable {
         !noSubstrateRuntime
     }
 
+    var hasStaking: Bool {
+        assets.contains { $0.hasStaking }
+    }
+
     func chainAssetsWithExternalBalances() -> [ChainAsset] {
         assets.compactMap { asset in
             guard asset.hasPoolStaking || asset.isUtility && hasCrowdloans else {

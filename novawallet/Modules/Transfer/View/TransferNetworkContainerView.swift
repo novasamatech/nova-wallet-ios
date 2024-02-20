@@ -2,15 +2,15 @@ import Foundation
 import UIKit
 
 final class TransferNetworkContainerView: UIView {
-    private let tokenLabel: UILabel = TransferNetworkContainerView.createLabel()
-    private let fromLabel: UILabel = TransferNetworkContainerView.createLabel()
-    private var toLabel: UILabel?
+    let tokenLabel: UILabel = TransferNetworkContainerView.createLabel()
+    let fromLabel: UILabel = TransferNetworkContainerView.createLabel()
+    var toLabel: UILabel?
 
     var horizontalSpacing: CGFloat = 6.0
     var verticalSpacing: CGFloat = 7.0
 
     let staticNetworkView = AssetListChainView()
-    private(set) var selectableNetworkView: AssetListChainControlView?
+    var selectableNetworkView: AssetListChainControlView?
 
     var locale = Locale.current {
         didSet {
