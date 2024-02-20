@@ -380,7 +380,7 @@
 "crowdloan.acala.learn.more" = "Подробнее о различных вкладах в Acala";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
-"crowdloan.reward.destination.format" = "%@ назначение вознаг��аждений";
+"crowdloan.reward.destination.format" = "%@ назначение вознаграждений";
 "crowdloan.havenot.applied.bonus.title" = "Вы не применили бонус";
 "crowdloan.havenot.applied.bonus.message" = "Если у вас нет реферального кода, вы можете применить код Nova, чтобы получить бонус за свой вклад";
 "crowdloan.havenot.applied.bonus.apply" = "Применить";
@@ -808,7 +808,7 @@
 "parastk.cant.redeem.title" = "Нельзя забрать";
 "parastk.cant.redeem.message" = "Нет доступных токенов, чтобы забрать";
 "parastk.cant.rebond.title" = "Нельзя вернуть в стейк";
-"parastk.cant.rebond.message" = "Вы не ��ыводили токены для этого коллатора";
+"parastk.cant.rebond.message" = "Вы не выводили токены для этого коллатора";
 "parachain.staking.full.message" = "Вы достигли максимального количества делегаций - %@ коллаторов";
 "wallet.transfer.cross.chain.to" = "в";
 "xcm.destination.selection.title" = "Сеть получателя";
@@ -1465,6 +1465,7 @@
 "proxy.signing.checkmark.title" = "Автоматически проводить в будущем";
 "deeplink.error.invalid.referendum.id.message" = "Референдум не найден";
 "governance.referendum.not.found.message" = "Референдум не найден";
+"notifications.setup.notification.title" = "⭐️ Новое вознаграждение";
 "notifications.setup.notification.subtitle" = "Получено +0.6068 KSM ($20.35) из Kusama стекинга";
 "notifications.setup.notification.accessory" = "Сейчас";
 "notifications.setup.title" = "Не упустите ни одного момента!";

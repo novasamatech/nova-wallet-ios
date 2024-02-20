@@ -1464,7 +1464,9 @@
 "proxy.fee.error.message" = "Delegated account %@ doesn\'t have enough balance to pay the network fee of %@. Available balance to pay fee: %@";
 "proxy.signing.checkmark.title" = "Automatically continue in the future";
 "deeplink.error.invalid.referendum.id.message" = "Referendum is not found";
-"governance.referendum.not.found.message" = "Referendum is not found";"notifications.setup.notification.subtitle" = "Received +0.6068 KSM ($20.35) from Kusama staking";
+"governance.referendum.not.found.message" = "Referendum is not found";
+"notifications.setup.notification.title" = "⭐️ New reward";
+"notifications.setup.notification.subtitle" = "Received +0.6068 KSM ($20.35) from Kusama staking";
 "notifications.setup.notification.accessory" = "Now";
 "notifications.setup.title" = "Don’t miss a thing!";
 "notifications.setup.subtitle" = "Get notified about Wallet operations, Governance\nupdates, Staking activity and Security, so you’re always\nin the know";
