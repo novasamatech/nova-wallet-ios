@@ -902,6 +902,8 @@
 		76B0B7147181747A7CEDDDF6 /* GovernanceUnavailableTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E25CF67173500E0AC19387 /* GovernanceUnavailableTracksViewController.swift */; };
 		76CF8508C6936FC9941F3C3E /* TokensManageAddProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C995D640129977CAB05982EC /* TokensManageAddProtocols.swift */; };
 		770955712AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */; };
+		770ABB8C2B85587200132465 /* LocalNotificationTopicSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770ABB8B2B85587200132465 /* LocalNotificationTopicSettings.swift */; };
+		770ABB8E2B85593700132465 /* Web3TopicSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */; };
 		770F57882A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */; };
 		770F578B2A8A48FF005FD7C1 /* ButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */; };
 		771056062B717E0400EE2C20 /* PushNotificationParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */; };
@@ -5293,6 +5295,8 @@
 		75CFAA1D2D04553B10421C69 /* DAppAuthConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmProtocols.swift; sourceTree = "<group>"; };
 		76AA6A6232B1CF2D5AF74D0D /* ParaStkUnstakeInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeInteractor.swift; sourceTree = "<group>"; };
 		770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBaseDataValidatingFactory.swift; sourceTree = "<group>"; };
+		770ABB8B2B85587200132465 /* LocalNotificationTopicSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTopicSettings.swift; sourceTree = "<group>"; };
+		770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TopicSettingsMapper.swift; sourceTree = "<group>"; };
 		770F57872A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewStyles.swift; sourceTree = "<group>"; };
 		770F578A2A8A48FF005FD7C1 /* ButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewModel.swift; sourceTree = "<group>"; };
 		771056052B717E0400EE2C20 /* PushNotificationParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationParsingTests.swift; sourceTree = "<group>"; };
@@ -11155,6 +11159,7 @@
 				773B2E422B756F8600A3BC11 /* LocalPushSettings.swift */,
 				7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */,
 				7772EB352B734099000D7E21 /* NotificationTopic.swift */,
+				770ABB8B2B85587200132465 /* LocalNotificationTopicSettings.swift */,
 				77F8A1972B73769C00B25F9B /* Web3AlertsSyncServiceFactory.swift */,
 				773B2E3E2B74DCB500A3BC11 /* TopicService.swift */,
 				773B2E442B75727900A3BC11 /* FirebaseHolder.swift */,
@@ -13142,6 +13147,7 @@
 				0C59E8D22AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift */,
 				0C59E8D42AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift */,
 				0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */,
+				770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -23595,6 +23601,7 @@
 				84AF08D82941B6D800D0572B /* TokenManageViewModel.swift in Sources */,
 				840DFF532894189D001B11EA /* ChainAddressDetailsMeasurement.swift in Sources */,
 				9565BEB636E6D386B0C0FBE5 /* StakingPayoutConfirmationViewFactory.swift in Sources */,
+				770ABB8E2B85593700132465 /* Web3TopicSettingsMapper.swift in Sources */,
 				6F0CFDAB9D0C35075BD74A77 /* WalletHistoryFilterProtocols.swift in Sources */,
 				849C7BD92A1B21CF00434621 /* GladingRectModel.swift in Sources */,
 				60461B20A5DA9E9E3AF0BB84 /* WalletHistoryFilterWireframe.swift in Sources */,
@@ -23727,6 +23734,7 @@
 				88E5E2A5295D8F8E001B1D41 /* DAppGlobalSettingsViewModel.swift in Sources */,
 				841E553C282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift in Sources */,
 				84C479C129309E58003DF82B /* BasePolkassemblyOperationFactory.swift in Sources */,
+				770ABB8C2B85587200132465 /* LocalNotificationTopicSettings.swift in Sources */,
 				84300B2C26C10C9B00D64514 /* ConnectionStateReporting.swift in Sources */,
 				772AB22C2B3E15D10099DB73 /* AccountProxyViewModel.swift in Sources */,
 				9E4E458C92D12B24D5EAD893 /* ControllerAccountInteractor.swift in Sources */,

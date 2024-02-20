@@ -4,6 +4,7 @@ import SubstrateSdk
 
 protocol SettingsLocalSubscriptionFactoryProtocol {
     func getPushSettingsProvider() -> StreamableProvider<LocalPushSettings>?
+    func getTopicsProvider() -> StreamableProvider<LocalNotificationTopicSettings>?
 }
 
 final class SettingsLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -43,6 +44,43 @@ extension SettingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProt
             storageFacade.createRepository(mapper: mapper)
 
         let source = EmptyStreamableSource<LocalPushSettings>()
+
+        let observable = CoreDataContextObservable(
+            service: storageFacade.databaseService,
+            mapper: mapper,
+            predicate: { _ in true }
+        )
+
+        observable.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Can't start storage observing: \(error)")
+            }
+        }
+
+        let provider = StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: operationManager
+        )
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    func getTopicsProvider() -> StreamableProvider<LocalNotificationTopicSettings>? {
+        let cacheKey = "topics-settings"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<LocalNotificationTopicSettings> {
+            return provider
+        }
+
+        let mapper = AnyCoreDataMapper(Web3TopicSettingsMapper())
+        let repository: CoreDataRepository<LocalNotificationTopicSettings, CDUserSingleValue> =
+            storageFacade.createRepository(mapper: mapper)
+
+        let source = EmptyStreamableSource<LocalNotificationTopicSettings>()
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,

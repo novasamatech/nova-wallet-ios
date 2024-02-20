@@ -1,4 +1,6 @@
-enum NotificationTopic {
+import Foundation
+
+enum NotificationTopic: Codable, Equatable {
     case appUpdates
     case chainReferendums(chainId: String, trackId: String?)
     case newChainReferendums(chainId: String, trackId: String?)
