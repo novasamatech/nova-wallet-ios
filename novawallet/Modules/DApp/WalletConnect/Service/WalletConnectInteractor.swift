@@ -5,6 +5,7 @@ final class WalletConnectInteractor {
     let presenter: WalletConnectInteractorOutputProtocol
     let transport: WalletConnectTransportProtocol
     let securedLayer: SecurityLayerServiceProtocol
+    let urlHandlingFacade: URLHandlingServiceFacadeProtocol
 
     weak var mediator: DAppInteractionMediating?
 
@@ -13,11 +14,39 @@ final class WalletConnectInteractor {
     init(
         transport: WalletConnectTransportProtocol,
         presenter: WalletConnectInteractorOutputProtocol,
-        securedLayer: SecurityLayerServiceProtocol
+        securedLayer: SecurityLayerServiceProtocol,
+        urlHandlingFacade: URLHandlingServiceFacadeProtocol
     ) {
         self.transport = transport
         self.presenter = presenter
         self.securedLayer = securedLayer
+        self.urlHandlingFacade = urlHandlingFacade
+    }
+
+    private func subscribeUrlHandling() {
+        guard let wcUrlHandler: WalletConnectUrlParsingService = urlHandlingFacade.findService() else {
+            return
+        }
+
+        handleUrlLink(from: wcUrlHandler)
+
+        wcUrlHandler.pendingUrl.addObserver(with: self) { [weak self, weak wcUrlHandler] _, _ in
+            guard let handler = wcUrlHandler else {
+                return
+            }
+
+            self?.handleUrlLink(from: handler)
+        }
+    }
+
+    private func handleUrlLink(from handler: WalletConnectUrlParsingService) {
+        guard let newUrl = handler.pendingUrl.state else {
+            return
+        }
+
+        handler.pendingUrl.state = nil
+
+        transport.connect(uri: newUrl, completion: { _ in })
     }
 }
 
@@ -119,6 +148,8 @@ extension WalletConnectInteractor: DAppInteractionChildProtocol {
     func setup() {
         transport.delegate = self
         mediator?.register(transport: transport)
+
+        subscribeUrlHandling()
     }
 
     func throttle() {
