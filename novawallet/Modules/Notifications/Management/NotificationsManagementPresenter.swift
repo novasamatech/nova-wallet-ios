@@ -59,7 +59,7 @@ final class NotificationsManagementPresenter {
             isAnnouncementsOn: announcementsEnabled,
             isSentTokensOn: settings.notifications.tokenSent,
             isReceiveTokensOn: settings.notifications.tokenReceived,
-            isGovernanceOn: settings.notifications.govMyDelegatorVoted.notificationsEnabled,
+            isGovernanceOn: isGovernanceOn(),
             isStakingOn: settings.notifications.stakingReward.notificationsEnabled
         )
     }
@@ -74,6 +74,32 @@ final class NotificationsManagementPresenter {
         )
         view?.didReceive(sections: viewModel)
         view?.didReceive(isSaveActionAvailabe: isSaveAvailable)
+    }
+
+    func isGovernanceOn() -> Bool {
+        let govMyDelegatorVotedEnabled = modifiedSettings.map {
+            switch $0.notifications.govMyDelegatorVoted {
+            case .all:
+                return true
+            case let .concrete(chains):
+                return !chains.isEmpty
+            }
+        }
+
+        if govMyDelegatorVotedEnabled == true {
+            return true
+        }
+
+        let govTopics = modifiedTopicsSettings?.topics.contains {
+            switch $0 {
+            case .chainReferendums, .newChainReferendums:
+                return true
+            case .appUpdates:
+                return false
+            }
+        }
+
+        return govTopics == true
     }
 }
 
@@ -147,6 +173,9 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     func changeGovSettings(settings: [ChainModel.Id: GovernanceNotificationsModel]) {
         var topics: [NotificationTopic] = []
         topics = settings.reduce(into: topics) {
+            guard $1.value.enabled else {
+                return
+            }
             switch $1.value.tracks {
             case .all:
                 if $1.value.newReferendum {
@@ -167,8 +196,9 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         }
         modifiedTopicsSettings = .init(topics: topics)
+        let govMyDelegatorVotedChaind = settings.filter { $0.value.enabled && $0.value.delegateHasVoted }.map(\.key)
         modifiedSettings = modifiedSettings?.with {
-            $0.govMyDelegatorVoted = .concrete(settings.filter { $0.value.delegateHasVoted }.map(\.key))
+            $0.govMyDelegatorVoted = .concrete(govMyDelegatorVotedChaind)
         }
         updateView()
     }
