@@ -81,10 +81,9 @@ final class SettingsTests: XCTestCase {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
       
         let pushNotificationsService = MockPushNotificationsServiceProtocol()
+        let status = Observable<PushNotificationsStatus?>(state: .denied)
         stub(pushNotificationsService) { stub in
-            when(stub).status(completion: any()).then { closure in
-                closure(.off)
-            }
+            when(stub).statusObservable.get.thenReturn(status)
         }
 
         let interactor = SettingsInteractor(
