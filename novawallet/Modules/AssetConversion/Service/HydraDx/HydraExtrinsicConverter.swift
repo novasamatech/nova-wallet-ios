@@ -25,14 +25,22 @@ enum HydraExtrinsicConverter {
 
         switch params.swap {
         case let .omniSell(call):
-            return try currentBuilder.adding(call: call.runtimeCall())
+            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         case let .omniBuy(call):
-            return try currentBuilder.adding(call: call.runtimeCall())
+            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         case let .routedSell(call):
-            return try currentBuilder.adding(call: call.runtimeCall())
+            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         case let .routedBuy(call):
-            return try currentBuilder.adding(call: call.runtimeCall())
+            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         }
+
+        if let revertFeeCurrency = params.revertFeeCurrency {
+            currentBuilder = try currentBuilder.adding(call: revertFeeCurrency.runtimeCall())
+        }
+
+        currentBuilder = currentBuilder.with(batchType: .ignoreFails)
+
+        return currentBuilder
     }
 
     static func isOmnipoolSwap(route: HydraDx.RemoteSwapRoute) -> Bool {
