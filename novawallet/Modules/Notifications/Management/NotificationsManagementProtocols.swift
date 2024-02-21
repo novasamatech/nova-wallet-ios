@@ -16,6 +16,7 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
     func enableNotifications()
     func save(
         settings: LocalPushSettings,
+        topics: LocalNotificationTopicSettings,
         notificationsEnabled: Bool,
         announcementsEnabled: Bool
     )

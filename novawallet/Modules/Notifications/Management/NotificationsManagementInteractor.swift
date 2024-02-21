@@ -12,6 +12,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     private var topicsSettingsProvider: StreamableProvider<LocalNotificationTopicSettings>?
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushService: PushNotificationsServiceProtocol?
+    private var topicService: TopicServiceProtocol?
 
     init(
         settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
@@ -74,6 +75,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
 
     func save(
         settings: LocalPushSettings,
+        topics: LocalNotificationTopicSettings,
         notificationsEnabled: Bool,
         announcementsEnabled: Bool
     ) {
@@ -81,12 +83,26 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
             syncService = alertServiceFactory.createSyncService()
         }
 
+        let group = DispatchGroup()
+        group.enter()
+        group.enter()
+
         syncService?.save(settings: settings) { [weak self] in
             self?.settingsManager.notificationsEnabled = notificationsEnabled
             self?.settingsManager.announcements = announcementsEnabled
-            DispatchQueue.main.async {
-                self?.presenter?.didReceiveSaveCompletion()
-            }
+            group.leave()
+        }
+
+        if topicService == nil {
+            topicService = alertServiceFactory.createTopicService()
+        }
+
+        topicService?.save(settings: topics) {
+            group.leave()
+        }
+
+        group.notify(queue: .main) {
+            self.presenter?.didReceiveSaveCompletion()
         }
     }
 

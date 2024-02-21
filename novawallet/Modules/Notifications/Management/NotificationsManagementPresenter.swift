@@ -21,8 +21,7 @@ final class NotificationsManagementPresenter {
     private var isSaveAvailable: Bool {
         guard let settings = settings,
               let announcementsEnabled = announcementsEnabled,
-              let notificationsEnabled = notificationsEnabled,
-              let topicsSettings = topicsSettings else {
+              let notificationsEnabled = notificationsEnabled else {
             return false
         }
 
@@ -134,9 +133,12 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
               let modifiedAnnouncementsEnabled = modifiedAnnouncementsEnabled else {
             return
         }
+
         view?.startLoading()
+        let topics = modifiedTopicsSettings ?? .init(topics: [])
         interactor.save(
             settings: settings,
+            topics: topics,
             notificationsEnabled: notificationsEnabled,
             announcementsEnabled: modifiedAnnouncementsEnabled
         )
