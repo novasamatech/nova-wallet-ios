@@ -42,7 +42,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         type: NftType
     ) -> AnyDataProviderRepository<NftModel> {
         let mapper = AnyCoreDataMapper(NftModelMapper())
-        let filter = NSPredicate.nfts(for: [(chain.chainId, ownerId)], type: type.rawValue)
+        let filter = NSPredicate.nfts(for: [(chain.chainId, ownerId)], type: type)
         let sortDescriptor = NSSortDescriptor.nftsByCreationDesc
         let repository = storageFacade.createRepository(
             filter: filter,
@@ -178,6 +178,13 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
 
         let dataSource = NftStreamableSource(syncServices: syncServices)
 
+        /**
+         *  We can now have cases:
+         *  1) When we don't sync nfts (don't have source for it) but want to display it from cache (rmrk v1).
+         *  2) Don't have source for nfts and don't want to display them from cache (uniques).
+         *  Probably we want to remove such nfts from cache and don't provide source for them in future.
+         */
+
         let mapper = AnyCoreDataMapper(NftModelMapper())
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
@@ -200,7 +207,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         }
 
         let filterOptions = nftOptions.map { ($0.chain.chainId, $0.ownerId) }
-        let filter = NSPredicate.nfts(for: filterOptions)
+        let filter = NSPredicate.nfts(for: filterOptions, types: NftType.notIntersectingTypes)
         let sortDescriptor = NSSortDescriptor.nftsByCreationDesc
         let repository = storageFacade.createRepository(
             filter: filter,

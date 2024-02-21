@@ -217,16 +217,23 @@ extension NSPredicate {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, ownerPredicate])
     }
 
-    static func nfts(for type: UInt16) -> NSPredicate {
-        NSPredicate(format: "%K == %d", #keyPath(CDNft.type), type)
-    }
-
     static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)]) -> NSPredicate {
         let predicates = chainAccounts.map { nfts(for: $0.0, ownerId: $0.1) }
         return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
     }
 
-    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)], type: UInt16) -> NSPredicate {
+    static func nfts(for type: NftType) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDNft.type), type.rawValue)
+    }
+
+    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)], types: Set<NftType>) -> NSPredicate {
+        let chainAccountPredicate = nfts(for: chainAccounts)
+        let orPredicates = types.map { nfts(for: $0) }
+        let typesPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainAccountPredicate, typesPredicate])
+    }
+
+    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)], type: NftType) -> NSPredicate {
         let chainAccountPredicate = nfts(for: chainAccounts)
         let typePredicate = nfts(for: type)
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainAccountPredicate, typePredicate])
