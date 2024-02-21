@@ -6,9 +6,10 @@ final class KodaDotNftSyncService: BaseNftSyncService {
     let ownerId: AccountId
     let chain: ChainModel
 
-    private let operationFactory = KodaDotNftOperationFactory(url: KodaDotApi.url)
+    private let operationFactory: KodaDotNftOperationFactoryProtocol
 
     init(
+        api: URL,
         ownerId: AccountId,
         chain: ChainModel,
         repository: AnyDataProviderRepository<NftModel>,
@@ -18,6 +19,7 @@ final class KodaDotNftSyncService: BaseNftSyncService {
     ) {
         self.ownerId = ownerId
         self.chain = chain
+        operationFactory = KodaDotNftOperationFactory(url: api)
 
         super.init(
             repository: repository,

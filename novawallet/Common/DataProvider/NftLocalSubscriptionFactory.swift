@@ -107,10 +107,15 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
     }
 
-    private func createKodaDotService(for chain: ChainModel, ownerId: AccountId) -> NftSyncServiceProtocol {
+    private func createKodaDotService(for chain: ChainModel, ownerId: AccountId) -> NftSyncServiceProtocol? {
+        guard let apiUrl = KodaDotAssetHubApi.apiForChain(chain.chainId) else {
+            return nil
+        }
+
         let repository = createSyncRepository(for: chain, ownerId: ownerId, type: .kodadot)
 
         return KodaDotNftSyncService(
+            api: apiUrl,
             ownerId: ownerId,
             chain: chain,
             repository: repository,
@@ -122,7 +127,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for chain: ChainModel,
         ownerId: AccountId,
         type: NftType
-    ) -> NftSyncServiceProtocol {
+    ) -> NftSyncServiceProtocol? {
         switch type {
         case .uniques:
             return createUniquesService(for: chain, ownerId: ownerId)
@@ -167,7 +172,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
 
         let nftOptions = createNftOptions(for: wallet, chains: chains)
 
-        let syncServices = nftOptions.map { option in
+        let syncServices = nftOptions.compactMap { option in
             createService(for: option.chain, ownerId: option.ownerId, type: option.type)
         }
 

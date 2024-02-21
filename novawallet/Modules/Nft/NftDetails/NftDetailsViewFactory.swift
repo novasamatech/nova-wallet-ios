@@ -166,10 +166,16 @@ struct NftDetailsViewFactory {
         nftMetadataService: NftFileDownloadServiceProtocol,
         operationQueue: OperationQueue
     ) -> KodaDotDetailsInteractor? {
-        KodaDotDetailsInteractor(
+        guard
+            nftChainModel.nft.type == NftType.kodadot.rawValue,
+            let apiUrl = KodaDotAssetHubApi.apiForChain(nftChainModel.chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        return KodaDotDetailsInteractor(
             nftChainModel: nftChainModel,
             nftMetadataService: nftMetadataService,
-            operationFactory: KodaDotNftOperationFactory(url: KodaDotApi.url),
+            operationFactory: KodaDotNftOperationFactory(url: apiUrl),
             accountRepository: accountRepository,
             operationQueue: operationQueue
         )

@@ -7,8 +7,20 @@ protocol KodaDotNftOperationFactoryProtocol {
     func fetchCollection(for collectionId: String) -> CompoundOperationWrapper<KodaDotNftCollectionResponse>
 }
 
-enum KodaDotApi {
-    static let url = URL(string: "https://squid.subsquid.io/speck/graphql")!
+enum KodaDotAssetHubApi {
+    static let polkadotAssetHub = URL(string: "https://ahp.gql.api.kodadot.xyz")!
+    static let kusamaAssetHub = URL(string: "https://ahk.gql.api.kodadot.xyz")
+
+    static func apiForChain(_ chainId: ChainModel.Id) -> URL? {
+        switch chainId {
+        case KnowChainId.statemine:
+            return KodaDotAssetHubApi.kusamaAssetHub
+        case KnowChainId.statemint:
+            return KodaDotAssetHubApi.polkadotAssetHub
+        default:
+            return nil
+        }
+    }
 }
 
 final class KodaDotNftOperationFactory: SubqueryBaseOperationFactory {
