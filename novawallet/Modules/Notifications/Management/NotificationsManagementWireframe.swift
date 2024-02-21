@@ -22,7 +22,7 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
 
     func showGovSetup(
         from view: ControllerBackedProtocol?,
-        settings: [ChainModel.Id: GovernanceNotificationsModel],
+        settings: GovernanceNotificationsInitModel?,
         completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
     ) {
         guard let govNotificationsView = GovernanceNotificationsViewFactory.createView(

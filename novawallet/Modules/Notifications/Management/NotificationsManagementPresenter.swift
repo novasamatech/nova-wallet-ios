@@ -167,11 +167,48 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         }
         modifiedTopicsSettings = .init(topics: topics)
+        modifiedSettings = modifiedSettings?.with {
+            $0.govMyDelegatorVoted = .concrete(settings.filter { $0.value.delegateHasVoted }.map(\.key))
+        }
         updateView()
     }
 
-    func getGovSettings() -> [ChainModel.Id: GovernanceNotificationsModel] {
-        [:]
+    func getGovSettings() -> GovernanceNotificationsInitModel? {
+        guard let notifications = modifiedSettings?.notifications else {
+            return nil
+        }
+
+        var chainReferendumUpdateTopics = [ChainModel.Id: Selection<Set<TrackIdLocal>>]()
+        var chainNewReferendumTopics = [ChainModel.Id: Selection<Set<TrackIdLocal>>]()
+        let allTopics = modifiedTopicsSettings.map(\.topics) ?? []
+
+        for topic in allTopics {
+            switch topic {
+            case let .chainReferendums(chainId, optTrackId):
+                if let trackId = optTrackId {
+                    let addedTracks = chainReferendumUpdateTopics[chainId]?.concreteValue ?? []
+                    chainReferendumUpdateTopics[chainId] = .concrete(Set(addedTracks + [trackId]))
+                } else {
+                    chainReferendumUpdateTopics[chainId] = .all
+                }
+            case let .newChainReferendums(chainId, optTrackId):
+                if let trackId = optTrackId {
+                    let addedTracks = chainNewReferendumTopics[chainId]?.concreteValue ?? []
+                    chainNewReferendumTopics[chainId] = .concrete(Set(addedTracks + [trackId]))
+                } else {
+                    chainNewReferendumTopics[chainId] = .all
+                }
+            default: break
+            }
+        }
+
+        let delegateHasVoted = getChainsSettings(\.govMyDelegatorVoted)
+
+        return .init(
+            newReferendum: chainNewReferendumTopics,
+            referendumUpdate: chainReferendumUpdateTopics,
+            delegateHasVoted: delegateHasVoted
+        )
     }
 
     func changeStakingRewardsSettings(result: Selection<Set<ChainModel.Id>>?) {
@@ -190,7 +227,11 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     }
 
     func getStakingRewardsSettings() -> Selection<Set<ChainModel.Id>>? {
-        switch modifiedSettings?.notifications.stakingReward {
+        getChainsSettings(\.stakingReward)
+    }
+
+    func getChainsSettings(_ keyPath: KeyPath<Web3AlertNotification, RemotePushSettings.ChainSelection>) -> Selection<Set<ChainModel.Id>>? {
+        switch modifiedSettings?.notifications[keyPath: keyPath] {
         case let .concrete(chains):
             return .concrete(Set(chains))
         case .all:

@@ -64,8 +64,7 @@ final class NotificationsSetupInteractor {
                 transfer: .concrete([]),
                 tokenSent: true,
                 tokenReceived: true,
-                govMyDelegatorVoted: .concrete([]),
-                govMyReferendumFinished: .concrete([])
+                govMyDelegatorVoted: .concrete([])
             )
         )
 

@@ -38,3 +38,13 @@ extension GovernanceNotificationsModel {
         }
     }
 }
+
+struct GovernanceNotificationsInitModel {
+    var newReferendum: [ChainModel.Id: Selection<Set<TrackIdLocal>>]
+    var referendumUpdate: [ChainModel.Id: Selection<Set<TrackIdLocal>>]
+    var delegateHasVoted: Selection<Set<ChainModel.Id>>?
+
+    func tracks(for chainId: ChainModel.Id) -> Selection<Set<TrackIdLocal>>? {
+        newReferendum[chainId] ?? referendumUpdate[chainId]
+    }
+}

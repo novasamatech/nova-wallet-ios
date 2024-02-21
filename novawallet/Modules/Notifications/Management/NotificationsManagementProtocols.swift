@@ -42,7 +42,7 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
     )
     func showGovSetup(
         from view: ControllerBackedProtocol?,
-        settings: [ChainModel.Id: GovernanceNotificationsModel],
+        settings: GovernanceNotificationsInitModel?,
         completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
     )
     func complete(from view: ControllerBackedProtocol?)

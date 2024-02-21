@@ -7,14 +7,15 @@ final class GovernanceNotificationsPresenter {
     let wireframe: GovernanceNotificationsWireframeProtocol
     let interactor: GovernanceNotificationsInteractorInputProtocol
     private let chainList: ListDifferenceCalculator<ChainModel>
-    private var settings: [ChainModel.Id: GovernanceNotificationsModel]
+    private var settings: [ChainModel.Id: GovernanceNotificationsModel] = [:]
+    private var initState: GovernanceNotificationsInitModel?
 
     init(
-        settings: [ChainModel.Id: GovernanceNotificationsModel],
+        initState: GovernanceNotificationsInitModel?,
         interactor: GovernanceNotificationsInteractorInputProtocol,
         wireframe: GovernanceNotificationsWireframeProtocol
     ) {
-        self.settings = settings
+        self.initState = initState
         self.interactor = interactor
         self.wireframe = wireframe
 
@@ -73,6 +74,7 @@ final class GovernanceNotificationsPresenter {
 extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProtocol {
     func setup() {
         interactor.setup()
+        provideClearButtonState()
     }
 
     func clear() {
@@ -107,7 +109,12 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
         }
 
         let selectedTracks = settings[chain.identifier]?.selectedTracks
-        wireframe.showTracks(from: view, for: chain, selectedTracks: selectedTracks) { [weak self] selectedTracks, count in
+        wireframe.showTracks(
+            from: view,
+
+            for: chain,
+            selectedTracks: selectedTracks
+        ) { [weak self] selectedTracks, count in
             self?.settings[chain.identifier]?.set(selectedTracks: selectedTracks, count: count)
             self?.provideViewModels()
         }
@@ -121,6 +128,35 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
 extension GovernanceNotificationsPresenter: GovernanceNotificationsInteractorOutputProtocol {
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>]) {
         chainList.apply(changes: changes)
+        if let initState = initState {
+            for chain in chainList.allItems {
+                let newReferendum = initState.newReferendum[chain.chainId] != nil
+                let referendumUpdate = initState.referendumUpdate[chain.chainId] != nil
+                let delegateHasVoted = initState.delegateHasVoted?.isAll == true || initState.delegateHasVoted?.concreteValue?.contains(chain.chainId) == true
+                let tracks: GovernanceNotificationsModel.SelectedTracks = initState.tracks(for: chain.chainId).map {
+                    switch $0 {
+                    case .all:
+                        return .all
+                    case let .concrete(values):
+                        return .concrete(values, count: 0)
+                    }
+                } ?? .all
+                settings[chain.chainId] = GovernanceNotificationsModel(
+                    identifier: chain.identifier,
+                    enabled: newReferendum || referendumUpdate || delegateHasVoted,
+                    icon: RemoteImageViewModel(url: chain.icon),
+                    name: chain.name,
+                    newReferendum: newReferendum,
+                    referendumUpdate: referendumUpdate,
+                    delegateHasVoted: delegateHasVoted,
+                    tracks: tracks
+                )
+            }
+
+            self.initState = nil
+        }
+
         provideViewModels()
+        provideClearButtonState()
     }
 }
