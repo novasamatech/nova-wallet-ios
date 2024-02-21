@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol NftLocalSubscriptionFactoryProtocol {
     func getNftProvider(for wallet: MetaAccountModel, chains: [ChainModel]) -> StreamableProvider<NftModel>
@@ -51,6 +52,29 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
 
         return AnyDataProviderRepository(repository)
+    }
+
+    private func createClearService() -> NftSyncServiceProtocol? {
+        let excludedTypes = NftType.excludedTypes
+
+        guard !excludedTypes.isEmpty else {
+            return nil
+        }
+
+        let mapper = AnyCoreDataMapper(NftModelMapper())
+        let filter = NSPredicate.nftsForTypes(excludedTypes)
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: mapper
+        )
+
+        return NFTClearService(
+            repository: AnyDataProviderRepository(repository),
+            operationQueue: operationQueue,
+            retryStrategy: ExponentialReconnection(),
+            logger: logger
+        )
     }
 
     private func createUniquesService(
@@ -172,8 +196,12 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
 
         let nftOptions = createNftOptions(for: wallet, chains: chains)
 
-        let syncServices = nftOptions.compactMap { option in
+        var syncServices = nftOptions.compactMap { option in
             createService(for: option.chain, ownerId: option.ownerId, type: option.type)
+        }
+
+        if let clearService = createClearService() {
+            syncServices.insert(clearService, at: 0)
         }
 
         let dataSource = NftStreamableSource(syncServices: syncServices)
@@ -207,7 +235,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         }
 
         let filterOptions = nftOptions.map { ($0.chain.chainId, $0.ownerId) }
-        let filter = NSPredicate.nfts(for: filterOptions, types: NftType.notIntersectingTypes)
+        let filter = NSPredicate.nfts(for: filterOptions)
         let sortDescriptor = NSSortDescriptor.nftsByCreationDesc
         let repository = storageFacade.createRepository(
             filter: filter,

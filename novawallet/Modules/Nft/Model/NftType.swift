@@ -7,7 +7,7 @@ enum NftType: UInt16, Equatable {
     case pdc20
     case kodadot
 
-    static var notIntersectingTypes: Set<NftType> {
-        [rmrkV1, rmrkV2, pdc20, kodadot]
+    static var excludedTypes: Set<NftType> {
+        [.uniques]
     }
 }

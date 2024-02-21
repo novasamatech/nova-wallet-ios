@@ -226,6 +226,11 @@ extension NSPredicate {
         NSPredicate(format: "%K == %d", #keyPath(CDNft.type), type.rawValue)
     }
 
+    static func nftsForTypes(_ types: Set<NftType>) -> NSPredicate {
+        let orPredicates = types.map { nfts(for: $0) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+    }
+
     static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)], types: Set<NftType>) -> NSPredicate {
         let chainAccountPredicate = nfts(for: chainAccounts)
         let orPredicates = types.map { nfts(for: $0) }
