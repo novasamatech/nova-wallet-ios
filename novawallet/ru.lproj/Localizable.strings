@@ -1517,3 +1517,4 @@
 "staking.setup.proxy.authority" = "Выдать полномочия аккаунту";
 "staking.setup.proxy.deposit" = "Прокси депозит";
 "staking.setup.proxy.title" = "Добавить делегацию для %@ стекинга";
+"notifications.management.gov.selected.tracks" = "%li of %li";

@@ -10,7 +10,7 @@ struct GovernanceNotificationsModel {
 
     enum SelectedTracks {
         case all
-        case concrete(Set<TrackIdLocal>)
+        case concrete(Set<TrackIdLocal>, count: Int)
     }
 
     var allNotificationsIsOff: Bool {
@@ -25,7 +25,7 @@ extension GovernanceNotificationsModel {
         switch tracks {
         case .all:
             return nil
-        case let .concrete(tracksIds):
+        case let .concrete(tracksIds, _):
             return Set(tracksIds)
         }
     }
@@ -34,7 +34,7 @@ extension GovernanceNotificationsModel {
         if selectedTracks.count == count {
             tracks = .all
         } else {
-            tracks = .concrete(selectedTracks)
+            tracks = .concrete(selectedTracks, count: count)
         }
     }
 }

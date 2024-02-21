@@ -3,13 +3,13 @@ import Foundation
 typealias StakingChainsCount = Int
 
 final class StakingRewardsNotificationsWireframe: StakingRewardsNotificationsWireframeProtocol {
-    let completion: (Set<ChainModel.Id>, StakingChainsCount) -> Void
+    let completion: (Selection<Set<ChainModel.Id>>?) -> Void
 
-    init(completion: @escaping (Set<ChainModel.Id>, StakingChainsCount) -> Void) {
+    init(completion: @escaping (Selection<Set<ChainModel.Id>>?) -> Void) {
         self.completion = completion
     }
 
-    func complete(selectedChains: Set<ChainModel.Id>, totalChainsCount: Int) {
-        completion(selectedChains, totalChainsCount)
+    func complete(selectedChains: Selection<Set<ChainModel.Id>>?) {
+        completion(selectedChains)
     }
 }

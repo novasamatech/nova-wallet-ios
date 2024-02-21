@@ -38,7 +38,7 @@ extension StakingRewardsNotificationsViewController: StakingRewardsNotifications
                 title: settings.name,
                 icon: settings.icon,
                 isOn: settings.enabled,
-                action: { self.presenter.changeSettings(network: settings.identifier, isEnabled: $0) }
+                action: { self.presenter.changeSettings(chainId: settings.identifier, isEnabled: $0) }
             ))
         }
 

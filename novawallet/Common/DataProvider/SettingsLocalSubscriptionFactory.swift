@@ -41,7 +41,11 @@ extension SettingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProt
 
         let mapper = AnyCoreDataMapper(Web3AlertSettingsMapper())
         let repository: CoreDataRepository<LocalPushSettings, CDUserSingleValue> =
-            storageFacade.createRepository(mapper: mapper)
+            storageFacade.createRepository(
+                filter: .pushSettings,
+                sortDescriptors: [],
+                mapper: mapper
+            )
 
         let source = EmptyStreamableSource<LocalPushSettings>()
 
@@ -78,7 +82,11 @@ extension SettingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProt
 
         let mapper = AnyCoreDataMapper(Web3TopicSettingsMapper())
         let repository: CoreDataRepository<LocalNotificationTopicSettings, CDUserSingleValue> =
-            storageFacade.createRepository(mapper: mapper)
+            storageFacade.createRepository(
+                filter: .topicSettings,
+                sortDescriptors: [],
+                mapper: mapper
+            )
 
         let source = EmptyStreamableSource<LocalNotificationTopicSettings>()
 

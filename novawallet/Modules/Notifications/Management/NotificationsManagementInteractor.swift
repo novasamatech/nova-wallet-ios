@@ -9,6 +9,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     let alertServiceFactory: Web3AlertsServicesFactoryProtocol
 
     private var settingsProvider: StreamableProvider<LocalPushSettings>?
+    private var topicsSettingsProvider: StreamableProvider<LocalNotificationTopicSettings>?
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushService: PushNotificationsServiceProtocol?
 
@@ -25,6 +26,11 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     private func subscribeToSettings() {
         clear(streamableProvider: &settingsProvider)
         settingsProvider = subscribeToPushSettings()
+    }
+
+    private func subscribeToTopicsSettings() {
+        clear(streamableProvider: &topicsSettingsProvider)
+        topicsSettingsProvider = subscribeToTopicsSettings()
     }
 
     private func provideAnnouncementsFlag() {
@@ -53,6 +59,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
 extension NotificationsManagementInteractor: NotificationsManagementInteractorInputProtocol {
     func setup() {
         subscribeToSettings()
+        subscribeToTopicsSettings()
         provideAnnouncementsFlag()
         provideNotificationsStatus()
     }
@@ -85,6 +92,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
 
     func remakeSubscription() {
         subscribeToSettings()
+        subscribeToTopicsSettings()
     }
 }
 
@@ -95,6 +103,19 @@ extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscri
             case let .success(changes):
                 if let settings = changes.reduceToLastChange() {
                     self.presenter?.didReceive(settings: settings)
+                }
+            case let .failure(error):
+                self.presenter?.didReceive(error: .settingsSubscription(error))
+            }
+        }
+    }
+
+    func handleTopicsSettings(result: Result<[DataProviderChange<LocalNotificationTopicSettings>], Error>) {
+        DispatchQueue.main.async {
+            switch result {
+            case let .success(changes):
+                if let settings = changes.reduceToLastChange() {
+                    self.presenter?.didReceive(topicsSettings: settings)
                 }
             case let .failure(error):
                 self.presenter?.didReceive(error: .settingsSubscription(error))

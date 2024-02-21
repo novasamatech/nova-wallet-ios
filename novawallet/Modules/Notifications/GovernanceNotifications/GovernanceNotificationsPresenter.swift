@@ -10,7 +10,7 @@ final class GovernanceNotificationsPresenter {
     private var settings: [ChainModel.Id: GovernanceNotificationsModel]
 
     init(
-        settings: [ChainModel.Id: GovernanceNotificationsModel] = [:],
+        settings: [ChainModel.Id: GovernanceNotificationsModel],
         interactor: GovernanceNotificationsInteractorInputProtocol,
         wireframe: GovernanceNotificationsWireframeProtocol
     ) {

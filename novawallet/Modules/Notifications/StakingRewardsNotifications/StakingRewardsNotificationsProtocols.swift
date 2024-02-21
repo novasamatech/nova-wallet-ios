@@ -7,7 +7,7 @@ protocol StakingRewardsNotificationsViewProtocol: ControllerBackedProtocol {
 }
 
 protocol StakingRewardsNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
-    func changeSettings(network: ChainModel.Id, isEnabled: Bool)
+    func changeSettings(chainId: ChainModel.Id, isEnabled: Bool)
     func proceed()
 }
 
@@ -20,7 +20,7 @@ protocol StakingRewardsNotificationsInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRewardsNotificationsWireframeProtocol: AnyObject {
-    func complete(selectedChains: Set<ChainModel.Id>, totalChainsCount: Int)
+    func complete(selectedChains: Selection<Set<ChainModel.Id>>?)
 }
 
 struct StakingRewardsNotificationsViewModel {

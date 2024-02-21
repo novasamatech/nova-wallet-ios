@@ -9,23 +9,27 @@ final class NotificationsManagementPresenter {
 
     weak var delegate: PushNotificationsStatusDelegate?
     private var settings: LocalPushSettings?
+    private var topicsSettings: LocalNotificationTopicSettings?
     private var notificationsEnabled: Bool?
     private var announcementsEnabled: Bool?
 
     private var modifiedSettings: LocalPushSettings?
     private var modifiedAnnouncementsEnabled: Bool?
     private var modifiedNotificationsEnabled: Bool?
+    private var modifiedTopicsSettings: LocalNotificationTopicSettings?
 
     private var isSaveAvailable: Bool {
         guard let settings = settings,
               let announcementsEnabled = announcementsEnabled,
-              let notificationsEnabled = notificationsEnabled else {
+              let notificationsEnabled = notificationsEnabled,
+              let topicsSettings = topicsSettings else {
             return false
         }
 
         let parametersWasModified = settings != modifiedSettings ||
             announcementsEnabled != modifiedAnnouncementsEnabled ||
-            notificationsEnabled != modifiedNotificationsEnabled
+            notificationsEnabled != modifiedNotificationsEnabled ||
+            topicsSettings != modifiedTopicsSettings
 
         return parametersWasModified
     }
@@ -138,20 +142,60 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         )
     }
 
-    func changeGovSettings(settings _: [ChainModel.Id: GovernanceNotificationsModel]) {
-        // TODO:
+    func changeGovSettings(settings: [ChainModel.Id: GovernanceNotificationsModel]) {
+        var topics: [NotificationTopic] = []
+        topics = settings.reduce(into: topics) {
+            switch $1.value.tracks {
+            case .all:
+                if $1.value.newReferendum {
+                    $0.append(.newChainReferendums(chainId: $1.key, trackId: nil))
+                }
+                if $1.value.referendumUpdate {
+                    $0.append(.chainReferendums(chainId: $1.key, trackId: nil))
+                }
+            case let .concrete(trackIds, _):
+                for trackId in trackIds {
+                    if $1.value.newReferendum {
+                        $0.append(.newChainReferendums(chainId: $1.key, trackId: trackId))
+                    }
+                    if $1.value.referendumUpdate {
+                        $0.append(.chainReferendums(chainId: $1.key, trackId: trackId))
+                    }
+                }
+            }
+        }
+        modifiedTopicsSettings = .init(topics: topics)
+        updateView()
     }
 
     func getGovSettings() -> [ChainModel.Id: GovernanceNotificationsModel] {
         [:]
     }
 
-    func changeStakingRewardsSettings(selectedChains _: Set<ChainModel.Id>, totalChainsCount _: Int) {
-        // TODO:
+    func changeStakingRewardsSettings(result: Selection<Set<ChainModel.Id>>?) {
+        modifiedSettings = modifiedSettings?.with {
+            switch result {
+            case .all:
+                $0.stakingReward = .all
+            case let .concrete(selectedChains):
+                $0.stakingReward = .concrete(Array(selectedChains))
+            case nil:
+                $0.stakingReward = .concrete(Array([]))
+            }
+        }
+
+        updateView()
     }
 
-    func getStakingRewardsSettings() -> Set<ChainModel.Id> {
-        .init()
+    func getStakingRewardsSettings() -> Selection<Set<ChainModel.Id>>? {
+        switch modifiedSettings?.notifications.stakingReward {
+        case let .concrete(chains):
+            return .concrete(Set(chains))
+        case .all:
+            return .all
+        default:
+            return nil
+        }
     }
 }
 
@@ -160,6 +204,14 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         self.settings = settings
         if modifiedSettings == nil {
             modifiedSettings = settings
+        }
+        updateView()
+    }
+
+    func didReceive(topicsSettings: LocalNotificationTopicSettings) {
+        self.topicsSettings = topicsSettings
+        if modifiedTopicsSettings == nil {
+            modifiedTopicsSettings = topicsSettings
         }
         updateView()
     }

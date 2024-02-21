@@ -3,21 +3,21 @@ import SoraFoundation
 
 struct GovernanceNotificationsViewFactory {
     static func createView(
-        settings _: [ChainModel.Id: GovernanceNotificationsModel],
+        settings: [ChainModel.Id: GovernanceNotificationsModel],
         completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
     ) -> GovernanceNotificationsViewProtocol? {
         let interactor = GovernanceNotificationsInteractor(chainRegistry: ChainRegistryFacade.sharedRegistry)
         let wireframe = GovernanceNotificationsWireframe(completion: completion)
 
         let presenter = GovernanceNotificationsPresenter(
+            settings: settings,
             interactor: interactor,
             wireframe: wireframe
         )
 
         let view = GovernanceNotificationsViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared,
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view

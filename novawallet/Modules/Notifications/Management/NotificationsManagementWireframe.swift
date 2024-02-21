@@ -5,8 +5,8 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
 
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
-        selectedChains: Set<ChainModel.Id>,
-        completion: @escaping (Set<ChainModel.Id>, StakingChainsCount) -> Void
+        selectedChains: Selection<Set<ChainModel.Id>>?,
+        completion: @escaping (Selection<Set<ChainModel.Id>>?) -> Void
     ) {
         guard let stakingRewardsView = StakingRewardsNotificationsViewFactory.createView(
             selectedChains: selectedChains,

@@ -24,6 +24,7 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
     func didReceive(settings: LocalPushSettings)
+    func didReceive(topicsSettings: LocalNotificationTopicSettings)
     func didReceive(error: NotificationsManagementError)
     func didReceive(notificationsEnabled: Bool)
     func didReceive(announcementsEnabled: Bool)
@@ -35,8 +36,8 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
     func showWallets(from view: ControllerBackedProtocol?)
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
-        selectedChains: Set<ChainModel.Id>,
-        completion: @escaping (Set<ChainModel.Id>, StakingChainsCount) -> Void
+        selectedChains: Selection<Set<ChainModel.Id>>?,
+        completion: @escaping (Selection<Set<ChainModel.Id>>?) -> Void
     )
     func showGovSetup(
         from view: ControllerBackedProtocol?,

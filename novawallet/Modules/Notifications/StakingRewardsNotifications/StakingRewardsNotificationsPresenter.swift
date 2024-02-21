@@ -6,14 +6,15 @@ final class StakingRewardsNotificationsPresenter {
     let wireframe: StakingRewardsNotificationsWireframeProtocol
     let interactor: StakingRewardsNotificationsInteractorInputProtocol
     private let chainList: ListDifferenceCalculator<ChainModel>
-    private var selectedChains: Set<ChainModel.Id>
+    private let initialState: Selection<Set<ChainModel.Id>>?
+    private var selectedChains: Set<ChainModel.Id>?
 
     init(
-        selectedChains: Set<ChainModel.Id> = .init(),
+        initialState: Selection<Set<ChainModel.Id>>?,
         interactor: StakingRewardsNotificationsInteractorInputProtocol,
         wireframe: StakingRewardsNotificationsWireframeProtocol
     ) {
-        self.selectedChains = selectedChains
+        self.initialState = initialState
         self.interactor = interactor
         self.wireframe = wireframe
 
@@ -28,7 +29,7 @@ final class StakingRewardsNotificationsPresenter {
                 identifier: $0.identifier,
                 icon: RemoteImageViewModel(url: $0.icon),
                 name: $0.name,
-                enabled: selectedChains.contains($0.chainId)
+                enabled: selectedChains?.contains($0.identifier) == true
             )
         }
 
@@ -36,7 +37,7 @@ final class StakingRewardsNotificationsPresenter {
     }
 
     private func provideClearButtonState() {
-        let enabled = !selectedChains.isEmpty
+        let enabled = selectedChains.map { !$0.isEmpty } ?? false
         view?.didReceive(isClearActionAvailabe: enabled)
     }
 }
@@ -48,31 +49,42 @@ extension StakingRewardsNotificationsPresenter: StakingRewardsNotificationsPrese
     }
 
     func clear() {
-        selectedChains.removeAll()
+        selectedChains = .init()
         provideViewModels()
         provideClearButtonState()
     }
 
-    func changeSettings(network: String, isEnabled: Bool) {
+    func changeSettings(chainId: ChainModel.Id, isEnabled: Bool) {
         if isEnabled {
-            selectedChains.insert(network)
+            selectedChains?.insert(chainId)
         } else {
-            selectedChains.remove(network)
+            selectedChains?.remove(chainId)
         }
         provideClearButtonState()
     }
 
     func proceed() {
-        wireframe.complete(
-            selectedChains: selectedChains,
-            totalChainsCount: chainList.allItems.count
-        )
+        if let selectedChains = selectedChains {
+            let selectedAll = selectedChains.count == chainList.allItems.count
+            wireframe.complete(selectedChains: selectedAll ? .all : .concrete(Set(selectedChains)))
+        }
     }
 }
 
 extension StakingRewardsNotificationsPresenter: StakingRewardsNotificationsInteractorOutputProtocol {
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>]) {
         chainList.apply(changes: changes)
+        if selectedChains == nil {
+            switch initialState {
+            case .all:
+                selectedChains = Set(chainList.allItems.map(\.identifier))
+            case let .concrete(chains):
+                selectedChains = Set(chainList.allItems.filter { chains.contains($0.identifier) }.map(\.identifier))
+            case .none:
+                selectedChains = .init()
+            }
+            provideClearButtonState()
+        }
         provideViewModels()
     }
 }

@@ -1517,3 +1517,4 @@
 "notifications.management.gov.delegate.has.voted" = "Delegate has voted";
 "notifications.management.gov.tracks" = "Tracks";
 "notifications.management.gov.tracks.title" = "Select tracks for";
+"notifications.management.gov.selected.tracks" = "%li of %li";

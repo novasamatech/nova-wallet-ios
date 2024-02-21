@@ -3,13 +3,14 @@ import SoraFoundation
 
 struct StakingRewardsNotificationsViewFactory {
     static func createView(
-        selectedChains _: Set<ChainModel.Id>,
-        completion: @escaping (Set<ChainModel.Id>, StakingChainsCount) -> Void
+        selectedChains: Selection<Set<ChainModel.Id>>?,
+        completion: @escaping (Selection<Set<ChainModel.Id>>?) -> Void
     ) -> StakingRewardsNotificationsViewProtocol? {
         let interactor = StakingRewardsNotificationsInteractor(chainRegistry: ChainRegistryFacade.sharedRegistry)
         let wireframe = StakingRewardsNotificationsWireframe(completion: completion)
 
         let presenter = StakingRewardsNotificationsPresenter(
+            initialState: selectedChains,
             interactor: interactor,
             wireframe: wireframe
         )
