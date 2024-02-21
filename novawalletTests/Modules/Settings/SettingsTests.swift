@@ -83,6 +83,7 @@ final class SettingsTests: XCTestCase {
         let pushNotificationsService = MockPushNotificationsServiceProtocol()
         let status = Observable<PushNotificationsStatus?>(state: .denied)
         stub(pushNotificationsService) { stub in
+            when(stub).setup().thenDoNothing()
             when(stub).statusObservable.get.thenReturn(status)
         }
 
