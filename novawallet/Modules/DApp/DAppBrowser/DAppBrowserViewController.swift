@@ -18,6 +18,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
     private let localizationManager: LocalizationManagerProtocol
+    private let localRouter: URLLocalRouting
 
     private var selectedLocale: Locale {
         localizationManager.selectedLocale
@@ -25,9 +26,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     init(
         presenter: DAppBrowserPresenterProtocol,
+        localRouter: URLLocalRouting,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.localRouter = localRouter
         self.localizationManager = localizationManager
 
         super.init(nibName: nil, bundle: nil)
@@ -67,6 +70,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.closeBarItem.action = #selector(actionClose)
 
         rootView.webView.uiDelegate = self
+        rootView.webView.navigationDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         configureObservers()
@@ -305,7 +309,22 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     }
 }
 
-extension DAppBrowserViewController: WKUIDelegate {
+extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
+    func webView(
+        _: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        if
+            let url = navigationAction.request.url,
+            localRouter.canOpenLocalUrl(url) {
+            localRouter.openLocalUrl(url)
+            decisionHandler(.cancel)
+        } else {
+            decisionHandler(.allow)
+        }
+    }
+
     func webView(
         _ webView: WKWebView,
         createWebViewWith _: WKWebViewConfiguration,
