@@ -4,6 +4,7 @@ import SoraFoundation
 final class GovernanceNotificationsViewController: ChainNotificationSettingsViewController {
     let presenter: GovernanceNotificationsPresenterProtocol
     private var viewModels: [GovernanceNotificationsModel] = []
+    lazy var quantityFormatter = NumberFormatter.quantity.localizableResource()
 
     init(
         presenter: GovernanceNotificationsPresenterProtocol,
@@ -102,12 +103,15 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
                 preferredLanguages: selectedLocale.rLanguages
             )
         case let .concrete(tracks, totalCount):
-            let subtitle = R.string.localizable.notificationsManagementGovSelectedTracks(
-                tracks.count,
-                totalCount,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            return subtitle
+            if let count = totalCount {
+                return R.string.localizable.notificationsManagementGovSelectedTracks(
+                    tracks.count,
+                    totalCount,
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            } else {
+                return quantityFormatter.value(for: selectedLocale).string(from: .init(value: tracks.count))
+            }
         }
     }
 }

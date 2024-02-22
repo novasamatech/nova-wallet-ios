@@ -12,7 +12,7 @@ struct GovernanceNotificationsModel: Identifiable {
 
     enum SelectedTracks {
         case all
-        case concrete(Set<TrackIdLocal>, count: Int)
+        case concrete(Set<TrackIdLocal>, count: Int?)
     }
 
     var allNotificationsIsOff: Bool {
@@ -32,7 +32,7 @@ extension GovernanceNotificationsModel {
         }
     }
 
-    mutating func set(selectedTracks: Set<TrackIdLocal>, count: Int) {
+    mutating func set(selectedTracks: Set<TrackIdLocal>, count: Int?) {
         if selectedTracks.count == count {
             tracks = .all
         } else {
