@@ -60,8 +60,8 @@ final class NotificationsSetupInteractor {
             updatedAt: Date(),
             wallets: [web3Wallet],
             notifications: .init(
-                stakingReward: .concrete([]),
-                transfer: .concrete([]),
+                stakingReward: nil,
+                transfer: nil,
                 tokenSent: true,
                 tokenReceived: true
             )
