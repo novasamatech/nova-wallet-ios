@@ -1,7 +1,7 @@
 import UIKit
 
 final class GovernanceTracksSettingsInteractor {
-    weak var presenter: GovernanceSelectTracksInteractorOutputProtocol?
+    weak var presenter: SelectTracksInteractorOutputProtocol?
 
     let fetchOperationFactory: ReferendumsOperationFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
@@ -26,7 +26,7 @@ final class GovernanceTracksSettingsInteractor {
                     let tracks = try wrapper.targetOperation.extractNoCancellableResultData()
                     self?.presenter?.didReceiveTracks(tracks)
                 } catch {
-                    self?.presenter?.didReceiveError(.tracksFetchFailed(error))
+                    self?.presenter?.didReceiveError(selectTracksError: .tracksFetchFailed(error))
                 }
             }
         }
@@ -35,12 +35,10 @@ final class GovernanceTracksSettingsInteractor {
     }
 }
 
-extension GovernanceTracksSettingsInteractor: GovernanceSelectTracksInteractorInputProtocol {
+extension GovernanceTracksSettingsInteractor: SelectTracksInteractorInputProtocol {
     func setup() {
         provideTracks()
     }
-
-    func remakeSubscriptions() {}
 
     func retryTracksFetch() {
         provideTracks()

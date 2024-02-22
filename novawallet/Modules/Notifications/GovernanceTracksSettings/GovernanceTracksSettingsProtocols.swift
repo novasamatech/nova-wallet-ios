@@ -1,8 +1,8 @@
-protocol GovernanceTracksSettingsViewProtocol: GovernanceSelectTracksViewProtocol {
+protocol GovernanceTracksSettingsViewProtocol: SelectTracksViewProtocol {
     func didReceive(networkViewModel: NetworkViewModel)
 }
 
-protocol GovernanceTracksSettingsWireframeProtocol: GovernanceSelectTracksWireframeProtocol {
+protocol GovernanceTracksSettingsWireframeProtocol: SelectTracksWireframeProtocol {
     func proceed(
         from view: ControllerBackedProtocol?,
         tracks: [GovernanceTrackInfoLocal],

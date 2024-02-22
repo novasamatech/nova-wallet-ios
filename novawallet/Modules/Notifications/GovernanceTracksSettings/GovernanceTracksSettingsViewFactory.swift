@@ -54,7 +54,7 @@ enum GovernanceTracksSettingsViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        presenter.baseView = view
+        presenter.view = view
         interactor.presenter = presenter
 
         return view

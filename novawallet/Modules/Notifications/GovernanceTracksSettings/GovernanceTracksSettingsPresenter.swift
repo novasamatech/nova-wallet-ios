@@ -1,20 +1,25 @@
 import Foundation
 import SoraFoundation
 
-final class GovernanceTracksSettingsPresenter: GovernanceSelectTracksPresenter {
+final class GovernanceTracksSettingsPresenter: SelectTracksPresenter {
     weak var view: GovernanceTracksSettingsViewProtocol? {
-        baseView as? GovernanceTracksSettingsViewProtocol
+        get {
+            selectTracksView as? GovernanceTracksSettingsViewProtocol
+        }
+        set {
+            selectTracksView = newValue
+        }
     }
 
     var wireframe: GovernanceTracksSettingsWireframeProtocol? {
-        baseWireframe as? GovernanceTracksSettingsWireframeProtocol
+        selectTracksWireframe as? GovernanceTracksSettingsWireframeProtocol
     }
 
     private let initialSelectedTracks: Set<TrackIdLocal>?
 
     init(
         initialSelectedTracks: Set<TrackIdLocal>?,
-        interactor: GovernanceSelectTracksInteractorInputProtocol,
+        interactor: SelectTracksInteractorInputProtocol,
         wireframe: GovernanceTracksSettingsWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         chain: ChainModel,
@@ -22,8 +27,8 @@ final class GovernanceTracksSettingsPresenter: GovernanceSelectTracksPresenter {
     ) {
         self.initialSelectedTracks = initialSelectedTracks
         super.init(
-            baseInteractor: interactor,
-            baseWireframe: wireframe,
+            interactor: interactor,
+            wireframe: wireframe,
             chain: chain,
             localizationManager: localizationManager,
             logger: logger
