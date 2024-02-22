@@ -14,6 +14,4 @@ final class GovernanceTracksSettingsWireframe: GovernanceTracksSettingsWireframe
     ) {
         completion(Set(tracks.map(\.trackId)), totalCount)
     }
-
-    func proceed(from _: ControllerBackedProtocol?, tracks _: [GovernanceTrackInfoLocal]) {}
 }
