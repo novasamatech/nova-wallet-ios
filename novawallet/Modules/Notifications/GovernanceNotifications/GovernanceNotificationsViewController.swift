@@ -48,39 +48,49 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
                 title: model.name,
                 icon: model.icon,
                 isOn: model.enabled,
-                action: { self.presenter.changeSettings(chainId: model.identifier, isEnabled: $0) }
+                action: { [weak self] in
+                    self?.presenter.changeSettings(chainId: model.identifier, isEnabled: $0)
+                }
             )),
             .switchCell(.init(
                 title: newRefendumTitle,
                 icon: nil,
                 isOn: model.newReferendum,
-                action: { self.presenter.changeSettings(
-                    chainId: model.identifier,
-                    newReferendum: $0
-                ) }
+                action: { [weak self] in
+                    self?.presenter.changeSettings(
+                        chainId: model.identifier,
+                        newReferendum: $0
+                    )
+                }
             )),
             .switchCell(.init(
                 title: referendumUpdate,
                 icon: nil,
                 isOn: model.referendumUpdate,
-                action: { self.presenter.changeSettings(
-                    chainId: model.identifier,
-                    referendumUpdate: $0
-                ) }
+                action: { [weak self] in
+                    self?.presenter.changeSettings(
+                        chainId: model.identifier,
+                        referendumUpdate: $0
+                    )
+                }
             )),
             .switchCell(.init(
                 title: delegateHasVoted,
                 icon: nil,
                 isOn: model.delegateHasVoted,
-                action: { self.presenter.changeSettings(
-                    chainId: model.identifier,
-                    delegateHasVoted: $0
-                ) }
+                action: { [weak self] in
+                    self?.presenter.changeSettings(
+                        chainId: model.identifier,
+                        delegateHasVoted: $0
+                    )
+                }
             )),
             .accessoryCell(.init(
                 title: tracks,
                 accessory: tracksSubtitle(from: model.tracks),
-                action: { self.presenter.selectTracks(chainId: model.identifier) }
+                action: { [weak self] in
+                    self?.presenter.selectTracks(chainId: model.identifier)
+                }
             ))
         ])
     }

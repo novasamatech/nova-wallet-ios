@@ -1,4 +1,6 @@
-struct GovernanceNotificationsModel {
+import RobinHood
+
+struct GovernanceNotificationsModel: Identifiable {
     var identifier: ChainModel.Id
     var enabled: Bool
     var icon: ImageViewModelProtocol?

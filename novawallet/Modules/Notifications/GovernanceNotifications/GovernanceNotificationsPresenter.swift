@@ -25,7 +25,7 @@ final class GovernanceNotificationsPresenter {
     }
 
     private func provideViewModels() {
-        let viewModel = chainList.allItems.map {
+        let viewModels = chainList.allItems.map {
             if let chainSettings = settings[$0.identifier] {
                 return GovernanceNotificationsModel(
                     identifier: $0.identifier,
@@ -38,7 +38,7 @@ final class GovernanceNotificationsPresenter {
                     tracks: chainSettings.tracks
                 )
             } else {
-                let newModel = GovernanceNotificationsModel(
+                return GovernanceNotificationsModel(
                     identifier: $0.identifier,
                     enabled: false,
                     icon: RemoteImageViewModel(url: $0.icon),
@@ -48,12 +48,14 @@ final class GovernanceNotificationsPresenter {
                     delegateHasVoted: true,
                     tracks: .all
                 )
-                settings[$0.identifier] = newModel
-                return newModel
             }
         }
 
-        view?.didReceive(viewModels: viewModel)
+        settings = viewModels.reduce(into: settings) {
+            $0[$1.identifier] = $1
+        }
+
+        view?.didReceive(viewModels: viewModels)
     }
 
     private func provideClearButtonState() {
@@ -61,13 +63,13 @@ final class GovernanceNotificationsPresenter {
         view?.didReceive(isClearActionAvailabe: isEnabled)
     }
 
-    private func disableChainNotificationsIfNeeded(network: ChainModel.Id) {
-        if settings[network]?.allNotificationsIsOff == true {
-            changeSettings(chainId: network, isEnabled: false)
-            settings[network].map {
-                self.view?.didReceiveUpdates(for: $0)
-            }
+    private func disableChainNotificationsIfNeeded(chainId: ChainModel.Id) {
+        guard let chainSettings = settings[chainId], chainSettings.allNotificationsIsOff else {
+            return
         }
+
+        changeSettings(chainId: chainId, isEnabled: false)
+        view?.didReceiveUpdates(for: chainSettings)
     }
 }
 
@@ -90,17 +92,17 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
 
     func changeSettings(chainId: ChainModel.Id, newReferendum: Bool) {
         settings[chainId]?.newReferendum = newReferendum
-        disableChainNotificationsIfNeeded(network: chainId)
+        disableChainNotificationsIfNeeded(chainId: chainId)
     }
 
     func changeSettings(chainId: ChainModel.Id, referendumUpdate: Bool) {
         settings[chainId]?.referendumUpdate = referendumUpdate
-        disableChainNotificationsIfNeeded(network: chainId)
+        disableChainNotificationsIfNeeded(chainId: chainId)
     }
 
     func changeSettings(chainId: ChainModel.Id, delegateHasVoted: Bool) {
         settings[chainId]?.delegateHasVoted = delegateHasVoted
-        disableChainNotificationsIfNeeded(network: chainId)
+        disableChainNotificationsIfNeeded(chainId: chainId)
     }
 
     func selectTracks(chainId: ChainModel.Id) {
@@ -111,7 +113,6 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
         let selectedTracks = settings[chain.identifier]?.selectedTracks
         wireframe.showTracks(
             from: view,
-
             for: chain,
             selectedTracks: selectedTracks
         ) { [weak self] selectedTracks, count in
