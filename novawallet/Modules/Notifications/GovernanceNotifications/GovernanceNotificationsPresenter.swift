@@ -139,7 +139,7 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsInteractorOut
                     case .all:
                         return .all
                     case let .concrete(values):
-                        return .concrete(values, count: 0)
+                        return .concrete(values, count: nil)
                     }
                 } ?? .all
                 settings[chain.chainId] = GovernanceNotificationsModel(

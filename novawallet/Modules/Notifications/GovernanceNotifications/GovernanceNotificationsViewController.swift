@@ -106,11 +106,11 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
             if let count = totalCount {
                 return R.string.localizable.notificationsManagementGovSelectedTracks(
                     tracks.count,
-                    totalCount,
+                    count,
                     preferredLanguages: selectedLocale.rLanguages
                 )
             } else {
-                return quantityFormatter.value(for: selectedLocale).string(from: .init(value: tracks.count))
+                return quantityFormatter.value(for: selectedLocale).string(from: .init(value: tracks.count)) ?? ""
             }
         }
     }
