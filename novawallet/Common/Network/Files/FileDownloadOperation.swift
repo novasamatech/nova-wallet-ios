@@ -45,7 +45,17 @@ final class FileDownloadOperation: BaseOperation<URLResponse> {
         let dataTask = networkSession.downloadTask(with: remoteUrl) { tempUrl, response, networkError in
             do {
                 if let tempUrl = tempUrl {
-                    if !currentFileManager.fileExists(atPath: directoryUrl.path) {
+                    var isDirectory: ObjCBool = false
+                    let parentExists = currentFileManager.fileExists(
+                        atPath: directoryUrl.path,
+                        isDirectory: &isDirectory
+                    )
+
+                    if !parentExists || !isDirectory.boolValue {
+                        if parentExists {
+                            try currentFileManager.removeItem(at: directoryUrl)
+                        }
+
                         try currentFileManager.createDirectory(
                             at: directoryUrl,
                             withIntermediateDirectories: true,
