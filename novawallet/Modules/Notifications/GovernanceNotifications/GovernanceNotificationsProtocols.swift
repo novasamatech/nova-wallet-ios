@@ -11,7 +11,6 @@ protocol GovernanceNotificationsPresenterProtocol: ChainNotificationSettingsPres
     func changeSettings(chainId: ChainModel.Id, isEnabled: Bool)
     func changeSettings(chainId: ChainModel.Id, newReferendum: Bool)
     func changeSettings(chainId: ChainModel.Id, referendumUpdate: Bool)
-    func changeSettings(chainId: ChainModel.Id, delegateHasVoted: Bool)
     func selectTracks(chainId: ChainModel.Id)
     func proceed()
 }

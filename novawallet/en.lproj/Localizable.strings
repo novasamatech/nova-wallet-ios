@@ -1514,7 +1514,6 @@
 "staking.setup.proxy.title" = "Add delegation for %@ staking";
 "notifications.management.gov.new.referendum" = "New Referendum";
 "notifications.management.gov.referendum.update" = "Referendum Update";
-"notifications.management.gov.delegate.has.voted" = "Delegate has voted";
 "notifications.management.gov.tracks" = "Tracks";
 "notifications.management.gov.tracks.title" = "Select tracks for";
 "notifications.management.gov.selected.tracks" = "%li of %li";

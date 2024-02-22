@@ -1488,7 +1488,6 @@
 "notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
 "notifications.management.gov.new.referendum" = "Новый Референдум";
 "notifications.management.gov.referendum.update" = "Обновление Референдума";
-"notifications.management.gov.delegate.has.voted" = "Делегат проголосовал";
 "notifications.management.gov.tracks" = "Треки";
 "notifications.management.gov.tracks.title" = "Выберите треки для";
 "staking.alert.switch.to.stash.title" = "Выберите стэш-аккаунт для настройки прокси";

@@ -7,7 +7,6 @@ struct GovernanceNotificationsModel: Identifiable {
     var name: String
     var newReferendum: Bool
     var referendumUpdate: Bool
-    var delegateHasVoted: Bool
     var tracks: SelectedTracks
 
     enum SelectedTracks {
@@ -17,8 +16,7 @@ struct GovernanceNotificationsModel: Identifiable {
 
     var allNotificationsIsOff: Bool {
         newReferendum == false &&
-            referendumUpdate == false &&
-            delegateHasVoted == false
+            referendumUpdate == false
     }
 }
 
@@ -44,7 +42,6 @@ extension GovernanceNotificationsModel {
 struct GovernanceNotificationsInitModel {
     var newReferendum: [ChainModel.Id: Selection<Set<TrackIdLocal>>]
     var referendumUpdate: [ChainModel.Id: Selection<Set<TrackIdLocal>>]
-    var delegateHasVoted: Selection<Set<ChainModel.Id>>?
 
     func tracks(for chainId: ChainModel.Id) -> Selection<Set<TrackIdLocal>>? {
         newReferendum[chainId] ?? referendumUpdate[chainId]

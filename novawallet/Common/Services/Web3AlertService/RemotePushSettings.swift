@@ -16,7 +16,6 @@ struct Web3AlertNotification: Codable, Equatable {
     var transfer: RemotePushSettings.ChainSelection
     var tokenSent: Bool
     var tokenReceived: Bool
-    var govMyDelegatorVoted: RemotePushSettings.ChainSelection
 }
 
 struct RemotePushSettings: Codable, Equatable {
@@ -51,15 +50,6 @@ extension RemotePushSettings.ChainSelection {
 enum Selection<T> {
     case all
     case concrete(T)
-
-    var isAll: Bool {
-        switch self {
-        case .all:
-            return true
-        case .concrete:
-            return false
-        }
-    }
 
     var concreteValue: T? {
         switch self {

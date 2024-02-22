@@ -77,20 +77,7 @@ final class NotificationsManagementPresenter {
     }
 
     func isGovernanceOn() -> Bool {
-        let govMyDelegatorVotedEnabled = modifiedSettings.map {
-            switch $0.notifications.govMyDelegatorVoted {
-            case .all:
-                return true
-            case let .concrete(chains):
-                return !chains.isEmpty
-            }
-        }
-
-        if govMyDelegatorVotedEnabled == true {
-            return true
-        }
-
-        let govTopics = modifiedTopicsSettings?.topics.contains {
+        let hasGovernanceTopics = modifiedTopicsSettings?.topics.contains {
             switch $0 {
             case .chainReferendums, .newChainReferendums:
                 return true
@@ -99,7 +86,7 @@ final class NotificationsManagementPresenter {
             }
         }
 
-        return govTopics == true
+        return hasGovernanceTopics == true
     }
 }
 
@@ -196,10 +183,6 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         }
         modifiedTopicsSettings = .init(topics: topics)
-        let govMyDelegatorVotedChaind = settings.filter { $0.value.enabled && $0.value.delegateHasVoted }.map(\.key)
-        modifiedSettings = modifiedSettings?.with {
-            $0.govMyDelegatorVoted = .concrete(govMyDelegatorVotedChaind)
-        }
         updateView()
     }
 
@@ -232,12 +215,9 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         }
 
-        let delegateHasVoted = getChainsSettings(\.govMyDelegatorVoted)
-
         return .init(
             newReferendum: chainNewReferendumTopics,
-            referendumUpdate: chainReferendumUpdateTopics,
-            delegateHasVoted: delegateHasVoted
+            referendumUpdate: chainReferendumUpdateTopics
         )
     }
 

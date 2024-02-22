@@ -34,7 +34,6 @@ final class GovernanceNotificationsPresenter {
                     name: $0.name,
                     newReferendum: chainSettings.newReferendum,
                     referendumUpdate: chainSettings.referendumUpdate,
-                    delegateHasVoted: chainSettings.delegateHasVoted,
                     tracks: chainSettings.tracks
                 )
             } else {
@@ -45,7 +44,6 @@ final class GovernanceNotificationsPresenter {
                     name: $0.name,
                     newReferendum: true,
                     referendumUpdate: true,
-                    delegateHasVoted: true,
                     tracks: .all
                 )
             }
@@ -64,12 +62,45 @@ final class GovernanceNotificationsPresenter {
     }
 
     private func disableChainNotificationsIfNeeded(chainId: ChainModel.Id) {
-        guard let chainSettings = settings[chainId], chainSettings.allNotificationsIsOff else {
+        guard var chainSettings = settings[chainId], chainSettings.allNotificationsIsOff else {
             return
         }
 
-        changeSettings(chainId: chainId, isEnabled: false)
+        chainSettings.enabled = false
+        settings[chainId] = chainSettings
         view?.didReceiveUpdates(for: chainSettings)
+    }
+
+    private func initializeIfNeeded() {
+        guard let initState = initState else {
+            return
+        }
+
+        settings = chainList.allItems.reduce(into: settings) { result, chain in
+            let newReferendum = initState.newReferendum[chain.chainId] != nil
+            let referendumUpdate = initState.referendumUpdate[chain.chainId] != nil
+            let enabled = newReferendum || referendumUpdate
+            let tracks: GovernanceNotificationsModel.SelectedTracks = initState.tracks(for: chain.chainId).map {
+                switch $0 {
+                case .all:
+                    return .all
+                case let .concrete(values):
+                    return .concrete(values, count: nil)
+                }
+            } ?? .all
+
+            result[chain.chainId] = GovernanceNotificationsModel(
+                identifier: chain.identifier,
+                enabled: enabled,
+                icon: RemoteImageViewModel(url: chain.icon),
+                name: chain.name,
+                newReferendum: enabled ? newReferendum : true,
+                referendumUpdate: enabled ? referendumUpdate : true,
+                tracks: tracks
+            )
+        }
+
+        self.initState = nil
     }
 }
 
@@ -93,16 +124,13 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
     func changeSettings(chainId: ChainModel.Id, newReferendum: Bool) {
         settings[chainId]?.newReferendum = newReferendum
         disableChainNotificationsIfNeeded(chainId: chainId)
+        provideClearButtonState()
     }
 
     func changeSettings(chainId: ChainModel.Id, referendumUpdate: Bool) {
         settings[chainId]?.referendumUpdate = referendumUpdate
         disableChainNotificationsIfNeeded(chainId: chainId)
-    }
-
-    func changeSettings(chainId: ChainModel.Id, delegateHasVoted: Bool) {
-        settings[chainId]?.delegateHasVoted = delegateHasVoted
-        disableChainNotificationsIfNeeded(chainId: chainId)
+        provideClearButtonState()
     }
 
     func selectTracks(chainId: ChainModel.Id) {
@@ -129,34 +157,7 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
 extension GovernanceNotificationsPresenter: GovernanceNotificationsInteractorOutputProtocol {
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>]) {
         chainList.apply(changes: changes)
-        if let initState = initState {
-            for chain in chainList.allItems {
-                let newReferendum = initState.newReferendum[chain.chainId] != nil
-                let referendumUpdate = initState.referendumUpdate[chain.chainId] != nil
-                let delegateHasVoted = initState.delegateHasVoted?.isAll == true || initState.delegateHasVoted?.concreteValue?.contains(chain.chainId) == true
-                let tracks: GovernanceNotificationsModel.SelectedTracks = initState.tracks(for: chain.chainId).map {
-                    switch $0 {
-                    case .all:
-                        return .all
-                    case let .concrete(values):
-                        return .concrete(values, count: nil)
-                    }
-                } ?? .all
-                settings[chain.chainId] = GovernanceNotificationsModel(
-                    identifier: chain.identifier,
-                    enabled: newReferendum || referendumUpdate || delegateHasVoted,
-                    icon: RemoteImageViewModel(url: chain.icon),
-                    name: chain.name,
-                    newReferendum: newReferendum,
-                    referendumUpdate: referendumUpdate,
-                    delegateHasVoted: delegateHasVoted,
-                    tracks: tracks
-                )
-            }
-
-            self.initState = nil
-        }
-
+        initializeIfNeeded()
         provideViewModels()
         provideClearButtonState()
     }

@@ -38,9 +38,6 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         let referendumUpdate = R.string.localizable.notificationsManagementGovReferendumUpdate(
             preferredLanguages: selectedLocale.rLanguages
         )
-        let delegateHasVoted = R.string.localizable.notificationsManagementGovDelegateHasVoted(
-            preferredLanguages: selectedLocale.rLanguages
-        )
         let tracks = R.string.localizable.notificationsManagementGovTracks(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -72,17 +69,6 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
                     self?.presenter.changeSettings(
                         chainId: model.identifier,
                         referendumUpdate: $0
-                    )
-                }
-            )),
-            .switchCell(.init(
-                title: delegateHasVoted,
-                icon: nil,
-                isOn: model.delegateHasVoted,
-                action: { [weak self] in
-                    self?.presenter.changeSettings(
-                        chainId: model.identifier,
-                        delegateHasVoted: $0
                     )
                 }
             )),
